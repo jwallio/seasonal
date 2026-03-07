@@ -433,6 +433,49 @@ SLEET_RATE_PALETTE = ['#f0d9ff', '#e1bee7', '#ce93d8', '#ab47bc', '#8e24aa', '#6
 INCH_TO_MM = 25.4
 PTYPE_RATE_MIN_MMHR = 0.02
 PTYPE_RATE_MAX_MMHR = 12.0
+CONUS_PTYPE_RATE_MIN_MMHR = 0.01
+CONUS_PTYPE_RATE_MAX_MMHR = 10.0
+CONUS_PTYPE_PHASE_THRESHOLD_MMHR = 0.08
+CONUS_PTYPE_SMOOTH_THRESHOLD_MMHR = 0.12
+CONUS_PTYPE_VIS_SMOOTH_RADIUS_PX = 1
+CONUS_PTYPE_VIS_GAIN = 1.18
+CONUS_MSLP_CONTOUR_BASE_INTERVAL = 4
+CONUS_MSLP_CONTOUR_LONG_INTERVAL = 5
+CONUS_MSLP_CONTOUR_COLOR = '#32363b'
+CONUS_MSLP_CONTOUR_OPACITY = 0.78
+CONUS_MSLP_CONTOUR_LINE_WIDTH_FRAC = 0.0074
+CONUS_MSLP_CONTOUR_CANNY_THRESHOLD = 0.7
+CONUS_MSLP_CONTOUR_CANNY_SIGMA = 0.6
+CONUS_MSLP_CONTOUR_SMOOTH_PX = 1
+CONUS_MSLP_CONTOUR_MIN_CONNECTED_PX = 10
+CONUS_MSLP_LABEL_MAX_COUNT = 4
+CONUS_MSLP_LABEL_MAX_PRECIP_MMHR = 0.10
+CONUS_MSLP_LABEL_TOLERANCE_HPA = 0.32
+CONUS_MSLP_LABEL_MIN_SEPARATION_DEG = 7.0
+CONUS_MSLP_LABEL_SEARCH_RADIUS_DEG = 1.5
+CONUS_MSLP_LABEL_SEARCH_STEP_DEG = 0.5
+CONUS_MSLP_LABEL_ANCHORS = [
+    (-118.5, 45.5),
+    (-113.0, 40.5),
+    (-108.0, 35.5),
+    (-101.5, 41.0),
+    (-96.0, 36.5),
+    (-91.0, 43.0),
+    (-88.0, 33.5),
+    (-83.5, 39.5),
+]
+CONUS_PTYPE_LEGEND_HEIGHT = 124
+CONUS_PRESSURE_CENTER_SMOOTH_RADIUS_PX = 4
+CONUS_PRESSURE_CENTER_SCALE_M = 90000
+CONUS_PRESSURE_CENTER_SAMPLE_RADIUS_M = 70000
+CONUS_PRESSURE_CENTER_CORE_RADIUS_M = 240000
+CONUS_PRESSURE_CENTER_RING_RADIUS_M = 520000
+CONUS_PRESSURE_CENTER_MIN_PROMINENCE_HPA = 1.6
+CONUS_PRESSURE_CENTER_MIN_CORE_DELTA_HPA = 0.5
+CONUS_PRESSURE_CENTER_EXTREMUM_TOLERANCE_HPA = 0.35
+CONUS_PRESSURE_CENTER_EDGE_MARGIN_LON_DEG = 2.75
+CONUS_PRESSURE_CENTER_EDGE_MARGIN_LAT_DEG = 1.75
+CONUS_RAIN_RATE_PALETTE = ['#bcff72', '#80ef3f', '#3ed02d', '#199b2a', '#ffe600', '#ffbf00', '#ff8c00', '#ff4e00', '#c60000', '#ff39d8']
 SNOW_PTYPE_SEGMENTS_MMHR = [
     # 0.00-0.10 in/hr (medium -> darker blue)
     (0.0, 0.10 * INCH_TO_MM, ['#4ea6ff', '#2f84db', '#1f63bf']),
@@ -445,6 +488,14 @@ SNOW_PTYPE_SEGMENTS_MMHR = [
 ]
 SNOW_PTYPE_MAX_MMHR = 1.0 * INCH_TO_MM
 SNOW_PTYPE_TICKS_MMHR = [0.0, 0.10 * INCH_TO_MM, 0.25 * INCH_TO_MM, 0.50 * INCH_TO_MM, 1.0 * INCH_TO_MM]
+CONUS_SNOW_PTYPE_SEGMENTS_MMHR = [
+    (0.0, 0.10 * INCH_TO_MM, ['#8fd4ff', '#4fa9ff', '#1c74d9']),
+    (0.10 * INCH_TO_MM, 0.25 * INCH_TO_MM, ['#276bd8', '#194ab2', '#0b2d7e']),
+    (0.25 * INCH_TO_MM, 0.50 * INCH_TO_MM, ['#4d1dab', '#6b2fd3', '#8b45f1']),
+    (0.50 * INCH_TO_MM, 1.00 * INCH_TO_MM, ['#bdfdff', '#4feaff', '#00cee5']),
+]
+CONUS_FRZR_RATE_PALETTE = ['#fff1f8', '#ffd4e7', '#ffabd0', '#ff7bb9', '#f54e9a', '#d81b60', '#a70e53', '#740035']
+CONUS_SLEET_RATE_PALETTE = ['#f5e7ff', '#e1c5ff', '#ca90ff', '#ac55e7', '#8a2dc8', '#65149d']
 SNOW_ACCUM_STEP_SEGMENTS_IN = [
     (0.1, 2.0, ['#eaf8ff']),
     (2.0, 4.0, ['#cfeeff']),
@@ -1056,6 +1107,18 @@ def contour_overlay(field, interval, color, opacity=0.82, smooth_px=0, thicken_p
     lines = dist.lte(width)
     if thicken_px and thicken_px > 0:
         lines = lines.focalMax(int(thicken_px))
+    return lines.selfMask().visualize(palette=[color], opacity=opacity)
+
+
+def conus_mslp_contour_overlay(field, interval, color, opacity=0.78, canny_threshold=0.7, canny_sigma=0.6, smooth_px=1, min_connected_px=10):
+    # Slightly smooth the pressure field before quantization, then drop tiny edge fragments after extraction.
+    smoothed = field.resample('bilinear')
+    if smooth_px and smooth_px > 0:
+        smoothed = smoothed.focalMean(int(smooth_px), 'circle', 'pixels')
+    quantized = smoothed.divide(float(interval)).round().toInt16()
+    lines = ee.Algorithms.CannyEdgeDetector(quantized, float(canny_threshold), float(canny_sigma)).gt(0)
+    if min_connected_px and min_connected_px > 1:
+        lines = lines.updateMask(lines.connectedPixelCount(128, True).gte(int(min_connected_px)))
     return lines.selfMask().visualize(palette=[color], opacity=opacity)
 
 
@@ -2267,7 +2330,55 @@ def _draw_legend(draw, product_key, width, y, snow_ratio=10):
         _draw_ticks(draw, bar_x, bar_y, bar_w, bar_h, [2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32], 0.1, SNOW_ACCUM_MAX_IN, tick_font)
         return
 
-    if product_key in ('conus_mslp_ptype', 'ne_mslp_ptype'):
+    if product_key == 'conus_mslp_ptype':
+        compact_label_font = load_font(20 if width >= 1200 else 17, bold=False)
+        compact_note_font = load_font(14 if width >= 1200 else 12, bold=False)
+        compact_tick_font = load_font(13 if width >= 1200 else 11, bold=False)
+        gap = 10 if width >= 1200 else 8
+        slot_w = int((bar_w - 3 * gap) / 4)
+        panel_top = y + 36
+        panel_bottom = y + CONUS_PTYPE_LEGEND_HEIGHT - 8
+        _draw_panel(
+            draw,
+            bar_x - 10,
+            y - 1,
+            bar_x + bar_w + 10,
+            panel_bottom,
+            fill=(244, 244, 244),
+            outline=(118, 118, 118),
+            radius=8,
+        )
+        draw.text((bar_x, y + 2), 'Precip Rate by Type (mm/hr)', fill=(22, 22, 22), font=compact_label_font)
+        draw.text((bar_x, y + 24), 'Snow scale follows in/hr bins for heavier rates', fill=(70, 70, 70), font=compact_note_font)
+        labels = [
+            ('Rain', CONUS_RAIN_RATE_PALETTE),
+            ('Snow', CONUS_SNOW_PTYPE_SEGMENTS_MMHR),
+            ('Freezing Rain', CONUS_FRZR_RATE_PALETTE),
+            ('Sleet', CONUS_SLEET_RATE_PALETTE),
+        ]
+        for i, (name, palette) in enumerate(labels):
+            sx = bar_x + i * (slot_w + gap)
+            draw.text((sx + 1, panel_top), name, fill=(24, 24, 24), font=compact_note_font)
+            gradient_y = panel_top + 20
+            if name == 'Snow':
+                _draw_segmented_gradient_bar(draw, sx, gradient_y, slot_w, 18, palette, 0.0, SNOW_PTYPE_MAX_MMHR)
+                _draw_ticks(
+                    draw,
+                    sx,
+                    gradient_y,
+                    slot_w,
+                    18,
+                    SNOW_PTYPE_TICKS_MMHR[1:],
+                    0.0,
+                    SNOW_PTYPE_MAX_MMHR,
+                    compact_tick_font,
+                )
+            else:
+                _draw_gradient_bar(draw, sx, gradient_y, slot_w, 18, palette)
+                _draw_ticks(draw, sx, gradient_y, slot_w, 18, [0.1, 1, 3, 6, 10], 0.1, CONUS_PTYPE_RATE_MAX_MMHR, compact_tick_font)
+        return
+
+    if product_key == 'ne_mslp_ptype':
         draw.text((bar_x, y + 2), 'Precip Rate by Type (mm/hr; Snow bins from in/hr)', fill=(22, 22, 22), font=label_font)
         gap = 16 if width >= 1200 else 10
         slot_w = int((bar_w - 3 * gap) / 4)
@@ -2336,7 +2447,84 @@ def _lonlat_to_image_xy(lon, lat, region, width, height):
     return x, y
 
 
-def annotate_map_file(out_file, product_key, hour, map_region=None, low_center=None, snow_labels=None, snow_ratio=10):
+def _draw_pressure_marker(draw, width, height, x, y, kind, mb_value):
+    label_font = load_font(46 if width >= 1300 else 40, bold=True)
+    value_font = load_font(19 if width >= 1300 else 17, bold=True)
+    label_stroke = 3
+    value_stroke = 2
+    safe_pad = 12
+    label_fill = (196, 30, 30) if kind == 'L' else (36, 77, 182)
+    value_fill = (20, 20, 20)
+    label_text = str(kind).upper()
+    value_text = f'{int(round(float(mb_value)))}'
+    label_bbox = draw.textbbox((0, 0), label_text, font=label_font, stroke_width=label_stroke)
+    value_bbox = draw.textbbox((0, 0), value_text, font=value_font, stroke_width=value_stroke)
+    label_w = label_bbox[2] - label_bbox[0]
+    label_h = label_bbox[3] - label_bbox[1]
+    value_w = value_bbox[2] - value_bbox[0]
+    value_h = value_bbox[3] - value_bbox[1]
+    gap = -4
+    group_w = max(label_w, value_w)
+    group_h = label_h + value_h + gap
+    group_left = int(round(x - group_w / 2.0))
+    group_top = int(round(y - group_h / 2.0))
+    group_left = max(safe_pad, min(width - group_w - safe_pad, group_left))
+    group_top = max(safe_pad, min(height - group_h - safe_pad, group_top))
+    label_x = int(round(group_left + (group_w - label_w) / 2.0 - label_bbox[0]))
+    label_y = int(round(group_top - label_bbox[1]))
+    value_top = group_top + label_h + gap
+    value_x = int(round(group_left + (group_w - value_w) / 2.0 - value_bbox[0]))
+    value_y = int(round(value_top - value_bbox[1]))
+    try:
+        draw.text((label_x, label_y), label_text, fill=label_fill, font=label_font, stroke_width=label_stroke, stroke_fill=(245, 245, 245))
+        draw.text((value_x, value_y), value_text, fill=value_fill, font=value_font, stroke_width=value_stroke, stroke_fill=(245, 245, 245))
+    except TypeError:
+        draw.text((label_x, label_y), label_text, fill=label_fill, font=label_font)
+        draw.text((value_x, value_y), value_text, fill=value_fill, font=value_font)
+
+
+def _draw_contour_labels(draw, width, height, contour_labels, map_region):
+    label_font = load_font(16 if width >= 1300 else 14, bold=False)
+    stroke_width = 2
+    safe_pad = 14
+    placed = []
+    for item in contour_labels or []:
+        text = item.get('text')
+        if not text:
+            continue
+        marker_xy = _lonlat_to_image_xy(
+            item.get('lon'),
+            item.get('lat'),
+            map_region,
+            width,
+            height,
+        )
+        if marker_xy is None:
+            continue
+        x, y = marker_xy
+        bbox = draw.textbbox((0, 0), text, font=label_font, stroke_width=stroke_width)
+        tw = bbox[2] - bbox[0]
+        th = bbox[3] - bbox[1]
+        tx = int(round(x - tw / 2.0 - bbox[0]))
+        ty = int(round(y - th / 2.0 - bbox[1]))
+        rect = (tx + bbox[0], ty + bbox[1], tx + bbox[2], ty + bbox[3])
+        if rect[0] < safe_pad or rect[1] < safe_pad or rect[2] > width - safe_pad or rect[3] > height - safe_pad:
+            continue
+        overlaps = False
+        for ox0, oy0, ox1, oy1 in placed:
+            if not (rect[2] < ox0 or rect[0] > ox1 or rect[3] < oy0 or rect[1] > oy1):
+                overlaps = True
+                break
+        if overlaps:
+            continue
+        try:
+            draw.text((tx, ty), text, fill=(82, 82, 82), font=label_font, stroke_width=stroke_width, stroke_fill=(242, 242, 242))
+        except TypeError:
+            draw.text((tx, ty), text, fill=(82, 82, 82), font=label_font)
+        placed.append(rect)
+
+
+def annotate_map_file(out_file, product_key, hour, map_region=None, low_center=None, pressure_centers=None, contour_labels=None, snow_labels=None, snow_ratio=10):
     from PIL import Image, ImageDraw
 
     product_titles = {
@@ -2357,6 +2545,28 @@ def annotate_map_file(out_file, product_key, hour, map_region=None, low_center=N
 
     with Image.open(out_file) as src:
         img = src.convert('RGB')
+        if map_region is not None and pressure_centers:
+            marker_draw = ImageDraw.Draw(img)
+            for center in pressure_centers:
+                marker_xy = _lonlat_to_image_xy(
+                    center.get('lon'),
+                    center.get('lat'),
+                    map_region,
+                    img.width,
+                    img.height,
+                )
+                mb = center.get('mb')
+                if marker_xy is None or mb is None:
+                    continue
+                _draw_pressure_marker(
+                    marker_draw,
+                    img.width,
+                    img.height,
+                    marker_xy[0],
+                    marker_xy[1],
+                    center.get('kind', 'L'),
+                    mb,
+                )
         if map_region is not None and low_center:
             marker_xy = _lonlat_to_image_xy(
                 low_center.get('lon'),
@@ -2394,6 +2604,10 @@ def annotate_map_file(out_file, product_key, hour, map_region=None, low_center=N
                         marker_draw.text((mb_x, mb_y), mb_text, fill=(214, 28, 28), font=value_font, stroke_width=2, stroke_fill=(20, 20, 20))
                     except TypeError:
                         marker_draw.text((mb_x, mb_y), mb_text, fill=(214, 28, 28), font=value_font)
+
+        if product_key == 'conus_mslp_ptype' and map_region is not None and contour_labels:
+            contour_draw = ImageDraw.Draw(img)
+            _draw_contour_labels(contour_draw, img.width, img.height, contour_labels, map_region)
 
         if map_region is not None and snow_labels:
             snow_draw = ImageDraw.Draw(img)
@@ -2433,7 +2647,9 @@ def annotate_map_file(out_file, product_key, hour, map_region=None, low_center=N
                 placed.append(rect)
 
         legend_h = 0
-        if product_key in ('conus_mslp_ptype', 'ne_mslp_ptype'):
+        if product_key == 'conus_mslp_ptype':
+            legend_h = CONUS_PTYPE_LEGEND_HEIGHT
+        elif product_key == 'ne_mslp_ptype':
             legend_h = 180
         elif product_key in (
             'nh_z500a',
@@ -3174,11 +3390,14 @@ def generate_z500_anomaly_map(img, h, region, prefix):
     )
 
 
-def derive_precip_phase(img, region_geom):
+def derive_precip_phase(img, region_geom, precip_mask_threshold_mmhr=0.12, precip_smooth_radius_px=1):
     precip_6h_mm = img.select(WN2_PRECIP_6H_BAND).multiply(1000).clip(region_geom)
     precip_rate = precip_6h_mm.divide(6)  # mm/hr
-    precip_rate_sm = precip_rate.focalMean(1, 'circle', 'pixels')
-    precip_mask = precip_rate_sm.gt(0.12)
+    if precip_smooth_radius_px and precip_smooth_radius_px > 0:
+        precip_rate_sm = precip_rate.focalMean(int(precip_smooth_radius_px), 'circle', 'pixels')
+    else:
+        precip_rate_sm = precip_rate
+    precip_mask = precip_rate_sm.gt(float(precip_mask_threshold_mmhr))
 
     t2c = img.select(WN2_T2M_BAND).subtract(273.15).clip(region_geom)
     t850c = img.select(WN2_T850_BAND).subtract(273.15).clip(region_geom)
@@ -3191,13 +3410,19 @@ def derive_precip_phase(img, region_geom):
     return precip_rate_sm, precip_6h_mm, rain, snow, freezing_rain, sleet
 
 
-def smooth_precip_type_masks(precip_rate, rain, snow, freezing_rain, sleet):
-    precip_mask = precip_rate.gt(0.2).focalMax(1, 'circle', 'pixels').focalMin(1, 'circle', 'pixels')
+def smooth_precip_type_masks(precip_rate, rain, snow, freezing_rain, sleet, mask_threshold_mmhr=0.2, edge_radius_px=1, mode_radii=(2, 1)):
+    precip_mask = precip_rate.gt(float(mask_threshold_mmhr))
+    if edge_radius_px and edge_radius_px > 0:
+        precip_mask = precip_mask.focalMax(int(edge_radius_px), 'circle', 'pixels').focalMin(int(edge_radius_px), 'circle', 'pixels')
     ptype = ee.Image.constant(0).updateMask(precip_mask)
     ptype = ptype.where(snow, 1)
     ptype = ptype.where(freezing_rain, 2)
     ptype = ptype.where(sleet, 3)
-    ptype_sm = ptype.focalMode(2, 'circle', 'pixels').focalMode(1, 'circle', 'pixels').updateMask(precip_mask)
+    ptype_sm = ptype
+    for radius in mode_radii or ():
+        if radius and radius > 0:
+            ptype_sm = ptype_sm.focalMode(int(radius), 'circle', 'pixels')
+    ptype_sm = ptype_sm.updateMask(precip_mask)
     rain_sm = ptype_sm.eq(0).And(precip_mask)
     snow_sm = ptype_sm.eq(1).And(precip_mask)
     frz_sm = ptype_sm.eq(2).And(precip_mask)
@@ -3205,17 +3430,22 @@ def smooth_precip_type_masks(precip_rate, rain, snow, freezing_rain, sleet):
     return rain_sm, snow_sm, frz_sm, sleet_sm
 
 
-def snow_ptype_rate_layer(precip_rate_mmhr, snow_mask):
+def snow_ptype_rate_layer(precip_rate_mmhr, snow_mask, segments=None, max_rate_mmhr=None, over_color='#00a8c1'):
+    segments = segments or SNOW_PTYPE_SEGMENTS_MMHR
+    max_rate = float(max_rate_mmhr if max_rate_mmhr is not None else SNOW_PTYPE_MAX_MMHR)
     snow_rate = precip_rate_mmhr.updateMask(snow_mask)
     layers = [
-        range_gradient_layer(snow_rate, low, high, palette, include_high=(i == len(SNOW_PTYPE_SEGMENTS_MMHR) - 1))
-        for i, (low, high, palette) in enumerate(SNOW_PTYPE_SEGMENTS_MMHR)
+        range_gradient_layer(snow_rate, low, high, palette, include_high=(i == len(segments) - 1))
+        for i, (low, high, palette) in enumerate(segments)
     ]
-    layers.append(snow_rate.gt(SNOW_PTYPE_MAX_MMHR).selfMask().visualize(palette=['#00a8c1']))
+    layers.append(snow_rate.gt(max_rate).selfMask().visualize(palette=[over_color]))
     return ee.ImageCollection(layers).mosaic()
 
 
-def find_low_center(mslp_hpa, region_geom, fallback_region=None, scale_m=50000):
+def _find_pressure_center(mslp_hpa, region_geom, fallback_region=None, scale_m=50000, mode='low'):
+    mode = str(mode or 'low').lower()
+    is_low = mode != 'high'
+
     def _fallback(mb_value=None):
         if fallback_region and len(fallback_region) == 4:
             west, south, east, north = fallback_region
@@ -3223,13 +3453,14 @@ def find_low_center(mslp_hpa, region_geom, fallback_region=None, scale_m=50000):
                 'lon': (west + east) / 2.0,
                 'lat': (south + north) / 2.0,
                 'mb': mb_value,
+                'kind': 'L' if is_low else 'H',
             }
         return None
 
     min_val = None
     try:
         min_stats = mslp_hpa.reduceRegion(
-            reducer=ee.Reducer.min(),
+            reducer=ee.Reducer.min() if is_low else ee.Reducer.max(),
             geometry=region_geom,
             scale=scale_m,
             bestEffort=True,
@@ -3242,11 +3473,14 @@ def find_low_center(mslp_hpa, region_geom, fallback_region=None, scale_m=50000):
         min_val = float(min_raw)
         mb_value = int(round(min_val))
     except Exception as e:
-        print(f'[{ts()}] Low-center min reduction failed: {e}')
+        print(f'[{ts()}] Pressure-center reduction failed ({mode}): {e}')
         return _fallback()
 
     try:
-        min_mask = mslp_hpa.lte(min_val + 0.2).selfMask()
+        if is_low:
+            min_mask = mslp_hpa.lte(min_val + 0.2).selfMask()
+        else:
+            min_mask = mslp_hpa.gte(min_val - 0.2).selfMask()
         lonlat_img = ee.Image.pixelLonLat().updateMask(min_mask)
 
         sample = lonlat_img.sample(
@@ -3264,7 +3498,7 @@ def find_low_center(mslp_hpa, region_geom, fallback_region=None, scale_m=50000):
             lon = props.get('longitude')
             lat = props.get('latitude')
             if lon is not None and lat is not None:
-                return {'lon': float(lon), 'lat': float(lat), 'mb': mb_value}
+                return {'lon': float(lon), 'lat': float(lat), 'mb': mb_value, 'kind': 'L' if is_low else 'H'}
 
         lonlat = lonlat_img.reduceRegion(
             reducer=ee.Reducer.mean(),
@@ -3277,11 +3511,206 @@ def find_low_center(mslp_hpa, region_geom, fallback_region=None, scale_m=50000):
         lon = lonlat.get('longitude')
         lat = lonlat.get('latitude')
         if lon is not None and lat is not None:
-            return {'lon': float(lon), 'lat': float(lat), 'mb': mb_value}
+            return {'lon': float(lon), 'lat': float(lat), 'mb': mb_value, 'kind': 'L' if is_low else 'H'}
     except Exception as e:
-        print(f'[{ts()}] Low-center coordinate detection failed: {e}')
+        print(f'[{ts()}] Pressure-center coordinate detection failed ({mode}): {e}')
 
     return _fallback(mb_value)
+
+
+def find_low_center(mslp_hpa, region_geom, fallback_region=None, scale_m=50000):
+    return _find_pressure_center(mslp_hpa, region_geom, fallback_region=fallback_region, scale_m=scale_m, mode='low')
+
+
+def find_high_center(mslp_hpa, region_geom, fallback_region=None, scale_m=50000):
+    return _find_pressure_center(mslp_hpa, region_geom, fallback_region=fallback_region, scale_m=scale_m, mode='high')
+
+
+def _reduce_pressure_scalar(field, reducer, geometry, scale_m):
+    stats = field.reduceRegion(
+        reducer=reducer,
+        geometry=geometry,
+        scale=scale_m,
+        bestEffort=True,
+        maxPixels=1e9,
+        tileScale=4,
+    ).getInfo() or {}
+    raw = stats.get(WN2_MSLP_BAND)
+    if raw is None:
+        return None
+    try:
+        return float(raw)
+    except (TypeError, ValueError):
+        return None
+
+
+def _center_within_region_margin(center, region, margin_lon_deg, margin_lat_deg):
+    if not center or not region or len(region) != 4:
+        return False
+    lon = center.get('lon')
+    lat = center.get('lat')
+    if lon is None or lat is None:
+        return False
+    west, south, east, north = [float(v) for v in region]
+    return (
+        float(lon) >= west + float(margin_lon_deg)
+        and float(lon) <= east - float(margin_lon_deg)
+        and float(lat) >= south + float(margin_lat_deg)
+        and float(lat) <= north - float(margin_lat_deg)
+    )
+
+
+def get_conus_mslp_contour_labels(mslp_hpa, precip_rate_mmhr, mslp_interval):
+    major_interval = max(8, int(round(float(mslp_interval) * 2.0)))
+    offsets = []
+    radius = float(CONUS_MSLP_LABEL_SEARCH_RADIUS_DEG)
+    step = float(CONUS_MSLP_LABEL_SEARCH_STEP_DEG)
+    steps = int(round(radius / step))
+    for dy_idx in range(-steps, steps + 1):
+        for dx_idx in range(-steps, steps + 1):
+            offsets.append((dx_idx * step, dy_idx * step))
+
+    features = []
+    for anchor_idx, (lon0, lat0) in enumerate(CONUS_MSLP_LABEL_ANCHORS):
+        for cand_idx, (dx, dy) in enumerate(offsets):
+            features.append(
+                ee.Feature(
+                    ee.Geometry.Point([float(lon0 + dx), float(lat0 + dy)]),
+                    {
+                        'anchor': int(anchor_idx),
+                        'priority': int(cand_idx),
+                        'offset_sum': float(abs(dx) + abs(dy)),
+                    },
+                )
+            )
+
+    sample_fc = ee.FeatureCollection(features)
+    sample_img = ee.Image.cat([
+        mslp_hpa.rename('mslp'),
+        precip_rate_mmhr.rename('precip'),
+    ])
+    try:
+        sampled = sample_img.sampleRegions(
+            collection=sample_fc,
+            properties=['anchor', 'priority', 'offset_sum'],
+            scale=50000,
+            geometries=True,
+            tileScale=4,
+        ).getInfo() or {}
+    except Exception as e:
+        print(f'[{ts()}] CONUS contour labels skipped: {e}')
+        return []
+
+    best_by_anchor = {}
+    for feat in sampled.get('features', []):
+        props = feat.get('properties') or {}
+        geom = feat.get('geometry') or {}
+        coords = geom.get('coordinates') or []
+        if len(coords) < 2:
+            continue
+        mslp_val = props.get('mslp')
+        precip_val = props.get('precip')
+        anchor = props.get('anchor')
+        if mslp_val is None or precip_val is None or anchor is None:
+            continue
+        try:
+            mslp_val = float(mslp_val)
+            precip_val = float(precip_val)
+            anchor = int(anchor)
+        except (TypeError, ValueError):
+            continue
+        if precip_val > CONUS_MSLP_LABEL_MAX_PRECIP_MMHR:
+            continue
+        contour_value = int(round(mslp_val / float(major_interval)) * major_interval)
+        contour_diff = abs(mslp_val - float(contour_value))
+        if contour_diff > CONUS_MSLP_LABEL_TOLERANCE_HPA:
+            continue
+        score = contour_diff + (precip_val * 2.5) + float(props.get('offset_sum') or 0.0) * 0.08
+        candidate = {
+            'lon': float(coords[0]),
+            'lat': float(coords[1]),
+            'text': str(contour_value),
+            'score': score,
+        }
+        current = best_by_anchor.get(anchor)
+        if current is None or candidate['score'] < current['score']:
+            best_by_anchor[anchor] = candidate
+
+    selected = []
+    for item in sorted(best_by_anchor.values(), key=lambda v: v['score']):
+        too_close = False
+        for placed in selected:
+            dx = item['lon'] - placed['lon']
+            dy = item['lat'] - placed['lat']
+            if math.hypot(dx, dy) < CONUS_MSLP_LABEL_MIN_SEPARATION_DEG:
+                too_close = True
+                break
+        if too_close:
+            continue
+        selected.append({'lon': item['lon'], 'lat': item['lat'], 'text': item['text']})
+        if len(selected) >= CONUS_MSLP_LABEL_MAX_COUNT:
+            break
+    return selected
+
+
+def find_conus_synoptic_pressure_center(mslp_hpa, region_geom, region, mode='low'):
+    mode = str(mode or 'low').lower()
+    is_low = mode != 'high'
+    analysis_field = mslp_hpa.focalMean(CONUS_PRESSURE_CENTER_SMOOTH_RADIUS_PX, 'circle', 'pixels')
+    finder = find_low_center if is_low else find_high_center
+    center = finder(
+        analysis_field,
+        region_geom,
+        fallback_region=None,
+        scale_m=CONUS_PRESSURE_CENTER_SCALE_M,
+    )
+    if not _center_within_region_margin(
+        center,
+        region,
+        CONUS_PRESSURE_CENTER_EDGE_MARGIN_LON_DEG,
+        CONUS_PRESSURE_CENTER_EDGE_MARGIN_LAT_DEG,
+    ):
+        return None
+
+    point = ee.Geometry.Point([float(center['lon']), float(center['lat'])])
+    sample_geom = point.buffer(CONUS_PRESSURE_CENTER_SAMPLE_RADIUS_M, maxError=1000)
+    core_geom = point.buffer(CONUS_PRESSURE_CENTER_CORE_RADIUS_M, maxError=1000)
+    ring_geom = point.buffer(CONUS_PRESSURE_CENTER_RING_RADIUS_M, maxError=1000).difference(core_geom, maxError=1000)
+
+    try:
+        center_value = _reduce_pressure_scalar(analysis_field, ee.Reducer.mean(), sample_geom, CONUS_PRESSURE_CENTER_SCALE_M)
+        core_mean = _reduce_pressure_scalar(analysis_field, ee.Reducer.mean(), core_geom, CONUS_PRESSURE_CENTER_SCALE_M)
+        ring_mean = _reduce_pressure_scalar(analysis_field, ee.Reducer.mean(), ring_geom, CONUS_PRESSURE_CENTER_SCALE_M)
+        extremum_value = _reduce_pressure_scalar(
+            analysis_field,
+            (ee.Reducer.min() if is_low else ee.Reducer.max()),
+            core_geom,
+            CONUS_PRESSURE_CENTER_SCALE_M,
+        )
+    except Exception as e:
+        print(f'[{ts()}] CONUS pressure-center validation failed ({mode}): {e}')
+        return None
+
+    if any(value is None for value in (center_value, core_mean, ring_mean, extremum_value)):
+        return None
+
+    prominence = (ring_mean - center_value) if is_low else (center_value - ring_mean)
+    core_delta = (core_mean - center_value) if is_low else (center_value - core_mean)
+    extremum_offset = (center_value - extremum_value) if is_low else (extremum_value - center_value)
+
+    if prominence < CONUS_PRESSURE_CENTER_MIN_PROMINENCE_HPA:
+        return None
+    if core_delta < CONUS_PRESSURE_CENTER_MIN_CORE_DELTA_HPA:
+        return None
+    if extremum_offset > CONUS_PRESSURE_CENTER_EXTREMUM_TOLERANCE_HPA:
+        return None
+
+    return {
+        'lon': float(center['lon']),
+        'lat': float(center['lat']),
+        'mb': int(round(center_value)),
+        'kind': 'L' if is_low else 'H',
+    }
 
 
 def get_snow_airport_labels(snow_total_in, key):
@@ -3390,36 +3819,90 @@ def should_render_frame(path):
 def generate_mslp_ptype_map(img, h, region=CONUS_THUMB_REGION, key='conus_mslp_ptype'):
     region_geom = ee.Geometry.Rectangle(region, geodesic=False)
     is_ne = key.startswith('ne_')
+    is_conus = key == 'conus_mslp_ptype'
     state_names = NE_STATE_NAMES if is_ne else None
     land_fc = NE_STATES if is_ne else None
     work_geom = region_geom.difference(NE_EXCLUDED_STATES.geometry(), maxError=1000) if is_ne else region_geom
-    precip_rate, _, rain, snow, freezing_rain, sleet = derive_precip_phase(img, work_geom)
-    rain_sm, snow_sm, frz_sm, sleet_sm = smooth_precip_type_masks(precip_rate, rain, snow, freezing_rain, sleet)
-    precip_rate_vis = precip_rate.resample('bilinear').focalMean(2, 'circle', 'pixels')
+    precip_rate, _, rain, snow, freezing_rain, sleet = derive_precip_phase(
+        img,
+        work_geom,
+        precip_mask_threshold_mmhr=(CONUS_PTYPE_PHASE_THRESHOLD_MMHR if is_conus else 0.12),
+    )
+    rain_sm, snow_sm, frz_sm, sleet_sm = smooth_precip_type_masks(
+        precip_rate,
+        rain,
+        snow,
+        freezing_rain,
+        sleet,
+        mask_threshold_mmhr=(CONUS_PTYPE_SMOOTH_THRESHOLD_MMHR if is_conus else 0.2),
+        edge_radius_px=(0 if is_conus else 1),
+        mode_radii=((1,) if is_conus else (2, 1)),
+    )
+    precip_rate_vis = precip_rate.resample('bilinear')
+    if is_conus and CONUS_PTYPE_VIS_SMOOTH_RADIUS_PX > 0:
+        precip_rate_vis = precip_rate_vis.focalMean(CONUS_PTYPE_VIS_SMOOTH_RADIUS_PX, 'circle', 'pixels')
+    elif not is_conus:
+        precip_rate_vis = precip_rate_vis.focalMean(2, 'circle', 'pixels')
+    precip_rate_display = precip_rate_vis.multiply(CONUS_PTYPE_VIS_GAIN) if is_conus else precip_rate_vis
+    ptype_min = CONUS_PTYPE_RATE_MIN_MMHR if is_conus else PTYPE_RATE_MIN_MMHR
+    ptype_max = CONUS_PTYPE_RATE_MAX_MMHR if is_conus else PTYPE_RATE_MAX_MMHR
+    rain_palette = CONUS_RAIN_RATE_PALETTE if is_conus else RAIN_RATE_PALETTE
+    frzr_palette = CONUS_FRZR_RATE_PALETTE if is_conus else FRZR_RATE_PALETTE
+    sleet_palette = CONUS_SLEET_RATE_PALETTE if is_conus else SLEET_RATE_PALETTE
+    snow_segments = CONUS_SNOW_PTYPE_SEGMENTS_MMHR if is_conus else SNOW_PTYPE_SEGMENTS_MMHR
 
-    rain_layer = precip_rate_vis.updateMask(rain_sm).visualize(
-        min=PTYPE_RATE_MIN_MMHR, max=PTYPE_RATE_MAX_MMHR,
-        palette=RAIN_RATE_PALETTE,
+    rain_layer = precip_rate_display.updateMask(rain_sm).visualize(
+        min=ptype_min, max=ptype_max,
+        palette=rain_palette,
     )
-    snow_layer = snow_ptype_rate_layer(precip_rate_vis, snow_sm)
-    frz_layer = precip_rate_vis.updateMask(frz_sm).visualize(
-        min=PTYPE_RATE_MIN_MMHR, max=PTYPE_RATE_MAX_MMHR,
-        palette=FRZR_RATE_PALETTE,
+    snow_layer = snow_ptype_rate_layer(
+        precip_rate_display,
+        snow_sm,
+        segments=snow_segments,
+        max_rate_mmhr=SNOW_PTYPE_MAX_MMHR,
+        over_color=('#00dff2' if is_conus else '#00a8c1'),
     )
-    sleet_layer = precip_rate_vis.updateMask(sleet_sm).visualize(
-        min=PTYPE_RATE_MIN_MMHR, max=PTYPE_RATE_MAX_MMHR,
-        palette=SLEET_RATE_PALETTE,
+    frz_layer = precip_rate_display.updateMask(frz_sm).visualize(
+        min=ptype_min, max=ptype_max,
+        palette=frzr_palette,
+    )
+    sleet_layer = precip_rate_display.updateMask(sleet_sm).visualize(
+        min=ptype_min, max=ptype_max,
+        palette=sleet_palette,
     )
 
     mslp_hpa = img.select(WN2_MSLP_BAND).divide(100).clip(work_geom)
-    mslp_interval = adaptive_interval_for_hour(3, h, long_interval=4)
-    mslp_contours = contour_overlay(
-        mslp_hpa,
-        interval=mslp_interval,
-        color='#2a2a2a',
-        opacity=0.9,
+    mslp_interval = adaptive_interval_for_hour(
+        (CONUS_MSLP_CONTOUR_BASE_INTERVAL if is_conus else 3),
+        h,
+        long_interval=(CONUS_MSLP_CONTOUR_LONG_INTERVAL if is_conus else 4),
     )
-    low_center = find_low_center(mslp_hpa, work_geom, fallback_region=region)
+    if is_conus:
+        mslp_contours = conus_mslp_contour_overlay(
+            mslp_hpa,
+            interval=mslp_interval,
+            color=CONUS_MSLP_CONTOUR_COLOR,
+            opacity=CONUS_MSLP_CONTOUR_OPACITY,
+            canny_threshold=CONUS_MSLP_CONTOUR_CANNY_THRESHOLD,
+            canny_sigma=CONUS_MSLP_CONTOUR_CANNY_SIGMA,
+            smooth_px=CONUS_MSLP_CONTOUR_SMOOTH_PX,
+            min_connected_px=CONUS_MSLP_CONTOUR_MIN_CONNECTED_PX,
+        )
+    else:
+        mslp_contours = contour_overlay(
+            mslp_hpa,
+            interval=mslp_interval,
+            color='#2a2a2a',
+            opacity=0.9,
+            line_width_frac=0.010,
+        )
+    contour_labels = None
+    low_center = None if is_conus else find_low_center(mslp_hpa, work_geom, fallback_region=region)
+    pressure_centers = None
+    if is_conus:
+        low_center = find_conus_synoptic_pressure_center(mslp_hpa, work_geom, region, mode='low')
+        high_center = find_conus_synoptic_pressure_center(mslp_hpa, work_geom, region, mode='high')
+        pressure_centers = [center for center in (high_center, low_center) if center is not None]
 
     composite = ee.ImageCollection([
         basemap_overlay(region_geom, land_color=BASEMAP_LAND_COLOR, ocean_color=BASEMAP_OCEAN_COLOR, land_fc=land_fc),
@@ -3435,7 +3918,15 @@ def generate_mslp_ptype_map(img, h, region=CONUS_THUMB_REGION, key='conus_mslp_p
     base_dims = PTYPE_NE_DIMS if key.startswith('ne_') else PTYPE_CONUS_DIMS
     dims = adaptive_dimensions_for_hour(region_dimensions(base_dims, region), h, long_factor=0.92, min_w=980, min_h=720)
     export_composite(composite, out_file, region, dimensions=dims)
-    annotate_map_file(out_file, key, h, map_region=region, low_center=low_center)
+    annotate_map_file(
+        out_file,
+        key,
+        h,
+        map_region=region,
+        low_center=(None if is_conus else low_center),
+        pressure_centers=pressure_centers,
+        contour_labels=contour_labels,
+    )
 
 
 def generate_snow_accum_map(img, h, running_snow_cm, region=CONUS_THUMB_REGION, key='conus_snow_accum', snow_ratio=10):
