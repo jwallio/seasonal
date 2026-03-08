@@ -573,8 +573,31 @@ SNOW_ACCUM_STEP_SEGMENTS_IN = [
     (28.0, 30.0, ['#4fe4ff']),
     (30.0, 32.0, ['#00cee8']),
 ]
+NE_SNOW_ACCUM_STEP_SEGMENTS_IN = [
+    (0.1, 2.0, ['#eefbff']),
+    (2.0, 4.0, ['#d9f3ff']),
+    (4.0, 6.0, ['#b9e4ff']),
+    (6.0, 8.0, ['#8fd3fb']),
+    (8.0, 10.0, ['#5db7f1']),
+    (10.0, 12.0, ['#358fdd']),
+    (12.0, 14.0, ['#2c68cb']),
+    (14.0, 16.0, ['#524ec5']),
+    (16.0, 18.0, ['#733fc5']),
+    (18.0, 20.0, ['#9a34c5']),
+    (20.0, 22.0, ['#c332c1']),
+    (22.0, 24.0, ['#e05cbe']),
+    (24.0, 26.0, ['#d9fcff']),
+    (26.0, 28.0, ['#96f6ff']),
+    (28.0, 30.0, ['#47eaff']),
+    (30.0, 32.0, ['#00d8f2']),
+]
 SNOW_ACCUM_MAX_IN = 32.0
 SNOW_ACCUM_OVER_COLOR = '#d60000'
+NE_SNOW_ACCUM_LEGEND_HEIGHT = 82
+NE_SNOW_ACCUM_HEADER_HEIGHT = 60
+NE_SNOW_LABEL_MIN_IN = 1.0
+NE_SNOW_LABEL_MAX_COUNT = 16
+NE_SNOW_LABEL_COLLISION_PAD = 4
 T2M_F_PALETTE = [
     '#5a168a', '#3344b2', '#2f75d6', '#55a7eb', '#8fd1f4', '#cce8fa',
     '#f1f3ef',
@@ -1264,6 +1287,17 @@ def border_overlay(include_states=False, state_names=None, region_geom=None, det
     return country_lines
 
 
+def ne_snow_border_overlay(region_geom=None):
+    country_fc = COUNTRIES_BORDERS
+    state_fc = US_STATES.filter(ee.Filter.inList('NAME', NE_STATE_NAMES))
+    if region_geom is not None:
+        country_fc = country_fc.filterBounds(region_geom)
+        state_fc = state_fc.filterBounds(region_geom)
+    country_lines = ee.Image().byte().paint(country_fc, 1, 1).selfMask().visualize(palette=['#2f2f2f'], opacity=0.92)
+    state_lines = ee.Image().byte().paint(state_fc, 1, 2).selfMask().visualize(palette=['#5c3e28'], opacity=0.96)
+    return ee.ImageCollection([country_lines, state_lines]).mosaic()
+
+
 def basemap_overlay(region_geom, land_color='#ececec', ocean_color='#cfe0ea', land_fc=None):
     ocean = ee.Image.constant(1).clip(region_geom).visualize(palette=[ocean_color], opacity=1.0)
     land_features = land_fc if land_fc is not None else COUNTRIES
@@ -1680,7 +1714,7 @@ def _is_memory_or_invalid_argument_error(msg):
     )
 
 
-def _sample_rect_array(field_img, band_name, bounds, base_scale_m, max_attempts=4, context=''):
+def _sample_rect_array(field_img, band_name, bounds, base_scale_m, max_attempts=4, context='', use_target_crs=True):
     import numpy as np
 
     geom = ee.Geometry.Rectangle(bounds, geodesic=False)
@@ -1696,8 +1730,9 @@ def _sample_rect_array(field_img, band_name, bounds, base_scale_m, max_attempts=
                 .toFloat()
                 .clip(geom)
                 .resample('bilinear')
-                .reproject(crs=TARGET_CRS, scale=current_scale)
             )
+            if use_target_crs:
+                sampled = sampled.reproject(crs=TARGET_CRS, scale=current_scale)
             info = sampled.sampleRectangle(region=geom, defaultValue=fill_value).getInfo()
             raw = (info or {}).get('properties', {}).get(band_name)
             if raw is None:
@@ -1803,6 +1838,7 @@ def _sample_grouped_climo_array(
     context='',
     start_year=None,
     end_year=None,
+    use_target_crs=True,
 ):
     import numpy as np
 
@@ -1833,6 +1869,7 @@ def _sample_grouped_climo_array(
             bounds,
             current_scale,
             context=f'{context} climo_{y0}_{y1}',
+            use_target_crs=use_target_crs,
         )
         current_scale = max(current_scale, int(used_scale))
         if weighted_sum is None:
@@ -1863,6 +1900,82 @@ def _align_arrays(a, b):
     h = min(a_np.shape[0], b_np.shape[0])
     w = min(a_np.shape[1], b_np.shape[1])
     return a_np[:h, :w], b_np[:h, :w]
+
+
+def _stitch_sampled_longitude_parts(arrays):
+    import numpy as np
+
+    parts = [np.asarray(arr, dtype=np.float32) for arr in arrays if np.asarray(arr).ndim == 2]
+    if not parts:
+        raise RuntimeError('No sampled array parts available for longitude stitch.')
+    min_h = min(arr.shape[0] for arr in parts)
+    trimmed = [arr[:min_h, :] for arr in parts]
+    return np.concatenate(trimmed, axis=1)
+
+
+def _sample_rect_array_parts(field_img, band_name, bounds_parts, base_scale_m, context='', use_target_crs=True):
+    target_scale = int(max(20000, float(base_scale_m)))
+    last_arrays = []
+    last_scale = target_scale
+    for _ in range(2):
+        arrays = []
+        scales = []
+        for idx, bounds in enumerate(bounds_parts):
+            arr, used_scale = _sample_rect_array(
+                field_img,
+                band_name,
+                bounds,
+                target_scale,
+                context=f'{context} part{idx}',
+                use_target_crs=use_target_crs,
+            )
+            arrays.append(arr)
+            scales.append(int(used_scale))
+        last_arrays = arrays
+        last_scale = max(scales)
+        if all(scale == last_scale for scale in scales):
+            break
+        target_scale = last_scale
+    return _stitch_sampled_longitude_parts(last_arrays), int(last_scale)
+
+
+def _sample_grouped_climo_array_parts(
+    source_collection,
+    band_name,
+    bounds_parts,
+    base_scale_m,
+    group_years=3,
+    context='',
+    start_year=None,
+    end_year=None,
+    use_target_crs=True,
+):
+    target_scale = int(max(20000, float(base_scale_m)))
+    last_arrays = []
+    last_scale = target_scale
+    for _ in range(2):
+        arrays = []
+        scales = []
+        for idx, bounds in enumerate(bounds_parts):
+            arr, used_scale = _sample_grouped_climo_array(
+                source_collection,
+                band_name,
+                bounds,
+                target_scale,
+                group_years=group_years,
+                context=f'{context} part{idx}',
+                start_year=start_year,
+                end_year=end_year,
+                use_target_crs=use_target_crs,
+            )
+            arrays.append(arr)
+            scales.append(int(used_scale))
+        last_arrays = arrays
+        last_scale = max(scales)
+        if all(scale == last_scale for scale in scales):
+            break
+        target_scale = last_scale
+    return _stitch_sampled_longitude_parts(last_arrays), int(last_scale)
 
 
 def _fill_nan_gaps(field, fill_value=0.0):
@@ -1915,6 +2028,34 @@ def _smooth_array_box(field, passes=1):
             + pad[2:, :-2] + pad[2:, 1:-1] + pad[2:, 2:]
         ) / 9.0
     return out.astype(np.float32)
+
+
+def _collapse_polar_cap(field, rows=3):
+    import numpy as np
+
+    arr = np.asarray(field, dtype=np.float32).copy()
+    if arr.ndim != 2:
+        return arr
+    cap_rows = max(0, min(int(rows), arr.shape[0]))
+    if cap_rows <= 0:
+        return arr
+
+    for r in range(cap_rows):
+        row = arr[r, :]
+        finite = np.isfinite(row)
+        if not finite.any():
+            continue
+        row_mean = float(np.nanmean(row[finite]))
+        blend = 1.0 - (float(r + 1) / float(cap_rows + 1))
+        if blend <= 0.0:
+            continue
+        row_out = row.copy()
+        row_out[finite] = (
+            row[finite] * (1.0 - blend)
+            + row_mean * blend
+        ).astype(np.float32)
+        arr[r, :] = row_out
+    return arr
 
 
 def _contour_levels(field, interval):
@@ -2445,6 +2586,25 @@ def _draw_line_sample(draw, x0, y0, x1, color, width=3):
     draw.line((x0, y0, x1, y0), fill=color, width=width)
 
 
+def _draw_ne_snow_bar_legend(draw, width, y, snow_ratio=10):
+    label_font = load_font(19 if width >= 1200 else 17, bold=False)
+    tick_font = load_font(12 if width >= 1200 else 10, bold=False)
+    x_pad = 58 if width >= 1200 else 36
+    panel_x0 = x_pad - 12
+    panel_x1 = width - x_pad + 12
+    panel_y0 = y - 1
+    panel_y1 = y + 66
+    _draw_panel(draw, panel_x0, panel_y0, panel_x1, panel_y1, fill=(244, 244, 244), outline=(126, 126, 126), radius=8)
+    draw.text((x_pad, y + 2), f'Snowfall Total (in, {int(snow_ratio)}:1 ratio)', fill=(22, 22, 22), font=label_font)
+    bar_x = x_pad
+    bar_y = y + 24
+    bar_w = width - 2 * x_pad
+    bar_h = 20
+    snow_segments = [(low, high, palette) for low, high, palette in NE_SNOW_ACCUM_STEP_SEGMENTS_IN]
+    _draw_segmented_gradient_bar(draw, bar_x, bar_y, bar_w, bar_h, snow_segments, 0.1, SNOW_ACCUM_MAX_IN)
+    _draw_ticks(draw, bar_x, bar_y, bar_w, bar_h, list(range(2, int(SNOW_ACCUM_MAX_IN) + 1, 2)), 0.1, SNOW_ACCUM_MAX_IN, tick_font)
+
+
 def _draw_legend(draw, product_key, width, y, snow_ratio=10):
     label_font = load_font(22 if width >= 1200 else 18, bold=False)
     tick_font = load_font(16 if width >= 1200 else 14, bold=False)
@@ -2536,6 +2696,10 @@ def _draw_legend(draw, product_key, width, y, snow_ratio=10):
         )
         _draw_gradient_bar(draw, bar_x, bar_y, bar_w, bar_h, T2M_ANOM_F_PALETTE)
         _draw_ticks(draw, bar_x, bar_y, bar_w, bar_h, [-40, -30, -20, -10, 0, 10, 20, 30, 40], T2M_ANOM_F_MIN, T2M_ANOM_F_MAX, tick_font)
+        return
+
+    if product_key == 'ne_snow_accum':
+        _draw_ne_snow_bar_legend(draw, width, y, snow_ratio=snow_ratio)
         return
 
     if product_key in ('conus_snow_accum', 'ne_snow_accum', 'ne_zoom_snow_accum'):
@@ -2740,6 +2904,97 @@ def _draw_contour_labels(draw, width, height, contour_labels, map_region):
         placed.append(rect)
 
 
+def _draw_snow_labels(draw, width, height, map_region, snow_labels, product_key):
+    if not map_region or not snow_labels:
+        return
+
+    if product_key == 'ne_snow_accum':
+        snow_font = load_font(20 if width >= 1300 else 17, bold=True)
+        stroke_width = 2
+        safe_pad = 8
+        min_inches = NE_SNOW_LABEL_MIN_IN
+        max_labels = NE_SNOW_LABEL_MAX_COUNT
+        collision_pad = NE_SNOW_LABEL_COLLISION_PAD
+        text_fill = (38, 38, 38)
+        stroke_fill = (247, 247, 247)
+        offsets = [
+            (6, -2),
+            (-6, -2),
+            (6, 2),
+            (-6, 2),
+        ]
+    else:
+        snow_font = load_font(20 if width >= 1300 else 16, bold=True)
+        stroke_width = 2
+        safe_pad = 4
+        min_inches = 0.5
+        max_labels = 999
+        collision_pad = 2
+        text_fill = (32, 32, 32)
+        stroke_fill = (245, 245, 245)
+        offsets = [(4, -2)]
+
+    placed = []
+    placed_count = 0
+    for item in sorted(snow_labels, key=lambda s: s.get('inches', 0.0), reverse=True):
+        code = item.get('code')
+        inches = item.get('inches')
+        if not code or inches is None or float(inches) < float(min_inches):
+            continue
+        if placed_count >= max_labels:
+            break
+        marker_xy = _lonlat_to_image_xy(
+            item.get('lon'),
+            item.get('lat'),
+            map_region,
+            width,
+            height,
+        )
+        if marker_xy is None:
+            continue
+
+        x, y = marker_xy
+        text = f'{code} {int(round(float(inches)))}'
+        bbox = draw.textbbox((0, 0), text, font=snow_font, stroke_width=stroke_width)
+        tw = bbox[2] - bbox[0]
+        th = bbox[3] - bbox[1]
+        placed_here = False
+        for dx_sign, dy_sign in offsets:
+            if dx_sign >= 0:
+                tx = x + dx_sign
+            else:
+                tx = x + dx_sign - tw
+            if dy_sign <= 0:
+                ty = y - th + dy_sign
+            else:
+                ty = y + dy_sign
+            tx = max(safe_pad, min(width - tw - safe_pad, tx))
+            ty = max(safe_pad, min(height - th - safe_pad, ty))
+            rect = (
+                tx + bbox[0] - collision_pad,
+                ty + bbox[1] - collision_pad,
+                tx + bbox[2] + collision_pad,
+                ty + bbox[3] + collision_pad,
+            )
+            overlaps = False
+            for ox0, oy0, ox1, oy1 in placed:
+                if not (rect[2] < ox0 or rect[0] > ox1 or rect[3] < oy0 or rect[1] > oy1):
+                    overlaps = True
+                    break
+            if overlaps:
+                continue
+            try:
+                draw.text((tx, ty), text, fill=text_fill, font=snow_font, stroke_width=stroke_width, stroke_fill=stroke_fill)
+            except TypeError:
+                draw.text((tx, ty), text, fill=text_fill, font=snow_font)
+            placed.append(rect)
+            placed_count += 1
+            placed_here = True
+            break
+        if not placed_here and product_key != 'ne_snow_accum':
+            continue
+
+
 def annotate_map_file(out_file, product_key, hour, map_region=None, low_center=None, pressure_centers=None, contour_labels=None, snow_labels=None, snow_ratio=10):
     from PIL import Image, ImageDraw
 
@@ -2827,40 +3082,79 @@ def annotate_map_file(out_file, product_key, hour, map_region=None, low_center=N
 
         if map_region is not None and snow_labels:
             snow_draw = ImageDraw.Draw(img)
-            snow_font = load_font(20 if img.width >= 1300 else 16, bold=True)
-            placed = []
-            for item in sorted(snow_labels, key=lambda s: s.get('inches', 0.0), reverse=True):
-                code = item.get('code')
-                inches = item.get('inches')
-                if not code or inches is None or float(inches) < 0.5:
-                    continue
-                marker_xy = _lonlat_to_image_xy(
-                    item.get('lon'),
-                    item.get('lat'),
-                    map_region,
-                    img.width,
-                    img.height,
-                )
-                if marker_xy is None:
-                    continue
-                x, y = marker_xy
-                text = f'{code} {int(round(float(inches)))}'
-                tw, th = _text_size(snow_draw, text, snow_font)
-                tx = max(4, min(img.width - tw - 4, x + 4))
-                ty = max(4, min(img.height - th - 4, y - th - 2))
-                rect = (tx - 2, ty - 1, tx + tw + 2, ty + th + 1)
-                overlaps = False
-                for ox0, oy0, ox1, oy1 in placed:
-                    if not (rect[2] < ox0 or rect[0] > ox1 or rect[3] < oy0 or rect[1] > oy1):
-                        overlaps = True
-                        break
-                if overlaps:
-                    continue
+            if product_key == 'ne_snow_accum':
+                _draw_snow_labels(snow_draw, img.width, img.height, map_region, snow_labels, product_key)
+            else:
+                snow_font = load_font(20 if img.width >= 1300 else 16, bold=True)
+                placed = []
+                for item in sorted(snow_labels, key=lambda s: s.get('inches', 0.0), reverse=True):
+                    code = item.get('code')
+                    inches = item.get('inches')
+                    if not code or inches is None or float(inches) < 0.5:
+                        continue
+                    marker_xy = _lonlat_to_image_xy(
+                        item.get('lon'),
+                        item.get('lat'),
+                        map_region,
+                        img.width,
+                        img.height,
+                    )
+                    if marker_xy is None:
+                        continue
+                    x, y = marker_xy
+                    text = f'{code} {int(round(float(inches)))}'
+                    tw, th = _text_size(snow_draw, text, snow_font)
+                    tx = max(4, min(img.width - tw - 4, x + 4))
+                    ty = max(4, min(img.height - th - 4, y - th - 2))
+                    rect = (tx - 2, ty - 1, tx + tw + 2, ty + th + 1)
+                    overlaps = False
+                    for ox0, oy0, ox1, oy1 in placed:
+                        if not (rect[2] < ox0 or rect[0] > ox1 or rect[3] < oy0 or rect[1] > oy1):
+                            overlaps = True
+                            break
+                    if overlaps:
+                        continue
+                    try:
+                        snow_draw.text((tx, ty), text, fill=(32, 32, 32), font=snow_font, stroke_width=2, stroke_fill=(245, 245, 245))
+                    except TypeError:
+                        snow_draw.text((tx, ty), text, fill=(32, 32, 32), font=snow_font)
+                    placed.append(rect)
+
+        if product_key == 'ne_snow_accum':
+            footer_draw = ImageDraw.Draw(img)
+            footer_lines = [
+                'Source: WeatherNext2 (Earth Engine)',
+                'Generated by: Jonathan Wall (@_jwall on X) | Copyright 2024-5 Google LLC',
+            ]
+            footer_font = load_font(14 if img.width >= 1300 else 12, bold=True)
+            footer_stroke = 4
+            footer_gap = 1
+            line_boxes = []
+            max_w = 0
+            total_h = 0
+            for line in footer_lines:
+                bbox = footer_draw.textbbox((0, 0), line, font=footer_font, stroke_width=footer_stroke)
+                line_boxes.append(bbox)
+                max_w = max(max_w, bbox[2] - bbox[0])
+                total_h += bbox[3] - bbox[1]
+            total_h += footer_gap * (len(footer_lines) - 1)
+            fy = img.height - total_h - 10
+            fx = img.width - max_w - 12
+            for line, bbox in zip(footer_lines, line_boxes):
+                line_x = int(round(fx - bbox[0]))
+                line_y = int(round(fy - bbox[1]))
                 try:
-                    snow_draw.text((tx, ty), text, fill=(32, 32, 32), font=snow_font, stroke_width=2, stroke_fill=(245, 245, 245))
+                    footer_draw.text(
+                        (line_x, line_y),
+                        line,
+                        fill=(54, 54, 54),
+                        font=footer_font,
+                        stroke_width=footer_stroke,
+                        stroke_fill=(248, 248, 248),
+                    )
                 except TypeError:
-                    snow_draw.text((tx, ty), text, fill=(32, 32, 32), font=snow_font)
-                placed.append(rect)
+                    footer_draw.text((line_x, line_y), line, fill=(54, 54, 54), font=footer_font)
+                fy += (bbox[3] - bbox[1]) + footer_gap
 
         if product_key == 'na_z500a':
             footer_draw = ImageDraw.Draw(img)
@@ -2940,6 +3234,8 @@ def annotate_map_file(out_file, product_key, hour, map_region=None, low_center=N
             legend_h = 180
         elif product_key == 'na_z500a':
             legend_h = NA_Z500A_LEGEND_HEIGHT
+        elif product_key == 'ne_snow_accum':
+            legend_h = NE_SNOW_ACCUM_LEGEND_HEIGHT
         elif product_key in (
             'nh_z500a',
             'conus_vort500',
@@ -2951,40 +3247,58 @@ def annotate_map_file(out_file, product_key, hour, map_region=None, low_center=N
         ):
             legend_h = 96
 
-        header_h = NA_Z500A_HEADER_HEIGHT if product_key == 'na_z500a' else 78
-        footer_h = 0 if product_key in ('na_z500a', 'conus_vort500') else 30
+        if product_key == 'na_z500a':
+            header_h = NA_Z500A_HEADER_HEIGHT
+        elif product_key == 'ne_snow_accum':
+            header_h = NE_SNOW_ACCUM_HEADER_HEIGHT
+        else:
+            header_h = 78
+        footer_h = 0 if product_key in ('na_z500a', 'conus_vort500', 'ne_snow_accum') else 30
         canvas = Image.new('RGB', (img.width, img.height + header_h + legend_h + footer_h), color=(236, 236, 236))
         canvas.paste(img, (0, header_h))
         draw = ImageDraw.Draw(canvas)
 
-        title_font = load_font(
-            (25 if img.width >= 1300 else 22) if product_key == 'na_z500a' else (30 if img.width >= 1300 else 26),
-            bold=True,
-        )
-        subtitle_font = load_font(
-            (17 if img.width >= 1300 else 15) if product_key == 'na_z500a' else (22 if img.width >= 1300 else 19),
-            bold=False,
-        )
+        if product_key == 'na_z500a':
+            title_start = 25 if img.width >= 1300 else 22
+            title_min = 16 if img.width >= 1300 else 14
+            subtitle_start = 17 if img.width >= 1300 else 15
+            subtitle_min = 13 if img.width >= 1300 else 12
+            title_y = 8
+            subtitle_y = 32
+        elif product_key == 'ne_snow_accum':
+            title_start = 26 if img.width >= 1300 else 23
+            title_min = 16 if img.width >= 1300 else 14
+            subtitle_start = 17 if img.width >= 1300 else 15
+            subtitle_min = 12 if img.width >= 1300 else 11
+            title_y = 5
+            subtitle_y = 32
+        else:
+            title_start = 30 if img.width >= 1300 else 26
+            title_min = 18 if img.width >= 1300 else 16
+            subtitle_start = 22 if img.width >= 1300 else 19
+            subtitle_min = 14 if img.width >= 1300 else 13
+            title_y = 10
+            subtitle_y = 44
         max_text_w = img.width - 24
         title_font = _fit_font(
             draw,
             title,
-            start_size=((25 if img.width >= 1300 else 22) if product_key == 'na_z500a' else (30 if img.width >= 1300 else 26)),
-            min_size=((16 if img.width >= 1300 else 14) if product_key == 'na_z500a' else (18 if img.width >= 1300 else 16)),
+            start_size=title_start,
+            min_size=title_min,
             bold=True,
             max_width=max_text_w,
         )
         subtitle_font = _fit_font(
             draw,
             subtitle,
-            start_size=((17 if img.width >= 1300 else 15) if product_key == 'na_z500a' else (22 if img.width >= 1300 else 19)),
-            min_size=((13 if img.width >= 1300 else 12) if product_key == 'na_z500a' else (14 if img.width >= 1300 else 13)),
+            start_size=subtitle_start,
+            min_size=subtitle_min,
             bold=False,
             max_width=max_text_w,
         )
 
-        draw.text((12, 8 if product_key == 'na_z500a' else 10), title, fill=(20, 20, 20), font=title_font)
-        draw.text((12, 32 if product_key == 'na_z500a' else 44), subtitle, fill=(25, 25, 25), font=subtitle_font)
+        draw.text((12, title_y), title, fill=(20, 20, 20), font=title_font)
+        draw.text((12, subtitle_y), subtitle, fill=(25, 25, 25), font=subtitle_font)
         draw.rectangle((0, header_h, img.width - 1, header_h + img.height - 1), outline=(32, 32, 32), width=2)
 
         if legend_h > 0:
@@ -3025,32 +3339,17 @@ def remap_nh_to_polar(
     lon_e=NH_SOURCE_REGION[2],
 ):
     from PIL import Image, ImageDraw
+    import numpy as np
 
     with Image.open(out_file) as src:
         src_img = src.convert('RGB')
-    sw, sh = src_img.size
-    src_px = src_img.load()
-    edge_blend = max(2, min(10, sw // 160))
-    if sw > (edge_blend * 2 + 2):
-        for yy in range(sh):
-            for i in range(edge_blend):
-                li = i
-                ri = sw - edge_blend + i
-                left = src_px[li, yy]
-                right = src_px[ri, yy]
-                w = (i + 1) / float(edge_blend + 1)
-                lmix = (
-                    int(round(left[0] * (1.0 - w) + right[0] * w)),
-                    int(round(left[1] * (1.0 - w) + right[1] * w)),
-                    int(round(left[2] * (1.0 - w) + right[2] * w)),
-                )
-                rmix = (
-                    int(round(right[0] * (1.0 - w) + left[0] * w)),
-                    int(round(right[1] * (1.0 - w) + left[1] * w)),
-                    int(round(right[2] * (1.0 - w) + left[2] * w)),
-                )
-                src_px[li, yy] = lmix
-                src_px[ri, yy] = rmix
+    src_arr = np.asarray(src_img, dtype=np.float32)
+    sh, sw = src_arr.shape[:2]
+    row_means = src_arr.mean(axis=1)
+    wrap_pad = max(8, min(24, sw // 50))
+    wrapped = np.concatenate([src_arr[:, -wrap_pad:, :], src_arr, src_arr[:, :wrap_pad, :]], axis=1)
+    polar_cap_rows = max(10, min(24, sh // 12))
+    pole_transition_rows = max(polar_cap_rows + 10, min(42, sh // 6))
 
     out_size = NH_POLAR_DIMS
     out_img = Image.new('RGB', (out_size, out_size), color=(214, 214, 214))
@@ -3075,8 +3374,8 @@ def remap_nh_to_polar(
                 continue
 
             t = r * tan_edge
-            lat = math.degrees((math.pi / 2.0) - (2.0 * math.atan(t)))
-            lat = max(lat_min, min(lat_max, lat))
+            lat_raw = math.degrees((math.pi / 2.0) - (2.0 * math.atan(t)))
+            lat = max(lat_min, min(lat_max, lat_raw))
             if r < 1e-9:
                 lon = lon0
             else:
@@ -3096,27 +3395,56 @@ def remap_nh_to_polar(
             elif sy_f > (sh - 1):
                 sy_f = float(sh - 1)
 
+            if lat_raw >= lat_max:
+                denom = max(0.1, 90.0 - float(lat_max))
+                pole_frac = max(0.0, min(1.0, (90.0 - lat_raw) / denom))
+                cap_y = pole_frac * float(max(0, polar_cap_rows - 1))
+                y0_cap = int(math.floor(cap_y))
+                y1_cap = min(sh - 1, y0_cap + 1)
+                wy_cap = cap_y - y0_cap
+                mean0 = row_means[y0_cap]
+                mean1 = row_means[y1_cap]
+                out_px[x, y] = (
+                    int(round(mean0[0] * (1.0 - wy_cap) + mean1[0] * wy_cap)),
+                    int(round(mean0[1] * (1.0 - wy_cap) + mean1[1] * wy_cap)),
+                    int(round(mean0[2] * (1.0 - wy_cap) + mean1[2] * wy_cap)),
+                )
+                continue
+
             x0_raw = int(math.floor(sx_f))
-            x0 = x0_raw % sw
             y0 = int(math.floor(sy_f))
-            x1 = (x0 + 1) % sw
             y1 = min(sh - 1, y0 + 1)
             wx = sx_f - x0_raw
             wy = sy_f - y0
+            x0 = (x0_raw % sw) + wrap_pad
+            x1 = x0 + 1
 
-            c00 = src_px[x0, y0]
-            c10 = src_px[x1, y0]
-            c01 = src_px[x0, y1]
-            c11 = src_px[x1, y1]
+            c00 = wrapped[y0, x0]
+            c10 = wrapped[y0, x1]
+            c01 = wrapped[y1, x0]
+            c11 = wrapped[y1, x1]
 
             w00 = (1.0 - wx) * (1.0 - wy)
             w10 = wx * (1.0 - wy)
             w01 = (1.0 - wx) * wy
             w11 = wx * wy
 
-            rch = int(round(c00[0] * w00 + c10[0] * w10 + c01[0] * w01 + c11[0] * w11))
-            gch = int(round(c00[1] * w00 + c10[1] * w10 + c01[1] * w01 + c11[1] * w11))
-            bch = int(round(c00[2] * w00 + c10[2] * w10 + c01[2] * w01 + c11[2] * w11))
+            rch = (c00[0] * w00 + c10[0] * w10 + c01[0] * w01 + c11[0] * w11)
+            gch = (c00[1] * w00 + c10[1] * w10 + c01[1] * w01 + c11[1] * w11)
+            bch = (c00[2] * w00 + c10[2] * w10 + c01[2] * w01 + c11[2] * w11)
+            if sy_f < float(pole_transition_rows):
+                blend = max(0.0, min(1.0, 1.0 - (sy_f / float(pole_transition_rows))))
+                mean0 = row_means[y0]
+                mean1 = row_means[y1]
+                mean_r = float(mean0[0] * (1.0 - wy) + mean1[0] * wy)
+                mean_g = float(mean0[1] * (1.0 - wy) + mean1[1] * wy)
+                mean_b = float(mean0[2] * (1.0 - wy) + mean1[2] * wy)
+                rch = rch * (1.0 - blend) + mean_r * blend
+                gch = gch * (1.0 - blend) + mean_g * blend
+                bch = bch * (1.0 - blend) + mean_b * blend
+            rch = int(round(rch))
+            gch = int(round(gch))
+            bch = int(round(bch))
             out_px[x, y] = (rch, gch, bch)
 
     draw = ImageDraw.Draw(out_img)
@@ -3272,7 +3600,8 @@ def _generate_z500_anomaly_map_local(img, h, region, prefix):
             map_dims = f'{polar_width}x{NH_POLAR_DIMS}'
         else:
             map_dims = NH_SOURCE_DIMS
-        sample_bounds = NH_SOURCE_REGION
+        sample_bounds = [-179.0, 20.5, 179.0, 88.5]
+        sample_bounds_parts = split_region_longitude(sample_bounds, parts=4)
         plans = [
             {'dims': map_dims, 'sample_scale_m': LOCAL_Z500_NH_SCALES_M[0], 'minor_interval': 6, 'major_interval': 12, 'include_z540': True, 'include_border': True, 'label': 'local base'},
             {'dims': (map_dims if USE_NH_TRUE_POLAR_RENDER else shrink_dimensions(map_dims)), 'sample_scale_m': LOCAL_Z500_NH_SCALES_M[1], 'minor_interval': 0, 'major_interval': 18, 'include_z540': True, 'include_border': True, 'label': 'local coarse'},
@@ -3282,6 +3611,7 @@ def _generate_z500_anomaly_map_local(img, h, region, prefix):
     else:
         map_dims = region_dimensions(CONUS_DIMS, region)
         sample_bounds = region
+        sample_bounds_parts = None
         plans = [
             {'dims': map_dims, 'sample_scale_m': LOCAL_Z500_NA_SCALES_M[0], 'minor_interval': NA_Z500A_MINOR_INTERVAL, 'major_interval': NA_Z500A_MAJOR_INTERVAL, 'include_z540': True, 'include_border': True, 'label': 'local base'},
             {'dims': shrink_dimensions(map_dims), 'sample_scale_m': LOCAL_Z500_NA_SCALES_M[1], 'minor_interval': 0, 'major_interval': 18, 'include_z540': True, 'include_border': True, 'label': 'local coarse'},
@@ -3318,13 +3648,24 @@ def _generate_z500_anomaly_map_local(img, h, region, prefix):
                 .clip(sample_geom)
                 .rename('h500_m')
             )
-            forecast_m_arr, used_scale = _sample_rect_array(
-                forecast_m_img,
-                'h500_m',
-                sample_bounds,
-                plan['sample_scale_m'],
-                context=f'{prefix} forecast_h500_m',
-            )
+            if sample_bounds_parts:
+                forecast_m_arr, used_scale = _sample_rect_array_parts(
+                    forecast_m_img,
+                    'h500_m',
+                    sample_bounds_parts,
+                    plan['sample_scale_m'],
+                    context=f'{prefix} forecast_h500_m',
+                    use_target_crs=True,
+                )
+            else:
+                forecast_m_arr, used_scale = _sample_rect_array(
+                    forecast_m_img,
+                    'h500_m',
+                    sample_bounds,
+                    plan['sample_scale_m'],
+                    context=f'{prefix} forecast_h500_m',
+                    use_target_crs=True,
+                )
             climo_cache_key = (
                 'h500',
                 Z500_CLIMO_START_YEAR,
@@ -3343,22 +3684,39 @@ def _generate_z500_anomaly_map_local(img, h, region, prefix):
                     start_year=Z500_CLIMO_START_YEAR,
                     end_year=Z500_CLIMO_END_YEAR,
                 )
-                climo_m_arr, _ = _sample_grouped_climo_array(
-                    climo_source,
-                    CLIMO_H500_BAND,
-                    sample_bounds,
-                    used_scale,
-                    group_years=CLIMO_H500_GROUP_YEARS,
-                    context=f'{prefix} climo_h500_m',
-                    start_year=Z500_CLIMO_START_YEAR,
-                    end_year=Z500_CLIMO_END_YEAR,
-                )
+                if sample_bounds_parts:
+                    climo_m_arr, _ = _sample_grouped_climo_array_parts(
+                        climo_source,
+                        CLIMO_H500_BAND,
+                        sample_bounds_parts,
+                        used_scale,
+                        group_years=CLIMO_H500_GROUP_YEARS,
+                        context=f'{prefix} climo_h500_m',
+                        start_year=Z500_CLIMO_START_YEAR,
+                        end_year=Z500_CLIMO_END_YEAR,
+                        use_target_crs=True,
+                    )
+                else:
+                    climo_m_arr, _ = _sample_grouped_climo_array(
+                        climo_source,
+                        CLIMO_H500_BAND,
+                        sample_bounds,
+                        used_scale,
+                        group_years=CLIMO_H500_GROUP_YEARS,
+                        context=f'{prefix} climo_h500_m',
+                        start_year=Z500_CLIMO_START_YEAR,
+                        end_year=Z500_CLIMO_END_YEAR,
+                        use_target_crs=True,
+                    )
                 LOCAL_CLIMO_ARRAY_CACHE[climo_cache_key] = climo_m_arr
             else:
                 climo_m_arr = cached_climo
             forecast_m_arr, climo_m_arr = _align_arrays(forecast_m_arr, climo_m_arr)
             anomaly_m_arr = forecast_m_arr - climo_m_arr
             contour_dam_arr = forecast_m_arr / 10.0
+            if prefix == 'nh_z500a':
+                anomaly_m_arr = _collapse_polar_cap(anomaly_m_arr, rows=3)
+                contour_dam_arr = _collapse_polar_cap(contour_dam_arr, rows=3)
 
             if prefix == 'nh_z500a' and USE_NH_TRUE_POLAR_RENDER:
                 _render_local_anomaly_polar(
@@ -3426,7 +3784,14 @@ def _generate_z500_anomaly_map_local(img, h, region, prefix):
                 _overlay_png_on_jpg(out_file, border_png)
 
             if prefix == 'nh_z500a' and not USE_NH_TRUE_POLAR_RENDER:
-                remap_nh_to_polar(out_file, lon0=NH_LON0)
+                remap_nh_to_polar(
+                    out_file,
+                    lon0=NH_LON0,
+                    lat_min=sample_bounds[1],
+                    lat_max=sample_bounds[3],
+                    lon_w=sample_bounds[0],
+                    lon_e=sample_bounds[2],
+                )
             annotate_map_file(out_file, prefix, h)
             return
         except Exception as e:
@@ -3444,7 +3809,11 @@ def _generate_z500_anomaly_map_local(img, h, region, prefix):
 
 
 def generate_z500_anomaly_map(img, h, region, prefix):
-    if prefix == 'nh_z500a' and USE_NH_TRUE_POLAR_RENDER:
+    if prefix == 'nh_z500a':
+        notice_flag = getattr(generate_z500_anomaly_map, '_nh_local_render_notice', False)
+        if not notice_flag and not LOCAL_TRUE_ANOMALY_RENDER:
+            print(f'[{ts()}] NH z500: forcing local true-anomaly render to avoid unstable EE export failures.')
+            setattr(generate_z500_anomaly_map, '_nh_local_render_notice', True)
         return _generate_z500_anomaly_map_local(img, h, NH_SOURCE_REGION, prefix)
     if LOCAL_TRUE_ANOMALY_RENDER:
         return _generate_z500_anomaly_map_local(img, h, region, prefix)
@@ -4084,19 +4453,20 @@ def range_gradient_layer(field, low, high, palette, include_high=False):
     return norm.updateMask(mask).visualize(min=0, max=1, palette=palette)
 
 
-def snow_accum_layer(snow_total_in):
+def snow_accum_layer(snow_total_in, segments=None, over_color=SNOW_ACCUM_OVER_COLOR):
+    snow_segments = segments if segments is not None else SNOW_ACCUM_STEP_SEGMENTS_IN
     layers = []
-    for idx, (low, high, palette) in enumerate(SNOW_ACCUM_STEP_SEGMENTS_IN):
+    for idx, (low, high, palette) in enumerate(snow_segments):
         layers.append(
             range_gradient_layer(
                 snow_total_in,
                 low,
                 high,
                 palette,
-                include_high=(idx == len(SNOW_ACCUM_STEP_SEGMENTS_IN) - 1),
+                include_high=(idx == len(snow_segments) - 1),
             )
         )
-    layers.append(snow_total_in.gt(SNOW_ACCUM_MAX_IN).selfMask().visualize(palette=[SNOW_ACCUM_OVER_COLOR]))
+    layers.append(snow_total_in.gt(SNOW_ACCUM_MAX_IN).selfMask().visualize(palette=[over_color]))
     return ee.ImageCollection(layers).mosaic()
 
 
@@ -4247,19 +4617,21 @@ def generate_mslp_ptype_map(img, h, region=CONUS_THUMB_REGION, key='conus_mslp_p
 def generate_snow_accum_map(img, h, running_snow_cm, region=CONUS_THUMB_REGION, key='conus_snow_accum', snow_ratio=10):
     region_geom = ee.Geometry.Rectangle(region, geodesic=False)
     is_ne = key.startswith('ne_')
+    is_ne_regional = (key == 'ne_snow_accum')
     state_names = NE_STATE_NAMES if is_ne else None
     land_fc = NE_STATES if is_ne else None
     work_geom = region_geom.difference(NE_EXCLUDED_STATES.geometry(), maxError=1000) if is_ne else region_geom
     ratio_scale = ee.Image.constant(float(snow_ratio) / 10.0)
     snow_total_in = running_snow_cm.multiply(ratio_scale).divide(2.54).clip(work_geom)
     snow_total_vis = snow_total_in.resample('bilinear').focalMean(1, 'circle', 'pixels')
-    snow_layer = snow_accum_layer(snow_total_vis)
+    snow_segments = NE_SNOW_ACCUM_STEP_SEGMENTS_IN if is_ne_regional else SNOW_ACCUM_STEP_SEGMENTS_IN
+    snow_layer = snow_accum_layer(snow_total_vis, segments=snow_segments)
     snow_labels = get_snow_airport_labels(snow_total_in, key)
 
     composite = ee.ImageCollection([
         basemap_overlay(region_geom, land_color=BASEMAP_LAND_COLOR, ocean_color=BASEMAP_OCEAN_COLOR, land_fc=land_fc),
         snow_layer,
-        border_overlay(include_states=True, state_names=state_names),
+        (ne_snow_border_overlay(region_geom) if is_ne_regional else border_overlay(include_states=True, state_names=state_names)),
     ]).mosaic()
 
     out_file = build_frame_path(key, h, snow_ratio=snow_ratio)
