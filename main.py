@@ -426,6 +426,24 @@ BASEMAP_OCEAN_COLOR = '#d6dde4'
 Z500_MINOR_CONTOUR_INTERVAL = 6
 Z500_MAJOR_CONTOUR_INTERVAL = 12
 VORTICITY_PALETTE = ['#f5ee00', '#f4c236', '#ee8c4a', '#d35a75', '#a03ca0', '#5f209f']
+CONUS_VORT_WIND_SMOOTH_PX = 1
+CONUS_VORT_DISPLAY_SMOOTH_PX = 2
+CONUS_VORT_SCALE = 50000.0
+CONUS_VORT_MIN = 6.0
+CONUS_VORT_MAX = 50.0
+CONUS_VORT_MASK_THRESHOLD = 5.8
+CONUS_VORT_CORE_THRESHOLD = 8.8
+CONUS_VORT_MIN_CONNECTED_PX = 24
+CONUS_VORT_COHERENCE_SMOOTH_PX = 3
+CONUS_VORT_COHERENCE_THRESHOLD = 6.0
+CONUS_VORT_FILL_EXPAND_PX = 1
+CONUS_VORT_Z500_CONTOUR_COLOR = '#2f2f2f'
+CONUS_VORT_Z500_CONTOUR_OPACITY = 0.90
+CONUS_VORT_Z500_CONTOUR_LINE_WIDTH_FRAC = 0.0084
+CONUS_VORT_Z500_CONTOUR_CANNY_THRESHOLD = 0.55
+CONUS_VORT_Z500_CONTOUR_CANNY_SIGMA = 0.85
+CONUS_VORT_Z500_CONTOUR_SMOOTH_PX = 1
+CONUS_VORT_Z500_CONTOUR_MIN_CONNECTED_PX = 18
 RAIN_RATE_PALETTE = ['#a9ee80', '#7ad35a', '#4eb744', '#2f9637', '#f7ea00', '#ffbf00', '#ff8a00', '#ff4200', '#b70000', '#c21cff']
 SNOW_RATE_PALETTE = ['#0a1f6f', '#0d2f8f', '#1448b1', '#1f66cc', '#2d84df', '#45a6ef', '#63c2ff']
 FRZR_RATE_PALETTE = ['#ffe5ef', '#ffc4da', '#f78fb9', '#f06292', '#d81b60', '#ad1457', '#880e4f']
@@ -1117,6 +1135,56 @@ def conus_mslp_contour_overlay(field, interval, color, opacity=0.78, canny_thres
         smoothed = smoothed.focalMean(int(smooth_px), 'circle', 'pixels')
     quantized = smoothed.divide(float(interval)).round().toInt16()
     lines = ee.Algorithms.CannyEdgeDetector(quantized, float(canny_threshold), float(canny_sigma)).gt(0)
+    if min_connected_px and min_connected_px > 1:
+        lines = lines.updateMask(lines.connectedPixelCount(128, True).gte(int(min_connected_px)))
+    return lines.selfMask().visualize(palette=[color], opacity=opacity)
+
+
+def conus_vorticity_layer(vort_1e5):
+    vort_field = vort_1e5.multiply(CONUS_VORT_SCALE).resample('bilinear')
+    if CONUS_VORT_DISPLAY_SMOOTH_PX and CONUS_VORT_DISPLAY_SMOOTH_PX > 0:
+        vort_field = vort_field.focalMean(CONUS_VORT_DISPLAY_SMOOTH_PX, 'circle', 'pixels')
+    coherence_field = vort_field
+    if CONUS_VORT_COHERENCE_SMOOTH_PX and CONUS_VORT_COHERENCE_SMOOTH_PX > 0:
+        coherence_field = coherence_field.focalMean(CONUS_VORT_COHERENCE_SMOOTH_PX, 'circle', 'pixels')
+    mask_seed = vort_field.gte(CONUS_VORT_MASK_THRESHOLD).selfMask()
+    if CONUS_VORT_MIN_CONNECTED_PX and CONUS_VORT_MIN_CONNECTED_PX > 1:
+        mask_seed = mask_seed.updateMask(
+            mask_seed.connectedPixelCount(128, True).gte(CONUS_VORT_MIN_CONNECTED_PX)
+        )
+    mask_seed = mask_seed.unmask(0).gt(0)
+    if CONUS_VORT_FILL_EXPAND_PX and CONUS_VORT_FILL_EXPAND_PX > 0:
+        mask_seed = mask_seed.focalMax(CONUS_VORT_FILL_EXPAND_PX, 'circle', 'pixels')
+        mask_seed = mask_seed.focalMin(CONUS_VORT_FILL_EXPAND_PX, 'circle', 'pixels')
+    coherent_mask = coherence_field.gte(CONUS_VORT_COHERENCE_THRESHOLD)
+    core_mask = vort_field.gte(CONUS_VORT_CORE_THRESHOLD)
+    vort_mask = mask_seed.And(coherent_mask).Or(core_mask)
+    return vort_field.updateMask(vort_mask.selfMask()).visualize(
+        min=CONUS_VORT_MIN,
+        max=CONUS_VORT_MAX,
+        palette=VORTICITY_PALETTE,
+    )
+
+
+def conus_vort500_height_contour_overlay(
+    field,
+    interval,
+    color,
+    opacity=0.90,
+    canny_threshold=0.55,
+    canny_sigma=0.85,
+    smooth_px=1,
+    min_connected_px=18,
+):
+    smoothed = field.resample('bilinear')
+    if smooth_px and smooth_px > 0:
+        smoothed = smoothed.focalMean(int(smooth_px), 'circle', 'pixels')
+    quantized = smoothed.divide(float(interval)).round().toInt16()
+    lines = ee.Algorithms.CannyEdgeDetector(
+        quantized,
+        float(canny_threshold),
+        float(canny_sigma),
+    ).gt(0)
     if min_connected_px and min_connected_px > 1:
         lines = lines.updateMask(lines.connectedPixelCount(128, True).gte(int(min_connected_px)))
     return lines.selfMask().visualize(palette=[color], opacity=opacity)
@@ -2265,6 +2333,10 @@ def _draw_segmented_gradient_bar(draw, x, y, w, h, segments, vmin, vmax):
     draw.rectangle((x, y, x + w, y + h), outline=(50, 50, 50), width=1)
 
 
+def _draw_line_sample(draw, x0, y0, x1, color, width=3):
+    draw.line((x0, y0, x1, y0), fill=color, width=width)
+
+
 def _draw_legend(draw, product_key, width, y, snow_ratio=10):
     label_font = load_font(22 if width >= 1200 else 18, bold=False)
     tick_font = load_font(16 if width >= 1200 else 14, bold=False)
@@ -2300,7 +2372,17 @@ def _draw_legend(draw, product_key, width, y, snow_ratio=10):
         _draw_panel(draw, bar_x - 14, y - 4, bar_x + bar_w + 14, y + 72)
         draw.text((bar_x, y + 2), '500-hPa Relative Vorticity (x10^-5 s^-1)', fill=(22, 22, 22), font=label_font)
         _draw_tapered_gradient_bar(draw, bar_x, bar_y, bar_w, bar_h, VORTICITY_PALETTE)
-        _draw_ticks(draw, bar_x, bar_y, bar_w, bar_h, [4, 8, 12, 16, 20, 24, 28, 32, 36, 40, 44, 48], 4, 50, tick_font)
+        _draw_ticks(
+            draw,
+            bar_x,
+            bar_y,
+            bar_w,
+            bar_h,
+            [6, 10, 14, 18, 22, 26, 30, 34, 38, 42, 46, 50],
+            CONUS_VORT_MIN,
+            CONUS_VORT_MAX,
+            tick_font,
+        )
         return
 
     if product_key == 'conus_t2m':
@@ -2646,6 +2728,42 @@ def annotate_map_file(out_file, product_key, hour, map_region=None, low_center=N
                     snow_draw.text((tx, ty), text, fill=(32, 32, 32), font=snow_font)
                 placed.append(rect)
 
+        if product_key == 'conus_vort500':
+            footer_draw = ImageDraw.Draw(img)
+            footer_lines = [
+                'Source: WeatherNext2 (Earth Engine)',
+                'Generated by: Jonathan Wall (@_jwall on X) | Copyright 2024-5 Google LLC',
+            ]
+            footer_font = load_font(15 if img.width >= 1300 else 13, bold=True)
+            footer_stroke = 3
+            footer_gap = 1
+            line_boxes = []
+            max_w = 0
+            total_h = 0
+            for line in footer_lines:
+                bbox = footer_draw.textbbox((0, 0), line, font=footer_font, stroke_width=footer_stroke)
+                line_boxes.append(bbox)
+                max_w = max(max_w, bbox[2] - bbox[0])
+                total_h += bbox[3] - bbox[1]
+            total_h += footer_gap * (len(footer_lines) - 1)
+            fy = img.height - total_h - 10
+            fx = img.width - max_w - 12
+            for line, bbox in zip(footer_lines, line_boxes):
+                line_x = int(round(fx - bbox[0]))
+                line_y = int(round(fy - bbox[1]))
+                try:
+                    footer_draw.text(
+                        (line_x, line_y),
+                        line,
+                        fill=(58, 58, 58),
+                        font=footer_font,
+                        stroke_width=footer_stroke,
+                        stroke_fill=(246, 246, 246),
+                    )
+                except TypeError:
+                    footer_draw.text((line_x, line_y), line, fill=(58, 58, 58), font=footer_font)
+                fy += (bbox[3] - bbox[1]) + footer_gap
+
         legend_h = 0
         if product_key == 'conus_mslp_ptype':
             legend_h = CONUS_PTYPE_LEGEND_HEIGHT
@@ -2664,7 +2782,7 @@ def annotate_map_file(out_file, product_key, hour, map_region=None, low_center=N
             legend_h = 96
 
         header_h = 78
-        footer_h = 30
+        footer_h = 0 if product_key == 'conus_vort500' else 30
         canvas = Image.new('RGB', (img.width, img.height + header_h + legend_h + footer_h), color=(236, 236, 236))
         canvas.paste(img, (0, header_h))
         draw = ImageDraw.Draw(canvas)
@@ -2696,19 +2814,20 @@ def annotate_map_file(out_file, product_key, hour, map_region=None, low_center=N
         if legend_h > 0:
             _draw_legend(draw, product_key, img.width, header_h + img.height + 2, snow_ratio=snow_ratio)
 
-        footer_text = (
-            'Source: WeatherNext2 (Earth Engine) | Generated by: Jonathan Wall (@_jwall on X) '
-            '| Copyright 2024-5 Google LLC'
-        )
-        footer_font = _fit_font(
-            draw,
-            footer_text,
-            start_size=(18 if img.width >= 1300 else 16),
-            min_size=12,
-            bold=True,
-            max_width=max_text_w,
-        )
-        draw.text((12, img.height + header_h + legend_h + 4), footer_text, fill=(28, 28, 28), font=footer_font)
+        if footer_h > 0:
+            footer_text = (
+                'Source: WeatherNext2 (Earth Engine) | Generated by: Jonathan Wall (@_jwall on X) '
+                '| Copyright 2024-5 Google LLC'
+            )
+            footer_font = _fit_font(
+                draw,
+                footer_text,
+                start_size=(18 if img.width >= 1300 else 16),
+                min_size=12,
+                bold=True,
+                max_width=max_text_w,
+            )
+            draw.text((12, img.height + header_h + legend_h + 4), footer_text, fill=(28, 28, 28), font=footer_font)
         if max_dimension_px is not None:
             longest_side = max(canvas.width, canvas.height)
             if longest_side > int(max_dimension_px):
@@ -4258,8 +4377,8 @@ def generate_conus_t2m_anomaly_map(img, h, region=CONUS_THUMB_REGION, key='conus
 
 def generate_vort500_map(img, h):
     region_geom = ee.Geometry.Rectangle(CONUS_THUMB_REGION, geodesic=False)
-    u = img.select(WN2_500_U_BAND).resample('bilinear').focalMean(2, 'circle', 'pixels')
-    v = img.select(WN2_500_V_BAND).resample('bilinear').focalMean(2, 'circle', 'pixels')
+    u = img.select(WN2_500_U_BAND).resample('bilinear').focalMean(CONUS_VORT_WIND_SMOOTH_PX, 'circle', 'pixels')
+    v = img.select(WN2_500_V_BAND).resample('bilinear').focalMean(CONUS_VORT_WIND_SMOOTH_PX, 'circle', 'pixels')
     du_dy_deg = u.gradient().select('y')
     dv_dx_deg = v.gradient().select('x')
 
@@ -4270,19 +4389,18 @@ def generate_vort500_map(img, h):
     du_dy = du_dy_deg.divide(meters_per_px_lat)
     dv_dx = dv_dx_deg.divide(meters_per_px_lon)
     vort_1e5 = dv_dx.subtract(du_dy).multiply(1e5)
-    vort_display = vort_1e5.multiply(50000.0).focalMean(2, 'circle', 'pixels')
-
-    vort_layer = vort_display.updateMask(vort_display.gt(6)).visualize(
-        min=6, max=50,
-        palette=VORTICITY_PALETTE,
-    )
+    vort_layer = conus_vorticity_layer(vort_1e5)
     z500_height_dam = img.select(WN2_Z500_BAND).divide(9.80665).divide(10).clip(region_geom)
     z500_interval = adaptive_interval_for_hour(6, h, long_interval=8)
-    z500_contours = contour_overlay(
+    z500_contours = conus_vort500_height_contour_overlay(
         z500_height_dam,
         interval=z500_interval,
-        color='#2d2d2d',
-        opacity=0.88,
+        color=CONUS_VORT_Z500_CONTOUR_COLOR,
+        opacity=CONUS_VORT_Z500_CONTOUR_OPACITY,
+        canny_threshold=CONUS_VORT_Z500_CONTOUR_CANNY_THRESHOLD,
+        canny_sigma=CONUS_VORT_Z500_CONTOUR_CANNY_SIGMA,
+        smooth_px=CONUS_VORT_Z500_CONTOUR_SMOOTH_PX,
+        min_connected_px=CONUS_VORT_Z500_CONTOUR_MIN_CONNECTED_PX,
     )
     composite = ee.ImageCollection([
         basemap_overlay(region_geom, land_color=BASEMAP_LAND_COLOR, ocean_color=BASEMAP_OCEAN_COLOR),
