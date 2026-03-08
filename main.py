@@ -68,6 +68,7 @@ CONUS_REGION = ee.Geometry.Rectangle([-127.0, 22.0, -65.0, 50.0], geodesic=False
 WORLD_REGION = ee.Geometry.Rectangle([-180.0, -89.9, 180.0, 89.9], geodesic=False)
 NH_THUMB_REGION = [-180.0, 8.0, 20.0, 88.0]
 NA_THUMB_REGION = [-170.0, 8.0, -40.0, 82.0]
+NA_Z500A_REGION = [-170.0, 16.0, -34.0, 70.0]
 CONUS_THUMB_REGION = [-127.0, 22.0, -65.0, 50.0]
 # Northeast-only domain (excludes VA/NC by southern boundary; caps near tip of Maine)
 NE_THUMB_REGION = [-82.5, 39.2, -66.0, 47.6]
@@ -224,6 +225,7 @@ climo_window_days_env = os.environ.get('WN2_CLIMO_DOY_WINDOW_DAYS')
 climo_start_year_env = os.environ.get('WN2_CLIMO_START_YEAR')
 climo_end_year_env = os.environ.get('WN2_CLIMO_END_YEAR')
 climo_source_env = os.environ.get('WN2_CLIMO_SOURCE')
+z500_climo_baseline_env = os.environ.get('WN2_Z500_CLIMO_BASELINE')
 short_range_accuracy_hours_env = os.environ.get('WN2_SHORT_RANGE_ACCURACY_HOURS')
 run_nh_z500a_env = os.environ.get('WN2_RUN_NH_Z500A')
 run_na_z500a_env = os.environ.get('WN2_RUN_NA_Z500A')
@@ -259,6 +261,24 @@ def _parse_product_keys_csv(raw):
         return []
     parts = re.split(r'[\s,]+', text)
     return [p for p in parts if p]
+
+
+def _normalize_baseline_key(raw):
+    text = str(raw or '').strip().lower()
+    return re.sub(r'[^0-9a-z]+', '', text)
+
+
+def _resolve_z500_climo_years(raw, default_start_year, default_end_year):
+    key = _normalize_baseline_key(raw)
+    if key in ('', 'current', 'default', '19912020', '9120'):
+        return 'current', int(default_start_year), int(default_end_year), False
+    if key in ('19812010', '8110', 'classic', 'legacy'):
+        return '1981-2010', 1981, 2010, True
+    print(
+        f'[{ts()}] Invalid WN2_Z500_CLIMO_BASELINE="{raw}", '
+        f'defaulting to current H500 baseline {default_start_year}-{default_end_year}.'
+    )
+    return 'current', int(default_start_year), int(default_end_year), False
 
 
 LOCAL_TRUE_ANOMALY_RENDER = _env_flag(local_true_anom_render_env, default=True)
@@ -421,6 +441,27 @@ ANOMALY_MAX_M = 300
 ANOMALY_NEUTRAL_M = 6
 ANOMALY_DISPLAY_GAIN = 1.0
 ANOMALY_SMOOTH_RADIUS_PX = 0
+NA_Z500A_PALETTE = [
+    '#7a169f', '#9742c8', '#5b52e2', '#2e79f1', '#4fa7f7', '#9ccffb',
+    '#f0f1ef',
+    '#f5de97', '#f4b95c', '#ef833e', '#df492f', '#c62423', '#941114',
+]
+NA_Z500A_DISPLAY_GAIN = 1.14
+NA_Z500A_DISPLAY_GAMMA = 0.88
+NA_Z500A_ANOMALY_SMOOTH_PASSES = 1
+NA_Z500A_CONTOUR_SMOOTH_PASSES = 1
+NA_Z500A_MINOR_INTERVAL = 2.5
+NA_Z500A_MAJOR_INTERVAL = 12
+NA_Z500A_MINOR_COLOR = '#323232'
+NA_Z500A_MAJOR_COLOR = '#181818'
+NA_Z500A_HIGHLIGHT_COLOR = '#2958e6'
+NA_Z500A_MINOR_LW = 0.38
+NA_Z500A_MAJOR_LW = 0.94
+NA_Z500A_MINOR_ALPHA = 0.34
+NA_Z500A_MAJOR_ALPHA = 0.84
+NA_Z500A_INTERPOLATION = 'bicubic'
+NA_Z500A_LEGEND_HEIGHT = 74
+NA_Z500A_HEADER_HEIGHT = 62
 BASEMAP_LAND_COLOR = '#e6ebef'
 BASEMAP_OCEAN_COLOR = '#d6dde4'
 Z500_MINOR_CONTOUR_INTERVAL = 6
@@ -904,6 +945,12 @@ if climo_start_year_raw is not None or climo_end_year_raw is not None:
     CLIMO_END_YEAR = parsed_end
 CLIMO_H500_BASELINE_LABEL = f'{CLIMO_H500_SOURCE_LABEL} {CLIMO_START_YEAR}-{CLIMO_END_YEAR}'
 CLIMO_T2M_BASELINE_LABEL = f'{CLIMO_T2M_SOURCE_LABEL} {CLIMO_START_YEAR}-{CLIMO_END_YEAR}'
+Z500_CLIMO_BASELINE_KEY, Z500_CLIMO_START_YEAR, Z500_CLIMO_END_YEAR, Z500_CLIMO_IS_EXPLICIT = _resolve_z500_climo_years(
+    z500_climo_baseline_env,
+    CLIMO_START_YEAR,
+    CLIMO_END_YEAR,
+)
+Z500_CLIMO_BASELINE_LABEL = f'{CLIMO_H500_SOURCE_LABEL} {Z500_CLIMO_START_YEAR}-{Z500_CLIMO_END_YEAR}'
 short_range_accuracy_hours_raw = _parse_int(short_range_accuracy_hours_env)
 if short_range_accuracy_hours_raw is None:
     SHORT_RANGE_ACCURACY_HOURS = 24
@@ -925,10 +972,15 @@ print(
 )
 print(
     f'[{ts()}] Climatology baseline: '
-    f'H500={CLIMO_H500_BASELINE_LABEL}, T2M={CLIMO_T2M_BASELINE_LABEL} '
+    f'H500={Z500_CLIMO_BASELINE_LABEL}, T2M={CLIMO_T2M_BASELINE_LABEL} '
     f'(day-window=+/-{CLIMO_DOY_WINDOW_DAYS}d, not model-climate).'
 )
 print(f'[{ts()}] Climatology source mode: {CLIMO_SOURCE} ({CLIMO_SOURCE_NOTE})')
+if Z500_CLIMO_IS_EXPLICIT:
+    print(
+        f'[{ts()}] Z500 anomaly baseline override active: '
+        f'{Z500_CLIMO_BASELINE_LABEL} (WN2_Z500_CLIMO_BASELINE={Z500_CLIMO_BASELINE_KEY}).'
+    )
 if SHORT_RANGE_ACCURACY_HOURS > 0:
     print(f'[{ts()}] Short-range anomaly fidelity boost enabled through hour {SHORT_RANGE_ACCURACY_HOURS}.')
 if ADAPTIVE_LONG_RANGE:
@@ -1226,18 +1278,28 @@ def flat_background_overlay(region_geom, color='#cfe0ea'):
     return ee.Image.constant(1).clip(region_geom).visualize(palette=[color], opacity=1.0)
 
 
-def anomaly_overlay(anomaly_field):
+def anomaly_overlay(anomaly_field, palette=None, display_gain=None, smooth_radius_px=None, vmin=None, vmax=None, display_gamma=1.0):
     # Apply mild smoothing + gain for a cleaner, less noisy anomaly presentation.
+    palette = palette or ANOMALY_PALETTE
+    display_gain = ANOMALY_DISPLAY_GAIN if display_gain is None else float(display_gain)
+    smooth_radius_px = ANOMALY_SMOOTH_RADIUS_PX if smooth_radius_px is None else int(smooth_radius_px)
+    vmin = ANOMALY_MIN_M if vmin is None else float(vmin)
+    vmax = ANOMALY_MAX_M if vmax is None else float(vmax)
     anomaly_vis = anomaly_field.resample('bilinear')
-    if ANOMALY_SMOOTH_RADIUS_PX > 0:
-        anomaly_vis = anomaly_vis.focalMean(ANOMALY_SMOOTH_RADIUS_PX, 'circle', 'pixels')
-    if abs(ANOMALY_DISPLAY_GAIN - 1.0) > 1e-6:
-        anomaly_vis = anomaly_vis.multiply(ANOMALY_DISPLAY_GAIN)
-    anomaly_vis = anomaly_vis.clamp(ANOMALY_MIN_M, ANOMALY_MAX_M)
+    if smooth_radius_px > 0:
+        anomaly_vis = anomaly_vis.focalMean(smooth_radius_px, 'circle', 'pixels')
+    if abs(display_gain - 1.0) > 1e-6:
+        anomaly_vis = anomaly_vis.multiply(display_gain)
+    if abs(float(display_gamma) - 1.0) > 1e-6:
+        max_abs = max(abs(float(vmin)), abs(float(vmax)))
+        if max_abs > 0:
+            normalized = anomaly_vis.divide(max_abs).clamp(-1.0, 1.0)
+            anomaly_vis = normalized.sign().multiply(normalized.abs().pow(float(display_gamma))).multiply(max_abs)
+    anomaly_vis = anomaly_vis.clamp(vmin, vmax)
     return anomaly_vis.visualize(
-        min=ANOMALY_MIN_M,
-        max=ANOMALY_MAX_M,
-        palette=ANOMALY_PALETTE,
+        min=vmin,
+        max=vmax,
+        palette=palette,
     )
 
 
@@ -1274,19 +1336,19 @@ def _wrap_day_of_year_filter(start_doy, end_doy):
     )
 
 
-def z500_climo_1991_2020_m(valid_utc, region_geom=None, cache_tag='global', analysis_scale_m=None):
+def z500_climo_baseline_m(valid_utc, region_geom=None, cache_tag='global', analysis_scale_m=None):
     doy = valid_utc.timetuple().tm_yday
     month = int(valid_utc.month)
     day = int(valid_utc.day)
     hour = int(valid_utc.hour)
     scale_key = int(max(25000, float(analysis_scale_m))) if analysis_scale_m is not None else None
-    cache_key = (CLIMO_START_YEAR, CLIMO_END_YEAR, doy, hour, cache_tag, scale_key)
+    cache_key = (Z500_CLIMO_START_YEAR, Z500_CLIMO_END_YEAR, doy, hour, cache_tag, scale_key)
     cached = CLIMO_H500_CACHE.get(cache_key)
     if cached is not None:
         return cached
 
     base_collection = CLIMO_H500_COLLECTION.filter(
-        ee.Filter.calendarRange(CLIMO_START_YEAR, CLIMO_END_YEAR, 'year')
+        ee.Filter.calendarRange(Z500_CLIMO_START_YEAR, Z500_CLIMO_END_YEAR, 'year')
     )
     hour_collection = base_collection.filter(ee.Filter.calendarRange(hour, hour, 'hour'))
     hour_collection = _clip_collection_to_region(hour_collection, region_geom)
@@ -1304,12 +1366,12 @@ def z500_climo_1991_2020_m(valid_utc, region_geom=None, cache_tag='global', anal
         ee.Filter.calendarRange(month, month, 'month')
     ).filter(ee.Filter.calendarRange(hour, hour, 'hour'))
     fallback_collection = _clip_collection_to_region(fallback_collection, region_geom)
-    count_key = ('h500', CLIMO_START_YEAR, CLIMO_END_YEAR, month, day, hour)
+    count_key = ('h500', Z500_CLIMO_START_YEAR, Z500_CLIMO_END_YEAR, month, day, hour)
     window_n = CLIMO_COUNT_CACHE.get(count_key)
     if window_n is None:
         window_n = int(window_collection.size().getInfo())
         CLIMO_COUNT_CACHE[count_key] = window_n
-    size_log_key = ('h500', CLIMO_START_YEAR, CLIMO_END_YEAR, month, day, hour)
+    size_log_key = ('h500', Z500_CLIMO_START_YEAR, Z500_CLIMO_END_YEAR, month, day, hour)
     if size_log_key not in CLIMO_SIZE_LOGGED:
         try:
             fallback_n = int(fallback_collection.size().getInfo())
@@ -1328,7 +1390,7 @@ def z500_climo_1991_2020_m(valid_utc, region_geom=None, cache_tag='global', anal
 def z500_anomaly_m(img, hour, region_geom=None, cache_tag='global', analysis_scale_m=None):
     valid_utc = RUN_INIT_UTC + timedelta(hours=int(hour))
     forecast_height_m = img.select(WN2_Z500_BAND).divide(9.80665)
-    climo_height_m = z500_climo_1991_2020_m(
+    climo_height_m = z500_climo_baseline_m(
         valid_utc,
         region_geom=region_geom,
         cache_tag=cache_tag,
@@ -1676,14 +1738,18 @@ def _select_climo_source_collection(
     region_geom,
     count_cache_prefix,
     use_hour_filter=True,
+    start_year=None,
+    end_year=None,
 ):
     month = int(valid_utc.month)
     day = int(valid_utc.day)
     hour = int(valid_utc.hour)
     doy = valid_utc.timetuple().tm_yday
 
+    start_year = CLIMO_START_YEAR if start_year is None else int(start_year)
+    end_year = CLIMO_END_YEAR if end_year is None else int(end_year)
     year_filtered = base_collection.filter(
-        ee.Filter.calendarRange(CLIMO_START_YEAR, CLIMO_END_YEAR, 'year')
+        ee.Filter.calendarRange(start_year, end_year, 'year')
     )
     if use_hour_filter:
         hour_collection = year_filtered.filter(ee.Filter.calendarRange(hour, hour, 'hour'))
@@ -1707,12 +1773,12 @@ def _select_climo_source_collection(
     fallback_collection = _clip_collection_to_region(fallback_collection, region_geom)
 
     hour_key = hour if use_hour_filter else -1
-    count_key = (count_cache_prefix, CLIMO_START_YEAR, CLIMO_END_YEAR, month, day, hour_key)
+    count_key = (count_cache_prefix, start_year, end_year, month, day, hour_key)
     window_n = CLIMO_COUNT_CACHE.get(count_key)
     if window_n is None:
         window_n = int(window_collection.size().getInfo())
         CLIMO_COUNT_CACHE[count_key] = window_n
-    size_log_key = (count_cache_prefix, CLIMO_START_YEAR, CLIMO_END_YEAR, month, day, hour_key)
+    size_log_key = (count_cache_prefix, start_year, end_year, month, day, hour_key)
     if size_log_key not in CLIMO_SIZE_LOGGED:
         try:
             fallback_n = int(fallback_collection.size().getInfo())
@@ -1735,13 +1801,15 @@ def _sample_grouped_climo_array(
     base_scale_m,
     group_years=3,
     context='',
+    start_year=None,
+    end_year=None,
 ):
     import numpy as np
 
     if group_years < 1:
         group_years = 1
-    start_year = int(CLIMO_START_YEAR)
-    end_year = int(CLIMO_END_YEAR)
+    start_year = int(CLIMO_START_YEAR if start_year is None else start_year)
+    end_year = int(CLIMO_END_YEAR if end_year is None else end_year)
     if end_year < start_year:
         raise RuntimeError(f'Invalid climatology year range: {start_year}-{end_year}')
 
@@ -1832,6 +1900,23 @@ def _fill_nan_gaps(field, fill_value=0.0):
     return arr
 
 
+def _smooth_array_box(field, passes=1):
+    import numpy as np
+
+    arr = np.asarray(field, dtype=np.float32)
+    if arr.ndim != 2 or int(passes) <= 0:
+        return arr
+    out = arr.copy()
+    for _ in range(int(passes)):
+        pad = np.pad(out, 1, mode='edge')
+        out = (
+            pad[:-2, :-2] + pad[:-2, 1:-1] + pad[:-2, 2:]
+            + pad[1:-1, :-2] + pad[1:-1, 1:-1] + pad[1:-1, 2:]
+            + pad[2:, :-2] + pad[2:, 1:-1] + pad[2:, 2:]
+        ) / 9.0
+    return out.astype(np.float32)
+
+
 def _contour_levels(field, interval):
     import numpy as np
 
@@ -1868,15 +1953,24 @@ def _render_local_anomaly_tile(
     minor_color='#2a2a2a',
     major_color='#1a1a1a',
     major_lw=1.0,
+    minor_lw=0.55,
+    minor_alpha=0.60,
+    major_alpha=0.92,
     highlight_level=None,
     highlight_color='#2455ff',
+    anomaly_gain=1.0,
+    anomaly_gamma=1.0,
+    anomaly_smooth_passes=0,
+    contour_smooth_passes=0,
+    interpolation='bilinear',
+    use_centered_norm=False,
 ):
     import numpy as np
     import matplotlib
 
     matplotlib.use('Agg')
     import matplotlib.pyplot as plt
-    from matplotlib.colors import LinearSegmentedColormap
+    from matplotlib.colors import LinearSegmentedColormap, TwoSlopeNorm
 
     anomaly_arr = np.asarray(anomaly_field, dtype=np.float32)
     contour_arr = np.asarray(contour_field, dtype=np.float32)
@@ -1884,8 +1978,18 @@ def _render_local_anomaly_tile(
         anomaly_arr, contour_arr = _align_arrays(anomaly_arr, contour_arr)
     anomaly_arr = _fill_nan_gaps(anomaly_arr, fill_value=0.0)
     contour_arr = _fill_nan_gaps(contour_arr, fill_value=float(np.nanmean(contour_arr)) if np.isfinite(contour_arr).any() else 540.0)
+    if anomaly_smooth_passes and anomaly_smooth_passes > 0:
+        anomaly_arr = _smooth_array_box(anomaly_arr, anomaly_smooth_passes)
+    if contour_smooth_passes and contour_smooth_passes > 0:
+        contour_arr = _smooth_array_box(contour_arr, contour_smooth_passes)
 
-    anomaly_arr = np.clip(anomaly_arr * float(ANOMALY_DISPLAY_GAIN), float(vmin), float(vmax))
+    anomaly_arr = anomaly_arr * float(anomaly_gain)
+    if abs(float(anomaly_gamma) - 1.0) > 1e-6:
+        max_abs = max(abs(float(vmin)), abs(float(vmax)))
+        if max_abs > 0:
+            normalized = np.clip(anomaly_arr / float(max_abs), -1.0, 1.0)
+            anomaly_arr = np.sign(normalized) * np.power(np.abs(normalized), float(anomaly_gamma)) * float(max_abs)
+    anomaly_arr = np.clip(anomaly_arr, float(vmin), float(vmax))
     lon_w, lat_s, lon_e, lat_n = [float(v) for v in bounds]
     x = np.linspace(lon_w, lon_e, anomaly_arr.shape[1], dtype=np.float32)
     y = np.linspace(lat_n, lat_s, anomaly_arr.shape[0], dtype=np.float32)
@@ -1899,24 +2003,28 @@ def _render_local_anomaly_tile(
     ax.set_facecolor(BASEMAP_OCEAN_COLOR)
 
     cmap = LinearSegmentedColormap.from_list('wn2_anom', list(palette), N=256)
-    ax.imshow(
-        anomaly_arr,
-        extent=[lon_w, lon_e, lat_s, lat_n],
-        origin='upper',
-        cmap=cmap,
-        vmin=float(vmin),
-        vmax=float(vmax),
-        interpolation='bilinear',
-        aspect='auto',
-    )
+    norm = TwoSlopeNorm(vmin=float(vmin), vcenter=0.0, vmax=float(vmax)) if use_centered_norm else None
+    imshow_kwargs = {
+        'extent': [lon_w, lon_e, lat_s, lat_n],
+        'origin': 'upper',
+        'cmap': cmap,
+        'interpolation': interpolation,
+        'aspect': 'auto',
+    }
+    if norm is not None:
+        imshow_kwargs['norm'] = norm
+    else:
+        imshow_kwargs['vmin'] = float(vmin)
+        imshow_kwargs['vmax'] = float(vmax)
+    ax.imshow(anomaly_arr, **imshow_kwargs)
 
     minor_levels = _contour_levels(contour_arr, minor_interval)
     if minor_levels is not None and major_interval and float(minor_interval) < float(major_interval):
-        ax.contour(x, y, contour_arr, levels=minor_levels, colors=minor_color, linewidths=0.55, alpha=0.60)
+        ax.contour(x, y, contour_arr, levels=minor_levels, colors=minor_color, linewidths=minor_lw, alpha=minor_alpha)
 
     major_levels = _contour_levels(contour_arr, major_interval)
     if major_levels is not None:
-        ax.contour(x, y, contour_arr, levels=major_levels, colors=major_color, linewidths=major_lw, alpha=0.92)
+        ax.contour(x, y, contour_arr, levels=major_levels, colors=major_color, linewidths=major_lw, alpha=major_alpha)
 
     if highlight_level is not None:
         try:
@@ -2346,11 +2454,11 @@ def _draw_legend(draw, product_key, width, y, snow_ratio=10):
     bar_y = y + 26
     bar_h = 22
 
-    if product_key in ('nh_z500a', 'na_z500a'):
+    if product_key == 'nh_z500a':
         _draw_panel(draw, bar_x - 14, y - 4, bar_x + bar_w + 14, y + 72)
         draw.text(
             (bar_x, y + 2),
-            f'500-hPa Height Anomaly (m, {CLIMO_H500_BASELINE_LABEL} normal)',
+            f'500-hPa Height Anomaly (m, {Z500_CLIMO_BASELINE_LABEL} normal)',
             fill=(22, 22, 22),
             font=label_font,
         )
@@ -2365,6 +2473,32 @@ def _draw_legend(draw, product_key, width, y, snow_ratio=10):
             ANOMALY_MIN_M,
             ANOMALY_MAX_M,
             tick_font,
+        )
+        return
+
+    if product_key == 'na_z500a':
+        na_label_font = load_font(18 if width >= 1200 else 16, bold=False)
+        na_tick_font = load_font(14 if width >= 1200 else 12, bold=False)
+        na_bar_y = y + 19
+        na_bar_h = 18
+        _draw_panel(draw, bar_x - 14, y - 2, bar_x + bar_w + 14, y + 54)
+        draw.text(
+            (bar_x, y),
+            '500-hPa Height Anomaly (m)',
+            fill=(22, 22, 22),
+            font=na_label_font,
+        )
+        _draw_gradient_bar(draw, bar_x, na_bar_y, bar_w, na_bar_h, NA_Z500A_PALETTE)
+        _draw_ticks(
+            draw,
+            bar_x,
+            na_bar_y,
+            bar_w,
+            na_bar_h,
+            [-240, -180, -120, -60, 0, 60, 120, 180, 240],
+            ANOMALY_MIN_M,
+            ANOMALY_MAX_M,
+            na_tick_font,
         )
         return
 
@@ -2610,8 +2744,8 @@ def annotate_map_file(out_file, product_key, hour, map_region=None, low_center=N
     from PIL import Image, ImageDraw
 
     product_titles = {
-        'nh_z500a': f'WN2 0.25 deg | 500-hPa Geopotential Height (dam) & Anomaly vs {CLIMO_H500_BASELINE_LABEL} (m) | Northern Hemisphere',
-        'na_z500a': f'WN2 0.25 deg | 500-hPa Geopotential Height (dam) & Anomaly vs {CLIMO_H500_BASELINE_LABEL} (m) | North America',
+        'nh_z500a': f'WN2 0.25 deg | 500-hPa Geopotential Height (dam) & Anomaly vs {Z500_CLIMO_BASELINE_LABEL} (m) | Northern Hemisphere',
+        'na_z500a': f'WN2 0.25 deg | 500-hPa Height (dam) + Anomaly vs {Z500_CLIMO_BASELINE_LABEL} (m) | North America',
         'conus_mslp_ptype': 'WN2 0.25 deg | MSLP (hPa) + Precip Type | CONUS',
         'ne_mslp_ptype': 'WN2 0.25 deg | MSLP (hPa) + Precip Type | Northeast',
         'conus_vort500': 'WN2 0.25 deg | 500-hPa Relative Vorticity + 500-hPa Height (dam) | CONUS',
@@ -2728,6 +2862,41 @@ def annotate_map_file(out_file, product_key, hour, map_region=None, low_center=N
                     snow_draw.text((tx, ty), text, fill=(32, 32, 32), font=snow_font)
                 placed.append(rect)
 
+        if product_key == 'na_z500a':
+            footer_draw = ImageDraw.Draw(img)
+            footer_lines = [
+                'Source: WeatherNext2 (Earth Engine)',
+                'Generated by: Jonathan Wall (@_jwall on X) | Copyright 2024-5 Google LLC',
+            ]
+            footer_font = load_font(13 if img.width >= 1300 else 11, bold=False)
+            footer_stroke = 2
+            footer_gap = 0
+            line_boxes = []
+            max_w = 0
+            total_h = 0
+            for line in footer_lines:
+                bbox = footer_draw.textbbox((0, 0), line, font=footer_font, stroke_width=footer_stroke)
+                line_boxes.append(bbox)
+                max_w = max(max_w, bbox[2] - bbox[0])
+                total_h += bbox[3] - bbox[1]
+            fy = img.height - total_h - 12
+            fx = img.width - max_w - 14
+            for line, bbox in zip(footer_lines, line_boxes):
+                line_x = int(round(fx - bbox[0]))
+                line_y = int(round(fy - bbox[1]))
+                try:
+                    footer_draw.text(
+                        (line_x, line_y),
+                        line,
+                        fill=(72, 72, 72),
+                        font=footer_font,
+                        stroke_width=footer_stroke,
+                        stroke_fill=(240, 240, 240),
+                    )
+                except TypeError:
+                    footer_draw.text((line_x, line_y), line, fill=(72, 72, 72), font=footer_font)
+                fy += (bbox[3] - bbox[1]) + footer_gap
+
         if product_key == 'conus_vort500':
             footer_draw = ImageDraw.Draw(img)
             footer_lines = [
@@ -2769,9 +2938,10 @@ def annotate_map_file(out_file, product_key, hour, map_region=None, low_center=N
             legend_h = CONUS_PTYPE_LEGEND_HEIGHT
         elif product_key == 'ne_mslp_ptype':
             legend_h = 180
+        elif product_key == 'na_z500a':
+            legend_h = NA_Z500A_LEGEND_HEIGHT
         elif product_key in (
             'nh_z500a',
-            'na_z500a',
             'conus_vort500',
             'conus_t2m',
             'conus_t2m_anom',
@@ -2781,34 +2951,40 @@ def annotate_map_file(out_file, product_key, hour, map_region=None, low_center=N
         ):
             legend_h = 96
 
-        header_h = 78
-        footer_h = 0 if product_key == 'conus_vort500' else 30
+        header_h = NA_Z500A_HEADER_HEIGHT if product_key == 'na_z500a' else 78
+        footer_h = 0 if product_key in ('na_z500a', 'conus_vort500') else 30
         canvas = Image.new('RGB', (img.width, img.height + header_h + legend_h + footer_h), color=(236, 236, 236))
         canvas.paste(img, (0, header_h))
         draw = ImageDraw.Draw(canvas)
 
-        title_font = load_font(30 if img.width >= 1300 else 26, bold=True)
-        subtitle_font = load_font(22 if img.width >= 1300 else 19, bold=False)
+        title_font = load_font(
+            (25 if img.width >= 1300 else 22) if product_key == 'na_z500a' else (30 if img.width >= 1300 else 26),
+            bold=True,
+        )
+        subtitle_font = load_font(
+            (17 if img.width >= 1300 else 15) if product_key == 'na_z500a' else (22 if img.width >= 1300 else 19),
+            bold=False,
+        )
         max_text_w = img.width - 24
         title_font = _fit_font(
             draw,
             title,
-            start_size=(30 if img.width >= 1300 else 26),
-            min_size=(18 if img.width >= 1300 else 16),
+            start_size=((25 if img.width >= 1300 else 22) if product_key == 'na_z500a' else (30 if img.width >= 1300 else 26)),
+            min_size=((16 if img.width >= 1300 else 14) if product_key == 'na_z500a' else (18 if img.width >= 1300 else 16)),
             bold=True,
             max_width=max_text_w,
         )
         subtitle_font = _fit_font(
             draw,
             subtitle,
-            start_size=(22 if img.width >= 1300 else 19),
-            min_size=(14 if img.width >= 1300 else 13),
+            start_size=((17 if img.width >= 1300 else 15) if product_key == 'na_z500a' else (22 if img.width >= 1300 else 19)),
+            min_size=((13 if img.width >= 1300 else 12) if product_key == 'na_z500a' else (14 if img.width >= 1300 else 13)),
             bold=False,
             max_width=max_text_w,
         )
 
-        draw.text((12, 10), title, fill=(20, 20, 20), font=title_font)
-        draw.text((12, 44), subtitle, fill=(25, 25, 25), font=subtitle_font)
+        draw.text((12, 8 if product_key == 'na_z500a' else 10), title, fill=(20, 20, 20), font=title_font)
+        draw.text((12, 32 if product_key == 'na_z500a' else 44), subtitle, fill=(25, 25, 25), font=subtitle_font)
         draw.rectangle((0, header_h, img.width - 1, header_h + img.height - 1), outline=(32, 32, 32), width=2)
 
         if legend_h > 0:
@@ -3104,10 +3280,10 @@ def _generate_z500_anomaly_map_local(img, h, region, prefix):
             {'dims': (map_dims if USE_NH_TRUE_POLAR_RENDER else shrink_dimensions(shrink_dimensions(map_dims))), 'sample_scale_m': int(LOCAL_Z500_NH_SCALES_M[2] * 1.7), 'minor_interval': 0, 'major_interval': 30, 'include_z540': False, 'include_border': False, 'label': 'local emergency'},
         ]
     else:
-        map_dims = region_dimensions(ANOMALY_DIMS, region)
+        map_dims = region_dimensions(CONUS_DIMS, region)
         sample_bounds = region
         plans = [
-            {'dims': map_dims, 'sample_scale_m': LOCAL_Z500_NA_SCALES_M[0], 'minor_interval': 6, 'major_interval': 12, 'include_z540': True, 'include_border': True, 'label': 'local base'},
+            {'dims': map_dims, 'sample_scale_m': LOCAL_Z500_NA_SCALES_M[0], 'minor_interval': NA_Z500A_MINOR_INTERVAL, 'major_interval': NA_Z500A_MAJOR_INTERVAL, 'include_z540': True, 'include_border': True, 'label': 'local base'},
             {'dims': shrink_dimensions(map_dims), 'sample_scale_m': LOCAL_Z500_NA_SCALES_M[1], 'minor_interval': 0, 'major_interval': 18, 'include_z540': True, 'include_border': True, 'label': 'local coarse'},
             {'dims': shrink_dimensions(shrink_dimensions(map_dims)), 'sample_scale_m': LOCAL_Z500_NA_SCALES_M[2], 'minor_interval': 0, 'major_interval': 24, 'include_z540': False, 'include_border': True, 'label': 'local extra coarse'},
             {'dims': shrink_dimensions(shrink_dimensions(map_dims)), 'sample_scale_m': int(LOCAL_Z500_NA_SCALES_M[2] * 1.7), 'minor_interval': 0, 'major_interval': 30, 'include_z540': False, 'include_border': False, 'label': 'local emergency'},
@@ -3151,6 +3327,8 @@ def _generate_z500_anomaly_map_local(img, h, region, prefix):
             )
             climo_cache_key = (
                 'h500',
+                Z500_CLIMO_START_YEAR,
+                Z500_CLIMO_END_YEAR,
                 valid_utc.strftime('%Y%m%d%H'),
                 tuple(round(float(v), 3) for v in sample_bounds),
                 int(max(20000, float(used_scale))),
@@ -3162,6 +3340,8 @@ def _generate_z500_anomaly_map_local(img, h, region, prefix):
                     valid_utc,
                     sample_geom,
                     'h500',
+                    start_year=Z500_CLIMO_START_YEAR,
+                    end_year=Z500_CLIMO_END_YEAR,
                 )
                 climo_m_arr, _ = _sample_grouped_climo_array(
                     climo_source,
@@ -3170,6 +3350,8 @@ def _generate_z500_anomaly_map_local(img, h, region, prefix):
                     used_scale,
                     group_years=CLIMO_H500_GROUP_YEARS,
                     context=f'{prefix} climo_h500_m',
+                    start_year=Z500_CLIMO_START_YEAR,
+                    end_year=Z500_CLIMO_END_YEAR,
                 )
                 LOCAL_CLIMO_ARRAY_CACHE[climo_cache_key] = climo_m_arr
             else:
@@ -3212,16 +3394,25 @@ def _generate_z500_anomaly_map_local(img, h, region, prefix):
                     out_file=out_file,
                     width=width,
                     height=height,
-                    palette=ANOMALY_PALETTE,
+                    palette=NA_Z500A_PALETTE,
                     vmin=ANOMALY_MIN_M,
                     vmax=ANOMALY_MAX_M,
                     minor_interval=plan['minor_interval'],
                     major_interval=plan['major_interval'],
-                    minor_color='#2a2a2a',
-                    major_color='#141414',
-                    major_lw=1.0,
+                    minor_color=NA_Z500A_MINOR_COLOR,
+                    major_color=NA_Z500A_MAJOR_COLOR,
+                    major_lw=NA_Z500A_MAJOR_LW,
+                    minor_lw=NA_Z500A_MINOR_LW,
+                    minor_alpha=NA_Z500A_MINOR_ALPHA,
+                    major_alpha=NA_Z500A_MAJOR_ALPHA,
                     highlight_level=(540 if plan['include_z540'] else None),
-                    highlight_color='#2455ff',
+                    highlight_color=NA_Z500A_HIGHLIGHT_COLOR,
+                    anomaly_gain=NA_Z500A_DISPLAY_GAIN,
+                    anomaly_gamma=NA_Z500A_DISPLAY_GAMMA,
+                    anomaly_smooth_passes=NA_Z500A_ANOMALY_SMOOTH_PASSES,
+                    contour_smooth_passes=NA_Z500A_CONTOUR_SMOOTH_PASSES,
+                    interpolation=NA_Z500A_INTERPOLATION,
+                    use_centered_norm=True,
                 )
 
             if not (prefix == 'nh_z500a' and USE_NH_TRUE_POLAR_RENDER) and plan.get('include_border', True):
@@ -3264,7 +3455,7 @@ def generate_z500_anomaly_map(img, h, region, prefix):
         tile_bounds = split_region_longitude(NH_SOURCE_REGION, parts=tile_parts)
         default_scale = ANOMALY_NH_SCALE_M
     else:
-        map_dims = region_dimensions(ANOMALY_DIMS, region)
+        map_dims = region_dimensions(CONUS_DIMS, region)
         tile_bounds = split_region_longitude(region, parts=tile_parts)
         default_scale = ANOMALY_NA_SCALE_M
 
@@ -3283,7 +3474,12 @@ def generate_z500_anomaly_map(img, h, region, prefix):
         contour_for_render = _coarsen_for_compute(contour_field, contour_scale_m, min_scale_m=25000)
         overlays = [
             flat_background_overlay(tile_geom, color=BASEMAP_OCEAN_COLOR),
-            anomaly_overlay(anomaly_for_render),
+            anomaly_overlay(
+                anomaly_for_render,
+                palette=(NA_Z500A_PALETTE if prefix == 'na_z500a' else ANOMALY_PALETTE),
+                display_gain=(NA_Z500A_DISPLAY_GAIN if prefix == 'na_z500a' else ANOMALY_DISPLAY_GAIN),
+                display_gamma=(NA_Z500A_DISPLAY_GAMMA if prefix == 'na_z500a' else 1.0),
+            ),
         ]
         if minor_interval and int(minor_interval) < int(major_interval):
             overlays.append(
@@ -3396,8 +3592,8 @@ def generate_z500_anomaly_map(img, h, region, prefix):
                 'anomaly_scale_m': Z500_NA_ANOM_SCALES_M[0],
                 'scale_m': int(ANOMALY_NA_SCALE_M * 1.6),
                 'contour_scale_m': int(contour_scale_base * 1.2),
-                'minor_interval': Z500_MAJOR_CONTOUR_INTERVAL,
-                'major_interval': Z500_MAJOR_CONTOUR_INTERVAL,
+                'minor_interval': NA_Z500A_MINOR_INTERVAL,
+                'major_interval': NA_Z500A_MAJOR_INTERVAL,
                 'label': 'scale + major contours',
             },
             {
@@ -4758,7 +4954,7 @@ if not RECONCILE_ONLY and 'na_z500a' in enabled_keys:
         print(f'Generating Hour {h} [NA z500]...')
         img = get_cached_hour_image(h)
         try:
-            generate_z500_anomaly_map(img, h, NA_THUMB_REGION, 'na_z500a')
+            generate_z500_anomaly_map(img, h, NA_Z500A_REGION, 'na_z500a')
             successful_exports += 1
         except Exception as e:
             _record_task_failure(h, 'na_z500a', str(e), e)
