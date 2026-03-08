@@ -1925,82 +1925,6 @@ def _align_arrays(a, b):
     return a_np[:h, :w], b_np[:h, :w]
 
 
-def _stitch_sampled_longitude_parts(arrays):
-    import numpy as np
-
-    parts = [np.asarray(arr, dtype=np.float32) for arr in arrays if np.asarray(arr).ndim == 2]
-    if not parts:
-        raise RuntimeError('No sampled array parts available for longitude stitch.')
-    min_h = min(arr.shape[0] for arr in parts)
-    trimmed = [arr[:min_h, :] for arr in parts]
-    return np.concatenate(trimmed, axis=1)
-
-
-def _sample_rect_array_parts(field_img, band_name, bounds_parts, base_scale_m, context='', use_target_crs=True):
-    target_scale = int(max(20000, float(base_scale_m)))
-    last_arrays = []
-    last_scale = target_scale
-    for _ in range(2):
-        arrays = []
-        scales = []
-        for idx, bounds in enumerate(bounds_parts):
-            arr, used_scale = _sample_rect_array(
-                field_img,
-                band_name,
-                bounds,
-                target_scale,
-                context=f'{context} part{idx}',
-                use_target_crs=use_target_crs,
-            )
-            arrays.append(arr)
-            scales.append(int(used_scale))
-        last_arrays = arrays
-        last_scale = max(scales)
-        if all(scale == last_scale for scale in scales):
-            break
-        target_scale = last_scale
-    return _stitch_sampled_longitude_parts(last_arrays), int(last_scale)
-
-
-def _sample_grouped_climo_array_parts(
-    source_collection,
-    band_name,
-    bounds_parts,
-    base_scale_m,
-    group_years=3,
-    context='',
-    start_year=None,
-    end_year=None,
-    use_target_crs=True,
-):
-    target_scale = int(max(20000, float(base_scale_m)))
-    last_arrays = []
-    last_scale = target_scale
-    for _ in range(2):
-        arrays = []
-        scales = []
-        for idx, bounds in enumerate(bounds_parts):
-            arr, used_scale = _sample_grouped_climo_array(
-                source_collection,
-                band_name,
-                bounds,
-                target_scale,
-                group_years=group_years,
-                context=f'{context} part{idx}',
-                start_year=start_year,
-                end_year=end_year,
-                use_target_crs=use_target_crs,
-            )
-            arrays.append(arr)
-            scales.append(int(used_scale))
-        last_arrays = arrays
-        last_scale = max(scales)
-        if all(scale == last_scale for scale in scales):
-            break
-        target_scale = last_scale
-    return _stitch_sampled_longitude_parts(last_arrays), int(last_scale)
-
-
 def _fill_nan_gaps(field, fill_value=0.0):
     import numpy as np
 
@@ -2051,34 +1975,6 @@ def _smooth_array_box(field, passes=1):
             + pad[2:, :-2] + pad[2:, 1:-1] + pad[2:, 2:]
         ) / 9.0
     return out.astype(np.float32)
-
-
-def _collapse_polar_cap(field, rows=3):
-    import numpy as np
-
-    arr = np.asarray(field, dtype=np.float32).copy()
-    if arr.ndim != 2:
-        return arr
-    cap_rows = max(0, min(int(rows), arr.shape[0]))
-    if cap_rows <= 0:
-        return arr
-
-    for r in range(cap_rows):
-        row = arr[r, :]
-        finite = np.isfinite(row)
-        if not finite.any():
-            continue
-        row_mean = float(np.nanmean(row[finite]))
-        blend = 1.0 - (float(r + 1) / float(cap_rows + 1))
-        if blend <= 0.0:
-            continue
-        row_out = row.copy()
-        row_out[finite] = (
-            row[finite] * (1.0 - blend)
-            + row_mean * blend
-        ).astype(np.float32)
-        arr[r, :] = row_out
-    return arr
 
 
 def _contour_levels(field, interval):
@@ -3411,17 +3307,32 @@ def remap_nh_to_polar(
     lon_e=NH_SOURCE_REGION[2],
 ):
     from PIL import Image, ImageDraw
-    import numpy as np
 
     with Image.open(out_file) as src:
         src_img = src.convert('RGB')
-    src_arr = np.asarray(src_img, dtype=np.float32)
-    sh, sw = src_arr.shape[:2]
-    row_means = src_arr.mean(axis=1)
-    wrap_pad = max(8, min(24, sw // 50))
-    wrapped = np.concatenate([src_arr[:, -wrap_pad:, :], src_arr, src_arr[:, :wrap_pad, :]], axis=1)
-    polar_cap_rows = max(10, min(24, sh // 12))
-    pole_transition_rows = max(polar_cap_rows + 10, min(42, sh // 6))
+    sw, sh = src_img.size
+    src_px = src_img.load()
+    edge_blend = max(2, min(10, sw // 160))
+    if sw > (edge_blend * 2 + 2):
+        for yy in range(sh):
+            for i in range(edge_blend):
+                li = i
+                ri = sw - edge_blend + i
+                left = src_px[li, yy]
+                right = src_px[ri, yy]
+                w = (i + 1) / float(edge_blend + 1)
+                lmix = (
+                    int(round(left[0] * (1.0 - w) + right[0] * w)),
+                    int(round(left[1] * (1.0 - w) + right[1] * w)),
+                    int(round(left[2] * (1.0 - w) + right[2] * w)),
+                )
+                rmix = (
+                    int(round(right[0] * (1.0 - w) + left[0] * w)),
+                    int(round(right[1] * (1.0 - w) + left[1] * w)),
+                    int(round(right[2] * (1.0 - w) + left[2] * w)),
+                )
+                src_px[li, yy] = lmix
+                src_px[ri, yy] = rmix
 
     out_size = NH_POLAR_DIMS
     out_img = Image.new('RGB', (out_size, out_size), color=(214, 214, 214))
@@ -3446,8 +3357,8 @@ def remap_nh_to_polar(
                 continue
 
             t = r * tan_edge
-            lat_raw = math.degrees((math.pi / 2.0) - (2.0 * math.atan(t)))
-            lat = max(lat_min, min(lat_max, lat_raw))
+            lat = math.degrees((math.pi / 2.0) - (2.0 * math.atan(t)))
+            lat = max(lat_min, min(lat_max, lat))
             if r < 1e-9:
                 lon = lon0
             else:
@@ -3467,56 +3378,27 @@ def remap_nh_to_polar(
             elif sy_f > (sh - 1):
                 sy_f = float(sh - 1)
 
-            if lat_raw >= lat_max:
-                denom = max(0.1, 90.0 - float(lat_max))
-                pole_frac = max(0.0, min(1.0, (90.0 - lat_raw) / denom))
-                cap_y = pole_frac * float(max(0, polar_cap_rows - 1))
-                y0_cap = int(math.floor(cap_y))
-                y1_cap = min(sh - 1, y0_cap + 1)
-                wy_cap = cap_y - y0_cap
-                mean0 = row_means[y0_cap]
-                mean1 = row_means[y1_cap]
-                out_px[x, y] = (
-                    int(round(mean0[0] * (1.0 - wy_cap) + mean1[0] * wy_cap)),
-                    int(round(mean0[1] * (1.0 - wy_cap) + mean1[1] * wy_cap)),
-                    int(round(mean0[2] * (1.0 - wy_cap) + mean1[2] * wy_cap)),
-                )
-                continue
-
             x0_raw = int(math.floor(sx_f))
+            x0 = x0_raw % sw
             y0 = int(math.floor(sy_f))
+            x1 = (x0 + 1) % sw
             y1 = min(sh - 1, y0 + 1)
             wx = sx_f - x0_raw
             wy = sy_f - y0
-            x0 = (x0_raw % sw) + wrap_pad
-            x1 = x0 + 1
 
-            c00 = wrapped[y0, x0]
-            c10 = wrapped[y0, x1]
-            c01 = wrapped[y1, x0]
-            c11 = wrapped[y1, x1]
+            c00 = src_px[x0, y0]
+            c10 = src_px[x1, y0]
+            c01 = src_px[x0, y1]
+            c11 = src_px[x1, y1]
 
             w00 = (1.0 - wx) * (1.0 - wy)
             w10 = wx * (1.0 - wy)
             w01 = (1.0 - wx) * wy
             w11 = wx * wy
 
-            rch = (c00[0] * w00 + c10[0] * w10 + c01[0] * w01 + c11[0] * w11)
-            gch = (c00[1] * w00 + c10[1] * w10 + c01[1] * w01 + c11[1] * w11)
-            bch = (c00[2] * w00 + c10[2] * w10 + c01[2] * w01 + c11[2] * w11)
-            if sy_f < float(pole_transition_rows):
-                blend = max(0.0, min(1.0, 1.0 - (sy_f / float(pole_transition_rows))))
-                mean0 = row_means[y0]
-                mean1 = row_means[y1]
-                mean_r = float(mean0[0] * (1.0 - wy) + mean1[0] * wy)
-                mean_g = float(mean0[1] * (1.0 - wy) + mean1[1] * wy)
-                mean_b = float(mean0[2] * (1.0 - wy) + mean1[2] * wy)
-                rch = rch * (1.0 - blend) + mean_r * blend
-                gch = gch * (1.0 - blend) + mean_g * blend
-                bch = bch * (1.0 - blend) + mean_b * blend
-            rch = int(round(rch))
-            gch = int(round(gch))
-            bch = int(round(bch))
+            rch = int(round(c00[0] * w00 + c10[0] * w10 + c01[0] * w01 + c11[0] * w11))
+            gch = int(round(c00[1] * w00 + c10[1] * w10 + c01[1] * w01 + c11[1] * w11))
+            bch = int(round(c00[2] * w00 + c10[2] * w10 + c01[2] * w01 + c11[2] * w11))
             out_px[x, y] = (rch, gch, bch)
 
     draw = ImageDraw.Draw(out_img)
@@ -3672,8 +3554,7 @@ def _generate_z500_anomaly_map_local(img, h, region, prefix):
             map_dims = f'{polar_width}x{NH_POLAR_DIMS}'
         else:
             map_dims = NH_SOURCE_DIMS
-        sample_bounds = [-179.0, 20.5, 179.0, 88.5]
-        sample_bounds_parts = split_region_longitude(sample_bounds, parts=4)
+        sample_bounds = NH_SOURCE_REGION
         plans = [
             {'dims': map_dims, 'sample_scale_m': LOCAL_Z500_NH_SCALES_M[0], 'minor_interval': 6, 'major_interval': 12, 'include_z540': True, 'include_border': True, 'label': 'local base'},
             {'dims': (map_dims if USE_NH_TRUE_POLAR_RENDER else shrink_dimensions(map_dims)), 'sample_scale_m': LOCAL_Z500_NH_SCALES_M[1], 'minor_interval': 0, 'major_interval': 18, 'include_z540': True, 'include_border': True, 'label': 'local coarse'},
@@ -3683,7 +3564,6 @@ def _generate_z500_anomaly_map_local(img, h, region, prefix):
     else:
         map_dims = region_dimensions(CONUS_DIMS, region)
         sample_bounds = region
-        sample_bounds_parts = None
         plans = [
             {'dims': map_dims, 'sample_scale_m': LOCAL_Z500_NA_SCALES_M[0], 'minor_interval': NA_Z500A_MINOR_INTERVAL, 'major_interval': NA_Z500A_MAJOR_INTERVAL, 'include_z540': True, 'include_border': True, 'label': 'local base'},
             {'dims': shrink_dimensions(map_dims), 'sample_scale_m': LOCAL_Z500_NA_SCALES_M[1], 'minor_interval': 0, 'major_interval': 18, 'include_z540': True, 'include_border': True, 'label': 'local coarse'},
@@ -3720,24 +3600,14 @@ def _generate_z500_anomaly_map_local(img, h, region, prefix):
                 .clip(sample_geom)
                 .rename('h500_m')
             )
-            if sample_bounds_parts:
-                forecast_m_arr, used_scale = _sample_rect_array_parts(
-                    forecast_m_img,
-                    'h500_m',
-                    sample_bounds_parts,
-                    plan['sample_scale_m'],
-                    context=f'{prefix} forecast_h500_m',
-                    use_target_crs=True,
-                )
-            else:
-                forecast_m_arr, used_scale = _sample_rect_array(
-                    forecast_m_img,
-                    'h500_m',
-                    sample_bounds,
-                    plan['sample_scale_m'],
-                    context=f'{prefix} forecast_h500_m',
-                    use_target_crs=True,
-                )
+            forecast_m_arr, used_scale = _sample_rect_array(
+                forecast_m_img,
+                'h500_m',
+                sample_bounds,
+                plan['sample_scale_m'],
+                context=f'{prefix} forecast_h500_m',
+                use_target_crs=True,
+            )
             climo_cache_key = (
                 'h500',
                 Z500_CLIMO_START_YEAR,
@@ -3756,39 +3626,23 @@ def _generate_z500_anomaly_map_local(img, h, region, prefix):
                     start_year=Z500_CLIMO_START_YEAR,
                     end_year=Z500_CLIMO_END_YEAR,
                 )
-                if sample_bounds_parts:
-                    climo_m_arr, _ = _sample_grouped_climo_array_parts(
-                        climo_source,
-                        CLIMO_H500_BAND,
-                        sample_bounds_parts,
-                        used_scale,
-                        group_years=CLIMO_H500_GROUP_YEARS,
-                        context=f'{prefix} climo_h500_m',
-                        start_year=Z500_CLIMO_START_YEAR,
-                        end_year=Z500_CLIMO_END_YEAR,
-                        use_target_crs=True,
-                    )
-                else:
-                    climo_m_arr, _ = _sample_grouped_climo_array(
-                        climo_source,
-                        CLIMO_H500_BAND,
-                        sample_bounds,
-                        used_scale,
-                        group_years=CLIMO_H500_GROUP_YEARS,
-                        context=f'{prefix} climo_h500_m',
-                        start_year=Z500_CLIMO_START_YEAR,
-                        end_year=Z500_CLIMO_END_YEAR,
-                        use_target_crs=True,
-                    )
+                climo_m_arr, _ = _sample_grouped_climo_array(
+                    climo_source,
+                    CLIMO_H500_BAND,
+                    sample_bounds,
+                    used_scale,
+                    group_years=CLIMO_H500_GROUP_YEARS,
+                    context=f'{prefix} climo_h500_m',
+                    start_year=Z500_CLIMO_START_YEAR,
+                    end_year=Z500_CLIMO_END_YEAR,
+                    use_target_crs=True,
+                )
                 LOCAL_CLIMO_ARRAY_CACHE[climo_cache_key] = climo_m_arr
             else:
                 climo_m_arr = cached_climo
             forecast_m_arr, climo_m_arr = _align_arrays(forecast_m_arr, climo_m_arr)
             anomaly_m_arr = forecast_m_arr - climo_m_arr
             contour_dam_arr = forecast_m_arr / 10.0
-            if prefix == 'nh_z500a':
-                anomaly_m_arr = _collapse_polar_cap(anomaly_m_arr, rows=3)
-                contour_dam_arr = _collapse_polar_cap(contour_dam_arr, rows=3)
 
             if prefix == 'nh_z500a' and USE_NH_TRUE_POLAR_RENDER:
                 _render_local_anomaly_polar(
@@ -3856,14 +3710,7 @@ def _generate_z500_anomaly_map_local(img, h, region, prefix):
                 _overlay_png_on_jpg(out_file, border_png)
 
             if prefix == 'nh_z500a' and not USE_NH_TRUE_POLAR_RENDER:
-                remap_nh_to_polar(
-                    out_file,
-                    lon0=NH_LON0,
-                    lat_min=sample_bounds[1],
-                    lat_max=sample_bounds[3],
-                    lon_w=sample_bounds[0],
-                    lon_e=sample_bounds[2],
-                )
+                remap_nh_to_polar(out_file, lon0=NH_LON0)
             annotate_map_file(out_file, prefix, h)
             return
         except Exception as e:
@@ -3881,11 +3728,7 @@ def _generate_z500_anomaly_map_local(img, h, region, prefix):
 
 
 def generate_z500_anomaly_map(img, h, region, prefix):
-    if prefix == 'nh_z500a':
-        notice_flag = getattr(generate_z500_anomaly_map, '_nh_local_render_notice', False)
-        if not notice_flag and not LOCAL_TRUE_ANOMALY_RENDER:
-            print(f'[{ts()}] NH z500: forcing local true-anomaly render to avoid unstable EE export failures.')
-            setattr(generate_z500_anomaly_map, '_nh_local_render_notice', True)
+    if prefix == 'nh_z500a' and USE_NH_TRUE_POLAR_RENDER:
         return _generate_z500_anomaly_map_local(img, h, NH_SOURCE_REGION, prefix)
     if LOCAL_TRUE_ANOMALY_RENDER:
         return _generate_z500_anomaly_map_local(img, h, region, prefix)
