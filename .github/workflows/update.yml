@@ -6,18 +6,33 @@ on:
       - main
   workflow_dispatch:
     inputs:
+      product_selection:
+        description: "[Products] Which product set to run"
+        required: false
+        default: "flagship"
+        type: choice
+        options:
+          - flagship
+          - winter_weather
+          - conus_core
+          - regional_zoom
+          - z500_anomalies
+          - temperature
+          - snowfall
+          - all
+          - custom_csv
+      custom_products_csv:
+        description: "[Products] Only used when Product Set = custom_csv"
+        required: false
+        default: "na_z500a,conus_mslp_ptype,conus_vort500,ne_snow_accum,ne_zoom_snow_accum"
+        type: string
       preview_one_frame:
-        description: "Generate one frame per product (quick preview)"
+        description: "[Time Range] Generate only one frame per selected product"
         required: false
         default: false
         type: boolean
-      hours_csv:
-        description: "Optional explicit forecast hours (e.g. 6,12,18)"
-        required: false
-        default: ""
-        type: string
       hour_range_preset:
-        description: "Manual range preset (0 to selected hour, using native step)"
+        description: "[Time Range] Run 0 through selected hour using native model step"
         required: false
         default: "full"
         type: choice
@@ -30,23 +45,18 @@ on:
           - "120"
           - "180"
           - "240"
-      run_init_utc:
-        description: "Optional run init UTC override (example: 2026-02-22T12:00:00Z)"
+      hours_csv:
+        description: "[Time Range] Explicit forecast hours (overrides preset if set; e.g. 6,12,18)"
         required: false
         default: ""
         type: string
-      snow_ratio_csv:
-        description: "Snow ratios to render for custom runs only (10-20, comma-separated; e.g. 10,12,15,20)"
+      run_init_utc:
+        description: "[Time Range] Optional run init UTC override (example: 2026-02-22T12:00:00Z)"
         required: false
-        default: "10,12,15,20"
-        type: string
-      run_history_hours:
-        description: "Run history retention window in hours (6-72)"
-        required: false
-        default: "24"
+        default: ""
         type: string
       max_dimension:
-        description: "Maximum map dimension in pixels (caps width/height, e.g. 720, 900)"
+        description: "[Render Settings] Maximum output dimension in pixels"
         required: false
         default: "900"
         type: choice
@@ -56,35 +66,8 @@ on:
           - "900"
           - "960"
           - "1000"
-      geography_detail:
-        description: "Border detail mode (auto/high/low)"
-        required: false
-        default: "auto"
-        type: choice
-        options:
-          - auto
-          - high
-          - low
-      climo_start_year:
-        description: "Climatology start year (example: 2001 for a 20-year 2001-2020 baseline)"
-        required: false
-        default: "1991"
-        type: string
-      climo_end_year:
-        description: "Climatology end year (example: 2020)"
-        required: false
-        default: "2020"
-        type: string
-      climo_source:
-        description: "Climatology source reanalysis (era5 uses ERA5 for T2M; H500 falls back to MERRA2 in EE)"
-        required: false
-        default: "era5"
-        type: choice
-        options:
-          - era5
-          - merra2
       export_workers:
-        description: "Parallel worker count for non-z500 products (1-4)"
+        description: "[Render Settings] Parallel worker count for non-z500 products"
         required: false
         default: "3"
         type: choice
@@ -93,26 +76,50 @@ on:
           - "2"
           - "3"
           - "4"
-      product_mode:
-        description: "Product selection mode"
+      geography_detail:
+        description: "[Render Settings] Border detail mode"
         required: false
-        default: "all"
+        default: "auto"
         type: choice
         options:
-          - all
-          - custom
+          - auto
+          - high
+          - low
+      snow_ratio_csv:
+        description: "[Render Settings] Snow ratios for manual subsets/custom runs (comma-separated)"
+        required: false
+        default: "10,12,15,20"
+        type: string
+      climo_source:
+        description: "[Climate] Reanalysis source (ERA5 for T2M; H500 still falls back to MERRA2 in EE)"
+        required: false
+        default: "era5"
+        type: choice
+        options:
+          - era5
+          - merra2
+      climo_start_year:
+        description: "[Climate] Climatology start year"
+        required: false
+        default: "1991"
+        type: string
+      climo_end_year:
+        description: "[Climate] Climatology end year"
+        required: false
+        default: "2020"
+        type: string
       nh_render_mode:
-        description: "NH rendering mode (legacy keeps current style; polar is direct stereographic)"
+        description: "[Advanced] NH rendering mode"
         required: false
         default: "legacy"
         type: choice
         options:
           - legacy
           - polar
-      custom_products_csv:
-        description: "Custom mode product keys (comma-separated, no spaces): nh_z500a,na_z500a,conus_mslp_ptype,ne_mslp_ptype,conus_vort500,conus_t2m,conus_t2m_anom,conus_snow_accum,ne_snow_accum,ne_zoom_snow_accum"
+      run_history_hours:
+        description: "[Advanced] Run history retention window in hours"
         required: false
-        default: "nh_z500a,na_z500a,conus_mslp_ptype,ne_mslp_ptype,conus_vort500,conus_t2m,conus_t2m_anom,conus_snow_accum,ne_snow_accum,ne_zoom_snow_accum"
+        default: "24"
         type: string
   
 concurrency:
@@ -158,6 +165,82 @@ jobs:
           pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Resolve Product Selection
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            selection="${{ github.event.inputs.product_selection }}"
+            custom_csv="${{ github.event.inputs.custom_products_csv }}"
+            custom_snow_ratios="${{ github.event.inputs.snow_ratio_csv || '10,12,15,20' }}"
+          else
+            selection="all"
+            custom_csv=""
+            custom_snow_ratios="10"
+          fi
+
+          resolved_mode="all"
+          resolved_products=""
+          resolved_snow_ratios="10"
+
+          case "$selection" in
+            all)
+              ;;
+            flagship)
+              resolved_mode="custom"
+              resolved_products="na_z500a,conus_mslp_ptype,conus_vort500,ne_snow_accum,ne_zoom_snow_accum"
+              ;;
+            winter_weather)
+              resolved_mode="custom"
+              resolved_products="conus_mslp_ptype,ne_mslp_ptype,conus_snow_accum,ne_snow_accum,ne_zoom_snow_accum"
+              ;;
+            conus_core)
+              resolved_mode="custom"
+              resolved_products="conus_mslp_ptype,conus_vort500,conus_t2m,conus_t2m_anom,conus_snow_accum"
+              ;;
+            regional_zoom)
+              resolved_mode="custom"
+              resolved_products="na_z500a,ne_mslp_ptype,ne_snow_accum,ne_zoom_snow_accum"
+              ;;
+            z500_anomalies)
+              resolved_mode="custom"
+              resolved_products="nh_z500a,na_z500a"
+              ;;
+            temperature)
+              resolved_mode="custom"
+              resolved_products="conus_t2m,conus_t2m_anom"
+              ;;
+            snowfall)
+              resolved_mode="custom"
+              resolved_products="conus_snow_accum,ne_snow_accum,ne_zoom_snow_accum"
+              ;;
+            custom_csv)
+              resolved_mode="custom"
+              resolved_products="$custom_csv"
+              ;;
+            *)
+              echo "Unknown product_selection: $selection" >&2
+              exit 1
+              ;;
+          esac
+
+          if [ "$resolved_mode" = "custom" ]; then
+            resolved_snow_ratios="$custom_snow_ratios"
+          fi
+
+          {
+            echo "WN2_PRODUCT_MODE=$resolved_mode"
+            echo "WN2_SELECTED_PRODUCTS=$resolved_products"
+            echo "SNOW_RATIO_CSV=$resolved_snow_ratios"
+          } >> "$GITHUB_ENV"
+
+          echo "Resolved product selection: $selection"
+          if [ -n "$resolved_products" ]; then
+            echo "Resolved products: $resolved_products"
+          else
+            echo "Resolved products: all"
+          fi
+          echo "Resolved snow ratios: $resolved_snow_ratios"
+
       - name: Run Map Generator (Shard)
         id: map_generator
         env:
@@ -167,7 +250,6 @@ jobs:
           HOURS_LIMIT: ${{ github.event_name == 'push' && '1' || (github.event_name == 'workflow_dispatch' && github.event.inputs.preview_one_frame == 'true' && '1' || '') }}
           HOURS_CSV: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.hours_csv || '' }}
           RUN_INIT_UTC: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.run_init_utc || '' }}
-          SNOW_RATIO_CSV: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.product_mode == 'custom' && (github.event.inputs.snow_ratio_csv || '10,12,15,20') || '10' }}
           RUN_HISTORY_HOURS: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.run_history_hours || '24' }}
           WN2_MAX_DIMENSION: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.max_dimension || '900' }}
           WN2_GEOGRAPHY_DETAIL: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.geography_detail || 'auto' }}
@@ -175,14 +257,12 @@ jobs:
           WN2_CLIMO_END_YEAR: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.climo_end_year || '' }}
           WN2_CLIMO_SOURCE: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.climo_source || 'era5' }}
           EXPORT_WORKERS: ${{ matrix.phase == 'core' && (github.event_name == 'workflow_dispatch' && github.event.inputs.export_workers || '2') || '1' }}
-          WN2_PRODUCT_MODE: custom
           WN2_NH_RENDER_MODE: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.nh_render_mode || 'legacy' }}
           WN2_HOUR_SHARD_INDEX: ${{ matrix.shard_index }}
           WN2_HOUR_SHARD_TOTAL: ${{ matrix.shard_total }}
           WN2_RESUME_EXISTING: "1"
           WN2_SKIP_CLEANUP_RUN_DIR: "1"
           WN2_ALLOW_NO_PRODUCTS: "1"
-          WN2_SELECTED_PRODUCTS: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.product_mode == 'custom' && github.event.inputs.custom_products_csv || '' }}
           WN2_RUN_NH_Z500A: ${{ matrix.phase == 'z500' && '1' || '' }}
           WN2_RUN_NA_Z500A: ${{ matrix.phase == 'z500' && '1' || '' }}
           WN2_RUN_CONUS_MSLP_PTYPE: ${{ matrix.phase == 'core' && '1' || '' }}
@@ -236,6 +316,82 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install -r requirements.txt
+
+      - name: Resolve Product Selection
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            selection="${{ github.event.inputs.product_selection }}"
+            custom_csv="${{ github.event.inputs.custom_products_csv }}"
+            custom_snow_ratios="${{ github.event.inputs.snow_ratio_csv || '10,12,15,20' }}"
+          else
+            selection="all"
+            custom_csv=""
+            custom_snow_ratios="10"
+          fi
+
+          resolved_mode="all"
+          resolved_products=""
+          resolved_snow_ratios="10"
+
+          case "$selection" in
+            all)
+              ;;
+            flagship)
+              resolved_mode="custom"
+              resolved_products="na_z500a,conus_mslp_ptype,conus_vort500,ne_snow_accum,ne_zoom_snow_accum"
+              ;;
+            winter_weather)
+              resolved_mode="custom"
+              resolved_products="conus_mslp_ptype,ne_mslp_ptype,conus_snow_accum,ne_snow_accum,ne_zoom_snow_accum"
+              ;;
+            conus_core)
+              resolved_mode="custom"
+              resolved_products="conus_mslp_ptype,conus_vort500,conus_t2m,conus_t2m_anom,conus_snow_accum"
+              ;;
+            regional_zoom)
+              resolved_mode="custom"
+              resolved_products="na_z500a,ne_mslp_ptype,ne_snow_accum,ne_zoom_snow_accum"
+              ;;
+            z500_anomalies)
+              resolved_mode="custom"
+              resolved_products="nh_z500a,na_z500a"
+              ;;
+            temperature)
+              resolved_mode="custom"
+              resolved_products="conus_t2m,conus_t2m_anom"
+              ;;
+            snowfall)
+              resolved_mode="custom"
+              resolved_products="conus_snow_accum,ne_snow_accum,ne_zoom_snow_accum"
+              ;;
+            custom_csv)
+              resolved_mode="custom"
+              resolved_products="$custom_csv"
+              ;;
+            *)
+              echo "Unknown product_selection: $selection" >&2
+              exit 1
+              ;;
+          esac
+
+          if [ "$resolved_mode" = "custom" ]; then
+            resolved_snow_ratios="$custom_snow_ratios"
+          fi
+
+          {
+            echo "WN2_PRODUCT_MODE=$resolved_mode"
+            echo "WN2_SELECTED_PRODUCTS=$resolved_products"
+            echo "SNOW_RATIO_CSV=$resolved_snow_ratios"
+          } >> "$GITHUB_ENV"
+
+          echo "Resolved product selection: $selection"
+          if [ -n "$resolved_products" ]; then
+            echo "Resolved products: $resolved_products"
+          else
+            echo "Resolved products: all"
+          fi
+          echo "Resolved snow ratios: $resolved_snow_ratios"
 
       - name: Restore Recent Runs From gh-pages
         env:
@@ -295,7 +451,6 @@ jobs:
           HOURS_LIMIT: ${{ github.event_name == 'push' && '1' || (github.event_name == 'workflow_dispatch' && github.event.inputs.preview_one_frame == 'true' && '1' || '') }}
           HOURS_CSV: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.hours_csv || '' }}
           RUN_INIT_UTC: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.run_init_utc || '' }}
-          SNOW_RATIO_CSV: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.product_mode == 'custom' && (github.event.inputs.snow_ratio_csv || '10,12,15,20') || '10' }}
           RUN_HISTORY_HOURS: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.run_history_hours || '24' }}
           WN2_MAX_DIMENSION: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.max_dimension || '900' }}
           WN2_GEOGRAPHY_DETAIL: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.geography_detail || 'auto' }}
@@ -303,9 +458,7 @@ jobs:
           WN2_CLIMO_END_YEAR: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.climo_end_year || '' }}
           WN2_CLIMO_SOURCE: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.climo_source || 'era5' }}
           EXPORT_WORKERS: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.export_workers || '2' }}
-          WN2_PRODUCT_MODE: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.product_mode || 'all' }}
           WN2_NH_RENDER_MODE: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.nh_render_mode || 'legacy' }}
-          WN2_SELECTED_PRODUCTS: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.product_mode == 'custom' && github.event.inputs.custom_products_csv || '' }}
           WN2_RESUME_EXISTING: "1"
           WN2_SKIP_CLEANUP_RUN_DIR: "1"
           WN2_RECONCILE_ONLY: "1"
