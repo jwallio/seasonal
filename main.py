@@ -72,8 +72,8 @@ NA_Z500A_REGION = [-170.0, 16.0, -34.0, 70.0]
 CONUS_THUMB_REGION = [-127.0, 22.0, -65.0, 50.0]
 # Northeast-only domain (excludes VA/NC by southern boundary; caps near tip of Maine)
 NE_THUMB_REGION = [-82.5, 39.2, -66.0, 47.6]
-# New England zoom snowfall domain: Delmarva, NJ, NYC/LI, southern New England/Boston corridor
-NE_ZOOM_SNOW_THUMB_REGION = [-76.9, 38.0, -70.0, 43.3]
+# New England zoom snowfall domain: eastern NY through New England, tuned for a tighter regional view
+NE_ZOOM_SNOW_THUMB_REGION = [-76.8, 39.7, -66.4, 45.2]
 
 # Boundaries overlays
 COUNTRIES = ee.FeatureCollection('USDOS/LSIB_SIMPLE/2017')
@@ -166,23 +166,19 @@ NE_SNOW_LABEL_AIRPORTS = [
     ('ACY', -74.5772, 39.4576),
 ]
 NE_ZOOM_SNOW_LABEL_AIRPORTS = [
-    ('DCA', -77.0377, 38.8521),
-    ('BWI', -76.6684, 39.1754),
-    ('ILG', -75.6065, 39.6787),
-    ('PHL', -75.2424, 39.8729),
-    ('ACY', -74.5772, 39.4576),
     ('EWR', -74.1745, 40.6895),
-    ('LGA', -73.8740, 40.7769),
-    ('JFK', -73.7781, 40.6413),
-    ('ISP', -73.1002, 40.7952),
-    ('SWF', -74.1048, 41.5041),
+    ('ALB', -73.8027, 42.7483),
+    ('BTV', -73.1533, 44.4719),
     ('BDL', -72.6832, 41.9389),
-    ('PVD', -71.4332, 41.7240),
     ('ORH', -71.8757, 42.2673),
+    ('PVD', -71.4332, 41.7240),
     ('BOS', -71.0052, 42.3656),
     ('MHT', -71.4357, 42.9326),
+    ('PSM', -70.8233, 43.0779),
     ('PWM', -70.3093, 43.6462),
-    ('SBY', -75.5103, 38.3405),
+    ('AUG', -69.7973, 44.3206),
+    ('BGR', -68.8281, 44.8074),
+    ('HYA', -70.2804, 41.6693),
 ]
 
 
@@ -340,6 +336,7 @@ if FAST_RENDER:
     PTYPE_NE_DIMS = '1200x980'
     SNOW_CONUS_DIMS = '1320x960'
     SNOW_NE_DIMS = '1200x980'
+    SNOW_NE_ZOOM_DIMS = '1280x900'
     NH_SOURCE_DIMS = '1400x280'
     NH_POLAR_DIMS = 980
     ANOMALY_NA_SCALE_M = 52000
@@ -359,6 +356,7 @@ else:
     PTYPE_NE_DIMS = '1400x1120'
     SNOW_CONUS_DIMS = '1600x1140'
     SNOW_NE_DIMS = '1400x1120'
+    SNOW_NE_ZOOM_DIMS = '1500x980'
     NH_SOURCE_DIMS = '1600x320'
     NH_POLAR_DIMS = 1080
     ANOMALY_NA_SCALE_M = 52000
@@ -387,6 +385,7 @@ if max_dimension_px is not None:
     PTYPE_NE_DIMS = _cap_dims_to_max(PTYPE_NE_DIMS, max_dimension_px)
     SNOW_CONUS_DIMS = _cap_dims_to_max(SNOW_CONUS_DIMS, max_dimension_px)
     SNOW_NE_DIMS = _cap_dims_to_max(SNOW_NE_DIMS, max_dimension_px)
+    SNOW_NE_ZOOM_DIMS = _cap_dims_to_max(SNOW_NE_ZOOM_DIMS, max_dimension_px)
     NH_SOURCE_DIMS = _cap_dims_to_max(NH_SOURCE_DIMS, max_dimension_px)
     NH_POLAR_DIMS = max(480, min(int(NH_POLAR_DIMS), int(max_dimension_px)))
 
@@ -591,6 +590,24 @@ NE_SNOW_ACCUM_STEP_SEGMENTS_IN = [
     (28.0, 30.0, ['#47eaff']),
     (30.0, 32.0, ['#00d8f2']),
 ]
+NE_ZOOM_SNOW_ACCUM_STEP_SEGMENTS_IN = [
+    (0.1, 2.0, ['#f1fbff']),
+    (2.0, 4.0, ['#dff5ff']),
+    (4.0, 6.0, ['#a7ddff']),
+    (6.0, 8.0, ['#79c9fb']),
+    (8.0, 10.0, ['#49b2f3']),
+    (10.0, 12.0, ['#238fdc']),
+    (12.0, 14.0, ['#1b6ccc']),
+    (14.0, 16.0, ['#3655ca']),
+    (16.0, 18.0, ['#5b46c8']),
+    (18.0, 20.0, ['#833cc4']),
+    (20.0, 22.0, ['#b53bc2']),
+    (22.0, 24.0, ['#dd60c3']),
+    (24.0, 26.0, ['#dcfbff']),
+    (26.0, 28.0, ['#9bf4ff']),
+    (28.0, 30.0, ['#4ce8ff']),
+    (30.0, 32.0, ['#00d8f2']),
+]
 SNOW_ACCUM_MAX_IN = 32.0
 SNOW_ACCUM_OVER_COLOR = '#d60000'
 NE_SNOW_ACCUM_LEGEND_HEIGHT = 82
@@ -598,6 +615,12 @@ NE_SNOW_ACCUM_HEADER_HEIGHT = 60
 NE_SNOW_LABEL_MIN_IN = 1.0
 NE_SNOW_LABEL_MAX_COUNT = 16
 NE_SNOW_LABEL_COLLISION_PAD = 4
+NE_ZOOM_SNOW_ACCUM_LEGEND_HEIGHT = 78
+NE_ZOOM_SNOW_ACCUM_HEADER_HEIGHT = 64
+NE_ZOOM_SNOW_LABEL_MIN_IN = 1.0
+NE_ZOOM_SNOW_LABEL_MAX_COUNT = 12
+NE_ZOOM_SNOW_LABEL_COLLISION_PAD = 3
+NE_ZOOM_SNOW_DISPLAY_GAIN = 1.08
 T2M_F_PALETTE = [
     '#5a168a', '#3344b2', '#2f75d6', '#55a7eb', '#8fd1f4', '#cce8fa',
     '#f1f3ef',
@@ -2605,6 +2628,25 @@ def _draw_ne_snow_bar_legend(draw, width, y, snow_ratio=10):
     _draw_ticks(draw, bar_x, bar_y, bar_w, bar_h, list(range(2, int(SNOW_ACCUM_MAX_IN) + 1, 2)), 0.1, SNOW_ACCUM_MAX_IN, tick_font)
 
 
+def _draw_ne_zoom_snow_bar_legend(draw, width, y, snow_ratio=10):
+    label_font = load_font(18 if width >= 1200 else 16, bold=False)
+    tick_font = load_font(12 if width >= 1200 else 10, bold=False)
+    x_pad = 66 if width >= 1200 else 42
+    panel_x0 = x_pad - 12
+    panel_x1 = width - x_pad + 12
+    panel_y0 = y
+    panel_y1 = y + 64
+    _draw_panel(draw, panel_x0, panel_y0, panel_x1, panel_y1, fill=(244, 244, 244), outline=(126, 126, 126), radius=8)
+    draw.text((x_pad, y + 2), f'Snowfall Total (in, {int(snow_ratio)}:1)', fill=(22, 22, 22), font=label_font)
+    bar_x = x_pad
+    bar_y = y + 20
+    bar_w = width - 2 * x_pad
+    bar_h = 20
+    snow_segments = [(low, high, palette) for low, high, palette in NE_ZOOM_SNOW_ACCUM_STEP_SEGMENTS_IN]
+    _draw_segmented_gradient_bar(draw, bar_x, bar_y, bar_w, bar_h, snow_segments, 0.1, SNOW_ACCUM_MAX_IN)
+    _draw_ticks(draw, bar_x, bar_y, bar_w, bar_h, list(range(2, int(SNOW_ACCUM_MAX_IN) + 1, 2)), 0.1, SNOW_ACCUM_MAX_IN, tick_font)
+
+
 def _draw_legend(draw, product_key, width, y, snow_ratio=10):
     label_font = load_font(22 if width >= 1200 else 18, bold=False)
     tick_font = load_font(16 if width >= 1200 else 14, bold=False)
@@ -2700,6 +2742,10 @@ def _draw_legend(draw, product_key, width, y, snow_ratio=10):
 
     if product_key == 'ne_snow_accum':
         _draw_ne_snow_bar_legend(draw, width, y, snow_ratio=snow_ratio)
+        return
+
+    if product_key == 'ne_zoom_snow_accum':
+        _draw_ne_zoom_snow_bar_legend(draw, width, y, snow_ratio=snow_ratio)
         return
 
     if product_key in ('conus_snow_accum', 'ne_snow_accum', 'ne_zoom_snow_accum'):
@@ -2923,6 +2969,21 @@ def _draw_snow_labels(draw, width, height, map_region, snow_labels, product_key)
             (6, 2),
             (-6, 2),
         ]
+    elif product_key == 'ne_zoom_snow_accum':
+        snow_font = load_font(21 if width >= 1300 else 19, bold=True)
+        stroke_width = 3
+        safe_pad = 8
+        min_inches = NE_ZOOM_SNOW_LABEL_MIN_IN
+        max_labels = NE_ZOOM_SNOW_LABEL_MAX_COUNT
+        collision_pad = NE_ZOOM_SNOW_LABEL_COLLISION_PAD
+        text_fill = (34, 34, 34)
+        stroke_fill = (248, 248, 248)
+        offsets = [
+            (8, -2),
+            (-8, -2),
+            (8, 3),
+            (-8, 3),
+        ]
     else:
         snow_font = load_font(20 if width >= 1300 else 16, bold=True)
         stroke_width = 2
@@ -3082,7 +3143,7 @@ def annotate_map_file(out_file, product_key, hour, map_region=None, low_center=N
 
         if map_region is not None and snow_labels:
             snow_draw = ImageDraw.Draw(img)
-            if product_key == 'ne_snow_accum':
+            if product_key in ('ne_snow_accum', 'ne_zoom_snow_accum'):
                 _draw_snow_labels(snow_draw, img.width, img.height, map_region, snow_labels, product_key)
             else:
                 snow_font = load_font(20 if img.width >= 1300 else 16, bold=True)
@@ -3120,14 +3181,14 @@ def annotate_map_file(out_file, product_key, hour, map_region=None, low_center=N
                         snow_draw.text((tx, ty), text, fill=(32, 32, 32), font=snow_font)
                     placed.append(rect)
 
-        if product_key == 'ne_snow_accum':
+        if product_key in ('ne_snow_accum', 'ne_zoom_snow_accum'):
             footer_draw = ImageDraw.Draw(img)
             footer_lines = [
                 'Source: WeatherNext2 (Earth Engine)',
                 'Generated by: Jonathan Wall (@_jwall on X) | Copyright 2024-5 Google LLC',
             ]
-            footer_font = load_font(14 if img.width >= 1300 else 12, bold=True)
-            footer_stroke = 4
+            footer_font = load_font((14 if img.width >= 1300 else 12) if product_key == 'ne_snow_accum' else (15 if img.width >= 1300 else 13), bold=True)
+            footer_stroke = 4 if product_key in ('ne_snow_accum', 'ne_zoom_snow_accum') else 3
             footer_gap = 1
             line_boxes = []
             max_w = 0
@@ -3147,13 +3208,13 @@ def annotate_map_file(out_file, product_key, hour, map_region=None, low_center=N
                     footer_draw.text(
                         (line_x, line_y),
                         line,
-                        fill=(54, 54, 54),
+                        fill=((54, 54, 54) if product_key == 'ne_snow_accum' else (60, 60, 60)),
                         font=footer_font,
                         stroke_width=footer_stroke,
-                        stroke_fill=(248, 248, 248),
+                        stroke_fill=((248, 248, 248) if product_key == 'ne_snow_accum' else (246, 246, 246)),
                     )
                 except TypeError:
-                    footer_draw.text((line_x, line_y), line, fill=(54, 54, 54), font=footer_font)
+                    footer_draw.text((line_x, line_y), line, fill=((54, 54, 54) if product_key == 'ne_snow_accum' else (60, 60, 60)), font=footer_font)
                 fy += (bbox[3] - bbox[1]) + footer_gap
 
         if product_key == 'na_z500a':
@@ -3236,6 +3297,8 @@ def annotate_map_file(out_file, product_key, hour, map_region=None, low_center=N
             legend_h = NA_Z500A_LEGEND_HEIGHT
         elif product_key == 'ne_snow_accum':
             legend_h = NE_SNOW_ACCUM_LEGEND_HEIGHT
+        elif product_key == 'ne_zoom_snow_accum':
+            legend_h = NE_ZOOM_SNOW_ACCUM_LEGEND_HEIGHT
         elif product_key in (
             'nh_z500a',
             'conus_vort500',
@@ -3251,9 +3314,11 @@ def annotate_map_file(out_file, product_key, hour, map_region=None, low_center=N
             header_h = NA_Z500A_HEADER_HEIGHT
         elif product_key == 'ne_snow_accum':
             header_h = NE_SNOW_ACCUM_HEADER_HEIGHT
+        elif product_key == 'ne_zoom_snow_accum':
+            header_h = NE_ZOOM_SNOW_ACCUM_HEADER_HEIGHT
         else:
             header_h = 78
-        footer_h = 0 if product_key in ('na_z500a', 'conus_vort500', 'ne_snow_accum') else 30
+        footer_h = 0 if product_key in ('na_z500a', 'conus_vort500', 'ne_snow_accum', 'ne_zoom_snow_accum') else 30
         canvas = Image.new('RGB', (img.width, img.height + header_h + legend_h + footer_h), color=(236, 236, 236))
         canvas.paste(img, (0, header_h))
         draw = ImageDraw.Draw(canvas)
@@ -3272,6 +3337,13 @@ def annotate_map_file(out_file, product_key, hour, map_region=None, low_center=N
             subtitle_min = 12 if img.width >= 1300 else 11
             title_y = 5
             subtitle_y = 32
+        elif product_key == 'ne_zoom_snow_accum':
+            title_start = 27 if img.width >= 1300 else 24
+            title_min = 17 if img.width >= 1300 else 15
+            subtitle_start = 18 if img.width >= 1300 else 16
+            subtitle_min = 12 if img.width >= 1300 else 11
+            title_y = 6
+            subtitle_y = 35
         else:
             title_start = 30 if img.width >= 1300 else 26
             title_min = 18 if img.width >= 1300 else 16
@@ -4618,24 +4690,37 @@ def generate_snow_accum_map(img, h, running_snow_cm, region=CONUS_THUMB_REGION, 
     region_geom = ee.Geometry.Rectangle(region, geodesic=False)
     is_ne = key.startswith('ne_')
     is_ne_regional = (key == 'ne_snow_accum')
+    is_ne_zoom = (key == 'ne_zoom_snow_accum')
     state_names = NE_STATE_NAMES if is_ne else None
     land_fc = NE_STATES if is_ne else None
     work_geom = region_geom.difference(NE_EXCLUDED_STATES.geometry(), maxError=1000) if is_ne else region_geom
     ratio_scale = ee.Image.constant(float(snow_ratio) / 10.0)
     snow_total_in = running_snow_cm.multiply(ratio_scale).divide(2.54).clip(work_geom)
     snow_total_vis = snow_total_in.resample('bilinear').focalMean(1, 'circle', 'pixels')
-    snow_segments = NE_SNOW_ACCUM_STEP_SEGMENTS_IN if is_ne_regional else SNOW_ACCUM_STEP_SEGMENTS_IN
+    if is_ne_zoom and abs(NE_ZOOM_SNOW_DISPLAY_GAIN - 1.0) > 1e-6:
+        snow_total_vis = snow_total_vis.multiply(NE_ZOOM_SNOW_DISPLAY_GAIN)
+    if is_ne_regional:
+        snow_segments = NE_SNOW_ACCUM_STEP_SEGMENTS_IN
+    elif is_ne_zoom:
+        snow_segments = NE_ZOOM_SNOW_ACCUM_STEP_SEGMENTS_IN
+    else:
+        snow_segments = SNOW_ACCUM_STEP_SEGMENTS_IN
     snow_layer = snow_accum_layer(snow_total_vis, segments=snow_segments)
     snow_labels = get_snow_airport_labels(snow_total_in, key)
 
     composite = ee.ImageCollection([
         basemap_overlay(region_geom, land_color=BASEMAP_LAND_COLOR, ocean_color=BASEMAP_OCEAN_COLOR, land_fc=land_fc),
         snow_layer,
-        (ne_snow_border_overlay(region_geom) if is_ne_regional else border_overlay(include_states=True, state_names=state_names)),
+        (ne_snow_border_overlay(region_geom) if (is_ne_regional or is_ne_zoom) else border_overlay(include_states=True, state_names=state_names)),
     ]).mosaic()
 
     out_file = build_frame_path(key, h, snow_ratio=snow_ratio)
-    base_dims = SNOW_NE_DIMS if key.startswith('ne_') else SNOW_CONUS_DIMS
+    if is_ne_zoom:
+        base_dims = SNOW_NE_ZOOM_DIMS
+    elif key.startswith('ne_'):
+        base_dims = SNOW_NE_DIMS
+    else:
+        base_dims = SNOW_CONUS_DIMS
     dims = adaptive_dimensions_for_hour(region_dimensions(base_dims, region), h, long_factor=0.92, min_w=980, min_h=720)
     export_composite(composite, out_file, region, dimensions=dims)
     annotate_map_file(out_file, key, h, map_region=region, snow_labels=snow_labels, snow_ratio=snow_ratio)
