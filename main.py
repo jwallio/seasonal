@@ -81,6 +81,7 @@ CAROLINAS_SNOW_THUMB_REGION = [-85.9, 31.8, -74.5, 37.8]
 COUNTRIES = ee.FeatureCollection('USDOS/LSIB_SIMPLE/2017')
 COUNTRIES_BORDERS = ee.FeatureCollection('USDOS/LSIB/2017')
 US_STATES = ee.FeatureCollection('TIGER/2018/States')
+GLOBAL_SURFACE_WATER = ee.Image('JRC/GSW1_4/GlobalSurfaceWater').select('max_extent').unmask(0).gt(0)
 NE_STATE_NAMES = [
     'Connecticut', 'Delaware', 'Maine', 'Maryland', 'Massachusetts',
     'New Hampshire', 'New Jersey', 'New York', 'Pennsylvania',
@@ -1392,6 +1393,43 @@ def snow_land_outline_overlay(region_geom=None, state_names=None):
     country_lines = ee.Image().byte().paint(country_fc, 1, 1).selfMask().visualize(palette=['#161616'], opacity=0.95)
     state_lines = ee.Image().byte().paint(state_fc, 1, 2).selfMask().visualize(palette=['#000000'], opacity=0.99)
     return ee.ImageCollection([country_lines, state_lines]).mosaic()
+
+
+def major_surface_water_mask(region_geom=None, min_connected_px=256, expand_px=0):
+    water = GLOBAL_SURFACE_WATER
+    if region_geom is not None:
+        water = water.clip(region_geom)
+    connected = water.connectedPixelCount(2048, True)
+    major_water = water.updateMask(connected.gte(int(min_connected_px))).unmask(0).gt(0)
+    if expand_px and expand_px > 0:
+        major_water = major_water.focalMax(int(expand_px), 'square', 'pixels')
+    return major_water
+
+
+def great_lakes_outline_overlay(region_geom=None, min_connected_px=256):
+    major_water = major_surface_water_mask(region_geom, min_connected_px=min_connected_px)
+    shoreline = ee.Algorithms.CannyEdgeDetector(major_water.toFloat(), 0.99, 0.6).gt(0)
+    shoreline = shoreline.focalMax(1, 'square', 'pixels').selfMask()
+    return shoreline.visualize(palette=['#000000'], opacity=0.99)
+
+
+def mi_wi_snow_border_overlay(region_geom=None):
+    country_fc = COUNTRIES_BORDERS
+    state_fc = US_STATES
+    if region_geom is not None:
+        country_fc = country_fc.filterBounds(region_geom)
+        state_fc = state_fc.filterBounds(region_geom)
+    major_water = major_surface_water_mask(region_geom, min_connected_px=320, expand_px=2)
+    country_lines = ee.Image().byte().paint(country_fc, 1, 1).selfMask().updateMask(major_water.Not()).visualize(
+        palette=['#161616'],
+        opacity=0.95,
+    )
+    state_lines = ee.Image().byte().paint(state_fc, 1, 2).selfMask().updateMask(major_water.Not()).visualize(
+        palette=['#000000'],
+        opacity=0.99,
+    )
+    lake_lines = great_lakes_outline_overlay(region_geom, min_connected_px=320)
+    return ee.ImageCollection([country_lines, state_lines, lake_lines]).mosaic()
 
 
 def basemap_overlay(region_geom, land_color='#ececec', ocean_color='#cfe0ea', land_fc=None):
@@ -4643,7 +4681,11 @@ def generate_snow_accum_map(img, h, running_snow_cm, region=CONUS_THUMB_REGION, 
     composite = ee.ImageCollection([
         basemap_overlay(region_geom, land_color=BASEMAP_LAND_COLOR, ocean_color=BASEMAP_OCEAN_COLOR, land_fc=land_fc),
         snow_layer,
-        (ne_snow_border_overlay(region_geom) if (is_ne_regional or is_ne_zoom) else snow_land_outline_overlay(region_geom, state_names=state_names)),
+        (
+            ne_snow_border_overlay(region_geom)
+            if (is_ne_regional or is_ne_zoom)
+            else (mi_wi_snow_border_overlay(region_geom) if key == 'mi_wi_snow_accum' else snow_land_outline_overlay(region_geom, state_names=state_names))
+        ),
     ]).mosaic()
 
     out_file = build_frame_path(key, h, snow_ratio=snow_ratio)
