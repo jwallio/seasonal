@@ -15,6 +15,9 @@ on:
           - rework
           - legacy
 
+permissions:
+  contents: write
+
 jobs:
   run-default:
     uses: ./.github/workflows/update.yml
