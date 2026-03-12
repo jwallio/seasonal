@@ -1,0 +1,37 @@
+name: WeatherNext Runner
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      graphics_profile:
+        description: "[Graphics] Default graphics profile"
+        required: false
+        default: "rework"
+        type: choice
+        options:
+          - rework
+          - legacy
+
+jobs:
+  run-default:
+    uses: ./.github/workflows/update.yml
+    with:
+      product_selection: all
+      custom_products_csv: ""
+      graphics_profile: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.graphics_profile || 'rework' }}
+      preview_one_frame: ${{ github.event_name == 'push' }}
+      hour_range_preset: full
+      hours_csv: ""
+      run_init_utc: ""
+      max_dimension: "900"
+      export_workers: "3"
+      geography_detail: auto
+      snow_ratio_csv: "10"
+      climo_source: era5
+      climo_start_year: "1991"
+      climo_end_year: "2020"
+      run_history_hours: "24"
+    secrets: inherit
