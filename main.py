@@ -607,6 +607,10 @@ SNOW_ACCUM_STEP_SEGMENTS_IN = [
     (26.0, 28.0, ['#8defff']),
     (28.0, 30.0, ['#4fe4ff']),
     (30.0, 32.0, ['#00cee8']),
+    (32.0, 34.0, ['#d9fff2']),
+    (34.0, 36.0, ['#b5f7e3']),
+    (36.0, 38.0, ['#82ebd0']),
+    (38.0, 40.0, ['#45d8b3']),
 ]
 NE_SNOW_ACCUM_STEP_SEGMENTS_IN = [
     (0.1, 2.0, ['#eefbff']),
@@ -625,6 +629,10 @@ NE_SNOW_ACCUM_STEP_SEGMENTS_IN = [
     (26.0, 28.0, ['#96f6ff']),
     (28.0, 30.0, ['#47eaff']),
     (30.0, 32.0, ['#00d8f2']),
+    (32.0, 34.0, ['#dcfff4']),
+    (34.0, 36.0, ['#b7f8e5']),
+    (36.0, 38.0, ['#83edd1']),
+    (38.0, 40.0, ['#42d9b2']),
 ]
 NE_ZOOM_SNOW_ACCUM_STEP_SEGMENTS_IN = [
     (0.1, 2.0, ['#f1fbff']),
@@ -643,9 +651,14 @@ NE_ZOOM_SNOW_ACCUM_STEP_SEGMENTS_IN = [
     (26.0, 28.0, ['#9bf4ff']),
     (28.0, 30.0, ['#4ce8ff']),
     (30.0, 32.0, ['#00d8f2']),
+    (32.0, 34.0, ['#defff5']),
+    (34.0, 36.0, ['#b9f8e7']),
+    (36.0, 38.0, ['#84edd3']),
+    (38.0, 40.0, ['#40d8b2']),
 ]
-SNOW_ACCUM_MAX_IN = 32.0
+SNOW_ACCUM_MAX_IN = 40.0
 SNOW_ACCUM_OVER_COLOR = '#d60000'
+MIN_PRODUCT_LANDSCAPE_ASPECT = 1.22
 NE_SNOW_ACCUM_LEGEND_HEIGHT = 82
 NE_SNOW_ACCUM_HEADER_HEIGHT = 60
 NE_SNOW_LABEL_MIN_IN = 1.0
@@ -1365,8 +1378,19 @@ def ne_snow_border_overlay(region_geom=None):
     if region_geom is not None:
         country_fc = country_fc.filterBounds(region_geom)
         state_fc = state_fc.filterBounds(region_geom)
-    country_lines = ee.Image().byte().paint(country_fc, 1, 1).selfMask().visualize(palette=['#2f2f2f'], opacity=0.92)
-    state_lines = ee.Image().byte().paint(state_fc, 1, 2).selfMask().visualize(palette=['#5c3e28'], opacity=0.96)
+    country_lines = ee.Image().byte().paint(country_fc, 1, 1).selfMask().visualize(palette=['#121212'], opacity=0.94)
+    state_lines = ee.Image().byte().paint(state_fc, 1, 2).selfMask().visualize(palette=['#000000'], opacity=0.98)
+    return ee.ImageCollection([country_lines, state_lines]).mosaic()
+
+
+def snow_land_outline_overlay(region_geom=None, state_names=None):
+    country_fc = COUNTRIES_BORDERS
+    state_fc = US_STATES if not state_names else US_STATES.filter(ee.Filter.inList('NAME', state_names))
+    if region_geom is not None:
+        country_fc = country_fc.filterBounds(region_geom)
+        state_fc = state_fc.filterBounds(region_geom)
+    country_lines = ee.Image().byte().paint(country_fc, 1, 1).selfMask().visualize(palette=['#161616'], opacity=0.95)
+    state_lines = ee.Image().byte().paint(state_fc, 1, 2).selfMask().visualize(palette=['#000000'], opacity=0.99)
     return ee.ImageCollection([country_lines, state_lines]).mosaic()
 
 
@@ -1724,6 +1748,8 @@ def region_dimensions(base_dims, region):
     aspect = max(0.7, min(3.8, x_span / lat_span))
     height = int(round(width / aspect))
     height = max(360, min(2200, height))
+    if width / float(max(1, height)) < MIN_PRODUCT_LANDSCAPE_ASPECT:
+        height = max(360, int(round(width / MIN_PRODUCT_LANDSCAPE_ASPECT)))
     return f'{width}x{height}'
 
 
@@ -1764,9 +1790,14 @@ def is_long_range_hour(hour):
 
 
 def adaptive_dimensions_for_hour(dimensions, hour, long_factor=0.90, min_w=500, min_h=400):
-    if not is_long_range_hour(hour):
-        return dimensions
-    return scale_dimensions(dimensions, factor=long_factor, min_w=min_w, min_h=min_h)
+    if isinstance(dimensions, str) and 'x' in dimensions:
+        w, h = parse_dimensions(dimensions)
+        target_h = h
+        if w / float(max(1, h)) < MIN_PRODUCT_LANDSCAPE_ASPECT:
+            target_h = max(min_h, int(round(w / MIN_PRODUCT_LANDSCAPE_ASPECT)))
+        if target_h != h:
+            return f'{max(min_w, w)}x{target_h}'
+    return dimensions
 
 
 def adaptive_interval_for_hour(base_interval, hour, long_interval=None, multiplier=1.3):
@@ -2698,7 +2729,7 @@ def _draw_legend(draw, product_key, width, y, snow_ratio=10):
         draw.text((bar_x, y + 2), f'Accumulated Snowfall Total (in, {int(snow_ratio)}:1 ratio)', fill=(22, 22, 22), font=label_font)
         snow_segments = [(low, high, palette) for low, high, palette in SNOW_ACCUM_STEP_SEGMENTS_IN]
         _draw_segmented_gradient_bar(draw, bar_x, bar_y, bar_w, bar_h, snow_segments, 0.1, SNOW_ACCUM_MAX_IN)
-        _draw_ticks(draw, bar_x, bar_y, bar_w, bar_h, [2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32], 0.1, SNOW_ACCUM_MAX_IN, tick_font)
+        _draw_ticks(draw, bar_x, bar_y, bar_w, bar_h, list(range(2, int(SNOW_ACCUM_MAX_IN) + 1, 2)), 0.1, SNOW_ACCUM_MAX_IN, tick_font)
         return
 
     if product_key == 'conus_mslp_ptype':
@@ -4612,7 +4643,7 @@ def generate_snow_accum_map(img, h, running_snow_cm, region=CONUS_THUMB_REGION, 
     composite = ee.ImageCollection([
         basemap_overlay(region_geom, land_color=BASEMAP_LAND_COLOR, ocean_color=BASEMAP_OCEAN_COLOR, land_fc=land_fc),
         snow_layer,
-        (ne_snow_border_overlay(region_geom) if (is_ne_regional or is_ne_zoom) else border_overlay(include_states=True, state_names=state_names)),
+        (ne_snow_border_overlay(region_geom) if (is_ne_regional or is_ne_zoom) else snow_land_outline_overlay(region_geom, state_names=state_names)),
     ]).mosaic()
 
     out_file = build_frame_path(key, h, snow_ratio=snow_ratio)

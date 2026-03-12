@@ -1,9 +1,6 @@
-name: WeatherNext Auto-Runner
+name: WeatherNext Runner Custom
 
 on:
-  push:
-    branches:
-      - main
   workflow_dispatch:
     inputs:
       product_selection:
@@ -121,6 +118,68 @@ on:
         required: false
         default: "24"
         type: string
+  workflow_call:
+    inputs:
+      product_selection:
+        required: false
+        default: "flagship"
+        type: string
+      custom_products_csv:
+        required: false
+        default: "na_z500a,conus_mslp_ptype,conus_vort500,ne_zoom_snow_accum,mi_wi_snow_accum,carolinas_snow_accum"
+        type: string
+      graphics_profile:
+        required: false
+        default: "rework"
+        type: string
+      preview_one_frame:
+        required: false
+        default: false
+        type: boolean
+      hour_range_preset:
+        required: false
+        default: "full"
+        type: string
+      hours_csv:
+        required: false
+        default: ""
+        type: string
+      run_init_utc:
+        required: false
+        default: ""
+        type: string
+      max_dimension:
+        required: false
+        default: "900"
+        type: string
+      export_workers:
+        required: false
+        default: "3"
+        type: string
+      geography_detail:
+        required: false
+        default: "auto"
+        type: string
+      snow_ratio_csv:
+        required: false
+        default: "10,12,15,20"
+        type: string
+      climo_source:
+        required: false
+        default: "era5"
+        type: string
+      climo_start_year:
+        required: false
+        default: "1991"
+        type: string
+      climo_end_year:
+        required: false
+        default: "2020"
+        type: string
+      run_history_hours:
+        required: false
+        default: "24"
+        type: string
   
 concurrency:
   group: wn2-pages
@@ -168,15 +227,9 @@ jobs:
       - name: Resolve Product Selection
         shell: bash
         run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            selection="${{ github.event.inputs.product_selection }}"
-            custom_csv="${{ github.event.inputs.custom_products_csv }}"
-            custom_snow_ratios="${{ github.event.inputs.snow_ratio_csv || '10,12,15,20' }}"
-          else
-            selection="all"
-            custom_csv=""
-            custom_snow_ratios="10"
-          fi
+          selection="${{ inputs.product_selection }}"
+          custom_csv="${{ inputs.custom_products_csv }}"
+          custom_snow_ratios="${{ inputs.snow_ratio_csv || '10,12,15,20' }}"
 
           resolved_mode="all"
           resolved_products=""
@@ -246,18 +299,18 @@ jobs:
         env:
           EE_KEY: ${{ secrets.EE_KEY }}
           EE_PROJECT: ${{ secrets.EE_PROJECT }}
-          HOURS_MAX: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.hour_range_preset != 'full' && github.event.inputs.hour_range_preset || '' }}
-          HOURS_LIMIT: ${{ github.event_name == 'push' && '1' || (github.event_name == 'workflow_dispatch' && github.event.inputs.preview_one_frame == 'true' && '1' || '') }}
-          HOURS_CSV: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.hours_csv || '' }}
-          RUN_INIT_UTC: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.run_init_utc || '' }}
-          RUN_HISTORY_HOURS: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.run_history_hours || '24' }}
-          WN2_MAX_DIMENSION: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.max_dimension || '900' }}
-          WN2_GEOGRAPHY_DETAIL: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.geography_detail || 'auto' }}
-          WN2_CLIMO_START_YEAR: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.climo_start_year || '' }}
-          WN2_CLIMO_END_YEAR: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.climo_end_year || '' }}
-          WN2_CLIMO_SOURCE: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.climo_source || 'era5' }}
-          EXPORT_WORKERS: ${{ matrix.phase == 'core' && (github.event_name == 'workflow_dispatch' && github.event.inputs.export_workers || '2') || '1' }}
-          WN2_NH_RENDER_MODE: ${{ github.event_name == 'workflow_dispatch' && (github.event.inputs.graphics_profile == 'legacy' && 'legacy' || 'polar') || 'polar' }}
+          HOURS_MAX: ${{ inputs.hour_range_preset != 'full' && inputs.hour_range_preset || '' }}
+          HOURS_LIMIT: ${{ inputs.preview_one_frame && '1' || '' }}
+          HOURS_CSV: ${{ inputs.hours_csv || '' }}
+          RUN_INIT_UTC: ${{ inputs.run_init_utc || '' }}
+          RUN_HISTORY_HOURS: ${{ inputs.run_history_hours || '24' }}
+          WN2_MAX_DIMENSION: ${{ inputs.max_dimension || '900' }}
+          WN2_GEOGRAPHY_DETAIL: ${{ inputs.geography_detail || 'auto' }}
+          WN2_CLIMO_START_YEAR: ${{ inputs.climo_start_year || '' }}
+          WN2_CLIMO_END_YEAR: ${{ inputs.climo_end_year || '' }}
+          WN2_CLIMO_SOURCE: ${{ inputs.climo_source || 'era5' }}
+          EXPORT_WORKERS: ${{ matrix.phase == 'core' && (inputs.export_workers || '2') || '1' }}
+          WN2_NH_RENDER_MODE: ${{ inputs.graphics_profile == 'legacy' && 'legacy' || 'polar' }}
           WN2_HOUR_SHARD_INDEX: ${{ matrix.shard_index }}
           WN2_HOUR_SHARD_TOTAL: ${{ matrix.shard_total }}
           WN2_RESUME_EXISTING: "1"
@@ -279,7 +332,7 @@ jobs:
 
       - name: Smoke Test Outputs (Shard)
         env:
-          WN2_MAX_DIMENSION: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.max_dimension || '900' }}
+          WN2_MAX_DIMENSION: ${{ inputs.max_dimension || '900' }}
           WN2_SMOKE_ALLOW_EMPTY: "1"
         run: python tests/smoke_outputs.py
 
@@ -322,15 +375,9 @@ jobs:
       - name: Resolve Product Selection
         shell: bash
         run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            selection="${{ github.event.inputs.product_selection }}"
-            custom_csv="${{ github.event.inputs.custom_products_csv }}"
-            custom_snow_ratios="${{ github.event.inputs.snow_ratio_csv || '10,12,15,20' }}"
-          else
-            selection="all"
-            custom_csv=""
-            custom_snow_ratios="10"
-          fi
+          selection="${{ inputs.product_selection }}"
+          custom_csv="${{ inputs.custom_products_csv }}"
+          custom_snow_ratios="${{ inputs.snow_ratio_csv || '10,12,15,20' }}"
 
           resolved_mode="all"
           resolved_products=""
@@ -449,18 +496,18 @@ jobs:
         env:
           EE_KEY: ${{ secrets.EE_KEY }}
           EE_PROJECT: ${{ secrets.EE_PROJECT }}
-          HOURS_MAX: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.hour_range_preset != 'full' && github.event.inputs.hour_range_preset || '' }}
-          HOURS_LIMIT: ${{ github.event_name == 'push' && '1' || (github.event_name == 'workflow_dispatch' && github.event.inputs.preview_one_frame == 'true' && '1' || '') }}
-          HOURS_CSV: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.hours_csv || '' }}
-          RUN_INIT_UTC: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.run_init_utc || '' }}
-          RUN_HISTORY_HOURS: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.run_history_hours || '24' }}
-          WN2_MAX_DIMENSION: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.max_dimension || '900' }}
-          WN2_GEOGRAPHY_DETAIL: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.geography_detail || 'auto' }}
-          WN2_CLIMO_START_YEAR: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.climo_start_year || '' }}
-          WN2_CLIMO_END_YEAR: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.climo_end_year || '' }}
-          WN2_CLIMO_SOURCE: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.climo_source || 'era5' }}
-          EXPORT_WORKERS: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.export_workers || '2' }}
-          WN2_NH_RENDER_MODE: ${{ github.event_name == 'workflow_dispatch' && (github.event.inputs.graphics_profile == 'legacy' && 'legacy' || 'polar') || 'polar' }}
+          HOURS_MAX: ${{ inputs.hour_range_preset != 'full' && inputs.hour_range_preset || '' }}
+          HOURS_LIMIT: ${{ inputs.preview_one_frame && '1' || '' }}
+          HOURS_CSV: ${{ inputs.hours_csv || '' }}
+          RUN_INIT_UTC: ${{ inputs.run_init_utc || '' }}
+          RUN_HISTORY_HOURS: ${{ inputs.run_history_hours || '24' }}
+          WN2_MAX_DIMENSION: ${{ inputs.max_dimension || '900' }}
+          WN2_GEOGRAPHY_DETAIL: ${{ inputs.geography_detail || 'auto' }}
+          WN2_CLIMO_START_YEAR: ${{ inputs.climo_start_year || '' }}
+          WN2_CLIMO_END_YEAR: ${{ inputs.climo_end_year || '' }}
+          WN2_CLIMO_SOURCE: ${{ inputs.climo_source || 'era5' }}
+          EXPORT_WORKERS: ${{ inputs.export_workers || '2' }}
+          WN2_NH_RENDER_MODE: ${{ inputs.graphics_profile == 'legacy' && 'legacy' || 'polar' }}
           WN2_RESUME_EXISTING: "1"
           WN2_SKIP_CLEANUP_RUN_DIR: "1"
           WN2_RECONCILE_ONLY: "1"
@@ -480,7 +527,7 @@ jobs:
 
       - name: Smoke Test Outputs (Reconcile)
         env:
-          WN2_MAX_DIMENSION: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.max_dimension || '900' }}
+          WN2_MAX_DIMENSION: ${{ inputs.max_dimension || '900' }}
         run: python tests/smoke_outputs.py
 
       - name: Report generator failure (reconcile)
