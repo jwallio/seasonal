@@ -24,8 +24,16 @@ on:
       custom_products_csv:
         description: "[Products] Only used when Product Set = custom_csv"
         required: false
-        default: "na_z500a,conus_mslp_ptype,conus_vort500,ne_snow_accum,ne_zoom_snow_accum"
+        default: "na_z500a,conus_mslp_ptype,conus_vort500,ne_zoom_snow_accum,mi_wi_snow_accum,carolinas_snow_accum"
         type: string
+      graphics_profile:
+        description: "[Graphics] Primary graphics profile"
+        required: false
+        default: "rework"
+        type: choice
+        options:
+          - rework
+          - legacy
       preview_one_frame:
         description: "[Time Range] Generate only one frame per selected product"
         required: false
@@ -108,14 +116,6 @@ on:
         required: false
         default: "2020"
         type: string
-      nh_render_mode:
-        description: "[Advanced] NH rendering mode"
-        required: false
-        default: "legacy"
-        type: choice
-        options:
-          - legacy
-          - polar
       run_history_hours:
         description: "[Advanced] Run history retention window in hours"
         required: false
@@ -187,11 +187,11 @@ jobs:
               ;;
             flagship)
               resolved_mode="custom"
-              resolved_products="na_z500a,conus_mslp_ptype,conus_vort500,ne_snow_accum,ne_zoom_snow_accum"
+              resolved_products="na_z500a,conus_mslp_ptype,conus_vort500,ne_zoom_snow_accum,mi_wi_snow_accum,carolinas_snow_accum"
               ;;
             winter_weather)
               resolved_mode="custom"
-              resolved_products="conus_mslp_ptype,ne_mslp_ptype,conus_snow_accum,ne_snow_accum,ne_zoom_snow_accum"
+              resolved_products="conus_mslp_ptype,ne_mslp_ptype,conus_snow_accum,ne_snow_accum,ne_zoom_snow_accum,mi_wi_snow_accum,carolinas_snow_accum"
               ;;
             conus_core)
               resolved_mode="custom"
@@ -199,7 +199,7 @@ jobs:
               ;;
             regional_zoom)
               resolved_mode="custom"
-              resolved_products="na_z500a,ne_mslp_ptype,ne_snow_accum,ne_zoom_snow_accum"
+              resolved_products="na_z500a,ne_mslp_ptype,ne_zoom_snow_accum,mi_wi_snow_accum,carolinas_snow_accum"
               ;;
             z500_anomalies)
               resolved_mode="custom"
@@ -211,7 +211,7 @@ jobs:
               ;;
             snowfall)
               resolved_mode="custom"
-              resolved_products="conus_snow_accum,ne_snow_accum,ne_zoom_snow_accum"
+              resolved_products="conus_snow_accum,ne_snow_accum,ne_zoom_snow_accum,mi_wi_snow_accum,carolinas_snow_accum"
               ;;
             custom_csv)
               resolved_mode="custom"
@@ -257,7 +257,7 @@ jobs:
           WN2_CLIMO_END_YEAR: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.climo_end_year || '' }}
           WN2_CLIMO_SOURCE: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.climo_source || 'era5' }}
           EXPORT_WORKERS: ${{ matrix.phase == 'core' && (github.event_name == 'workflow_dispatch' && github.event.inputs.export_workers || '2') || '1' }}
-          WN2_NH_RENDER_MODE: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.nh_render_mode || 'legacy' }}
+          WN2_NH_RENDER_MODE: ${{ github.event_name == 'workflow_dispatch' && (github.event.inputs.graphics_profile == 'legacy' && 'legacy' || 'polar') || 'polar' }}
           WN2_HOUR_SHARD_INDEX: ${{ matrix.shard_index }}
           WN2_HOUR_SHARD_TOTAL: ${{ matrix.shard_total }}
           WN2_RESUME_EXISTING: "1"
@@ -273,6 +273,8 @@ jobs:
           WN2_RUN_CONUS_SNOW_ACCUM: ${{ matrix.phase == 'core' && '1' || '' }}
           WN2_RUN_NE_SNOW_ACCUM: ${{ matrix.phase == 'core' && '1' || '' }}
           WN2_RUN_NE_ZOOM_SNOW_ACCUM: ${{ matrix.phase == 'core' && '1' || '' }}
+          WN2_RUN_MI_WI_SNOW_ACCUM: ${{ matrix.phase == 'core' && '1' || '' }}
+          WN2_RUN_CAROLINAS_SNOW_ACCUM: ${{ matrix.phase == 'core' && '1' || '' }}
         run: python main.py
 
       - name: Smoke Test Outputs (Shard)
@@ -339,11 +341,11 @@ jobs:
               ;;
             flagship)
               resolved_mode="custom"
-              resolved_products="na_z500a,conus_mslp_ptype,conus_vort500,ne_snow_accum,ne_zoom_snow_accum"
+              resolved_products="na_z500a,conus_mslp_ptype,conus_vort500,ne_zoom_snow_accum,mi_wi_snow_accum,carolinas_snow_accum"
               ;;
             winter_weather)
               resolved_mode="custom"
-              resolved_products="conus_mslp_ptype,ne_mslp_ptype,conus_snow_accum,ne_snow_accum,ne_zoom_snow_accum"
+              resolved_products="conus_mslp_ptype,ne_mslp_ptype,conus_snow_accum,ne_snow_accum,ne_zoom_snow_accum,mi_wi_snow_accum,carolinas_snow_accum"
               ;;
             conus_core)
               resolved_mode="custom"
@@ -351,7 +353,7 @@ jobs:
               ;;
             regional_zoom)
               resolved_mode="custom"
-              resolved_products="na_z500a,ne_mslp_ptype,ne_snow_accum,ne_zoom_snow_accum"
+              resolved_products="na_z500a,ne_mslp_ptype,ne_zoom_snow_accum,mi_wi_snow_accum,carolinas_snow_accum"
               ;;
             z500_anomalies)
               resolved_mode="custom"
@@ -363,7 +365,7 @@ jobs:
               ;;
             snowfall)
               resolved_mode="custom"
-              resolved_products="conus_snow_accum,ne_snow_accum,ne_zoom_snow_accum"
+              resolved_products="conus_snow_accum,ne_snow_accum,ne_zoom_snow_accum,mi_wi_snow_accum,carolinas_snow_accum"
               ;;
             custom_csv)
               resolved_mode="custom"
@@ -458,7 +460,7 @@ jobs:
           WN2_CLIMO_END_YEAR: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.climo_end_year || '' }}
           WN2_CLIMO_SOURCE: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.climo_source || 'era5' }}
           EXPORT_WORKERS: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.export_workers || '2' }}
-          WN2_NH_RENDER_MODE: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.nh_render_mode || 'legacy' }}
+          WN2_NH_RENDER_MODE: ${{ github.event_name == 'workflow_dispatch' && (github.event.inputs.graphics_profile == 'legacy' && 'legacy' || 'polar') || 'polar' }}
           WN2_RESUME_EXISTING: "1"
           WN2_SKIP_CLEANUP_RUN_DIR: "1"
           WN2_RECONCILE_ONLY: "1"
@@ -472,6 +474,8 @@ jobs:
           WN2_RUN_CONUS_SNOW_ACCUM: "1"
           WN2_RUN_NE_SNOW_ACCUM: "1"
           WN2_RUN_NE_ZOOM_SNOW_ACCUM: "1"
+          WN2_RUN_MI_WI_SNOW_ACCUM: "1"
+          WN2_RUN_CAROLINAS_SNOW_ACCUM: "1"
         run: python main.py
 
       - name: Smoke Test Outputs (Reconcile)

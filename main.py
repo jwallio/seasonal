@@ -74,6 +74,8 @@ CONUS_THUMB_REGION = [-127.0, 22.0, -65.0, 50.0]
 NE_THUMB_REGION = [-82.5, 39.2, -66.0, 47.6]
 # New England zoom snowfall domain: eastern NY through New England, tuned for a tighter regional view
 NE_ZOOM_SNOW_THUMB_REGION = [-76.8, 39.7, -66.4, 45.2]
+MI_WI_SNOW_THUMB_REGION = [-93.8, 41.2, -82.1, 49.3]
+CAROLINAS_SNOW_THUMB_REGION = [-85.9, 31.8, -74.5, 37.8]
 
 # Boundaries overlays
 COUNTRIES = ee.FeatureCollection('USDOS/LSIB_SIMPLE/2017')
@@ -180,6 +182,36 @@ NE_ZOOM_SNOW_LABEL_AIRPORTS = [
     ('BGR', -68.8281, 44.8074),
     ('HYA', -70.2804, 41.6693),
 ]
+MI_WI_SNOW_LABEL_AIRPORTS = [
+    ('MSN', -89.3375, 43.1399),
+    ('MKE', -87.8966, 42.9472),
+    ('GRB', -88.1308, 44.4851),
+    ('ATW', -88.5191, 44.2581),
+    ('RHI', -89.4675, 45.6312),
+    ('CMX', -88.4891, 47.1684),
+    ('ESC', -87.0937, 45.7227),
+    ('MQT', -87.3954, 46.3536),
+    ('TVC', -85.5822, 44.7414),
+    ('PLN', -84.7967, 45.5709),
+    ('APN', -83.5603, 45.0781),
+    ('GRR', -85.5228, 42.8808),
+    ('LAN', -84.5874, 42.7787),
+    ('DTW', -83.3534, 42.2162),
+]
+CAROLINAS_SNOW_LABEL_AIRPORTS = [
+    ('CLT', -80.9431, 35.2140),
+    ('AVL', -82.5418, 35.4362),
+    ('HKY', -81.3896, 35.7411),
+    ('GSO', -79.9373, 36.0978),
+    ('RDU', -78.7875, 35.8776),
+    ('FAY', -78.8803, 34.9912),
+    ('ILM', -77.9026, 34.2706),
+    ('MYR', -78.9283, 33.6797),
+    ('CRE', -78.7239, 33.8117),
+    ('CAE', -81.1195, 33.9388),
+    ('GSP', -82.2189, 34.8956),
+    ('CHS', -80.0405, 32.8986),
+]
 
 
 def _airport_features(airports):
@@ -191,6 +223,8 @@ def _airport_features(airports):
 CONUS_SNOW_AIRPORT_FC, CONUS_SNOW_AIRPORT_LOOKUP = _airport_features(CONUS_SNOW_LABEL_AIRPORTS)
 NE_SNOW_AIRPORT_FC, NE_SNOW_AIRPORT_LOOKUP = _airport_features(NE_SNOW_LABEL_AIRPORTS)
 NE_ZOOM_SNOW_AIRPORT_FC, NE_ZOOM_SNOW_AIRPORT_LOOKUP = _airport_features(NE_ZOOM_SNOW_LABEL_AIRPORTS)
+MI_WI_SNOW_AIRPORT_FC, MI_WI_SNOW_AIRPORT_LOOKUP = _airport_features(MI_WI_SNOW_LABEL_AIRPORTS)
+CAROLINAS_SNOW_AIRPORT_FC, CAROLINAS_SNOW_AIRPORT_LOOKUP = _airport_features(CAROLINAS_SNOW_LABEL_AIRPORTS)
 
 
 def ts():
@@ -231,6 +265,8 @@ run_conus_vort500_env = os.environ.get('WN2_RUN_CONUS_VORT500')
 run_conus_snow_accum_env = os.environ.get('WN2_RUN_CONUS_SNOW_ACCUM')
 run_ne_snow_accum_env = os.environ.get('WN2_RUN_NE_SNOW_ACCUM')
 run_ne_zoom_snow_accum_env = os.environ.get('WN2_RUN_NE_ZOOM_SNOW_ACCUM')
+run_mi_wi_snow_accum_env = os.environ.get('WN2_RUN_MI_WI_SNOW_ACCUM')
+run_carolinas_snow_accum_env = os.environ.get('WN2_RUN_CAROLINAS_SNOW_ACCUM')
 run_conus_t2m_env = os.environ.get('WN2_RUN_CONUS_T2M')
 run_conus_t2m_anom_env = os.environ.get('WN2_RUN_CONUS_T2M_ANOM')
 selected_products_csv_env = os.environ.get('WN2_SELECTED_PRODUCTS')
@@ -621,6 +657,7 @@ NE_ZOOM_SNOW_LABEL_MIN_IN = 1.0
 NE_ZOOM_SNOW_LABEL_MAX_COUNT = 12
 NE_ZOOM_SNOW_LABEL_COLLISION_PAD = 3
 NE_ZOOM_SNOW_DISPLAY_GAIN = 1.08
+SNOW_REWORK_REGIONAL_KEYS = {'ne_zoom_snow_accum', 'mi_wi_snow_accum', 'carolinas_snow_accum'}
 T2M_F_PALETTE = [
     '#5a168a', '#3344b2', '#2f75d6', '#55a7eb', '#8fd1f4', '#cce8fa',
     '#f1f3ef',
@@ -680,8 +717,16 @@ PRODUCT_OPTIONS = [
     ('conus_snow_accum', 'CONUS Snowfall Accumulation', 'conus_snow_accum_*.jpg', run_conus_snow_accum_env),
     ('ne_snow_accum', 'Northeast Snowfall Accumulation', 'ne_snow_accum_*.jpg', run_ne_snow_accum_env),
     ('ne_zoom_snow_accum', 'New England Zoom Snowfall Accumulation', 'ne_zoom_snow_accum_*.jpg', run_ne_zoom_snow_accum_env),
+    ('mi_wi_snow_accum', 'Michigan/Wisconsin Snowfall Accumulation', 'mi_wi_snow_accum_*.jpg', run_mi_wi_snow_accum_env),
+    ('carolinas_snow_accum', 'Carolinas Snowfall Accumulation', 'carolinas_snow_accum_*.jpg', run_carolinas_snow_accum_env),
 ]
-SNOW_PRODUCT_KEYS = {'conus_snow_accum', 'ne_snow_accum', 'ne_zoom_snow_accum'}
+SNOW_PRODUCT_KEYS = {
+    'conus_snow_accum',
+    'ne_snow_accum',
+    'ne_zoom_snow_accum',
+    'mi_wi_snow_accum',
+    'carolinas_snow_accum',
+}
 PRODUCT_MODE = (str(product_mode_env or '').strip().lower() or 'all')
 USE_CUSTOM_PRODUCT_SELECTION = (event_name == 'workflow_dispatch' and PRODUCT_MODE == 'custom')
 SELECTED_PRODUCT_KEYS = set(_parse_product_keys_csv(selected_products_csv_env))
@@ -736,6 +781,8 @@ def cleanup_old_products():
         'conus_snow_accum_*.jpg',
         'ne_snow_accum_*.jpg',
         'ne_zoom_snow_accum_*.jpg',
+        'mi_wi_snow_accum_*.jpg',
+        'carolinas_snow_accum_*.jpg',
     ]
     removed = 0
     for pattern in stale_patterns:
@@ -757,6 +804,8 @@ def cleanup_current_run_products():
         'conus_snow_accum_*.jpg',
         'ne_snow_accum_*.jpg',
         'ne_zoom_snow_accum_*.jpg',
+        'mi_wi_snow_accum_*.jpg',
+        'carolinas_snow_accum_*.jpg',
     ]
     removed = 0
     for pattern in run_patterns:
@@ -2640,11 +2689,11 @@ def _draw_legend(draw, product_key, width, y, snow_ratio=10):
         _draw_ne_snow_bar_legend(draw, width, y, snow_ratio=snow_ratio)
         return
 
-    if product_key == 'ne_zoom_snow_accum':
+    if product_key in SNOW_REWORK_REGIONAL_KEYS:
         _draw_ne_zoom_snow_bar_legend(draw, width, y, snow_ratio=snow_ratio)
         return
 
-    if product_key in ('conus_snow_accum', 'ne_snow_accum', 'ne_zoom_snow_accum'):
+    if product_key in ('conus_snow_accum', 'ne_snow_accum') or product_key in SNOW_REWORK_REGIONAL_KEYS:
         _draw_panel(draw, bar_x - 14, y - 4, bar_x + bar_w + 14, y + 72)
         draw.text((bar_x, y + 2), f'Accumulated Snowfall Total (in, {int(snow_ratio)}:1 ratio)', fill=(22, 22, 22), font=label_font)
         snow_segments = [(low, high, palette) for low, high, palette in SNOW_ACCUM_STEP_SEGMENTS_IN]
@@ -2865,7 +2914,7 @@ def _draw_snow_labels(draw, width, height, map_region, snow_labels, product_key)
             (6, 2),
             (-6, 2),
         ]
-    elif product_key == 'ne_zoom_snow_accum':
+    elif product_key in SNOW_REWORK_REGIONAL_KEYS:
         snow_font = load_font(21 if width >= 1300 else 19, bold=True)
         stroke_width = 3
         safe_pad = 8
@@ -2966,10 +3015,13 @@ def annotate_map_file(out_file, product_key, hour, map_region=None, low_center=N
         'conus_snow_accum': f'WN2 0.25 deg | Accumulated Snowfall (in, {int(snow_ratio)}:1) | CONUS',
         'ne_snow_accum': f'WN2 0.25 deg | Accumulated Snowfall (in, {int(snow_ratio)}:1) | Northeast',
         'ne_zoom_snow_accum': f'WN2 0.25 deg | Accumulated Snowfall (in, {int(snow_ratio)}:1) | New England Zoom',
+        'mi_wi_snow_accum': f'WN2 0.25 deg | Accumulated Snowfall (in, {int(snow_ratio)}:1) | Michigan/Wisconsin',
+        'carolinas_snow_accum': f'WN2 0.25 deg | Accumulated Snowfall (in, {int(snow_ratio)}:1) | Carolinas',
     }
     title = product_titles.get(product_key, product_key)
     init_text, valid_text = format_map_times(hour)
     subtitle = f'Init: {init_text} | Hour: [{hour:03d}] | Valid: {valid_text}'
+    is_rework_snow = product_key in SNOW_REWORK_REGIONAL_KEYS
 
     with Image.open(out_file) as src:
         img = src.convert('RGB')
@@ -3039,7 +3091,7 @@ def annotate_map_file(out_file, product_key, hour, map_region=None, low_center=N
 
         if map_region is not None and snow_labels:
             snow_draw = ImageDraw.Draw(img)
-            if product_key in ('ne_snow_accum', 'ne_zoom_snow_accum'):
+            if product_key == 'ne_snow_accum' or is_rework_snow:
                 _draw_snow_labels(snow_draw, img.width, img.height, map_region, snow_labels, product_key)
             else:
                 snow_font = load_font(20 if img.width >= 1300 else 16, bold=True)
@@ -3077,14 +3129,14 @@ def annotate_map_file(out_file, product_key, hour, map_region=None, low_center=N
                         snow_draw.text((tx, ty), text, fill=(32, 32, 32), font=snow_font)
                     placed.append(rect)
 
-        if product_key in ('ne_snow_accum', 'ne_zoom_snow_accum'):
+        if product_key == 'ne_snow_accum' or is_rework_snow:
             footer_draw = ImageDraw.Draw(img)
             footer_lines = [
                 'Source: WeatherNext2 (Earth Engine)',
                 'Generated by: Jonathan Wall (@_jwall on X) | Copyright 2024-5 Google LLC',
             ]
             footer_font = load_font((14 if img.width >= 1300 else 12) if product_key == 'ne_snow_accum' else (15 if img.width >= 1300 else 13), bold=True)
-            footer_stroke = 4 if product_key in ('ne_snow_accum', 'ne_zoom_snow_accum') else 3
+            footer_stroke = 4 if (product_key == 'ne_snow_accum' or is_rework_snow) else 3
             footer_gap = 1
             line_boxes = []
             max_w = 0
@@ -3193,7 +3245,7 @@ def annotate_map_file(out_file, product_key, hour, map_region=None, low_center=N
             legend_h = NA_Z500A_LEGEND_HEIGHT
         elif product_key == 'ne_snow_accum':
             legend_h = NE_SNOW_ACCUM_LEGEND_HEIGHT
-        elif product_key == 'ne_zoom_snow_accum':
+        elif is_rework_snow:
             legend_h = NE_ZOOM_SNOW_ACCUM_LEGEND_HEIGHT
         elif product_key in (
             'nh_z500a',
@@ -3202,7 +3254,6 @@ def annotate_map_file(out_file, product_key, hour, map_region=None, low_center=N
             'conus_t2m_anom',
             'conus_snow_accum',
             'ne_snow_accum',
-            'ne_zoom_snow_accum',
         ):
             legend_h = 96
 
@@ -3210,11 +3261,11 @@ def annotate_map_file(out_file, product_key, hour, map_region=None, low_center=N
             header_h = NA_Z500A_HEADER_HEIGHT
         elif product_key == 'ne_snow_accum':
             header_h = NE_SNOW_ACCUM_HEADER_HEIGHT
-        elif product_key == 'ne_zoom_snow_accum':
+        elif is_rework_snow:
             header_h = NE_ZOOM_SNOW_ACCUM_HEADER_HEIGHT
         else:
             header_h = 78
-        footer_h = 0 if product_key in ('na_z500a', 'conus_vort500', 'ne_snow_accum', 'ne_zoom_snow_accum') else 30
+        footer_h = 0 if product_key in ('na_z500a', 'conus_vort500', 'ne_snow_accum') or is_rework_snow else 30
         canvas = Image.new('RGB', (img.width, img.height + header_h + legend_h + footer_h), color=(236, 236, 236))
         canvas.paste(img, (0, header_h))
         draw = ImageDraw.Draw(canvas)
@@ -3233,7 +3284,7 @@ def annotate_map_file(out_file, product_key, hour, map_region=None, low_center=N
             subtitle_min = 12 if img.width >= 1300 else 11
             title_y = 5
             subtitle_y = 32
-        elif product_key == 'ne_zoom_snow_accum':
+        elif is_rework_snow:
             title_start = 27 if img.width >= 1300 else 24
             title_min = 17 if img.width >= 1300 else 15
             subtitle_start = 18 if img.width >= 1300 else 16
@@ -4316,6 +4367,12 @@ def get_snow_airport_labels(snow_total_in, key):
     if key == 'ne_zoom_snow_accum':
         airport_fc = NE_ZOOM_SNOW_AIRPORT_FC
         lookup = NE_ZOOM_SNOW_AIRPORT_LOOKUP
+    elif key == 'mi_wi_snow_accum':
+        airport_fc = MI_WI_SNOW_AIRPORT_FC
+        lookup = MI_WI_SNOW_AIRPORT_LOOKUP
+    elif key == 'carolinas_snow_accum':
+        airport_fc = CAROLINAS_SNOW_AIRPORT_FC
+        lookup = CAROLINAS_SNOW_AIRPORT_LOOKUP
     elif key.startswith('ne_'):
         airport_fc = NE_SNOW_AIRPORT_FC
         lookup = NE_SNOW_AIRPORT_LOOKUP
@@ -4533,6 +4590,7 @@ def generate_snow_accum_map(img, h, running_snow_cm, region=CONUS_THUMB_REGION, 
     region_geom = ee.Geometry.Rectangle(region, geodesic=False)
     is_ne = key.startswith('ne_')
     is_ne_regional = (key == 'ne_snow_accum')
+    is_rework_regional = (key in SNOW_REWORK_REGIONAL_KEYS)
     is_ne_zoom = (key == 'ne_zoom_snow_accum')
     state_names = NE_STATE_NAMES if is_ne else None
     land_fc = NE_STATES if is_ne else None
@@ -4540,11 +4598,11 @@ def generate_snow_accum_map(img, h, running_snow_cm, region=CONUS_THUMB_REGION, 
     ratio_scale = ee.Image.constant(float(snow_ratio) / 10.0)
     snow_total_in = running_snow_cm.multiply(ratio_scale).divide(2.54).clip(work_geom)
     snow_total_vis = snow_total_in.resample('bilinear').focalMean(1, 'circle', 'pixels')
-    if is_ne_zoom and abs(NE_ZOOM_SNOW_DISPLAY_GAIN - 1.0) > 1e-6:
+    if is_rework_regional and abs(NE_ZOOM_SNOW_DISPLAY_GAIN - 1.0) > 1e-6:
         snow_total_vis = snow_total_vis.multiply(NE_ZOOM_SNOW_DISPLAY_GAIN)
     if is_ne_regional:
         snow_segments = NE_SNOW_ACCUM_STEP_SEGMENTS_IN
-    elif is_ne_zoom:
+    elif is_rework_regional:
         snow_segments = NE_ZOOM_SNOW_ACCUM_STEP_SEGMENTS_IN
     else:
         snow_segments = SNOW_ACCUM_STEP_SEGMENTS_IN
@@ -4558,7 +4616,7 @@ def generate_snow_accum_map(img, h, running_snow_cm, region=CONUS_THUMB_REGION, 
     ]).mosaic()
 
     out_file = build_frame_path(key, h, snow_ratio=snow_ratio)
-    if is_ne_zoom:
+    if is_rework_regional:
         base_dims = SNOW_NE_ZOOM_DIMS
     elif key.startswith('ne_'):
         base_dims = SNOW_NE_DIMS
@@ -5166,6 +5224,20 @@ if not RECONCILE_ONLY and non_z500_enabled:
                     task_specs.append((f'ne_zoom_snow_accum_r{ratio:02d}', 'ne_zoom_snow_accum', ratio))
                 else:
                     skipped_existing_exports += 1
+        if 'mi_wi_snow_accum' in enabled_keys:
+            for ratio in SNOW_RATIOS:
+                out_file = build_frame_path('mi_wi_snow_accum', h, snow_ratio=ratio)
+                if should_render_frame(out_file):
+                    task_specs.append((f'mi_wi_snow_accum_r{ratio:02d}', 'mi_wi_snow_accum', ratio))
+                else:
+                    skipped_existing_exports += 1
+        if 'carolinas_snow_accum' in enabled_keys:
+            for ratio in SNOW_RATIOS:
+                out_file = build_frame_path('carolinas_snow_accum', h, snow_ratio=ratio)
+                if should_render_frame(out_file):
+                    task_specs.append((f'carolinas_snow_accum_r{ratio:02d}', 'carolinas_snow_accum', ratio))
+                else:
+                    skipped_existing_exports += 1
 
         if not task_specs:
             continue
@@ -5228,6 +5300,32 @@ if not RECONCILE_ONLY and non_z500_enabled:
                         s,
                         NE_ZOOM_SNOW_THUMB_REGION,
                         'ne_zoom_snow_accum',
+                        snow_ratio=r,
+                    ),
+                ))
+            elif kind == 'mi_wi_snow_accum':
+                rr = int(ratio)
+                tasks.append((
+                    name,
+                    lambda i=img, hh=h, s=snow_for_hour, r=rr: generate_snow_accum_map(
+                        i,
+                        hh,
+                        s,
+                        MI_WI_SNOW_THUMB_REGION,
+                        'mi_wi_snow_accum',
+                        snow_ratio=r,
+                    ),
+                ))
+            elif kind == 'carolinas_snow_accum':
+                rr = int(ratio)
+                tasks.append((
+                    name,
+                    lambda i=img, hh=h, s=snow_for_hour, r=rr: generate_snow_accum_map(
+                        i,
+                        hh,
+                        s,
+                        CAROLINAS_SNOW_THUMB_REGION,
+                        'carolinas_snow_accum',
                         snow_ratio=r,
                     ),
                 ))
