@@ -1,11 +1,9 @@
 {
-  "generated_utc": "2026-03-12T18:16:45Z",
+  "generated_utc": "2026-03-12T18:23:05Z",
   "history_hours": 24,
   "default_run_id": "2026031206",
   "snow_products": [
-    "carolinas_snow_accum",
     "conus_snow_accum",
-    "mi_wi_snow_accum",
     "ne_snow_accum",
     "ne_zoom_snow_accum"
   ],
@@ -19,9 +17,7 @@
     "conus_t2m_anom": "USA Region 2m Temperature Anomaly",
     "conus_snow_accum": "CONUS Snowfall Accumulation",
     "ne_snow_accum": "Northeast Snowfall Accumulation",
-    "ne_zoom_snow_accum": "New England Zoom Snowfall Accumulation",
-    "mi_wi_snow_accum": "Michigan/Wisconsin Snowfall Accumulation",
-    "carolinas_snow_accum": "Carolinas Snowfall Accumulation"
+    "ne_zoom_snow_accum": "New England Zoom Snowfall Accumulation"
   },
   "runs": [
     {
@@ -92,6 +88,15 @@
         360
       ],
       "products": [
+        "na_z500a",
+        "conus_mslp_ptype",
+        "ne_mslp_ptype",
+        "conus_vort500",
+        "conus_t2m",
+        "conus_t2m_anom",
+        "conus_snow_accum",
+        "ne_snow_accum",
+        "ne_zoom_snow_accum",
         "mi_wi_snow_accum"
       ],
       "snow_ratios": [
@@ -101,6 +106,33 @@
         20
       ],
       "product_hours": {
+        "na_z500a": [
+          6
+        ],
+        "conus_mslp_ptype": [
+          6
+        ],
+        "ne_mslp_ptype": [
+          6
+        ],
+        "conus_vort500": [
+          6
+        ],
+        "conus_t2m": [
+          6
+        ],
+        "conus_t2m_anom": [
+          6
+        ],
+        "conus_snow_accum": [
+          6
+        ],
+        "ne_snow_accum": [
+          6
+        ],
+        "ne_zoom_snow_accum": [
+          6
+        ],
         "mi_wi_snow_accum": [
           6,
           12,
@@ -165,6 +197,15 @@
         ]
       },
       "product_snow_ratios": {
+        "conus_snow_accum": [
+          10
+        ],
+        "ne_snow_accum": [
+          10
+        ],
+        "ne_zoom_snow_accum": [
+          10
+        ],
         "mi_wi_snow_accum": [
           10,
           12,
@@ -173,14 +214,25 @@
         ]
       },
       "enabled_products": [
-        "mi_wi_snow_accum"
+        "nh_z500a",
+        "na_z500a",
+        "conus_mslp_ptype",
+        "ne_mslp_ptype",
+        "conus_vort500",
+        "conus_t2m",
+        "conus_t2m_anom",
+        "conus_snow_accum",
+        "ne_snow_accum",
+        "ne_zoom_snow_accum"
       ],
-      "missing_products": [],
+      "missing_products": [
+        "nh_z500a"
+      ],
       "failed_products": [],
       "failure_messages": {},
       "successful_exports": 0,
       "failed_exports": 0,
-      "updated_utc": "2026-03-12T18:16:45Z"
+      "updated_utc": "2026-03-12T18:23:05Z"
     }
   ]
 }
