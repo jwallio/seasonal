@@ -659,7 +659,8 @@ NE_ZOOM_SNOW_ACCUM_STEP_SEGMENTS_IN = [
 ]
 SNOW_ACCUM_MAX_IN = 40.0
 SNOW_ACCUM_OVER_COLOR = '#d60000'
-MIN_PRODUCT_LANDSCAPE_ASPECT = 1.22
+MIN_PRODUCT_LANDSCAPE_ASPECT = 1.42
+MIN_FINAL_PRODUCT_LANDSCAPE_ASPECT = 1.08
 NE_SNOW_ACCUM_LEGEND_HEIGHT = 82
 NE_SNOW_ACCUM_HEADER_HEIGHT = 60
 NE_SNOW_LABEL_MIN_IN = 1.0
@@ -3406,6 +3407,13 @@ def annotate_map_file(out_file, product_key, hour, map_region=None, low_center=N
                 max_width=max_text_w,
             )
             draw.text((12, img.height + header_h + legend_h + 4), footer_text, fill=(28, 28, 28), font=footer_font)
+        if canvas.width / float(max(1, canvas.height)) < MIN_FINAL_PRODUCT_LANDSCAPE_ASPECT:
+            target_w = max(canvas.width, int(math.ceil(canvas.height * MIN_FINAL_PRODUCT_LANDSCAPE_ASPECT)))
+            if target_w > canvas.width:
+                widened = Image.new('RGB', (target_w, canvas.height), color=(236, 236, 236))
+                offset_x = max(0, (target_w - canvas.width) // 2)
+                widened.paste(canvas, (offset_x, 0))
+                canvas = widened
         if max_dimension_px is not None:
             longest_side = max(canvas.width, canvas.height)
             if longest_side > int(max_dimension_px):
