@@ -1399,7 +1399,7 @@ def major_surface_water_mask(region_geom=None, min_connected_px=256, expand_px=0
     water = GLOBAL_SURFACE_WATER
     if region_geom is not None:
         water = water.clip(region_geom)
-    connected = water.connectedPixelCount(2048, True)
+    connected = water.connectedPixelCount(1024, True)
     major_water = water.updateMask(connected.gte(int(min_connected_px))).unmask(0).gt(0)
     if expand_px and expand_px > 0:
         major_water = major_water.focalMax(int(expand_px), 'square', 'pixels')
