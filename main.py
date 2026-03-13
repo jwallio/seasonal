@@ -3082,11 +3082,11 @@ def annotate_map_file(out_file, product_key, hour, map_region=None, low_center=N
         'conus_vort500': 'WN2 0.25 deg | 500-hPa Relative Vorticity + 500-hPa Height (dam) | CONUS',
         'conus_t2m': 'WN2 0.25 deg | 2m Temperature (degF) | USA Region (CONUS)',
         'conus_t2m_anom': f'WN2 0.25 deg | 2m Temperature Anomaly (degF) vs {CLIMO_T2M_BASELINE_LABEL} | USA Region (CONUS)',
-        'conus_snow_accum': f'WN2 0.25 deg | Accumulated Snowfall (in, {int(snow_ratio)}:1) | CONUS',
-        'ne_snow_accum': f'WN2 0.25 deg | Accumulated Snowfall (in, {int(snow_ratio)}:1) | Northeast',
-        'ne_zoom_snow_accum': f'WN2 0.25 deg | Accumulated Snowfall (in, {int(snow_ratio)}:1) | New England Zoom',
-        'mi_wi_snow_accum': f'WN2 0.25 deg | Accumulated Snowfall (in, {int(snow_ratio)}:1) | Michigan/Wisconsin',
-        'carolinas_snow_accum': f'WN2 0.25 deg | Accumulated Snowfall (in, {int(snow_ratio)}:1) | Carolinas',
+        'conus_snow_accum': 'WN2 0.25 deg | Accumulated Snowfall | CONUS',
+        'ne_snow_accum': 'WN2 0.25 deg | Accumulated Snowfall | Northeast',
+        'ne_zoom_snow_accum': 'WN2 0.25 deg | Accumulated Snowfall | New England Zoom',
+        'mi_wi_snow_accum': 'WN2 0.25 deg | Accumulated Snowfall | Michigan/Wisconsin',
+        'carolinas_snow_accum': 'WN2 0.25 deg | Accumulated Snowfall | Carolinas',
     }
     title = product_titles.get(product_key, product_key)
     init_text, valid_text = format_map_times(hour)
