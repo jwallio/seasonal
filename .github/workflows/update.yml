@@ -3,8 +3,8 @@ name: WeatherNext Runner Custom
 on:
   workflow_dispatch:
     inputs:
-      product_selection:
-        description: "[Products] Which product set to run"
+      run_target:
+        description: "[Run] Product bundle or single product"
         required: false
         default: "flagship"
         type: choice
@@ -17,9 +17,21 @@ on:
           - temperature
           - snowfall
           - all
+          - nh_z500a
+          - na_z500a
+          - conus_mslp_ptype
+          - ne_mslp_ptype
+          - conus_vort500
+          - conus_t2m
+          - conus_t2m_anom
+          - conus_snow_accum
+          - ne_snow_accum
+          - ne_zoom_snow_accum
+          - mi_wi_snow_accum
+          - carolinas_snow_accum
           - custom_csv
       custom_products_csv:
-        description: "[Products] Only used when Product Set = custom_csv"
+        description: "[Run] Only used when Run Target = custom_csv"
         required: false
         default: "na_z500a,conus_mslp_ptype,conus_vort500,ne_zoom_snow_accum,mi_wi_snow_accum,carolinas_snow_accum"
         type: string
@@ -91,9 +103,9 @@ on:
           - high
           - low
       snow_ratio_csv:
-        description: "[Render Settings] Snow ratios for manual subsets/custom runs (comma-separated)"
+        description: "[Render Settings] Snow ratios for snowfall products (comma-separated)"
         required: false
-        default: "10,12,15,20"
+        default: "10"
         type: string
       climo_source:
         description: "[Climate] Reanalysis source (ERA5 for T2M; H500 still falls back to MERRA2 in EE)"
@@ -120,7 +132,7 @@ on:
         type: string
   workflow_call:
     inputs:
-      product_selection:
+      run_target:
         required: false
         default: "flagship"
         type: string
@@ -162,7 +174,7 @@ on:
         type: string
       snow_ratio_csv:
         required: false
-        default: "10,12,15,20"
+        default: "10"
         type: string
       climo_source:
         required: false
@@ -182,32 +194,136 @@ on:
         type: string
   
 concurrency:
-  group: wn2-pages
-  cancel-in-progress: false
+  group: ${{ github.workflow }}-${{ github.event_name == 'push' && github.ref || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'push' }}
 
 permissions:
   contents: write
 
 jobs:
+  plan-run:
+    runs-on: ubuntu-latest
+    outputs:
+      product_mode: ${{ steps.plan.outputs.product_mode }}
+      selected_products: ${{ steps.plan.outputs.selected_products }}
+      snow_ratio_csv: ${{ steps.plan.outputs.snow_ratio_csv }}
+      matrix: ${{ steps.plan.outputs.matrix }}
+    steps:
+      - name: Resolve Product Selection And Shards
+        id: plan
+        env:
+          RUN_TARGET: ${{ inputs.run_target || 'flagship' }}
+          CUSTOM_PRODUCTS_CSV: ${{ inputs.custom_products_csv || '' }}
+          CUSTOM_SNOW_RATIOS: ${{ inputs.snow_ratio_csv || '10' }}
+          PREVIEW_ONE_FRAME: ${{ inputs.preview_one_frame && 'true' || 'false' }}
+          HOUR_RANGE_PRESET: ${{ inputs.hour_range_preset || 'full' }}
+          HOURS_CSV: ${{ inputs.hours_csv || '' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          import sys
+
+          all_products = [
+              "nh_z500a",
+              "na_z500a",
+              "conus_mslp_ptype",
+              "ne_mslp_ptype",
+              "conus_vort500",
+              "conus_t2m",
+              "conus_t2m_anom",
+              "conus_snow_accum",
+              "ne_snow_accum",
+              "ne_zoom_snow_accum",
+              "mi_wi_snow_accum",
+              "carolinas_snow_accum",
+          ]
+          z500_products = {"nh_z500a", "na_z500a"}
+          bundles = {
+              "flagship": ["na_z500a", "conus_mslp_ptype", "conus_vort500", "ne_zoom_snow_accum", "mi_wi_snow_accum", "carolinas_snow_accum"],
+              "winter_weather": ["conus_mslp_ptype", "ne_mslp_ptype", "conus_snow_accum", "ne_snow_accum", "ne_zoom_snow_accum", "mi_wi_snow_accum", "carolinas_snow_accum"],
+              "conus_core": ["conus_mslp_ptype", "conus_vort500", "conus_t2m", "conus_t2m_anom", "conus_snow_accum"],
+              "regional_zoom": ["na_z500a", "ne_mslp_ptype", "ne_zoom_snow_accum", "mi_wi_snow_accum", "carolinas_snow_accum"],
+              "z500_anomalies": ["nh_z500a", "na_z500a"],
+              "temperature": ["conus_t2m", "conus_t2m_anom"],
+              "snowfall": ["conus_snow_accum", "ne_snow_accum", "ne_zoom_snow_accum", "mi_wi_snow_accum", "carolinas_snow_accum"],
+          }
+
+          selection = (os.environ.get("RUN_TARGET", "").strip() or "flagship")
+          custom_csv = os.environ.get("CUSTOM_PRODUCTS_CSV", "").strip()
+          custom_snow_ratios = os.environ.get("CUSTOM_SNOW_RATIOS", "").strip() or "10"
+          preview = os.environ.get("PREVIEW_ONE_FRAME", "").strip().lower() == "true"
+          hour_preset = os.environ.get("HOUR_RANGE_PRESET", "").strip() or "full"
+          hours_csv = os.environ.get("HOURS_CSV", "").strip()
+          explicit_hours = [item.strip() for item in hours_csv.split(",") if item.strip()]
+
+          if selection == "all":
+              product_mode = "all"
+              selected_products = []
+          elif selection in bundles:
+              product_mode = "custom"
+              selected_products = bundles[selection]
+          elif selection == "custom_csv":
+              product_mode = "custom"
+              selected_products = [item.strip() for item in custom_csv.split(",") if item.strip()]
+              if not selected_products:
+                  print("custom_csv selected but custom_products_csv is blank", file=sys.stderr)
+                  raise SystemExit(1)
+          elif selection in all_products:
+              product_mode = "custom"
+              selected_products = [selection]
+          else:
+              print(f"Unknown run_target: {selection}", file=sys.stderr)
+              raise SystemExit(1)
+
+          selected_for_planning = all_products if product_mode == "all" else selected_products
+          z500_selected = [item for item in selected_for_planning if item in z500_products]
+          core_selected = [item for item in selected_for_planning if item not in z500_products]
+          is_small_time_window = preview or (explicit_hours and len(explicit_hours) <= 6) or hour_preset in {"24", "36", "48", "72"}
+          is_small_selection = len(selected_for_planning) <= 2
+
+          z500_shards = 0
+          if z500_selected:
+              z500_shards = 1 if (preview or len(z500_selected) == 1) else 2
+
+          core_shards = 0
+          if core_selected:
+              core_shards = 1 if (preview or (is_small_selection and is_small_time_window)) else 2
+
+          matrix_include = []
+          for phase, shard_total in (("z500", z500_shards), ("core", core_shards)):
+              for shard_index in range(shard_total):
+                  matrix_include.append(
+                      {
+                          "phase": phase,
+                          "shard_index": shard_index,
+                          "shard_total": shard_total,
+                      }
+                  )
+
+          if not matrix_include:
+              matrix_include = [{"phase": "core", "shard_index": 0, "shard_total": 1}]
+
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as fh:
+              fh.write(f"product_mode={product_mode}\n")
+              fh.write(f"selected_products={','.join(selected_products)}\n")
+              fh.write(f"snow_ratio_csv={custom_snow_ratios if product_mode == 'custom' else '10'}\n")
+              fh.write(f"matrix={json.dumps({'include': matrix_include})}\n")
+
+          print(f"Run target: {selection}")
+          print(f"Resolved mode: {product_mode}")
+          print(f"Resolved products: {selected_for_planning}")
+          print(f"Resolved matrix: {matrix_include}")
+          PY
+
   render-shards:
+    needs: plan-run
     runs-on: ubuntu-latest
     timeout-minutes: 210
     strategy:
       fail-fast: false
-      matrix:
-        include:
-          - phase: z500
-            shard_index: 0
-            shard_total: 2
-          - phase: z500
-            shard_index: 1
-            shard_total: 2
-          - phase: core
-            shard_index: 0
-            shard_total: 2
-          - phase: core
-            shard_index: 1
-            shard_total: 2
+      matrix: ${{ fromJson(needs.plan-run.outputs.matrix) }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -224,76 +340,6 @@ jobs:
           pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Resolve Product Selection
-        shell: bash
-        run: |
-          selection="${{ inputs.product_selection }}"
-          custom_csv="${{ inputs.custom_products_csv }}"
-          custom_snow_ratios="${{ inputs.snow_ratio_csv || '10,12,15,20' }}"
-
-          resolved_mode="all"
-          resolved_products=""
-          resolved_snow_ratios="10"
-
-          case "$selection" in
-            all)
-              ;;
-            flagship)
-              resolved_mode="custom"
-              resolved_products="na_z500a,conus_mslp_ptype,conus_vort500,ne_zoom_snow_accum,mi_wi_snow_accum,carolinas_snow_accum"
-              ;;
-            winter_weather)
-              resolved_mode="custom"
-              resolved_products="conus_mslp_ptype,ne_mslp_ptype,conus_snow_accum,ne_snow_accum,ne_zoom_snow_accum,mi_wi_snow_accum,carolinas_snow_accum"
-              ;;
-            conus_core)
-              resolved_mode="custom"
-              resolved_products="conus_mslp_ptype,conus_vort500,conus_t2m,conus_t2m_anom,conus_snow_accum"
-              ;;
-            regional_zoom)
-              resolved_mode="custom"
-              resolved_products="na_z500a,ne_mslp_ptype,ne_zoom_snow_accum,mi_wi_snow_accum,carolinas_snow_accum"
-              ;;
-            z500_anomalies)
-              resolved_mode="custom"
-              resolved_products="nh_z500a,na_z500a"
-              ;;
-            temperature)
-              resolved_mode="custom"
-              resolved_products="conus_t2m,conus_t2m_anom"
-              ;;
-            snowfall)
-              resolved_mode="custom"
-              resolved_products="conus_snow_accum,ne_snow_accum,ne_zoom_snow_accum,mi_wi_snow_accum,carolinas_snow_accum"
-              ;;
-            custom_csv)
-              resolved_mode="custom"
-              resolved_products="$custom_csv"
-              ;;
-            *)
-              echo "Unknown product_selection: $selection" >&2
-              exit 1
-              ;;
-          esac
-
-          if [ "$resolved_mode" = "custom" ]; then
-            resolved_snow_ratios="$custom_snow_ratios"
-          fi
-
-          {
-            echo "WN2_PRODUCT_MODE=$resolved_mode"
-            echo "WN2_SELECTED_PRODUCTS=$resolved_products"
-            echo "SNOW_RATIO_CSV=$resolved_snow_ratios"
-          } >> "$GITHUB_ENV"
-
-          echo "Resolved product selection: $selection"
-          if [ -n "$resolved_products" ]; then
-            echo "Resolved products: $resolved_products"
-          else
-            echo "Resolved products: all"
-          fi
-          echo "Resolved snow ratios: $resolved_snow_ratios"
-
       - name: Run Map Generator (Shard)
         id: map_generator
         env:
@@ -309,6 +355,9 @@ jobs:
           WN2_CLIMO_START_YEAR: ${{ inputs.climo_start_year || '' }}
           WN2_CLIMO_END_YEAR: ${{ inputs.climo_end_year || '' }}
           WN2_CLIMO_SOURCE: ${{ inputs.climo_source || 'era5' }}
+          WN2_PRODUCT_MODE: ${{ needs.plan-run.outputs.product_mode }}
+          WN2_SELECTED_PRODUCTS: ${{ needs.plan-run.outputs.selected_products }}
+          SNOW_RATIO_CSV: ${{ needs.plan-run.outputs.snow_ratio_csv }}
           EXPORT_WORKERS: ${{ matrix.phase == 'core' && (inputs.export_workers || '2') || '1' }}
           WN2_NH_RENDER_MODE: ${{ inputs.graphics_profile == 'legacy' && 'legacy' || 'polar' }}
           WN2_HOUR_SHARD_INDEX: ${{ matrix.shard_index }}
@@ -352,8 +401,10 @@ jobs:
           retention-days: 2
 
   merge-and-deploy:
-    needs: render-shards
-    if: ${{ always() }}
+    needs:
+      - plan-run
+      - render-shards
+    if: ${{ always() && needs.plan-run.result == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 210
     steps:
@@ -371,76 +422,6 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install -r requirements.txt
-
-      - name: Resolve Product Selection
-        shell: bash
-        run: |
-          selection="${{ inputs.product_selection }}"
-          custom_csv="${{ inputs.custom_products_csv }}"
-          custom_snow_ratios="${{ inputs.snow_ratio_csv || '10,12,15,20' }}"
-
-          resolved_mode="all"
-          resolved_products=""
-          resolved_snow_ratios="10"
-
-          case "$selection" in
-            all)
-              ;;
-            flagship)
-              resolved_mode="custom"
-              resolved_products="na_z500a,conus_mslp_ptype,conus_vort500,ne_zoom_snow_accum,mi_wi_snow_accum,carolinas_snow_accum"
-              ;;
-            winter_weather)
-              resolved_mode="custom"
-              resolved_products="conus_mslp_ptype,ne_mslp_ptype,conus_snow_accum,ne_snow_accum,ne_zoom_snow_accum,mi_wi_snow_accum,carolinas_snow_accum"
-              ;;
-            conus_core)
-              resolved_mode="custom"
-              resolved_products="conus_mslp_ptype,conus_vort500,conus_t2m,conus_t2m_anom,conus_snow_accum"
-              ;;
-            regional_zoom)
-              resolved_mode="custom"
-              resolved_products="na_z500a,ne_mslp_ptype,ne_zoom_snow_accum,mi_wi_snow_accum,carolinas_snow_accum"
-              ;;
-            z500_anomalies)
-              resolved_mode="custom"
-              resolved_products="nh_z500a,na_z500a"
-              ;;
-            temperature)
-              resolved_mode="custom"
-              resolved_products="conus_t2m,conus_t2m_anom"
-              ;;
-            snowfall)
-              resolved_mode="custom"
-              resolved_products="conus_snow_accum,ne_snow_accum,ne_zoom_snow_accum,mi_wi_snow_accum,carolinas_snow_accum"
-              ;;
-            custom_csv)
-              resolved_mode="custom"
-              resolved_products="$custom_csv"
-              ;;
-            *)
-              echo "Unknown product_selection: $selection" >&2
-              exit 1
-              ;;
-          esac
-
-          if [ "$resolved_mode" = "custom" ]; then
-            resolved_snow_ratios="$custom_snow_ratios"
-          fi
-
-          {
-            echo "WN2_PRODUCT_MODE=$resolved_mode"
-            echo "WN2_SELECTED_PRODUCTS=$resolved_products"
-            echo "SNOW_RATIO_CSV=$resolved_snow_ratios"
-          } >> "$GITHUB_ENV"
-
-          echo "Resolved product selection: $selection"
-          if [ -n "$resolved_products" ]; then
-            echo "Resolved products: $resolved_products"
-          else
-            echo "Resolved products: all"
-          fi
-          echo "Resolved snow ratios: $resolved_snow_ratios"
 
       - name: Restore Recent Runs From gh-pages
         env:
@@ -506,6 +487,9 @@ jobs:
           WN2_CLIMO_START_YEAR: ${{ inputs.climo_start_year || '' }}
           WN2_CLIMO_END_YEAR: ${{ inputs.climo_end_year || '' }}
           WN2_CLIMO_SOURCE: ${{ inputs.climo_source || 'era5' }}
+          WN2_PRODUCT_MODE: ${{ needs.plan-run.outputs.product_mode }}
+          WN2_SELECTED_PRODUCTS: ${{ needs.plan-run.outputs.selected_products }}
+          SNOW_RATIO_CSV: ${{ needs.plan-run.outputs.snow_ratio_csv }}
           EXPORT_WORKERS: ${{ inputs.export_workers || '2' }}
           WN2_NH_RENDER_MODE: ${{ inputs.graphics_profile == 'legacy' && 'legacy' || 'polar' }}
           WN2_RESUME_EXISTING: "1"

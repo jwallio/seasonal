@@ -742,7 +742,7 @@ SNOW_PRODUCT_KEYS = {
     'carolinas_snow_accum',
 }
 PRODUCT_MODE = (str(product_mode_env or '').strip().lower() or 'all')
-USE_CUSTOM_PRODUCT_SELECTION = (event_name == 'workflow_dispatch' and PRODUCT_MODE == 'custom')
+USE_CUSTOM_PRODUCT_SELECTION = (PRODUCT_MODE == 'custom')
 SELECTED_PRODUCT_KEYS = set(_parse_product_keys_csv(selected_products_csv_env))
 KNOWN_PRODUCT_KEYS = {k for k, _, _, _ in PRODUCT_OPTIONS}
 UNKNOWN_SELECTED_PRODUCT_KEYS = sorted(SELECTED_PRODUCT_KEYS - KNOWN_PRODUCT_KEYS)

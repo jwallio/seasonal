@@ -6,6 +6,44 @@ on:
       - main
   workflow_dispatch:
     inputs:
+      run_target:
+        description: "[Run] Product bundle or single product"
+        required: false
+        default: "flagship"
+        type: choice
+        options:
+          - flagship
+          - all
+          - snowfall
+          - winter_weather
+          - regional_zoom
+          - conus_core
+          - z500_anomalies
+          - temperature
+          - ne_zoom_snow_accum
+          - mi_wi_snow_accum
+          - carolinas_snow_accum
+          - conus_snow_accum
+          - ne_snow_accum
+          - conus_mslp_ptype
+          - ne_mslp_ptype
+          - conus_vort500
+          - conus_t2m
+          - conus_t2m_anom
+          - nh_z500a
+          - na_z500a
+      run_length:
+        description: "[Time] Latest frame or full range"
+        required: false
+        default: "full"
+        type: choice
+        options:
+          - latest_frame
+          - "24"
+          - "48"
+          - "72"
+          - "120"
+          - full
       graphics_profile:
         description: "[Graphics] Default graphics profile"
         required: false
@@ -22,11 +60,11 @@ jobs:
   run-default:
     uses: ./.github/workflows/update.yml
     with:
-      product_selection: all
+      run_target: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.run_target || 'flagship' }}
       custom_products_csv: ""
       graphics_profile: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.graphics_profile || 'rework' }}
-      preview_one_frame: ${{ github.event_name == 'push' }}
-      hour_range_preset: full
+      preview_one_frame: ${{ github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.run_length == 'latest_frame') }}
+      hour_range_preset: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.run_length != 'latest_frame' && github.event.inputs.run_length || 'full' }}
       hours_csv: ""
       run_init_utc: ""
       max_dimension: "900"
