@@ -3082,15 +3082,15 @@ def annotate_map_file(out_file, product_key, hour, map_region=None, low_center=N
         'conus_vort500': 'WN2 0.25 deg | 500-hPa Relative Vorticity + 500-hPa Height (dam) | CONUS',
         'conus_t2m': 'WN2 0.25 deg | 2m Temperature (degF) | USA Region (CONUS)',
         'conus_t2m_anom': f'WN2 0.25 deg | 2m Temperature Anomaly (degF) vs {CLIMO_T2M_BASELINE_LABEL} | USA Region (CONUS)',
-        'conus_snow_accum': 'WN2 0.25 deg | Accumulated Snowfall | CONUS',
-        'ne_snow_accum': 'WN2 0.25 deg | Accumulated Snowfall | Northeast',
-        'ne_zoom_snow_accum': 'WN2 0.25 deg | Accumulated Snowfall | New England Zoom',
-        'mi_wi_snow_accum': 'WN2 0.25 deg | Accumulated Snowfall | Michigan/Wisconsin',
-        'carolinas_snow_accum': 'WN2 0.25 deg | Accumulated Snowfall | Carolinas',
+        'conus_snow_accum': 'WN2 | Accumulated Snowfall | CONUS',
+        'ne_snow_accum': 'WN2 | Accumulated Snowfall | Northeast',
+        'ne_zoom_snow_accum': 'WN2 | Accumulated Snowfall | New England Zoom',
+        'mi_wi_snow_accum': 'WN2 | Accumulated Snowfall | Michigan/Wisconsin',
+        'carolinas_snow_accum': 'WN2 | Accumulated Snowfall | Carolinas',
     }
     title = product_titles.get(product_key, product_key)
     init_text, valid_text = format_map_times(hour)
-    subtitle = f'Init: {init_text} | Hour: [{hour:03d}] | Valid: {valid_text}'
+    subtitle = f'Init {init_text} | H{hour:03d} | Valid {valid_text}'
     is_rework_snow = product_key in SNOW_REWORK_REGIONAL_KEYS
 
     with Image.open(out_file) as src:
@@ -3336,41 +3336,44 @@ def annotate_map_file(out_file, product_key, hour, map_region=None, low_center=N
         else:
             header_h = 78
         footer_h = 0 if product_key in ('na_z500a', 'conus_vort500', 'ne_snow_accum') or is_rework_snow else 30
-        canvas = Image.new('RGB', (img.width, img.height + header_h + legend_h + footer_h), color=(236, 236, 236))
-        canvas.paste(img, (0, header_h))
-        draw = ImageDraw.Draw(canvas)
 
         if product_key == 'na_z500a':
             title_start = 25 if img.width >= 1300 else 22
             title_min = 16 if img.width >= 1300 else 14
             subtitle_start = 17 if img.width >= 1300 else 15
             subtitle_min = 13 if img.width >= 1300 else 12
-            title_y = 8
-            subtitle_y = 32
+            top_pad = 5
+            line_gap = 2
+            bottom_pad = 5
         elif product_key == 'ne_snow_accum':
-            title_start = 26 if img.width >= 1300 else 23
+            title_start = 25 if img.width >= 1300 else 22
             title_min = 16 if img.width >= 1300 else 14
-            subtitle_start = 17 if img.width >= 1300 else 15
+            subtitle_start = 16 if img.width >= 1300 else 14
             subtitle_min = 12 if img.width >= 1300 else 11
-            title_y = 5
-            subtitle_y = 32
+            top_pad = 4
+            line_gap = 2
+            bottom_pad = 4
         elif is_rework_snow:
-            title_start = 27 if img.width >= 1300 else 24
+            title_start = 24 if img.width >= 1300 else 21
             title_min = 17 if img.width >= 1300 else 15
-            subtitle_start = 18 if img.width >= 1300 else 16
+            subtitle_start = 15 if img.width >= 1300 else 13
             subtitle_min = 12 if img.width >= 1300 else 11
-            title_y = 6
-            subtitle_y = 35
+            top_pad = 4
+            line_gap = 1
+            bottom_pad = 4
         else:
-            title_start = 30 if img.width >= 1300 else 26
+            title_start = 28 if img.width >= 1300 else 24
             title_min = 18 if img.width >= 1300 else 16
-            subtitle_start = 22 if img.width >= 1300 else 19
+            subtitle_start = 19 if img.width >= 1300 else 17
             subtitle_min = 14 if img.width >= 1300 else 13
-            title_y = 10
-            subtitle_y = 44
+            top_pad = 6
+            line_gap = 2
+            bottom_pad = 6
         max_text_w = img.width - 24
+        header_probe = Image.new('RGB', (img.width, 1), color=(236, 236, 236))
+        header_draw = ImageDraw.Draw(header_probe)
         title_font = _fit_font(
-            draw,
+            header_draw,
             title,
             start_size=title_start,
             min_size=title_min,
@@ -3378,13 +3381,24 @@ def annotate_map_file(out_file, product_key, hour, map_region=None, low_center=N
             max_width=max_text_w,
         )
         subtitle_font = _fit_font(
-            draw,
+            header_draw,
             subtitle,
             start_size=subtitle_start,
             min_size=subtitle_min,
             bold=False,
             max_width=max_text_w,
         )
+        title_bbox = header_draw.textbbox((0, 0), title, font=title_font)
+        subtitle_bbox = header_draw.textbbox((0, 0), subtitle, font=subtitle_font)
+        title_h = title_bbox[3] - title_bbox[1]
+        subtitle_h = subtitle_bbox[3] - subtitle_bbox[1]
+        title_y = top_pad - title_bbox[1]
+        subtitle_y = title_y + title_h + line_gap - subtitle_bbox[1]
+        header_h = max(40, int(math.ceil(subtitle_y + subtitle_bbox[3] + bottom_pad)))
+
+        canvas = Image.new('RGB', (img.width, img.height + header_h + legend_h + footer_h), color=(236, 236, 236))
+        canvas.paste(img, (0, header_h))
+        draw = ImageDraw.Draw(canvas)
 
         draw.text((12, title_y), title, fill=(20, 20, 20), font=title_font)
         draw.text((12, subtitle_y), subtitle, fill=(25, 25, 25), font=subtitle_font)
