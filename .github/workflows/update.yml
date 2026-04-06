@@ -321,6 +321,8 @@ jobs:
     needs: plan-run
     runs-on: ubuntu-latest
     timeout-minutes: 210
+    env:
+      ENABLE_FORGEJO_ARTIFACT_UPLOAD: ${{ github.server_url == 'https://github.com' && '1' || vars.ENABLE_FORGEJO_ARTIFACT_UPLOAD || '0' }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.plan-run.outputs.matrix) }}
@@ -391,14 +393,20 @@ jobs:
           echo "Shard generation failed; artifact upload will continue with partial outputs."
 
       - name: Upload Shard Artifacts
-        if: ${{ always() }}
-        uses: actions/upload-artifact@v4
+        if: ${{ always() && env.ENABLE_FORGEJO_ARTIFACT_UPLOAD == '1' }}
+        uses: actions/upload-artifact@v3-node20
         with:
           name: shard-${{ matrix.phase }}-${{ matrix.shard_index }}
           path: |
             public/runs/**
           if-no-files-found: warn
           retention-days: 2
+
+      - name: List shard outputs when artifact upload is disabled
+        if: ${{ always() && env.ENABLE_FORGEJO_ARTIFACT_UPLOAD != '1' }}
+        run: |
+          echo "Artifact upload disabled; listing generated shard files instead."
+          find public -maxdepth 3 -type f | sort | sed -n '1,300p'
 
   merge-and-deploy:
     needs:
@@ -407,6 +415,9 @@ jobs:
     if: ${{ always() && needs.plan-run.result == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 210
+    env:
+      ENABLE_FORGEJO_ARTIFACT_UPLOAD: ${{ github.server_url == 'https://github.com' && '1' || vars.ENABLE_FORGEJO_ARTIFACT_UPLOAD || '0' }}
+      LOCAL_WN2_PUBLISH_DIR: ${{ github.server_url != 'https://github.com' && (vars.LOCAL_WN2_PUBLISH_DIR || '') || '' }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -423,7 +434,8 @@ jobs:
           pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Restore Recent Runs From gh-pages
+      - name: Restore Recent Runs From GitHub Pages
+        if: ${{ github.server_url == 'https://github.com' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -442,32 +454,64 @@ jobs:
             echo "No gh-pages branch yet; starting with a fresh public/ directory."
           fi
 
+      # On Forgejo, restore/publish directly from the localhost Caddy bind mount.
+      - name: Restore Recent Runs From Local Publish Dir
+        if: ${{ github.server_url != 'https://github.com' }}
+        run: |
+          mkdir -p public
+          if [ -n "${LOCAL_WN2_PUBLISH_DIR}" ] && [ -d "${LOCAL_WN2_PUBLISH_DIR}" ]; then
+            python - <<'PY'
+            from pathlib import Path
+            import os
+            import shutil
+
+            src = Path(os.environ["LOCAL_WN2_PUBLISH_DIR"])
+            dst = Path("public")
+            manifest = src / "runs_manifest.json"
+            runs_dir = src / "runs"
+
+            if manifest.exists():
+                shutil.copy2(manifest, dst / "runs_manifest.json")
+            if runs_dir.exists():
+                target = dst / "runs"
+                target.mkdir(parents=True, exist_ok=True)
+                for child in runs_dir.iterdir():
+                    out = target / child.name
+                    if child.is_dir():
+                        shutil.copytree(child, out, dirs_exist_ok=True)
+                    else:
+                        shutil.copy2(child, out)
+            print(f"Seeded public/ from {src}")
+            PY
+          else
+            echo "No mounted LOCAL_WN2_PUBLISH_DIR available; starting from a fresh public/ directory."
+            echo "To enable local publish, mount D:/weather-projects/wn2/public into the Forgejo runner container."
+          fi
+
       - name: Download Shard Artifacts
-        uses: actions/download-artifact@v4
+        if: ${{ env.ENABLE_FORGEJO_ARTIFACT_UPLOAD == '1' }}
+        uses: actions/download-artifact@v3-node20
         with:
-          pattern: shard-*
           path: .shards
-          merge-multiple: true
 
       - name: Merge Shard Frames
         run: |
           mkdir -p public/runs
           merged=0
-          if [ -d .shards/public/runs ]; then
-            cp -R .shards/public/runs/. public/runs/
-            merged=1
-          fi
-          if [ -d .shards/runs ]; then
-            cp -R .shards/runs/. public/runs/
-            merged=1
-          fi
-          shopt -s nullglob
-          for run_dir in .shards/[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]; do
-            if [ -d "$run_dir" ]; then
+          if [ -d .shards ]; then
+            while IFS= read -r -d '' run_dir; do
+              cp -R "${run_dir}/." public/runs/
+              merged=1
+            done < <(find .shards -type d -path '*/public/runs' -print0)
+            while IFS= read -r -d '' run_dir; do
+              cp -R "${run_dir}/." public/runs/
+              merged=1
+            done < <(find .shards -type d -path '*/runs' -print0)
+            while IFS= read -r -d '' run_dir; do
               cp -R "$run_dir" public/runs/
               merged=1
-            fi
-          done
+            done < <(find .shards -type d -regex '.*/[0-9]{10}$' -print0)
+          fi
           if [ "$merged" -eq 0 ]; then
             echo "No shard run directories found after artifact download."
           fi
@@ -520,8 +564,8 @@ jobs:
           echo "Reconcile run failed; deploying retained/partial outputs from public/."
 
       - name: Upload Final Public Artifacts
-        if: ${{ always() }}
-        uses: actions/upload-artifact@v4
+        if: ${{ always() && env.ENABLE_FORGEJO_ARTIFACT_UPLOAD == '1' }}
+        uses: actions/upload-artifact@v3-node20
         with:
           name: public-final
           path: |
@@ -531,9 +575,54 @@ jobs:
           if-no-files-found: warn
           retention-days: 5
 
+      - name: List final public outputs when artifact upload is disabled
+        if: ${{ always() && env.ENABLE_FORGEJO_ARTIFACT_UPLOAD != '1' }}
+        run: |
+          echo "Artifact upload disabled; listing final public files instead."
+          find public -maxdepth 3 -type f | sort | sed -n '1,300p'
+
       - name: Deploy to GitHub Pages
-        if: ${{ success() }}
+        if: ${{ success() && github.server_url == 'https://github.com' }}
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./public
+
+      - name: Publish to local Caddy root
+        if: ${{ success() && github.server_url != 'https://github.com' && env.LOCAL_WN2_PUBLISH_DIR != '' }}
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import os
+          import shutil
+
+          src = Path("public")
+          dst = Path(os.environ["LOCAL_WN2_PUBLISH_DIR"])
+          if not dst.exists():
+              raise SystemExit(
+                  "Configured LOCAL_WN2_PUBLISH_DIR does not exist inside the runner: "
+                  f"{dst}\n"
+                  "Bind-mount D:/weather-projects/wn2/public into the Forgejo runner and "
+                  "set LOCAL_WN2_PUBLISH_DIR to that mount path."
+              )
+
+          for child in dst.iterdir():
+              if child.is_dir():
+                  shutil.rmtree(child)
+              else:
+                  child.unlink()
+          for child in src.iterdir():
+              target = dst / child.name
+              if child.is_dir():
+                  shutil.copytree(child, target, dirs_exist_ok=True)
+              else:
+                  shutil.copy2(child, target)
+          print(f"Published {src} to {dst}")
+          PY
+
+      - name: Explain skipped local publish
+        if: ${{ success() && github.server_url != 'https://github.com' && env.LOCAL_WN2_PUBLISH_DIR == '' }}
+        run: |
+          echo "Local publish skipped."
+          echo "This Forgejo runner container cannot currently write to D:/weather-projects/wn2/public."
+          echo "Mount that host path into the runner and set LOCAL_WN2_PUBLISH_DIR to enable direct localhost publishing."
