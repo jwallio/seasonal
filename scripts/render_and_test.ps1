@@ -4,6 +4,11 @@ param(
     [string]$MaxDim = "900",
     [ValidateSet("era5", "merra2")]
     [string]$Climo = "era5",
+    [ValidateSet("first", "mean", "median", "member")]
+    [string]$EnsembleMode = "first",
+    [string]$EnsembleMember = "",
+    [ValidateSet("default", "classic")]
+    [string]$Z500Style = "default",
     [string]$EeProject = "snowcast-1"
 )
 
@@ -17,6 +22,9 @@ try {
         -HoursCsv $HoursCsv `
         -MaxDim $MaxDim `
         -Climo $Climo `
+        -EnsembleMode $EnsembleMode `
+        -EnsembleMember $EnsembleMember `
+        -Z500Style $Z500Style `
         -EeProject $EeProject
 
     $env:WN2_MAX_DIMENSION = $MaxDim

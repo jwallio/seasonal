@@ -38,6 +38,11 @@ WN2_PRECIP_6H_BAND = 'total_precipitation_6hr'
 WN2_T2M_BAND = '2m_temperature'
 WN2_T850_BAND = '850_temperature'
 WN2_T700_BAND = '700_temperature'
+WN2_T500_BAND = '500_temperature'
+WN2_500_OMEGA_BAND = '500_vertical_velocity'
+WN2_10M_U_BAND = '10m_u_component_of_wind'
+WN2_10M_V_BAND = '10m_v_component_of_wind'
+WN2_SST_BAND = 'sea_surface_temperature'
 MERRA2_CLIMO_ASSET = 'NASA/GSFC/MERRA/slv/2'
 MERRA2_CLIMO_H500_BAND = 'H500'
 MERRA2_CLIMO_T2M_BAND = 'T2M'
@@ -258,6 +263,9 @@ climo_end_year_env = os.environ.get('WN2_CLIMO_END_YEAR')
 climo_source_env = os.environ.get('WN2_CLIMO_SOURCE')
 z500_climo_baseline_env = os.environ.get('WN2_Z500_CLIMO_BASELINE')
 short_range_accuracy_hours_env = os.environ.get('WN2_SHORT_RANGE_ACCURACY_HOURS')
+ensemble_mode_env = os.environ.get('WN2_ENSEMBLE_MODE')
+ensemble_member_env = os.environ.get('WN2_ENSEMBLE_MEMBER')
+z500_style_env = os.environ.get('WN2_Z500_STYLE')
 run_nh_z500a_env = os.environ.get('WN2_RUN_NH_Z500A')
 run_na_z500a_env = os.environ.get('WN2_RUN_NA_Z500A')
 run_conus_mslp_ptype_env = os.environ.get('WN2_RUN_CONUS_MSLP_PTYPE')
@@ -270,6 +278,11 @@ run_mi_wi_snow_accum_env = os.environ.get('WN2_RUN_MI_WI_SNOW_ACCUM')
 run_carolinas_snow_accum_env = os.environ.get('WN2_RUN_CAROLINAS_SNOW_ACCUM')
 run_conus_t2m_env = os.environ.get('WN2_RUN_CONUS_T2M')
 run_conus_t2m_anom_env = os.environ.get('WN2_RUN_CONUS_T2M_ANOM')
+run_conus_wind10_env = os.environ.get('WN2_RUN_CONUS_WIND10')
+run_conus_t850_env = os.environ.get('WN2_RUN_CONUS_T850')
+run_conus_t500_env = os.environ.get('WN2_RUN_CONUS_T500')
+run_conus_omega500_env = os.environ.get('WN2_RUN_CONUS_OMEGA500')
+run_conus_sst_env = os.environ.get('WN2_RUN_CONUS_SST')
 selected_products_csv_env = os.environ.get('WN2_SELECTED_PRODUCTS')
 nh_render_mode_env = os.environ.get('WN2_NH_RENDER_MODE')
 local_true_anom_render_env = os.environ.get('WN2_LOCAL_TRUE_ANOM_RENDER')
@@ -322,12 +335,24 @@ ALLOW_NO_PRODUCTS = _env_flag(allow_no_products_env, default=False)
 ADAPTIVE_LONG_RANGE = _env_flag(adaptive_long_range_env, default=True)
 NH_RENDER_MODE = str(nh_render_mode_env or 'legacy').strip().lower()
 CLIMO_SOURCE = str(climo_source_env or 'era5').strip().lower()
+ENSEMBLE_MODE = str(ensemble_mode_env or 'first').strip().lower()
+ENSEMBLE_MEMBER = str(ensemble_member_env or '').strip()
+Z500_STYLE = str(z500_style_env or 'default').strip().lower()
 if NH_RENDER_MODE not in ('legacy', 'polar'):
     print(f'[{ts()}] Invalid WN2_NH_RENDER_MODE="{NH_RENDER_MODE}", defaulting to legacy.')
     NH_RENDER_MODE = 'legacy'
 if CLIMO_SOURCE not in ('era5', 'merra2'):
     print(f'[{ts()}] Invalid WN2_CLIMO_SOURCE="{CLIMO_SOURCE}", defaulting to era5.')
     CLIMO_SOURCE = 'era5'
+if ENSEMBLE_MODE not in ('first', 'mean', 'median', 'member'):
+    print(f'[{ts()}] Invalid WN2_ENSEMBLE_MODE="{ENSEMBLE_MODE}", defaulting to first.')
+    ENSEMBLE_MODE = 'first'
+if ENSEMBLE_MODE == 'member' and not ENSEMBLE_MEMBER:
+    print(f'[{ts()}] WN2_ENSEMBLE_MODE=member requires WN2_ENSEMBLE_MEMBER; defaulting to first.')
+    ENSEMBLE_MODE = 'first'
+if Z500_STYLE not in ('default', 'classic'):
+    print(f'[{ts()}] Invalid WN2_Z500_STYLE="{Z500_STYLE}", defaulting to default.')
+    Z500_STYLE = 'default'
 USE_NH_TRUE_POLAR_RENDER = (NH_RENDER_MODE == 'polar')
 
 FAST_RENDER = _env_flag(fast_render_env, default=(event_name == 'schedule'))
@@ -462,6 +487,12 @@ if max_dimension_px is not None:
     print(f'[{ts()}] Max output dimension cap: {max_dimension_px}px.')
 print(f'[{ts()}] NH render mode: {NH_RENDER_MODE}.')
 print(f'[{ts()}] Geography detail mode: {GEOGRAPHY_DETAIL_MODE}.')
+print(
+    f'[{ts()}] Ensemble mode: {ENSEMBLE_MODE}'
+    + (f' (member={ENSEMBLE_MEMBER})' if ENSEMBLE_MEMBER else '')
+    + '.'
+)
+print(f'[{ts()}] 500-hPa anomaly style: {Z500_STYLE}.')
 if RECONCILE_ONLY:
     print(f'[{ts()}] Reconcile-only mode enabled: map rendering phases will be skipped.')
 
@@ -482,6 +513,21 @@ NA_Z500A_PALETTE = [
     '#f0f1ef',
     '#f5de97', '#f4b95c', '#ef833e', '#df492f', '#c62423', '#941114',
 ]
+Z500_CLASSIC_PALETTE = [
+    '#32678e', '#3f80a7', '#5796b8', '#72abc6', '#98c1d2', '#c0d8e1',
+    '#e8eef0',
+    '#f9e4e2', '#f2c2c0', '#e39a97', '#d87573', '#c45257', '#a83b49',
+]
+Z500_CLASSIC_MIN_M = -140
+Z500_CLASSIC_MAX_M = 140
+Z500_CLASSIC_DISPLAY_GAIN = 1.0
+Z500_CLASSIC_DISPLAY_GAMMA = 1.0
+Z500_CLASSIC_SMOOTH_PASSES = 1
+Z500_CLASSIC_CONTOUR_SMOOTH_PASSES = 0
+Z500_CLASSIC_MINOR_INTERVAL = 0
+Z500_CLASSIC_MAJOR_INTERVAL = 0
+Z500_CLASSIC_LEGEND_HEIGHT = 74
+Z500_CLASSIC_HEADER_HEIGHT = 62
 NA_Z500A_DISPLAY_GAIN = 1.14
 NA_Z500A_DISPLAY_GAMMA = 0.88
 NA_Z500A_ANOMALY_SMOOTH_PASSES = 1
@@ -687,6 +733,68 @@ T2M_F_MIN = -20.0
 T2M_F_MAX = 110.0
 T2M_ANOM_F_MIN = -40.0
 T2M_ANOM_F_MAX = 40.0
+
+PARAMETER_MAP_SPECS = {
+    'conus_wind10': {
+        'label': 'CONUS 10m Wind Speed',
+        'title': 'WN2 0.25 deg | 10m Wind Speed (m/s) | CONUS',
+        'kind': 'wind10',
+        'units': '10m wind speed (m/s)',
+        'min': 0.0,
+        'max': 35.0,
+        'ticks': [0, 5, 10, 15, 20, 25, 30, 35],
+        'palette': ['#f5f5f5', '#c7e9f1', '#77c8d7', '#41a6c2', '#277da1', '#225ea8', '#253494', '#54278f'],
+        'contour_interval': 5,
+    },
+    'conus_t850': {
+        'label': 'CONUS 850mb Temperature',
+        'title': 'WN2 0.25 deg | 850-hPa Temperature (degC) | CONUS',
+        'kind': 'temperature',
+        'band': WN2_T850_BAND,
+        'units': '850-hPa temperature (degC)',
+        'min': -30.0,
+        'max': 30.0,
+        'ticks': [-30, -20, -10, 0, 10, 20, 30],
+        'palette': ['#3f2b96', '#5f80cc', '#8ecae6', '#e9f2f4', '#ffd166', '#f28f3b', '#c44536'],
+        'contour_interval': 5,
+    },
+    'conus_t500': {
+        'label': 'CONUS 500mb Temperature',
+        'title': 'WN2 0.25 deg | 500-hPa Temperature (degC) | CONUS',
+        'kind': 'temperature',
+        'band': WN2_T500_BAND,
+        'units': '500-hPa temperature (degC)',
+        'min': -50.0,
+        'max': 5.0,
+        'ticks': [-50, -40, -30, -20, -10, 0],
+        'palette': ['#313695', '#4575b4', '#74add1', '#abd9e9', '#e0f3f8', '#ffffbf', '#fee090', '#fdae61', '#d73027'],
+        'contour_interval': 5,
+    },
+    'conus_omega500': {
+        'label': 'CONUS 500mb Vertical Velocity',
+        'title': 'WN2 0.25 deg | 500-hPa Vertical Velocity (Pa/s) | CONUS',
+        'kind': 'omega',
+        'band': WN2_500_OMEGA_BAND,
+        'units': '500-hPa vertical velocity (Pa/s)',
+        'min': -1.0,
+        'max': 1.0,
+        'ticks': [-1, -0.5, 0, 0.5, 1],
+        'palette': ['#2166ac', '#67a9cf', '#d1e5f0', '#f7f7f7', '#fddbc7', '#ef8a62', '#b2182b'],
+        'contour_interval': 0.25,
+    },
+    'conus_sst': {
+        'label': 'CONUS Sea-Surface Temperature',
+        'title': 'WN2 0.25 deg | Sea-Surface Temperature (degC) | CONUS',
+        'kind': 'temperature',
+        'band': WN2_SST_BAND,
+        'units': 'sea-surface temperature (degC)',
+        'min': 0.0,
+        'max': 32.0,
+        'ticks': [0, 5, 10, 15, 20, 25, 30],
+        'palette': ['#273c75', '#487eb0', '#63cdda', '#a8e6cf', '#f6e58d', '#f0932b', '#eb4d4b'],
+        'contour_interval': 2,
+    },
+}
 if CLIMO_SOURCE == 'era5':
     # ERA5 daily is used for T2M climatology. Earth Engine ERA5 does not expose
     # a 500-hPa geopotential-height band, so H500 remains on MERRA2 for now.
@@ -729,6 +837,11 @@ PRODUCT_OPTIONS = [
     ('conus_vort500', 'CONUS 500mb Vorticity', 'conus_vort500_*.jpg', run_conus_vort500_env),
     ('conus_t2m', 'USA Region 2m Temperature', 'conus_t2m_*.jpg', run_conus_t2m_env),
     ('conus_t2m_anom', 'USA Region 2m Temperature Anomaly', 'conus_t2m_anom_*.jpg', run_conus_t2m_anom_env),
+    ('conus_wind10', PARAMETER_MAP_SPECS['conus_wind10']['label'], 'conus_wind10_*.jpg', run_conus_wind10_env),
+    ('conus_t850', PARAMETER_MAP_SPECS['conus_t850']['label'], 'conus_t850_*.jpg', run_conus_t850_env),
+    ('conus_t500', PARAMETER_MAP_SPECS['conus_t500']['label'], 'conus_t500_*.jpg', run_conus_t500_env),
+    ('conus_omega500', PARAMETER_MAP_SPECS['conus_omega500']['label'], 'conus_omega500_*.jpg', run_conus_omega500_env),
+    ('conus_sst', PARAMETER_MAP_SPECS['conus_sst']['label'], 'conus_sst_*.jpg', run_conus_sst_env),
     ('conus_snow_accum', 'CONUS Snowfall Accumulation', 'conus_snow_accum_*.jpg', run_conus_snow_accum_env),
     ('ne_snow_accum', 'Northeast Snowfall Accumulation', 'ne_snow_accum_*.jpg', run_ne_snow_accum_env),
     ('ne_zoom_snow_accum', 'New England Zoom Snowfall Accumulation', 'ne_zoom_snow_accum_*.jpg', run_ne_zoom_snow_accum_env),
@@ -742,6 +855,7 @@ SNOW_PRODUCT_KEYS = {
     'mi_wi_snow_accum',
     'carolinas_snow_accum',
 }
+OPTIONAL_PARAMETER_PRODUCT_KEYS = set(PARAMETER_MAP_SPECS)
 PRODUCT_MODE = (str(product_mode_env or '').strip().lower() or 'all')
 USE_CUSTOM_PRODUCT_SELECTION = (PRODUCT_MODE == 'custom')
 SELECTED_PRODUCT_KEYS = set(_parse_product_keys_csv(selected_products_csv_env))
@@ -756,7 +870,10 @@ if UNKNOWN_SELECTED_PRODUCT_KEYS:
 
 ENABLED_PRODUCTS = []
 for key, label, pattern, raw_flag in PRODUCT_OPTIONS:
-    flag_enabled = _select_product_flag(raw_flag, default=True)
+    optional_default = not (key in OPTIONAL_PARAMETER_PRODUCT_KEYS)
+    if USE_CUSTOM_PRODUCT_SELECTION and key in SELECTED_PRODUCT_KEYS:
+        optional_default = True
+    flag_enabled = _select_product_flag(raw_flag, default=optional_default)
     if USE_CUSTOM_PRODUCT_SELECTION:
         if SELECTED_PRODUCT_KEYS:
             enabled = key in SELECTED_PRODUCT_KEYS and flag_enabled
@@ -793,6 +910,11 @@ def cleanup_old_products():
         'conus_vort500_*.jpg',
         'conus_t2m_*.jpg',
         'conus_t2m_anom_*.jpg',
+        'conus_wind10_*.jpg',
+        'conus_t850_*.jpg',
+        'conus_t500_*.jpg',
+        'conus_omega500_*.jpg',
+        'conus_sst_*.jpg',
         'conus_snow_accum_*.jpg',
         'ne_snow_accum_*.jpg',
         'ne_zoom_snow_accum_*.jpg',
@@ -816,6 +938,11 @@ def cleanup_current_run_products():
         'conus_vort500_*.jpg',
         'conus_t2m_*.jpg',
         'conus_t2m_anom_*.jpg',
+        'conus_wind10_*.jpg',
+        'conus_t850_*.jpg',
+        'conus_t500_*.jpg',
+        'conus_omega500_*.jpg',
+        'conus_sst_*.jpg',
         'conus_snow_accum_*.jpg',
         'ne_snow_accum_*.jpg',
         'ne_zoom_snow_accum_*.jpg',
@@ -998,6 +1125,42 @@ if latest_start_collection.size().getInfo() == 0:
     if run_init_utc_env:
         raise ValueError(f'Requested RUN_INIT_UTC={run_init_utc_env} returned no images.')
     raise ValueError('Latest WN2 run filter returned no images in the last 7 days.')
+
+
+def select_ensemble_image(image_collection, context='forecast', check_nonempty=True):
+    """Select or aggregate WeatherNext ensemble members explicitly.
+
+    The historical default remains ``first`` for output compatibility. New
+    runs can request ``mean``/``median`` or a specific member through the
+    WN2_ENSEMBLE_* environment variables.
+    """
+    if check_nonempty:
+        collection_size = int(image_collection.size().getInfo())
+        if collection_size <= 0:
+            raise ValueError(f'No WeatherNext images available for {context}.')
+
+    if ENSEMBLE_MODE == 'mean':
+        return ee.Image(image_collection.mean())
+    if ENSEMBLE_MODE == 'median':
+        return ee.Image(image_collection.median())
+    if ENSEMBLE_MODE == 'member':
+        member_collection = image_collection.filter(ee.Filter.eq('ensemble_member', ENSEMBLE_MEMBER))
+        member_size = int(member_collection.size().getInfo())
+        if member_size <= 0:
+            try:
+                member_number = int(ENSEMBLE_MEMBER)
+            except (TypeError, ValueError):
+                member_number = None
+            if member_number is not None:
+                member_collection = image_collection.filter(ee.Filter.eq('ensemble_member', member_number))
+                member_size = int(member_collection.size().getInfo())
+        if member_size <= 0:
+            raise ValueError(
+                f'WeatherNext ensemble member {ENSEMBLE_MEMBER!r} is unavailable for {context}.'
+            )
+        return ee.Image(member_collection.first())
+
+    return ee.Image(image_collection.first())
 
 
 def _parse_int(value):
@@ -1206,7 +1369,10 @@ if HOUR_SHARD_TOTAL > 1:
         )
 
 hour0_candidates = filter_forecast_hour(latest_start_collection, 0)
-hour0_image = ee.Image(ee.Algorithms.If(hour0_candidates.size().gt(0), hour0_candidates.first(), latest_start_collection.first()))
+if 0 in AVAILABLE_HOURS:
+    hour0_image = select_ensemble_image(hour0_candidates, context='forecast hour 0', check_nonempty=False)
+else:
+    hour0_image = select_ensemble_image(latest_start_collection, context='run fallback')
 
 print(f'[{ts()}] Fetching system:index...')
 t0 = time.time()
@@ -1255,16 +1421,28 @@ else:
     band_names = ee.List(hour0_image.bandNames()).getInfo()
     print(f'[{ts()}] DEBUG_BANDS not set; skipping full bandNames print.')
 
-required_bands = [
-    WN2_Z500_BAND,
-    WN2_500_U_BAND,
-    WN2_500_V_BAND,
-    WN2_MSLP_BAND,
-    WN2_PRECIP_6H_BAND,
-    WN2_T2M_BAND,
-    WN2_T850_BAND,
-    WN2_T700_BAND,
-]
+required_bands = set()
+enabled_product_keys_for_bands = {item[0] for item in ENABLED_PRODUCTS}
+if {'nh_z500a', 'na_z500a', 'conus_vort500'} & enabled_product_keys_for_bands:
+    required_bands.add(WN2_Z500_BAND)
+if 'conus_vort500' in enabled_product_keys_for_bands:
+    required_bands.update({WN2_500_U_BAND, WN2_500_V_BAND})
+if {'conus_mslp_ptype', 'ne_mslp_ptype'} & enabled_product_keys_for_bands:
+    required_bands.update({WN2_MSLP_BAND, WN2_PRECIP_6H_BAND, WN2_T2M_BAND, WN2_T850_BAND, WN2_T700_BAND})
+if {'conus_t2m', 'conus_t2m_anom'} & enabled_product_keys_for_bands:
+    required_bands.add(WN2_T2M_BAND)
+if any(key in enabled_product_keys_for_bands for key in SNOW_PRODUCT_KEYS):
+    required_bands.update({WN2_PRECIP_6H_BAND, WN2_T2M_BAND, WN2_T850_BAND, WN2_T700_BAND})
+if 'conus_wind10' in enabled_product_keys_for_bands:
+    required_bands.update({WN2_10M_U_BAND, WN2_10M_V_BAND})
+if 'conus_t850' in enabled_product_keys_for_bands:
+    required_bands.add(WN2_T850_BAND)
+if 'conus_t500' in enabled_product_keys_for_bands:
+    required_bands.add(WN2_T500_BAND)
+if 'conus_omega500' in enabled_product_keys_for_bands:
+    required_bands.add(WN2_500_OMEGA_BAND)
+if 'conus_sst' in enabled_product_keys_for_bands:
+    required_bands.add(WN2_SST_BAND)
 missing_bands = [b for b in required_bands if b not in band_names]
 if missing_bands:
     raise ValueError(f'Required WN2 bands missing: {missing_bands}')
@@ -1272,7 +1450,9 @@ if missing_bands:
 
 def get_hour_image(h):
     hour_filtered = filter_forecast_hour(latest_start_collection, h)
-    return ee.Image(ee.Algorithms.If(hour_filtered.size().gt(0), hour_filtered.first(), hour0_image))
+    if h in AVAILABLE_HOURS:
+        return select_ensemble_image(hour_filtered, context=f'forecast hour {h}', check_nonempty=False)
+    return hour0_image
 
 
 # --- 3. METEOROLOGY LOGIC ---
@@ -2699,6 +2879,27 @@ def _draw_legend(draw, product_key, width, y, snow_ratio=10):
         na_bar_y = y + 19
         na_bar_h = 18
         _draw_panel(draw, bar_x - 14, y - 2, bar_x + bar_w + 14, y + 54)
+        if Z500_STYLE == 'classic':
+            classic_label_font = load_font(18 if width >= 1200 else 16, bold=True)
+            draw.text(
+                (bar_x, y),
+                '500-mb height anomaly (m)',
+                fill=(22, 22, 22),
+                font=classic_label_font,
+            )
+            _draw_gradient_bar(draw, bar_x, na_bar_y, bar_w, na_bar_h, Z500_CLASSIC_PALETTE)
+            _draw_ticks(
+                draw,
+                bar_x,
+                na_bar_y,
+                bar_w,
+                na_bar_h,
+                [-140, -100, -60, -20, 0, 20, 60, 100, 140],
+                Z500_CLASSIC_MIN_M,
+                Z500_CLASSIC_MAX_M,
+                na_tick_font,
+            )
+            return
         draw.text(
             (bar_x, y),
             '500-hPa Height Anomaly (m)',
@@ -2753,6 +2954,29 @@ def _draw_legend(draw, product_key, width, y, snow_ratio=10):
         )
         _draw_gradient_bar(draw, bar_x, bar_y, bar_w, bar_h, T2M_ANOM_F_PALETTE)
         _draw_ticks(draw, bar_x, bar_y, bar_w, bar_h, [-40, -30, -20, -10, 0, 10, 20, 30, 40], T2M_ANOM_F_MIN, T2M_ANOM_F_MAX, tick_font)
+        return
+
+    parameter_spec = PARAMETER_MAP_SPECS.get(product_key)
+    if parameter_spec is not None:
+        _draw_panel(draw, bar_x - 14, y - 4, bar_x + bar_w + 14, y + 72)
+        draw.text(
+            (bar_x, y + 2),
+            str(parameter_spec['units']),
+            fill=(22, 22, 22),
+            font=label_font,
+        )
+        _draw_gradient_bar(draw, bar_x, bar_y, bar_w, bar_h, parameter_spec['palette'])
+        _draw_ticks(
+            draw,
+            bar_x,
+            bar_y,
+            bar_w,
+            bar_h,
+            parameter_spec['ticks'],
+            parameter_spec['min'],
+            parameter_spec['max'],
+            tick_font,
+        )
         return
 
     if product_key == 'ne_snow_accum':
@@ -3076,7 +3300,11 @@ def annotate_map_file(out_file, product_key, hour, map_region=None, low_center=N
 
     product_titles = {
         'nh_z500a': f'WN2 0.25 deg | 500-hPa Geopotential Height (dam) & Anomaly vs {Z500_CLIMO_BASELINE_LABEL} (m) | Northern Hemisphere',
-        'na_z500a': f'WN2 0.25 deg | 500-hPa Height (dam) + Anomaly vs {Z500_CLIMO_BASELINE_LABEL} (m) | North America',
+        'na_z500a': (
+            f'WN2 0.25 deg | 500-mb Height Anomaly (m) | North America'
+            if Z500_STYLE == 'classic'
+            else f'WN2 0.25 deg | 500-hPa Height (dam) + Anomaly vs {Z500_CLIMO_BASELINE_LABEL} (m) | North America'
+        ),
         'conus_mslp_ptype': 'WN2 0.25 deg | MSLP (hPa) + Precip Type | CONUS',
         'ne_mslp_ptype': 'WN2 0.25 deg | MSLP (hPa) + Precip Type | Northeast',
         'conus_vort500': 'WN2 0.25 deg | 500-hPa Relative Vorticity + 500-hPa Height (dam) | CONUS',
@@ -3088,6 +3316,7 @@ def annotate_map_file(out_file, product_key, hour, map_region=None, low_center=N
         'mi_wi_snow_accum': 'WN2 | Accumulated Snowfall | Michigan/Wisconsin',
         'carolinas_snow_accum': 'WN2 | Accumulated Snowfall | Carolinas',
     }
+    product_titles.update({key: spec['title'] for key, spec in PARAMETER_MAP_SPECS.items()})
     title = product_titles.get(product_key, product_key)
     init_text, valid_text = format_map_times(hour)
     subtitle = f'Init {init_text} | H{hour:03d} | Valid {valid_text}'
@@ -3239,6 +3468,7 @@ def annotate_map_file(out_file, product_key, hour, map_region=None, low_center=N
             footer_draw = ImageDraw.Draw(img)
             footer_lines = [
                 'Source: WeatherNext2 (Earth Engine)',
+                f'Anomaly style: {Z500_STYLE}',
                 'Generated by: Jonathan Wall (@_jwall on X) | Copyright 2024-5 Google LLC',
             ]
             footer_font = load_font(13 if img.width >= 1300 else 11, bold=False)
@@ -3312,7 +3542,7 @@ def annotate_map_file(out_file, product_key, hour, map_region=None, low_center=N
         elif product_key == 'ne_mslp_ptype':
             legend_h = 180
         elif product_key == 'na_z500a':
-            legend_h = NA_Z500A_LEGEND_HEIGHT
+            legend_h = Z500_CLASSIC_LEGEND_HEIGHT if Z500_STYLE == 'classic' else NA_Z500A_LEGEND_HEIGHT
         elif product_key == 'ne_snow_accum':
             legend_h = NE_SNOW_ACCUM_LEGEND_HEIGHT
         elif is_rework_snow:
@@ -3322,13 +3552,18 @@ def annotate_map_file(out_file, product_key, hour, map_region=None, low_center=N
             'conus_vort500',
             'conus_t2m',
             'conus_t2m_anom',
+            'conus_wind10',
+            'conus_t850',
+            'conus_t500',
+            'conus_omega500',
+            'conus_sst',
             'conus_snow_accum',
             'ne_snow_accum',
         ):
             legend_h = 96
 
         if product_key == 'na_z500a':
-            header_h = NA_Z500A_HEADER_HEIGHT
+            header_h = Z500_CLASSIC_HEADER_HEIGHT if Z500_STYLE == 'classic' else NA_Z500A_HEADER_HEIGHT
         elif product_key == 'ne_snow_accum':
             header_h = NE_SNOW_ACCUM_HEADER_HEIGHT
         elif is_rework_snow:
@@ -3690,6 +3925,7 @@ def export_composite(composite, out_file, region, dimensions=1600, scale=None, c
 
 
 def _generate_z500_anomaly_map_local(img, h, region, prefix):
+    classic_na_style = prefix == 'na_z500a' and Z500_STYLE == 'classic'
     if prefix == 'nh_z500a':
         if USE_NH_TRUE_POLAR_RENDER:
             polar_width = max(int(round(NH_POLAR_DIMS * 1.18)), NH_POLAR_DIMS + 120)
@@ -3707,11 +3943,24 @@ def _generate_z500_anomaly_map_local(img, h, region, prefix):
         map_dims = region_dimensions(CONUS_DIMS, region)
         sample_bounds = region
         plans = [
-            {'dims': map_dims, 'sample_scale_m': LOCAL_Z500_NA_SCALES_M[0], 'minor_interval': NA_Z500A_MINOR_INTERVAL, 'major_interval': NA_Z500A_MAJOR_INTERVAL, 'include_z540': True, 'include_border': True, 'label': 'local base'},
+            {
+                'dims': map_dims,
+                'sample_scale_m': LOCAL_Z500_NA_SCALES_M[0],
+                'minor_interval': Z500_CLASSIC_MINOR_INTERVAL if classic_na_style else NA_Z500A_MINOR_INTERVAL,
+                'major_interval': Z500_CLASSIC_MAJOR_INTERVAL if classic_na_style else NA_Z500A_MAJOR_INTERVAL,
+                'include_z540': False if classic_na_style else True,
+                'include_border': True,
+                'label': 'local base',
+            },
             {'dims': shrink_dimensions(map_dims), 'sample_scale_m': LOCAL_Z500_NA_SCALES_M[1], 'minor_interval': 0, 'major_interval': 18, 'include_z540': True, 'include_border': True, 'label': 'local coarse'},
             {'dims': shrink_dimensions(shrink_dimensions(map_dims)), 'sample_scale_m': LOCAL_Z500_NA_SCALES_M[2], 'minor_interval': 0, 'major_interval': 24, 'include_z540': False, 'include_border': True, 'label': 'local extra coarse'},
             {'dims': shrink_dimensions(shrink_dimensions(map_dims)), 'sample_scale_m': int(LOCAL_Z500_NA_SCALES_M[2] * 1.7), 'minor_interval': 0, 'major_interval': 30, 'include_z540': False, 'include_border': False, 'label': 'local emergency'},
         ]
+        if classic_na_style:
+            for plan in plans[1:]:
+                plan['minor_interval'] = 0
+                plan['major_interval'] = 0
+                plan['include_z540'] = False
 
     if SHORT_RANGE_ACCURACY_HOURS > 0 and int(h) <= SHORT_RANGE_ACCURACY_HOURS:
         for i, plan in enumerate(plans):
@@ -3725,7 +3974,8 @@ def _generate_z500_anomaly_map_local(img, h, region, prefix):
             plan['sample_scale_m'] = int(plan['sample_scale_m'] * 1.2)
             if plan.get('minor_interval', 0) > 0:
                 plan['minor_interval'] = max(12, int(plan['minor_interval']))
-            plan['major_interval'] = max(18, int(plan['major_interval']))
+            if not classic_na_style:
+                plan['major_interval'] = max(18, int(plan['major_interval']))
 
     out_file = build_frame_path(prefix, h)
     valid_utc = RUN_INIT_UTC + timedelta(hours=int(h))
@@ -3813,6 +4063,13 @@ def _generate_z500_anomaly_map_local(img, h, region, prefix):
                     highlight_color='#2455ff',
                 )
             else:
+                anomaly_palette = Z500_CLASSIC_PALETTE if classic_na_style else NA_Z500A_PALETTE
+                anomaly_vmin = Z500_CLASSIC_MIN_M if classic_na_style else ANOMALY_MIN_M
+                anomaly_vmax = Z500_CLASSIC_MAX_M if classic_na_style else ANOMALY_MAX_M
+                anomaly_gain = Z500_CLASSIC_DISPLAY_GAIN if classic_na_style else NA_Z500A_DISPLAY_GAIN
+                anomaly_gamma = Z500_CLASSIC_DISPLAY_GAMMA if classic_na_style else NA_Z500A_DISPLAY_GAMMA
+                anomaly_smooth = Z500_CLASSIC_SMOOTH_PASSES if classic_na_style else NA_Z500A_ANOMALY_SMOOTH_PASSES
+                contour_smooth = Z500_CLASSIC_CONTOUR_SMOOTH_PASSES if classic_na_style else NA_Z500A_CONTOUR_SMOOTH_PASSES
                 _render_local_anomaly_tile(
                     anomaly_field=anomaly_m_arr,
                     contour_field=contour_dam_arr,
@@ -3820,9 +4077,9 @@ def _generate_z500_anomaly_map_local(img, h, region, prefix):
                     out_file=out_file,
                     width=width,
                     height=height,
-                    palette=NA_Z500A_PALETTE,
-                    vmin=ANOMALY_MIN_M,
-                    vmax=ANOMALY_MAX_M,
+                    palette=anomaly_palette,
+                    vmin=anomaly_vmin,
+                    vmax=anomaly_vmax,
                     minor_interval=plan['minor_interval'],
                     major_interval=plan['major_interval'],
                     minor_color=NA_Z500A_MINOR_COLOR,
@@ -3833,10 +4090,10 @@ def _generate_z500_anomaly_map_local(img, h, region, prefix):
                     major_alpha=NA_Z500A_MAJOR_ALPHA,
                     highlight_level=(540 if plan['include_z540'] else None),
                     highlight_color=NA_Z500A_HIGHLIGHT_COLOR,
-                    anomaly_gain=NA_Z500A_DISPLAY_GAIN,
-                    anomaly_gamma=NA_Z500A_DISPLAY_GAMMA,
-                    anomaly_smooth_passes=NA_Z500A_ANOMALY_SMOOTH_PASSES,
-                    contour_smooth_passes=NA_Z500A_CONTOUR_SMOOTH_PASSES,
+                    anomaly_gain=anomaly_gain,
+                    anomaly_gamma=anomaly_gamma,
+                    anomaly_smooth_passes=anomaly_smooth,
+                    contour_smooth_passes=contour_smooth,
                     interpolation=NA_Z500A_INTERPOLATION,
                     use_centered_norm=True,
                 )
@@ -3896,15 +4153,23 @@ def generate_z500_anomaly_map(img, h, region, prefix):
         include_z540=True,
         include_border=True,
     ):
+        classic_na_style = prefix == 'na_z500a' and Z500_STYLE == 'classic'
+        style_palette = Z500_CLASSIC_PALETTE if classic_na_style else (NA_Z500A_PALETTE if prefix == 'na_z500a' else ANOMALY_PALETTE)
+        style_gain = Z500_CLASSIC_DISPLAY_GAIN if classic_na_style else (NA_Z500A_DISPLAY_GAIN if prefix == 'na_z500a' else ANOMALY_DISPLAY_GAIN)
+        style_gamma = Z500_CLASSIC_DISPLAY_GAMMA if classic_na_style else (NA_Z500A_DISPLAY_GAMMA if prefix == 'na_z500a' else 1.0)
+        style_min = Z500_CLASSIC_MIN_M if classic_na_style else ANOMALY_MIN_M
+        style_max = Z500_CLASSIC_MAX_M if classic_na_style else ANOMALY_MAX_M
         anomaly_for_render = _coarsen_for_compute(anomaly_field, anomaly_scale_m, min_scale_m=25000)
         contour_for_render = _coarsen_for_compute(contour_field, contour_scale_m, min_scale_m=25000)
         overlays = [
             flat_background_overlay(tile_geom, color=BASEMAP_OCEAN_COLOR),
             anomaly_overlay(
                 anomaly_for_render,
-                palette=(NA_Z500A_PALETTE if prefix == 'na_z500a' else ANOMALY_PALETTE),
-                display_gain=(NA_Z500A_DISPLAY_GAIN if prefix == 'na_z500a' else ANOMALY_DISPLAY_GAIN),
-                display_gamma=(NA_Z500A_DISPLAY_GAMMA if prefix == 'na_z500a' else 1.0),
+                palette=style_palette,
+                display_gain=style_gain,
+                display_gamma=style_gamma,
+                vmin=style_min,
+                vmax=style_max,
             ),
         ]
         if minor_interval and int(minor_interval) < int(major_interval):
@@ -3919,18 +4184,19 @@ def generate_z500_anomaly_map(img, h, region, prefix):
                     line_width_frac=0.006,
                 )
             )
-        overlays.append(
-            contour_overlay(
-                contour_for_render,
-                interval=major_interval,
-                color='#121212',
-                opacity=0.92,
-                smooth_px=0,
-                thicken_px=0,
-                line_width_frac=0.009,
+        if major_interval and int(major_interval) > 0:
+            overlays.append(
+                contour_overlay(
+                    contour_for_render,
+                    interval=major_interval,
+                    color='#121212',
+                    opacity=0.92,
+                    smooth_px=0,
+                    thicken_px=0,
+                    line_width_frac=0.009,
+                )
             )
-        )
-        if include_z540:
+        if include_z540 and not classic_na_style:
             overlays.append(
                 highlight_iso_overlay(
                     contour_for_render,
@@ -4055,6 +4321,11 @@ def generate_z500_anomaly_map(img, h, region, prefix):
                 'label': 'emergency ultra coarse true anomaly',
             },
         ]
+        if Z500_STYLE == 'classic':
+            for plan in plans:
+                plan['minor_interval'] = 0
+                plan['major_interval'] = 0
+                plan['include_z540'] = False
 
     if is_long_range_hour(h):
         for plan in plans:
@@ -4065,7 +4336,8 @@ def generate_z500_anomaly_map(img, h, region, prefix):
                 plan['anomaly_scale_m'] = int(plan['anomaly_scale_m'] * 1.2)
             if plan.get('contour_scale_m') is not None:
                 plan['contour_scale_m'] = int(plan['contour_scale_m'] * 1.2)
-            plan['major_interval'] = max(18, int(plan['major_interval']))
+            if not (prefix == 'na_z500a' and Z500_STYLE == 'classic'):
+                plan['major_interval'] = max(18, int(plan['major_interval']))
             if plan.get('minor_interval', 0) > 0:
                 plan['minor_interval'] = max(12, int(plan['minor_interval']))
 
@@ -4722,6 +4994,62 @@ def generate_snow_accum_map(img, h, running_snow_cm, region=CONUS_THUMB_REGION, 
     annotate_map_file(out_file, key, h, map_region=region, snow_labels=snow_labels, snow_ratio=snow_ratio)
 
 
+def generate_parameter_map(img, h, region=CONUS_THUMB_REGION, key='conus_wind10'):
+    """Render a selected WeatherNext 2 field using a shared map contract."""
+    spec = PARAMETER_MAP_SPECS.get(key)
+    if spec is None:
+        raise ValueError(f'Unknown WeatherNext parameter product: {key}')
+
+    region_geom = ee.Geometry.Rectangle(region, geodesic=False)
+    kind = spec.get('kind')
+    if kind == 'wind10':
+        u = img.select(WN2_10M_U_BAND)
+        v = img.select(WN2_10M_V_BAND)
+        field = u.pow(2).add(v.pow(2)).sqrt().rename('wind10_speed_mps')
+    elif kind == 'temperature':
+        field = img.select(spec['band']).subtract(273.15).rename(f'{key}_c')
+    elif kind == 'omega':
+        field = img.select(spec['band']).rename(f'{key}_pa_s')
+    else:
+        raise ValueError(f'Unsupported parameter-map kind for {key}: {kind}')
+
+    field = field.clip(region_geom).resample('bilinear').focalMean(1, 'circle', 'pixels')
+    field_layer = field.visualize(
+        min=float(spec['min']),
+        max=float(spec['max']),
+        palette=spec['palette'],
+    )
+    contour_interval = spec.get('contour_interval')
+    overlays = [
+        basemap_overlay(region_geom, land_color=BASEMAP_LAND_COLOR, ocean_color=BASEMAP_OCEAN_COLOR),
+        field_layer,
+    ]
+    if contour_interval and float(contour_interval) > 0:
+        overlays.append(
+            contour_overlay(
+                field,
+                interval=float(contour_interval),
+                color='#2a2a2a',
+                opacity=0.54,
+                smooth_px=0,
+                thicken_px=0,
+                line_width_frac=0.006,
+            )
+        )
+    overlays.append(border_overlay(include_states=True, region_geom=region_geom, detailed=_use_detailed_geography()))
+    composite = ee.ImageCollection(overlays).mosaic()
+    out_file = build_frame_path(key, h)
+    dims = adaptive_dimensions_for_hour(
+        region_dimensions(CONUS_DIMS, region),
+        h,
+        long_factor=0.92,
+        min_w=980,
+        min_h=720,
+    )
+    export_composite(composite, out_file, region, dimensions=dims)
+    annotate_map_file(out_file, key, h, map_region=region)
+
+
 def generate_conus_t2m_map(img, h, region=CONUS_THUMB_REGION, key='conus_t2m'):
     region_geom = ee.Geometry.Rectangle(region, geodesic=False)
     t2m_f = (
@@ -5298,6 +5626,13 @@ if not RECONCILE_ONLY and non_z500_enabled:
                 task_specs.append(('conus_t2m_anom', 'conus_t2m_anom', None))
             else:
                 skipped_existing_exports += 1
+        for parameter_key in PARAMETER_MAP_SPECS:
+            if parameter_key in enabled_keys:
+                out_file = build_frame_path(parameter_key, h)
+                if should_render_frame(out_file):
+                    task_specs.append((parameter_key, parameter_key, None))
+                else:
+                    skipped_existing_exports += 1
         if 'conus_snow_accum' in enabled_keys:
             for ratio in SNOW_RATIOS:
                 out_file = build_frame_path('conus_snow_accum', h, snow_ratio=ratio)
@@ -5359,6 +5694,8 @@ if not RECONCILE_ONLY and non_z500_enabled:
                 tasks.append((name, lambda i=img, hh=h: generate_conus_t2m_map(i, hh, CONUS_THUMB_REGION, 'conus_t2m')))
             elif kind == 'conus_t2m_anom':
                 tasks.append((name, lambda i=img, hh=h: generate_conus_t2m_anomaly_map(i, hh, CONUS_THUMB_REGION, 'conus_t2m_anom')))
+            elif kind in PARAMETER_MAP_SPECS:
+                tasks.append((name, lambda i=img, hh=h, kk=kind: generate_parameter_map(i, hh, CONUS_THUMB_REGION, kk)))
             elif kind == 'conus_snow_accum':
                 rr = int(ratio)
                 tasks.append((
@@ -5701,6 +6038,11 @@ current_entry = {
     'label': RUN_ID_LABEL,
     'run_date': run_date,
     'init_utc': iso_utc(RUN_INIT_UTC),
+    'source': ASSET,
+    'source_label': 'WeatherNext 2 (Earth Engine)',
+    'ensemble_mode': ENSEMBLE_MODE,
+    'ensemble_member': ENSEMBLE_MEMBER or None,
+    'z500_style': Z500_STYLE,
     'hours': current_hours,
     'products': current_products,
     'snow_ratios': current_ratios if current_ratios else [10],
@@ -5779,6 +6121,11 @@ for entry in [current_entry] + existing_entries:
         'label': str(entry.get('label') or rid),
         'run_date': str(entry.get('run_date') or rid),
         'init_utc': iso_utc(init_dt),
+        'source': str(entry.get('source') or ASSET),
+        'source_label': str(entry.get('source_label') or 'WeatherNext 2 (Earth Engine)'),
+        'ensemble_mode': str(entry.get('ensemble_mode') or 'first'),
+        'ensemble_member': entry.get('ensemble_member'),
+        'z500_style': str(entry.get('z500_style') or 'default'),
         'hours': hours,
         'products': products,
         'snow_ratios': snow_ratios,
