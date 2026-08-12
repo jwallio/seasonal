@@ -449,7 +449,7 @@ jobs:
 
       - name: Upload Shard Artifacts
         if: ${{ always() && env.ENABLE_FORGEJO_ARTIFACT_UPLOAD == '1' }}
-        uses: actions/upload-artifact@v3-node20
+        uses: actions/upload-artifact@v4
         with:
           name: shard-${{ matrix.phase }}-${{ matrix.shard_index }}
           path: |
@@ -545,7 +545,7 @@ jobs:
 
       - name: Download Shard Artifacts
         if: ${{ env.ENABLE_FORGEJO_ARTIFACT_UPLOAD == '1' }}
-        uses: actions/download-artifact@v3-node20
+        uses: actions/download-artifact@v4
         with:
           path: .shards
 
@@ -628,7 +628,7 @@ jobs:
 
       - name: Upload Final Public Artifacts
         if: ${{ always() && env.ENABLE_FORGEJO_ARTIFACT_UPLOAD == '1' }}
-        uses: actions/upload-artifact@v3-node20
+        uses: actions/upload-artifact@v4
         with:
           name: public-final
           path: |
