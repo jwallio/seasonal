@@ -14,6 +14,7 @@ on:
           - conus_core
           - regional_zoom
           - z500_anomalies
+          - weather_parameters
           - temperature
           - snowfall
           - all
@@ -24,6 +25,11 @@ on:
           - conus_vort500
           - conus_t2m
           - conus_t2m_anom
+          - conus_wind10
+          - conus_t850
+          - conus_t500
+          - conus_omega500
+          - conus_sst
           - conus_snow_accum
           - ne_snow_accum
           - ne_zoom_snow_accum
@@ -43,6 +49,29 @@ on:
         options:
           - rework
           - legacy
+      z500_style:
+        description: "[Graphics] 500-mb anomaly style"
+        required: false
+        default: "default"
+        type: choice
+        options:
+          - default
+          - classic
+      ensemble_mode:
+        description: "[Model] WeatherNext ensemble selection"
+        required: false
+        default: "first"
+        type: choice
+        options:
+          - first
+          - mean
+          - median
+          - member
+      ensemble_member:
+        description: "[Model] Ensemble member when mode=member"
+        required: false
+        default: ""
+        type: string
       preview_one_frame:
         description: "[Time Range] Generate only one frame per selected product"
         required: false
@@ -144,6 +173,18 @@ on:
         required: false
         default: "rework"
         type: string
+      z500_style:
+        required: false
+        default: "default"
+        type: string
+      ensemble_mode:
+        required: false
+        default: "first"
+        type: string
+      ensemble_member:
+        required: false
+        default: ""
+        type: string
       preview_one_frame:
         required: false
         default: false
@@ -233,6 +274,11 @@ jobs:
               "conus_vort500",
               "conus_t2m",
               "conus_t2m_anom",
+              "conus_wind10",
+              "conus_t850",
+              "conus_t500",
+              "conus_omega500",
+              "conus_sst",
               "conus_snow_accum",
               "ne_snow_accum",
               "ne_zoom_snow_accum",
@@ -246,6 +292,7 @@ jobs:
               "conus_core": ["conus_mslp_ptype", "conus_vort500", "conus_t2m", "conus_t2m_anom", "conus_snow_accum"],
               "regional_zoom": ["na_z500a", "ne_mslp_ptype", "ne_zoom_snow_accum", "mi_wi_snow_accum", "carolinas_snow_accum"],
               "z500_anomalies": ["nh_z500a", "na_z500a"],
+              "weather_parameters": ["conus_wind10", "conus_t850", "conus_t500", "conus_omega500", "conus_sst"],
               "temperature": ["conus_t2m", "conus_t2m_anom"],
               "snowfall": ["conus_snow_accum", "ne_snow_accum", "ne_zoom_snow_accum", "mi_wi_snow_accum", "carolinas_snow_accum"],
           }
@@ -357,6 +404,9 @@ jobs:
           WN2_CLIMO_START_YEAR: ${{ inputs.climo_start_year || '' }}
           WN2_CLIMO_END_YEAR: ${{ inputs.climo_end_year || '' }}
           WN2_CLIMO_SOURCE: ${{ inputs.climo_source || 'era5' }}
+          WN2_Z500_STYLE: ${{ inputs.z500_style || 'default' }}
+          WN2_ENSEMBLE_MODE: ${{ inputs.ensemble_mode || 'first' }}
+          WN2_ENSEMBLE_MEMBER: ${{ inputs.ensemble_member || '' }}
           WN2_PRODUCT_MODE: ${{ needs.plan-run.outputs.product_mode }}
           WN2_SELECTED_PRODUCTS: ${{ needs.plan-run.outputs.selected_products }}
           SNOW_RATIO_CSV: ${{ needs.plan-run.outputs.snow_ratio_csv }}
@@ -374,6 +424,11 @@ jobs:
           WN2_RUN_CONUS_VORT500: ${{ matrix.phase == 'core' && '1' || '' }}
           WN2_RUN_CONUS_T2M: ${{ matrix.phase == 'core' && '1' || '' }}
           WN2_RUN_CONUS_T2M_ANOM: ${{ matrix.phase == 'core' && '1' || '' }}
+          WN2_RUN_CONUS_WIND10: ${{ matrix.phase == 'core' && '1' || '' }}
+          WN2_RUN_CONUS_T850: ${{ matrix.phase == 'core' && '1' || '' }}
+          WN2_RUN_CONUS_T500: ${{ matrix.phase == 'core' && '1' || '' }}
+          WN2_RUN_CONUS_OMEGA500: ${{ matrix.phase == 'core' && '1' || '' }}
+          WN2_RUN_CONUS_SST: ${{ matrix.phase == 'core' && '1' || '' }}
           WN2_RUN_CONUS_SNOW_ACCUM: ${{ matrix.phase == 'core' && '1' || '' }}
           WN2_RUN_NE_SNOW_ACCUM: ${{ matrix.phase == 'core' && '1' || '' }}
           WN2_RUN_NE_ZOOM_SNOW_ACCUM: ${{ matrix.phase == 'core' && '1' || '' }}
@@ -531,6 +586,9 @@ jobs:
           WN2_CLIMO_START_YEAR: ${{ inputs.climo_start_year || '' }}
           WN2_CLIMO_END_YEAR: ${{ inputs.climo_end_year || '' }}
           WN2_CLIMO_SOURCE: ${{ inputs.climo_source || 'era5' }}
+          WN2_Z500_STYLE: ${{ inputs.z500_style || 'default' }}
+          WN2_ENSEMBLE_MODE: ${{ inputs.ensemble_mode || 'first' }}
+          WN2_ENSEMBLE_MEMBER: ${{ inputs.ensemble_member || '' }}
           WN2_PRODUCT_MODE: ${{ needs.plan-run.outputs.product_mode }}
           WN2_SELECTED_PRODUCTS: ${{ needs.plan-run.outputs.selected_products }}
           SNOW_RATIO_CSV: ${{ needs.plan-run.outputs.snow_ratio_csv }}
@@ -546,6 +604,11 @@ jobs:
           WN2_RUN_CONUS_VORT500: "1"
           WN2_RUN_CONUS_T2M: "1"
           WN2_RUN_CONUS_T2M_ANOM: "1"
+          WN2_RUN_CONUS_WIND10: "1"
+          WN2_RUN_CONUS_T850: "1"
+          WN2_RUN_CONUS_T500: "1"
+          WN2_RUN_CONUS_OMEGA500: "1"
+          WN2_RUN_CONUS_SST: "1"
           WN2_RUN_CONUS_SNOW_ACCUM: "1"
           WN2_RUN_NE_SNOW_ACCUM: "1"
           WN2_RUN_NE_ZOOM_SNOW_ACCUM: "1"
