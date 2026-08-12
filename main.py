@@ -364,4 +364,6191 @@ def _cap_dims_to_max(dimensions, max_px, min_px=360):
     try:
         max_px = int(max_px)
     except (TypeError, ValueError):
-óNøêÚ$z{-®éÜj×W7E÷–ÆöBÒ°Ğ¢vvVæW&FVE÷WF2s¢—6õ÷WF2†æ÷u÷WF2’ÀĞ¢v†—7F÷'•ö†÷W'2s¢%Tåô„•5Dõ%•ô„õU%2ÀĞ¢vFVfVÇE÷'Våö–Bs¢&VfW'&VEöFVfVÇE÷'Våö–BÀĞ¢w6æ÷u÷&öGV7G2s¢6÷'FVB…4äõuõ$ôET5Eô´U•2’ÀĞ¢w&öGV7EöÆ&VÇ2s¢¶¶W“¢Æ&VÂf÷"¶W’ÂÆ&VÂÂòÂò–â$ôET5EôõD”ôå7ÒÀĞ¢w'Vç2s¢Öæ–fW7E÷'Vç2ÀĞ§ĞĞ§v—F‚Öæ–fW7E÷F‚æ÷Vâ‚wrrÂVæ6öF–æsÒwWFbÓ‚r’2c Ğ¢§6öâæGV×†Öæ–fW7E÷–ÆöBÂbÂ–æFVçCÓ"Ğ Ğ¦Öæ–fW7Eö§6öâÒ§6öâæGV×2†Öæ–fW7E÷–ÆöBÂ6W&F÷'3Ò‚rÂrÂs¢r’Ğ¦‡FÖÅ÷FV×ÆFRÒ"" Ğ£ÂDô5E•R‡FÖÃàĞ£Æ‡FÖÃàĞ£Æ†VCàĞ¢ÇF—FÆSåvVF†W$æW‡C"f–WvW#Â÷F—FÆSàĞ¢ÆÖWFæÖSÒ'f–Ww÷'B"6öçFVçCÒ'v–GFƒÖFWf–6R×v–GF‚Â–æ—F–Â×66ÆSÓ#àĞ¢Ç7G–ÆSàĞ¢§&ö÷B°Ğ¢ÒÖ6öçG&öÇ2Öƒ¢ƒ‡ƒ°Ğ¢ĞĞ¢&öG’°Ğ¢&6¶w&÷VæC¢3ccc°Ğ¢6öÆ÷#¢6VfVfVc°Ğ¢föçBÖfÖ–Ç“§7—7FVÒ×V’Â6ç2×6W&–c°Ğ¢FW‡BÖÆ–vã¦6VçFW#°Ğ¢Ö&v–ã£°Ğ¢FF–ærÖ&÷GFöÓ£°Ğ¢ĞĞ¢çw&°Ğ¢Ö‚×v–GFƒ£#Cƒ°Ğ¢Ö&v–ã£WFó°Ğ¢FF–æs£G‚‚6Æ2‡f"‚ÒÖ6öçG&öÇ2Ö‚’²G‚“°Ğ¢ĞĞ¢æÖ×w&°Ğ¢&6¶w&÷VæC¢3°Ğ¢&÷&FW#£‚6öÆ–B3FcFcFc°Ğ¢†V–v‡C£cfƒ°Ğ¢Ö‚Ö†V–v‡C¦6Æ2ƒf‚Òf"‚ÒÖ6öçG&öÇ2Ö‚’Ò3‚“°Ğ¢Ö–âÖ†V–v‡C£##ƒ°Ğ¢F—7Æ“¦fÆWƒ°Ğ¢Æ–vâÖ—FV×3¦6VçFW#°Ğ¢§W7F–g’Ö6öçFVçC¦6VçFW#°Ğ¢÷fW&fÆ÷s¦†–FFVã°Ğ¢ĞĞ¢–Ör°Ğ¢v–GFƒ¦WFó°Ğ¢†V–v‡C¦WFó°Ğ¢Ö‚×v–GFƒ£S°Ğ¢Ö‚Ö†V–v‡C£S°Ğ¢ö&¦V7BÖf—C¦6öçF–ã°Ğ¢F—7Æ“¦&Æö6³°Ğ¢&6¶w&÷VæC¢3°Ğ¢ĞĞ¢7F—FÆR°Ğ¢Ö&v–ã£g‚ƒ°Ğ¢föçB×6—¦S£#Gƒ°Ğ¢föçB×vV–v‡C£s°Ğ¢ÆWGFW"×76–æs£ãVÓ°Ğ¢ĞĞ¢'WGFöâ°Ğ¢FF–æs£‚gƒ°Ğ¢föçB×6—¦S£gƒ°Ğ¢7W'6÷#§ö–çFW#°Ğ¢&÷&FW#£‚6öÆ–B3ccc°Ğ¢&6¶w&÷VæC¢3&C&C&C°Ğ¢6öÆ÷#¢6ccc°Ğ¢&÷&FW"×&F—W3£‡ƒ°Ğ¢ĞĞ¢6VÆV7B°Ğ¢FF–æs£‡‚ƒ°Ğ¢föçB×6—¦S£Wƒ°Ğ¢&÷&FW"×&F—W3£‡ƒ°Ğ¢&÷&FW#£‚6öÆ–B3ccc°Ğ¢&6¶w&÷VæC¢3&&&°Ğ¢6öÆ÷#¢6ccc°Ğ¢Ö–â×v–GFƒ£#ƒ°Ğ¢ĞĞ¢6Æ&VÂ°Ğ¢F—7Æ“¦–æÆ–æRÖ&Æö6³°Ğ¢Ö–â×v–GFƒ£#ƒ°Ğ¢föçB×vV–v‡C£s°Ğ¢ÆWGFW"×76–æs£ã6VÓ°Ğ¢ĞĞ¢æ&÷GFöÒÖ6öçG&öÇ2°Ğ¢÷6—F–öã¦f—†VC°Ğ¢ÆVgC£°Ğ¢&–v‡C£°Ğ¢&÷GFöÓ£°Ğ¢&6¶w&÷VæC¢3CCC°Ğ¢&÷&FW"×F÷£‚6öÆ–B3636363°Ğ¢FF–æs£‚‚6Æ2ƒ'‚²Vçb‡6fRÖ&VÖ–ç6WBÖ&÷GFöÒ’“°Ğ¢&÷‚×6†F÷s£Óg‚g‚&v&ƒÂÂÂã3R“°Ğ¢ĞĞ¢ç&÷r°Ğ¢Ö‚×v–GFƒ£#Cƒ°Ğ¢Ö&v–ã£WFó°Ğ¢F—7Æ“¦fÆWƒ°Ğ¢Æ–vâÖ—FV×3¦6VçFW#°Ğ¢§W7F–g’Ö6öçFVçC¦6VçFW#°Ğ¢fÆW‚×w&§w&°Ğ¢v£ƒ°Ğ¢ĞĞ¢6†÷W%6Æ–FW"°Ğ¢v–GFƒ¦Ö–âƒ“c‚Â“Ggr“°Ğ¢†V–v‡C£3Gƒ°Ğ¢F÷V6‚Ö7F–öã§â×ƒ°Ğ¢ĞĞ¢ÖVF–†Ö‚×v–GFƒ¢sc‚’°Ğ¢7F—FÆR²föçB×6—¦S£#ƒ²Ö&v–ã£‡‚ƒ²ĞĞ¢'WGFöâ²föçB×6—¦S£Gƒ²FF–æs£‡‚'ƒ²ĞĞ¢6VÆV7B²föçB×6—¦S£Gƒ²Ö–â×v–GFƒ£“gƒ²ĞĞ¢6Æ&VÂ²Ö–â×v–GFƒ£ƒgƒ²ĞĞ¢æ&÷GFöÒÖ6öçG&öÇ2²FF–æs£‚‡‚6Æ2ƒG‚²Vçb‡6fRÖ&VÖ–ç6WBÖ&÷GFöÒ’“²ĞĞ¢ç&÷r²v£‡ƒ²ĞĞ¢6†÷W%6Æ–FW"²v–GFƒ¦Ö–âƒ“c‚Â“ggr“²ĞĞ¢æÖ×w&°Ğ¢†V–v‡C£S'fƒ°Ğ¢Ö–âÖ†V–v‡C£cƒ°Ğ¢Ö‚Ö†V–v‡C¦6Æ2ƒf‚Òf"‚ÒÖ6öçG&öÇ2Ö‚’Ò‡‚“°Ğ¢ĞĞ¢ĞĞ¢Â÷7G–ÆSàĞ£Âö†VCàĞ£Æ&öG“àĞ¢ÆF—b6Æ73Ò'w&#àĞ¢Æƒ"–CÒ'F—FÆR#åvVF†W$æW‡C"f–WvW#Âöƒ#àĞ¢ÆF—b6Æ73Ò&Ö×w&#àĞ¢Æ–Ör–CÒ&Ö"7&3Ò""ÇCÒ%tã"Ö#àĞ¢ÂöF—càĞ¢ÂöF—càĞ Ğ¢ÆF—b6Æ73Ò&&÷GFöÒÖ6öçG&öÇ2#àĞ¢ÆF—b6Æ73Ò'&÷r#àĞ¢ÆÆ&VÂf÷#Ò''Vâ#å'Vã£ÂöÆ&VÃàĞ¢Ç6VÆV7B–CÒ''Vâ#ãÂ÷6VÆV7CàĞ¢ÆÆ&VÂf÷#Ò'&öGV7B#äÖ£ÂöÆ&VÃàĞ¢Ç6VÆV7B–CÒ'&öGV7B#ãÂ÷6VÆV7CàĞ¢ÆÆ&VÂf÷#Ò'6æ÷u&F–ò#å6æ÷r&F–ó£ÂöÆ&VÃàĞ¢Ç6VÆV7B–CÒ'6æ÷u&F–ò#ãÂ÷6VÆV7CàĞ¢ÂöF—càĞ¢ÆF—b6Æ73Ò'&÷r"7G–ÆSÒ&Ö&v–â×F÷£‡ƒ²#àĞ¢Æ'WGFöâ–CÒ'&Wd'Fâ#å&WcÂö'WGFöãàĞ¢Ç7â–CÒ&Æ&VÂ#ä†÷W"ÒÒÓÂ÷7ãàĞ¢Æ'WGFöâ–CÒ&æW‡D'Fâ#äæW‡CÂö'WGFöãàĞ¢ÂöF—càĞ¢ÆF—b6Æ73Ò'&÷r"7G–ÆSÒ&Ö&v–â×F÷£gƒ²#àĞ¢Æ–çWBG—SÒ'&ævR"–CÒ&†÷W%6Æ–FW""Ö–ãÒ#"ÖƒÒ#"7FWÒ#"fÇVSÒ##àĞ¢ÂöF—càĞ¢ÂöF—càĞ Ğ¢Ç67&—CàĞ¢6öç7BÖæ–fW7BÒõôÔä”dU5Eô¥4ôåõó°Ğ¢6öç7B'Vç2Ò'&’æ—4'&’†Öæ–fW7Bç'Vç2’òÖæ–fW7Bç'Vç2¢µÓ°Ğ¢6öç7B6æ÷u&öGV7G2ÒæWr6WB„'&’æ—4'&’†Öæ–fW7Bç6æ÷u÷&öGV7G2’òÖæ–fW7Bç6æ÷u÷&öGV7G2¢µÒ“°Ğ¢6öç7B&öGV7DÆ&VÇ2Ò†Öæ–fW7Bç&öGV7EöÆ&VÇ2bbG—VöbÖæ–fW7Bç&öGV7EöÆ&VÇ2ÓÓÒvö&¦V7Br’òÖæ–fW7Bç&öGV7EöÆ&VÇ2¢·Ó°Ğ¢ÆWB7F—fT†÷W'2ÒµÓ°Ğ¢ÆWB–G‚Ò°Ğ Ğ¢6öç7BÖVÂÒFö7VÖVçBævWDVÆVÖVçD'”–B‚vÖr“°Ğ¢6öç7BF—FÆTVÂÒFö7VÖVçBævWDVÆVÖVçD'”–B‚wF—FÆRr“°Ğ¢6öç7BÖw&VÂÒFö7VÖVçBçVW'•6VÆV7F÷"‚ræÖ×w&r“°Ğ¢6öç7B6öçG&öÇ4VÂÒFö7VÖVçBçVW'•6VÆV7F÷"‚ræ&÷GFöÒÖ6öçG&öÇ2r“°Ğ¢6öç7B&ö÷DVÂÒFö7VÖVçBæFö7VÖVçDVÆVÖVçC°Ğ¢6öç7BÆ&VÄVÂÒFö7VÖVçBævWDVÆVÖVçD'”–B‚vÆ&VÂr“°Ğ¢6öç7B'VäVÂÒFö7VÖVçBævWDVÆVÖVçD'”–B‚w'Vâr“°Ğ¢6öç7B&öGV7DVÂÒFö7VÖVçBævWDVÆVÖVçD'”–B‚w&öGV7Br“°Ğ¢6öç7B&F–ôVÂÒFö7VÖVçBævWDVÆVÖVçD'”–B‚w6æ÷u&F–òr“°Ğ¢6öç7B6Æ–FW$VÂÒFö7VÖVçBævWDVÆVÖVçD'”–B‚v†÷W%6Æ–FW"r“°Ğ¢6öç7B&Wd'FâÒFö7VÖVçBævWDVÆVÖVçD'”–B‚w&Wd'Fâr“°Ğ¢6öç7BæW‡D'FâÒFö7VÖVçBævWDVÆVÖVçD'”–B‚væW‡D'Fâr“°Ğ Ğ¢gVæ7F–öâæ÷&ÖÆ—¦T–çDÆ—7B‡fÇVW2ÂÖ–åfÇVRÂÖ…fÇVR’°Ğ¢–b‚'&’æ—4'&’‡fÇVW2’’&WGW&âµÓ°Ğ¢6öç7B÷WBÒµÓ°Ğ¢f÷"†6öç7B&röbfÇVW2’°Ğ¢6öç7BâÒçVÖ&W"‡&r“°Ğ¢–b‚çVÖ&W"æ—4–çFVvW"†â’’6öçF–çVS°Ğ¢–b†Ö–åfÇVRÓÒçVÆÂbbâÂÖ–åfÇVR’6öçF–çVS°Ğ¢–b†Ö…fÇVRÓÒçVÆÂbbââÖ…fÇVR’6öçF–çVS°Ğ¢÷WBçW6‚†â“°Ğ¢ĞĞ¢&WGW&â'&’æg&öÒ†æWr6WB†÷WB’’ç6÷'B‚†Â"’ÓâÒ"“°Ğ¢ĞĞ Ğ¢gVæ7F–öâvWD7W'&VçE'Vâ‚’°Ğ¢6öç7B6VÆV7FVBÒ'VäVÂçfÇVS°Ğ¢f÷"†6öç7B'Vâöb'Vç2’°Ğ¢–b…7G&–ær‡'Vâæ–B’ÓÓÒ6VÆV7FVB’&WGW&â'Vã°Ğ¢ĞĞ¢&WGW&â'Vç2æÆVæwF‚ò'Vç5³Ò¢çVÆÃ°Ğ¢ĞĞ Ğ¢gVæ7F–öâ6WE6VÆV7D÷F–öç2‡6VÆV7DVÂÂfÇVW2ÂÆ&VÄfâ’°Ğ¢6öç7B&WbÒ6VÆV7DVÂçfÇVS°Ğ¢6VÆV7DVÂæ–ææW$…DÔÂÒrs°Ğ¢f÷"†6öç7BfÇVRöbfÇVW2’°Ğ¢6öç7B÷F–öâÒFö7VÖVçBæ7&VFTVÆVÖVçB‚v÷F–öâr“°Ğ¢÷F–öâçfÇVRÒ7G&–ær‡fÇVR“°Ğ¢÷F–öâçFW‡D6öçFVçBÒÆ&VÄfâ‡fÇVR“°Ğ¢6VÆV7DVÂæVæD6†–ÆB†÷F–öâ“°Ğ¢ĞĞ¢f÷"†6öç7BfÇVRöbfÇVW2’°Ğ¢–b…7G&–ær‡fÇVR’ÓÓÒ&Wb’°Ğ¢6VÆV7DVÂçfÇVRÒ&Wc°Ğ¢&WGW&ã°Ğ¢ĞĞ¢ĞĞ¢–b‡fÇVW2æÆVæwF‚’°Ğ¢6VÆV7DVÂçfÇVRÒ7G&–ær‡fÇVW5³Ò“°Ğ¢ĞĞ¢ĞĞ Ğ¢gVæ7F–öâ'V–ÆDg&ÖTæÖR‡&öGV7BÂ†÷W"Â&F–ò’°Ğ¢6öç7B†÷W%7G"Ò7G&–ær††÷W"’çE7F'Bƒ2Âsr“°Ğ¢–b‡6æ÷u&öGV7G2æ†2‡&öGV7B’’°Ğ¢6öç7B&F–õ7G"Ò7G&–ær‡&F–ò’çE7F'Bƒ"Âsr“°Ğ¢&WGW&â&öGV7B²u÷"r²&F–õ7G"²uòr²†÷W%7G"²ræ§rs°Ğ¢ĞĞ¢&WGW&â&öGV7B²uòr²†÷W%7G"²ræ§rs°Ğ¢ĞĞ Ğ¢gVæ7F–öâvWE&öGV7D†÷W'2‡'VâÂ&öGV7B’°Ğ¢–b‚'VâÇÂ&öGV7B’&WGW&âµÓ°Ğ¢6öç7B66÷VBÒ‡'Vâç&öGV7Eö†÷W'2bbG—Vöb'Vâç&öGV7Eö†÷W'2ÓÓÒvö&¦V7BrĞ¢ò'Vâç&öGV7Eö†÷W'5·&öGV7EĞĞ¢¢çVÆÃ°Ğ¢6öç7B66÷VD†÷W'2Òæ÷&ÖÆ—¦T–çDÆ—7B‡66÷VBÂÂçVÆÂ“°Ğ¢–b‡66÷VD†÷W'2æÆVæwF‚’&WGW&â66÷VD†÷W'3°Ğ¢&WGW&âæ÷&ÖÆ—¦T–çDÆ—7B‡'Vâæ†÷W'2ÂÂçVÆÂ“°Ğ¢ĞĞ Ğ¢gVæ7F–öâvWE&öGV7E&F–÷2‡'VâÂ&öGV7B’°Ğ¢–b‚'VâÇÂ&öGV7B’&WGW&âµÓ°Ğ¢6öç7B66÷VBÒ‡'Vâç&öGV7E÷6æ÷u÷&F–÷2bbG—Vöb'Vâç&öGV7E÷6æ÷u÷&F–÷2ÓÓÒvö&¦V7BrĞ¢ò'Vâç&öGV7E÷6æ÷u÷&F–÷5·&öGV7EĞĞ¢¢çVÆÃ°Ğ¢6öç7B66÷VE&F–÷2Òæ÷&ÖÆ—¦T–çDÆ—7B‡66÷VBÂÂ#“°Ğ¢–b‡66÷VE&F–÷2æÆVæwF‚’&WGW&â66÷VE&F–÷3°Ğ¢&WGW&âæ÷&ÖÆ—¦T–çDÆ—7B‡'Vâç6æ÷u÷&F–÷2ÂÂ#“°Ğ¢ĞĞ Ğ¢gVæ7F–öâ7–æ5&öGV7E66÷VD6öçG&öÇ2‚’°Ğ¢6öç7B'VâÒvWD7W'&VçE'Vâ‚“°Ğ¢–b‚'Vâ’°Ğ¢7F—fT†÷W'2ÒµÓ°Ğ¢6Æ–FW$VÂæÖ‚Òss°Ğ¢6Æ–FW$VÂçfÇVRÒss°Ğ¢–G‚Ò°Ğ¢&WGW&ã°Ğ¢ĞĞ¢6öç7B&öGV7BÒ&öGV7DVÂçfÇVS°Ğ¢6öç7B—56æ÷rÒ6æ÷u&öGV7G2æ†2‡&öGV7B“°Ğ¢6öç7B&F–÷2Ò—56æ÷ròvWE&öGV7E&F–÷2‡'VâÂ&öGV7B’¢µÓ°Ğ¢6WE6VÆV7D÷F–öç2‡&F–ôVÂÂ&F–÷2æÆVæwF‚ò&F–÷2¢³ÒÂ‡&F–ò’Óâ&F–ò²s£r“°Ğ¢6öç7B&Wf–÷W4†÷W"Ò7F—fT†÷W'5¶–G…Ó°Ğ¢7F—fT†÷W'2ÒvWE&öGV7D†÷W'2‡'VâÂ&öGV7B“°Ğ¢–b†7F—fT†÷W'2æÆVæwF‚ÓÓÒ’°Ğ¢–G‚Ò°Ğ¢ÒVÇ6R°Ğ¢6öç7Bf÷VæBÒ7F—fT†÷W'2æ–æFW„öb‡&Wf–÷W4†÷W"“°Ğ¢–G‚Òf÷VæBãÒòf÷VæB¢°Ğ¢ĞĞ¢6Æ–FW$VÂæÖ‚Ò7G&–ær„ÖF‚æÖ‚ƒÂ7F—fT†÷W'2æÆVæwF‚Ò’“°Ğ¢6Æ–FW$VÂçfÇVRÒ7G&–ær†–G‚“°Ğ¢ĞĞ Ğ¢gVæ7F–öâ7–æ5'Vå66÷VD6öçG&öÇ2‚’°Ğ¢6öç7B'VâÒvWD7W'&VçE'Vâ‚“°Ğ¢–b‚'Vâ’°Ğ¢7F—fT†÷W'2ÒµÓ°Ğ¢&öGV7DVÂæ–ææW$…DÔÂÒrs°Ğ¢&F–ôVÂæ–ææW$…DÔÂÒrs°Ğ¢6Æ–FW$VÂæÖ‚Òss°Ğ¢6Æ–FW$VÂçfÇVRÒss°Ğ¢–G‚Ò°Ğ¢&WGW&ã°Ğ¢ĞĞ¢6öç7B&öGV7G2Ò'&’æ—4'&’‡'Vâç&öGV7G2’ò'Vâç&öGV7G2¢µÓ°Ğ¢6WE6VÆV7D÷F–öç2‡&öGV7DVÂÂ&öGV7G2Â†¶W’’Óâ&öGV7DÆ&VÇ5¶¶W•ÒÇÂ¶W’“°Ğ¢7–æ5&öGV7E66÷VD6öçG&öÇ2‚“°Ğ¢ĞĞ Ğ¢gVæ7F–öâf–Ww÷'D†V–v‡B‚’°Ğ¢–b‡v–æF÷rçf—7VÅf–Ww÷'BbbçVÖ&W"æ—4f–æ—FR‡v–æF÷rçf—7VÅf–Ww÷'Bæ†V–v‡B’’°Ğ¢&WGW&âÖF‚æfÆö÷"‡v–æF÷rçf—7VÅf–Ww÷'Bæ†V–v‡B“°Ğ¢ĞĞ¢&WGW&âÖF‚æfÆö÷"‡v–æF÷ræ–ææW$†V–v‡BÇÂFö7VÖVçBæFö7VÖVçDVÆVÖVçBæ6Æ–VçD†V–v‡BÇÂƒ“°Ğ¢ĞĞ Ğ¢gVæ7F–öâ7–æ4&÷GFöÔ–ç6WB‚’°Ğ¢6öç7B‚Ò6öçG&öÇ4VÂòÖF‚æ6V–Â†6öçG&öÇ4VÂævWD&÷VæF–æt6Æ–VçE&V7B‚’æ†V–v‡B’¢°Ğ¢&ö÷DVÂç7G–ÆRç6WE&÷W'G’‚rÒÖ6öçG&öÇ2Ö‚rÂ7G&–ær„ÖF‚æÖ‚ƒÂ‚’’²w‚r“°Ğ¢Fö7VÖVçBæ&öG’ç7G–ÆRçFF–æt&÷GFöÒÒ7G&–ær†‚²B’²w‚s°Ğ¢–b†Öw&VÂ’°Ğ¢6öç7B—4Öö&–ÆRÒv–æF÷ræÖF6„ÖVF–‚r†Ö‚×v–GFƒ¢sc‚’r’æÖF6†W3°Ğ¢6öç7BÖF÷ÒÖF‚æÖ‚ƒÂÖF‚æ6V–Â†Öw&VÂævWD&÷VæF–æt6Æ–VçE&V7B‚’çF÷’“°Ğ¢6öç7Bf‚ÒÖF‚æÖ‚ƒ3#Âf–Ww÷'D†V–v‡B‚’“°Ğ¢6öç7BVFvTvÒ—4Öö&–ÆRòB¢#°Ğ¢6öç7BÖ–äÖ†V–v‡BÒ—4Öö&–ÆRòc¢##°Ğ¢6öç7BF&vWD†V–v‡BÒÖF‚æÖ‚†Ö–äÖ†V–v‡BÂf‚Ò‚ÒÖF÷ÒVFvTv“°Ğ¢Öw&VÂç7G–ÆRæ†V–v‡BÒ7G&–ær‡F&vWD†V–v‡B’²w‚s°Ğ¢ĞĞ¢ĞĞ Ğ¢gVæ7F–öâ&VæFW"‚’°Ğ¢6öç7B'VâÒvWD7W'&VçE'Vâ‚“°Ğ¢–b‚'VâÇÂ7F—fT†÷W'2æÆVæwF‚ÇÂ&öGV7DVÂçfÇVR’°Ğ¢ÖVÂç7&2Òrs°Ğ¢Æ&VÄVÂæ–ææW%FW‡BÒtæò†÷W'2s°Ğ¢F—FÆTVÂæ–ææW%FW‡BÒuvVF†W$æW‡C"f–WvW"s°Ğ¢7–æ4&÷GFöÔ–ç6WB‚“°Ğ¢&WGW&ã°Ğ¢ĞĞ Ğ¢6öç7B&öGV7BÒ&öGV7DVÂçfÇVS°Ğ¢6öç7B—56æ÷rÒ6æ÷u&öGV7G2æ†2‡&öGV7B“°Ğ¢&F–ôVÂæF—6&ÆVBÒ—56æ÷s°Ğ¢–b‚—56æ÷r’°Ğ¢&F–ôVÂçF—FÆRÒu6æ÷r&F–òÆ–W2Fò6æ÷vfÆÂ67V×VÆF–öâÖ2öæÇ’âs°Ğ¢ÒVÇ6R°Ğ¢&F–ôVÂçF—FÆRÒrs°Ğ¢6öç7B&F–ô÷F–öç2ÒvWE&öGV7E&F–÷2‡'VâÂ&öGV7B“°Ğ¢–b‡&F–ô÷F–öç2æÆVæwF‚bb&F–ô÷F–öç2æ–æ6ÇVFW2„çVÖ&W"‡&F–ôVÂçfÇVR’’’°Ğ¢&F–ôVÂçfÇVRÒ7G&–ær‡&F–ô÷F–öç5³Ò“°Ğ¢ĞĞ¢ĞĞ Ğ¢6öç7B†÷W"Ò7F—fT†÷W'5¶–G…Ó°Ğ¢6öç7B&F–òÒçVÖ&W"‡&F–ôVÂçfÇVRÇÂ“°Ğ¢6öç7Bg&ÖTæÖRÒ'V–ÆDg&ÖTæÖR‡&öGV7BÂ†÷W"Â&F–ò“°Ğ¢6öç7B'Vä–BÒ7G&–ær‡'Vâæ–B“°Ğ¢6öç7B†÷W%7G"Ò7G&–ær††÷W"’çE7F'Bƒ2Âsr“°Ğ Ğ¢ÖVÂç7&2Òw'Vç2òr²'Vä–B²ròr²g&ÖTæÖS°Ğ¢ÖVÂæÇBÒ'Vä–B²rr²&öGV7B²r†÷W"r²†÷W%7G#°Ğ¢Æ&VÄVÂæ–ææW%FW‡BÒt†÷W"r²†÷W%7G#°Ğ¢F—FÆTVÂæ–ææW%FW‡BÒuvVF†W$æW‡C"f–WvW"s°Ğ¢7–æ4&÷GFöÔ–ç6WB‚“°Ğ¢ĞĞ Ğ¢gVæ7F–öâ6†ævR†F—"’°Ğ¢–b‚7F—fT†÷W'2æÆVæwF‚’&WGW&ã°Ğ¢–G‚Ò†–G‚²F—"²7F—fT†÷W'2æÆVæwF‚’R7F—fT†÷W'2æÆVæwFƒ°Ğ¢6Æ–FW$VÂçfÇVRÒ7G&–ær†–G‚“°Ğ¢&VæFW"‚“°Ğ¢ĞĞ Ğ¢'VäVÂæFDWfVçDÆ—7FVæW"‚v6†ævRrÂ‚’Óâ°Ğ¢7–æ5'Vå66÷VD6öçG&öÇ2‚“°Ğ¢&VæFW"‚“°Ğ¢Ò“°Ğ¢&öGV7DVÂæFDWfVçDÆ—7FVæW"‚v6†ævRrÂ‚’Óâ°Ğ¢7–æ5&öGV7E66÷VD6öçG&öÇ2‚“°Ğ¢&VæFW"‚“°Ğ¢Ò“°Ğ¢&F–ôVÂæFDWfVçDÆ—7FVæW"‚v6†ævRrÂ‚’Óâ°Ğ¢7–æ5&öGV7E66÷VD6öçG&öÇ2‚“°Ğ¢&VæFW"‚“°Ğ¢Ò“°Ğ¢6Æ–FW$VÂæFDWfVçDÆ—7FVæW"‚v–çWBrÂ‚’Óâ°Ğ¢–G‚ÒçVÖ&W"‡6Æ–FW$VÂçfÇVR“°Ğ¢&VæFW"‚“°Ğ¢Ò“°Ğ¢&Wd'FâæFDWfVçDÆ—7FVæW"‚v6Æ–6²rÂ‚’Óâ6†ævR‚Ó’“°Ğ¢æW‡D'FâæFDWfVçDÆ—7FVæW"‚v6Æ–6²rÂ‚’Óâ6†ævRƒ’“°Ğ¢ÖVÂæFDWfVçDÆ—7FVæW"‚vÆöBrÂ7–æ4&÷GFöÔ–ç6WB“°Ğ Ğ¢6WE6VÆV7D÷F–öç2‡'VäVÂÂ'Vç2æÖ‚‡'Vâ’Óâ'Vâæ–B’Â†–B’Óâ°Ğ¢6öç7B'VâÒ'Vç2æf–æB‚†—FVÒ’Óâ7G&–ær†—FVÒæ–B’ÓÓÒ7G&–ær†–B’“°Ğ¢&WGW&â'Vâò‡'VâæÆ&VÂÇÂ7G&–ær†–B’’¢7G&–ær†–B“°Ğ¢Ò“°Ğ¢–b‡'Vç2æÆVæwF‚’°Ğ¢6öç7BFVfVÇD–BÒ'Vç2ç6öÖR‚‡'Vâ’Óâ7G&–ær‡'Vâæ–B’ÓÓÒ7G&–ær†Öæ–fW7BæFVfVÇE÷'Våö–B’Ğ¢ò7G&–ær†Öæ–fW7BæFVfVÇE÷'Våö–BĞ¢¢7G&–ær‡'Vç5³Òæ–B“°Ğ¢'VäVÂçfÇVRÒFVfVÇD–C°Ğ¢ĞĞ¢v–æF÷ræFDWfVçDÆ—7FVæW"‚w&W6—¦RrÂ7–æ4&÷GFöÔ–ç6WB“°Ğ¢v–æF÷ræFDWfVçDÆ—7FVæW"‚v÷&–VçFF–öæ6†ævRrÂ7–æ4&÷GFöÔ–ç6WB“°Ğ¢–b‡v–æF÷rçf—7VÅf–Ww÷'B’°Ğ¢v–æF÷rçf—7VÅf–Ww÷'BæFDWfVçDÆ—7FVæW"‚w&W6—¦RrÂ7–æ4&÷GFöÔ–ç6WB“°Ğ¢ĞĞ¢7–æ5'Vå66÷VD6öçG&öÇ2‚“°Ğ¢7–æ4&÷GFöÔ–ç6WB‚“°Ğ¢&VæFW"‚“°Ğ¢Â÷67&—CàĞ£Âö&öG“àĞ£Âö‡FÖÃàĞ¢"" Ğ¦‡FÖÂÒ‡FÖÅ÷FV×ÆFRç&WÆ6R‚uõôÔä”dU5Eô¥4ôåõòrÂÖæ–fW7Eö§6öâĞ Ğ§v—F‚÷Vâ†bw´õUEUGÒö–æFW‚æ‡FÖÂrÂwrrÂVæ6öF–æsÒwWFbÓ‚r’2c Ğ¢bçw&—FR†‡FÖÂĞ Ğ 
+        return dimensions
+    if max_px <= 0:
+        return dimensions
+
+    if isinstance(dimensions, int):
+        return max(int(min_px), min(int(dimensions), int(max_px)))
+
+    if isinstance(dimensions, str) and 'x' in dimensions:
+        w_str, h_str = dimensions.lower().split('x', 1)
+        try:
+            w = int(w_str)
+            h = int(h_str)
+        except ValueError:
+            return dimensions
+        if w <= max_px and h <= max_px:
+            return dimensions
+        scale = min(max_px / float(w), max_px / float(h))
+        if scale >= 1.0:
+            return dimensions
+        nw = max(int(min_px), int(round(w * scale)))
+        nh = max(int(min_px), int(round(h * scale)))
+        return f'{nw}x{nh}'
+
+    return dimensions
+
+
+if FAST_RENDER:
+    ANOMALY_DIMS = '1080x790'
+    CONUS_DIMS = '1300x930'
+    NE_DIMS = '1180x930'
+    PTYPE_CONUS_DIMS = '1320x960'
+    PTYPE_NE_DIMS = '1200x980'
+    SNOW_CONUS_DIMS = '1320x960'
+    SNOW_NE_DIMS = '1200x980'
+    SNOW_NE_ZOOM_DIMS = '1280x900'
+    NH_SOURCE_DIMS = '1400x280'
+    NH_POLAR_DIMS = 980
+    ANOMALY_NA_SCALE_M = 52000
+    ANOMALY_NH_SCALE_M = 76000
+    ANOMALY_WORK_SCALE_M = 220000
+    Z500_NH_ANOM_SCALES_M = [260000, 360000, 480000]
+    Z500_NA_ANOM_SCALES_M = [200000, 300000, 420000]
+    T2M_ANOM_WORK_SCALES_M = [70000, 110000, 150000]
+    LOCAL_Z500_NH_SCALES_M = [130000, 180000, 240000]
+    LOCAL_Z500_NA_SCALES_M = [110000, 150000, 210000]
+    LOCAL_T2M_ANOM_SCALES_M = [45000, 65000, 95000]
+else:
+    ANOMALY_DIMS = '1200x880'
+    CONUS_DIMS = '1400x1000'
+    NE_DIMS = '1200x980'
+    PTYPE_CONUS_DIMS = '1600x1140'
+    PTYPE_NE_DIMS = '1400x1120'
+    SNOW_CONUS_DIMS = '1600x1140'
+    SNOW_NE_DIMS = '1400x1120'
+    SNOW_NE_ZOOM_DIMS = '1500x980'
+    NH_SOURCE_DIMS = '1600x320'
+    NH_POLAR_DIMS = 1080
+    ANOMALY_NA_SCALE_M = 52000
+    ANOMALY_NH_SCALE_M = 76000
+    ANOMALY_WORK_SCALE_M = 240000
+    Z500_NH_ANOM_SCALES_M = [240000, 340000, 460000]
+    Z500_NA_ANOM_SCALES_M = [180000, 280000, 380000]
+    T2M_ANOM_WORK_SCALES_M = [65000, 100000, 140000]
+    LOCAL_Z500_NH_SCALES_M = [90000, 130000, 180000]
+    LOCAL_Z500_NA_SCALES_M = [70000, 105000, 150000]
+    LOCAL_T2M_ANOM_SCALES_M = [30000, 45000, 70000]
+
+max_dimension_px = None
+if max_dimension_env:
+    try:
+        max_dimension_px = int(max_dimension_env)
+    except ValueError:
+        print(f'[{ts()}] Invalid WN2_MAX_DIMENSION="{max_dimension_env}", ignoring.')
+        max_dimension_px = None
+if max_dimension_px is not None:
+    max_dimension_px = max(480, min(1400, max_dimension_px))
+    ANOMALY_DIMS = _cap_dims_to_max(ANOMALY_DIMS, max_dimension_px)
+    CONUS_DIMS = _cap_dims_to_max(CONUS_DIMS, max_dimension_px)
+    NE_DIMS = _cap_dims_to_max(NE_DIMS, max_dimension_px)
+    PTYPE_CONUS_DIMS = _cap_dims_to_max(PTYPE_CONUS_DIMS, max_dimension_px)
+    PTYPE_NE_DIMS = _cap_dims_to_max(PTYPE_NE_DIMS, max_dimension_px)
+    SNOW_CONUS_DIMS = _cap_dims_to_max(SNOW_CONUS_DIMS, max_dimension_px)
+    SNOW_NE_DIMS = _cap_dims_to_max(SNOW_NE_DIMS, max_dimension_px)
+    SNOW_NE_ZOOM_DIMS = _cap_dims_to_max(SNOW_NE_ZOOM_DIMS, max_dimension_px)
+    NH_SOURCE_DIMS = _cap_dims_to_max(NH_SOURCE_DIMS, max_dimension_px)
+    NH_POLAR_DIMS = max(480, min(int(NH_POLAR_DIMS), int(max_dimension_px)))
+
+GEOGRAPHY_DETAIL_MODE = str(geography_detail_env or 'auto').strip().lower()
+if GEOGRAPHY_DETAIL_MODE not in ('auto', 'high', 'low'):
+    print(f'[{ts()}] Invalid WN2_GEOGRAPHY_DETAIL="{GEOGRAPHY_DETAIL_MODE}", defaulting to auto.')
+    GEOGRAPHY_DETAIL_MODE = 'auto'
+
+
+def _use_detailed_geography(width=None, height=None):
+    if GEOGRAPHY_DETAIL_MODE == 'high':
+        return True
+    if GEOGRAPHY_DETAIL_MODE == 'low':
+        return False
+
+    longest = 0
+    for value in (width, height, max_dimension_px):
+        try:
+            if value is not None:
+                longest = max(longest, int(value))
+        except (TypeError, ValueError):
+            continue
+
+    if longest <= 0:
+        # Auto mode defaults to detailed outlines unless explicitly size-capped low.
+        return True
+    return longest >= 840
+
+workers_env = os.environ.get('EXPORT_WORKERS')
+try:
+    EXPORT_WORKERS = int(workers_env) if workers_env else (2 if FAST_RENDER else 2)
+except ValueError:
+    EXPORT_WORKERS = 2
+EXPORT_WORKERS = max(1, min(4, EXPORT_WORKERS))
+print(f'[{ts()}] Render profile: fast={FAST_RENDER}, workers={EXPORT_WORKERS}, dims={ANOMALY_DIMS}/{CONUS_DIMS}.')
+if max_dimension_px is not None:
+    print(f'[{ts()}] Max output dimension cap: {max_dimension_px}px.')
+print(f'[{ts()}] NH render mode: {NH_RENDER_MODE}.')
+print(f'[{ts()}] Geography detail mode: {GEOGRAPHY_DETAIL_MODE}.')
+print(
+    f'[{ts()}] Ensemble mode: {ENSEMBLE_MODE}'
+    + (f' (member={ENSEMBLE_MEMBER})' if ENSEMBLE_MEMBER else '')
+    + '.'
+)
+print(f'[{ts()}] 500-hPa anomaly style: {Z500_STYLE}.')
+if RECONCILE_ONLY:
+    print(f'[{ts()}] Reconcile-only mode enabled: map rendering phases will be skipped.')
+
+ANOMALY_PALETTE = [
+    '#6a1b9a', '#7e57c2', '#5c6bc0', '#3f7fcf', '#5ea5de', '#8cc3e8',
+    '#bddbf0', '#dfe7ee',
+    '#efe4b0', '#efcd83', '#eaa45f', '#e2784a', '#cc4f36', '#a92a26'
+]
+ANOMALY_NEG_PALETTE = ['#6f00a8', '#8f45c8', '#5f58cf', '#2f75e2', '#5fa8ef', '#9fd7f5']
+ANOMALY_POS_PALETTE = ['#f6e48e', '#f8c06b', '#f39a55', '#ea6e45', '#d93f2f', '#9a1f16']
+ANOMALY_MIN_M = -300
+ANOMALY_MAX_M = 300
+ANOMALY_NEUTRAL_M = 6
+ANOMALY_DISPLAY_GAIN = 1.0
+ANOMALY_SMOOTH_RADIUS_PX = 0
+NA_Z500A_PALETTE = [
+    '#7a169f', '#9742c8', '#5b52e2', '#2e79f1', '#4fa7f7', '#9ccffb',
+    '#f0f1ef',
+    '#f5de97', '#f4b95c', '#ef833e', '#df492f', '#c62423', '#941114',
+]
+Z500_CLASSIC_PALETTE = [
+    '#32678e', '#3f80a7', '#5796b8', '#72abc6', '#98c1d2', '#c0d8e1',
+    '#e8eef0',
+    '#f9e4e2', '#f2c2c0', '#e39a97', '#d87573', '#c45257', '#a83b49',
+]
+Z500_CLASSIC_MIN_M = -140
+Z500_CLASSIC_MAX_M = 140
+Z500_CLASSIC_DISPLAY_GAIN = 1.0
+Z500_CLASSIC_DISPLAY_GAMMA = 1.0
+Z500_CLASSIC_SMOOTH_PASSES = 1
+Z500_CLASSIC_CONTOUR_SMOOTH_PASSES = 0
+Z500_CLASSIC_MINOR_INTERVAL = 0
+Z500_CLASSIC_MAJOR_INTERVAL = 0
+Z500_CLASSIC_LEGEND_HEIGHT = 74
+Z500_CLASSIC_HEADER_HEIGHT = 62
+NA_Z500A_DISPLAY_GAIN = 1.14
+NA_Z500A_DISPLAY_GAMMA = 0.88
+NA_Z500A_ANOMALY_SMOOTH_PASSES = 1
+NA_Z500A_CONTOUR_SMOOTH_PASSES = 1
+NA_Z500A_MINOR_INTERVAL = 2.5
+NA_Z500A_MAJOR_INTERVAL = 12
+NA_Z500A_MINOR_COLOR = '#323232'
+NA_Z500A_MAJOR_COLOR = '#181818'
+NA_Z500A_HIGHLIGHT_COLOR = '#2958e6'
+NA_Z500A_MINOR_LW = 0.38
+NA_Z500A_MAJOR_LW = 0.94
+NA_Z500A_MINOR_ALPHA = 0.34
+NA_Z500A_MAJOR_ALPHA = 0.84
+NA_Z500A_INTERPOLATION = 'bicubic'
+NA_Z500A_LEGEND_HEIGHT = 74
+NA_Z500A_HEADER_HEIGHT = 62
+BASEMAP_LAND_COLOR = '#e6ebef'
+BASEMAP_OCEAN_COLOR = '#d6dde4'
+Z500_MINOR_CONTOUR_INTERVAL = 6
+Z500_MAJOR_CONTOUR_INTERVAL = 12
+VORTICITY_PALETTE = ['#f5ee00', '#f4c236', '#ee8c4a', '#d35a75', '#a03ca0', '#5f209f']
+CONUS_VORT_WIND_SMOOTH_PX = 1
+CONUS_VORT_DISPLAY_SMOOTH_PX = 2
+CONUS_VORT_SCALE = 50000.0
+CONUS_VORT_MIN = 6.0
+CONUS_VORT_MAX = 50.0
+CONUS_VORT_MASK_THRESHOLD = 5.8
+CONUS_VORT_CORE_THRESHOLD = 8.8
+CONUS_VORT_MIN_CONNECTED_PX = 24
+CONUS_VORT_COHERENCE_SMOOTH_PX = 3
+CONUS_VORT_COHERENCE_THRESHOLD = 6.0
+CONUS_VORT_FILL_EXPAND_PX = 1
+CONUS_VORT_Z500_CONTOUR_COLOR = '#2f2f2f'
+CONUS_VORT_Z500_CONTOUR_OPACITY = 0.90
+CONUS_VORT_Z500_CONTOUR_LINE_WIDTH_FRAC = 0.0084
+CONUS_VORT_Z500_CONTOUR_CANNY_THRESHOLD = 0.55
+CONUS_VORT_Z500_CONTOUR_CANNY_SIGMA = 0.85
+CONUS_VORT_Z500_CONTOUR_SMOOTH_PX = 1
+CONUS_VORT_Z500_CONTOUR_MIN_CONNECTED_PX = 18
+RAIN_RATE_PALETTE = ['#a9ee80', '#7ad35a', '#4eb744', '#2f9637', '#f7ea00', '#ffbf00', '#ff8a00', '#ff4200', '#b70000', '#c21cff']
+SNOW_RATE_PALETTE = ['#0a1f6f', '#0d2f8f', '#1448b1', '#1f66cc', '#2d84df', '#45a6ef', '#63c2ff']
+FRZR_RATE_PALETTE = ['#ffe5ef', '#ffc4da', '#f78fb9', '#f06292', '#d81b60', '#ad1457', '#880e4f']
+SLEET_RATE_PALETTE = ['#f0d9ff', '#e1bee7', '#ce93d8', '#ab47bc', '#8e24aa', '#6a1b9a']
+INCH_TO_MM = 25.4
+PTYPE_RATE_MIN_MMHR = 0.02
+PTYPE_RATE_MAX_MMHR = 12.0
+CONUS_PTYPE_RATE_MIN_MMHR = 0.01
+CONUS_PTYPE_RATE_MAX_MMHR = 10.0
+CONUS_PTYPE_PHASE_THRESHOLD_MMHR = 0.08
+CONUS_PTYPE_SMOOTH_THRESHOLD_MMHR = 0.12
+CONUS_PTYPE_VIS_SMOOTH_RADIUS_PX = 1
+CONUS_PTYPE_VIS_GAIN = 1.18
+CONUS_MSLP_CONTOUR_BASE_INTERVAL = 4
+CONUS_MSLP_CONTOUR_LONG_INTERVAL = 5
+CONUS_MSLP_CONTOUR_COLOR = '#32363b'
+CONUS_MSLP_CONTOUR_OPACITY = 0.78
+CONUS_MSLP_CONTOUR_LINE_WIDTH_FRAC = 0.0074
+CONUS_MSLP_CONTOUR_CANNY_THRESHOLD = 0.7
+CONUS_MSLP_CONTOUR_CANNY_SIGMA = 0.6
+CONUS_MSLP_CONTOUR_SMOOTH_PX = 1
+CONUS_MSLP_CONTOUR_MIN_CONNECTED_PX = 10
+CONUS_MSLP_LABEL_MAX_COUNT = 4
+CONUS_MSLP_LABEL_MAX_PRECIP_MMHR = 0.10
+CONUS_MSLP_LABEL_TOLERANCE_HPA = 0.32
+CONUS_MSLP_LABEL_MIN_SEPARATION_DEG = 7.0
+CONUS_MSLP_LABEL_SEARCH_RADIUS_DEG = 1.5
+CONUS_MSLP_LABEL_SEARCH_STEP_DEG = 0.5
+CONUS_MSLP_LABEL_ANCHORS = [
+    (-118.5, 45.5),
+    (-113.0, 40.5),
+    (-108.0, 35.5),
+    (-101.5, 41.0),
+    (-96.0, 36.5),
+    (-91.0, 43.0),
+    (-88.0, 33.5),
+    (-83.5, 39.5),
+]
+CONUS_PTYPE_LEGEND_HEIGHT = 124
+CONUS_PRESSURE_CENTER_SMOOTH_RADIUS_PX = 4
+CONUS_PRESSURE_CENTER_SCALE_M = 90000
+CONUS_PRESSURE_CENTER_SAMPLE_RADIUS_M = 70000
+CONUS_PRESSURE_CENTER_CORE_RADIUS_M = 240000
+CONUS_PRESSURE_CENTER_RING_RADIUS_M = 520000
+CONUS_PRESSURE_CENTER_MIN_PROMINENCE_HPA = 1.6
+CONUS_PRESSURE_CENTER_MIN_CORE_DELTA_HPA = 0.5
+CONUS_PRESSURE_CENTER_EXTREMUM_TOLERANCE_HPA = 0.35
+CONUS_PRESSURE_CENTER_EDGE_MARGIN_LON_DEG = 2.75
+CONUS_PRESSURE_CENTER_EDGE_MARGIN_LAT_DEG = 1.75
+CONUS_RAIN_RATE_PALETTE = ['#bcff72', '#80ef3f', '#3ed02d', '#199b2a', '#ffe600', '#ffbf00', '#ff8c00', '#ff4e00', '#c60000', '#ff39d8']
+SNOW_PTYPE_SEGMENTS_MMHR = [
+    # 0.00-0.10 in/hr (medium -> darker blue)
+    (0.0, 0.10 * INCH_TO_MM, ['#4ea6ff', '#2f84db', '#1f63bf']),
+    # 0.10-0.25 in/hr (dark blue)
+    (0.10 * INCH_TO_MM, 0.25 * INCH_TO_MM, ['#2b76d1', '#1e5fb8', '#0f3a88']),
+    # 0.25-0.50 in/hr (dark purple)
+    (0.25 * INCH_TO_MM, 0.50 * INCH_TO_MM, ['#4a148c', '#5e2aa8', '#7140bf']),
+    # 0.50-1.00 in/hr (cyan)
+    (0.50 * INCH_TO_MM, 1.00 * INCH_TO_MM, ['#b9ffff', '#58e4ef', '#00bfd3']),
+]
+SNOW_PTYPE_MAX_MMHR = 1.0 * INCH_TO_MM
+SNOW_PTYPE_TICKS_MMHR = [0.0, 0.10 * INCH_TO_MM, 0.25 * INCH_TO_MM, 0.50 * INCH_TO_MM, 1.0 * INCH_TO_MM]
+CONUS_SNOW_PTYPE_SEGMENTS_MMHR = [
+    (0.0, 0.10 * INCH_TO_MM, ['#8fd4ff', '#4fa9ff', '#1c74d9']),
+    (0.10 * INCH_TO_MM, 0.25 * INCH_TO_MM, ['#276bd8', '#194ab2', '#0b2d7e']),
+    (0.25 * INCH_TO_MM, 0.50 * INCH_TO_MM, ['#4d1dab', '#6b2fd3', '#8b45f1']),
+    (0.50 * INCH_TO_MM, 1.00 * INCH_TO_MM, ['#bdfdff', '#4feaff', '#00cee5']),
+]
+CONUS_FRZR_RATE_PALETTE = ['#fff1f8', '#ffd4e7', '#ffabd0', '#ff7bb9', '#f54e9a', '#d81b60', '#a70e53', '#740035']
+CONUS_SLEET_RATE_PALETTE = ['#f5e7ff', '#e1c5ff', '#ca90ff', '#ac55e7', '#8a2dc8', '#65149d']
+SNOW_ACCUM_STEP_SEGMENTS_IN = [
+    (0.1, 2.0, ['#eaf8ff']),
+    (2.0, 4.0, ['#cfeeff']),
+    (4.0, 6.0, ['#a9defd']),
+    (6.0, 8.0, ['#7bc9f7']),
+    (8.0, 10.0, ['#4aaee8']),
+    (10.0, 12.0, ['#2f8fd9']),
+    (12.0, 14.0, ['#516dd0']),
+    (14.0, 16.0, ['#6b52c6']),
+    (16.0, 18.0, ['#8540be']),
+    (18.0, 20.0, ['#9d36b7']),
+    (20.0, 22.0, ['#b93db8']),
+    (22.0, 24.0, ['#d451bb']),
+    (24.0, 26.0, ['#00b8d6']),
+    (26.0, 28.0, ['#28d0e6']),
+    (28.0, 30.0, ['#74e8f4']),
+    (30.0, 32.0, ['#cbfbff']),
+    (32.0, 34.0, ['#1ec48f']),
+    (34.0, 36.0, ['#53d8ae']),
+    (36.0, 38.0, ['#97edd0']),
+    (38.0, 40.0, ['#ddfff1']),
+]
+NE_SNOW_ACCUM_STEP_SEGMENTS_IN = [
+    (0.1, 2.0, ['#eefbff']),
+    (2.0, 4.0, ['#d9f3ff']),
+    (4.0, 6.0, ['#b9e4ff']),
+    (6.0, 8.0, ['#8fd3fb']),
+    (8.0, 10.0, ['#5db7f1']),
+    (10.0, 12.0, ['#358fdd']),
+    (12.0, 14.0, ['#2c68cb']),
+    (14.0, 16.0, ['#524ec5']),
+    (16.0, 18.0, ['#733fc5']),
+    (18.0, 20.0, ['#9a34c5']),
+    (20.0, 22.0, ['#c332c1']),
+    (22.0, 24.0, ['#e05cbe']),
+    (24.0, 26.0, ['#00bedc']),
+    (26.0, 28.0, ['#30d7ec']),
+    (28.0, 30.0, ['#7beefa']),
+    (30.0, 32.0, ['#d5fdff']),
+    (32.0, 34.0, ['#23c993']),
+    (34.0, 36.0, ['#58ddb2']),
+    (36.0, 38.0, ['#9aeed3']),
+    (38.0, 40.0, ['#e0fff3']),
+]
+NE_ZOOM_SNOW_ACCUM_STEP_SEGMENTS_IN = [
+    (0.1, 2.0, ['#f1fbff']),
+    (2.0, 4.0, ['#dff5ff']),
+    (4.0, 6.0, ['#a7ddff']),
+    (6.0, 8.0, ['#79c9fb']),
+    (8.0, 10.0, ['#49b2f3']),
+    (10.0, 12.0, ['#238fdc']),
+    (12.0, 14.0, ['#1b6ccc']),
+    (14.0, 16.0, ['#3655ca']),
+    (16.0, 18.0, ['#5b46c8']),
+    (18.0, 20.0, ['#833cc4']),
+    (20.0, 22.0, ['#b53bc2']),
+    (22.0, 24.0, ['#dd60c3']),
+    (24.0, 26.0, ['#00bedb']),
+    (26.0, 28.0, ['#2fd7ec']),
+    (28.0, 30.0, ['#7bedf9']),
+    (30.0, 32.0, ['#d5fcff']),
+    (32.0, 34.0, ['#20c991']),
+    (34.0, 36.0, ['#56ddb1']),
+    (36.0, 38.0, ['#99eed2']),
+    (38.0, 40.0, ['#e0fff4']),
+]
+SNOW_ACCUM_MAX_IN = 40.0
+SNOW_ACCUM_OVER_COLOR = '#d60000'
+MIN_PRODUCT_LANDSCAPE_ASPECT = 1.55
+MIN_FINAL_PRODUCT_LANDSCAPE_ASPECT = 1.20
+NE_SNOW_ACCUM_LEGEND_HEIGHT = 82
+NE_SNOW_ACCUM_HEADER_HEIGHT = 60
+NE_SNOW_LABEL_MIN_IN = 1.0
+NE_SNOW_LABEL_MAX_COUNT = 16
+NE_SNOW_LABEL_COLLISION_PAD = 4
+NE_ZOOM_SNOW_ACCUM_LEGEND_HEIGHT = 78
+NE_ZOOM_SNOW_ACCUM_HEADER_HEIGHT = 64
+NE_ZOOM_SNOW_LABEL_MIN_IN = 1.0
+NE_ZOOM_SNOW_LABEL_MAX_COUNT = 12
+NE_ZOOM_SNOW_LABEL_COLLISION_PAD = 3
+NE_ZOOM_SNOW_DISPLAY_GAIN = 1.08
+SNOW_REWORK_REGIONAL_KEYS = {'ne_zoom_snow_accum', 'mi_wi_snow_accum', 'carolinas_snow_accum'}
+T2M_F_PALETTE = [
+    '#5a168a', '#3344b2', '#2f75d6', '#55a7eb', '#8fd1f4', '#cce8fa',
+    '#f1f3ef',
+    '#f7e5a3', '#f8cc72', '#f3a14f', '#ea6f3b', '#d33e2e', '#9e1f1f'
+]
+T2M_ANOM_F_PALETTE = [
+    '#6f00a8', '#4b3fcb', '#2f73e0', '#58adef', '#9ad7f7',
+    '#e6e8ea',
+    '#f4e58c', '#f4c264', '#ef9849', '#e46535', '#ca2f24', '#8e1313'
+]
+T2M_F_MIN = -20.0
+T2M_F_MAX = 110.0
+T2M_ANOM_F_MIN = -40.0
+T2M_ANOM_F_MAX = 40.0
+
+PARAMETER_MAP_SPECS = {
+    'conus_wind10': {
+        'label': 'CONUS 10m Wind Speed',
+        'title': 'WN2 0.25 deg | 10m Wind Speed (m/s) | CONUS',
+        'kind': 'wind10',
+        'units': '10m wind speed (m/s)',
+        'min': 0.0,
+        'max': 35.0,
+        'ticks': [0, 5, 10, 15, 20, 25, 30, 35],
+        'palette': ['#f5f5f5', '#c7e9f1', '#77c8d7', '#41a6c2', '#277da1', '#225ea8', '#253494', '#54278f'],
+        'contour_interval': 5,
+    },
+    'conus_t850': {
+        'label': 'CONUS 850mb Temperature',
+        'title': 'WN2 0.25 deg | 850-hPa Temperature (degC) | CONUS',
+        'kind': 'temperature',
+        'band': WN2_T850_BAND,
+        'units': '850-hPa temperature (degC)',
+        'min': -30.0,
+        'max': 30.0,
+        'ticks': [-30, -20, -10, 0, 10, 20, 30],
+        'palette': ['#3f2b96', '#5f80cc', '#8ecae6', '#e9f2f4', '#ffd166', '#f28f3b', '#c44536'],
+        'contour_interval': 5,
+    },
+    'conus_t500': {
+        'label': 'CONUS 500mb Temperature',
+        'title': 'WN2 0.25 deg | 500-hPa Temperature (degC) | CONUS',
+        'kind': 'temperature',
+        'band': WN2_T500_BAND,
+        'units': '500-hPa temperature (degC)',
+        'min': -50.0,
+        'max': 5.0,
+        'ticks': [-50, -40, -30, -20, -10, 0],
+        'palette': ['#313695', '#4575b4', '#74add1', '#abd9e9', '#e0f3f8', '#ffffbf', '#fee090', '#fdae61', '#d73027'],
+        'contour_interval': 5,
+    },
+    'conus_omega500': {
+        'label': 'CONUS 500mb Vertical Velocity',
+        'title': 'WN2 0.25 deg | 500-hPa Vertical Velocity (Pa/s) | CONUS',
+        'kind': 'omega',
+        'band': WN2_500_OMEGA_BAND,
+        'units': '500-hPa vertical velocity (Pa/s)',
+        'min': -1.0,
+        'max': 1.0,
+        'ticks': [-1, -0.5, 0, 0.5, 1],
+        'palette': ['#2166ac', '#67a9cf', '#d1e5f0', '#f7f7f7', '#fddbc7', '#ef8a62', '#b2182b'],
+        'contour_interval': 0.25,
+    },
+    'conus_sst': {
+        'label': 'CONUS Sea-Surface Temperature',
+        'title': 'WN2 0.25 deg | Sea-Surface Temperature (degC) | CONUS',
+        'kind': 'temperature',
+        'band': WN2_SST_BAND,
+        'units': 'sea-surface temperature (degC)',
+        'min': 0.0,
+        'max': 32.0,
+        'ticks': [0, 5, 10, 15, 20, 25, 30],
+        'palette': ['#273c75', '#487eb0', '#63cdda', '#a8e6cf', '#f6e58d', '#f0932b', '#eb4d4b'],
+        'contour_interval': 2,
+    },
+}
+if CLIMO_SOURCE == 'era5':
+    # ERA5 daily is used for T2M climatology. Earth Engine ERA5 does not expose
+    # a 500-hPa geopotential-height band, so H500 remains on MERRA2 for now.
+    CLIMO_H500_COLLECTION = ee.ImageCollection(MERRA2_CLIMO_ASSET).select(MERRA2_CLIMO_H500_BAND)
+    CLIMO_H500_BAND = MERRA2_CLIMO_H500_BAND
+    CLIMO_H500_SOURCE_LABEL = 'MERRA2'
+    CLIMO_T2M_COLLECTION = ee.ImageCollection(ERA5_DAILY_CLIMO_ASSET).select(ERA5_DAILY_CLIMO_T2M_BAND)
+    CLIMO_T2M_BAND = ERA5_DAILY_CLIMO_T2M_BAND
+    CLIMO_T2M_SOURCE_LABEL = 'ERA5'
+    CLIMO_T2M_USE_HOUR_FILTER = False
+    CLIMO_SOURCE_NOTE = (
+        'ERA5 selected; T2M uses ERA5 daily means, and H500 falls back to MERRA2 '
+        'because ERA5 H500 geopotential is unavailable in EE.'
+    )
+else:
+    CLIMO_H500_COLLECTION = ee.ImageCollection(MERRA2_CLIMO_ASSET).select(MERRA2_CLIMO_H500_BAND)
+    CLIMO_H500_BAND = MERRA2_CLIMO_H500_BAND
+    CLIMO_H500_SOURCE_LABEL = 'MERRA2'
+    CLIMO_T2M_COLLECTION = ee.ImageCollection(MERRA2_CLIMO_ASSET).select(MERRA2_CLIMO_T2M_BAND)
+    CLIMO_T2M_BAND = MERRA2_CLIMO_T2M_BAND
+    CLIMO_T2M_SOURCE_LABEL = 'MERRA2'
+    CLIMO_T2M_USE_HOUR_FILTER = True
+    CLIMO_SOURCE_NOTE = 'MERRA2 selected for both H500 and T2M.'
+
+CLIMO_H500_BASELINE_LABEL = f'{CLIMO_H500_SOURCE_LABEL} {CLIMO_START_YEAR}-{CLIMO_END_YEAR}'
+CLIMO_T2M_BASELINE_LABEL = f'{CLIMO_T2M_SOURCE_LABEL} {CLIMO_START_YEAR}-{CLIMO_END_YEAR}'
+CLIMO_H500_GROUP_YEARS = 3
+CLIMO_T2M_GROUP_YEARS = 1 if CLIMO_T2M_SOURCE_LABEL == 'ERA5' else 3
+CLIMO_H500_CACHE = {}
+CLIMO_T2M_CACHE = {}
+CLIMO_SIZE_LOGGED = set()
+CLIMO_COUNT_CACHE = {}
+LOCAL_CLIMO_ARRAY_CACHE = {}
+
+PRODUCT_OPTIONS = [
+    ('nh_z500a', 'NH 500mb Height Anomaly', 'nh_z500a_*.jpg', run_nh_z500a_env),
+    ('na_z500a', 'North America 500mb Height Anomaly', 'na_z500a_*.jpg', run_na_z500a_env),
+    ('conus_mslp_ptype', 'CONUS MSLP + P-Type', 'conus_mslp_ptype_*.jpg', run_conus_mslp_ptype_env),
+    ('ne_mslp_ptype', 'Northeast MSLP + P-Type', 'ne_mslp_ptype_*.jpg', run_ne_mslp_ptype_env),
+    ('conus_vort500', 'CONUS 500mb Vorticity', 'conus_vort500_*.jpg', run_conus_vort500_env),
+    ('conus_t2m', 'USA Region 2m Temperature', 'conus_t2m_*.jpg', run_conus_t2m_env),
+    ('conus_t2m_anom', 'USA Region 2m Temperature Anomaly', 'conus_t2m_anom_*.jpg', run_conus_t2m_anom_env),
+    ('conus_wind10', PARAMETER_MAP_SPECS['conus_wind10']['label'], 'conus_wind10_*.jpg', run_conus_wind10_env),
+    ('conus_t850', PARAMETER_MAP_SPECS['conus_t850']['label'], 'conus_t850_*.jpg', run_conus_t850_env),
+    ('conus_t500', PARAMETER_MAP_SPECS['conus_t500']['label'], 'conus_t500_*.jpg', run_conus_t500_env),
+    ('conus_omega500', PARAMETER_MAP_SPECS['conus_omega500']['label'], 'conus_omega500_*.jpg', run_conus_omega500_env),
+    ('conus_sst', PARAMETER_MAP_SPECS['conus_sst']['label'], 'conus_sst_*.jpg', run_conus_sst_env),
+    ('conus_snow_accum', 'CONUS Snowfall Accumulation', 'conus_snow_accum_*.jpg', run_conus_snow_accum_env),
+    ('ne_snow_accum', 'Northeast Snowfall Accumulation', 'ne_snow_accum_*.jpg', run_ne_snow_accum_env),
+    ('ne_zoom_snow_accum', 'New England Zoom Snowfall Accumulation', 'ne_zoom_snow_accum_*.jpg', run_ne_zoom_snow_accum_env),
+    ('mi_wi_snow_accum', 'Michigan/Wisconsin Snowfall Accumulation', 'mi_wi_snow_accum_*.jpg', run_mi_wi_snow_accum_env),
+    ('carolinas_snow_accum', 'Carolinas Snowfall Accumulation', 'carolinas_snow_accum_*.jpg', run_carolinas_snow_accum_env),
+]
+SNOW_PRODUCT_KEYS = {
+    'conus_snow_accum',
+    'ne_snow_accum',
+    'ne_zoom_snow_accum',
+    'mi_wi_snow_accum',
+    'carolinas_snow_accum',
+}
+OPTIONAL_PARAMETER_PRODUCT_KEYS = set(PARAMETER_MAP_SPECS)
+PRODUCT_MODE = (str(product_mode_env or '').strip().lower() or 'all')
+USE_CUSTOM_PRODUCT_SELECTION = (PRODUCT_MODE == 'custom')
+SELECTED_PRODUCT_KEYS = set(_parse_product_keys_csv(selected_products_csv_env))
+KNOWN_PRODUCT_KEYS = {k for k, _, _, _ in PRODUCT_OPTIONS}
+UNKNOWN_SELECTED_PRODUCT_KEYS = sorted(SELECTED_PRODUCT_KEYS - KNOWN_PRODUCT_KEYS)
+
+if UNKNOWN_SELECTED_PRODUCT_KEYS:
+    print(
+        f'[{ts()}] Ignoring unknown custom product keys from WN2_SELECTED_PRODUCTS: '
+        f'{", ".join(UNKNOWN_SELECTED_PRODUCT_KEYS)}'
+    )
+
+ENABLED_PRODUCTS = []
+for key, label, pattern, raw_flag in PRODUCT_OPTIONS:
+    optional_default = not (key in OPTIONAL_PARAMETER_PRODUCT_KEYS)
+    if USE_CUSTOM_PRODUCT_SELECTION and key in SELECTED_PRODUCT_KEYS:
+        optional_default = True
+    flag_enabled = _select_product_flag(raw_flag, default=optional_default)
+    if USE_CUSTOM_PRODUCT_SELECTION:
+        if SELECTED_PRODUCT_KEYS:
+            enabled = key in SELECTED_PRODUCT_KEYS and flag_enabled
+        else:
+            enabled = flag_enabled
+    else:
+        enabled = True
+    if enabled:
+        ENABLED_PRODUCTS.append((key, label, pattern))
+
+if not ENABLED_PRODUCTS:
+    if ALLOW_NO_PRODUCTS:
+        print(f'[{ts()}] No products enabled for this shard; exiting early (WN2_ALLOW_NO_PRODUCTS=1).')
+        raise SystemExit(0)
+    raise ValueError(
+        'No products selected. Set WN2_SELECTED_PRODUCTS (or custom_products_csv in workflow_dispatch) '
+        'or enable at least one WN2_RUN_* product flag.'
+    )
+
+print(f'[{ts()}] Enabled products: {[k for k, _, _ in ENABLED_PRODUCTS]}')
+if product_mode_env:
+    print(f'[{ts()}] Workflow product mode: {PRODUCT_MODE} (custom_selection={USE_CUSTOM_PRODUCT_SELECTION})')
+if USE_CUSTOM_PRODUCT_SELECTION and SELECTED_PRODUCT_KEYS:
+    print(f'[{ts()}] Custom products from WN2_SELECTED_PRODUCTS: {sorted(SELECTED_PRODUCT_KEYS)}')
+
+
+def cleanup_old_products():
+    stale_patterns = [
+        'z500a_*.jpg',
+        'nh_z500a_*.jpg',
+        'na_z500a_*.jpg',
+        'conus_mslp_ptype_*.jpg',
+        'ne_mslp_ptype_*.jpg',
+        'conus_vort500_*.jpg',
+        'conus_t2m_*.jpg',
+        'conus_t2m_anom_*.jpg',
+        'conus_wind10_*.jpg',
+        'conus_t850_*.jpg',
+        'conus_t500_*.jpg',
+        'conus_omega500_*.jpg',
+        'conus_sst_*.jpg',
+        'conus_snow_accum_*.jpg',
+        'ne_snow_accum_*.jpg',
+        'ne_zoom_snow_accum_*.jpg',
+        'mi_wi_snow_accum_*.jpg',
+        'carolinas_snow_accum_*.jpg',
+    ]
+    removed = 0
+    for pattern in stale_patterns:
+        for path in glob.glob(os.path.join(OUTPUT, pattern)):
+            os.remove(path)
+            removed += 1
+    print(f'[{ts()}] Removed {removed} stale product image(s).')
+
+
+def cleanup_current_run_products():
+    run_patterns = [
+        'nh_z500a_*.jpg',
+        'na_z500a_*.jpg',
+        'conus_mslp_ptype_*.jpg',
+        'ne_mslp_ptype_*.jpg',
+        'conus_vort500_*.jpg',
+        'conus_t2m_*.jpg',
+        'conus_t2m_anom_*.jpg',
+        'conus_wind10_*.jpg',
+        'conus_t850_*.jpg',
+        'conus_t500_*.jpg',
+        'conus_omega500_*.jpg',
+        'conus_sst_*.jpg',
+        'conus_snow_accum_*.jpg',
+        'ne_snow_accum_*.jpg',
+        'ne_zoom_snow_accum_*.jpg',
+        'mi_wi_snow_accum_*.jpg',
+        'carolinas_snow_accum_*.jpg',
+    ]
+    removed = 0
+    for pattern in run_patterns:
+        for path in RUN_OUTPUT_DIR.glob(pattern):
+            try:
+                path.unlink()
+                removed += 1
+            except OSError:
+                pass
+    if removed:
+        print(f'[{ts()}] Cleared {removed} stale frame(s) from current run directory: {RUN_OUTPUT_DIR}')
+
+
+def filter_forecast_hour(ic, h):
+    return ic.filter(
+        ee.Filter.Or(
+            ee.Filter.eq('forecast_hour', h),
+            ee.Filter.eq('forecast_hour', str(h)),
+        )
+    )
+
+
+def clip_to_nh(image):
+    return ee.ImageCollection([image.clip(NH_W), image.clip(NH_E)]).mosaic()
+
+
+def download_thumb(ee_image, out_path, vis_params):
+    os.makedirs(os.path.dirname(out_path) or '.', exist_ok=True)
+    url = ee_image.getThumbURL(vis_params)
+    last_error = None
+    max_attempts = 2
+    request_timeout_s = 120
+    for attempt in range(1, max_attempts + 1):
+        try:
+            with requests.get(url, stream=True, timeout=request_timeout_s) as response:
+                if response.status_code != 200:
+                    body = response.text[:500]
+                    print(f'[{ts()}] Thumbnail download failed: status={response.status_code}, body={body}')
+                    raise requests.HTTPError(
+                        f'Thumbnail download failed with status {response.status_code}: {body}',
+                        response=response
+                    )
+
+                with open(out_path, 'wb') as f:
+                    for chunk in response.iter_content(chunk_size=1024 * 1024):
+                        if chunk:
+                            f.write(chunk)
+            return
+        except Exception as e:
+            last_error = e
+            msg = str(e)
+            transient = (
+                isinstance(e, (requests.ConnectionError, requests.Timeout))
+                or 'RemoteDisconnected' in msg
+                or 'Connection aborted' in msg
+                or 'Read timed out' in msg
+            )
+            if transient and attempt < max_attempts:
+                wait_s = attempt * 3
+                print(
+                    f'[{ts()}] Retry {attempt}/{max_attempts - 1} for {out_path} '
+                    f'after transient error: {msg}'
+                )
+                time.sleep(wait_s)
+                continue
+            print(f'[{ts()}] Thumbnail download error for {out_path}: {e}')
+            raise
+    if last_error is not None:
+        raise last_error
+
+
+def get_latest_start_time_recent(ic, days=7):
+    now_utc = datetime.now(timezone.utc)
+    window_start = (now_utc - timedelta(days=days)).strftime('%Y-%m-%dT%H:%M:%S')
+    window_end = (now_utc + timedelta(days=1)).strftime('%Y-%m-%dT%H:%M:%S')
+    recent = ic.filterDate(window_start, window_end)
+    print(f'[{ts()}] Using WN2 recency window: {window_start}Z to {window_end}Z')
+
+    print(f'[{ts()}] Fetching start_time...')
+    t0 = time.time()
+    latest_start_time = recent.aggregate_max('start_time').getInfo()
+    print(f'[{ts()}] Fetched start_time in {time.time() - t0:.2f}s: {latest_start_time}')
+
+    if latest_start_time is not None:
+        latest_run_collection = recent.filter(ee.Filter.eq('start_time', latest_start_time))
+        return latest_start_time, ee.Date(latest_start_time), recent, latest_run_collection
+
+    print(f'[{ts()}] start_time unavailable in recent subset, falling back to system:time_start.')
+    t0 = time.time()
+    latest_system_time = recent.aggregate_max('system:time_start').getInfo()
+    print(f'[{ts()}] Fetched fallback system:time_start in {time.time() - t0:.2f}s: {latest_system_time}')
+
+    if latest_system_time is None:
+        raise ValueError('No WN2 images found in the last 7 days.')
+
+    latest_start_date = ee.Date(latest_system_time)
+    latest_start_time = latest_start_date.format("YYYY-MM-dd'T'HH:mm:ss'Z'").getInfo()
+    latest_run_collection = recent.filter(ee.Filter.eq('system:time_start', latest_system_time))
+    return latest_start_time, latest_start_date, recent, latest_run_collection
+
+
+def parse_utc_timestamp(raw):
+    if raw is None:
+        return None
+    text = str(raw).strip()
+    # Workflow/manual inputs sometimes include wrapping quotes.
+    if len(text) >= 2 and text[0] == text[-1] and text[0] in ('"', "'"):
+        text = text[1:-1].strip()
+    if not text:
+        return None
+
+    # Accept both trailing Z and z from workflow inputs.
+    iso_text = text[:-1] + '+00:00' if text.lower().endswith('z') else text
+    if len(iso_text) >= 5 and iso_text[-5] in ('+', '-') and iso_text[-3] != ':':
+        iso_text = iso_text[:-2] + ':' + iso_text[-2:]
+    try:
+        dt = datetime.fromisoformat(iso_text)
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        return dt.astimezone(timezone.utc)
+    except ValueError:
+        pass
+
+    for fmt in (
+        "%Y-%m-%dT%H:%M:%S",
+        "%Y-%m-%d %H:%M:%S",
+        "%Y-%m-%dT%H:%M",
+        "%Y-%m-%d %H:%M",
+        "%Y-%m-%dT%H",
+        "%Y-%m-%d %H",
+    ):
+        try:
+            return datetime.strptime(text, fmt).replace(tzinfo=timezone.utc)
+        except ValueError:
+            pass
+    return None
+
+
+def format_utc_timestamp(dt):
+    return dt.astimezone(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
+
+
+def get_selected_start_time_recent(ic, days=7, requested_start_time=None):
+    if requested_start_time:
+        requested_dt = parse_utc_timestamp(requested_start_time)
+        if requested_dt is None:
+            raise ValueError(
+                f'RUN_INIT_UTC="{requested_start_time}" is invalid. '
+                'Use an ISO UTC timestamp like 2026-02-22T12:00:00Z.'
+            )
+        requested_iso = format_utc_timestamp(requested_dt)
+        print(f'[{ts()}] RUN_INIT_UTC requested: {requested_iso}')
+        requested = ic.filter(ee.Filter.eq('start_time', requested_iso))
+        requested_count = requested.size().getInfo()
+        print(f'[{ts()}] Requested run frame count: {requested_count}')
+        if requested_count == 0:
+            raise ValueError(
+                f'Requested RUN_INIT_UTC={requested_iso} was not found in {ASSET}. '
+                'Confirm the init time exists in WeatherNext2.'
+            )
+        return requested_iso, ee.Date(requested_iso), requested, requested
+
+    return get_latest_start_time_recent(ic, days=days)
+
+
+# Select either explicit RUN_INIT_UTC or latest run from a recent time window.
+collection = ee.ImageCollection(ASSET)
+latest_start_time, latest_start_date, recent_collection, latest_start_collection = get_selected_start_time_recent(
+    collection,
+    days=7,
+    requested_start_time=run_init_utc_env,
+)
+
+if latest_start_collection.size().getInfo() == 0:
+    if run_init_utc_env:
+        raise ValueError(f'Requested RUN_INIT_UTC={run_init_utc_env} returned no images.')
+    raise ValueError('Latest WN2 run filter returned no images in the last 7 days.')
+
+
+def select_ensemble_image(image_collection, context='forecast', check_nonempty=True):
+    """Select or aggregate WeatherNext ensemble members explicitly.
+
+    The historical default remains ``first`` for output compatibility. New
+    runs can request ``mean``/``median`` or a specific member through the
+    WN2_ENSEMBLE_* environment variables.
+    """
+    if check_nonempty:
+        collection_size = int(image_collection.size().getInfo())
+        if collection_size <= 0:
+            raise ValueError(f'No WeatherNext images available for {context}.')
+
+    if ENSEMBLE_MODE == 'mean':
+        return ee.Image(image_collection.mean())
+    if ENSEMBLE_MODE == 'median':
+        return ee.Image(image_collection.median())
+    if ENSEMBLE_MODE == 'member':
+        member_collection = image_collection.filter(ee.Filter.eq('ensemble_member', ENSEMBLE_MEMBER))
+        member_size = int(member_collection.size().getInfo())
+        if member_size <= 0:
+            try:
+                member_number = int(ENSEMBLE_MEMBER)
+            except (TypeError, ValueError):
+                member_number = None
+            if member_number is not None:
+                member_collection = image_collection.filter(ee.Filter.eq('ensemble_member', member_number))
+                member_size = int(member_collection.size().getInfo())
+        if member_size <= 0:
+            raise ValueError(
+                f'WeatherNext ensemble member {ENSEMBLE_MEMBER!r} is unavailable for {context}.'
+            )
+        return ee.Image(member_collection.first())
+
+    return ee.Image(image_collection.first())
+
+
+def _parse_int(value):
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def _parse_hour_shard(index_raw, total_raw):
+    idx = _parse_int(index_raw)
+    total = _parse_int(total_raw)
+    if idx is None or total is None:
+        return 0, 1
+    total = max(1, total)
+    idx = max(0, min(total - 1, idx))
+    return idx, total
+
+
+def _parse_snow_ratios(csv_value):
+    if csv_value:
+        parts = [p.strip() for p in str(csv_value).split(',') if p.strip()]
+        parsed = sorted({v for v in (_parse_int(p) for p in parts) if v is not None and 10 <= v <= 20})
+        if parsed:
+            return parsed
+    return [10]
+
+
+HOUR_SHARD_INDEX, HOUR_SHARD_TOTAL = _parse_hour_shard(hour_shard_index_env, hour_shard_total_env)
+long_range_threshold_raw = _parse_int(long_range_threshold_env)
+if long_range_threshold_raw is None:
+    LONG_RANGE_THRESHOLD = 120
+else:
+    LONG_RANGE_THRESHOLD = max(24, long_range_threshold_raw)
+min_valid_frame_bytes_raw = _parse_int(min_valid_frame_bytes_env)
+if min_valid_frame_bytes_raw is None:
+    MIN_VALID_FRAME_BYTES = 12000
+else:
+    MIN_VALID_FRAME_BYTES = max(4000, min_valid_frame_bytes_raw)
+climo_window_days_raw = _parse_int(climo_window_days_env)
+if climo_window_days_raw is None:
+    CLIMO_DOY_WINDOW_DAYS = 0 if CLIMO_SOURCE == 'era5' else 5
+else:
+    CLIMO_DOY_WINDOW_DAYS = max(0, min(15, climo_window_days_raw))
+climo_start_year_raw = _parse_int(climo_start_year_env)
+climo_end_year_raw = _parse_int(climo_end_year_env)
+if climo_start_year_raw is not None or climo_end_year_raw is not None:
+    parsed_start = climo_start_year_raw if climo_start_year_raw is not None else CLIMO_START_YEAR
+    parsed_end = climo_end_year_raw if climo_end_year_raw is not None else CLIMO_END_YEAR
+    parsed_start = max(1980, min(2100, parsed_start))
+    parsed_end = max(1980, min(2100, parsed_end))
+    if parsed_end < parsed_start:
+        parsed_end = parsed_start
+    CLIMO_START_YEAR = parsed_start
+    CLIMO_END_YEAR = parsed_end
+CLIMO_H500_BASELINE_LABEL = f'{CLIMO_H500_SOURCE_LABEL} {CLIMO_START_YEAR}-{CLIMO_END_YEAR}'
+CLIMO_T2M_BASELINE_LABEL = f'{CLIMO_T2M_SOURCE_LABEL} {CLIMO_START_YEAR}-{CLIMO_END_YEAR}'
+Z500_CLIMO_BASELINE_KEY, Z500_CLIMO_START_YEAR, Z500_CLIMO_END_YEAR, Z500_CLIMO_IS_EXPLICIT = _resolve_z500_climo_years(
+    z500_climo_baseline_env,
+    CLIMO_START_YEAR,
+    CLIMO_END_YEAR,
+)
+Z500_CLIMO_BASELINE_LABEL = f'{CLIMO_H500_SOURCE_LABEL} {Z500_CLIMO_START_YEAR}-{Z500_CLIMO_END_YEAR}'
+short_range_accuracy_hours_raw = _parse_int(short_range_accuracy_hours_env)
+if short_range_accuracy_hours_raw is None:
+    SHORT_RANGE_ACCURACY_HOURS = 24
+else:
+    SHORT_RANGE_ACCURACY_HOURS = max(0, min(72, short_range_accuracy_hours_raw))
+
+SNOW_RATIOS = _parse_snow_ratios(snow_ratio_csv_env)
+run_history_hours_raw = _parse_int(run_history_hours_env)
+if run_history_hours_raw is None:
+    RUN_HISTORY_HOURS = 24
+else:
+    RUN_HISTORY_HOURS = max(6, min(72, run_history_hours_raw))
+
+print(f'[{ts()}] Snow ratios selected: {SNOW_RATIOS}')
+print(f'[{ts()}] Run history retention: {RUN_HISTORY_HOURS}h')
+print(
+    f'[{ts()}] Resume existing frames: {RESUME_EXISTING} '
+    f'(min_valid_bytes={MIN_VALID_FRAME_BYTES}, skip_cleanup={SKIP_CLEANUP_RUN_DIR})'
+)
+print(
+    f'[{ts()}] Climatology baseline: '
+    f'H500={Z500_CLIMO_BASELINE_LABEL}, T2M={CLIMO_T2M_BASELINE_LABEL} '
+    f'(day-window=+/-{CLIMO_DOY_WINDOW_DAYS}d, not model-climate).'
+)
+print(f'[{ts()}] Climatology source mode: {CLIMO_SOURCE} ({CLIMO_SOURCE_NOTE})')
+if Z500_CLIMO_IS_EXPLICIT:
+    print(
+        f'[{ts()}] Z500 anomaly baseline override active: '
+        f'{Z500_CLIMO_BASELINE_LABEL} (WN2_Z500_CLIMO_BASELINE={Z500_CLIMO_BASELINE_KEY}).'
+    )
+if SHORT_RANGE_ACCURACY_HOURS > 0:
+    print(f'[{ts()}] Short-range anomaly fidelity boost enabled through hour {SHORT_RANGE_ACCURACY_HOURS}.')
+if ADAPTIVE_LONG_RANGE:
+    print(f'[{ts()}] Adaptive long-range render enabled from hour {LONG_RANGE_THRESHOLD}+.')
+if HOUR_SHARD_TOTAL > 1:
+    print(f'[{ts()}] Hour sharding requested: shard {HOUR_SHARD_INDEX + 1}/{HOUR_SHARD_TOTAL}.')
+if run_init_utc_env:
+    print(f'[{ts()}] Requested run init override: {run_init_utc_env}')
+elif event_name == 'workflow_dispatch':
+    print(f'[{ts()}] RUN_INIT_UTC not set for workflow_dispatch; selecting latest available run.')
+
+
+def _infer_available_hours(run_collection):
+    raw_hours = run_collection.aggregate_array('forecast_hour').getInfo()
+    parsed = sorted({h for h in (_parse_int(v) for v in raw_hours) if h is not None and h >= 0})
+    if not parsed:
+        raise ValueError('No numeric forecast_hour values found in latest run.')
+    return parsed
+
+
+def _select_hours(available_hours):
+    explicit = None
+    if hours_csv:
+        explicit = sorted({int(x.strip()) for x in hours_csv.split(',') if x.strip()})
+        if not explicit:
+            raise ValueError('HOURS_CSV was set but no valid hour values were parsed.')
+        print(f'[{ts()}] HOURS override from HOURS_CSV: {explicit}')
+        selected = explicit
+    else:
+        deltas = sorted({b - a for a, b in zip(available_hours, available_hours[1:]) if (b - a) > 0})
+        has_3h = 3 in deltas
+        has_6h = 6 in deltas
+
+        preferred_step = _parse_int(hours_step_env) if hours_step_env else None
+        if preferred_step is not None and preferred_step <= 0:
+            preferred_step = None
+
+        if preferred_step is None:
+            step = 3 if has_3h else 6 if has_6h else (deltas[0] if deltas else 6)
+        else:
+            step = preferred_step
+            if step == 3 and not has_3h and has_6h:
+                step = 6
+            elif step == 6 and not has_6h and has_3h:
+                step = 3
+            elif step not in deltas and deltas:
+                step = deltas[0]
+
+        start_hour = available_hours[0]
+        selected = [h for h in available_hours if (h - start_hour) % step == 0]
+        if not selected:
+            selected = available_hours
+
+    max_hour = _parse_int(hours_max_env) if hours_max_env else None
+    if max_hour is not None:
+        bounded = [h for h in selected if h <= max_hour]
+        if bounded:
+            selected = bounded
+        else:
+            raise ValueError(f'HOURS_MAX={max_hour} filtered out all selected hours: {selected}')
+
+    limit_count = _parse_int(hours_limit_env) if hours_limit_env else None
+    if limit_count is not None and limit_count > 0:
+        selected = selected[:limit_count]
+
+    if explicit is None:
+        note_parts = []
+        if max_hour is not None:
+            note_parts.append(f'max={max_hour}')
+        if limit_count is not None and limit_count > 0:
+            note_parts.append(f'limit={limit_count}')
+        notes = f" ({', '.join(note_parts)})" if note_parts else ''
+        print(
+            f'[{ts()}] Auto HOURS: step={step}h, count={len(selected)}, '
+            f'range={selected[0]}..{selected[-1]} (available range {available_hours[0]}..{available_hours[-1]}){notes}.'
+        )
+    else:
+        note_parts = []
+        if max_hour is not None:
+            note_parts.append(f'max={max_hour}')
+        if limit_count is not None and limit_count > 0:
+            note_parts.append(f'limit={limit_count}')
+        if note_parts:
+            print(f"[{ts()}] HOURS post-filters: {', '.join(note_parts)} -> {selected}")
+    return selected
+
+
+def _apply_hour_shard(hours, shard_index=0, shard_total=1):
+    if shard_total <= 1 or not hours:
+        return list(hours)
+    chunk_size = int(math.ceil(len(hours) / float(shard_total)))
+    start = shard_index * chunk_size
+    end = min(len(hours), start + chunk_size)
+    if start >= len(hours):
+        return []
+    return list(hours[start:end])
+
+
+AVAILABLE_HOURS = _infer_available_hours(latest_start_collection)
+HOURS = _select_hours(AVAILABLE_HOURS)
+if HOUR_SHARD_TOTAL > 1:
+    base_hours = list(HOURS)
+    HOURS = _apply_hour_shard(HOURS, shard_index=HOUR_SHARD_INDEX, shard_total=HOUR_SHARD_TOTAL)
+    if HOURS:
+        print(
+            f'[{ts()}] Hour shard selection: {len(HOURS)} hour(s) '
+            f'({HOURS[0]}..{HOURS[-1]}) from {len(base_hours)} total selected hours.'
+        )
+    else:
+        print(
+            f'[{ts()}] Hour shard selection produced no hours for '
+            f'shard {HOUR_SHARD_INDEX + 1}/{HOUR_SHARD_TOTAL}; continuing with no-op render.'
+        )
+
+hour0_candidates = filter_forecast_hour(latest_start_collection, 0)
+if 0 in AVAILABLE_HOURS:
+    hour0_image = select_ensemble_image(hour0_candidates, context='forecast hour 0', check_nonempty=False)
+else:
+    hour0_image = select_ensemble_image(latest_start_collection, context='run fallback')
+
+print(f'[{ts()}] Fetching system:index...')
+t0 = time.time()
+run_date = hour0_image.get('system:index').getInfo()
+if run_date is None:
+    run_date = latest_start_time
+print(f'[{ts()}] Fetched system:index in {time.time() - t0:.2f}s: {run_date}')
+
+print(f'Processing Run: {run_date}')
+print(f'Selected start_time: {latest_start_time}')
+
+
+def parse_run_init_utc(ts_utc):
+    parsed = parse_utc_timestamp(ts_utc)
+    if parsed is not None:
+        return parsed
+    print(f'[{ts()}] Warning: could not parse run init "{ts_utc}", falling back to current UTC time.')
+    return datetime.now(timezone.utc)
+
+
+RUN_INIT_UTC = parse_run_init_utc(latest_start_time)
+RUN_ID = RUN_INIT_UTC.strftime('%Y%m%d%H')
+RUN_ID_LABEL = RUN_INIT_UTC.strftime('%Y-%m-%d %HZ')
+RUNS_ROOT_DIR = Path(OUTPUT) / 'runs'
+RUN_OUTPUT_DIR = RUNS_ROOT_DIR / RUN_ID
+RUN_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+BORDER_CACHE_DIR = RUN_OUTPUT_DIR / '.cache' / 'borders'
+BORDER_CACHE_DIR.mkdir(parents=True, exist_ok=True)
+BORDER_OVERLAY_CACHE = {}
+print(f'[{ts()}] Run output directory: {RUN_OUTPUT_DIR}')
+
+
+def format_map_times(hour):
+    valid_utc = RUN_INIT_UTC + timedelta(hours=hour)
+    init_text = RUN_INIT_UTC.strftime('%H00 UTC %a %d %b %Y')
+    valid_text = valid_utc.strftime('%H00 UTC %a %d %b %Y')
+    return init_text, valid_text
+
+if DEBUG_BANDS:
+    print(f'[{ts()}] Fetching bandNames...')
+    t0 = time.time()
+    band_names = ee.List(hour0_image.bandNames()).getInfo()
+    print(f'[{ts()}] Fetched bandNames in {time.time() - t0:.2f}s ({len(band_names)} bands)')
+    print(f'Available bands: {band_names}')
+else:
+    band_names = ee.List(hour0_image.bandNames()).getInfo()
+    print(f'[{ts()}] DEBUG_BANDS not set; skipping full bandNames print.')
+
+required_bands = set()
+enabled_product_keys_for_bands = {item[0] for item in ENABLED_PRODUCTS}
+if {'nh_z500a', 'na_z500a', 'conus_vort500'} & enabled_product_keys_for_bands:
+    required_bands.add(WN2_Z500_BAND)
+if 'conus_vort500' in enabled_product_keys_for_bands:
+    required_bands.update({WN2_500_U_BAND, WN2_500_V_BAND})
+if {'conus_mslp_ptype', 'ne_mslp_ptype'} & enabled_product_keys_for_bands:
+    required_bands.update({WN2_MSLP_BAND, WN2_PRECIP_6H_BAND, WN2_T2M_BAND, WN2_T850_BAND, WN2_T700_BAND})
+if {'conus_t2m', 'conus_t2m_anom'} & enabled_product_keys_for_bands:
+    required_bands.add(WN2_T2M_BAND)
+if any(key in enabled_product_keys_for_bands for key in SNOW_PRODUCT_KEYS):
+    required_bands.update({WN2_PRECIP_6H_BAND, WN2_T2M_BAND, WN2_T850_BAND, WN2_T700_BAND})
+if 'conus_wind10' in enabled_product_keys_for_bands:
+    required_bands.update({WN2_10M_U_BAND, WN2_10M_V_BAND})
+if 'conus_t850' in enabled_product_keys_for_bands:
+    required_bands.add(WN2_T850_BAND)
+if 'conus_t500' in enabled_product_keys_for_bands:
+    required_bands.add(WN2_T500_BAND)
+if 'conus_omega500' in enabled_product_keys_for_bands:
+    required_bands.add(WN2_500_OMEGA_BAND)
+if 'conus_sst' in enabled_product_keys_for_bands:
+    required_bands.add(WN2_SST_BAND)
+missing_bands = [b for b in required_bands if b not in band_names]
+if missing_bands:
+    raise ValueError(f'Required WN2 bands missing: {missing_bands}')
+
+
+def get_hour_image(h):
+    hour_filtered = filter_forecast_hour(latest_start_collection, h)
+    if h in AVAILABLE_HOURS:
+        return select_ensemble_image(hour_filtered, context=f'forecast hour {h}', check_nonempty=False)
+    return hour0_image
+
+
+# --- 3. METEOROLOGY LOGIC ---
+def contour_overlay(field, interval, color, opacity=0.82, smooth_px=0, thicken_px=0, line_width_frac=0.010):
+    # Draw thin, crisp contour lines by finding narrow zero-crossings at integer contour levels.
+    smoothed = field.resample('bilinear')
+    if smooth_px and smooth_px > 0:
+        smoothed = smoothed.focalMean(int(smooth_px), 'circle', 'pixels')
+    scaled = smoothed.divide(float(interval))
+    dist = scaled.subtract(scaled.round()).abs()
+    width = max(0.004, min(0.020, float(line_width_frac)))
+    lines = dist.lte(width)
+    if thicken_px and thicken_px > 0:
+        lines = lines.focalMax(int(thicken_px))
+    return lines.selfMask().visualize(palette=[color], opacity=opacity)
+
+
+def conus_mslp_contour_overlay(field, interval, color, opacity=0.78, canny_threshold=0.7, canny_sigma=0.6, smooth_px=1, min_connected_px=10):
+    # Slightly smooth the pressure field before quantization, then drop tiny edge fragments after extraction.
+    smoothed = field.resample('bilinear')
+    if smooth_px and smooth_px > 0:
+        smoothed = smoothed.focalMean(int(smooth_px), 'circle', 'pixels')
+    quantized = smoothed.divide(float(interval)).round().toInt16()
+    lines = ee.Algorithms.CannyEdgeDetector(quantized, float(canny_threshold), float(canny_sigma)).gt(0)
+    if min_connected_px and min_connected_px > 1:
+        lines = lines.updateMask(lines.connectedPixelCount(128, True).gte(int(min_connected_px)))
+    return lines.selfMask().visualize(palette=[color], opacity=opacity)
+
+
+def conus_vorticity_layer(vort_1e5):
+    vort_field = vort_1e5.multiply(CONUS_VORT_SCALE).resample('bilinear')
+    if CONUS_VORT_DISPLAY_SMOOTH_PX and CONUS_VORT_DISPLAY_SMOOTH_PX > 0:
+        vort_field = vort_field.focalMean(CONUS_VORT_DISPLAY_SMOOTH_PX, 'circle', 'pixels')
+    coherence_field = vort_field
+    if CONUS_VORT_COHERENCE_SMOOTH_PX and CONUS_VORT_COHERENCE_SMOOTH_PX > 0:
+        coherence_field = coherence_field.focalMean(CONUS_VORT_COHERENCE_SMOOTH_PX, 'circle', 'pixels')
+    mask_seed = vort_field.gte(CONUS_VORT_MASK_THRESHOLD).selfMask()
+    if CONUS_VORT_MIN_CONNECTED_PX and CONUS_VORT_MIN_CONNECTED_PX > 1:
+        mask_seed = mask_seed.updateMask(
+            mask_seed.connectedPixelCount(128, True).gte(CONUS_VORT_MIN_CONNECTED_PX)
+        )
+    mask_seed = mask_seed.unmask(0).gt(0)
+    if CONUS_VORT_FILL_EXPAND_PX and CONUS_VORT_FILL_EXPAND_PX > 0:
+        mask_seed = mask_seed.focalMax(CONUS_VORT_FILL_EXPAND_PX, 'circle', 'pixels')
+        mask_seed = mask_seed.focalMin(CONUS_VORT_FILL_EXPAND_PX, 'circle', 'pixels')
+    coherent_mask = coherence_field.gte(CONUS_VORT_COHERENCE_THRESHOLD)
+    core_mask = vort_field.gte(CONUS_VORT_CORE_THRESHOLD)
+    vort_mask = mask_seed.And(coherent_mask).Or(core_mask)
+    return vort_field.updateMask(vort_mask.selfMask()).visualize(
+        min=CONUS_VORT_MIN,
+        max=CONUS_VORT_MAX,
+        palette=VORTICITY_PALETTE,
+    )
+
+
+def conus_vort500_height_contour_overlay(
+    field,
+    interval,
+    color,
+    opacity=0.90,
+    canny_threshold=0.55,
+    canny_sigma=0.85,
+    smooth_px=1,
+    min_connected_px=18,
+):
+    smoothed = field.resample('bilinear')
+    if smooth_px and smooth_px > 0:
+        smoothed = smoothed.focalMean(int(smooth_px), 'circle', 'pixels')
+    quantized = smoothed.divide(float(interval)).round().toInt16()
+    lines = ee.Algorithms.CannyEdgeDetector(
+        quantized,
+        float(canny_threshold),
+        float(canny_sigma),
+    ).gt(0)
+    if min_connected_px and min_connected_px > 1:
+        lines = lines.updateMask(lines.connectedPixelCount(128, True).gte(int(min_connected_px)))
+    return lines.selfMask().visualize(palette=[color], opacity=opacity)
+
+
+def highlight_iso_overlay(field, level, color='#2455ff', opacity=0.92, tolerance=1.2, smooth_px=0):
+    smoothed = field.resample('bilinear')
+    if smooth_px and smooth_px > 0:
+        smoothed = smoothed.focalMean(int(smooth_px), 'circle', 'pixels')
+    line = smoothed.subtract(float(level)).abs().lte(float(tolerance)).selfMask()
+    return line.visualize(palette=[color], opacity=opacity)
+
+
+def border_overlay(include_states=False, state_names=None, region_geom=None, detailed=True):
+    country_fc = COUNTRIES_BORDERS if detailed else COUNTRIES
+    if region_geom is not None:
+        country_fc = country_fc.filterBounds(region_geom)
+    country_lines = ee.Image().byte().paint(country_fc, 1, 1).selfMask().visualize(palette=['#333333'])
+    if include_states:
+        state_fc = US_STATES if not state_names else US_STATES.filter(ee.Filter.inList('NAME', state_names))
+        if region_geom is not None:
+            state_fc = state_fc.filterBounds(region_geom)
+        state_lines = ee.Image().byte().paint(state_fc, 1, 1).selfMask().visualize(palette=['#6b4a2c'])
+        return ee.ImageCollection([country_lines, state_lines]).mosaic()
+    return country_lines
+
+
+def ne_snow_border_overlay(region_geom=None):
+    country_fc = COUNTRIES_BORDERS
+    state_fc = US_STATES.filter(ee.Filter.inList('NAME', NE_STATE_NAMES))
+    if region_geom is not None:
+        country_fc = country_fc.filterBounds(region_geom)
+        state_fc = state_fc.filterBounds(region_geom)
+    country_lines = ee.Image().byte().paint(country_fc, 1, 1).selfMask().visualize(palette=['#121212'], opacity=0.94)
+    state_lines = ee.Image().byte().paint(state_fc, 1, 2).selfMask().visualize(palette=['#000000'], opacity=0.98)
+    return ee.ImageCollection([country_lines, state_lines]).mosaic()
+
+
+def snow_land_outline_overlay(region_geom=None, state_names=None):
+    country_fc = COUNTRIES_BORDERS
+    state_fc = US_STATES if not state_names else US_STATES.filter(ee.Filter.inList('NAME', state_names))
+    if region_geom is not None:
+        country_fc = country_fc.filterBounds(region_geom)
+        state_fc = state_fc.filterBounds(region_geom)
+    country_lines = ee.Image().byte().paint(country_fc, 1, 1).selfMask().visualize(palette=['#161616'], opacity=0.95)
+    state_lines = ee.Image().byte().paint(state_fc, 1, 2).selfMask().visualize(palette=['#000000'], opacity=0.99)
+    return ee.ImageCollection([country_lines, state_lines]).mosaic()
+
+
+def major_surface_water_mask(region_geom=None, min_connected_px=256, expand_px=0):
+    water = GLOBAL_SURFACE_WATER
+    if region_geom is not None:
+        water = water.clip(region_geom)
+    connected = water.connectedPixelCount(1024, True)
+    major_water = water.updateMask(connected.gte(int(min_connected_px))).unmask(0).gt(0)
+    if expand_px and expand_px > 0:
+        major_water = major_water.focalMax(int(expand_px), 'square', 'pixels')
+    return major_water
+
+
+def great_lakes_outline_overlay(region_geom=None, min_connected_px=256):
+    major_water = major_surface_water_mask(region_geom, min_connected_px=min_connected_px)
+    shoreline = ee.Algorithms.CannyEdgeDetector(major_water.toFloat(), 0.99, 0.6).gt(0)
+    shoreline = shoreline.focalMax(1, 'square', 'pixels').selfMask()
+    return shoreline.visualize(palette=['#000000'], opacity=0.99)
+
+
+def mi_wi_snow_border_overlay(region_geom=None):
+    country_fc = COUNTRIES_BORDERS
+    state_fc = US_STATES
+    if region_geom is not None:
+        country_fc = country_fc.filterBounds(region_geom)
+        state_fc = state_fc.filterBounds(region_geom)
+    major_water = major_surface_water_mask(region_geom, min_connected_px=320, expand_px=2)
+    country_lines = ee.Image().byte().paint(country_fc, 1, 1).selfMask().updateMask(major_water.Not()).visualize(
+        palette=['#161616'],
+        opacity=0.95,
+    )
+    state_lines = ee.Image().byte().paint(state_fc, 1, 2).selfMask().updateMask(major_water.Not()).visualize(
+        palette=['#000000'],
+        opacity=0.99,
+    )
+    lake_lines = great_lakes_outline_overlay(region_geom, min_connected_px=320)
+    return ee.ImageCollection([country_lines, state_lines, lake_lines]).mosaic()
+
+
+def basemap_overlay(region_geom, land_color='#ececec', ocean_color='#cfe0ea', land_fc=None):
+    ocean = ee.Image.constant(1).clip(region_geom).visualize(palette=[ocean_color], opacity=1.0)
+    land_features = land_fc if land_fc is not None else COUNTRIES
+    if region_geom is not None:
+        land_features = land_features.filterBounds(region_geom)
+    land_mask = ee.Image().byte().paint(land_features, 1, 1).clip(region_geom).selfMask()
+    land = land_mask.visualize(palette=[land_color], opacity=1.0)
+    return ee.ImageCollection([ocean, land]).mosaic()
+
+
+def flat_background_overlay(region_geom, color='#cfe0ea'):
+    return ee.Image.constant(1).clip(region_geom).visualize(palette=[color], opacity=1.0)
+
+
+def anomaly_overlay(anomaly_field, palette=None, display_gain=None, smooth_radius_px=None, vmin=None, vmax=None, display_gamma=1.0):
+    # Apply mild smoothing + gain for a cleaner, less noisy anomaly presentation.
+    palette = palette or ANOMALY_PALETTE
+    display_gain = ANOMALY_DISPLAY_GAIN if display_gain is None else float(display_gain)
+    smooth_radius_px = ANOMALY_SMOOTH_RADIUS_PX if smooth_radius_px is None else int(smooth_radius_px)
+    vmin = ANOMALY_MIN_M if vmin is None else float(vmin)
+    vmax = ANOMALY_MAX_M if vmax is None else float(vmax)
+    anomaly_vis = anomaly_field.resample('bilinear')
+    if smooth_radius_px > 0:
+        anomaly_vis = anomaly_vis.focalMean(smooth_radius_px, 'circle', 'pixels')
+    if abs(display_gain - 1.0) > 1e-6:
+        anomaly_vis = anomaly_vis.multiply(display_gain)
+    if abs(float(display_gamma) - 1.0) > 1e-6:
+        max_abs = max(abs(float(vmin)), abs(float(vmax)))
+        if max_abs > 0:
+            normalized = anomaly_vis.divide(max_abs).clamp(-1.0, 1.0)
+            anomaly_vis = normalized.sign().multiply(normalized.abs().pow(float(display_gamma))).multiply(max_abs)
+    anomaly_vis = anomaly_vis.clamp(vmin, vmax)
+    return anomaly_vis.visualize(
+        min=vmin,
+        max=vmax,
+        palette=palette,
+    )
+
+
+def pseudo_z500_anomaly_m(height_dam, radius_px=20):
+    broad = height_dam.resample('bilinear').focalMean(radius=radius_px, kernelType='circle', units='pixels')
+    return height_dam.subtract(broad).multiply(10).rename('z500_pseudo_anomaly_m')
+
+
+def _clip_collection_to_region(collection, region_geom):
+    if region_geom is None:
+        return collection
+    return ee.ImageCollection(collection.map(lambda im: ee.Image(im).clip(region_geom)))
+
+
+def _coarsen_for_compute(image, scale_m, min_scale_m):
+    img = ee.Image(image).toFloat()
+    if scale_m is None:
+        return img
+    # Keep compute graph lightweight; output scale is controlled at export time.
+    return img.resample('bilinear')
+
+
+def _wrap_day_of_year_filter(start_doy, end_doy):
+    if start_doy >= 1 and end_doy <= 366:
+        return ee.Filter.calendarRange(start_doy, end_doy, 'day_of_year')
+    if start_doy < 1:
+        return ee.Filter.Or(
+            ee.Filter.calendarRange(start_doy + 366, 366, 'day_of_year'),
+            ee.Filter.calendarRange(1, end_doy, 'day_of_year'),
+        )
+    return ee.Filter.Or(
+        ee.Filter.calendarRange(start_doy, 366, 'day_of_year'),
+        ee.Filter.calendarRange(1, end_doy - 366, 'day_of_year'),
+    )
+
+
+def z500_climo_baseline_m(valid_utc, region_geom=None, cache_tag='global', analysis_scale_m=None):
+    doy = valid_utc.timetuple().tm_yday
+    month = int(valid_utc.month)
+    day = int(valid_utc.day)
+    hour = int(valid_utc.hour)
+    scale_key = int(max(25000, float(analysis_scale_m))) if analysis_scale_m is not None else None
+    cache_key = (Z500_CLIMO_START_YEAR, Z500_CLIMO_END_YEAR, doy, hour, cache_tag, scale_key)
+    cached = CLIMO_H500_CACHE.get(cache_key)
+    if cached is not None:
+        return cached
+
+    base_collection = CLIMO_H500_COLLECTION.filter(
+        ee.Filter.calendarRange(Z500_CLIMO_START_YEAR, Z500_CLIMO_END_YEAR, 'year')
+    )
+    hour_collection = base_collection.filter(ee.Filter.calendarRange(hour, hour, 'hour'))
+    hour_collection = _clip_collection_to_region(hour_collection, region_geom)
+    if CLIMO_DOY_WINDOW_DAYS <= 0:
+        window_collection = hour_collection.filter(
+            ee.Filter.calendarRange(month, month, 'month')
+        ).filter(
+            ee.Filter.calendarRange(day, day, 'day_of_month')
+        )
+    else:
+        start_doy = doy - CLIMO_DOY_WINDOW_DAYS
+        end_doy = doy + CLIMO_DOY_WINDOW_DAYS
+        window_collection = hour_collection.filter(_wrap_day_of_year_filter(start_doy, end_doy))
+    fallback_collection = base_collection.filter(
+        ee.Filter.calendarRange(month, month, 'month')
+    ).filter(ee.Filter.calendarRange(hour, hour, 'hour'))
+    fallback_collection = _clip_collection_to_region(fallback_collection, region_geom)
+    count_key = ('h500', Z500_CLIMO_START_YEAR, Z500_CLIMO_END_YEAR, month, day, hour)
+    window_n = CLIMO_COUNT_CACHE.get(count_key)
+    if window_n is None:
+        window_n = int(window_collection.size().getInfo())
+        CLIMO_COUNT_CACHE[count_key] = window_n
+    size_log_key = ('h500', Z500_CLIMO_START_YEAR, Z500_CLIMO_END_YEAR, month, day, hour)
+    if size_log_key not in CLIMO_SIZE_LOGGED:
+        try:
+            fallback_n = int(fallback_collection.size().getInfo())
+            print(f'[{ts()}] H500 climo sample count month/day/hour={window_n}, fallback month/hour={fallback_n}.')
+        except Exception as e:
+            print(f'[{ts()}] H500 climo sample-count check skipped: {e}')
+        CLIMO_SIZE_LOGGED.add(size_log_key)
+    climo_source = window_collection if window_n > 0 else fallback_collection
+    climo = ee.Image(climo_source.mean()).rename('z500_climo_m').resample('bilinear')
+    if analysis_scale_m is not None:
+        climo = _coarsen_for_compute(climo, analysis_scale_m, min_scale_m=25000)
+    CLIMO_H500_CACHE[cache_key] = climo
+    return climo
+
+
+def z500_anomaly_m(img, hour, region_geom=None, cache_tag='global', analysis_scale_m=None):
+    valid_utc = RUN_INIT_UTC + timedelta(hours=int(hour))
+    forecast_height_m = img.select(WN2_Z500_BAND).divide(9.80665)
+    climo_height_m = z500_climo_baseline_m(
+        valid_utc,
+        region_geom=region_geom,
+        cache_tag=cache_tag,
+        analysis_scale_m=analysis_scale_m,
+    )
+    if region_geom is not None:
+        forecast_height_m = forecast_height_m.clip(region_geom)
+        climo_height_m = climo_height_m.clip(region_geom)
+    if analysis_scale_m is not None:
+        forecast_height_m = _coarsen_for_compute(forecast_height_m, analysis_scale_m, min_scale_m=25000)
+        climo_height_m = _coarsen_for_compute(climo_height_m, analysis_scale_m, min_scale_m=25000)
+    else:
+        forecast_height_m = forecast_height_m.toFloat()
+        climo_height_m = climo_height_m.toFloat()
+    # Integer-space subtraction lowers EE memory while preserving true anomalies.
+    forecast_dm = forecast_height_m.divide(10.0).round().toInt16()
+    climo_dm = climo_height_m.divide(10.0).round().toInt16()
+    return forecast_dm.subtract(climo_dm).multiply(10.0).toFloat().rename('z500_anomaly_m')
+
+
+def t2m_climo_1991_2020_c(valid_utc, region_geom=None, cache_tag='global', analysis_scale_m=None):
+    doy = valid_utc.timetuple().tm_yday
+    month = int(valid_utc.month)
+    day = int(valid_utc.day)
+    hour = int(valid_utc.hour)
+    scale_key = int(max(15000, float(analysis_scale_m))) if analysis_scale_m is not None else None
+    cache_key = (CLIMO_START_YEAR, CLIMO_END_YEAR, doy, hour, cache_tag, scale_key)
+    cached = CLIMO_T2M_CACHE.get(cache_key)
+    if cached is not None:
+        return cached
+
+    base_collection = CLIMO_T2M_COLLECTION.filter(
+        ee.Filter.calendarRange(CLIMO_START_YEAR, CLIMO_END_YEAR, 'year')
+    )
+    if CLIMO_T2M_USE_HOUR_FILTER:
+        hour_collection = base_collection.filter(ee.Filter.calendarRange(hour, hour, 'hour'))
+    else:
+        hour_collection = base_collection
+    hour_collection = _clip_collection_to_region(hour_collection, region_geom)
+    if CLIMO_DOY_WINDOW_DAYS <= 0:
+        window_collection = hour_collection.filter(
+            ee.Filter.calendarRange(month, month, 'month')
+        ).filter(
+            ee.Filter.calendarRange(day, day, 'day_of_month')
+        )
+    else:
+        start_doy = doy - CLIMO_DOY_WINDOW_DAYS
+        end_doy = doy + CLIMO_DOY_WINDOW_DAYS
+        window_collection = hour_collection.filter(_wrap_day_of_year_filter(start_doy, end_doy))
+    fallback_collection = base_collection.filter(ee.Filter.calendarRange(month, month, 'month'))
+    if CLIMO_T2M_USE_HOUR_FILTER:
+        fallback_collection = fallback_collection.filter(ee.Filter.calendarRange(hour, hour, 'hour'))
+    fallback_collection = _clip_collection_to_region(fallback_collection, region_geom)
+    hour_key = hour if CLIMO_T2M_USE_HOUR_FILTER else -1
+    count_key = ('t2m', CLIMO_START_YEAR, CLIMO_END_YEAR, month, day, hour_key)
+    window_n = CLIMO_COUNT_CACHE.get(count_key)
+    if window_n is None:
+        window_n = int(window_collection.size().getInfo())
+        CLIMO_COUNT_CACHE[count_key] = window_n
+    size_log_key = ('t2m', CLIMO_START_YEAR, CLIMO_END_YEAR, month, day, hour_key)
+    if size_log_key not in CLIMO_SIZE_LOGGED:
+        try:
+            fallback_n = int(fallback_collection.size().getInfo())
+            if CLIMO_T2M_USE_HOUR_FILTER:
+                print(f'[{ts()}] T2M climo sample count month/day/hour={window_n}, fallback month/hour={fallback_n}.')
+            else:
+                print(f'[{ts()}] T2M climo sample count month/day={window_n}, fallback month={fallback_n}.')
+        except Exception as e:
+            print(f'[{ts()}] T2M climo sample-count check skipped: {e}')
+        CLIMO_SIZE_LOGGED.add(size_log_key)
+    climo_source = window_collection if window_n > 0 else fallback_collection
+    climo_k = ee.Image(climo_source.mean()).rename('t2m_climo_k').resample('bilinear')
+    if analysis_scale_m is not None:
+        if CLIMO_T2M_SOURCE_LABEL == 'ERA5':
+            climo_k = climo_k.reproject(crs=TARGET_CRS, scale=max(30000, int(analysis_scale_m)))
+        else:
+            climo_k = _coarsen_for_compute(climo_k, analysis_scale_m, min_scale_m=15000)
+    climo_c = climo_k.subtract(273.15).rename('t2m_climo_c')
+    if region_geom is not None:
+        climo_c = climo_c.clip(region_geom)
+    CLIMO_T2M_CACHE[cache_key] = climo_c
+    return climo_c
+
+
+def t2m_anomaly_c(img, hour, region_geom=None, cache_tag='global', analysis_scale_m=None):
+    valid_utc = RUN_INIT_UTC + timedelta(hours=int(hour))
+    forecast_t2m_c = img.select(WN2_T2M_BAND).subtract(273.15)
+    climo_t2m_c = t2m_climo_1991_2020_c(
+        valid_utc,
+        region_geom=region_geom,
+        cache_tag=cache_tag,
+        analysis_scale_m=analysis_scale_m,
+    )
+    if region_geom is not None:
+        forecast_t2m_c = forecast_t2m_c.clip(region_geom)
+        climo_t2m_c = climo_t2m_c.clip(region_geom)
+    if analysis_scale_m is not None:
+        if CLIMO_T2M_SOURCE_LABEL == 'ERA5':
+            coarse_scale = max(30000, int(analysis_scale_m))
+            forecast_t2m_c = forecast_t2m_c.resample('bilinear').reproject(crs=TARGET_CRS, scale=coarse_scale)
+            climo_t2m_c = climo_t2m_c.resample('bilinear').reproject(crs=TARGET_CRS, scale=coarse_scale)
+        else:
+            forecast_t2m_c = _coarsen_for_compute(forecast_t2m_c, analysis_scale_m, min_scale_m=15000)
+            climo_t2m_c = _coarsen_for_compute(climo_t2m_c, analysis_scale_m, min_scale_m=15000)
+    else:
+        forecast_t2m_c = forecast_t2m_c.toFloat()
+        climo_t2m_c = climo_t2m_c.toFloat()
+    forecast_tc10 = forecast_t2m_c.multiply(10.0).round().toInt16()
+    climo_tc10 = climo_t2m_c.multiply(10.0).round().toInt16()
+    return forecast_tc10.subtract(climo_tc10).divide(10.0).toFloat().rename('t2m_anomaly_c')
+
+
+def shrink_dimensions(dimensions):
+    if isinstance(dimensions, int):
+        return max(500, int(dimensions * 0.82))
+    if isinstance(dimensions, str) and 'x' in dimensions:
+        w_str, h_str = dimensions.lower().split('x', 1)
+        try:
+            w = int(w_str)
+            h = int(h_str)
+            return f'{max(500, int(w * 0.82))}x{max(400, int(h * 0.82))}'
+        except ValueError:
+            return dimensions
+    return dimensions
+
+
+def split_nh_dimensions(source_dims):
+    if isinstance(source_dims, str) and 'x' in source_dims:
+        w_str, h_str = source_dims.lower().split('x', 1)
+        try:
+            w = int(w_str)
+            h = int(h_str)
+            return f'{max(420, w // 2)}x{max(280, h)}'
+        except ValueError:
+            return '1100x440'
+    return '1100x440'
+
+
+def split_dimensions_horizontal(source_dims):
+    if isinstance(source_dims, str) and 'x' in source_dims:
+        w_str, h_str = source_dims.lower().split('x', 1)
+        try:
+            w = int(w_str)
+            h = int(h_str)
+            return f'{max(360, w // 2)}x{max(280, h)}'
+        except ValueError:
+            return source_dims
+    if isinstance(source_dims, int):
+        return max(360, int(source_dims // 2))
+    return source_dims
+
+
+def split_dimensions_horizontal_parts(source_dims, parts=2):
+    parts = max(1, int(parts))
+    if parts == 1:
+        return source_dims
+    if isinstance(source_dims, str) and 'x' in source_dims:
+        w_str, h_str = source_dims.lower().split('x', 1)
+        try:
+            w = int(w_str)
+            h = int(h_str)
+            return f'{max(220, w // parts)}x{max(280, h)}'
+        except ValueError:
+            return source_dims
+    if isinstance(source_dims, int):
+        return max(220, int(source_dims // parts))
+    return source_dims
+
+
+def split_region_longitude(region, parts=2):
+    min_lon, min_lat, max_lon, max_lat = [float(v) for v in region]
+    parts = max(1, int(parts))
+    span = max_lon - min_lon
+    if parts == 1 or span <= 0:
+        return [[min_lon, min_lat, max_lon, max_lat]]
+    bounds = []
+    for i in range(parts):
+        lon0 = min_lon + span * (i / parts)
+        lon1 = min_lon + span * ((i + 1) / parts)
+        bounds.append([lon0, min_lat, lon1, max_lat])
+    return bounds
+
+
+def split_region_west_east(region):
+    min_lon, min_lat, max_lon, max_lat = [float(v) for v in region]
+    mid_lon = (min_lon + max_lon) * 0.5
+    west = [min_lon, min_lat, mid_lon, max_lat]
+    east = [mid_lon, min_lat, max_lon, max_lat]
+    return west, east
+
+
+def inset_region_bbox(region, lon_pad=0.6, lat_pad=0.6):
+    if not isinstance(region, list) or len(region) != 4:
+        return region
+    west, south, east, north = [float(v) for v in region]
+    if east - west <= 2 * lon_pad or north - south <= 2 * lat_pad:
+        return region
+    return [
+        max(-179.9, west + lon_pad),
+        max(-89.9, south + lat_pad),
+        min(179.9, east - lon_pad),
+        min(89.9, north - lat_pad),
+    ]
+
+
+def region_dimensions(base_dims, region):
+    if not isinstance(region, list) or len(region) != 4:
+        return base_dims
+    width = None
+    if isinstance(base_dims, int):
+        width = base_dims
+    elif isinstance(base_dims, str) and 'x' in base_dims:
+        try:
+            width = int(base_dims.lower().split('x', 1)[0])
+        except ValueError:
+            width = None
+    if width is None or width < 200:
+        return base_dims
+
+    west, south, east, north = [float(v) for v in region]
+    lon_span = (east - west) if east >= west else (east + 360.0 - west)
+    lat_span = max(0.2, north - south)
+    mid_lat = max(-80.0, min(80.0, (south + north) * 0.5))
+    x_span = max(0.2, lon_span * max(0.2, math.cos(math.radians(mid_lat))))
+    aspect = max(0.7, min(3.8, x_span / lat_span))
+    height = int(round(width / aspect))
+    height = max(360, min(2200, height))
+    if width / float(max(1, height)) < MIN_PRODUCT_LANDSCAPE_ASPECT:
+        height = max(360, int(round(width / MIN_PRODUCT_LANDSCAPE_ASPECT)))
+    return f'{width}x{height}'
+
+
+def parse_dimensions(dimensions, fallback_w=1200, fallback_h=900):
+    if isinstance(dimensions, int):
+        w = max(200, int(dimensions))
+        return w, max(200, int(fallback_h))
+    if isinstance(dimensions, str) and 'x' in dimensions:
+        w_str, h_str = dimensions.lower().split('x', 1)
+        try:
+            return max(200, int(w_str)), max(200, int(h_str))
+        except ValueError:
+            return fallback_w, fallback_h
+    return fallback_w, fallback_h
+
+
+def scale_dimensions(dimensions, factor=1.0, min_w=500, min_h=400):
+    factor = float(max(0.2, min(2.0, factor)))
+    if isinstance(dimensions, int):
+        return max(min_w, int(round(dimensions * factor)))
+    if isinstance(dimensions, str) and 'x' in dimensions:
+        w_str, h_str = dimensions.lower().split('x', 1)
+        try:
+            w = max(min_w, int(round(int(w_str) * factor)))
+            h = max(min_h, int(round(int(h_str) * factor)))
+            return f'{w}x{h}'
+        except ValueError:
+            return dimensions
+    return dimensions
+
+
+def is_long_range_hour(hour):
+    try:
+        h = int(hour)
+    except (TypeError, ValueError):
+        return False
+    return ADAPTIVE_LONG_RANGE and h >= LONG_RANGE_THRESHOLD
+
+
+def adaptive_dimensions_for_hour(dimensions, hour, long_factor=0.90, min_w=500, min_h=400):
+    if isinstance(dimensions, str) and 'x' in dimensions:
+        w, h = parse_dimensions(dimensions)
+        target_h = h
+        if w / float(max(1, h)) < MIN_PRODUCT_LANDSCAPE_ASPECT:
+            target_h = max(min_h, int(round(w / MIN_PRODUCT_LANDSCAPE_ASPECT)))
+        if target_h != h:
+            return f'{max(min_w, w)}x{target_h}'
+    return dimensions
+
+
+def adaptive_interval_for_hour(base_interval, hour, long_interval=None, multiplier=1.3):
+    if not is_long_range_hour(hour):
+        return int(base_interval)
+    if long_interval is not None:
+        return int(long_interval)
+    return max(int(base_interval) + 1, int(round(float(base_interval) * float(multiplier))))
+
+
+def _is_memory_or_invalid_argument_error(msg):
+    text = str(msg)
+    return (
+        'User memory limit exceeded' in text
+        or 'INVALID_ARGUMENT' in text
+        or 'Invalid argument' in text
+    )
+
+
+def _sample_rect_array(field_img, band_name, bounds, base_scale_m, max_attempts=4, context='', use_target_crs=True):
+    import numpy as np
+
+    geom = ee.Geometry.Rectangle(bounds, geodesic=False)
+    current_scale = int(max(20000, float(base_scale_m)))
+    fill_value = -9999.0
+    last_msg = ''
+
+    for _attempt in range(1, max_attempts + 1):
+        try:
+            sampled = (
+                ee.Image(field_img)
+                .select(band_name)
+                .toFloat()
+                .clip(geom)
+                .resample('bilinear')
+            )
+            if use_target_crs:
+                sampled = sampled.reproject(crs=TARGET_CRS, scale=current_scale)
+            info = sampled.sampleRectangle(region=geom, defaultValue=fill_value).getInfo()
+            raw = (info or {}).get('properties', {}).get(band_name)
+            if raw is None:
+                raise RuntimeError(f'Sampled rectangle missing band "{band_name}".')
+            arr = np.array(raw, dtype=np.float32)
+            if arr.ndim != 2 or arr.size == 0:
+                raise RuntimeError(f'Invalid sampled array shape for "{band_name}": {arr.shape}')
+            arr[arr <= (fill_value + 0.5)] = np.nan
+            # Normalize to north-up rows for plotting.
+            if arr.shape[0] > 1:
+                top_row = arr[0, :]
+                bottom_row = arr[-1, :]
+                if np.isfinite(top_row).any() and np.isfinite(bottom_row).any():
+                    top = float(np.nanmean(top_row))
+                    bot = float(np.nanmean(bottom_row))
+                    if top < bot:
+                        arr = np.flipud(arr)
+            return arr, current_scale
+        except Exception as e:
+            last_msg = str(e)
+            if _attempt < max_attempts and _is_memory_or_invalid_argument_error(last_msg):
+                current_scale = int(current_scale * 1.55)
+                continue
+            label = context or f'band {band_name}'
+            raise RuntimeError(
+                f'sampleRectangle failed for {label} at scale {current_scale}m: {last_msg}'
+            ) from e
+
+    label = context or f'band {band_name}'
+    raise RuntimeError(
+        f'sampleRectangle failed for {label} after retries. Last error: {last_msg}'
+    )
+
+
+def _select_climo_source_collection(
+    base_collection,
+    valid_utc,
+    region_geom,
+    count_cache_prefix,
+    use_hour_filter=True,
+    start_year=None,
+    end_year=None,
+):
+    month = int(valid_utc.month)
+    day = int(valid_utc.day)
+    hour = int(valid_utc.hour)
+    doy = valid_utc.timetuple().tm_yday
+
+    start_year = CLIMO_START_YEAR if start_year is None else int(start_year)
+    end_year = CLIMO_END_YEAR if end_year is None else int(end_year)
+    year_filtered = base_collection.filter(
+        ee.Filter.calendarRange(start_year, end_year, 'year')
+    )
+    if use_hour_filter:
+        hour_collection = year_filtered.filter(ee.Filter.calendarRange(hour, hour, 'hour'))
+    else:
+        hour_collection = year_filtered
+    hour_collection = _clip_collection_to_region(hour_collection, region_geom)
+    if CLIMO_DOY_WINDOW_DAYS <= 0:
+        window_collection = hour_collection.filter(
+            ee.Filter.calendarRange(month, month, 'month')
+        ).filter(
+            ee.Filter.calendarRange(day, day, 'day_of_month')
+        )
+    else:
+        start_doy = doy - CLIMO_DOY_WINDOW_DAYS
+        end_doy = doy + CLIMO_DOY_WINDOW_DAYS
+        window_collection = hour_collection.filter(_wrap_day_of_year_filter(start_doy, end_doy))
+
+    fallback_collection = year_filtered.filter(ee.Filter.calendarRange(month, month, 'month'))
+    if use_hour_filter:
+        fallback_collection = fallback_collection.filter(ee.Filter.calendarRange(hour, hour, 'hour'))
+    fallback_collection = _clip_collection_to_region(fallback_collection, region_geom)
+
+    hour_key = hour if use_hour_filter else -1
+    count_key = (count_cache_prefix, start_year, end_year, month, day, hour_key)
+    window_n = CLIMO_COUNT_CACHE.get(count_key)
+    if window_n is None:
+        window_n = int(window_collection.size().getInfo())
+        CLIMO_COUNT_CACHE[count_key] = window_n
+    size_log_key = (count_cache_prefix, start_year, end_year, month, day, hour_key)
+    if size_log_key not in CLIMO_SIZE_LOGGED:
+        try:
+            fallback_n = int(fallback_collection.size().getInfo())
+            sample_label = 'month/day/hour' if use_hour_filter else 'month/day'
+            fallback_label = 'month/hour' if use_hour_filter else 'month'
+            print(
+                f'[{ts()}] {count_cache_prefix.upper()} climo sample count '
+                f'{sample_label}={window_n}, fallback {fallback_label}={fallback_n}.'
+            )
+        except Exception as e:
+            print(f'[{ts()}] {count_cache_prefix.upper()} climo sample-count check skipped: {e}')
+        CLIMO_SIZE_LOGGED.add(size_log_key)
+    return window_collection if window_n > 0 else fallback_collection
+
+
+def _sample_grouped_climo_array(
+    source_collection,
+    band_name,
+    bounds,
+    base_scale_m,
+    group_years=3,
+    context='',
+    start_year=None,
+    end_year=None,
+    use_target_crs=True,
+):
+    import numpy as np
+
+    if group_years < 1:
+        group_years = 1
+    start_year = int(CLIMO_START_YEAR if start_year is None else start_year)
+    end_year = int(CLIMO_END_YEAR if end_year is None else end_year)
+    if end_year < start_year:
+        raise RuntimeError(f'Invalid climatology year range: {start_year}-{end_year}')
+
+    weighted_sum = None
+    weight_sum = None
+    current_scale = int(max(20000, float(base_scale_m)))
+    groups_used = 0
+    years_used = 0
+    for y0 in range(start_year, end_year + 1, group_years):
+        y1 = min(end_year, y0 + group_years - 1)
+        grp = source_collection.filter(ee.Filter.calendarRange(y0, y1, 'year'))
+        grp_n = int(grp.size().getInfo())
+        if grp_n <= 0:
+            continue
+        groups_used += 1
+        years_used += grp_n
+        grp_img = ee.Image(grp.mean()).select(band_name).toFloat()
+        grp_arr, used_scale = _sample_rect_array(
+            grp_img,
+            band_name,
+            bounds,
+            current_scale,
+            context=f'{context} climo_{y0}_{y1}',
+            use_target_crs=use_target_crs,
+        )
+        current_scale = max(current_scale, int(used_scale))
+        if weighted_sum is None:
+            weighted_sum = np.zeros_like(grp_arr, dtype=np.float64)
+            weight_sum = np.zeros_like(grp_arr, dtype=np.float64)
+        if weighted_sum.shape != grp_arr.shape:
+            weighted_sum, grp_arr = _align_arrays(weighted_sum, grp_arr)
+            weight_sum, _ = _align_arrays(weight_sum, grp_arr)
+        valid = np.isfinite(grp_arr)
+        if np.any(valid):
+            weighted_sum[valid] += grp_arr[valid] * float(grp_n)
+            weight_sum[valid] += float(grp_n)
+
+    if weighted_sum is None or groups_used == 0 or years_used == 0:
+        raise RuntimeError(f'{context} grouped climo sampling returned no data.')
+
+    with np.errstate(invalid='ignore', divide='ignore'):
+        out = (weighted_sum / weight_sum).astype(np.float32)
+    out[~np.isfinite(out)] = np.nan
+    return out, current_scale
+
+
+def _align_arrays(a, b):
+    import numpy as np
+
+    a_np = np.asarray(a, dtype=np.float32)
+    b_np = np.asarray(b, dtype=np.float32)
+    h = min(a_np.shape[0], b_np.shape[0])
+    w = min(a_np.shape[1], b_np.shape[1])
+    return a_np[:h, :w], b_np[:h, :w]
+
+
+def _fill_nan_gaps(field, fill_value=0.0):
+    import numpy as np
+
+    arr = np.asarray(field, dtype=np.float32).copy()
+    if arr.ndim != 2 or not np.isnan(arr).any():
+        return arr
+
+    x_idx = np.arange(arr.shape[1], dtype=np.float32)
+    for r in range(arr.shape[0]):
+        row = arr[r, :]
+        valid = np.isfinite(row)
+        if valid.all():
+            continue
+        if valid.any():
+            row[~valid] = np.interp(x_idx[~valid], x_idx[valid], row[valid]).astype(np.float32)
+        else:
+            row[:] = float(fill_value)
+        arr[r, :] = row
+
+    y_idx = np.arange(arr.shape[0], dtype=np.float32)
+    for c in range(arr.shape[1]):
+        col = arr[:, c]
+        valid = np.isfinite(col)
+        if valid.all():
+            continue
+        if valid.any():
+            col[~valid] = np.interp(y_idx[~valid], y_idx[valid], col[valid]).astype(np.float32)
+        else:
+            col[:] = float(fill_value)
+        arr[:, c] = col
+
+    arr[~np.isfinite(arr)] = float(fill_value)
+    return arr
+
+
+def _smooth_array_box(field, passes=1):
+    import numpy as np
+
+    arr = np.asarray(field, dtype=np.float32)
+    if arr.ndim != 2 or int(passes) <= 0:
+        return arr
+    out = arr.copy()
+    for _ in range(int(passes)):
+        pad = np.pad(out, 1, mode='edge')
+        out = (
+            pad[:-2, :-2] + pad[:-2, 1:-1] + pad[:-2, 2:]
+            + pad[1:-1, :-2] + pad[1:-1, 1:-1] + pad[1:-1, 2:]
+            + pad[2:, :-2] + pad[2:, 1:-1] + pad[2:, 2:]
+        ) / 9.0
+    return out.astype(np.float32)
+
+
+def _contour_levels(field, interval):
+    import numpy as np
+
+    if not interval or interval <= 0:
+        return None
+    finite = field[np.isfinite(field)]
+    if finite.size == 0:
+        return None
+    vmin = float(np.nanmin(finite))
+    vmax = float(np.nanmax(finite))
+    if not math.isfinite(vmin) or not math.isfinite(vmax) or vmax <= vmin:
+        return None
+    start = math.floor(vmin / float(interval)) * float(interval)
+    end = math.ceil(vmax / float(interval)) * float(interval)
+    levels = np.arange(start, end + float(interval) * 0.5, float(interval), dtype=np.float32)
+    if levels.size > 120:
+        step = max(1, int(math.ceil(levels.size / 120.0)))
+        levels = levels[::step]
+    return levels
+
+
+def _render_local_anomaly_tile(
+    anomaly_field,
+    contour_field,
+    bounds,
+    out_file,
+    width,
+    height,
+    palette,
+    vmin,
+    vmax,
+    minor_interval=None,
+    major_interval=12,
+    minor_color='#2a2a2a',
+    major_color='#1a1a1a',
+    major_lw=1.0,
+    minor_lw=0.55,
+    minor_alpha=0.60,
+    major_alpha=0.92,
+    highlight_level=None,
+    highlight_color='#2455ff',
+    anomaly_gain=1.0,
+    anomaly_gamma=1.0,
+    anomaly_smooth_passes=0,
+    contour_smooth_passes=0,
+    interpolation='bilinear',
+    use_centered_norm=False,
+):
+    import numpy as np
+    import matplotlib
+
+    matplotlib.use('Agg')
+    import matplotlib.pyplot as plt
+    from matplotlib.colors import LinearSegmentedColormap, TwoSlopeNorm
+
+    anomaly_arr = np.asarray(anomaly_field, dtype=np.float32)
+    contour_arr = np.asarray(contour_field, dtype=np.float32)
+    if anomaly_arr.shape != contour_arr.shape:
+        anomaly_arr, contour_arr = _align_arrays(anomaly_arr, contour_arr)
+    anomaly_arr = _fill_nan_gaps(anomaly_arr, fill_value=0.0)
+    contour_arr = _fill_nan_gaps(contour_arr, fill_value=float(np.nanmean(contour_arr)) if np.isfinite(contour_arr).any() else 540.0)
+    if anomaly_smooth_passes and anomaly_smooth_passes > 0:
+        anomaly_arr = _smooth_array_box(anomaly_arr, anomaly_smooth_passes)
+    if contour_smooth_passes and contour_smooth_passes > 0:
+        contour_arr = _smooth_array_box(contour_arr, contour_smooth_passes)
+
+    anomaly_arr = anomaly_arr * float(anomaly_gain)
+    if abs(float(anomaly_gamma) - 1.0) > 1e-6:
+        max_abs = max(abs(float(vmin)), abs(float(vmax)))
+        if max_abs > 0:
+            normalized = np.clip(anomaly_arr / float(max_abs), -1.0, 1.0)
+            anomaly_arr = np.sign(normalized) * np.power(np.abs(normalized), float(anomaly_gamma)) * float(max_abs)
+    anomaly_arr = np.clip(anomaly_arr, float(vmin), float(vmax))
+    lon_w, lat_s, lon_e, lat_n = [float(v) for v in bounds]
+    x = np.linspace(lon_w, lon_e, anomaly_arr.shape[1], dtype=np.float32)
+    y = np.linspace(lat_n, lat_s, anomaly_arr.shape[0], dtype=np.float32)
+
+    dpi = 100
+    fig = plt.figure(figsize=(max(2, width) / dpi, max(2, height) / dpi), dpi=dpi, frameon=False)
+    ax = fig.add_axes([0.0, 0.0, 1.0, 1.0])
+    ax.set_axis_off()
+    ax.set_xlim(lon_w, lon_e)
+    ax.set_ylim(lat_s, lat_n)
+    ax.set_facecolor(BASEMAP_OCEAN_COLOR)
+
+    cmap = LinearSegmentedColormap.from_list('wn2_anom', list(palette), N=256)
+    norm = TwoSlopeNorm(vmin=float(vmin), vcenter=0.0, vmax=float(vmax)) if use_centered_norm else None
+    imshow_kwargs = {
+        'extent': [lon_w, lon_e, lat_s, lat_n],
+        'origin': 'upper',
+        'cmap': cmap,
+        'interpolation': interpolation,
+        'aspect': 'auto',
+    }
+    if norm is not None:
+        imshow_kwargs['norm'] = norm
+    else:
+        imshow_kwargs['vmin'] = float(vmin)
+        imshow_kwargs['vmax'] = float(vmax)
+    ax.imshow(anomaly_arr, **imshow_kwargs)
+
+    minor_levels = _contour_levels(contour_arr, minor_interval)
+    if minor_levels is not None and major_interval and float(minor_interval) < float(major_interval):
+        ax.contour(x, y, contour_arr, levels=minor_levels, colors=minor_color, linewidths=minor_lw, alpha=minor_alpha)
+
+    major_levels = _contour_levels(contour_arr, major_interval)
+    if major_levels is not None:
+        ax.contour(x, y, contour_arr, levels=major_levels, colors=major_color, linewidths=major_lw, alpha=major_alpha)
+
+    if highlight_level is not None:
+        try:
+            ax.contour(
+                x,
+                y,
+                contour_arr,
+                levels=[float(highlight_level)],
+                colors=highlight_color,
+                linewidths=max(0.9, major_lw + 0.1),
+                alpha=0.95,
+            )
+        except Exception:
+            pass
+
+    fig.savefig(
+        out_file,
+        format='jpg',
+        dpi=dpi,
+        pil_kwargs={'quality': 97, 'subsampling': 0},
+    )
+    plt.close(fig)
+
+
+def _render_local_anomaly_polar(
+    anomaly_field,
+    contour_field,
+    bounds,
+    out_file,
+    width,
+    height,
+    palette,
+    vmin,
+    vmax,
+    anomaly_step=30,
+    minor_interval=6,
+    major_interval=12,
+    minor_color='#2a2a2a',
+    major_color='#141414',
+    minor_lw=0.56,
+    major_lw=1.0,
+    minor_alpha=0.60,
+    major_alpha=0.92,
+    grid_color='#b8b8b8',
+    grid_alpha=0.40,
+    lon0=NH_LON0,
+    highlight_level=None,
+    highlight_color='#2455ff',
+):
+    import numpy as np
+    import matplotlib
+
+    matplotlib.use('Agg')
+    import matplotlib.pyplot as plt
+    from matplotlib.colors import LinearSegmentedColormap, TwoSlopeNorm
+
+    anomaly_arr = np.asarray(anomaly_field, dtype=np.float32)
+    contour_arr = np.asarray(contour_field, dtype=np.float32)
+    if anomaly_arr.shape != contour_arr.shape:
+        anomaly_arr, contour_arr = _align_arrays(anomaly_arr, contour_arr)
+
+    anomaly_arr = _fill_nan_gaps(anomaly_arr, fill_value=0.0)
+    contour_fill = float(np.nanmean(contour_arr)) if np.isfinite(contour_arr).any() else 540.0
+    contour_arr = _fill_nan_gaps(contour_arr, fill_value=contour_fill)
+    anomaly_arr = np.clip(anomaly_arr * float(ANOMALY_DISPLAY_GAIN), float(vmin), float(vmax))
+
+    lon_w, lat_s, lon_e, lat_n = [float(v) for v in bounds]
+    lat_min = max(float(lat_s), 20.0)
+    lat_max = min(float(lat_n), NH_SOURCE_REGION[3])
+    if lat_max <= lat_min:
+        lat_min = min(float(lat_s), float(lat_n))
+        lat_max = max(float(lat_s), float(lat_n))
+
+    lat = np.linspace(lat_max, lat_min, anomaly_arr.shape[0], dtype=np.float32)
+    lon = np.linspace(lon_w, lon_e, anomaly_arr.shape[1], dtype=np.float32)
+
+    lon_rel = np.mod(lon - float(lon0) + 360.0, 360.0)
+    sort_idx = np.argsort(lon_rel)
+    lon_sorted = lon_rel[sort_idx]
+    anomaly_sorted = anomaly_arr[:, sort_idx]
+    contour_sorted = contour_arr[:, sort_idx]
+    lon_closed = np.concatenate([lon_sorted, [float(lon_sorted[0] + 360.0)]])
+    anomaly_closed = np.concatenate([anomaly_sorted, anomaly_sorted[:, :1]], axis=1)
+    contour_closed = np.concatenate([contour_sorted, contour_sorted[:, :1]], axis=1)
+
+    def _stereo_r(lat_deg):
+        lat_deg = np.asarray(lat_deg, dtype=np.float64)
+        lat_rad = np.radians(np.clip(lat_deg, -89.999, 89.999))
+        return np.tan((math.pi / 4.0) - (lat_rad / 2.0))
+
+    r = _stereo_r(lat)
+    theta = np.deg2rad(lon_closed)
+    theta_grid, r_grid = np.meshgrid(theta, r)
+    r_edge = float(_stereo_r(lat_min))
+    if not math.isfinite(r_edge) or r_edge <= 0:
+        r_edge = float(np.nanmax(r))
+
+    cmap = LinearSegmentedColormap.from_list('wn2_anom_polar', list(palette), N=256)
+    norm = TwoSlopeNorm(vmin=float(vmin), vcenter=0.0, vmax=float(vmax))
+    anom_levels = np.arange(
+        float(vmin),
+        float(vmax) + float(anomaly_step) * 0.5,
+        float(anomaly_step),
+        dtype=np.float32,
+    )
+
+    minor_levels = _contour_levels(contour_closed, minor_interval)
+    major_levels = _contour_levels(contour_closed, major_interval)
+    if minor_levels is not None and major_interval and float(minor_interval) < float(major_interval):
+        major_mod = float(major_interval)
+        minor_levels = np.array(
+            [
+                float(v)
+                for v in minor_levels
+                if abs((float(v) / major_mod) - round(float(v) / major_mod)) > 1e-6
+            ],
+            dtype=np.float32,
+        )
+        if minor_levels.size == 0:
+            minor_levels = None
+    else:
+        minor_levels = None
+
+    dpi = 100
+    fig = plt.figure(figsize=(max(2, width) / dpi, max(2, height) / dpi), dpi=dpi, frameon=False)
+    fig.patch.set_facecolor(BASEMAP_OCEAN_COLOR)
+    ax = fig.add_axes([0.02, 0.02, 0.82, 0.96], projection='polar')
+    ax.set_facecolor(BASEMAP_OCEAN_COLOR)
+    ax.set_theta_zero_location('N')
+    ax.set_theta_direction(-1)
+    ax.set_ylim(0.0, r_edge)
+
+    ax.contourf(
+        theta_grid,
+        r_grid,
+        anomaly_closed,
+        levels=anom_levels,
+        cmap=cmap,
+        norm=norm,
+        extend='both',
+        antialiased=False,
+        zorder=1,
+    )
+
+    if minor_levels is not None:
+        ax.contour(
+            theta_grid,
+            r_grid,
+            contour_closed,
+            levels=minor_levels,
+            colors=minor_color,
+            linewidths=minor_lw,
+            alpha=minor_alpha,
+            zorder=3,
+        )
+    if major_levels is not None:
+        ax.contour(
+            theta_grid,
+            r_grid,
+            contour_closed,
+            levels=major_levels,
+            colors=major_color,
+            linewidths=major_lw,
+            alpha=major_alpha,
+            zorder=4,
+        )
+
+    if highlight_level is not None:
+        try:
+            ax.contour(
+                theta_grid,
+                r_grid,
+                contour_closed,
+                levels=[float(highlight_level)],
+                colors=highlight_color,
+                linewidths=max(0.9, major_lw + 0.1),
+                alpha=0.95,
+                zorder=5,
+            )
+        except Exception:
+            pass
+
+    ax.set_xticks(np.deg2rad(np.arange(0, 360, 30, dtype=np.float32)))
+    ring_lats = np.arange(20, 90, 10, dtype=np.float32)
+    ring_ticks = np.array([_stereo_r(v) for v in ring_lats], dtype=np.float64)
+    ring_ticks = ring_ticks[np.isfinite(ring_ticks)]
+    ring_ticks = ring_ticks[(ring_ticks > 0.0) & (ring_ticks < r_edge)]
+    if ring_ticks.size:
+        ax.set_yticks(np.sort(ring_ticks))
+    ax.set_xticklabels([])
+    ax.set_yticklabels([])
+    ax.grid(True, linestyle='--', linewidth=0.75, color=grid_color, alpha=grid_alpha)
+    ax.spines['polar'].set_color('#303030')
+    ax.spines['polar'].set_linewidth(1.2)
+
+    cax = fig.add_axes([0.87, 0.15, 0.03, 0.70])
+    cbar = fig.colorbar(
+        plt.cm.ScalarMappable(norm=norm, cmap=cmap),
+        cax=cax,
+        orientation='vertical',
+        extend='both',
+    )
+    cbar_ticks = np.arange(float(vmin), float(vmax) + 1.0, float(anomaly_step) * 2.0)
+    cbar.set_ticks(cbar_ticks)
+    cbar.ax.tick_params(labelsize=9, length=2, width=0.8, colors='#202020')
+    cbar.outline.set_linewidth(0.8)
+    cbar.outline.set_edgecolor('#4a4a4a')
+    cbar.set_label('500-hPa Height Anomaly (m)', fontsize=9, color='#202020', labelpad=8)
+
+    fig.savefig(
+        out_file,
+        format='jpg',
+        dpi=dpi,
+        pil_kwargs={'quality': 97, 'subsampling': 0},
+    )
+    plt.close(fig)
+
+
+def _overlay_png_on_jpg(base_jpg, overlay_png):
+    from PIL import Image
+
+    with Image.open(base_jpg).convert('RGBA') as base, Image.open(overlay_png).convert('RGBA') as overlay:
+        if overlay.size != base.size:
+            resample_nearest = Image.Resampling.NEAREST if hasattr(Image, 'Resampling') else Image.NEAREST
+            overlay = overlay.resize(base.size, resample_nearest)
+        merged = Image.alpha_composite(base, overlay)
+        merged.convert('RGB').save(base_jpg, format='JPEG', quality=97, subsampling=0)
+
+
+def _export_border_overlay_png(bounds, out_png, width, height, include_states=False, detailed=False):
+    region_geom = ee.Geometry.Rectangle(bounds, geodesic=False)
+    border_img = border_overlay(
+        include_states=include_states,
+        region_geom=region_geom,
+        detailed=detailed,
+    )
+    download_thumb(
+        border_img,
+        out_png,
+        {
+            'region': bounds,
+            'format': 'png',
+            'dimensions': f'{int(width)}x{int(height)}',
+            'crs': TARGET_CRS,
+        },
+    )
+
+
+def get_cached_border_overlay_png(bounds, width, height, include_states=False, detailed=False):
+    key_payload = {
+        'bounds': [round(float(v), 4) for v in bounds],
+        'width': int(width),
+        'height': int(height),
+        'include_states': bool(include_states),
+        'detailed': bool(detailed),
+    }
+    key_text = json.dumps(key_payload, sort_keys=True, separators=(',', ':'))
+    key = hashlib.md5(key_text.encode('utf-8')).hexdigest()
+    cached = BORDER_OVERLAY_CACHE.get(key)
+    if cached and os.path.exists(cached):
+        return cached
+
+    out_png = str(BORDER_CACHE_DIR / f'border_{key}.png')
+    if not os.path.exists(out_png):
+        _export_border_overlay_png(
+            bounds,
+            out_png,
+            width,
+            height,
+            include_states=include_states,
+            detailed=detailed,
+        )
+    BORDER_OVERLAY_CACHE[key] = out_png
+    return out_png
+
+
+def load_font(size, bold=False):
+    from PIL import ImageFont
+
+    candidates = []
+    if bold:
+        candidates.extend([
+            'DejaVuSans-Bold.ttf',
+            '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf',
+            'arialbd.ttf',
+        ])
+    else:
+        candidates.extend([
+            'DejaVuSans.ttf',
+            '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',
+            'arial.ttf',
+        ])
+    for font_name in candidates:
+        try:
+            return ImageFont.truetype(font_name, size=size)
+        except OSError:
+            continue
+    return ImageFont.load_default()
+
+
+def _hex_to_rgb(color_hex):
+    color_hex = color_hex.strip().lstrip('#')
+    if len(color_hex) != 6:
+        return (0, 0, 0)
+    return tuple(int(color_hex[i:i + 2], 16) for i in (0, 2, 4))
+
+
+def _interp_palette_color(palette, t):
+    if not palette:
+        return (0, 0, 0)
+    if len(palette) == 1:
+        return _hex_to_rgb(palette[0])
+    t = max(0.0, min(1.0, t))
+    pos = t * (len(palette) - 1)
+    idx = int(math.floor(pos))
+    frac = pos - idx
+    if idx >= len(palette) - 1:
+        return _hex_to_rgb(palette[-1])
+    c0 = _hex_to_rgb(palette[idx])
+    c1 = _hex_to_rgb(palette[idx + 1])
+    return (
+        int(round(c0[0] + (c1[0] - c0[0]) * frac)),
+        int(round(c0[1] + (c1[1] - c0[1]) * frac)),
+        int(round(c0[2] + (c1[2] - c0[2]) * frac)),
+    )
+
+
+def _draw_gradient_bar(draw, x, y, w, h, palette):
+    if w < 2 or h < 2:
+        return
+    for i in range(w):
+        frac = i / float(max(1, w - 1))
+        draw.line([(x + i, y), (x + i, y + h)], fill=_interp_palette_color(palette, frac), width=1)
+    draw.rectangle((x, y, x + w, y + h), outline=(50, 50, 50), width=1)
+
+
+def _draw_tapered_gradient_bar(draw, x, y, w, h, palette):
+    taper = max(8, min(18, w // 12))
+    inner_x = x + taper
+    inner_w = max(4, w - 2 * taper)
+    for i in range(inner_w):
+        frac = i / float(max(1, inner_w - 1))
+        draw.line([(inner_x + i, y), (inner_x + i, y + h)], fill=_interp_palette_color(palette, frac), width=1)
+    for i in range(taper):
+        frac = i / float(max(1, taper - 1))
+        color_l = _interp_palette_color(palette, 0.0)
+        color_r = _interp_palette_color(palette, 1.0)
+        yy0 = y + int(round(h * 0.5 * frac))
+        yy1 = y + h - int(round(h * 0.5 * frac))
+        draw.line((x + i, yy0, x + i, yy1), fill=color_l, width=1)
+        draw.line((x + w - 1 - i, yy0, x + w - 1 - i, yy1), fill=color_r, width=1)
+    draw.rectangle((x, y, x + w, y + h), outline=(50, 50, 50), width=1)
+
+
+def _text_size(draw, text, font):
+    bbox = draw.textbbox((0, 0), text, font=font)
+    return (bbox[2] - bbox[0], bbox[3] - bbox[1])
+
+
+def _fit_font(draw, text, start_size, min_size, bold=False, max_width=1000):
+    size = start_size
+    while size >= min_size:
+        font = load_font(size, bold=bold)
+        tw, _ = _text_size(draw, text, font)
+        if tw <= max_width:
+            return font
+        size -= 1
+    return load_font(min_size, bold=bold)
+
+
+def _format_tick_label(value):
+    if isinstance(value, (int, float)) and value != 0 and abs(value) < 1:
+        s = f'{value:g}'
+        if s.startswith('-0'):
+            return '-' + s[2:]
+        if s.startswith('0'):
+            return s[1:]
+        return s
+    return f'{value:g}'
+
+
+def _draw_ticks(draw, x, y, w, h, values, vmin, vmax, font):
+    if vmax <= vmin:
+        return
+    for value in values:
+        frac = (value - vmin) / float(vmax - vmin)
+        if frac < 0 or frac > 1:
+            continue
+        tx = int(round(x + frac * w))
+        draw.line((tx, y + h, tx, y + h + 5), fill=(40, 40, 40), width=1)
+        label = _format_tick_label(value)
+        tw, _ = _text_size(draw, label, font)
+        draw.text((tx - tw // 2, y + h + 7), label, fill=(30, 30, 30), font=font)
+
+
+def _draw_panel(draw, x0, y0, x1, y1, fill=(242, 242, 242), outline=(120, 120, 120), radius=10):
+    draw.rounded_rectangle((x0, y0, x1, y1), radius=radius, fill=fill, outline=outline, width=2)
+
+
+def _draw_segmented_gradient_bar(draw, x, y, w, h, segments, vmin, vmax):
+    if w < 2 or h < 2 or vmax <= vmin:
+        return
+    for low, high, palette in segments:
+        clamped_low = max(vmin, min(vmax, low))
+        clamped_high = max(vmin, min(vmax, high))
+        if clamped_high <= clamped_low:
+            continue
+        sx = x + int(round((clamped_low - vmin) / float(vmax - vmin) * w))
+        ex = x + int(round((clamped_high - vmin) / float(vmax - vmin) * w))
+        seg_w = max(1, ex - sx)
+        for i in range(seg_w):
+            frac = i / float(max(1, seg_w - 1))
+            draw.line([(sx + i, y), (sx + i, y + h)], fill=_interp_palette_color(palette, frac), width=1)
+    draw.rectangle((x, y, x + w, y + h), outline=(50, 50, 50), width=1)
+
+
+def _draw_line_sample(draw, x0, y0, x1, color, width=3):
+    draw.line((x0, y0, x1, y0), fill=color, width=width)
+
+
+def _draw_ne_snow_bar_legend(draw, width, y, snow_ratio=10):
+    label_font = load_font(19 if width >= 1200 else 17, bold=False)
+    tick_font = load_font(12 if width >= 1200 else 10, bold=False)
+    x_pad = 58 if width >= 1200 else 36
+    panel_x0 = x_pad - 12
+    panel_x1 = width - x_pad + 12
+    panel_y0 = y - 1
+    panel_y1 = y + 66
+    _draw_panel(draw, panel_x0, panel_y0, panel_x1, panel_y1, fill=(244, 244, 244), outline=(126, 126, 126), radius=8)
+    draw.text((x_pad, y + 2), f'Snowfall Total (in, {int(snow_ratio)}:1 ratio)', fill=(22, 22, 22), font=label_font)
+    bar_x = x_pad
+    bar_y = y + 24
+    bar_w = width - 2 * x_pad
+    bar_h = 20
+    snow_segments = [(low, high, palette) for low, high, palette in NE_SNOW_ACCUM_STEP_SEGMENTS_IN]
+    _draw_segmented_gradient_bar(draw, bar_x, bar_y, bar_w, bar_h, snow_segments, 0.1, SNOW_ACCUM_MAX_IN)
+    _draw_ticks(draw, bar_x, bar_y, bar_w, bar_h, list(range(2, int(SNOW_ACCUM_MAX_IN) + 1, 2)), 0.1, SNOW_ACCUM_MAX_IN, tick_font)
+
+
+def _draw_ne_zoom_snow_bar_legend(draw, width, y, snow_ratio=10):
+    label_font = load_font(18 if width >= 1200 else 16, bold=False)
+    tick_font = load_font(12 if width >= 1200 else 10, bold=False)
+    x_pad = 66 if width >= 1200 else 42
+    panel_x0 = x_pad - 12
+    panel_x1 = width - x_pad + 12
+    panel_y0 = y
+    panel_y1 = y + 64
+    _draw_panel(draw, panel_x0, panel_y0, panel_x1, panel_y1, fill=(244, 244, 244), outline=(126, 126, 126), radius=8)
+    draw.text((x_pad, y + 2), f'Snowfall Total (in, {int(snow_ratio)}:1)', fill=(22, 22, 22), font=label_font)
+    bar_x = x_pad
+    bar_y = y + 20
+    bar_w = width - 2 * x_pad
+    bar_h = 20
+    snow_segments = [(low, high, palette) for low, high, palette in NE_ZOOM_SNOW_ACCUM_STEP_SEGMENTS_IN]
+    _draw_segmented_gradient_bar(draw, bar_x, bar_y, bar_w, bar_h, snow_segments, 0.1, SNOW_ACCUM_MAX_IN)
+    _draw_ticks(draw, bar_x, bar_y, bar_w, bar_h, list(range(2, int(SNOW_ACCUM_MAX_IN) + 1, 2)), 0.1, SNOW_ACCUM_MAX_IN, tick_font)
+
+
+def _draw_legend(draw, product_key, width, y, snow_ratio=10):
+    label_font = load_font(22 if width >= 1200 else 18, bold=False)
+    tick_font = load_font(16 if width >= 1200 else 14, bold=False)
+    x_pad = 58 if width >= 1200 else 36
+    bar_x = x_pad
+    bar_w = width - 2 * x_pad
+    bar_y = y + 26
+    bar_h = 22
+
+    if product_key == 'nh_z500a':
+        _draw_panel(draw, bar_x - 14, y - 4, bar_x + bar_w + 14, y + 72)
+        draw.text(
+            (bar_x, y + 2),
+            f'500-hPa Height Anomaly (m, {Z500_CLIMO_BASELINE_LABEL} normal)',
+            fill=(22, 22, 22),
+            font=label_font,
+        )
+        _draw_gradient_bar(draw, bar_x, bar_y, bar_w, bar_h, ANOMALY_PALETTE)
+        _draw_ticks(
+            draw,
+            bar_x,
+            bar_y,
+            bar_w,
+            bar_h,
+            [-240, -180, -120, -60, 0, 60, 120, 180, 240],
+            ANOMALY_MIN_M,
+            ANOMALY_MAX_M,
+            tick_font,
+        )
+        return
+
+    if product_key == 'na_z500a':
+        na_label_font = load_font(18 if width >= 1200 else 16, bold=False)
+        na_tick_font = load_font(14 if width >= 1200 else 12, bold=False)
+        na_bar_y = y + 19
+        na_bar_h = 18
+        _draw_panel(draw, bar_x - 14, y - 2, bar_x + bar_w + 14, y + 54)
+        if Z500_STYLE == 'classic':
+            classic_label_font = load_font(18 if width >= 1200 else 16, bold=True)
+            draw.text(
+                (bar_x, y),
+                '500-mb height anomaly (m)',
+                fill=(22, 22, 22),
+                font=classic_label_font,
+            )
+            _draw_gradient_bar(draw, bar_x, na_bar_y, bar_w, na_bar_h, Z500_CLASSIC_PALETTE)
+            _draw_ticks(
+                draw,
+                bar_x,
+                na_bar_y,
+                bar_w,
+                na_bar_h,
+                [-140, -100, -60, -20, 0, 20, 60, 100, 140],
+                Z500_CLASSIC_MIN_M,
+                Z500_CLASSIC_MAX_M,
+                na_tick_font,
+            )
+            return
+        draw.text(
+            (bar_x, y),
+            '500-hPa Height Anomaly (m)',
+            fill=(22, 22, 22),
+            font=na_label_font,
+        )
+        _draw_gradient_bar(draw, bar_x, na_bar_y, bar_w, na_bar_h, NA_Z500A_PALETTE)
+        _draw_ticks(
+            draw,
+            bar_x,
+            na_bar_y,
+            bar_w,
+            na_bar_h,
+            [-240, -180, -120, -60, 0, 60, 120, 180, 240],
+            ANOMALY_MIN_M,
+            ANOMALY_MAX_M,
+            na_tick_font,
+        )
+        return
+
+    if product_key == 'conus_vort500':
+        _draw_panel(draw, bar_x - 14, y - 4, bar_x + bar_w + 14, y + 72)
+        draw.text((bar_x, y + 2), '500-hPa Relative Vorticity (x10^-5 s^-1)', fill=(22, 22, 22), font=label_font)
+        _draw_tapered_gradient_bar(draw, bar_x, bar_y, bar_w, bar_h, VORTICITY_PALETTE)
+        _draw_ticks(
+            draw,
+            bar_x,
+            bar_y,
+            bar_w,
+            bar_h,
+            [6, 10, 14, 18, 22, 26, 30, 34, 38, 42, 46, 50],
+            CONUS_VORT_MIN,
+            CONUS_VORT_MAX,
+            tick_font,
+        )
+        return
+
+    if product_key == 'conus_t2m':
+        _draw_panel(draw, bar_x - 14, y - 4, bar_x + bar_w + 14, y + 72)
+        draw.text((bar_x, y + 2), '2m Temperature (degF) | USA Region (CONUS)', fill=(22, 22, 22), font=label_font)
+        _draw_gradient_bar(draw, bar_x, bar_y, bar_w, bar_h, T2M_F_PALETTE)
+        _draw_ticks(draw, bar_x, bar_y, bar_w, bar_h, [-20, 0, 10, 20, 32, 40, 50, 60, 70, 80, 90, 100, 110], T2M_F_MIN, T2M_F_MAX, tick_font)
+        return
+
+    if product_key == 'conus_t2m_anom':
+        _draw_panel(draw, bar_x - 14, y - 4, bar_x + bar_w + 14, y + 72)
+        draw.text(
+            (bar_x, y + 2),
+            f'2m Temperature Anomaly (degF) vs {CLIMO_T2M_BASELINE_LABEL} | USA Region (CONUS)',
+            fill=(22, 22, 22),
+            font=label_font,
+        )
+        _draw_gradient_bar(draw, bar_x, bar_y, bar_w, bar_h, T2M_ANOM_F_PALETTE)
+        _draw_ticks(draw, bar_x, bar_y, bar_w, bar_h, [-40, -30, -20, -10, 0, 10, 20, 30, 40], T2M_ANOM_F_MIN, T2M_ANOM_F_MAX, tick_font)
+        return
+
+    parameter_spec = PARAMETER_MAP_SPECS.get(product_key)
+    if parameter_spec is not None:
+        _draw_panel(draw, bar_x - 14, y - 4, bar_x + bar_w + 14, y + 72)
+        draw.text(
+            (bar_x, y + 2),
+            str(parameter_spec['units']),
+            fill=(22, 22, 22),
+            font=label_font,
+        )
+        _draw_gradient_bar(draw, bar_x, bar_y, bar_w, bar_h, parameter_spec['palette'])
+        _draw_ticks(
+            draw,
+            bar_x,
+            bar_y,
+            bar_w,
+            bar_h,
+            parameter_spec['ticks'],
+            parameter_spec['min'],
+            parameter_spec['max'],
+            tick_font,
+        )
+        return
+
+    if product_key == 'ne_snow_accum':
+        _draw_ne_snow_bar_legend(draw, width, y, snow_ratio=snow_ratio)
+        return
+
+    if product_key in SNOW_REWORK_REGIONAL_KEYS:
+        _draw_ne_zoom_snow_bar_legend(draw, width, y, snow_ratio=snow_ratio)
+        return
+
+    if product_key in ('conus_snow_accum', 'ne_snow_accum') or product_key in SNOW_REWORK_REGIONAL_KEYS:
+        _draw_panel(draw, bar_x - 14, y - 4, bar_x + bar_w + 14, y + 72)
+        draw.text((bar_x, y + 2), f'Accumulated Snowfall Total (in, {int(snow_ratio)}:1 ratio)', fill=(22, 22, 22), font=label_font)
+        snow_segments = [(low, high, palette) for low, high, palette in SNOW_ACCUM_STEP_SEGMENTS_IN]
+        _draw_segmented_gradient_bar(draw, bar_x, bar_y, bar_w, bar_h, snow_segments, 0.1, SNOW_ACCUM_MAX_IN)
+        _draw_ticks(draw, bar_x, bar_y, bar_w, bar_h, list(range(2, int(SNOW_ACCUM_MAX_IN) + 1, 2)), 0.1, SNOW_ACCUM_MAX_IN, tick_font)
+        return
+
+    if product_key == 'conus_mslp_ptype':
+        compact_label_font = load_font(20 if width >= 1200 else 17, bold=False)
+        compact_note_font = load_font(14 if width >= 1200 else 12, bold=False)
+        compact_tick_font = load_font(13 if width >= 1200 else 11, bold=False)
+        gap = 10 if width >= 1200 else 8
+        slot_w = int((bar_w - 3 * gap) / 4)
+        panel_top = y + 36
+        panel_bottom = y + CONUS_PTYPE_LEGEND_HEIGHT - 8
+        _draw_panel(
+            draw,
+            bar_x - 10,
+            y - 1,
+            bar_x + bar_w + 10,
+            panel_bottom,
+            fill=(244, 244, 244),
+            outline=(118, 118, 118),
+            radius=8,
+        )
+        draw.text((bar_x, y + 2), 'Precip Rate by Type (mm/hr)', fill=(22, 22, 22), font=compact_label_font)
+        draw.text((bar_x, y + 24), 'Snow scale follows in/hr bins for heavier rates', fill=(70, 70, 70), font=compact_note_font)
+        labels = [
+            ('Rain', CONUS_RAIN_RATE_PALETTE),
+            ('Snow', CONUS_SNOW_PTYPE_SEGMENTS_MMHR),
+            ('Freezing Rain', CONUS_FRZR_RATE_PALETTE),
+            ('Sleet', CONUS_SLEET_RATE_PALETTE),
+        ]
+        for i, (name, palette) in enumerate(labels):
+            sx = bar_x + i * (slot_w + gap)
+            draw.text((sx + 1, panel_top), name, fill=(24, 24, 24), font=compact_note_font)
+            gradient_y = panel_top + 20
+            if name == 'Snow':
+                _draw_segmented_gradient_bar(draw, sx, gradient_y, slot_w, 18, palette, 0.0, SNOW_PTYPE_MAX_MMHR)
+                _draw_ticks(
+                    draw,
+                    sx,
+                    gradient_y,
+                    slot_w,
+                    18,
+                    SNOW_PTYPE_TICKS_MMHR[1:],
+                    0.0,
+                    SNOW_PTYPE_MAX_MMHR,
+                    compact_tick_font,
+                )
+            else:
+                _draw_gradient_bar(draw, sx, gradient_y, slot_w, 18, palette)
+                _draw_ticks(draw, sx, gradient_y, slot_w, 18, [0.1, 1, 3, 6, 10], 0.1, CONUS_PTYPE_RATE_MAX_MMHR, compact_tick_font)
+        return
+
+    if product_key == 'ne_mslp_ptype':
+        draw.text((bar_x, y + 2), 'Precip Rate by Type (mm/hr; Snow bins from in/hr)', fill=(22, 22, 22), font=label_font)
+        gap = 16 if width >= 1200 else 10
+        slot_w = int((bar_w - 3 * gap) / 4)
+        panel_h = 96
+        labels = [
+            ('Rain', RAIN_RATE_PALETTE),
+            ('Snow', SNOW_RATE_PALETTE),
+            ('Freezing Rain', FRZR_RATE_PALETTE),
+            ('Sleet', SLEET_RATE_PALETTE),
+        ]
+        for i, (name, palette) in enumerate(labels):
+            sx = bar_x + i * (slot_w + gap)
+            panel_x0 = sx - 6
+            panel_y0 = y + 28
+            panel_x1 = sx + slot_w + 6
+            panel_y1 = panel_y0 + panel_h
+            _draw_panel(draw, panel_x0, panel_y0, panel_x1, panel_y1, fill=(242, 242, 242), outline=(130, 130, 130), radius=8)
+            draw.text((sx + 2, y + 34), name, fill=(24, 24, 24), font=tick_font)
+            gradient_y = y + 58
+            if name == 'Snow':
+                snow_segments = [(lo, hi, pal) for lo, hi, pal in SNOW_PTYPE_SEGMENTS_MMHR]
+                _draw_segmented_gradient_bar(draw, sx, gradient_y, slot_w, bar_h, snow_segments, 0.0, SNOW_PTYPE_MAX_MMHR)
+                _draw_ticks(
+                    draw,
+                    sx,
+                    gradient_y,
+                    slot_w,
+                    bar_h,
+                    SNOW_PTYPE_TICKS_MMHR,
+                    0.0,
+                    SNOW_PTYPE_MAX_MMHR,
+                    tick_font,
+                )
+            else:
+                _draw_gradient_bar(draw, sx, gradient_y, slot_w, bar_h, palette)
+                _draw_ticks(draw, sx, gradient_y, slot_w, bar_h, [0.1, 0.3, 1, 3, 6, 11, 24, 38], 0.1, 38.0, tick_font)
+
+
+def _lonlat_to_image_xy(lon, lat, region, width, height):
+    if lon is None or lat is None or not region or len(region) != 4:
+        return None
+    west, south, east, north = region
+    if north <= south:
+        return None
+
+    lon_f = float(lon)
+    lat_f = float(lat)
+    lat_f = max(south, min(north, lat_f))
+
+    if east > west:
+        span = east - west
+        lon_norm = (lon_f - west) / span
+    else:
+        span = (east + 360.0) - west
+        wrapped = lon_f
+        if wrapped < west:
+            wrapped += 360.0
+        lon_norm = (wrapped - west) / span
+
+    lon_norm = max(0.0, min(1.0, lon_norm))
+    y_norm = (north - lat_f) / (north - south)
+    y_norm = max(0.0, min(1.0, y_norm))
+
+    x = int(round(lon_norm * (width - 1)))
+    y = int(round(y_norm * (height - 1)))
+    return x, y
+
+
+def _draw_pressure_marker(draw, width, height, x, y, kind, mb_value):
+    label_font = load_font(46 if width >= 1300 else 40, bold=True)
+    value_font = load_font(19 if width >= 1300 else 17, bold=True)
+    label_stroke = 3
+    value_stroke = 2
+    safe_pad = 12
+    label_fill = (196, 30, 30) if kind == 'L' else (36, 77, 182)
+    value_fill = (20, 20, 20)
+    label_text = str(kind).upper()
+    value_text = f'{int(round(float(mb_value)))}'
+    label_bbox = draw.textbbox((0, 0), label_text, font=label_font, stroke_width=label_stroke)
+    value_bbox = draw.textbbox((0, 0), value_text, font=value_font, stroke_width=value_stroke)
+    label_w = label_bbox[2] - label_bbox[0]
+    label_h = label_bbox[3] - label_bbox[1]
+    value_w = value_bbox[2] - value_bbox[0]
+    value_h = value_bbox[3] - value_bbox[1]
+    gap = -4
+    group_w = max(label_w, value_w)
+    group_h = label_h + value_h + gap
+    group_left = int(round(x - group_w / 2.0))
+    group_top = int(round(y - group_h / 2.0))
+    group_left = max(safe_pad, min(width - group_w - safe_pad, group_left))
+    group_top = max(safe_pad, min(height - group_h - safe_pad, group_top))
+    label_x = int(round(group_left + (group_w - label_w) / 2.0 - label_bbox[0]))
+    label_y = int(round(group_top - label_bbox[1]))
+    value_top = group_top + label_h + gap
+    value_x = int(round(group_left + (group_w - value_w) / 2.0 - value_bbox[0]))
+    value_y = int(round(value_top - value_bbox[1]))
+    try:
+        draw.text((label_x, label_y), label_text, fill=label_fill, font=label_font, stroke_width=label_stroke, stroke_fill=(245, 245, 245))
+        draw.text((value_x, value_y), value_text, fill=value_fill, font=value_font, stroke_width=value_stroke, stroke_fill=(245, 245, 245))
+    except TypeError:
+        draw.text((label_x, label_y), label_text, fill=label_fill, font=label_font)
+        draw.text((value_x, value_y), value_text, fill=value_fill, font=value_font)
+
+
+def _draw_contour_labels(draw, width, height, contour_labels, map_region):
+    label_font = load_font(16 if width >= 1300 else 14, bold=False)
+    stroke_width = 2
+    safe_pad = 14
+    placed = []
+    for item in contour_labels or []:
+        text = item.get('text')
+        if not text:
+            continue
+        marker_xy = _lonlat_to_image_xy(
+            item.get('lon'),
+            item.get('lat'),
+            map_region,
+            width,
+            height,
+        )
+        if marker_xy is None:
+            continue
+        x, y = marker_xy
+        bbox = draw.textbbox((0, 0), text, font=label_font, stroke_width=stroke_width)
+        tw = bbox[2] - bbox[0]
+        th = bbox[3] - bbox[1]
+        tx = int(round(x - tw / 2.0 - bbox[0]))
+        ty = int(round(y - th / 2.0 - bbox[1]))
+        rect = (tx + bbox[0], ty + bbox[1], tx + bbox[2], ty + bbox[3])
+        if rect[0] < safe_pad or rect[1] < safe_pad or rect[2] > width - safe_pad or rect[3] > height - safe_pad:
+            continue
+        overlaps = False
+        for ox0, oy0, ox1, oy1 in placed:
+            if not (rect[2] < ox0 or rect[0] > ox1 or rect[3] < oy0 or rect[1] > oy1):
+                overlaps = True
+                break
+        if overlaps:
+            continue
+        try:
+            draw.text((tx, ty), text, fill=(82, 82, 82), font=label_font, stroke_width=stroke_width, stroke_fill=(242, 242, 242))
+        except TypeError:
+            draw.text((tx, ty), text, fill=(82, 82, 82), font=label_font)
+        placed.append(rect)
+
+
+def _draw_snow_labels(draw, width, height, map_region, snow_labels, product_key):
+    if not map_region or not snow_labels:
+        return
+
+    if product_key == 'ne_snow_accum':
+        snow_font = load_font(20 if width >= 1300 else 17, bold=True)
+        stroke_width = 2
+        safe_pad = 8
+        min_inches = NE_SNOW_LABEL_MIN_IN
+        max_labels = NE_SNOW_LABEL_MAX_COUNT
+        collision_pad = NE_SNOW_LABEL_COLLISION_PAD
+        text_fill = (38, 38, 38)
+        stroke_fill = (247, 247, 247)
+        offsets = [
+            (6, -2),
+            (-6, -2),
+            (6, 2),
+            (-6, 2),
+        ]
+    elif product_key in SNOW_REWORK_REGIONAL_KEYS:
+        snow_font = load_font(21 if width >= 1300 else 19, bold=True)
+        stroke_width = 3
+        safe_pad = 8
+        min_inches = NE_ZOOM_SNOW_LABEL_MIN_IN
+        max_labels = NE_ZOOM_SNOW_LABEL_MAX_COUNT
+        collision_pad = NE_ZOOM_SNOW_LABEL_COLLISION_PAD
+        text_fill = (34, 34, 34)
+        stroke_fill = (248, 248, 248)
+        offsets = [
+            (8, -2),
+            (-8, -2),
+            (8, 3),
+            (-8, 3),
+        ]
+    else:
+        snow_font = load_font(20 if width >= 1300 else 16, bold=True)
+        stroke_width = 2
+        safe_pad = 4
+        min_inches = 0.5
+        max_labels = 999
+        collision_pad = 2
+        text_fill = (32, 32, 32)
+        stroke_fill = (245, 245, 245)
+        offsets = [(4, -2)]
+
+    placed = []
+    placed_count = 0
+    for item in sorted(snow_labels, key=lambda s: s.get('inches', 0.0), reverse=True):
+        code = item.get('code')
+        inches = item.get('inches')
+        if not code or inches is None or float(inches) < float(min_inches):
+            continue
+        if placed_count >= max_labels:
+            break
+        marker_xy = _lonlat_to_image_xy(
+            item.get('lon'),
+            item.get('lat'),
+            map_region,
+            width,
+            height,
+        )
+        if marker_xy is None:
+            continue
+
+        x, y = marker_xy
+        text = f'{code} {int(round(float(inches)))}'
+        bbox = draw.textbbox((0, 0), text, font=snow_font, stroke_width=stroke_width)
+        tw = bbox[2] - bbox[0]
+        th = bbox[3] - bbox[1]
+        placed_here = False
+        for dx_sign, dy_sign in offsets:
+            if dx_sign >= 0:
+                tx = x + dx_sign
+            else:
+                tx = x + dx_sign - tw
+            if dy_sign <= 0:
+                ty = y - th + dy_sign
+            else:
+                ty = y + dy_sign
+            tx = max(safe_pad, min(width - tw - safe_pad, tx))
+            ty = max(safe_pad, min(height - th - safe_pad, ty))
+            rect = (
+                tx + bbox[0] - collision_pad,
+                ty + bbox[1] - collision_pad,
+                tx + bbox[2] + collision_pad,
+                ty + bbox[3] + collision_pad,
+            )
+            overlaps = False
+            for ox0, oy0, ox1, oy1 in placed:
+                if not (rect[2] < ox0 or rect[0] > ox1 or rect[3] < oy0 or rect[1] > oy1):
+                    overlaps = True
+                    break
+            if overlaps:
+                continue
+            try:
+                draw.text((tx, ty), text, fill=text_fill, font=snow_font, stroke_width=stroke_width, stroke_fill=stroke_fill)
+            except TypeError:
+                draw.text((tx, ty), text, fill=text_fill, font=snow_font)
+            placed.append(rect)
+            placed_count += 1
+            placed_here = True
+            break
+        if not placed_here and product_key != 'ne_snow_accum':
+            continue
+
+
+def annotate_map_file(out_file, product_key, hour, map_region=None, low_center=None, pressure_centers=None, contour_labels=None, snow_labels=None, snow_ratio=10):
+    from PIL import Image, ImageDraw
+
+    product_titles = {
+        'nh_z500a': f'WN2 0.25 deg | 500-hPa Geopotential Height (dam) & Anomaly vs {Z500_CLIMO_BASELINE_LABEL} (m) | Northern Hemisphere',
+        'na_z500a': (
+            f'WN2 0.25 deg | 500-mb Height Anomaly (m) | North America'
+            if Z500_STYLE == 'classic'
+            else f'WN2 0.25 deg | 500-hPa Height (dam) + Anomaly vs {Z500_CLIMO_BASELINE_LABEL} (m) | North America'
+        ),
+        'conus_mslp_ptype': 'WN2 0.25 deg | MSLP (hPa) + Precip Type | CONUS',
+        'ne_mslp_ptype': 'WN2 0.25 deg | MSLP (hPa) + Precip Type | Northeast',
+        'conus_vort500': 'WN2 0.25 deg | 500-hPa Relative Vorticity + 500-hPa Height (dam) | CONUS',
+        'conus_t2m': 'WN2 0.25 deg | 2m Temperature (degF) | USA Region (CONUS)',
+        'conus_t2m_anom': f'WN2 0.25 deg | 2m Temperature Anomaly (degF) vs {CLIMO_T2M_BASELINE_LABEL} | USA Region (CONUS)',
+        'conus_snow_accum': 'WN2 | Accumulated Snowfall | CONUS',
+        'ne_snow_accum': 'WN2 | Accumulated Snowfall | Northeast',
+        'ne_zoom_snow_accum': 'WN2 | Accumulated Snowfall | New England Zoom',
+        'mi_wi_snow_accum': 'WN2 | Accumulated Snowfall | Michigan/Wisconsin',
+        'carolinas_snow_accum': 'WN2 | Accumulated Snowfall | Carolinas',
+    }
+    product_titles.update({key: spec['title'] for key, spec in PARAMETER_MAP_SPECS.items()})
+    title = product_titles.get(product_key, product_key)
+    init_text, valid_text = format_map_times(hour)
+    subtitle = f'Init {init_text} | H{hour:03d} | Valid {valid_text}'
+    is_rework_snow = product_key in SNOW_REWORK_REGIONAL_KEYS
+
+    with Image.open(out_file) as src:
+        img = src.convert('RGB')
+        if map_region is not None and pressure_centers:
+            marker_draw = ImageDraw.Draw(img)
+            for center in pressure_centers:
+                marker_xy = _lonlat_to_image_xy(
+                    center.get('lon'),
+                    center.get('lat'),
+                    map_region,
+                    img.width,
+                    img.height,
+                )
+                mb = center.get('mb')
+                if marker_xy is None or mb is None:
+                    continue
+                _draw_pressure_marker(
+                    marker_draw,
+                    img.width,
+                    img.height,
+                    marker_xy[0],
+                    marker_xy[1],
+                    center.get('kind', 'L'),
+                    mb,
+                )
+        if map_region is not None and low_center:
+            marker_xy = _lonlat_to_image_xy(
+                low_center.get('lon'),
+                low_center.get('lat'),
+                map_region,
+                img.width,
+                img.height,
+            )
+            if marker_xy is not None:
+                marker_draw = ImageDraw.Draw(img)
+                marker_font = load_font(60 if img.width >= 1300 else 52, bold=True)
+                value_font = load_font(28 if img.width >= 1300 else 24, bold=True)
+                x, y = marker_xy
+                l_tw, l_th = _text_size(marker_draw, 'L', marker_font)
+                l_x = int(round(x - l_tw / 2))
+                l_y = int(round(y - l_th / 2))
+                l_x = max(4, min(img.width - l_tw - 4, l_x))
+                l_y = max(4, min(img.height - l_th - 4, l_y))
+                try:
+                    marker_draw.text((l_x, l_y), 'L', fill=(214, 28, 28), font=marker_font, stroke_width=2, stroke_fill=(20, 20, 20))
+                except TypeError:
+                    marker_draw.text((l_x, l_y), 'L', fill=(214, 28, 28), font=marker_font)
+
+                mb = low_center.get('mb')
+                if mb is not None:
+                    mb_text = f'{int(round(float(mb)))} mb'
+                    mb_tw, mb_th = _text_size(marker_draw, mb_text, value_font)
+                    mb_x = l_x + l_tw + 8
+                    mb_y = l_y + max(0, (l_th - mb_th) // 2)
+                    if mb_x + mb_tw > img.width - 4:
+                        mb_x = max(4, l_x - mb_tw - 8)
+                    mb_x = max(4, min(img.width - mb_tw - 4, mb_x))
+                    mb_y = max(4, min(img.height - mb_th - 4, mb_y))
+                    try:
+                        marker_draw.text((mb_x, mb_y), mb_text, fill=(214, 28, 28), font=value_font, stroke_width=2, stroke_fill=(20, 20, 20))
+                    except TypeError:
+                        marker_draw.text((mb_x, mb_y), mb_text, fill=(214, 28, 28), font=value_font)
+
+        if product_key == 'conus_mslp_ptype' and map_region is not None and contour_labels:
+            contour_draw = ImageDraw.Draw(img)
+            _draw_contour_labels(contour_draw, img.width, img.height, contour_labels, map_region)
+
+        if map_region is not None and snow_labels:
+            snow_draw = ImageDraw.Draw(img)
+            if product_key == 'ne_snow_accum' or is_rework_snow:
+                _draw_snow_labels(snow_draw, img.width, img.height, map_region, snow_labels, product_key)
+            else:
+                snow_font = load_font(20 if img.width >= 1300 else 16, bold=True)
+                placed = []
+                for item in sorted(snow_labels, key=lambda s: s.get('inches', 0.0), reverse=True):
+                    code = item.get('code')
+                    inches = item.get('inches')
+                    if not code or inches is None or float(inches) < 0.5:
+                        continue
+                    marker_xy = _lonlat_to_image_xy(
+                        item.get('lon'),
+                        item.get('lat'),
+                        map_region,
+                        img.width,
+                        img.height,
+                    )
+                    if marker_xy is None:
+                        continue
+                    x, y = marker_xy
+                    text = f'{code} {int(round(float(inches)))}'
+                    tw, th = _text_size(snow_draw, text, snow_font)
+                    tx = max(4, min(img.width - tw - 4, x + 4))
+                    ty = max(4, min(img.height - th - 4, y - th - 2))
+                    rect = (tx - 2, ty - 1, tx + tw + 2, ty + th + 1)
+                    overlaps = False
+                    for ox0, oy0, ox1, oy1 in placed:
+                        if not (rect[2] < ox0 or rect[0] > ox1 or rect[3] < oy0 or rect[1] > oy1):
+                            overlaps = True
+                            break
+                    if overlaps:
+                        continue
+                    try:
+                        snow_draw.text((tx, ty), text, fill=(32, 32, 32), font=snow_font, stroke_width=2, stroke_fill=(245, 245, 245))
+                    except TypeError:
+                        snow_draw.text((tx, ty), text, fill=(32, 32, 32), font=snow_font)
+                    placed.append(rect)
+
+        if product_key == 'ne_snow_accum' or is_rework_snow:
+            footer_draw = ImageDraw.Draw(img)
+            footer_lines = [
+                'Source: WeatherNext2 (Earth Engine)',
+                'Generated by: Jonathan Wall (@_jwall on X) | Copyright 2024-5 Google LLC',
+            ]
+            footer_font = load_font((14 if img.width >= 1300 else 12) if product_key == 'ne_snow_accum' else (15 if img.width >= 1300 else 13), bold=True)
+            footer_stroke = 4 if (product_key == 'ne_snow_accum' or is_rework_snow) else 3
+            footer_gap = 1
+            line_boxes = []
+            max_w = 0
+            total_h = 0
+            for line in footer_lines:
+                bbox = footer_draw.textbbox((0, 0), line, font=footer_font, stroke_width=footer_stroke)
+                line_boxes.append(bbox)
+                max_w = max(max_w, bbox[2] - bbox[0])
+                total_h += bbox[3] - bbox[1]
+            total_h += footer_gap * (len(footer_lines) - 1)
+            fy = img.height - total_h - 10
+            fx = img.width - max_w - 12
+            for line, bbox in zip(footer_lines, line_boxes):
+                line_x = int(round(fx - bbox[0]))
+                line_y = int(round(fy - bbox[1]))
+                try:
+                    footer_draw.text(
+                        (line_x, line_y),
+                        line,
+                        fill=((54, 54, 54) if product_key == 'ne_snow_accum' else (60, 60, 60)),
+                        font=footer_font,
+                        stroke_width=footer_stroke,
+                        stroke_fill=((248, 248, 248) if product_key == 'ne_snow_accum' else (246, 246, 246)),
+                    )
+                except TypeError:
+                    footer_draw.text((line_x, line_y), line, fill=((54, 54, 54) if product_key == 'ne_snow_accum' else (60, 60, 60)), font=footer_font)
+                fy += (bbox[3] - bbox[1]) + footer_gap
+
+        if product_key == 'na_z500a':
+            footer_draw = ImageDraw.Draw(img)
+            footer_lines = [
+                'Source: WeatherNext2 (Earth Engine)',
+                f'Anomaly style: {Z500_STYLE}',
+                'Generated by: Jonathan Wall (@_jwall on X) | Copyright 2024-5 Google LLC',
+            ]
+            footer_font = load_font(13 if img.width >= 1300 else 11, bold=False)
+            footer_stroke = 2
+            footer_gap = 0
+            line_boxes = []
+            max_w = 0
+            total_h = 0
+            for line in footer_lines:
+                bbox = footer_draw.textbbox((0, 0), line, font=footer_font, stroke_width=footer_stroke)
+                line_boxes.append(bbox)
+                max_w = max(max_w, bbox[2] - bbox[0])
+                total_h += bbox[3] - bbox[1]
+            fy = img.height - total_h - 12
+            fx = img.width - max_w - 14
+            for line, bbox in zip(footer_lines, line_boxes):
+                line_x = int(round(fx - bbox[0]))
+                line_y = int(round(fy - bbox[1]))
+                try:
+                    footer_draw.text(
+                        (line_x, line_y),
+                        line,
+                        fill=(72, 72, 72),
+                        font=footer_font,
+                        stroke_width=footer_stroke,
+                        stroke_fill=(240, 240, 240),
+                    )
+                except TypeError:
+                    footer_draw.text((line_x, line_y), line, fill=(72, 72, 72), font=footer_font)
+                fy += (bbox[3] - bbox[1]) + footer_gap
+
+        if product_key == 'conus_vort500':
+            footer_draw = ImageDraw.Draw(img)
+            footer_lines = [
+                'Source: WeatherNext2 (Earth Engine)',
+                'Generated by: Jonathan Wall (@_jwall on X) | Copyright 2024-5 Google LLC',
+            ]
+            footer_font = load_font(15 if img.width >= 1300 else 13, bold=True)
+            footer_stroke = 3
+            footer_gap = 1
+            line_boxes = []
+            max_w = 0
+            total_h = 0
+            for line in footer_lines:
+                bbox = footer_draw.textbbox((0, 0), line, font=footer_font, stroke_width=footer_stroke)
+                line_boxes.append(bbox)
+                max_w = max(max_w, bbox[2] - bbox[0])
+                total_h += bbox[3] - bbox[1]
+            total_h += footer_gap * (len(footer_lines) - 1)
+            fy = img.height - total_h - 10
+            fx = img.width - max_w - 12
+            for line, bbox in zip(footer_lines, line_boxes):
+                line_x = int(round(fx - bbox[0]))
+                line_y = int(round(fy - bbox[1]))
+                try:
+                    footer_draw.text(
+                        (line_x, line_y),
+                        line,
+                        fill=(58, 58, 58),
+                        font=footer_font,
+                        stroke_width=footer_stroke,
+                        stroke_fill=(246, 246, 246),
+                    )
+                except TypeError:
+                    footer_draw.text((line_x, line_y), line, fill=(58, 58, 58), font=footer_font)
+                fy += (bbox[3] - bbox[1]) + footer_gap
+
+        legend_h = 0
+        if product_key == 'conus_mslp_ptype':
+            legend_h = CONUS_PTYPE_LEGEND_HEIGHT
+        elif product_key == 'ne_mslp_ptype':
+            legend_h = 180
+        elif product_key == 'na_z500a':
+            legend_h = Z500_CLASSIC_LEGEND_HEIGHT if Z500_STYLE == 'classic' else NA_Z500A_LEGEND_HEIGHT
+        elif product_key == 'ne_snow_accum':
+            legend_h = NE_SNOW_ACCUM_LEGEND_HEIGHT
+        elif is_rework_snow:
+            legend_h = NE_ZOOM_SNOW_ACCUM_LEGEND_HEIGHT
+        elif product_key in (
+            'nh_z500a',
+            'conus_vort500',
+            'conus_t2m',
+            'conus_t2m_anom',
+            'conus_wind10',
+            'conus_t850',
+            'conus_t500',
+            'conus_omega500',
+            'conus_sst',
+            'conus_snow_accum',
+            'ne_snow_accum',
+        ):
+            legend_h = 96
+
+        if product_key == 'na_z500a':
+            header_h = Z500_CLASSIC_HEADER_HEIGHT if Z500_STYLE == 'classic' else NA_Z500A_HEADER_HEIGHT
+        elif product_key == 'ne_snow_accum':
+            header_h = NE_SNOW_ACCUM_HEADER_HEIGHT
+        elif is_rework_snow:
+            header_h = NE_ZOOM_SNOW_ACCUM_HEADER_HEIGHT
+        else:
+            header_h = 78
+        footer_h = 0 if product_key in ('na_z500a', 'conus_vort500', 'ne_snow_accum') or is_rework_snow else 30
+
+        if product_key == 'na_z500a':
+            title_start = 25 if img.width >= 1300 else 22
+            title_min = 16 if img.width >= 1300 else 14
+            subtitle_start = 17 if img.width >= 1300 else 15
+            subtitle_min = 13 if img.width >= 1300 else 12
+            top_pad = 5
+            line_gap = 2
+            bottom_pad = 5
+        elif product_key == 'ne_snow_accum':
+            title_start = 25 if img.width >= 1300 else 22
+            title_min = 16 if img.width >= 1300 else 14
+            subtitle_start = 16 if img.width >= 1300 else 14
+            subtitle_min = 12 if img.width >= 1300 else 11
+            top_pad = 4
+            line_gap = 2
+            bottom_pad = 4
+        elif is_rework_snow:
+            title_start = 24 if img.width >= 1300 else 21
+            title_min = 17 if img.width >= 1300 else 15
+            subtitle_start = 15 if img.width >= 1300 else 13
+            subtitle_min = 12 if img.width >= 1300 else 11
+            top_pad = 4
+            line_gap = 1
+            bottom_pad = 4
+        else:
+            title_start = 28 if img.width >= 1300 else 24
+            title_min = 18 if img.width >= 1300 else 16
+            subtitle_start = 19 if img.width >= 1300 else 17
+            subtitle_min = 14 if img.width >= 1300 else 13
+            top_pad = 6
+            line_gap = 2
+            bottom_pad = 6
+        max_text_w = img.width - 24
+        header_probe = Image.new('RGB', (img.width, 1), color=(236, 236, 236))
+        header_draw = ImageDraw.Draw(header_probe)
+        title_font = _fit_font(
+            header_draw,
+            title,
+            start_size=title_start,
+            min_size=title_min,
+            bold=True,
+            max_width=max_text_w,
+        )
+        subtitle_font = _fit_font(
+            header_draw,
+            subtitle,
+            start_size=subtitle_start,
+            min_size=subtitle_min,
+            bold=False,
+            max_width=max_text_w,
+        )
+        title_bbox = header_draw.textbbox((0, 0), title, font=title_font)
+        subtitle_bbox = header_draw.textbbox((0, 0), subtitle, font=subtitle_font)
+        title_h = title_bbox[3] - title_bbox[1]
+        subtitle_h = subtitle_bbox[3] - subtitle_bbox[1]
+        title_y = top_pad - title_bbox[1]
+        subtitle_y = title_y + title_h + line_gap - subtitle_bbox[1]
+        header_h = max(40, int(math.ceil(subtitle_y + subtitle_bbox[3] + bottom_pad)))
+
+        canvas = Image.new('RGB', (img.width, img.height + header_h + legend_h + footer_h), color=(236, 236, 236))
+        canvas.paste(img, (0, header_h))
+        draw = ImageDraw.Draw(canvas)
+
+        draw.text((12, title_y), title, fill=(20, 20, 20), font=title_font)
+        draw.text((12, subtitle_y), subtitle, fill=(25, 25, 25), font=subtitle_font)
+        draw.rectangle((0, header_h, img.width - 1, header_h + img.height - 1), outline=(32, 32, 32), width=2)
+
+        if legend_h > 0:
+            _draw_legend(draw, product_key, img.width, header_h + img.height + 2, snow_ratio=snow_ratio)
+
+        if footer_h > 0:
+            footer_text = (
+                'Source: WeatherNext2 (Earth Engine) | Generated by: Jonathan Wall (@_jwall on X) '
+                '| Copyright 2024-5 Google LLC'
+            )
+            footer_font = _fit_font(
+                draw,
+                footer_text,
+                start_size=(18 if img.width >= 1300 else 16),
+                min_size=12,
+                bold=True,
+                max_width=max_text_w,
+            )
+            draw.text((12, img.height + header_h + legend_h + 4), footer_text, fill=(28, 28, 28), font=footer_font)
+        if canvas.width / float(max(1, canvas.height)) < MIN_FINAL_PRODUCT_LANDSCAPE_ASPECT:
+            target_w = max(canvas.width, int(math.ceil(canvas.height * MIN_FINAL_PRODUCT_LANDSCAPE_ASPECT)))
+            if target_w > canvas.width:
+                widened = Image.new('RGB', (target_w, canvas.height), color=(236, 236, 236))
+                offset_x = max(0, (target_w - canvas.width) // 2)
+                widened.paste(canvas, (offset_x, 0))
+                canvas = widened
+        if max_dimension_px is not None:
+            longest_side = max(canvas.width, canvas.height)
+            if longest_side > int(max_dimension_px):
+                resize_scale = float(max_dimension_px) / float(longest_side)
+                target_w = max(100, int(round(canvas.width * resize_scale)))
+                target_h = max(100, int(round(canvas.height * resize_scale)))
+                resampling = getattr(Image, 'Resampling', None)
+                lanczos = getattr(resampling, 'LANCZOS', getattr(Image, 'LANCZOS', Image.BICUBIC))
+                canvas = canvas.resize((target_w, target_h), lanczos)
+        canvas.save(out_file, format='JPEG', quality=97, subsampling=0)
+
+
+def remap_nh_to_polar(
+    out_file,
+    lon0=NH_LON0,
+    lat_min=20.0,
+    lat_max=NH_SOURCE_REGION[3],
+    lon_w=NH_SOURCE_REGION[0],
+    lon_e=NH_SOURCE_REGION[2],
+):
+    from PIL import Image, ImageDraw
+
+    with Image.open(out_file) as src:
+        src_img = src.convert('RGB')
+    sw, sh = src_img.size
+    src_px = src_img.load()
+    edge_blend = max(2, min(10, sw // 160))
+    if sw > (edge_blend * 2 + 2):
+        for yy in range(sh):
+            for i in range(edge_blend):
+                li = i
+                ri = sw - edge_blend + i
+                left = src_px[li, yy]
+                right = src_px[ri, yy]
+                w = (i + 1) / float(edge_blend + 1)
+                lmix = (
+                    int(round(left[0] * (1.0 - w) + right[0] * w)),
+                    int(round(left[1] * (1.0 - w) + right[1] * w)),
+                    int(round(left[2] * (1.0 - w) + right[2] * w)),
+                )
+                rmix = (
+                    int(round(right[0] * (1.0 - w) + left[0] * w)),
+                    int(round(right[1] * (1.0 - w) + left[1] * w)),
+                    int(round(right[2] * (1.0 - w) + left[2] * w)),
+                )
+                src_px[li, yy] = lmix
+                src_px[ri, yy] = rmix
+
+    out_size = NH_POLAR_DIMS
+    out_img = Image.new('RGB', (out_size, out_size), color=(214, 214, 214))
+    out_px = out_img.load()
+
+    cx = (out_size - 1) / 2.0
+    cy = (out_size - 1) / 2.0
+    radius = out_size * 0.48
+    tan_edge = math.tan((math.pi / 4.0) - (math.radians(lat_min) / 2.0))
+    if tan_edge <= 0:
+        tan_edge = 1e-6
+    lon_span = float(lon_e) - float(lon_w)
+    if lon_span <= 0:
+        lon_span = 360.0
+
+    for y in range(out_size):
+        dy = (y - cy) / radius
+        for x in range(out_size):
+            dx = (x - cx) / radius
+            r = math.hypot(dx, dy)
+            if r > 1.0:
+                continue
+
+            t = r * tan_edge
+            lat = math.degrees((math.pi / 2.0) - (2.0 * math.atan(t)))
+            lat = max(lat_min, min(lat_max, lat))
+            if r < 1e-9:
+                lon = lon0
+            else:
+                lon = lon0 - math.degrees(math.atan2(dx, -dy))
+            lon = ((lon + 180.0) % 360.0) - 180.0
+
+            # Map source longitude using the actual rectangular source bounds.
+            lon_rel = lon - float(lon_w)
+            while lon_rel < 0.0:
+                lon_rel += 360.0
+            while lon_rel >= lon_span:
+                lon_rel -= lon_span
+            sx_f = (lon_rel / lon_span) * (sw - 1)
+            sy_f = (lat_max - lat) / (lat_max - lat_min) * (sh - 1)
+            if sy_f < 0.0:
+                sy_f = 0.0
+            elif sy_f > (sh - 1):
+                sy_f = float(sh - 1)
+
+            x0_raw = int(math.floor(sx_f))
+            x0 = x0_raw % sw
+            y0 = int(math.floor(sy_f))
+            x1 = (x0 + 1) % sw
+            y1 = min(sh - 1, y0 + 1)
+            wx = sx_f - x0_raw
+            wy = sy_f - y0
+
+            c00 = src_px[x0, y0]
+            c10 = src_px[x1, y0]
+            c01 = src_px[x0, y1]
+            c11 = src_px[x1, y1]
+
+            w00 = (1.0 - wx) * (1.0 - wy)
+            w10 = wx * (1.0 - wy)
+            w01 = (1.0 - wx) * wy
+            w11 = wx * wy
+
+            rch = int(round(c00[0] * w00 + c10[0] * w10 + c01[0] * w01 + c11[0] * w11))
+            gch = int(round(c00[1] * w00 + c10[1] * w10 + c01[1] * w01 + c11[1] * w11))
+            bch = int(round(c00[2] * w00 + c10[2] * w10 + c01[2] * w01 + c11[2] * w11))
+            out_px[x, y] = (rch, gch, bch)
+
+    draw = ImageDraw.Draw(out_img)
+    draw.ellipse((cx - radius, cy - radius, cx + radius, cy + radius), outline=(44, 44, 44), width=2)
+
+    out_img.save(out_file, format='JPEG', quality=97, subsampling=0)
+
+
+def stitch_horizontal(left_file, right_file, out_file):
+    from PIL import Image
+
+    with Image.open(left_file) as left_src:
+        left = left_src.convert('RGB')
+    with Image.open(right_file) as right_src:
+        right = right_src.convert('RGB')
+
+    height = min(left.height, right.height)
+    if left.height != height:
+        left = left.resize((left.width, height))
+    if right.height != height:
+        right = right.resize((right.width, height))
+
+    stitched = Image.new('RGB', (left.width + right.width, height))
+    stitched.paste(left, (0, 0))
+    stitched.paste(right, (left.width, 0))
+    stitched.save(out_file, format='JPEG', quality=97, subsampling=0)
+
+
+def stitch_horizontal_many(tile_files, out_file):
+    from PIL import Image
+
+    images = []
+    try:
+        for path in tile_files:
+            with Image.open(path) as src:
+                images.append(src.convert('RGB'))
+        if not images:
+            raise ValueError('No tile files provided for horizontal stitch.')
+        height = min(img.height for img in images)
+        resized = [img.resize((img.width, height)) if img.height != height else img for img in images]
+        total_width = sum(img.width for img in resized)
+        stitched = Image.new('RGB', (total_width, height))
+        x = 0
+        for img in resized:
+            stitched.paste(img, (x, 0))
+            x += img.width
+        stitched.save(out_file, format='JPEG', quality=97, subsampling=0)
+    finally:
+        for img in images:
+            try:
+                img.close()
+            except Exception:
+                pass
+
+
+def export_nh_split_composite(composite, out_file, dimensions, scale=None):
+    split_dims = split_nh_dimensions(dimensions)
+    west_tmp = f'{out_file}.west_tmp.jpg'
+    east_tmp = f'{out_file}.east_tmp.jpg'
+    try:
+        export_composite(
+            composite.clip(NH_W),
+            west_tmp,
+            NH_W_BOUNDS,
+            dimensions=split_dims,
+            scale=scale,
+            crs=TARGET_CRS,
+        )
+        export_composite(
+            composite.clip(NH_E),
+            east_tmp,
+            NH_E_BOUNDS,
+            dimensions=split_dims,
+            scale=scale,
+            crs=TARGET_CRS,
+        )
+        stitch_horizontal(west_tmp, east_tmp, out_file)
+    finally:
+        for tmp in (west_tmp, east_tmp):
+            if os.path.exists(tmp):
+                try:
+                    os.remove(tmp)
+                except OSError:
+                    pass
+
+
+def export_composite(composite, out_file, region, dimensions=1600, scale=None, crs=None):
+    print(f'[{ts()}] Exporting {out_file}...')
+    t0 = time.time()
+    current_region = region
+    current_dimensions = dimensions
+    current_scale = scale
+    max_attempts = 4
+    backoff_schedule_s = [2, 4, 7]
+
+    for attempt in range(1, max_attempts + 1):
+        params = {
+            'region': current_region,
+            'format': 'jpg',
+        }
+        if crs is not None:
+            params['crs'] = crs
+        elif current_scale is not None:
+            params['crs'] = TARGET_CRS
+        if current_scale is not None:
+            params['scale'] = current_scale
+        else:
+            params['dimensions'] = current_dimensions
+
+        try:
+            download_thumb(composite, out_file, params)
+            print(f'[{ts()}] Export complete for {out_file} ({time.time() - t0:.2f}s)')
+            return
+        except requests.HTTPError as e:
+            response = getattr(e, 'response', None)
+            status = response.status_code if response is not None else None
+            body = response.text if response is not None else str(e)
+            is_memory = status == 400 and 'User memory limit exceeded' in body
+            is_transform = status == 400 and 'Unable to transform edge' in body
+
+            if attempt < max_attempts and is_memory:
+                if current_scale is not None:
+                    current_scale = int(max(2000, current_scale * 1.45))
+                else:
+                    current_dimensions = shrink_dimensions(current_dimensions)
+                wait_s = backoff_schedule_s[min(attempt - 1, len(backoff_schedule_s) - 1)]
+                print(
+                    f'[{ts()}] Retry {attempt}/{max_attempts - 1} for {out_file} after memory limit '
+                    f'(wait {wait_s}s, next scale={current_scale}, next dims={current_dimensions}).'
+                )
+                time.sleep(wait_s)
+                continue
+
+            if attempt < max_attempts and is_transform:
+                new_region = inset_region_bbox(current_region)
+                if new_region != current_region:
+                    current_region = new_region
+                    print(
+                        f'[{ts()}] Retry {attempt}/{max_attempts - 1} for {out_file} '
+                        f'with inset region to bypass transform edge.'
+                    )
+                    continue
+
+            raise
+
+    print(f'[{ts()}] Export complete for {out_file} ({time.time() - t0:.2f}s)')
+
+
+def _generate_z500_anomaly_map_local(img, h, region, prefix):
+    classic_na_style = prefix == 'na_z500a' and Z500_STYLE == 'classic'
+    if prefix == 'nh_z500a':
+        if USE_NH_TRUE_POLAR_RENDER:
+            polar_width = max(int(round(NH_POLAR_DIMS * 1.18)), NH_POLAR_DIMS + 120)
+            map_dims = f'{polar_width}x{NH_POLAR_DIMS}'
+        else:
+            map_dims = NH_SOURCE_DIMS
+        sample_bounds = NH_SOURCE_REGION
+        plans = [
+            {'dims': map_dims, 'sample_scale_m': LOCAL_Z500_NH_SCALES_M[0], 'minor_interval': 6, 'major_interval': 12, 'include_z540': True, 'include_border': True, 'label': 'local base'},
+            {'dims': (map_dims if USE_NH_TRUE_POLAR_RENDER else shrink_dimensions(map_dims)), 'sample_scale_m': LOCAL_Z500_NH_SCALES_M[1], 'minor_interval': 0, 'major_interval': 18, 'include_z540': True, 'include_border': True, 'label': 'local coarse'},
+            {'dims': (map_dims if USE_NH_TRUE_POLAR_RENDER else shrink_dimensions(shrink_dimensions(map_dims))), 'sample_scale_m': LOCAL_Z500_NH_SCALES_M[2], 'minor_interval': 0, 'major_interval': 24, 'include_z540': False, 'include_border': True, 'label': 'local extra coarse'},
+            {'dims': (map_dims if USE_NH_TRUE_POLAR_RENDER else shrink_dimensions(shrink_dimensions(map_dims))), 'sample_scale_m': int(LOCAL_Z500_NH_SCALES_M[2] * 1.7), 'minor_interval': 0, 'major_interval': 30, 'include_z540': False, 'include_border': False, 'label': 'local emergency'},
+        ]
+    else:
+        map_dims = region_dimensions(CONUS_DIMS, region)
+        sample_bounds = region
+        plans = [
+            {
+                'dims': map_dims,
+                'sample_scale_m': LOCAL_Z500_NA_SCALES_M[0],
+                'minor_interval': Z500_CLASSIC_MINOR_INTERVAL if classic_na_style else NA_Z500A_MINOR_INTERVAL,
+                'major_interval': Z500_CLASSIC_MAJOR_INTERVAL if classic_na_style else NA_Z500A_MAJOR_INTERVAL,
+                'include_z540': False if classic_na_style else True,
+                'include_border': True,
+                'label': 'local base',
+            },
+            {'dims': shrink_dimensions(map_dims), 'sample_scale_m': LOCAL_Z500_NA_SCALES_M[1], 'minor_interval': 0, 'major_interval': 18, 'include_z540': True, 'include_border': True, 'label': 'local coarse'},
+            {'dims': shrink_dimensions(shrink_dimensions(map_dims)), 'sample_scale_m': LOCAL_Z500_NA_SCALES_M[2], 'minor_interval': 0, 'major_interval': 24, 'include_z540': False, 'include_border': True, 'label': 'local extra coarse'},
+            {'dims': shrink_dimensions(shrink_dimensions(map_dims)), 'sample_scale_m': int(LOCAL_Z500_NA_SCALES_M[2] * 1.7), 'minor_interval': 0, 'major_interval': 30, 'include_z540': False, 'include_border': False, 'label': 'local emergency'},
+        ]
+        if classic_na_style:
+            for plan in plans[1:]:
+                plan['minor_interval'] = 0
+                plan['major_interval'] = 0
+                plan['include_z540'] = False
+
+    if SHORT_RANGE_ACCURACY_HOURS > 0 and int(h) <= SHORT_RANGE_ACCURACY_HOURS:
+        for i, plan in enumerate(plans):
+            factor = 0.70 if i == 0 else 0.82 if i == 1 else 1.0
+            plan['sample_scale_m'] = int(max(36000, plan['sample_scale_m'] * factor))
+
+    if is_long_range_hour(h):
+        for plan in plans:
+            if not (prefix == 'nh_z500a' and USE_NH_TRUE_POLAR_RENDER):
+                plan['dims'] = adaptive_dimensions_for_hour(plan['dims'], h, long_factor=0.92, min_w=760, min_h=300)
+            plan['sample_scale_m'] = int(plan['sample_scale_m'] * 1.2)
+            if plan.get('minor_interval', 0) > 0:
+                plan['minor_interval'] = max(12, int(plan['minor_interval']))
+            if not classic_na_style:
+                plan['major_interval'] = max(18, int(plan['major_interval']))
+
+    out_file = build_frame_path(prefix, h)
+    valid_utc = RUN_INIT_UTC + timedelta(hours=int(h))
+    sample_geom = ee.Geometry.Rectangle(sample_bounds, geodesic=False)
+    last_msg = ''
+
+    for plan in plans:
+        border_png = None
+        try:
+            width, height = parse_dimensions(plan['dims'])
+            forecast_m_img = (
+                img.select(WN2_Z500_BAND)
+                .divide(9.80665)
+                .clip(sample_geom)
+                .rename('h500_m')
+            )
+            forecast_m_arr, used_scale = _sample_rect_array(
+                forecast_m_img,
+                'h500_m',
+                sample_bounds,
+                plan['sample_scale_m'],
+                context=f'{prefix} forecast_h500_m',
+                use_target_crs=True,
+            )
+            climo_cache_key = (
+                'h500',
+                Z500_CLIMO_START_YEAR,
+                Z500_CLIMO_END_YEAR,
+                valid_utc.strftime('%Y%m%d%H'),
+                tuple(round(float(v), 3) for v in sample_bounds),
+                int(max(20000, float(used_scale))),
+            )
+            cached_climo = LOCAL_CLIMO_ARRAY_CACHE.get(climo_cache_key)
+            if cached_climo is None:
+                climo_source = _select_climo_source_collection(
+                    CLIMO_H500_COLLECTION,
+                    valid_utc,
+                    sample_geom,
+                    'h500',
+                    start_year=Z500_CLIMO_START_YEAR,
+                    end_year=Z500_CLIMO_END_YEAR,
+                )
+                climo_m_arr, _ = _sample_grouped_climo_array(
+                    climo_source,
+                    CLIMO_H500_BAND,
+                    sample_bounds,
+                    used_scale,
+                    group_years=CLIMO_H500_GROUP_YEARS,
+                    context=f'{prefix} climo_h500_m',
+                    start_year=Z500_CLIMO_START_YEAR,
+                    end_year=Z500_CLIMO_END_YEAR,
+                    use_target_crs=True,
+                )
+                LOCAL_CLIMO_ARRAY_CACHE[climo_cache_key] = climo_m_arr
+            else:
+                climo_m_arr = cached_climo
+            forecast_m_arr, climo_m_arr = _align_arrays(forecast_m_arr, climo_m_arr)
+            anomaly_m_arr = forecast_m_arr - climo_m_arr
+            contour_dam_arr = forecast_m_arr / 10.0
+
+            if prefix == 'nh_z500a' and USE_NH_TRUE_POLAR_RENDER:
+                _render_local_anomaly_polar(
+                    anomaly_field=anomaly_m_arr,
+                    contour_field=contour_dam_arr,
+                    bounds=sample_bounds,
+                    out_file=out_file,
+                    width=width,
+                    height=height,
+                    palette=ANOMALY_PALETTE,
+                    vmin=ANOMALY_MIN_M,
+                    vmax=ANOMALY_MAX_M,
+                    anomaly_step=30,
+                    minor_interval=max(6, int(plan['minor_interval'] or 6)),
+                    major_interval=max(12, int(plan['major_interval'] or 12)),
+                    minor_color='#303030',
+                    major_color='#101010',
+                    minor_lw=0.56,
+                    major_lw=1.0,
+                    minor_alpha=0.62,
+                    major_alpha=0.94,
+                    grid_color='#b8b8b8',
+                    grid_alpha=0.40,
+                    lon0=NH_LON0,
+                    highlight_level=(540 if plan['include_z540'] else None),
+                    highlight_color='#2455ff',
+                )
+            else:
+                anomaly_palette = Z500_CLASSIC_PALETTE if classic_na_style else NA_Z500A_PALETTE
+                anomaly_vmin = Z500_CLASSIC_MIN_M if classic_na_style else ANOMALY_MIN_M
+                anomaly_vmax = Z500_CLASSIC_MAX_M if classic_na_style else ANOMALY_MAX_M
+                anomaly_gain = Z500_CLASSIC_DISPLAY_GAIN if classic_na_style else NA_Z500A_DISPLAY_GAIN
+                anomaly_gamma = Z500_CLASSIC_DISPLAY_GAMMA if classic_na_style else NA_Z500A_DISPLAY_GAMMA
+                anomaly_smooth = Z500_CLASSIC_SMOOTH_PASSES if classic_na_style else NA_Z500A_ANOMALY_SMOOTH_PASSES
+                contour_smooth = Z500_CLASSIC_CONTOUR_SMOOTH_PASSES if classic_na_style else NA_Z500A_CONTOUR_SMOOTH_PASSES
+                _render_local_anomaly_tile(
+                    anomaly_field=anomaly_m_arr,
+                    contour_field=contour_dam_arr,
+                    bounds=sample_bounds,
+                    out_file=out_file,
+                    width=width,
+                    height=height,
+                    palette=anomaly_palette,
+                    vmin=anomaly_vmin,
+                    vmax=anomaly_vmax,
+                    minor_interval=plan['minor_interval'],
+                    major_interval=plan['major_interval'],
+                    minor_color=NA_Z500A_MINOR_COLOR,
+                    major_color=NA_Z500A_MAJOR_COLOR,
+                    major_lw=NA_Z500A_MAJOR_LW,
+                    minor_lw=NA_Z500A_MINOR_LW,
+                    minor_alpha=NA_Z500A_MINOR_ALPHA,
+                    major_alpha=NA_Z500A_MAJOR_ALPHA,
+                    highlight_level=(540 if plan['include_z540'] else None),
+                    highlight_color=NA_Z500A_HIGHLIGHT_COLOR,
+                    anomaly_gain=anomaly_gain,
+                    anomaly_gamma=anomaly_gamma,
+                    anomaly_smooth_passes=anomaly_smooth,
+                    contour_smooth_passes=contour_smooth,
+                    interpolation=NA_Z500A_INTERPOLATION,
+                    use_centered_norm=True,
+                )
+
+            if not (prefix == 'nh_z500a' and USE_NH_TRUE_POLAR_RENDER) and plan.get('include_border', True):
+                border_png = get_cached_border_overlay_png(
+                    sample_bounds,
+                    width,
+                    height,
+                    include_states=False,
+                    detailed=_use_detailed_geography(width, height),
+                )
+                _overlay_png_on_jpg(out_file, border_png)
+
+            if prefix == 'nh_z500a' and not USE_NH_TRUE_POLAR_RENDER:
+                remap_nh_to_polar(out_file, lon0=NH_LON0)
+            annotate_map_file(out_file, prefix, h)
+            return
+        except Exception as e:
+            last_msg = str(e)
+            if not _is_memory_or_invalid_argument_error(last_msg):
+                # Local path can fail on varying sample dimensions; continue to next plan first.
+                if 'sampleRectangle failed' not in last_msg and 'Invalid sampled array shape' not in last_msg:
+                    raise
+            print(f'[{ts()}] {prefix} hour {h}: local true anomaly retry failed ({plan["label"]}).')
+
+    short_msg = (last_msg or 'Unknown export error').replace('\n', ' ')[:220]
+    raise RuntimeError(
+        f'{prefix} hour {h}: local true-anomaly export failed after retries. Last error: {short_msg}'
+    )
+
+
+def generate_z500_anomaly_map(img, h, region, prefix):
+    if prefix == 'nh_z500a' and USE_NH_TRUE_POLAR_RENDER:
+        return _generate_z500_anomaly_map_local(img, h, NH_SOURCE_REGION, prefix)
+    if LOCAL_TRUE_ANOMALY_RENDER:
+        return _generate_z500_anomaly_map_local(img, h, region, prefix)
+
+    tile_parts = 4
+    if prefix == 'nh_z500a':
+        map_dims = NH_SOURCE_DIMS
+        tile_bounds = split_region_longitude(NH_SOURCE_REGION, parts=tile_parts)
+        default_scale = ANOMALY_NH_SCALE_M
+    else:
+        map_dims = region_dimensions(CONUS_DIMS, region)
+        tile_bounds = split_region_longitude(region, parts=tile_parts)
+        default_scale = ANOMALY_NA_SCALE_M
+
+    def _build_tile_composite(
+        tile_geom,
+        anomaly_field,
+        contour_field,
+        anomaly_scale_m,
+        contour_scale_m,
+        minor_interval=Z500_MINOR_CONTOUR_INTERVAL,
+        major_interval=Z500_MAJOR_CONTOUR_INTERVAL,
+        include_z540=True,
+        include_border=True,
+    ):
+        classic_na_style = prefix == 'na_z500a' and Z500_STYLE == 'classic'
+        style_palette = Z500_CLASSIC_PALETTE if classic_na_style else (NA_Z500A_PALETTE if prefix == 'na_z500a' else ANOMALY_PALETTE)
+        style_gain = Z500_CLASSIC_DISPLAY_GAIN if classic_na_style else (NA_Z500A_DISPLAY_GAIN if prefix == 'na_z500a' else ANOMALY_DISPLAY_GAIN)
+        style_gamma = Z500_CLASSIC_DISPLAY_GAMMA if classic_na_style else (NA_Z500A_DISPLAY_GAMMA if prefix == 'na_z500a' else 1.0)
+        style_min = Z500_CLASSIC_MIN_M if classic_na_style else ANOMALY_MIN_M
+        style_max = Z500_CLASSIC_MAX_M if classic_na_style else ANOMALY_MAX_M
+        anomaly_for_render = _coarsen_for_compute(anomaly_field, anomaly_scale_m, min_scale_m=25000)
+        contour_for_render = _coarsen_for_compute(contour_field, contour_scale_m, min_scale_m=25000)
+        overlays = [
+            flat_background_overlay(tile_geom, color=BASEMAP_OCEAN_COLOR),
+            anomaly_overlay(
+                anomaly_for_render,
+                palette=style_palette,
+                display_gain=style_gain,
+                display_gamma=style_gamma,
+                vmin=style_min,
+                vmax=style_max,
+            ),
+        ]
+        if minor_interval and int(minor_interval) < int(major_interval):
+            overlays.append(
+                contour_overlay(
+                    contour_for_render,
+                    interval=minor_interval,
+                    color='#202020',
+                    opacity=0.38,
+                    smooth_px=0,
+                    thicken_px=0,
+                    line_width_frac=0.006,
+                )
+            )
+        if major_interval and int(major_interval) > 0:
+            overlays.append(
+                contour_overlay(
+                    contour_for_render,
+                    interval=major_interval,
+                    color='#121212',
+                    opacity=0.92,
+                    smooth_px=0,
+                    thicken_px=0,
+                    line_width_frac=0.009,
+                )
+            )
+        if include_z540 and not classic_na_style:
+            overlays.append(
+                highlight_iso_overlay(
+                    contour_for_render,
+                    level=540,
+                    color='#2455ff',
+                    opacity=0.92,
+                    tolerance=1.0,
+                    smooth_px=0,
+                )
+            )
+        if include_border:
+            overlays.append(
+                border_overlay(
+                    include_states=False,
+                    region_geom=tile_geom,
+                    detailed=_use_detailed_geography(),
+                )
+            )
+        return ee.ImageCollection(overlays).mosaic()
+
+    def _is_recoverable_export_error(msg):
+        return (
+            'User memory limit exceeded' in msg
+            or 'Unable to transform edge' in msg
+            or 'Invalid argument' in msg
+            or 'INVALID_ARGUMENT' in msg
+        )
+
+    if prefix == 'nh_z500a':
+        mid_dims = shrink_dimensions(map_dims)
+        low_dims = shrink_dimensions(mid_dims)
+        contour_scale_base = int(ANOMALY_WORK_SCALE_M)
+        plans = [
+            {
+                'use_scale': True,
+                'dims': mid_dims,
+                'scale_m': int(ANOMALY_NH_SCALE_M * 1.4),
+                'anomaly_scale_m': Z500_NH_ANOM_SCALES_M[0],
+                'contour_scale_m': int(contour_scale_base * 1.2),
+                'minor_interval': Z500_MAJOR_CONTOUR_INTERVAL,
+                'major_interval': Z500_MAJOR_CONTOUR_INTERVAL,
+                'label': 'split scale + major contours',
+            },
+            {
+                'use_scale': True,
+                'dims': low_dims,
+                'scale_m': int(ANOMALY_NH_SCALE_M * 2.0),
+                'anomaly_scale_m': Z500_NH_ANOM_SCALES_M[1],
+                'contour_scale_m': int(contour_scale_base * 1.6),
+                'minor_interval': 18,
+                'major_interval': 18,
+                'label': 'split coarse scale + sparse contours',
+            },
+            {
+                'use_scale': True,
+                'dims': low_dims,
+                'scale_m': int(ANOMALY_NH_SCALE_M * 2.6),
+                'anomaly_scale_m': Z500_NH_ANOM_SCALES_M[2],
+                'contour_scale_m': int(contour_scale_base * 2.0),
+                'minor_interval': 24,
+                'major_interval': 24,
+                'label': 'split ultra coarse scale + ultra sparse contours',
+            },
+            {
+                'use_scale': True,
+                'dims': low_dims,
+                'scale_m': int(ANOMALY_NH_SCALE_M * 4.2),
+                'anomaly_scale_m': int(Z500_NH_ANOM_SCALES_M[2] * 1.5),
+                'contour_scale_m': int(contour_scale_base * 2.8),
+                'minor_interval': 0,
+                'major_interval': 30,
+                'include_z540': False,
+                'include_border': False,
+                'label': 'emergency ultra coarse true anomaly',
+            },
+        ]
+    else:
+        mid_dims = shrink_dimensions(map_dims)
+        low_dims = shrink_dimensions(mid_dims)
+        contour_scale_base = int(ANOMALY_WORK_SCALE_M)
+        plans = [
+            {
+                'use_scale': True,
+                'dims': mid_dims,
+                'anomaly_scale_m': Z500_NA_ANOM_SCALES_M[0],
+                'scale_m': int(ANOMALY_NA_SCALE_M * 1.6),
+                'contour_scale_m': int(contour_scale_base * 1.2),
+                'minor_interval': NA_Z500A_MINOR_INTERVAL,
+                'major_interval': NA_Z500A_MAJOR_INTERVAL,
+                'label': 'scale + major contours',
+            },
+            {
+                'use_scale': True,
+                'dims': low_dims,
+                'anomaly_scale_m': Z500_NA_ANOM_SCALES_M[1],
+                'scale_m': int(ANOMALY_NA_SCALE_M * 2.2),
+                'contour_scale_m': int(contour_scale_base * 1.6),
+                'minor_interval': 18,
+                'major_interval': 18,
+                'label': 'coarse scale + sparse contours',
+            },
+            {
+                'use_scale': True,
+                'dims': low_dims,
+                'scale_m': int(ANOMALY_NA_SCALE_M * 2.9),
+                'anomaly_scale_m': Z500_NA_ANOM_SCALES_M[2],
+                'contour_scale_m': int(contour_scale_base * 2.0),
+                'minor_interval': 24,
+                'major_interval': 24,
+                'label': 'ultra coarse scale + ultra sparse contours',
+            },
+            {
+                'use_scale': True,
+                'dims': low_dims,
+                'scale_m': int(ANOMALY_NA_SCALE_M * 4.5),
+                'anomaly_scale_m': int(Z500_NA_ANOM_SCALES_M[2] * 1.5),
+                'contour_scale_m': int(contour_scale_base * 2.8),
+                'minor_interval': 0,
+                'major_interval': 30,
+                'include_z540': False,
+                'include_border': False,
+                'label': 'emergency ultra coarse true anomaly',
+            },
+        ]
+        if Z500_STYLE == 'classic':
+            for plan in plans:
+                plan['minor_interval'] = 0
+                plan['major_interval'] = 0
+                plan['include_z540'] = False
+
+    if is_long_range_hour(h):
+        for plan in plans:
+            plan['dims'] = adaptive_dimensions_for_hour(plan['dims'], h, long_factor=0.92, min_w=700, min_h=320)
+            if plan.get('scale_m') is not None:
+                plan['scale_m'] = int(plan['scale_m'] * 1.15)
+            if plan.get('anomaly_scale_m') is not None:
+                plan['anomaly_scale_m'] = int(plan['anomaly_scale_m'] * 1.2)
+            if plan.get('contour_scale_m') is not None:
+                plan['contour_scale_m'] = int(plan['contour_scale_m'] * 1.2)
+            if not (prefix == 'na_z500a' and Z500_STYLE == 'classic'):
+                plan['major_interval'] = max(18, int(plan['major_interval']))
+            if plan.get('minor_interval', 0) > 0:
+                plan['minor_interval'] = max(12, int(plan['minor_interval']))
+
+    out_file = build_frame_path(prefix, h)
+    last_msg = ''
+    for plan in plans:
+        tile_tmp_files = [f'{out_file}.tile{idx}.jpg' for idx in range(len(tile_bounds))]
+        export_scale = (plan.get('scale_m', default_scale) if plan.get('use_scale', True) else None)
+        split_dims = split_dimensions_horizontal_parts(plan.get('dims') or map_dims, parts=len(tile_bounds))
+        try:
+            for idx, bounds in enumerate(tile_bounds):
+                tile_geom = ee.Geometry.Rectangle(bounds, geodesic=False)
+                contour_tile = img.select(WN2_Z500_BAND).divide(9.80665).divide(10).clip(tile_geom)
+                anomaly_tile = z500_anomaly_m(
+                    img,
+                    h,
+                    region_geom=tile_geom,
+                    cache_tag=f'{prefix}_{plan["anomaly_scale_m"]}_{idx}',
+                    analysis_scale_m=plan['anomaly_scale_m'],
+                )
+                tile_composite = _build_tile_composite(
+                    tile_geom=tile_geom,
+                    anomaly_field=anomaly_tile,
+                    contour_field=contour_tile,
+                    anomaly_scale_m=plan['anomaly_scale_m'],
+                    contour_scale_m=plan['contour_scale_m'],
+                    minor_interval=plan['minor_interval'],
+                    major_interval=plan['major_interval'],
+                    include_z540=plan.get('include_z540', True),
+                    include_border=plan.get('include_border', True),
+                )
+                export_composite(
+                    tile_composite,
+                    tile_tmp_files[idx],
+                    bounds,
+                    dimensions=split_dims,
+                    scale=export_scale,
+                    crs=TARGET_CRS,
+                )
+
+            stitch_horizontal_many(tile_tmp_files, out_file)
+            if prefix == 'nh_z500a':
+                remap_nh_to_polar(out_file, lon0=NH_LON0)
+            annotate_map_file(out_file, prefix, h)
+            return
+        except Exception as e:
+            msg = str(e)
+            if not _is_recoverable_export_error(msg):
+                raise
+            last_msg = msg
+            print(f'[{ts()}] {prefix} hour {h}: true anomaly export retry failed ({plan["label"]}).')
+        finally:
+            for tmp in tile_tmp_files:
+                if os.path.exists(tmp):
+                    try:
+                        os.remove(tmp)
+                    except OSError:
+                        pass
+
+    short_msg = (last_msg or 'Unknown export error').replace('\n', ' ')[:220]
+    raise RuntimeError(
+        f'{prefix} hour {h}: true-anomaly-only export failed after retries (fallback disabled). Last error: {short_msg}'
+    )
+
+
+def derive_precip_phase(img, region_geom, precip_mask_threshold_mmhr=0.12, precip_smooth_radius_px=1):
+    precip_6h_mm = img.select(WN2_PRECIP_6H_BAND).multiply(1000).clip(region_geom)
+    precip_rate = precip_6h_mm.divide(6)  # mm/hr
+    if precip_smooth_radius_px and precip_smooth_radius_px > 0:
+        precip_rate_sm = precip_rate.focalMean(int(precip_smooth_radius_px), 'circle', 'pixels')
+    else:
+        precip_rate_sm = precip_rate
+    precip_mask = precip_rate_sm.gt(float(precip_mask_threshold_mmhr))
+
+    t2c = img.select(WN2_T2M_BAND).subtract(273.15).clip(region_geom)
+    t850c = img.select(WN2_T850_BAND).subtract(273.15).clip(region_geom)
+    t700c = img.select(WN2_T700_BAND).subtract(273.15).clip(region_geom)
+
+    snow = precip_mask.And(t2c.lte(1)).And(t850c.lte(-1)).And(t700c.lte(-2))
+    freezing_rain = precip_mask.And(t2c.lte(0)).And(t850c.gt(1)).And(t700c.gt(-2))
+    sleet = precip_mask.And(t2c.lte(0)).And(t850c.gt(0)).And(t700c.lte(-2)).And(freezing_rain.Not())
+    rain = precip_mask.And(snow.Not()).And(freezing_rain.Not()).And(sleet.Not())
+    return precip_rate_sm, precip_6h_mm, rain, snow, freezing_rain, sleet
+
+
+def smooth_precip_type_masks(precip_rate, rain, snow, freezing_rain, sleet, mask_threshold_mmhr=0.2, edge_radius_px=1, mode_radii=(2, 1)):
+    precip_mask = precip_rate.gt(float(mask_threshold_mmhr))
+    if edge_radius_px and edge_radius_px > 0:
+        precip_mask = precip_mask.focalMax(int(edge_radius_px), 'circle', 'pixels').focalMin(int(edge_radius_px), 'circle', 'pixels')
+    ptype = ee.Image.constant(0).updateMask(precip_mask)
+    ptype = ptype.where(snow, 1)
+    ptype = ptype.where(freezing_rain, 2)
+    ptype = ptype.where(sleet, 3)
+    ptype_sm = ptype
+    for radius in mode_radii or ():
+        if radius and radius > 0:
+            ptype_sm = ptype_sm.focalMode(int(radius), 'circle', 'pixels')
+    ptype_sm = ptype_sm.updateMask(precip_mask)
+    rain_sm = ptype_sm.eq(0).And(precip_mask)
+    snow_sm = ptype_sm.eq(1).And(precip_mask)
+    frz_sm = ptype_sm.eq(2).And(precip_mask)
+    sleet_sm = ptype_sm.eq(3).And(precip_mask)
+    return rain_sm, snow_sm, frz_sm, sleet_sm
+
+
+def snow_ptype_rate_layer(precip_rate_mmhr, snow_mask, segments=None, max_rate_mmhr=None, over_color='#00a8c1'):
+    segments = segments or SNOW_PTYPE_SEGMENTS_MMHR
+    max_rate = float(max_rate_mmhr if max_rate_mmhr is not None else SNOW_PTYPE_MAX_MMHR)
+    snow_rate = precip_rate_mmhr.updateMask(snow_mask)
+    layers = [
+        range_gradient_layer(snow_rate, low, high, palette, include_high=(i == len(segments) - 1))
+        for i, (low, high, palette) in enumerate(segments)
+    ]
+    layers.append(snow_rate.gt(max_rate).selfMask().visualize(palette=[over_color]))
+    return ee.ImageCollection(layers).mosaic()
+
+
+def _find_pressure_center(mslp_hpa, region_geom, fallback_region=None, scale_m=50000, mode='low'):
+    mode = str(mode or 'low').lower()
+    is_low = mode != 'high'
+
+    def _fallback(mb_value=None):
+        if fallback_region and len(fallback_region) == 4:
+            west, south, east, north = fallback_region
+            return {
+                'lon': (west + east) / 2.0,
+                'lat': (south + north) / 2.0,
+                'mb': mb_value,
+                'kind': 'L' if is_low else 'H',
+            }
+        return None
+
+    min_val = None
+    try:
+        min_stats = mslp_hpa.reduceRegion(
+            reducer=ee.Reducer.min() if is_low else ee.Reducer.max(),
+            geometry=region_geom,
+            scale=scale_m,
+            bestEffort=True,
+            maxPixels=1e9,
+            tileScale=4,
+        ).getInfo() or {}
+        min_raw = min_stats.get(WN2_MSLP_BAND)
+        if min_raw is None:
+            return _fallback()
+        min_val = float(min_raw)
+        mb_value = int(round(min_val))
+    except Exception as e:
+        print(f'[{ts()}] Pressure-center reduction failed ({mode}): {e}')
+        return _fallback()
+
+    try:
+        if is_low:
+            min_mask = mslp_hpa.lte(min_val + 0.2).selfMask()
+        else:
+            min_mask = mslp_hpa.gte(min_val - 0.2).selfMask()
+        lonlat_img = ee.Image.pixelLonLat().updateMask(min_mask)
+
+        sample = lonlat_img.sample(
+            region=region_geom,
+            scale=scale_m,
+            numPixels=1,
+            dropNulls=True,
+            geometries=False,
+            tileScale=4,
+            seed=42,
+        ).first()
+        if sample is not None:
+            info = sample.getInfo() or {}
+            props = info.get('properties') or {}
+            lon = props.get('longitude')
+            lat = props.get('latitude')
+            if lon is not None and lat is not None:
+                return {'lon': float(lon), 'lat': float(lat), 'mb': mb_value, 'kind': 'L' if is_low else 'H'}
+
+        lonlat = lonlat_img.reduceRegion(
+            reducer=ee.Reducer.mean(),
+            geometry=region_geom,
+            scale=scale_m,
+            bestEffort=True,
+            maxPixels=1e9,
+            tileScale=4,
+        ).getInfo() or {}
+        lon = lonlat.get('longitude')
+        lat = lonlat.get('latitude')
+        if lon is not None and lat is not None:
+            return {'lon': float(lon), 'lat': float(lat), 'mb': mb_value, 'kind': 'L' if is_low else 'H'}
+    except Exception as e:
+        print(f'[{ts()}] Pressure-center coordinate detection failed ({mode}): {e}')
+
+    return _fallback(mb_value)
+
+
+def find_low_center(mslp_hpa, region_geom, fallback_region=None, scale_m=50000):
+    return _find_pressure_center(mslp_hpa, region_geom, fallback_region=fallback_region, scale_m=scale_m, mode='low')
+
+
+def find_high_center(mslp_hpa, region_geom, fallback_region=None, scale_m=50000):
+    return _find_pressure_center(mslp_hpa, region_geom, fallback_region=fallback_region, scale_m=scale_m, mode='high')
+
+
+def _reduce_pressure_scalar(field, reducer, geometry, scale_m):
+    stats = field.reduceRegion(
+        reducer=reducer,
+        geometry=geometry,
+        scale=scale_m,
+        bestEffort=True,
+        maxPixels=1e9,
+        tileScale=4,
+    ).getInfo() or {}
+    raw = stats.get(WN2_MSLP_BAND)
+    if raw is None:
+        return None
+    try:
+        return float(raw)
+    except (TypeError, ValueError):
+        return None
+
+
+def _center_within_region_margin(center, region, margin_lon_deg, margin_lat_deg):
+    if not center or not region or len(region) != 4:
+        return False
+    lon = center.get('lon')
+    lat = center.get('lat')
+    if lon is None or lat is None:
+        return False
+    west, south, east, north = [float(v) for v in region]
+    return (
+        float(lon) >= west + float(margin_lon_deg)
+        and float(lon) <= east - float(margin_lon_deg)
+        and float(lat) >= south + float(margin_lat_deg)
+        and float(lat) <= north - float(margin_lat_deg)
+    )
+
+
+def get_conus_mslp_contour_labels(mslp_hpa, precip_rate_mmhr, mslp_interval):
+    major_interval = max(8, int(round(float(mslp_interval) * 2.0)))
+    offsets = []
+    radius = float(CONUS_MSLP_LABEL_SEARCH_RADIUS_DEG)
+    step = float(CONUS_MSLP_LABEL_SEARCH_STEP_DEG)
+    steps = int(round(radius / step))
+    for dy_idx in range(-steps, steps + 1):
+        for dx_idx in range(-steps, steps + 1):
+            offsets.append((dx_idx * step, dy_idx * step))
+
+    features = []
+    for anchor_idx, (lon0, lat0) in enumerate(CONUS_MSLP_LABEL_ANCHORS):
+        for cand_idx, (dx, dy) in enumerate(offsets):
+            features.append(
+                ee.Feature(
+                    ee.Geometry.Point([float(lon0 + dx), float(lat0 + dy)]),
+                    {
+                        'anchor': int(anchor_idx),
+                        'priority': int(cand_idx),
+                        'offset_sum': float(abs(dx) + abs(dy)),
+                    },
+                )
+            )
+
+    sample_fc = ee.FeatureCollection(features)
+    sample_img = ee.Image.cat([
+        mslp_hpa.rename('mslp'),
+        precip_rate_mmhr.rename('precip'),
+    ])
+    try:
+        sampled = sample_img.sampleRegions(
+            collection=sample_fc,
+            properties=['anchor', 'priority', 'offset_sum'],
+            scale=50000,
+            geometries=True,
+            tileScale=4,
+        ).getInfo() or {}
+    except Exception as e:
+        print(f'[{ts()}] CONUS contour labels skipped: {e}')
+        return []
+
+    best_by_anchor = {}
+    for feat in sampled.get('features', []):
+        props = feat.get('properties') or {}
+        geom = feat.get('geometry') or {}
+        coords = geom.get('coordinates') or []
+        if len(coords) < 2:
+            continue
+        mslp_val = props.get('mslp')
+        precip_val = props.get('precip')
+        anchor = props.get('anchor')
+        if mslp_val is None or precip_val is None or anchor is None:
+            continue
+        try:
+            mslp_val = float(mslp_val)
+            precip_val = float(precip_val)
+            anchor = int(anchor)
+        except (TypeError, ValueError):
+            continue
+        if precip_val > CONUS_MSLP_LABEL_MAX_PRECIP_MMHR:
+            continue
+        contour_value = int(round(mslp_val / float(major_interval)) * major_interval)
+        contour_diff = abs(mslp_val - float(contour_value))
+        if contour_diff > CONUS_MSLP_LABEL_TOLERANCE_HPA:
+            continue
+        score = contour_diff + (precip_val * 2.5) + float(props.get('offset_sum') or 0.0) * 0.08
+        candidate = {
+            'lon': float(coords[0]),
+            'lat': float(coords[1]),
+            'text': str(contour_value),
+            'score': score,
+        }
+        current = best_by_anchor.get(anchor)
+        if current is None or candidate['score'] < current['score']:
+            best_by_anchor[anchor] = candidate
+
+    selected = []
+    for item in sorted(best_by_anchor.values(), key=lambda v: v['score']):
+        too_close = False
+        for placed in selected:
+            dx = item['lon'] - placed['lon']
+            dy = item['lat'] - placed['lat']
+            if math.hypot(dx, dy) < CONUS_MSLP_LABEL_MIN_SEPARATION_DEG:
+                too_close = True
+                break
+        if too_close:
+            continue
+        selected.append({'lon': item['lon'], 'lat': item['lat'], 'text': item['text']})
+        if len(selected) >= CONUS_MSLP_LABEL_MAX_COUNT:
+            break
+    return selected
+
+
+def find_conus_synoptic_pressure_center(mslp_hpa, region_geom, region, mode='low'):
+    mode = str(mode or 'low').lower()
+    is_low = mode != 'high'
+    analysis_field = mslp_hpa.focalMean(CONUS_PRESSURE_CENTER_SMOOTH_RADIUS_PX, 'circle', 'pixels')
+    finder = find_low_center if is_low else find_high_center
+    center = finder(
+        analysis_field,
+        region_geom,
+        fallback_region=None,
+        scale_m=CONUS_PRESSURE_CENTER_SCALE_M,
+    )
+    if not _center_within_region_margin(
+        center,
+        region,
+        CONUS_PRESSURE_CENTER_EDGE_MARGIN_LON_DEG,
+        CONUS_PRESSURE_CENTER_EDGE_MARGIN_LAT_DEG,
+    ):
+        return None
+
+    point = ee.Geometry.Point([float(center['lon']), float(center['lat'])])
+    sample_geom = point.buffer(CONUS_PRESSURE_CENTER_SAMPLE_RADIUS_M, maxError=1000)
+    core_geom = point.buffer(CONUS_PRESSURE_CENTER_CORE_RADIUS_M, maxError=1000)
+    ring_geom = point.buffer(CONUS_PRESSURE_CENTER_RING_RADIUS_M, maxError=1000).difference(core_geom, maxError=1000)
+
+    try:
+        center_value = _reduce_pressure_scalar(analysis_field, ee.Reducer.mean(), sample_geom, CONUS_PRESSURE_CENTER_SCALE_M)
+        core_mean = _reduce_pressure_scalar(analysis_field, ee.Reducer.mean(), core_geom, CONUS_PRESSURE_CENTER_SCALE_M)
+        ring_mean = _reduce_pressure_scalar(analysis_field, ee.Reducer.mean(), ring_geom, CONUS_PRESSURE_CENTER_SCALE_M)
+        extremum_value = _reduce_pressure_scalar(
+            analysis_field,
+            (ee.Reducer.min() if is_low else ee.Reducer.max()),
+            core_geom,
+            CONUS_PRESSURE_CENTER_SCALE_M,
+        )
+    except Exception as e:
+        print(f'[{ts()}] CONUS pressure-center validation failed ({mode}): {e}')
+        return None
+
+    if any(value is None for value in (center_value, core_mean, ring_mean, extremum_value)):
+        return None
+
+    prominence = (ring_mean - center_value) if is_low else (center_value - ring_mean)
+    core_delta = (core_mean - center_value) if is_low else (center_value - core_mean)
+    extremum_offset = (center_value - extremum_value) if is_low else (extremum_value - center_value)
+
+    if prominence < CONUS_PRESSURE_CENTER_MIN_PROMINENCE_HPA:
+        return None
+    if core_delta < CONUS_PRESSURE_CENTER_MIN_CORE_DELTA_HPA:
+        return None
+    if extremum_offset > CONUS_PRESSURE_CENTER_EXTREMUM_TOLERANCE_HPA:
+        return None
+
+    return {
+        'lon': float(center['lon']),
+        'lat': float(center['lat']),
+        'mb': int(round(center_value)),
+        'kind': 'L' if is_low else 'H',
+    }
+
+
+def get_snow_airport_labels(snow_total_in, key):
+    if key == 'ne_zoom_snow_accum':
+        airport_fc = NE_ZOOM_SNOW_AIRPORT_FC
+        lookup = NE_ZOOM_SNOW_AIRPORT_LOOKUP
+    elif key == 'mi_wi_snow_accum':
+        airport_fc = MI_WI_SNOW_AIRPORT_FC
+        lookup = MI_WI_SNOW_AIRPORT_LOOKUP
+    elif key == 'carolinas_snow_accum':
+        airport_fc = CAROLINAS_SNOW_AIRPORT_FC
+        lookup = CAROLINAS_SNOW_AIRPORT_LOOKUP
+    elif key.startswith('ne_'):
+        airport_fc = NE_SNOW_AIRPORT_FC
+        lookup = NE_SNOW_AIRPORT_LOOKUP
+    else:
+        airport_fc = CONUS_SNOW_AIRPORT_FC
+        lookup = CONUS_SNOW_AIRPORT_LOOKUP
+    try:
+        samples = snow_total_in.rename('snow_in').sampleRegions(
+            collection=airport_fc,
+            properties=['code'],
+            scale=25000,
+            geometries=False,
+            tileScale=4,
+        ).getInfo() or {}
+        labels = []
+        for feat in samples.get('features', []):
+            props = feat.get('properties') or {}
+            code = props.get('code')
+            val = props.get('snow_in')
+            if code is None or val is None:
+                continue
+            if code not in lookup:
+                continue
+            lon, lat = lookup[code]
+            labels.append({
+                'code': code,
+                'inches': max(0.0, float(val)),
+                'lon': lon,
+                'lat': lat,
+            })
+        return labels
+    except Exception as e:
+        print(f'[{ts()}] Snow airport labels skipped: {e}')
+        return []
+
+
+def snow_increment_cm(img, region_geom):
+    precip_rate_sm, precip_6h_mm, _, snow, _, _ = derive_precip_phase(img, region_geom)
+    robust_snow = snow.And(precip_rate_sm.gt(0.2))
+    return precip_6h_mm.updateMask(robust_snow).unmask(0).rename('snow_cm_6h')
+
+
+def range_gradient_layer(field, low, high, palette, include_high=False):
+    span = max(high - low, 0.001)
+    norm = field.subtract(low).divide(span).clamp(0, 1)
+    if include_high:
+        mask = field.gte(low).And(field.lte(high))
+    else:
+        mask = field.gte(low).And(field.lt(high))
+    return norm.updateMask(mask).visualize(min=0, max=1, palette=palette)
+
+
+def snow_accum_layer(snow_total_in, segments=None, over_color=SNOW_ACCUM_OVER_COLOR):
+    snow_segments = segments if segments is not None else SNOW_ACCUM_STEP_SEGMENTS_IN
+    layers = []
+    for idx, (low, high, palette) in enumerate(snow_segments):
+        layers.append(
+            range_gradient_layer(
+                snow_total_in,
+                low,
+                high,
+                palette,
+                include_high=(idx == len(snow_segments) - 1),
+            )
+        )
+    layers.append(snow_total_in.gt(SNOW_ACCUM_MAX_IN).selfMask().visualize(palette=[over_color]))
+    return ee.ImageCollection(layers).mosaic()
+
+
+def is_snow_product(product_key):
+    return product_key in SNOW_PRODUCT_KEYS
+
+
+def build_frame_name(product_key, hour, snow_ratio=None):
+    if is_snow_product(product_key):
+        ratio = int(round(float(snow_ratio if snow_ratio is not None else 10)))
+        return f'{product_key}_r{ratio:02d}_{hour:03d}.jpg'
+    return f'{product_key}_{hour:03d}.jpg'
+
+
+def build_frame_path(product_key, hour, snow_ratio=None):
+    return str(RUN_OUTPUT_DIR / build_frame_name(product_key, hour, snow_ratio=snow_ratio))
+
+
+def frame_exists_valid(path):
+    p = Path(path)
+    if not p.exists():
+        return False
+    try:
+        return p.stat().st_size >= MIN_VALID_FRAME_BYTES
+    except OSError:
+        return False
+
+
+def should_render_frame(path):
+    if not RESUME_EXISTING:
+        return True
+    return not frame_exists_valid(path)
+
+
+def generate_mslp_ptype_map(img, h, region=CONUS_THUMB_REGION, key='conus_mslp_ptype'):
+    region_geom = ee.Geometry.Rectangle(region, geodesic=False)
+    is_ne = key.startswith('ne_')
+    is_conus = key == 'conus_mslp_ptype'
+    state_names = NE_STATE_NAMES if is_ne else None
+    land_fc = NE_STATES if is_ne else None
+    work_geom = region_geom.difference(NE_EXCLUDED_STATES.geometry(), maxError=1000) if is_ne else region_geom
+    precip_rate, _, rain, snow, freezing_rain, sleet = derive_precip_phase(
+        img,
+        work_geom,
+        precip_mask_threshold_mmhr=(CONUS_PTYPE_PHASE_THRESHOLD_MMHR if is_conus else 0.12),
+    )
+    rain_sm, snow_sm, frz_sm, sleet_sm = smooth_precip_type_masks(
+        precip_rate,
+        rain,
+        snow,
+        freezing_rain,
+        sleet,
+        mask_threshold_mmhr=(CONUS_PTYPE_SMOOTH_THRESHOLD_MMHR if is_conus else 0.2),
+        edge_radius_px=(0 if is_conus else 1),
+        mode_radii=((1,) if is_conus else (2, 1)),
+    )
+    precip_rate_vis = precip_rate.resample('bilinear')
+    if is_conus and CONUS_PTYPE_VIS_SMOOTH_RADIUS_PX > 0:
+        precip_rate_vis = precip_rate_vis.focalMean(CONUS_PTYPE_VIS_SMOOTH_RADIUS_PX, 'circle', 'pixels')
+    elif not is_conus:
+        precip_rate_vis = precip_rate_vis.focalMean(2, 'circle', 'pixels')
+    precip_rate_display = precip_rate_vis.multiply(CONUS_PTYPE_VIS_GAIN) if is_conus else precip_rate_vis
+    ptype_min = CONUS_PTYPE_RATE_MIN_MMHR if is_conus else PTYPE_RATE_MIN_MMHR
+    ptype_max = CONUS_PTYPE_RATE_MAX_MMHR if is_conus else PTYPE_RATE_MAX_MMHR
+    rain_palette = CONUS_RAIN_RATE_PALETTE if is_conus else RAIN_RATE_PALETTE
+    frzr_palette = CONUS_FRZR_RATE_PALETTE if is_conus else FRZR_RATE_PALETTE
+    sleet_palette = CONUS_SLEET_RATE_PALETTE if is_conus else SLEET_RATE_PALETTE
+    snow_segments = CONUS_SNOW_PTYPE_SEGMENTS_MMHR if is_conus else SNOW_PTYPE_SEGMENTS_MMHR
+
+    rain_layer = precip_rate_display.updateMask(rain_sm).visualize(
+        min=ptype_min, max=ptype_max,
+        palette=rain_palette,
+    )
+    snow_layer = snow_ptype_rate_layer(
+        precip_rate_display,
+        snow_sm,
+        segments=snow_segments,
+        max_rate_mmhr=SNOW_PTYPE_MAX_MMHR,
+        over_color=('#00dff2' if is_conus else '#00a8c1'),
+    )
+    frz_layer = precip_rate_display.updateMask(frz_sm).visualize(
+        min=ptype_min, max=ptype_max,
+        palette=frzr_palette,
+    )
+    sleet_layer = precip_rate_display.updateMask(sleet_sm).visualize(
+        min=ptype_min, max=ptype_max,
+        palette=sleet_palette,
+    )
+
+    mslp_hpa = img.select(WN2_MSLP_BAND).divide(100).clip(work_geom)
+    mslp_interval = adaptive_interval_for_hour(
+        (CONUS_MSLP_CONTOUR_BASE_INTERVAL if is_conus else 3),
+        h,
+        long_interval=(CONUS_MSLP_CONTOUR_LONG_INTERVAL if is_conus else 4),
+    )
+    if is_conus:
+        mslp_contours = conus_mslp_contour_overlay(
+            mslp_hpa,
+            interval=mslp_interval,
+            color=CONUS_MSLP_CONTOUR_COLOR,
+            opacity=CONUS_MSLP_CONTOUR_OPACITY,
+            canny_threshold=CONUS_MSLP_CONTOUR_CANNY_THRESHOLD,
+            canny_sigma=CONUS_MSLP_CONTOUR_CANNY_SIGMA,
+            smooth_px=CONUS_MSLP_CONTOUR_SMOOTH_PX,
+            min_connected_px=CONUS_MSLP_CONTOUR_MIN_CONNECTED_PX,
+        )
+    else:
+        mslp_contours = contour_overlay(
+            mslp_hpa,
+            interval=mslp_interval,
+            color='#2a2a2a',
+            opacity=0.9,
+            line_width_frac=0.010,
+        )
+    contour_labels = None
+    low_center = None if is_conus else find_low_center(mslp_hpa, work_geom, fallback_region=region)
+    pressure_centers = None
+    if is_conus:
+        low_center = find_conus_synoptic_pressure_center(mslp_hpa, work_geom, region, mode='low')
+        high_center = find_conus_synoptic_pressure_center(mslp_hpa, work_geom, region, mode='high')
+        pressure_centers = [center for center in (high_center, low_center) if center is not None]
+
+    composite = ee.ImageCollection([
+        basemap_overlay(region_geom, land_color=BASEMAP_LAND_COLOR, ocean_color=BASEMAP_OCEAN_COLOR, land_fc=land_fc),
+        rain_layer,
+        snow_layer,
+        frz_layer,
+        sleet_layer,
+        mslp_contours,
+        border_overlay(include_states=True, state_names=state_names),
+    ]).mosaic()
+
+    out_file = build_frame_path(key, h)
+    base_dims = PTYPE_NE_DIMS if key.startswith('ne_') else PTYPE_CONUS_DIMS
+    dims = adaptive_dimensions_for_hour(region_dimensions(base_dims, region), h, long_factor=0.92, min_w=980, min_h=720)
+    export_composite(composite, out_file, region, dimensions=dims)
+    annotate_map_file(
+        out_file,
+        key,
+        h,
+        map_region=region,
+        low_center=(None if is_conus else low_center),
+        pressure_centers=pressure_centers,
+        contour_labels=contour_labels,
+    )
+
+
+def generate_snow_accum_map(img, h, running_snow_cm, region=CONUS_THUMB_REGION, key='conus_snow_accum', snow_ratio=10):
+    region_geom = ee.Geometry.Rectangle(region, geodesic=False)
+    is_ne = key.startswith('ne_')
+    is_ne_regional = (key == 'ne_snow_accum')
+    is_rework_regional = (key in SNOW_REWORK_REGIONAL_KEYS)
+    is_ne_zoom = (key == 'ne_zoom_snow_accum')
+    state_names = NE_STATE_NAMES if is_ne else None
+    land_fc = NE_STATES if is_ne else None
+    work_geom = region_geom.difference(NE_EXCLUDED_STATES.geometry(), maxError=1000) if is_ne else region_geom
+    ratio_scale = ee.Image.constant(float(snow_ratio) / 10.0)
+    snow_total_in = running_snow_cm.multiply(ratio_scale).divide(2.54).clip(work_geom)
+    snow_total_vis = snow_total_in.resample('bilinear').focalMean(1, 'circle', 'pixels')
+    if is_rework_regional and abs(NE_ZOOM_SNOW_DISPLAY_GAIN - 1.0) > 1e-6:
+        snow_total_vis = snow_total_vis.multiply(NE_ZOOM_SNOW_DISPLAY_GAIN)
+    if is_ne_regional:
+        snow_segments = NE_SNOW_ACCUM_STEP_SEGMENTS_IN
+    elif is_rework_regional:
+        snow_segments = NE_ZOOM_SNOW_ACCUM_STEP_SEGMENTS_IN
+    else:
+        snow_segments = SNOW_ACCUM_STEP_SEGMENTS_IN
+    snow_layer = snow_accum_layer(snow_total_vis, segments=snow_segments)
+    snow_labels = get_snow_airport_labels(snow_total_in, key)
+
+    composite = ee.ImageCollection([
+        basemap_overlay(region_geom, land_color=BASEMAP_LAND_COLOR, ocean_color=BASEMAP_OCEAN_COLOR, land_fc=land_fc),
+        snow_layer,
+        (
+            ne_snow_border_overlay(region_geom)
+            if (is_ne_regional or is_ne_zoom)
+            else (mi_wi_snow_border_overlay(region_geom) if key == 'mi_wi_snow_accum' else snow_land_outline_overlay(region_geom, state_names=state_names))
+        ),
+    ]).mosaic()
+
+    out_file = build_frame_path(key, h, snow_ratio=snow_ratio)
+    if is_rework_regional:
+        base_dims = SNOW_NE_ZOOM_DIMS
+    elif key.startswith('ne_'):
+        base_dims = SNOW_NE_DIMS
+    else:
+        base_dims = SNOW_CONUS_DIMS
+    dims = adaptive_dimensions_for_hour(region_dimensions(base_dims, region), h, long_factor=0.92, min_w=980, min_h=720)
+    export_composite(composite, out_file, region, dimensions=dims)
+    annotate_map_file(out_file, key, h, map_region=region, snow_labels=snow_labels, snow_ratio=snow_ratio)
+
+
+def generate_parameter_map(img, h, region=CONUS_THUMB_REGION, key='conus_wind10'):
+    """Render a selected WeatherNext 2 field using a shared map contract."""
+    spec = PARAMETER_MAP_SPECS.get(key)
+    if spec is None:
+        raise ValueError(f'Unknown WeatherNext parameter product: {key}')
+
+    region_geom = ee.Geometry.Rectangle(region, geodesic=False)
+    kind = spec.get('kind')
+    if kind == 'wind10':
+        u = img.select(WN2_10M_U_BAND)
+        v = img.select(WN2_10M_V_BAND)
+        field = u.pow(2).add(v.pow(2)).sqrt().rename('wind10_speed_mps')
+    elif kind == 'temperature':
+        field = img.select(spec['band']).subtract(273.15).rename(f'{key}_c')
+    elif kind == 'omega':
+        field = img.select(spec['band']).rename(f'{key}_pa_s')
+    else:
+        raise ValueError(f'Unsupported parameter-map kind for {key}: {kind}')
+
+    field = field.clip(region_geom).resample('bilinear').focalMean(1, 'circle', 'pixels')
+    field_layer = field.visualize(
+        min=float(spec['min']),
+        max=float(spec['max']),
+        palette=spec['palette'],
+    )
+    contour_interval = spec.get('contour_interval')
+    overlays = [
+        basemap_overlay(region_geom, land_color=BASEMAP_LAND_COLOR, ocean_color=BASEMAP_OCEAN_COLOR),
+        field_layer,
+    ]
+    if contour_interval and float(contour_interval) > 0:
+        overlays.append(
+            contour_overlay(
+                field,
+                interval=float(contour_interval),
+                color='#2a2a2a',
+                opacity=0.54,
+                smooth_px=0,
+                thicken_px=0,
+                line_width_frac=0.006,
+            )
+        )
+    overlays.append(border_overlay(include_states=True, region_geom=region_geom, detailed=_use_detailed_geography()))
+    composite = ee.ImageCollection(overlays).mosaic()
+    out_file = build_frame_path(key, h)
+    dims = adaptive_dimensions_for_hour(
+        region_dimensions(CONUS_DIMS, region),
+        h,
+        long_factor=0.92,
+        min_w=980,
+        min_h=720,
+    )
+    export_composite(composite, out_file, region, dimensions=dims)
+    annotate_map_file(out_file, key, h, map_region=region)
+
+
+def generate_conus_t2m_map(img, h, region=CONUS_THUMB_REGION, key='conus_t2m'):
+    region_geom = ee.Geometry.Rectangle(region, geodesic=False)
+    t2m_f = (
+        img.select(WN2_T2M_BAND)
+        .subtract(273.15)
+        .multiply(9.0 / 5.0)
+        .add(32.0)
+        .clip(region_geom)
+    )
+    t2m_vis = t2m_f.resample('bilinear').focalMean(1, 'circle', 'pixels')
+    t2m_layer = t2m_vis.visualize(min=T2M_F_MIN, max=T2M_F_MAX, palette=T2M_F_PALETTE)
+    temp_interval = adaptive_interval_for_hour(8, h, long_interval=10)
+    t2m_contours = contour_overlay(
+        t2m_vis,
+        interval=temp_interval,
+        color='#2a2a2a',
+        opacity=0.62,
+        smooth_px=0,
+        thicken_px=0,
+    )
+    freezing_line = highlight_iso_overlay(
+        t2m_vis,
+        level=32,
+        color='#2455ff',
+        opacity=0.88,
+        tolerance=0.9,
+        smooth_px=0,
+    )
+    composite = ee.ImageCollection([
+        basemap_overlay(region_geom, land_color=BASEMAP_LAND_COLOR, ocean_color=BASEMAP_OCEAN_COLOR),
+        t2m_layer,
+        t2m_contours,
+        freezing_line,
+        border_overlay(include_states=True),
+    ]).mosaic()
+    out_file = build_frame_path(key, h)
+    dims = adaptive_dimensions_for_hour(region_dimensions(CONUS_DIMS, region), h, long_factor=0.92, min_w=980, min_h=720)
+    export_composite(composite, out_file, region, dimensions=dims)
+    annotate_map_file(out_file, key, h)
+
+
+def _generate_conus_t2m_anomaly_map_local(img, h, region=CONUS_THUMB_REGION, key='conus_t2m_anom'):
+    base_dims = region_dimensions(CONUS_DIMS, region)
+    plans = [
+        {'dims': base_dims, 'sample_scale_m': LOCAL_T2M_ANOM_SCALES_M[0], 'contour_interval': 12, 'include_freezing': True, 'include_border': True, 'label': 'local base'},
+        {'dims': shrink_dimensions(base_dims), 'sample_scale_m': LOCAL_T2M_ANOM_SCALES_M[1], 'contour_interval': 18, 'include_freezing': True, 'include_border': True, 'label': 'local coarse'},
+        {'dims': shrink_dimensions(shrink_dimensions(base_dims)), 'sample_scale_m': LOCAL_T2M_ANOM_SCALES_M[2], 'contour_interval': 24, 'include_freezing': False, 'include_border': True, 'label': 'local extra coarse'},
+        {'dims': shrink_dimensions(shrink_dimensions(base_dims)), 'sample_scale_m': int(LOCAL_T2M_ANOM_SCALES_M[2] * 1.8), 'contour_interval': 30, 'include_freezing': False, 'include_border': False, 'label': 'local emergency'},
+    ]
+    if is_long_range_hour(h):
+        for plan in plans:
+            plan['dims'] = adaptive_dimensions_for_hour(plan['dims'], h, long_factor=0.92, min_w=760, min_h=520)
+            plan['sample_scale_m'] = int(plan['sample_scale_m'] * 1.2)
+            plan['contour_interval'] = max(18, int(plan['contour_interval']))
+
+    out_file = build_frame_path(key, h)
+    valid_utc = RUN_INIT_UTC + timedelta(hours=int(h))
+    sample_geom = ee.Geometry.Rectangle(region, geodesic=False)
+    last_msg = ''
+
+    for plan in plans:
+        border_png = None
+        try:
+            width, height = parse_dimensions(plan['dims'])
+            forecast_c_img = (
+                img.select(WN2_T2M_BAND)
+                .subtract(273.15)
+                .clip(sample_geom)
+                .rename('t2m_c')
+            )
+            forecast_c_arr, used_scale = _sample_rect_array(
+                forecast_c_img,
+                't2m_c',
+                region,
+                plan['sample_scale_m'],
+                context=f'{key} forecast_t2m_c',
+            )
+            climo_cache_key = (
+                't2m',
+                valid_utc.strftime('%Y%m%d%H'),
+                tuple(round(float(v), 3) for v in region),
+                int(max(20000, float(used_scale))),
+            )
+            cached_climo = LOCAL_CLIMO_ARRAY_CACHE.get(climo_cache_key)
+            if cached_climo is None:
+                climo_source = _select_climo_source_collection(
+                    CLIMO_T2M_COLLECTION,
+                    valid_utc,
+                    sample_geom,
+                    't2m',
+                    use_hour_filter=CLIMO_T2M_USE_HOUR_FILTER,
+                )
+                climo_k_arr, _ = _sample_grouped_climo_array(
+                    climo_source,
+                    CLIMO_T2M_BAND,
+                    region,
+                    used_scale,
+                    group_years=CLIMO_T2M_GROUP_YEARS,
+                    context=f'{key} climo_t2m_c',
+                )
+                climo_c_arr = climo_k_arr - 273.15
+                LOCAL_CLIMO_ARRAY_CACHE[climo_cache_key] = climo_c_arr
+            else:
+                climo_c_arr = cached_climo
+            forecast_c_arr, climo_c_arr = _align_arrays(forecast_c_arr, climo_c_arr)
+            anomaly_f_arr = (forecast_c_arr - climo_c_arr) * (9.0 / 5.0)
+            contour_f_arr = forecast_c_arr * (9.0 / 5.0) + 32.0
+
+            _render_local_anomaly_tile(
+                anomaly_field=anomaly_f_arr,
+                contour_field=contour_f_arr,
+                bounds=region,
+                out_file=out_file,
+                width=width,
+                height=height,
+                palette=T2M_ANOM_F_PALETTE,
+                vmin=T2M_ANOM_F_MIN,
+                vmax=T2M_ANOM_F_MAX,
+                minor_interval=None,
+                major_interval=int(plan['contour_interval']),
+                minor_color='#2d2d2d',
+                major_color='#222222',
+                major_lw=1.0,
+                highlight_level=(32 if plan.get('include_freezing', True) else None),
+                highlight_color='#2455ff',
+            )
+
+            if plan.get('include_border', True):
+                border_png = get_cached_border_overlay_png(
+                    region,
+                    width,
+                    height,
+                    include_states=True,
+                    detailed=_use_detailed_geography(width, height),
+                )
+                _overlay_png_on_jpg(out_file, border_png)
+
+            annotate_map_file(out_file, key, h)
+            return
+        except Exception as e:
+            last_msg = str(e)
+            if not _is_memory_or_invalid_argument_error(last_msg):
+                if 'sampleRectangle failed' not in last_msg and 'Invalid sampled array shape' not in last_msg:
+                    raise
+            print(f'[{ts()}] {key} hour {h}: local true anomaly retry failed ({plan["label"]}).')
+
+    short_msg = (last_msg or 'Unknown export error').replace('\n', ' ')[:220]
+    raise RuntimeError(
+        f'{key} hour {h}: local true-anomaly export failed after retries. Last error: {short_msg}'
+    )
+
+
+def generate_conus_t2m_anomaly_map(img, h, region=CONUS_THUMB_REGION, key='conus_t2m_anom'):
+    if LOCAL_TRUE_ANOMALY_RENDER and CLIMO_T2M_SOURCE_LABEL != 'ERA5':
+        return _generate_conus_t2m_anomaly_map_local(img, h, region=region, key=key)
+    if LOCAL_TRUE_ANOMALY_RENDER and CLIMO_T2M_SOURCE_LABEL == 'ERA5':
+        notice_flag = getattr(generate_conus_t2m_anomaly_map, '_era5_local_notice', False)
+        if not notice_flag:
+            print(
+                f'[{ts()}] ERA5 T2M climatology detected: using EE-native anomaly render '
+                f'for {key} (local sampled-array mode is disabled for ERA5 stability).'
+            )
+            setattr(generate_conus_t2m_anomaly_map, '_era5_local_notice', True)
+
+    tile_parts = 1 if CLIMO_T2M_SOURCE_LABEL == 'ERA5' else 4
+    tile_bounds = split_region_longitude(region, parts=tile_parts)
+    base_dims = region_dimensions(CONUS_DIMS, region)
+    mid_dims = shrink_dimensions(base_dims)
+    low_dims = shrink_dimensions(mid_dims)
+    plans = [
+        {'dims': mid_dims, 'scale_m': 30000, 'work_scale_m': T2M_ANOM_WORK_SCALES_M[0], 'contour_interval': 12, 'label': 'scaled export + 12F contours'},
+        {'dims': low_dims, 'scale_m': 42000, 'work_scale_m': T2M_ANOM_WORK_SCALES_M[1], 'contour_interval': 18, 'label': 'coarse scale + sparse contours'},
+        {'dims': low_dims, 'scale_m': 56000, 'work_scale_m': T2M_ANOM_WORK_SCALES_M[2], 'contour_interval': 24, 'label': 'ultra coarse scale + ultra sparse contours'},
+        {'dims': low_dims, 'scale_m': 90000, 'work_scale_m': int(T2M_ANOM_WORK_SCALES_M[2] * 1.6), 'contour_interval': 30, 'include_border': False, 'include_freezing': False, 'label': 'emergency ultra coarse true anomaly'},
+    ]
+    if is_long_range_hour(h):
+        for plan in plans:
+            plan['dims'] = adaptive_dimensions_for_hour(plan['dims'], h, long_factor=0.92, min_w=760, min_h=520)
+            plan['scale_m'] = int(plan['scale_m'] * 1.15)
+            plan['work_scale_m'] = int(plan['work_scale_m'] * 1.2)
+            plan['contour_interval'] = max(18, int(plan['contour_interval']))
+
+    def _build_composite(
+        tile_geom,
+        t2m_anom_f,
+        t2m_f,
+        work_scale_m,
+        contour_interval,
+        include_border=True,
+        include_freezing=True,
+    ):
+        anom_field = _coarsen_for_compute(t2m_anom_f, work_scale_m, min_scale_m=15000)
+        contour_field = _coarsen_for_compute(t2m_f, max(work_scale_m, 28000), min_scale_m=20000)
+        t2m_anom_vis = anom_field.resample('bilinear').focalMean(1, 'circle', 'pixels')
+        t2m_anom_layer = t2m_anom_vis.visualize(
+            min=T2M_ANOM_F_MIN,
+            max=T2M_ANOM_F_MAX,
+            palette=T2M_ANOM_F_PALETTE,
+        )
+        temp_contours = contour_overlay(
+            contour_field,
+            interval=int(contour_interval),
+            color='#2d2d2d',
+            opacity=0.50,
+            smooth_px=0,
+            thicken_px=0,
+        )
+        overlays = [
+            flat_background_overlay(tile_geom, color=BASEMAP_OCEAN_COLOR),
+            t2m_anom_layer,
+            temp_contours,
+        ]
+        if include_freezing:
+            overlays.append(
+                highlight_iso_overlay(
+                    contour_field,
+                    level=32,
+                    color='#2455ff',
+                    opacity=0.90,
+                    tolerance=1.0,
+                    smooth_px=0,
+                )
+            )
+        if include_border:
+            overlays.append(border_overlay(include_states=True, region_geom=tile_geom))
+        return ee.ImageCollection(overlays).mosaic()
+
+    def _is_recoverable_export_error(msg):
+        return (
+            'User memory limit exceeded' in msg
+            or 'Unable to transform edge' in msg
+            or 'Invalid argument' in msg
+            or 'INVALID_ARGUMENT' in msg
+        )
+
+    out_file = build_frame_path(key, h)
+    last_msg = ''
+    for plan in plans:
+        tile_tmp_files = [f'{out_file}.tile{idx}.jpg' for idx in range(len(tile_bounds))]
+        split_dims = split_dimensions_horizontal_parts(plan['dims'], parts=len(tile_bounds))
+        if CLIMO_T2M_SOURCE_LABEL == 'ERA5':
+            # Keep ERA5 fallback outputs above sanity thresholds when exported as narrow tile slices.
+            sw, sh = parse_dimensions(split_dims, fallback_w=260, fallback_h=380)
+            split_dims = f'{max(260, sw)}x{max(360, sh)}'
+        export_scale = None if CLIMO_T2M_SOURCE_LABEL == 'ERA5' else plan['scale_m']
+        try:
+            for idx, bounds in enumerate(tile_bounds):
+                tile_geom = ee.Geometry.Rectangle(bounds, geodesic=False)
+                t2m_f = (
+                    img.select(WN2_T2M_BAND)
+                    .subtract(273.15)
+                    .multiply(9.0 / 5.0)
+                    .add(32.0)
+                    .clip(tile_geom)
+                )
+                t2m_anom_c = t2m_anomaly_c(
+                    img,
+                    h,
+                    region_geom=tile_geom,
+                    cache_tag=f'{key}_{plan["work_scale_m"]}_{idx}',
+                    analysis_scale_m=plan['work_scale_m'],
+                )
+                t2m_anom_f = t2m_anom_c.multiply(9.0 / 5.0).rename('t2m_anomaly_f')
+                composite = _build_composite(
+                    tile_geom=tile_geom,
+                    t2m_anom_f=t2m_anom_f,
+                    t2m_f=t2m_f,
+                    work_scale_m=plan['work_scale_m'],
+                    contour_interval=plan['contour_interval'],
+                    include_border=plan.get('include_border', True),
+                    include_freezing=plan.get('include_freezing', True),
+                )
+                export_composite(
+                    composite,
+                    tile_tmp_files[idx],
+                    bounds,
+                    dimensions=split_dims,
+                    scale=export_scale,
+                    crs=TARGET_CRS,
+                )
+
+            stitch_horizontal_many(tile_tmp_files, out_file)
+            annotate_map_file(out_file, key, h)
+            return
+        except Exception as e:
+            msg = str(e)
+            if not _is_recoverable_export_error(msg):
+                raise
+            last_msg = msg
+            print(f'[{ts()}] {key} hour {h}: anomaly export retry failed ({plan["label"]}).')
+        finally:
+            for tmp in tile_tmp_files:
+                if os.path.exists(tmp):
+                    try:
+                        os.remove(tmp)
+                    except OSError:
+                        pass
+
+    short_msg = (last_msg or 'Unknown export error').replace('\n', ' ')[:220]
+    raise RuntimeError(f'{key} hour {h}: true-anomaly export failed after retries. Last error: {short_msg}')
+
+
+def generate_vort500_map(img, h):
+    region_geom = ee.Geometry.Rectangle(CONUS_THUMB_REGION, geodesic=False)
+    u = img.select(WN2_500_U_BAND).resample('bilinear').focalMean(CONUS_VORT_WIND_SMOOTH_PX, 'circle', 'pixels')
+    v = img.select(WN2_500_V_BAND).resample('bilinear').focalMean(CONUS_VORT_WIND_SMOOTH_PX, 'circle', 'pixels')
+    du_dy_deg = u.gradient().select('y')
+    dv_dx_deg = v.gradient().select('x')
+
+    lat = ee.Image.pixelLonLat().select('latitude').multiply(3.141592653589793 / 180.0)
+    # gradient() is per-pixel; convert using approximate 0.25-degree grid spacing.
+    meters_per_px_lat = ee.Image.constant(27830.0)
+    meters_per_px_lon = lat.cos().multiply(27830.0).max(5000.0)
+    du_dy = du_dy_deg.divide(meters_per_px_lat)
+    dv_dx = dv_dx_deg.divide(meters_per_px_lon)
+    vort_1e5 = dv_dx.subtract(du_dy).multiply(1e5)
+    vort_layer = conus_vorticity_layer(vort_1e5)
+    z500_height_dam = img.select(WN2_Z500_BAND).divide(9.80665).divide(10).clip(region_geom)
+    z500_interval = adaptive_interval_for_hour(6, h, long_interval=8)
+    z500_contours = conus_vort500_height_contour_overlay(
+        z500_height_dam,
+        interval=z500_interval,
+        color=CONUS_VORT_Z500_CONTOUR_COLOR,
+        opacity=CONUS_VORT_Z500_CONTOUR_OPACITY,
+        canny_threshold=CONUS_VORT_Z500_CONTOUR_CANNY_THRESHOLD,
+        canny_sigma=CONUS_VORT_Z500_CONTOUR_CANNY_SIGMA,
+        smooth_px=CONUS_VORT_Z500_CONTOUR_SMOOTH_PX,
+        min_connected_px=CONUS_VORT_Z500_CONTOUR_MIN_CONNECTED_PX,
+    )
+    composite = ee.ImageCollection([
+        basemap_overlay(region_geom, land_color=BASEMAP_LAND_COLOR, ocean_color=BASEMAP_OCEAN_COLOR),
+        vort_layer,
+        z500_contours,
+        border_overlay(include_states=True),
+    ]).mosaic()
+
+    out_file = build_frame_path('conus_vort500', h)
+    dims = adaptive_dimensions_for_hour(
+        region_dimensions(CONUS_DIMS, CONUS_THUMB_REGION),
+        h,
+        long_factor=0.92,
+        min_w=980,
+        min_h=720,
+    )
+    export_composite(composite, out_file, CONUS_THUMB_REGION, dimensions=dims)
+    annotate_map_file(out_file, 'conus_vort500', h)
+
+
+def _file_md5(p: Path) -> str:
+    h = hashlib.md5()
+    with p.open("rb") as f:
+        for chunk in iter(lambda: f.read(1024 * 1024), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def sanity_check_jpgs(out_dir: str, pattern: str = "z500a_*.jpg", require_variation=True) -> None:
+    from PIL import Image
+    files = sorted(Path(out_dir).glob(pattern))
+    if not files:
+        raise RuntimeError(f"No files found matching {pattern} in {out_dir}")
+
+    hashes = []
+    sizes = []
+    for p in files:
+        with Image.open(p) as im:
+            sizes.append((p.name, im.size))
+        hashes.append((p.name, _file_md5(p)))
+
+    tiny = [(n, s) for n, s in sizes if s[0] < 300 or s[1] < 150]
+    if tiny:
+        raise RuntimeError(f"Sanity check failed: tiny images detected: {tiny[:5]}")
+
+    unique_hashes = {h for _, h in hashes}
+    if require_variation and len(files) > 1 and len(unique_hashes) == 1:
+        raise RuntimeError("Sanity check failed: all images are identical (same MD5).")
+
+    print(f"Sanity OK: {len(files)} images, {len(unique_hashes)} unique hashes.")
+
+
+# --- 4. EXECUTION ---
+cleanup_old_products()
+skip_cleanup_effective = SKIP_CLEANUP_RUN_DIR or RECONCILE_ONLY
+if skip_cleanup_effective:
+    print(f'[{ts()}] Skipping run-directory cleanup to preserve existing frames for resume mode.')
+else:
+    cleanup_current_run_products()
+failures = []
+successful_exports = 0
+planned_exports = 0
+skipped_existing_exports = 0
+failed_product_keys = set()
+failed_product_messages = {}
+needs_snow_accum = any(k in SNOW_PRODUCT_KEYS for k, _, _ in ENABLED_PRODUCTS)
+snow_accum_by_hour = {}
+zero_snow = ee.Image.constant(0).clip(CONUS_REGION).rename('snow_total_cm')
+snow_precompute_done = False
+
+enabled_keys = {k for k, _, _ in ENABLED_PRODUCTS}
+hour_image_cache = {}
+
+
+def get_cached_hour_image(hour):
+    cached = hour_image_cache.get(hour)
+    if cached is None:
+        cached = get_hour_image(hour)
+        hour_image_cache[hour] = cached
+    return cached
+
+
+def _record_task_failure(hour, name, err_msg, exc):
+    print(f'[{ts()}] Hour {hour} product {name}: FAILED - {err_msg}')
+    failures.append((f'{hour}:{name}', err_msg))
+    product_key = None
+    enabled_product_keys = [key for key, _, _ in ENABLED_PRODUCTS]
+    if name in enabled_product_keys:
+        product_key = name
+    else:
+        prefix_matches = [key for key in enabled_product_keys if name.startswith(f'{key}_')]
+        if prefix_matches:
+            product_key = max(prefix_matches, key=len)
+    if product_key is None:
+        product_key = name
+    failed_product_keys.add(product_key)
+    msg_text = str(err_msg).replace('\n', ' ').strip()
+    if len(msg_text) > 500:
+        msg_text = msg_text[:500] + '...'
+    failed_product_messages[product_key] = msg_text
+    if 'earthengine.thumbnails.create' in err_msg:
+        raise RuntimeError(
+            "Earth Engine permission denied: earthengine.thumbnails.create. "
+            "Grant the service account Earth Engine User (or Admin) on EE_PROJECT and ensure Earth Engine API is enabled."
+        ) from exc
+
+
+def ensure_snow_accum_precompute():
+    global snow_precompute_done, snow_accum_by_hour
+
+    if snow_precompute_done or not needs_snow_accum:
+        return
+    selected_hours = sorted(set(HOURS))
+    if not selected_hours:
+        snow_precompute_done = True
+        return
+
+    max_selected_hour = selected_hours[-1]
+    accum_hours = sorted([hh for hh in AVAILABLE_HOURS if 0 <= hh <= max_selected_hour])
+    if not accum_hours:
+        accum_hours = selected_hours
+
+    running_snow_cm = zero_snow
+    running_by_available_hour = {0: zero_snow}
+    for hh in accum_hours:
+        if hh <= 0:
+            running_by_available_hour[hh] = running_snow_cm
+            continue
+        step_img = get_hour_image(hh)
+        running_snow_cm = running_snow_cm.add(snow_increment_cm(step_img, CONUS_REGION)).rename('snow_total_cm')
+        running_by_available_hour[hh] = running_snow_cm
+
+    local_map = {}
+    for sh in selected_hours:
+        eligible = [hh for hh in running_by_available_hour.keys() if hh <= sh]
+        if eligible:
+            local_map[sh] = running_by_available_hour[max(eligible)]
+        else:
+            local_map[sh] = zero_snow
+    snow_accum_by_hour = local_map
+    snow_precompute_done = True
+    print(
+        f'[{ts()}] Snow accumulation precompute: '
+        f'available_steps={len(accum_hours)}, selected_frames={len(selected_hours)}, '
+        f'max_hour={max_selected_hour}.'
+    )
+
+
+def write_step_summary(
+    success_count,
+    failure_items,
+    enabled_products=None,
+    generated_products=None,
+    missing_products=None,
+    planned_count=0,
+    skipped_existing_count=0,
+):
+    summary_path = os.environ.get('GITHUB_STEP_SUMMARY')
+    if not summary_path:
+        return
+    try:
+        enabled_products = list(enabled_products or [])
+        generated_products = list(generated_products or [])
+        missing_products = list(missing_products or [])
+        lines = [
+            '## WeatherNext2 Render Summary',
+            f'- Successful exports: {int(success_count)}',
+            f'- Failed exports: {len(failure_items)}',
+        ]
+        if planned_count:
+            lines.append(f'- Planned exports this run: {int(planned_count)}')
+        if skipped_existing_count:
+            lines.append(f'- Skipped existing frames: {int(skipped_existing_count)}')
+        if enabled_products:
+            lines.append(f'- Enabled products: {", ".join(enabled_products)}')
+        if generated_products:
+            lines.append(f'- Products with frames generated: {", ".join(generated_products)}')
+        if missing_products:
+            lines.append(f'- Missing products (no frames): {", ".join(missing_products)}')
+        if failure_items:
+            lines.append('')
+            lines.append('### Failures')
+            for hour_key, msg in failure_items[:20]:
+                one_line = str(msg).replace('\n', ' ').strip()
+                if len(one_line) > 180:
+                    one_line = one_line[:180] + '...'
+                lines.append(f'- `{hour_key}`: {one_line}')
+            if len(failure_items) > 20:
+                lines.append(f'- ... and {len(failure_items) - 20} more')
+        lines.append('')
+        with open(summary_path, 'a', encoding='utf-8') as f:
+            f.write('\n'.join(lines) + '\n')
+    except Exception as e:
+        print(f'[{ts()}] Warning: could not write GitHub step summary: {e}')
+
+
+if not RECONCILE_ONLY and 'nh_z500a' in enabled_keys:
+    print(f'[{ts()}] Phase 1/3: generating NH z500 true-anomaly maps first.')
+    for h in HOURS:
+        out_file = build_frame_path('nh_z500a', h)
+        if not should_render_frame(out_file):
+            skipped_existing_exports += 1
+            continue
+        planned_exports += 1
+        print(f'Generating Hour {h} [NH z500]...')
+        img = get_cached_hour_image(h)
+        try:
+            generate_z500_anomaly_map(img, h, NH_THUMB_REGION, 'nh_z500a')
+            successful_exports += 1
+        except Exception as e:
+            _record_task_failure(h, 'nh_z500a', str(e), e)
+
+non_z500_enabled = [k for k in enabled_keys if k not in {'nh_z500a', 'na_z500a'}]
+if not RECONCILE_ONLY and non_z500_enabled:
+    print(f'[{ts()}] Phase 2/3: generating non-z500 products.')
+    for h in HOURS:
+        task_specs = []
+
+        if 'conus_mslp_ptype' in enabled_keys:
+            out_file = build_frame_path('conus_mslp_ptype', h)
+            if should_render_frame(out_file):
+                task_specs.append(('conus_mslp_ptype', 'conus_mslp_ptype', None))
+            else:
+                skipped_existing_exports += 1
+        if 'ne_mslp_ptype' in enabled_keys:
+            out_file = build_frame_path('ne_mslp_ptype', h)
+            if should_render_frame(out_file):
+                task_specs.append(('ne_mslp_ptype', 'ne_mslp_ptype', None))
+            else:
+                skipped_existing_exports += 1
+        if 'conus_vort500' in enabled_keys:
+            out_file = build_frame_path('conus_vort500', h)
+            if should_render_frame(out_file):
+                task_specs.append(('conus_vort500', 'conus_vort500', None))
+            else:
+                skipped_existing_exports += 1
+        if 'conus_t2m' in enabled_keys:
+            out_file = build_frame_path('conus_t2m', h)
+            if should_render_frame(out_file):
+                task_specs.append(('conus_t2m', 'conus_t2m', None))
+            else:
+                skipped_existing_exports += 1
+        if 'conus_t2m_anom' in enabled_keys:
+            out_file = build_frame_path('conus_t2m_anom', h)
+            if should_render_frame(out_file):
+                task_specs.append(('conus_t2m_anom', 'conus_t2m_anom', None))
+            else:
+                skipped_existing_exports += 1
+        for parameter_key in PARAMETER_MAP_SPECS:
+            if parameter_key in enabled_keys:
+                out_file = build_frame_path(parameter_key, h)
+                if should_render_frame(out_file):
+                    task_specs.append((parameter_key, parameter_key, None))
+                else:
+                    skipped_existing_exports += 1
+        if 'conus_snow_accum' in enabled_keys:
+            for ratio in SNOW_RATIOS:
+                out_file = build_frame_path('conus_snow_accum', h, snow_ratio=ratio)
+                if should_render_frame(out_file):
+                    task_specs.append((f'conus_snow_accum_r{ratio:02d}', 'conus_snow_accum', ratio))
+                else:
+                    skipped_existing_exports += 1
+        if 'ne_snow_accum' in enabled_keys:
+            for ratio in SNOW_RATIOS:
+                out_file = build_frame_path('ne_snow_accum', h, snow_ratio=ratio)
+                if should_render_frame(out_file):
+                    task_specs.append((f'ne_snow_accum_r{ratio:02d}', 'ne_snow_accum', ratio))
+                else:
+                    skipped_existing_exports += 1
+        if 'ne_zoom_snow_accum' in enabled_keys:
+            for ratio in SNOW_RATIOS:
+                out_file = build_frame_path('ne_zoom_snow_accum', h, snow_ratio=ratio)
+                if should_render_frame(out_file):
+                    task_specs.append((f'ne_zoom_snow_accum_r{ratio:02d}', 'ne_zoom_snow_accum', ratio))
+                else:
+                    skipped_existing_exports += 1
+        if 'mi_wi_snow_accum' in enabled_keys:
+            for ratio in SNOW_RATIOS:
+                out_file = build_frame_path('mi_wi_snow_accum', h, snow_ratio=ratio)
+                if should_render_frame(out_file):
+                    task_specs.append((f'mi_wi_snow_accum_r{ratio:02d}', 'mi_wi_snow_accum', ratio))
+                else:
+                    skipped_existing_exports += 1
+        if 'carolinas_snow_accum' in enabled_keys:
+            for ratio in SNOW_RATIOS:
+                out_file = build_frame_path('carolinas_snow_accum', h, snow_ratio=ratio)
+                if should_render_frame(out_file):
+                    task_specs.append((f'carolinas_snow_accum_r{ratio:02d}', 'carolinas_snow_accum', ratio))
+                else:
+                    skipped_existing_exports += 1
+
+        if not task_specs:
+            continue
+
+        planned_exports += len(task_specs)
+        print(f'Generating Hour {h} [core products] ({len(task_specs)} pending export(s))...')
+        img = get_cached_hour_image(h)
+        needs_snow_here = any(spec[1] in SNOW_PRODUCT_KEYS for spec in task_specs)
+        if needs_snow_here:
+            ensure_snow_accum_precompute()
+            snow_for_hour = snow_accum_by_hour.get(h, zero_snow)
+        else:
+            snow_for_hour = zero_snow
+
+        tasks = []
+        for name, kind, ratio in task_specs:
+            if kind == 'conus_mslp_ptype':
+                tasks.append((name, lambda i=img, hh=h: generate_mslp_ptype_map(i, hh, CONUS_THUMB_REGION, 'conus_mslp_ptype')))
+            elif kind == 'ne_mslp_ptype':
+                tasks.append((name, lambda i=img, hh=h: generate_mslp_ptype_map(i, hh, NE_THUMB_REGION, 'ne_mslp_ptype')))
+            elif kind == 'conus_vort500':
+                tasks.append((name, lambda i=img, hh=h: generate_vort500_map(i, hh)))
+            elif kind == 'conus_t2m':
+                tasks.append((name, lambda i=img, hh=h: generate_conus_t2m_map(i, hh, CONUS_THUMB_REGION, 'conus_t2m')))
+            elif kind == 'conus_t2m_anom':
+                tasks.append((name, lambda i=img, hh=h: generate_conus_t2m_anomaly_map(i, hh, CONUS_THUMB_REGION, 'conus_t2m_anom')))
+            elif kind in PARAMETER_MAP_SPECS:
+                tasks.append((name, lambda i=img, hh=h, kk=kind: generate_parameter_map(i, hh, CONUS_THUMB_REGION, kk)))
+            elif kind == 'conus_snow_accum':
+                rr = int(ratio)
+                tasks.append((
+                    name,
+                    lambda i=img, hh=h, s=snow_for_hour, r=rr: generate_snow_accum_map(
+                        i,
+                        hh,
+                        s,
+                        CONUS_THUMB_REGION,
+                        'conus_snow_accum',
+                        snow_ratio=r,
+                    ),
+                ))
+            elif kind == 'ne_snow_accum':
+                rr = int(ratio)
+                tasks.append((
+                    name,
+                    lambda i=img, hh=h, s=snow_for_hour, r=rr: generate_snow_accum_map(
+                        i,
+                        hh,
+                        s,
+                        NE_THUMB_REGION,
+                        'ne_snow_accum',
+                        snow_ratio=r,
+                    ),
+                ))
+            elif kind == 'ne_zoom_snow_accum':
+                rr = int(ratio)
+                tasks.append((
+                    name,
+                    lambda i=img, hh=h, s=snow_for_hour, r=rr: generate_snow_accum_map(
+                        i,
+                        hh,
+                        s,
+                        NE_ZOOM_SNOW_THUMB_REGION,
+                        'ne_zoom_snow_accum',
+                        snow_ratio=r,
+                    ),
+                ))
+            elif kind == 'mi_wi_snow_accum':
+                rr = int(ratio)
+                tasks.append((
+                    name,
+                    lambda i=img, hh=h, s=snow_for_hour, r=rr: generate_snow_accum_map(
+                        i,
+                        hh,
+                        s,
+                        MI_WI_SNOW_THUMB_REGION,
+                        'mi_wi_snow_accum',
+                        snow_ratio=r,
+                    ),
+                ))
+            elif kind == 'carolinas_snow_accum':
+                rr = int(ratio)
+                tasks.append((
+                    name,
+                    lambda i=img, hh=h, s=snow_for_hour, r=rr: generate_snow_accum_map(
+                        i,
+                        hh,
+                        s,
+                        CAROLINAS_SNOW_THUMB_REGION,
+                        'carolinas_snow_accum',
+                        snow_ratio=r,
+                    ),
+                ))
+
+        with ThreadPoolExecutor(max_workers=EXPORT_WORKERS) as pool:
+            future_to_name = {pool.submit(fn): name for name, fn in tasks}
+            for future in as_completed(future_to_name):
+                name = future_to_name[future]
+                try:
+                    future.result()
+                    successful_exports += 1
+                except Exception as e:
+                    err_msg = str(e)
+                    _record_task_failure(h, name, err_msg, e)
+
+if not RECONCILE_ONLY and 'na_z500a' in enabled_keys:
+    print(f'[{ts()}] Phase 3/3: generating NA z500 true-anomaly maps last.')
+    for h in HOURS:
+        out_file = build_frame_path('na_z500a', h)
+        if not should_render_frame(out_file):
+            skipped_existing_exports += 1
+            continue
+        planned_exports += 1
+        print(f'Generating Hour {h} [NA z500]...')
+        img = get_cached_hour_image(h)
+        try:
+            generate_z500_anomaly_map(img, h, NA_Z500A_REGION, 'na_z500a')
+            successful_exports += 1
+        except Exception as e:
+            _record_task_failure(h, 'na_z500a', str(e), e)
+
+if RECONCILE_ONLY:
+    print(f'[{ts()}] Reconcile-only mode: skipped render phases and using existing run frames.')
+
+print(
+    f'[{ts()}] Export counts: planned={planned_exports}, '
+    f'generated={successful_exports}, skipped_existing={skipped_existing_exports}, failed={len(failures)}.'
+)
+
+if failures:
+    print(f'[{ts()}] Completed with {len(failures)} failed hour(s).')
+    for h, msg in failures:
+        print(f'[{ts()}] Failure summary - hour {h}: {msg}')
+
+generated_product_keys = []
+skip_sanity_checks = RESUME_EXISTING and planned_exports == 0 and successful_exports == 0 and not failures
+for key, _, pattern in ENABLED_PRODUCTS:
+    product_files = sorted(Path(RUN_OUTPUT_DIR).glob(pattern))
+    if not product_files:
+        if key in failed_product_keys:
+            print(f'[{ts()}] Skipping sanity check for {key}: no frames generated after render failures.')
+        else:
+            print(f'[{ts()}] Skipping sanity check for {key}: no frames generated this run.')
+        continue
+    if skip_sanity_checks:
+        generated_product_keys.append(key)
+        continue
+    sanity_check_jpgs(
+        str(RUN_OUTPUT_DIR),
+        pattern=pattern,
+        require_variation=not is_snow_product(key),
+    )
+    generated_product_keys.append(key)
+if skip_sanity_checks:
+    print(f'[{ts()}] Sanity checks skipped: resume-only run with no new exports planned.')
+
+enabled_product_keys = [key for key, _, _ in ENABLED_PRODUCTS]
+missing_product_keys = [key for key in enabled_product_keys if key not in generated_product_keys]
+if missing_product_keys:
+    print(
+        f'[{ts()}] Product coverage warning: missing frames for {missing_product_keys}; '
+        f'generated={generated_product_keys}'
+    )
+
+write_step_summary(
+    successful_exports,
+    failures,
+    enabled_products=enabled_product_keys,
+    generated_products=generated_product_keys,
+    missing_products=missing_product_keys,
+    planned_count=planned_exports,
+    skipped_existing_count=skipped_existing_exports,
+)
+
+
+# --- 5. BUILD INTERFACE ---
+def parse_iso_utc(raw):
+    if not raw:
+        return None
+    text = str(raw).strip()
+    if not text:
+        return None
+    if text.endswith('Z'):
+        text = text[:-1] + '+00:00'
+    try:
+        dt = datetime.fromisoformat(text)
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        return dt.astimezone(timezone.utc)
+    except ValueError:
+        return None
+
+
+def iso_utc(dt):
+    return dt.astimezone(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
+
+
+def normalize_int_list(values, min_value=None, max_value=None):
+    items = []
+    if isinstance(values, list):
+        for raw in values:
+            v = _parse_int(raw)
+            if v is None:
+                continue
+            if min_value is not None and v < min_value:
+                continue
+            if max_value is not None and v > max_value:
+                continue
+            items.append(v)
+    return sorted(set(items))
+
+
+def load_manifest_entries(manifest_path):
+    if not manifest_path.exists():
+        return []
+    try:
+        with manifest_path.open('r', encoding='utf-8') as f:
+            payload = json.load(f)
+    except Exception as e:
+        print(f'[{ts()}] Could not read existing runs manifest: {e}')
+        return []
+    runs = payload.get('runs') if isinstance(payload, dict) else payload
+    if not isinstance(runs, list):
+        return []
+    entries = []
+    for item in runs:
+        if isinstance(item, dict) and item.get('id'):
+            entries.append(item)
+    return entries
+
+
+FRAME_NAME_RE = re.compile(r'^(?P<product>[a-z0-9_]+?)(?:_r(?P<ratio>\d{2}))?_(?P<hour>\d{3})\.jpg$', re.IGNORECASE)
+
+
+def discover_run_product_frames(run_dir):
+    product_hours = {}
+    product_snow_ratios = {}
+    if not run_dir.exists() or not run_dir.is_dir():
+        return {}, {}
+
+    for frame_path in run_dir.glob('*.jpg'):
+        match = FRAME_NAME_RE.match(frame_path.name)
+        if not match:
+            continue
+        product = str(match.group('product') or '').strip()
+        if not product:
+            continue
+        hour = _parse_int(match.group('hour'))
+        if hour is None:
+            continue
+        product_hours.setdefault(product, set()).add(hour)
+        ratio_text = match.group('ratio')
+        if ratio_text is not None:
+            ratio = _parse_int(ratio_text)
+            if ratio is not None:
+                product_snow_ratios.setdefault(product, set()).add(ratio)
+
+    normalized_hours = {
+        key: sorted(values)
+        for key, values in product_hours.items()
+        if values
+    }
+    normalized_ratios = {
+        key: sorted(values)
+        for key, values in product_snow_ratios.items()
+        if values
+    }
+    return normalized_hours, normalized_ratios
+
+
+def normalize_product_hours_map(raw_map):
+    out = {}
+    if not isinstance(raw_map, dict):
+        return out
+    for raw_key, raw_values in raw_map.items():
+        key = str(raw_key).strip()
+        if not key:
+            continue
+        hours = normalize_int_list(raw_values, min_value=0)
+        if hours:
+            out[key] = hours
+    return out
+
+
+def normalize_product_ratio_map(raw_map):
+    out = {}
+    if not isinstance(raw_map, dict):
+        return out
+    for raw_key, raw_values in raw_map.items():
+        key = str(raw_key).strip()
+        if not key:
+            continue
+        ratios = normalize_int_list(raw_values, min_value=10, max_value=20)
+        if ratios:
+            out[key] = ratios
+    return out
+
+
+def estimate_run_frame_count(entry):
+    products = [str(p) for p in entry.get('products', []) if isinstance(p, str)]
+    if not products:
+        return 0
+    product_hours = normalize_product_hours_map(entry.get('product_hours'))
+    product_ratios = normalize_product_ratio_map(entry.get('product_snow_ratios'))
+    fallback_hours = normalize_int_list(entry.get('hours', []), min_value=0)
+    fallback_ratios = normalize_int_list(entry.get('snow_ratios', []), min_value=10, max_value=20)
+
+    frame_count = 0
+    for key in products:
+        hours = product_hours.get(key, fallback_hours)
+        if not hours:
+            continue
+        if is_snow_product(key):
+            ratios = product_ratios.get(key, fallback_ratios)
+            if not ratios:
+                ratios = [10]
+            frame_count += len(hours) * len(ratios)
+        else:
+            frame_count += len(hours)
+    return frame_count
+
+
+def choose_default_run_id(manifest_runs, fallback_id):
+    if not manifest_runs:
+        return fallback_id
+    total_known_products = len(PRODUCT_OPTIONS)
+
+    def _score(item):
+        products = [str(p) for p in item.get('products', []) if isinstance(p, str)]
+        product_count = len(products)
+        product_coverage = (product_count / float(total_known_products)) if total_known_products > 0 else 0.0
+        frame_count = estimate_run_frame_count(item)
+        init_dt = parse_iso_utc(item.get('init_utc')) or datetime.min.replace(tzinfo=timezone.utc)
+        # Prefer broad product coverage first, then total frame inventory, then recency.
+        return (product_coverage, product_count, frame_count, init_dt)
+
+    best = max(manifest_runs, key=_score)
+    best_id = str(best.get('id') or '').strip()
+    return best_id or fallback_id
+
+
+manifest_path = Path(OUTPUT) / 'runs_manifest.json'
+existing_entries = load_manifest_entries(manifest_path)
+same_run_existing_count = sum(1 for item in existing_entries if str(item.get('id', '')).strip() == RUN_ID)
+if same_run_existing_count:
+    existing_entries = [item for item in existing_entries if str(item.get('id', '')).strip() != RUN_ID]
+    print(
+        f'[{ts()}] Ignoring {same_run_existing_count} existing manifest entr'
+        f'{"y" if same_run_existing_count == 1 else "ies"} for current RUN_ID {RUN_ID}.'
+    )
+now_utc = datetime.now(timezone.utc)
+cutoff_utc = now_utc - timedelta(hours=RUN_HISTORY_HOURS)
+enabled_keys = [key for key, _, _ in ENABLED_PRODUCTS]
+product_order = {key: idx for idx, (key, _, _, _) in enumerate(PRODUCT_OPTIONS)}
+current_product_hours, current_product_snow_ratios = discover_run_product_frames(RUN_OUTPUT_DIR)
+current_products = [key for key in enabled_keys if key in current_product_hours]
+if not current_products:
+    current_products = sorted(
+        current_product_hours.keys(),
+        key=lambda k: (product_order.get(k, 999), k),
+    )
+current_hours = sorted({hour for values in current_product_hours.values() for hour in values})
+current_ratios = sorted({ratio for values in current_product_snow_ratios.values() for ratio in values})
+if not current_ratios and any(k in SNOW_PRODUCT_KEYS for k in current_products):
+    current_ratios = SNOW_RATIOS if SNOW_RATIOS else [10]
+current_entry = {
+    'id': RUN_ID,
+    'label': RUN_ID_LABEL,
+    'run_date': run_date,
+    'init_utc': iso_utc(RUN_INIT_UTC),
+    'source': ASSET,
+    'source_label': 'WeatherNext 2 (Earth Engine)',
+    'ensemble_mode': ENSEMBLE_MODE,
+    'ensemble_member': ENSEMBLE_MEMBER or None,
+    'z500_style': Z500_STYLE,
+    'hours': current_hours,
+    'products': current_products,
+    'snow_ratios': current_ratios if current_ratios else [10],
+    'product_hours': {key: current_product_hours[key] for key in current_products if key in current_product_hours},
+    'product_snow_ratios': {
+        key: current_product_snow_ratios[key]
+        for key in current_products
+        if key in current_product_snow_ratios
+    },
+    'enabled_products': enabled_product_keys,
+    'missing_products': missing_product_keys,
+    'failed_products': sorted([key for key in failed_product_keys if key in enabled_product_keys]),
+    'failure_messages': {
+        key: failed_product_messages[key]
+        for key in sorted(failed_product_messages.keys())
+        if key in failed_product_messages
+    },
+    'successful_exports': int(successful_exports),
+    'failed_exports': len(failures),
+    'updated_utc': iso_utc(now_utc),
+}
+
+merged = {}
+for entry in [current_entry] + existing_entries:
+    rid = str(entry.get('id', '')).strip()
+    if not rid or rid in merged:
+        continue
+    init_dt = parse_iso_utc(entry.get('init_utc'))
+    if init_dt is None:
+        continue
+    # Retain runs by publication/update recency so manual backfills remain visible
+    # for the configured history window even when their model init is older.
+    updated_dt = parse_iso_utc(entry.get('updated_utc'))
+    retention_dt = updated_dt or init_dt
+    if rid != RUN_ID and retention_dt < cutoff_utc:
+        continue
+    run_dir = RUNS_ROOT_DIR / rid
+    if rid != RUN_ID and not run_dir.exists():
+        continue
+
+    discovered_hours, discovered_ratios = discover_run_product_frames(run_dir) if run_dir.exists() else ({}, {})
+    product_hours = discovered_hours or normalize_product_hours_map(entry.get('product_hours'))
+    product_snow_ratios = discovered_ratios or normalize_product_ratio_map(entry.get('product_snow_ratios'))
+
+    legacy_products = [str(p) for p in entry.get('products', []) if isinstance(p, str)]
+    legacy_hours = normalize_int_list(entry.get('hours', []), min_value=0)
+    if not product_hours and legacy_products and legacy_hours:
+        for key in legacy_products:
+            product_hours[key] = list(legacy_hours)
+
+    if not product_snow_ratios:
+        legacy_ratios = normalize_int_list(entry.get('snow_ratios', []), min_value=10, max_value=20)
+        if legacy_ratios:
+            for key in product_hours.keys():
+                if is_snow_product(key):
+                    product_snow_ratios[key] = list(legacy_ratios)
+
+    products = sorted(
+        [key for key, hours in product_hours.items() if hours],
+        key=lambda k: (product_order.get(k, 999), k),
+    )
+    if not products:
+        continue
+    product_hours = {key: product_hours[key] for key in products if key in product_hours}
+    product_snow_ratios = {key: product_snow_ratios[key] for key in products if key in product_snow_ratios}
+
+    hours = sorted({hour for key in products for hour in product_hours.get(key, [])})
+    if not hours:
+        continue
+
+    snow_ratios = sorted({ratio for key in products for ratio in product_snow_ratios.get(key, [])})
+    if not snow_ratios and any(is_snow_product(key) for key in products):
+        snow_ratios = [10]
+    merged[rid] = {
+        'id': rid,
+        'label': str(entry.get('label') or rid),
+        'run_date': str(entry.get('run_date') or rid),
+        'init_utc': iso_utc(init_dt),
+        'source': str(entry.get('source') or ASSET),
+        'source_label': str(entry.get('source_label') or 'WeatherNext 2 (Earth Engine)'),
+        'ensemble_mode': str(entry.get('ensemble_mode') or 'first'),
+        'ensemble_member': entry.get('ensemble_member'),
+        'z500_style': str(entry.get('z500_style') or 'default'),
+        'hours': hours,
+        'products': products,
+        'snow_ratios': snow_ratios,
+        'product_hours': product_hours,
+        'product_snow_ratios': product_snow_ratios,
+        'enabled_products': [str(p) for p in entry.get('enabled_products', []) if isinstance(p, str)],
+        'missing_products': [str(p) for p in entry.get('missing_products', []) if isinstance(p, str)],
+        'failed_products': [str(p) for p in entry.get('failed_products', []) if isinstance(p, str)],
+        'failure_messages': {
+            str(raw_key): str(raw_msg)
+            for raw_key, raw_msg in (entry.get('failure_messages', {}) or {}).items()
+            if isinstance(raw_key, str)
+        },
+        'successful_exports': int(_parse_int(entry.get('successful_exports')) or 0),
+        'failed_exports': int(_parse_int(entry.get('failed_exports')) or 0),
+        'updated_utc': str(entry.get('updated_utc') or iso_utc(now_utc)),
+    }
+
+manifest_runs = sorted(
+    merged.values(),
+    key=lambda item: parse_iso_utc(item.get('init_utc')) or datetime.min.replace(tzinfo=timezone.utc),
+    reverse=True,
+)
+preferred_default_run_id = choose_default_run_id(manifest_runs, RUN_ID)
+valid_run_ids = {item['id'] for item in manifest_runs}
+if RUNS_ROOT_DIR.exists():
+    for child in RUNS_ROOT_DIR.iterdir():
+        if child.is_dir() and child.name not in valid_run_ids:
+            shutil.rmtree(child, ignore_errors=True)
+
+manifest_payload = {
+    'generated_utc': iso_utc(now_utc),
+    'history_hours': RUN_HISTORY_HOURS,
+    'default_run_id': preferred_default_run_id,
+    'snow_products': sorted(SNOW_PRODUCT_KEYS),
+    'product_labels': {key: label for key, label, _, _ in PRODUCT_OPTIONS},
+    'runs': manifest_runs,
+}
+with manifest_path.open('w', encoding='utf-8') as f:
+    json.dump(manifest_payload, f, indent=2)
+
+manifest_json = json.dumps(manifest_payload, separators=(',', ':'))
+html_template = """
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WeatherNext2 viewer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        :root {
+            --controls-h: 188px;
+        }
+        body {
+            background:#1f1f1f;
+            color:#efefef;
+            font-family:system-ui, sans-serif;
+            text-align:center;
+            margin:0;
+            padding-bottom:0;
+        }
+        .wrap {
+            max-width:1240px;
+            margin:0 auto;
+            padding:14px 10px calc(var(--controls-h) + 14px);
+        }
+        .map-wrap {
+            background:#111;
+            border:1px solid #4f4f4f;
+            height:60vh;
+            max-height:calc(100vh - var(--controls-h) - 30px);
+            min-height:220px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            overflow:hidden;
+        }
+        img {
+            width:auto;
+            height:auto;
+            max-width:100%;
+            max-height:100%;
+            object-fit:contain;
+            display:block;
+            background:#111;
+        }
+        #title {
+            margin:6px 0 10px;
+            font-size:24px;
+            font-weight:700;
+            letter-spacing:0.01em;
+        }
+        button {
+            padding:10px 16px;
+            font-size:16px;
+            cursor:pointer;
+            border:1px solid #666;
+            background:#2d2d2d;
+            color:#f1f1f1;
+            border-radius:8px;
+        }
+        select {
+            padding:8px 10px;
+            font-size:15px;
+            border-radius:8px;
+            border:1px solid #666;
+            background:#2a2a2a;
+            color:#f1f1f1;
+            min-width:120px;
+        }
+        #label {
+            display:inline-block;
+            min-width:120px;
+            font-weight:700;
+            letter-spacing:0.03em;
+        }
+        .bottom-controls {
+            position:fixed;
+            left:0;
+            right:0;
+            bottom:0;
+            background:#141414;
+            border-top:1px solid #3c3c3c;
+            padding:10px 10px calc(12px + env(safe-area-inset-bottom));
+            box-shadow:0 -6px 16px rgba(0, 0, 0, 0.35);
+        }
+        .row {
+            max-width:1240px;
+            margin:0 auto;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            flex-wrap:wrap;
+            gap:10px;
+        }
+        #hourSlider {
+            width:min(960px, 94vw);
+            height:34px;
+            touch-action:pan-x;
+        }
+        @media (max-width: 760px) {
+            #title { font-size:20px; margin:8px 0 10px; }
+            button { font-size:14px; padding:8px 12px; }
+            select { font-size:14px; min-width:96px; }
+            #label { min-width:86px; }
+            .bottom-controls { padding:10px 8px calc(14px + env(safe-area-inset-bottom)); }
+            .row { gap:8px; }
+            #hourSlider { width:min(960px, 96vw); }
+            .map-wrap {
+                height:52vh;
+                min-height:160px;
+                max-height:calc(100vh - var(--controls-h) - 18px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="wrap">
+        <h2 id="title">WeatherNext2 viewer</h2>
+        <div class="map-wrap">
+            <img id="map" src="" alt="WN2 map">
+        </div>
+    </div>
+
+    <div class="bottom-controls">
+        <div class="row">
+            <label for="run">Run:</label>
+            <select id="run"></select>
+            <label for="product">Map:</label>
+            <select id="product"></select>
+            <label for="snowRatio">Snow Ratio:</label>
+            <select id="snowRatio"></select>
+        </div>
+        <div class="row" style="margin-top:8px;">
+            <button id="prevBtn">Prev</button>
+            <span id="label">Hour ---</span>
+            <button id="nextBtn">Next</button>
+        </div>
+        <div class="row" style="margin-top:6px;">
+            <input type="range" id="hourSlider" min="0" max="0" step="1" value="0">
+        </div>
+    </div>
+
+    <script>
+        const manifest = __MANIFEST_JSON__;
+        const runs = Array.isArray(manifest.runs) ? manifest.runs : [];
+        const snowProducts = new Set(Array.isArray(manifest.snow_products) ? manifest.snow_products : []);
+        const productLabels = (manifest.product_labels && typeof manifest.product_labels === 'object') ? manifest.product_labels : {};
+        let activeHours = [];
+        let idx = 0;
+
+        const mapEl = document.getElementById('map');
+        const titleEl = document.getElementById('title');
+        const mapWrapEl = document.querySelector('.map-wrap');
+        const controlsEl = document.querySelector('.bottom-controls');
+        const rootEl = document.documentElement;
+        const labelEl = document.getElementById('label');
+        const runEl = document.getElementById('run');
+        const productEl = document.getElementById('product');
+        const ratioEl = document.getElementById('snowRatio');
+        const sliderEl = document.getElementById('hourSlider');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+
+        function normalizeIntList(values, minValue, maxValue) {
+            if (!Array.isArray(values)) return [];
+            const out = [];
+            for (const raw of values) {
+                const n = Number(raw);
+                if (!Number.isInteger(n)) continue;
+                if (minValue !== null && n < minValue) continue;
+                if (maxValue !== null && n > maxValue) continue;
+                out.push(n);
+            }
+            return Array.from(new Set(out)).sort((a, b) => a - b);
+        }
+
+        function getCurrentRun() {
+            const selected = runEl.value;
+            for (const run of runs) {
+                if (String(run.id) === selected) return run;
+            }
+            return runs.length ? runs[0] : null;
+        }
+
+        function setSelectOptions(selectEl, values, labelFn) {
+            const prev = selectEl.value;
+            selectEl.innerHTML = '';
+            for (const value of values) {
+                const option = document.createElement('option');
+                option.value = String(value);
+                option.textContent = labelFn(value);
+                selectEl.appendChild(option);
+            }
+            for (const value of values) {
+                if (String(value) === prev) {
+                    selectEl.value = prev;
+                    return;
+                }
+            }
+            if (values.length) {
+                selectEl.value = String(values[0]);
+            }
+        }
+
+        function buildFrameName(product, hour, ratio) {
+            const hourStr = String(hour).padStart(3, '0');
+            if (snowProducts.has(product)) {
+                const ratioStr = String(ratio).padStart(2, '0');
+                return product + '_r' + ratioStr + '_' + hourStr + '.jpg';
+            }
+            return product + '_' + hourStr + '.jpg';
+        }
+
+        function getProductHours(run, product) {
+            if (!run || !product) return [];
+            const scoped = (run.product_hours && typeof run.product_hours === 'object')
+                ? run.product_hours[product]
+                : null;
+            const scopedHours = normalizeIntList(scoped, 0, null);
+            if (scopedHours.length) return scopedHours;
+            return normalizeIntList(run.hours, 0, null);
+        }
+
+        function getProductRatios(run, product) {
+            if (!run || !product) return [];
+            const scoped = (run.product_snow_ratios && typeof run.product_snow_ratios === 'object')
+                ? run.product_snow_ratios[product]
+                : null;
+            const scopedRatios = normalizeIntList(scoped, 10, 20);
+            if (scopedRatios.length) return scopedRatios;
+            return normalizeIntList(run.snow_ratios, 10, 20);
+        }
+
+        function syncProductScopedControls() {
+            const run = getCurrentRun();
+            if (!run) {
+                activeHours = [];
+                sliderEl.max = '0';
+                sliderEl.value = '0';
+                idx = 0;
+                return;
+            }
+            const product = productEl.value;
+            const isSnow = snowProducts.has(product);
+            const ratios = isSnow ? getProductRatios(run, product) : [];
+            setSelectOptions(ratioEl, ratios.length ? ratios : [10], (ratio) => ratio + ':1');
+            const previousHour = activeHours[idx];
+            activeHours = getProductHours(run, product);
+            if (activeHours.length === 0) {
+                idx = 0;
+            } else {
+                const found = activeHours.indexOf(previousHour);
+                idx = found >= 0 ? found : 0;
+            }
+            sliderEl.max = String(Math.max(0, activeHours.length - 1));
+            sliderEl.value = String(idx);
+        }
+
+        function syncRunScopedControls() {
+            const run = getCurrentRun();
+            if (!run) {
+                activeHours = [];
+                productEl.innerHTML = '';
+                ratioEl.innerHTML = '';
+                sliderEl.max = '0';
+                sliderEl.value = '0';
+                idx = 0;
+                return;
+            }
+            const products = Array.isArray(run.products) ? run.products : [];
+            setSelectOptions(productEl, products, (key) => productLabels[key] || key);
+            syncProductScopedControls();
+        }
+
+        function viewportHeight() {
+            if (window.visualViewport && Number.isFinite(window.visualViewport.height)) {
+                return Math.floor(window.visualViewport.height);
+            }
+            return Math.floor(window.innerHeight || document.documentElement.clientHeight || 800);
+        }
+
+        function syncBottomInset() {
+            const h = controlsEl ? Math.ceil(controlsEl.getBoundingClientRect().height) : 0;
+            rootEl.style.setProperty('--controls-h', String(Math.max(110, h)) + 'px');
+            document.body.style.paddingBottom = String(h + 14) + 'px';
+            if (mapWrapEl) {
+                const isMobile = window.matchMedia('(max-width: 760px)').matches;
+                const mapTop = Math.max(0, Math.ceil(mapWrapEl.getBoundingClientRect().top));
+                const vh = Math.max(320, viewportHeight());
+                const edgeGap = isMobile ? 14 : 12;
+                const minMapHeight = isMobile ? 160 : 220;
+                const targetHeight = Math.max(minMapHeight, vh - h - mapTop - edgeGap);
+                mapWrapEl.style.height = String(targetHeight) + 'px';
+            }
+        }
+
+        function render() {
+            const run = getCurrentRun();
+            if (!run || !activeHours.length || !productEl.value) {
+                mapEl.src = '';
+                labelEl.innerText = 'No hours';
+                titleEl.innerText = 'WeatherNext2 viewer';
+                syncBottomInset();
+                return;
+            }
+
+            const product = productEl.value;
+            const isSnow = snowProducts.has(product);
+            ratioEl.disabled = !isSnow;
+            if (!isSnow) {
+                ratioEl.title = 'Snow ratio applies to snowfall accumulation maps only.';
+            } else {
+                ratioEl.title = '';
+                const ratioOptions = getProductRatios(run, product);
+                if (ratioOptions.length && !ratioOptions.includes(Number(ratioEl.value))) {
+                    ratioEl.value = String(ratioOptions[0]);
+                }
+            }
+
+            const hour = activeHours[idx];
+            const ratio = Number(ratioEl.value || 10);
+            const frameName = buildFrameName(product, hour, ratio);
+            const runId = String(run.id);
+            const hourStr = String(hour).padStart(3, '0');
+
+            mapEl.src = 'runs/' + runId + '/' + frameName;
+            mapEl.alt = runId + ' ' + product + ' hour ' + hourStr;
+            labelEl.innerText = 'Hour ' + hourStr;
+            titleEl.innerText = 'WeatherNext2 viewer';
+            syncBottomInset();
+        }
+
+        function change(dir) {
+            if (!activeHours.length) return;
+            idx = (idx + dir + activeHours.length) % activeHours.length;
+            sliderEl.value = String(idx);
+            render();
+        }
+
+        runEl.addEventListener('change', () => {
+            syncRunScopedControls();
+            render();
+        });
+        productEl.addEventListener('change', () => {
+            syncProductScopedControls();
+            render();
+        });
+        ratioEl.addEventListener('change', () => {
+            syncProductScopedControls();
+            render();
+        });
+        sliderEl.addEventListener('input', () => {
+            idx = Number(sliderEl.value);
+            render();
+        });
+        prevBtn.addEventListener('click', () => change(-1));
+        nextBtn.addEventListener('click', () => change(1));
+        mapEl.addEventListener('load', syncBottomInset);
+
+        setSelectOptions(runEl, runs.map((run) => run.id), (id) => {
+            const run = runs.find((item) => String(item.id) === String(id));
+            return run ? (run.label || String(id)) : String(id);
+        });
+        if (runs.length) {
+            const defaultId = runs.some((run) => String(run.id) === String(manifest.default_run_id))
+                ? String(manifest.default_run_id)
+                : String(runs[0].id);
+            runEl.value = defaultId;
+        }
+        window.addEventListener('resize', syncBottomInset);
+        window.addEventListener('orientationchange', syncBottomInset);
+        if (window.visualViewport) {
+            window.visualViewport.addEventListener('resize', syncBottomInset);
+        }
+        syncRunScopedControls();
+        syncBottomInset();
+        render();
+    </script>
+</body>
+</html>
+"""
+html = html_template.replace('__MANIFEST_JSON__', manifest_json)
+
+with open(f'{OUTPUT}/index.html', 'w', encoding='utf-8') as f:
+    f.write(html)
+
