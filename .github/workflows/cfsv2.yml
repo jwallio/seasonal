@@ -1,0 +1,111 @@
+name: CFSv2 Rolling Seasonal Graphics
+
+on:
+  schedule:
+    # Run after the 18Z CFS cycle has had time to publish monthly means.
+    - cron: "35 22 * * *"
+  workflow_dispatch:
+    inputs:
+      lead_months:
+        description: "Target leads, comma-separated"
+        required: false
+        default: "1,2,3"
+        type: string
+      seasonal_window:
+        description: "Optional consecutive leads for a seasonal mean"
+        required: false
+        default: "1,2,3"
+        type: string
+      rolling_days:
+        description: "Lagged initial-condition window; 10 means 40 cycles"
+        required: false
+        default: "10"
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    env:
+      LEAD_MONTHS: ${{ inputs.lead_months || '1,2,3' }}
+      SEASONAL_WINDOW: ${{ inputs.seasonal_window || '1,2,3' }}
+      ROLLING_DAYS: ${{ inputs.rolling_days || '10' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Install CFSv2 rendering dependencies
+        run: python -m pip install --upgrade requests numpy matplotlib Pillow
+
+      - name: Restore rolling state
+        uses: actions/cache@v4
+        with:
+          path: .cache/cfsv2
+          key: cfsv2-rolling-${{ github.run_id }}
+          restore-keys: |
+            cfsv2-rolling-
+
+      - name: Build wgrib2
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y build-essential gfortran libopenjp2-7-dev libpng-dev zlib1g-dev
+          source_dir="$RUNNER_TEMP/wgrib2-src"
+          mkdir -p "$source_dir"
+          curl -fsSL "https://ftp.cpc.ncep.noaa.gov/wd51we/wgrib2/wgrib2.tgz" -o "$RUNNER_TEMP/wgrib2.tgz"
+          tar -xzf "$RUNNER_TEMP/wgrib2.tgz" -C "$source_dir"
+          makefile_dir="$(find "$source_dir" -type f -iname 'makefile' -printf '%h\n' | head -n 1)"
+          test -n "$makefile_dir"
+          export CC=gcc
+          export FC=gfortran
+          make -C "$makefile_dir" -j2
+          wgrib2_bin="$(find "$makefile_dir" -type f -name wgrib2 -perm -111 | head -n 1)"
+          test -n "$wgrib2_bin"
+          echo "CFSV2_WGRIB2=$wgrib2_bin" >> "$GITHUB_ENV"
+
+      - name: Render rolling CFSv2 products
+        run: |
+          python scripts/cfsv2_seasonal.py \
+            --init latest \
+            --lead-months "$LEAD_MONTHS" \
+            --seasonal-window "$SEASONAL_WINDOW" \
+            --members 1 \
+            --rolling-days "$ROLLING_DAYS" \
+            --rolling-member 1 \
+            --rolling-state-dir .cache/cfsv2/rolling \
+            --allow-partial-rolling \
+            --ncei-calibration \
+            --cache-dir .cache/cfsv2 \
+            --output-dir public/seasonal/cfsv2 \
+            --manifest public/seasonal/cfsv2_manifest.json \
+            --request-delay 2
+
+      - name: Upload CFSv2 artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cfsv2-seasonal-${{ github.run_id }}
+          path: |
+            public/seasonal/cfsv2/**
+            public/seasonal/cfsv2_manifest.json
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Publish CFSv2 assets to GitHub Pages
+        if: success()
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
+          keep_files: true

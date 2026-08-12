@@ -14,6 +14,7 @@ on:
           - conus_core
           - regional_zoom
           - z500_anomalies
+          - weather_parameters
           - temperature
           - snowfall
           - all
@@ -24,6 +25,11 @@ on:
           - conus_vort500
           - conus_t2m
           - conus_t2m_anom
+          - conus_wind10
+          - conus_t850
+          - conus_t500
+          - conus_omega500
+          - conus_sst
           - conus_snow_accum
           - ne_snow_accum
           - ne_zoom_snow_accum
@@ -43,6 +49,29 @@ on:
         options:
           - rework
           - legacy
+      z500_style:
+        description: "[Graphics] 500-mb anomaly style"
+        required: false
+        default: "default"
+        type: choice
+        options:
+          - default
+          - classic
+      ensemble_mode:
+        description: "[Model] WeatherNext ensemble selection"
+        required: false
+        default: "first"
+        type: choice
+        options:
+          - first
+          - mean
+          - median
+          - member
+      ensemble_member:
+        description: "[Model] Ensemble member when mode=member"
+        required: false
+        default: ""
+        type: string
       preview_one_frame:
         description: "[Time Range] Generate only one frame per selected product"
         required: false
@@ -144,6 +173,18 @@ on:
         required: false
         default: "rework"
         type: string
+      z500_style:
+        required: false
+        default: "default"
+        type: string
+      ensemble_mode:
+        required: false
+        default: "first"
+        type: string
+      ensemble_member:
+        required: false
+        default: ""
+        type: string
       preview_one_frame:
         required: false
         default: false
@@ -233,6 +274,11 @@ jobs:
               "conus_vort500",
               "conus_t2m",
               "conus_t2m_anom",
+              "conus_wind10",
+              "conus_t850",
+              "conus_t500",
+              "conus_omega500",
+              "conus_sst",
               "conus_snow_accum",
               "ne_snow_accum",
               "ne_zoom_snow_accum",
@@ -246,6 +292,7 @@ jobs:
               "conus_core": ["conus_mslp_ptype", "conus_vort500", "conus_t2m", "conus_t2m_anom", "conus_snow_accum"],
               "regional_zoom": ["na_z500a", "ne_mslp_ptype", "ne_zoom_snow_accum", "mi_wi_snow_accum", "carolinas_snow_accum"],
               "z500_anomalies": ["nh_z500a", "na_z500a"],
+              "weather_parameters": ["conus_wind10", "conus_t850", "conus_t500", "conus_omega500", "conus_sst"],
               "temperature": ["conus_t2m", "conus_t2m_anom"],
               "snowfall": ["conus_snow_accum", "ne_snow_accum", "ne_zoom_snow_accum", "mi_wi_snow_accum", "carolinas_snow_accum"],
           }
@@ -321,6 +368,8 @@ jobs:
     needs: plan-run
     runs-on: ubuntu-latest
     timeout-minutes: 210
+    env:
+      ENABLE_FORGEJO_ARTIFACT_UPLOAD: ${{ github.server_url == 'https://github.com' && '1' || vars.ENABLE_FORGEJO_ARTIFACT_UPLOAD || '0' }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.plan-run.outputs.matrix) }}
@@ -355,6 +404,9 @@ jobs:
           WN2_CLIMO_START_YEAR: ${{ inputs.climo_start_year || '' }}
           WN2_CLIMO_END_YEAR: ${{ inputs.climo_end_year || '' }}
           WN2_CLIMO_SOURCE: ${{ inputs.climo_source || 'era5' }}
+          WN2_Z500_STYLE: ${{ inputs.z500_style || 'default' }}
+          WN2_ENSEMBLE_MODE: ${{ inputs.ensemble_mode || 'first' }}
+          WN2_ENSEMBLE_MEMBER: ${{ inputs.ensemble_member || '' }}
           WN2_PRODUCT_MODE: ${{ needs.plan-run.outputs.product_mode }}
           WN2_SELECTED_PRODUCTS: ${{ needs.plan-run.outputs.selected_products }}
           SNOW_RATIO_CSV: ${{ needs.plan-run.outputs.snow_ratio_csv }}
@@ -372,6 +424,11 @@ jobs:
           WN2_RUN_CONUS_VORT500: ${{ matrix.phase == 'core' && '1' || '' }}
           WN2_RUN_CONUS_T2M: ${{ matrix.phase == 'core' && '1' || '' }}
           WN2_RUN_CONUS_T2M_ANOM: ${{ matrix.phase == 'core' && '1' || '' }}
+          WN2_RUN_CONUS_WIND10: ${{ matrix.phase == 'core' && '1' || '' }}
+          WN2_RUN_CONUS_T850: ${{ matrix.phase == 'core' && '1' || '' }}
+          WN2_RUN_CONUS_T500: ${{ matrix.phase == 'core' && '1' || '' }}
+          WN2_RUN_CONUS_OMEGA500: ${{ matrix.phase == 'core' && '1' || '' }}
+          WN2_RUN_CONUS_SST: ${{ matrix.phase == 'core' && '1' || '' }}
           WN2_RUN_CONUS_SNOW_ACCUM: ${{ matrix.phase == 'core' && '1' || '' }}
           WN2_RUN_NE_SNOW_ACCUM: ${{ matrix.phase == 'core' && '1' || '' }}
           WN2_RUN_NE_ZOOM_SNOW_ACCUM: ${{ matrix.phase == 'core' && '1' || '' }}
@@ -391,14 +448,20 @@ jobs:
           echo "Shard generation failed; artifact upload will continue with partial outputs."
 
       - name: Upload Shard Artifacts
-        if: ${{ always() }}
-        uses: actions/upload-artifact@v4
+        if: ${{ always() && env.ENABLE_FORGEJO_ARTIFACT_UPLOAD == '1' }}
+        uses: actions/upload-artifact@v3-node20
         with:
           name: shard-${{ matrix.phase }}-${{ matrix.shard_index }}
           path: |
             public/runs/**
           if-no-files-found: warn
           retention-days: 2
+
+      - name: List shard outputs when artifact upload is disabled
+        if: ${{ always() && env.ENABLE_FORGEJO_ARTIFACT_UPLOAD != '1' }}
+        run: |
+          echo "Artifact upload disabled; listing generated shard files instead."
+          find public -maxdepth 3 -type f | sort | sed -n '1,300p'
 
   merge-and-deploy:
     needs:
@@ -407,6 +470,9 @@ jobs:
     if: ${{ always() && needs.plan-run.result == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 210
+    env:
+      ENABLE_FORGEJO_ARTIFACT_UPLOAD: ${{ github.server_url == 'https://github.com' && '1' || vars.ENABLE_FORGEJO_ARTIFACT_UPLOAD || '0' }}
+      LOCAL_WN2_PUBLISH_DIR: ${{ github.server_url != 'https://github.com' && (vars.LOCAL_WN2_PUBLISH_DIR || '') || '' }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -423,7 +489,8 @@ jobs:
           pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Restore Recent Runs From gh-pages
+      - name: Restore Recent Runs From GitHub Pages
+        if: ${{ github.server_url == 'https://github.com' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -442,32 +509,64 @@ jobs:
             echo "No gh-pages branch yet; starting with a fresh public/ directory."
           fi
 
+      # On Forgejo, restore/publish directly from the localhost Caddy bind mount.
+      - name: Restore Recent Runs From Local Publish Dir
+        if: ${{ github.server_url != 'https://github.com' }}
+        run: |
+          mkdir -p public
+          if [ -n "${LOCAL_WN2_PUBLISH_DIR}" ] && [ -d "${LOCAL_WN2_PUBLISH_DIR}" ]; then
+            python - <<'PY'
+            from pathlib import Path
+            import os
+            import shutil
+
+            src = Path(os.environ["LOCAL_WN2_PUBLISH_DIR"])
+            dst = Path("public")
+            manifest = src / "runs_manifest.json"
+            runs_dir = src / "runs"
+
+            if manifest.exists():
+                shutil.copy2(manifest, dst / "runs_manifest.json")
+            if runs_dir.exists():
+                target = dst / "runs"
+                target.mkdir(parents=True, exist_ok=True)
+                for child in runs_dir.iterdir():
+                    out = target / child.name
+                    if child.is_dir():
+                        shutil.copytree(child, out, dirs_exist_ok=True)
+                    else:
+                        shutil.copy2(child, out)
+            print(f"Seeded public/ from {src}")
+            PY
+          else
+            echo "No mounted LOCAL_WN2_PUBLISH_DIR available; starting from a fresh public/ directory."
+            echo "To enable local publish, mount D:/weather-projects/wn2/public into the Forgejo runner container."
+          fi
+
       - name: Download Shard Artifacts
-        uses: actions/download-artifact@v4
+        if: ${{ env.ENABLE_FORGEJO_ARTIFACT_UPLOAD == '1' }}
+        uses: actions/download-artifact@v3-node20
         with:
-          pattern: shard-*
           path: .shards
-          merge-multiple: true
 
       - name: Merge Shard Frames
         run: |
           mkdir -p public/runs
           merged=0
-          if [ -d .shards/public/runs ]; then
-            cp -R .shards/public/runs/. public/runs/
-            merged=1
-          fi
-          if [ -d .shards/runs ]; then
-            cp -R .shards/runs/. public/runs/
-            merged=1
-          fi
-          shopt -s nullglob
-          for run_dir in .shards/[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]; do
-            if [ -d "$run_dir" ]; then
+          if [ -d .shards ]; then
+            while IFS= read -r -d '' run_dir; do
+              cp -R "${run_dir}/." public/runs/
+              merged=1
+            done < <(find .shards -type d -path '*/public/runs' -print0)
+            while IFS= read -r -d '' run_dir; do
+              cp -R "${run_dir}/." public/runs/
+              merged=1
+            done < <(find .shards -type d -path '*/runs' -print0)
+            while IFS= read -r -d '' run_dir; do
               cp -R "$run_dir" public/runs/
               merged=1
-            fi
-          done
+            done < <(find .shards -type d -regex '.*/[0-9]{10}$' -print0)
+          fi
           if [ "$merged" -eq 0 ]; then
             echo "No shard run directories found after artifact download."
           fi
@@ -487,6 +586,9 @@ jobs:
           WN2_CLIMO_START_YEAR: ${{ inputs.climo_start_year || '' }}
           WN2_CLIMO_END_YEAR: ${{ inputs.climo_end_year || '' }}
           WN2_CLIMO_SOURCE: ${{ inputs.climo_source || 'era5' }}
+          WN2_Z500_STYLE: ${{ inputs.z500_style || 'default' }}
+          WN2_ENSEMBLE_MODE: ${{ inputs.ensemble_mode || 'first' }}
+          WN2_ENSEMBLE_MEMBER: ${{ inputs.ensemble_member || '' }}
           WN2_PRODUCT_MODE: ${{ needs.plan-run.outputs.product_mode }}
           WN2_SELECTED_PRODUCTS: ${{ needs.plan-run.outputs.selected_products }}
           SNOW_RATIO_CSV: ${{ needs.plan-run.outputs.snow_ratio_csv }}
@@ -502,6 +604,11 @@ jobs:
           WN2_RUN_CONUS_VORT500: "1"
           WN2_RUN_CONUS_T2M: "1"
           WN2_RUN_CONUS_T2M_ANOM: "1"
+          WN2_RUN_CONUS_WIND10: "1"
+          WN2_RUN_CONUS_T850: "1"
+          WN2_RUN_CONUS_T500: "1"
+          WN2_RUN_CONUS_OMEGA500: "1"
+          WN2_RUN_CONUS_SST: "1"
           WN2_RUN_CONUS_SNOW_ACCUM: "1"
           WN2_RUN_NE_SNOW_ACCUM: "1"
           WN2_RUN_NE_ZOOM_SNOW_ACCUM: "1"
@@ -520,8 +627,8 @@ jobs:
           echo "Reconcile run failed; deploying retained/partial outputs from public/."
 
       - name: Upload Final Public Artifacts
-        if: ${{ always() }}
-        uses: actions/upload-artifact@v4
+        if: ${{ always() && env.ENABLE_FORGEJO_ARTIFACT_UPLOAD == '1' }}
+        uses: actions/upload-artifact@v3-node20
         with:
           name: public-final
           path: |
@@ -531,9 +638,54 @@ jobs:
           if-no-files-found: warn
           retention-days: 5
 
+      - name: List final public outputs when artifact upload is disabled
+        if: ${{ always() && env.ENABLE_FORGEJO_ARTIFACT_UPLOAD != '1' }}
+        run: |
+          echo "Artifact upload disabled; listing final public files instead."
+          find public -maxdepth 3 -type f | sort | sed -n '1,300p'
+
       - name: Deploy to GitHub Pages
-        if: ${{ success() }}
+        if: ${{ success() && github.server_url == 'https://github.com' }}
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./public
+
+      - name: Publish to local Caddy root
+        if: ${{ success() && github.server_url != 'https://github.com' && env.LOCAL_WN2_PUBLISH_DIR != '' }}
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import os
+          import shutil
+
+          src = Path("public")
+          dst = Path(os.environ["LOCAL_WN2_PUBLISH_DIR"])
+          if not dst.exists():
+              raise SystemExit(
+                  "Configured LOCAL_WN2_PUBLISH_DIR does not exist inside the runner: "
+                  f"{dst}\n"
+                  "Bind-mount D:/weather-projects/wn2/public into the Forgejo runner and "
+                  "set LOCAL_WN2_PUBLISH_DIR to that mount path."
+              )
+
+          for child in dst.iterdir():
+              if child.is_dir():
+                  shutil.rmtree(child)
+              else:
+                  child.unlink()
+          for child in src.iterdir():
+              target = dst / child.name
+              if child.is_dir():
+                  shutil.copytree(child, target, dirs_exist_ok=True)
+              else:
+                  shutil.copy2(child, target)
+          print(f"Published {src} to {dst}")
+          PY
+
+      - name: Explain skipped local publish
+        if: ${{ success() && github.server_url != 'https://github.com' && env.LOCAL_WN2_PUBLISH_DIR == '' }}
+        run: |
+          echo "Local publish skipped."
+          echo "This Forgejo runner container cannot currently write to D:/weather-projects/wn2/public."
+          echo "Mount that host path into the runner and set LOCAL_WN2_PUBLISH_DIR to enable direct localhost publishing."

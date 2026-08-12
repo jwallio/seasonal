@@ -19,6 +19,7 @@ on:
           - regional_zoom
           - conus_core
           - z500_anomalies
+          - weather_parameters
           - temperature
           - ne_zoom_snow_accum
           - mi_wi_snow_accum
@@ -30,6 +31,11 @@ on:
           - conus_vort500
           - conus_t2m
           - conus_t2m_anom
+          - conus_wind10
+          - conus_t850
+          - conus_t500
+          - conus_omega500
+          - conus_sst
           - nh_z500a
           - na_z500a
       run_length:
@@ -52,6 +58,29 @@ on:
         options:
           - rework
           - legacy
+      z500_style:
+        description: "[Graphics] 500-mb anomaly style"
+        required: false
+        default: "default"
+        type: choice
+        options:
+          - default
+          - classic
+      ensemble_mode:
+        description: "[Model] WeatherNext ensemble selection"
+        required: false
+        default: "first"
+        type: choice
+        options:
+          - first
+          - mean
+          - median
+          - member
+      ensemble_member:
+        description: "[Model] Ensemble member when mode=member"
+        required: false
+        default: ""
+        type: string
 
 permissions:
   contents: write
@@ -63,6 +92,9 @@ jobs:
       run_target: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.run_target || 'flagship' }}
       custom_products_csv: ""
       graphics_profile: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.graphics_profile || 'rework' }}
+      z500_style: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.z500_style || 'default' }}
+      ensemble_mode: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.ensemble_mode || 'first' }}
+      ensemble_member: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.ensemble_member || '' }}
       preview_one_frame: ${{ github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.run_length == 'latest_frame') }}
       hour_range_preset: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.run_length != 'latest_frame' && github.event.inputs.run_length || 'full' }}
       hours_csv: ""
