@@ -65,13 +65,13 @@ jobs:
           mkdir -p "$source_dir"
           curl -fsSL "https://ftp.cpc.ncep.noaa.gov/wd51we/wgrib2/wgrib2.tgz" -o "$RUNNER_TEMP/wgrib2.tgz"
           tar -xzf "$RUNNER_TEMP/wgrib2.tgz" -C "$source_dir"
-          makefile_dir="$(find "$source_dir" -type f -iname 'makefile' -printf '%h\n' | head -n 1)"
-          test -n "$makefile_dir"
+          makefile_dir="$source_dir/grib2"
+          test -f "$makefile_dir/makefile"
           export CC=gcc
           export FC=gfortran
           make -C "$makefile_dir" -j2
-          wgrib2_bin="$(find "$makefile_dir" -type f -name wgrib2 -perm -111 | head -n 1)"
-          test -n "$wgrib2_bin"
+          wgrib2_bin="$makefile_dir/wgrib2/wgrib2"
+          test -x "$wgrib2_bin"
           echo "CFSV2_WGRIB2=$wgrib2_bin" >> "$GITHUB_ENV"
 
       - name: Render rolling CFSv2 products
