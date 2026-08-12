@@ -82,6 +82,12 @@ The repository requirements already include `requests`, `numpy`, `matplotlib`,
 and `Pillow`; `wgrib2` must be installed separately. The adapter honors
 `CFSV2_WGRIB2` and auto-detects `C:\wgrib2\wgrib2.exe` on Windows.
 
+The GitHub Actions workflow includes a **CFSv2 product** dropdown. The current
+adapter supports `500mb_height_anomaly` (the production output, selected by
+default) and `500mb_height_absolute` (a clearly labelled decoder/source smoke
+output). CFSv2 parameter choices such as 850-mb temperature or precipitation
+are not shown until their data decoding and baseline logic are implemented.
+
 Decode one target without requiring a baseline or rendering dependencies:
 
 ```powershell

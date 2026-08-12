@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       run_target:
-        description: "[Run] Product bundle or single product"
+        description: "[Run] Product or parameter preset"
         required: false
         default: "flagship"
         type: choice
@@ -20,6 +20,9 @@ on:
           - conus_core
           - z500_anomalies
           - weather_parameters
+          - surface_parameters
+          - upper_air_parameters
+          - temperature_parameters
           - temperature
           - ne_zoom_snow_accum
           - mi_wi_snow_accum

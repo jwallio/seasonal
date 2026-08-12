@@ -65,6 +65,8 @@ def main() -> int:
     check("colorbar.set_label" not in adapter, "footer colorbar description should be absent")
     check("0.045" not in adapter, "footer text position should be absent")
     workflow = WORKFLOW.read_text(encoding="utf-8")
+    for term in ("product:", "500mb_height_anomaly", "500mb_height_absolute", "CFSV2_PRODUCT"):
+        check(term in workflow, f"workflow missing product selector term: {term}")
     for term in ("baseline", "reforecast", "monthly_grib_01", "lead_month", "GRIB2", "rolling", "NOMADS"):
         check(term in documentation, f"documentation missing contract term: {term}")
     for term in ("rolling-days", "rolling-state-dir", "actions/cache", "--ncei-calibration"):

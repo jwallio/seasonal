@@ -6,6 +6,14 @@ on:
     - cron: "35 22 * * *"
   workflow_dispatch:
     inputs:
+      product:
+        description: "CFSv2 product to generate"
+        required: false
+        default: "500mb_height_anomaly"
+        type: choice
+        options:
+          - 500mb_height_anomaly
+          - 500mb_height_absolute
       lead_months:
         description: "Target leads, comma-separated"
         required: false
@@ -30,6 +38,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 240
     env:
+      CFSV2_PRODUCT: ${{ inputs.product || '500mb_height_anomaly' }}
       LEAD_MONTHS: ${{ inputs.lead_months || '1,2,3' }}
       SEASONAL_WINDOW: ${{ inputs.seasonal_window || '1,2,3' }}
       ROLLING_DAYS: ${{ inputs.rolling_days || '10' }}
@@ -76,20 +85,27 @@ jobs:
 
       - name: Render rolling CFSv2 products
         run: |
-          python scripts/cfsv2_seasonal.py \
-            --init latest \
-            --lead-months "$LEAD_MONTHS" \
-            --seasonal-window "$SEASONAL_WINDOW" \
-            --members 1 \
-            --rolling-days "$ROLLING_DAYS" \
-            --rolling-member 1 \
-            --rolling-state-dir .cache/cfsv2/rolling \
-            --allow-partial-rolling \
-            --ncei-calibration \
-            --cache-dir .cache/cfsv2 \
-            --output-dir public/seasonal/cfsv2 \
-            --manifest public/seasonal/cfsv2_manifest.json \
+          args=(
+            scripts/cfsv2_seasonal.py
+            --init latest
+            --lead-months "$LEAD_MONTHS"
+            --seasonal-window "$SEASONAL_WINDOW"
+            --members 1
+            --rolling-days "$ROLLING_DAYS"
+            --rolling-member 1
+            --rolling-state-dir .cache/cfsv2/rolling
+            --allow-partial-rolling
+            --cache-dir .cache/cfsv2
+            --output-dir public/seasonal/cfsv2
+            --manifest public/seasonal/cfsv2_manifest.json
             --request-delay 2
+          )
+          if [[ "$CFSV2_PRODUCT" == "500mb_height_absolute" ]]; then
+            args+=(--absolute)
+          else
+            args+=(--ncei-calibration)
+          fi
+          python "${args[@]}"
 
       - name: Upload CFSv2 artifacts
         if: always()

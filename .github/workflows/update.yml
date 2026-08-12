@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       run_target:
-        description: "[Run] Product bundle or single product"
+        description: "[Run] Product or parameter preset"
         required: false
         default: "flagship"
         type: choice
@@ -15,6 +15,9 @@ on:
           - regional_zoom
           - z500_anomalies
           - weather_parameters
+          - surface_parameters
+          - upper_air_parameters
+          - temperature_parameters
           - temperature
           - snowfall
           - all
@@ -293,6 +296,9 @@ jobs:
               "regional_zoom": ["na_z500a", "ne_mslp_ptype", "ne_zoom_snow_accum", "mi_wi_snow_accum", "carolinas_snow_accum"],
               "z500_anomalies": ["nh_z500a", "na_z500a"],
               "weather_parameters": ["conus_wind10", "conus_t850", "conus_t500", "conus_omega500", "conus_sst"],
+              "surface_parameters": ["conus_wind10", "conus_sst"],
+              "upper_air_parameters": ["conus_t850", "conus_t500", "conus_omega500"],
+              "temperature_parameters": ["conus_t850", "conus_t500"],
               "temperature": ["conus_t2m", "conus_t2m_anom"],
               "snowfall": ["conus_snow_accum", "ne_snow_accum", "ne_zoom_snow_accum", "mi_wi_snow_accum", "carolinas_snow_accum"],
           }
