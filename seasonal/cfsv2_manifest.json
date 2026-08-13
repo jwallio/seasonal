@@ -1,0 +1,497 @@
+{
+  "schema_version": 1,
+  "kind": "cfsv2_seasonal_manifest",
+  "generated_utc": "2026-08-13T16:42:13Z",
+  "source": "NOAA CFSv2 NOMADS",
+  "source_url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/",
+  "runs": [
+    {
+      "id": "cfsv2-2026081312",
+      "source": "NOAA CFSv2 NOMADS",
+      "source_url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/",
+      "model": "CFSv2",
+      "init_utc": "2026-08-13T12:00:00Z",
+      "decoder": {
+        "tool": "wgrib2",
+        "executable": "/home/runner/work/_temp/wgrib2-src/grib2/wgrib2/wgrib2"
+      },
+      "statistic": "ensemble_mean",
+      "members": [
+        1
+      ],
+      "ensemble_members": 4,
+      "ensemble_scope": "rolling_initial_conditions",
+      "aggregation": "1-day rolling initial-condition mean; optional seasonal mean",
+      "field": "z500_anomaly",
+      "units": "m",
+      "border_sources": [
+        {
+          "name": "countries.geojson",
+          "url": "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_110m_admin_0_countries.geojson"
+        },
+        {
+          "name": "us-states.geojson",
+          "url": "https://raw.githubusercontent.com/PublicaMundi/MappingAPI/master/data/geojson/us-states.json"
+        }
+      ],
+      "baseline": {
+        "source": "NCEI CFS reforecast calibration climatology; 1982-2010",
+        "years": "1982-2010",
+        "url_root": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs_refor_calclim_mm_9m_pgbf/",
+        "required": true,
+        "rolling_policy": "anchor_initialization"
+      },
+      "status": "partial",
+      "targets": [
+        {
+          "id": "cfsv2-202612-z500a-lead04",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-01-01T00:00:00Z",
+          "lead_month": 4,
+          "target_month": "202612",
+          "aggregation": "monthly forecast average",
+          "field": "z500_anomaly",
+          "units": "m",
+          "statistic": "ensemble_mean",
+          "members": [
+            1
+          ],
+          "ensemble_members": 3,
+          "ensemble_scope": "rolling_initial_conditions",
+          "source_files": [
+            {
+              "initialization": "2026081218",
+              "initialization_utc": "2026-08-12T18:00:00Z",
+              "lead_month": 4,
+              "member": 1,
+              "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260812/18/monthly_grib_01/pgbf.01.2026081218.202612.avrg.grib.grb2",
+              "cache_file": ".cache/cfsv2/2026081218/member_01/pgbf.01.2026081218.202612.avrg.grib.grb2",
+              "state_file": ".cache/cfsv2/rolling/202612/hgt500.2026081218.m01.csv.gz",
+              "storage": "nomads_grib2",
+              "downloaded": true,
+              "decoded_field": "HGT:500 mb",
+              "status": "available"
+            },
+            {
+              "initialization": "2026081300",
+              "initialization_utc": "2026-08-13T00:00:00Z",
+              "lead_month": 4,
+              "member": 1,
+              "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260813/00/monthly_grib_01/pgbf.01.2026081300.202612.avrg.grib.grb2",
+              "cache_file": ".cache/cfsv2/2026081300/member_01/pgbf.01.2026081300.202612.avrg.grib.grb2",
+              "state_file": ".cache/cfsv2/rolling/202612/hgt500.2026081300.m01.csv.gz",
+              "storage": "nomads_grib2",
+              "downloaded": true,
+              "decoded_field": "HGT:500 mb",
+              "status": "available"
+            },
+            {
+              "initialization": "2026081306",
+              "initialization_utc": "2026-08-13T06:00:00Z",
+              "lead_month": 4,
+              "member": 1,
+              "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260813/06/monthly_grib_01/pgbf.01.2026081306.202612.avrg.grib.grb2",
+              "cache_file": ".cache/cfsv2/2026081306/member_01/pgbf.01.2026081306.202612.avrg.grib.grb2",
+              "state_file": ".cache/cfsv2/rolling/202612/hgt500.2026081306.m01.csv.gz",
+              "storage": "nomads_grib2",
+              "downloaded": true,
+              "decoded_field": "HGT:500 mb",
+              "status": "available"
+            },
+            {
+              "initialization": "2026081312",
+              "initialization_utc": "2026-08-13T12:00:00Z",
+              "lead_month": 4,
+              "member": 1,
+              "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260813/12/monthly_grib_01/pgbf.01.2026081312.202612.avrg.grib.grb2",
+              "cache_file": ".cache/cfsv2/2026081312/member_01/pgbf.01.2026081312.202612.avrg.grib.grb2",
+              "state_file": ".cache/cfsv2/rolling/202612/hgt500.2026081312.m01.csv.gz",
+              "status": "missing",
+              "error": "403 Client Error: Forbidden for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260813/12/monthly_grib_01/pgbf.01.2026081312.202612.avrg.grib.grb2"
+            }
+          ],
+          "status": "partial",
+          "ensemble_expected_members": 4,
+          "ensemble_complete": false,
+          "ensemble_label": "3-member rolling mean",
+          "baseline": {
+            "file": ".cache/cfsv2/calibration/2026081312/pgbf.08.13.12.l04.fclm.1982.2010.grb2",
+            "label": "NCEI CFS reforecast calibration climatology; 1982-2010",
+            "years": "1982-2010",
+            "rolling_policy": "anchor_initialization",
+            "anchor_init": "2026081312",
+            "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs_refor_calclim_mm_9m_pgbf/08/pgbf.08.13.12.l04.fclm.1982.2010.grb2",
+            "downloaded": true
+          },
+          "image": "public/seasonal/cfsv2/2026081312/cfsv2_z500a_202612.jpg"
+        },
+        {
+          "id": "cfsv2-202701-z500a-lead05",
+          "valid_start_utc": "2027-01-01T00:00:00Z",
+          "valid_end_utc": "2027-02-01T00:00:00Z",
+          "lead_month": 5,
+          "target_month": "202701",
+          "aggregation": "monthly forecast average",
+          "field": "z500_anomaly",
+          "units": "m",
+          "statistic": "ensemble_mean",
+          "members": [
+            1
+          ],
+          "ensemble_members": 3,
+          "ensemble_scope": "rolling_initial_conditions",
+          "source_files": [
+            {
+              "initialization": "2026081218",
+              "initialization_utc": "2026-08-12T18:00:00Z",
+              "lead_month": 5,
+              "member": 1,
+              "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260812/18/monthly_grib_01/pgbf.01.2026081218.202701.avrg.grib.grb2",
+              "cache_file": ".cache/cfsv2/2026081218/member_01/pgbf.01.2026081218.202701.avrg.grib.grb2",
+              "state_file": ".cache/cfsv2/rolling/202701/hgt500.2026081218.m01.csv.gz",
+              "storage": "nomads_grib2",
+              "downloaded": true,
+              "decoded_field": "HGT:500 mb",
+              "status": "available"
+            },
+            {
+              "initialization": "2026081300",
+              "initialization_utc": "2026-08-13T00:00:00Z",
+              "lead_month": 5,
+              "member": 1,
+              "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260813/00/monthly_grib_01/pgbf.01.2026081300.202701.avrg.grib.grb2",
+              "cache_file": ".cache/cfsv2/2026081300/member_01/pgbf.01.2026081300.202701.avrg.grib.grb2",
+              "state_file": ".cache/cfsv2/rolling/202701/hgt500.2026081300.m01.csv.gz",
+              "storage": "nomads_grib2",
+              "downloaded": true,
+              "decoded_field": "HGT:500 mb",
+              "status": "available"
+            },
+            {
+              "initialization": "2026081306",
+              "initialization_utc": "2026-08-13T06:00:00Z",
+              "lead_month": 5,
+              "member": 1,
+              "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260813/06/monthly_grib_01/pgbf.01.2026081306.202701.avrg.grib.grb2",
+              "cache_file": ".cache/cfsv2/2026081306/member_01/pgbf.01.2026081306.202701.avrg.grib.grb2",
+              "state_file": ".cache/cfsv2/rolling/202701/hgt500.2026081306.m01.csv.gz",
+              "storage": "nomads_grib2",
+              "downloaded": true,
+              "decoded_field": "HGT:500 mb",
+              "status": "available"
+            },
+            {
+              "initialization": "2026081312",
+              "initialization_utc": "2026-08-13T12:00:00Z",
+              "lead_month": 5,
+              "member": 1,
+              "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260813/12/monthly_grib_01/pgbf.01.2026081312.202701.avrg.grib.grb2",
+              "cache_file": ".cache/cfsv2/2026081312/member_01/pgbf.01.2026081312.202701.avrg.grib.grb2",
+              "state_file": ".cache/cfsv2/rolling/202701/hgt500.2026081312.m01.csv.gz",
+              "status": "missing",
+              "error": "403 Client Error: Forbidden for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260813/12/monthly_grib_01/pgbf.01.2026081312.202701.avrg.grib.grb2"
+            }
+          ],
+          "status": "partial",
+          "ensemble_expected_members": 4,
+          "ensemble_complete": false,
+          "ensemble_label": "3-member rolling mean",
+          "baseline": {
+            "file": ".cache/cfsv2/calibration/2026081312/pgbf.08.13.12.l05.fclm.1982.2010.grb2",
+            "label": "NCEI CFS reforecast calibration climatology; 1982-2010",
+            "years": "1982-2010",
+            "rolling_policy": "anchor_initialization",
+            "anchor_init": "2026081312",
+            "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs_refor_calclim_mm_9m_pgbf/08/pgbf.08.13.12.l05.fclm.1982.2010.grb2",
+            "downloaded": true
+          },
+          "image": "public/seasonal/cfsv2/2026081312/cfsv2_z500a_202701.jpg"
+        },
+        {
+          "id": "cfsv2-202702-z500a-lead06",
+          "valid_start_utc": "2027-02-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": 6,
+          "target_month": "202702",
+          "aggregation": "monthly forecast average",
+          "field": "z500_anomaly",
+          "units": "m",
+          "statistic": "ensemble_mean",
+          "members": [
+            1
+          ],
+          "ensemble_members": 3,
+          "ensemble_scope": "rolling_initial_conditions",
+          "source_files": [
+            {
+              "initialization": "2026081218",
+              "initialization_utc": "2026-08-12T18:00:00Z",
+              "lead_month": 6,
+              "member": 1,
+              "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260812/18/monthly_grib_01/pgbf.01.2026081218.202702.avrg.grib.grb2",
+              "cache_file": ".cache/cfsv2/2026081218/member_01/pgbf.01.2026081218.202702.avrg.grib.grb2",
+              "state_file": ".cache/cfsv2/rolling/202702/hgt500.2026081218.m01.csv.gz",
+              "storage": "nomads_grib2",
+              "downloaded": true,
+              "decoded_field": "HGT:500 mb",
+              "status": "available"
+            },
+            {
+              "initialization": "2026081300",
+              "initialization_utc": "2026-08-13T00:00:00Z",
+              "lead_month": 6,
+              "member": 1,
+              "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260813/00/monthly_grib_01/pgbf.01.2026081300.202702.avrg.grib.grb2",
+              "cache_file": ".cache/cfsv2/2026081300/member_01/pgbf.01.2026081300.202702.avrg.grib.grb2",
+              "state_file": ".cache/cfsv2/rolling/202702/hgt500.2026081300.m01.csv.gz",
+              "storage": "nomads_grib2",
+              "downloaded": true,
+              "decoded_field": "HGT:500 mb",
+              "status": "available"
+            },
+            {
+              "initialization": "2026081306",
+              "initialization_utc": "2026-08-13T06:00:00Z",
+              "lead_month": 6,
+              "member": 1,
+              "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260813/06/monthly_grib_01/pgbf.01.2026081306.202702.avrg.grib.grb2",
+              "cache_file": ".cache/cfsv2/2026081306/member_01/pgbf.01.2026081306.202702.avrg.grib.grb2",
+              "state_file": ".cache/cfsv2/rolling/202702/hgt500.2026081306.m01.csv.gz",
+              "storage": "nomads_grib2",
+              "downloaded": true,
+              "decoded_field": "HGT:500 mb",
+              "status": "available"
+            },
+            {
+              "initialization": "2026081312",
+              "initialization_utc": "2026-08-13T12:00:00Z",
+              "lead_month": 6,
+              "member": 1,
+              "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260813/12/monthly_grib_01/pgbf.01.2026081312.202702.avrg.grib.grb2",
+              "cache_file": ".cache/cfsv2/2026081312/member_01/pgbf.01.2026081312.202702.avrg.grib.grb2",
+              "state_file": ".cache/cfsv2/rolling/202702/hgt500.2026081312.m01.csv.gz",
+              "status": "missing",
+              "error": "403 Client Error: Forbidden for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260813/12/monthly_grib_01/pgbf.01.2026081312.202702.avrg.grib.grb2"
+            }
+          ],
+          "status": "partial",
+          "ensemble_expected_members": 4,
+          "ensemble_complete": false,
+          "ensemble_label": "3-member rolling mean",
+          "baseline": {
+            "file": ".cache/cfsv2/calibration/2026081312/pgbf.08.13.12.l06.fclm.1982.2010.grb2",
+            "label": "NCEI CFS reforecast calibration climatology; 1982-2010",
+            "years": "1982-2010",
+            "rolling_policy": "anchor_initialization",
+            "anchor_init": "2026081312",
+            "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs_refor_calclim_mm_9m_pgbf/08/pgbf.08.13.12.l06.fclm.1982.2010.grb2",
+            "downloaded": true
+          },
+          "image": "public/seasonal/cfsv2/2026081312/cfsv2_z500a_202702.jpg"
+        },
+        {
+          "id": "cfsv2-202612-202702-z500a-seasonal",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": "4-6",
+          "target_month": "202612-202702",
+          "aggregation": "3-month seasonal mean",
+          "field": "z500_anomaly",
+          "units": "m",
+          "statistic": "ensemble_mean",
+          "members": [
+            1
+          ],
+          "ensemble_members": 3,
+          "ensemble_scope": "rolling_initial_conditions",
+          "monthly_leads": [
+            4,
+            5,
+            6
+          ],
+          "source_files": [
+            {
+              "initialization": "2026081218",
+              "initialization_utc": "2026-08-12T18:00:00Z",
+              "lead_month": 4,
+              "member": 1,
+              "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260812/18/monthly_grib_01/pgbf.01.2026081218.202612.avrg.grib.grb2",
+              "cache_file": ".cache/cfsv2/2026081218/member_01/pgbf.01.2026081218.202612.avrg.grib.grb2",
+              "state_file": ".cache/cfsv2/rolling/202612/hgt500.2026081218.m01.csv.gz",
+              "storage": "nomads_grib2",
+              "downloaded": true,
+              "decoded_field": "HGT:500 mb",
+              "status": "available"
+            },
+            {
+              "initialization": "2026081300",
+              "initialization_utc": "2026-08-13T00:00:00Z",
+              "lead_month": 4,
+              "member": 1,
+              "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260813/00/monthly_grib_01/pgbf.01.2026081300.202612.avrg.grib.grb2",
+              "cache_file": ".cache/cfsv2/2026081300/member_01/pgbf.01.2026081300.202612.avrg.grib.grb2",
+              "state_file": ".cache/cfsv2/rolling/202612/hgt500.2026081300.m01.csv.gz",
+              "storage": "nomads_grib2",
+              "downloaded": true,
+              "decoded_field": "HGT:500 mb",
+              "status": "available"
+            },
+            {
+              "initialization": "2026081306",
+              "initialization_utc": "2026-08-13T06:00:00Z",
+              "lead_month": 4,
+              "member": 1,
+              "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260813/06/monthly_grib_01/pgbf.01.2026081306.202612.avrg.grib.grb2",
+              "cache_file": ".cache/cfsv2/2026081306/member_01/pgbf.01.2026081306.202612.avrg.grib.grb2",
+              "state_file": ".cache/cfsv2/rolling/202612/hgt500.2026081306.m01.csv.gz",
+              "storage": "nomads_grib2",
+              "downloaded": true,
+              "decoded_field": "HGT:500 mb",
+              "status": "available"
+            },
+            {
+              "initialization": "2026081312",
+              "initialization_utc": "2026-08-13T12:00:00Z",
+              "lead_month": 4,
+              "member": 1,
+              "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260813/12/monthly_grib_01/pgbf.01.2026081312.202612.avrg.grib.grb2",
+              "cache_file": ".cache/cfsv2/2026081312/member_01/pgbf.01.2026081312.202612.avrg.grib.grb2",
+              "state_file": ".cache/cfsv2/rolling/202612/hgt500.2026081312.m01.csv.gz",
+              "status": "missing",
+              "error": "403 Client Error: Forbidden for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260813/12/monthly_grib_01/pgbf.01.2026081312.202612.avrg.grib.grb2"
+            },
+            {
+              "initialization": "2026081218",
+              "initialization_utc": "2026-08-12T18:00:00Z",
+              "lead_month": 5,
+              "member": 1,
+              "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260812/18/monthly_grib_01/pgbf.01.2026081218.202701.avrg.grib.grb2",
+              "cache_file": ".cache/cfsv2/2026081218/member_01/pgbf.01.2026081218.202701.avrg.grib.grb2",
+              "state_file": ".cache/cfsv2/rolling/202701/hgt500.2026081218.m01.csv.gz",
+              "storage": "nomads_grib2",
+              "downloaded": true,
+              "decoded_field": "HGT:500 mb",
+              "status": "available"
+            },
+            {
+              "initialization": "2026081300",
+              "initialization_utc": "2026-08-13T00:00:00Z",
+              "lead_month": 5,
+              "member": 1,
+              "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260813/00/monthly_grib_01/pgbf.01.2026081300.202701.avrg.grib.grb2",
+              "cache_file": ".cache/cfsv2/2026081300/member_01/pgbf.01.2026081300.202701.avrg.grib.grb2",
+              "state_file": ".cache/cfsv2/rolling/202701/hgt500.2026081300.m01.csv.gz",
+              "storage": "nomads_grib2",
+              "downloaded": true,
+              "decoded_field": "HGT:500 mb",
+              "status": "available"
+            },
+            {
+              "initialization": "2026081306",
+              "initialization_utc": "2026-08-13T06:00:00Z",
+              "lead_month": 5,
+              "member": 1,
+              "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260813/06/monthly_grib_01/pgbf.01.2026081306.202701.avrg.grib.grb2",
+              "cache_file": ".cache/cfsv2/2026081306/member_01/pgbf.01.2026081306.202701.avrg.grib.grb2",
+              "state_file": ".cache/cfsv2/rolling/202701/hgt500.2026081306.m01.csv.gz",
+              "storage": "nomads_grib2",
+              "downloaded": true,
+              "decoded_field": "HGT:500 mb",
+              "status": "available"
+            },
+            {
+              "initialization": "2026081312",
+              "initialization_utc": "2026-08-13T12:00:00Z",
+              "lead_month": 5,
+              "member": 1,
+              "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260813/12/monthly_grib_01/pgbf.01.2026081312.202701.avrg.grib.grb2",
+              "cache_file": ".cache/cfsv2/2026081312/member_01/pgbf.01.2026081312.202701.avrg.grib.grb2",
+              "state_file": ".cache/cfsv2/rolling/202701/hgt500.2026081312.m01.csv.gz",
+              "status": "missing",
+              "error": "403 Client Error: Forbidden for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260813/12/monthly_grib_01/pgbf.01.2026081312.202701.avrg.grib.grb2"
+            },
+            {
+              "initialization": "2026081218",
+              "initialization_utc": "2026-08-12T18:00:00Z",
+              "lead_month": 6,
+              "member": 1,
+              "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260812/18/monthly_grib_01/pgbf.01.2026081218.202702.avrg.grib.grb2",
+              "cache_file": ".cache/cfsv2/2026081218/member_01/pgbf.01.2026081218.202702.avrg.grib.grb2",
+              "state_file": ".cache/cfsv2/rolling/202702/hgt500.2026081218.m01.csv.gz",
+              "storage": "nomads_grib2",
+              "downloaded": true,
+              "decoded_field": "HGT:500 mb",
+              "status": "available"
+            },
+            {
+              "initialization": "2026081300",
+              "initialization_utc": "2026-08-13T00:00:00Z",
+              "lead_month": 6,
+              "member": 1,
+              "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260813/00/monthly_grib_01/pgbf.01.2026081300.202702.avrg.grib.grb2",
+              "cache_file": ".cache/cfsv2/2026081300/member_01/pgbf.01.2026081300.202702.avrg.grib.grb2",
+              "state_file": ".cache/cfsv2/rolling/202702/hgt500.2026081300.m01.csv.gz",
+              "storage": "nomads_grib2",
+              "downloaded": true,
+              "decoded_field": "HGT:500 mb",
+              "status": "available"
+            },
+            {
+              "initialization": "2026081306",
+              "initialization_utc": "2026-08-13T06:00:00Z",
+              "lead_month": 6,
+              "member": 1,
+              "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260813/06/monthly_grib_01/pgbf.01.2026081306.202702.avrg.grib.grb2",
+              "cache_file": ".cache/cfsv2/2026081306/member_01/pgbf.01.2026081306.202702.avrg.grib.grb2",
+              "state_file": ".cache/cfsv2/rolling/202702/hgt500.2026081306.m01.csv.gz",
+              "storage": "nomads_grib2",
+              "downloaded": true,
+              "decoded_field": "HGT:500 mb",
+              "status": "available"
+            },
+            {
+              "initialization": "2026081312",
+              "initialization_utc": "2026-08-13T12:00:00Z",
+              "lead_month": 6,
+              "member": 1,
+              "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260813/12/monthly_grib_01/pgbf.01.2026081312.202702.avrg.grib.grb2",
+              "cache_file": ".cache/cfsv2/2026081312/member_01/pgbf.01.2026081312.202702.avrg.grib.grb2",
+              "state_file": ".cache/cfsv2/rolling/202702/hgt500.2026081312.m01.csv.gz",
+              "status": "missing",
+              "error": "403 Client Error: Forbidden for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260813/12/monthly_grib_01/pgbf.01.2026081312.202702.avrg.grib.grb2"
+            }
+          ],
+          "status": "partial",
+          "baseline": {
+            "files": [
+              ".cache/cfsv2/calibration/2026081312/pgbf.08.13.12.l04.fclm.1982.2010.grb2",
+              ".cache/cfsv2/calibration/2026081312/pgbf.08.13.12.l05.fclm.1982.2010.grb2",
+              ".cache/cfsv2/calibration/2026081312/pgbf.08.13.12.l06.fclm.1982.2010.grb2"
+            ],
+            "label": "NCEI CFS reforecast calibration climatology; 1982-2010",
+            "years": "1982-2010",
+            "rolling_policy": "anchor_initialization",
+            "anchor_init": "2026081312",
+            "urls": [
+              "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs_refor_calclim_mm_9m_pgbf/08/pgbf.08.13.12.l04.fclm.1982.2010.grb2",
+              "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs_refor_calclim_mm_9m_pgbf/08/pgbf.08.13.12.l05.fclm.1982.2010.grb2",
+              "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs_refor_calclim_mm_9m_pgbf/08/pgbf.08.13.12.l06.fclm.1982.2010.grb2"
+            ]
+          },
+          "ensemble_complete": false,
+          "image": "public/seasonal/cfsv2/2026081312/cfsv2_z500a_202612-202702.jpg"
+        }
+      ],
+      "rolling_window": {
+        "days": 1,
+        "expected_cycles": 4,
+        "cycle_interval_hours": 6,
+        "member": 1,
+        "start_init_utc": "2026-08-12T18:00:00Z",
+        "end_init_utc": "2026-08-13T12:00:00Z",
+        "source": "lagged CFSv2 initial conditions"
+      },
+      "output_dir": "public/seasonal/cfsv2"
+    }
+  ]
+}
