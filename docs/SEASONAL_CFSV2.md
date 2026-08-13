@@ -193,4 +193,3 @@ Each target entry uses these fields:
 
 The Earth Engine collection is useful for its available 6-hourly surface
 fields, but it is not the pressure-level `HGT:500 mb` source used here.
-
