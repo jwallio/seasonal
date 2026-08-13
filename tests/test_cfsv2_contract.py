@@ -9,6 +9,7 @@ ADAPTER = ROOT / "scripts" / "cfsv2_seasonal.py"
 WRAPPER = ROOT / "scripts" / "render_cfsv2.ps1"
 DOC = ROOT / "docs" / "SEASONAL_CFSV2.md"
 WORKFLOW = ROOT / ".github" / "workflows" / "cfsv2.yml"
+PAGE = ROOT / "public" / "seasonal" / "cfsv2" / "index.html"
 
 
 def check(condition: bool, message: str) -> None:
@@ -21,9 +22,11 @@ def main() -> int:
     check(WRAPPER.exists(), "CFSv2 PowerShell wrapper missing")
     check(DOC.exists(), "CFSv2 documentation missing")
     check(WORKFLOW.exists(), "CFSv2 workflow missing")
+    check(PAGE.exists(), "CFSv2 Pages index missing")
 
     adapter = ADAPTER.read_text(encoding="utf-8")
     documentation = DOC.read_text(encoding="utf-8")
+    page = PAGE.read_text(encoding="utf-8")
     for term in (
         "NOMADS_ROOT",
         "pgbf.",
@@ -103,6 +106,7 @@ def main() -> int:
     check("top_edge_lons = np.linspace(lon_min, lon_max, 240)" in adapter, "projected map window should retain the full Greenland edge")
     check("border_lat_min = 14.0" in adapter, "border rendering should exclude South America")
     check("if not (lon_min <= longitude <= lon_max) or latitude < border_lat_min:" in adapter, "border rendering should stay inside the North America/Greenland window")
+    check("timeZone:'UTC'" in page, "Pages month labels should remain aligned with UTC map validity dates")
     workflow = WORKFLOW.read_text(encoding="utf-8")
     for term in (
         "product:",
