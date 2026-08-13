@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "kind": "cfsv2_seasonal_manifest",
-  "generated_utc": "2026-08-13T02:57:57Z",
+  "generated_utc": "2026-08-13T04:40:25Z",
   "source": "NOAA CFSv2 NOMADS",
   "source_url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/",
   "runs": [
@@ -56,7 +56,7 @@
           "members": [
             1
           ],
-          "ensemble_members": 27,
+          "ensemble_members": 28,
           "ensemble_scope": "rolling_initial_conditions",
           "source_files": [
             {
@@ -167,7 +167,7 @@
               "cache_file": ".cache/cfsv2/2026080506/member_01/pgbf.01.2026080506.202612.avrg.grib.grb2",
               "state_file": ".cache/cfsv2/rolling/202612/hgt500.2026080506.m01.csv.gz",
               "status": "missing",
-              "error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260805/06/monthly_grib_01/pgbf.01.2026080506.202612.avrg.grib.grb2"
+              "error": "('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))"
             },
             {
               "initialization": "2026080512",
@@ -178,7 +178,7 @@
               "cache_file": ".cache/cfsv2/2026080512/member_01/pgbf.01.2026080512.202612.avrg.grib.grb2",
               "state_file": ".cache/cfsv2/rolling/202612/hgt500.2026080512.m01.csv.gz",
               "status": "missing",
-              "error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260805/12/monthly_grib_01/pgbf.01.2026080512.202612.avrg.grib.grb2"
+              "error": "('Connection broken: IncompleteRead(2097152 bytes read, 22104909 more expected)', IncompleteRead(2097152 bytes read, 22104909 more expected))"
             },
             {
               "initialization": "2026080518",
@@ -189,7 +189,7 @@
               "cache_file": ".cache/cfsv2/2026080518/member_01/pgbf.01.2026080518.202612.avrg.grib.grb2",
               "state_file": ".cache/cfsv2/rolling/202612/hgt500.2026080518.m01.csv.gz",
               "status": "missing",
-              "error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260805/18/monthly_grib_01/pgbf.01.2026080518.202612.avrg.grib.grb2"
+              "error": "('Connection broken: IncompleteRead(2097152 bytes read, 22012814 more expected)', IncompleteRead(2097152 bytes read, 22012814 more expected))"
             },
             {
               "initialization": "2026080600",
@@ -550,14 +550,16 @@
               "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260812/18/monthly_grib_01/pgbf.01.2026081218.202612.avrg.grib.grb2",
               "cache_file": ".cache/cfsv2/2026081218/member_01/pgbf.01.2026081218.202612.avrg.grib.grb2",
               "state_file": ".cache/cfsv2/rolling/202612/hgt500.2026081218.m01.csv.gz",
-              "status": "missing",
-              "error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260812/18/monthly_grib_01/pgbf.01.2026081218.202612.avrg.grib.grb2"
+              "storage": "nomads_grib2",
+              "downloaded": true,
+              "decoded_field": "HGT:500 mb",
+              "status": "available"
             }
           ],
           "status": "partial",
           "ensemble_expected_members": 40,
           "ensemble_complete": false,
-          "ensemble_label": "27/40-cycle rolling mean",
+          "ensemble_label": "28/40-cycle rolling mean",
           "baseline": {
             "file": ".cache/cfsv2/calibration/2026081218/pgbf.08.12.18.l04.fclm.1982.2010.grb2",
             "label": "NCEI CFS reforecast calibration climatology; 1982-2010",
@@ -582,7 +584,7 @@
           "members": [
             1
           ],
-          "ensemble_members": 27,
+          "ensemble_members": 28,
           "ensemble_scope": "rolling_initial_conditions",
           "source_files": [
             {
@@ -682,7 +684,7 @@
               "cache_file": ".cache/cfsv2/2026080500/member_01/pgbf.01.2026080500.202701.avrg.grib.grb2",
               "state_file": ".cache/cfsv2/rolling/202701/hgt500.2026080500.m01.csv.gz",
               "status": "missing",
-              "error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260805/00/monthly_grib_01/pgbf.01.2026080500.202701.avrg.grib.grb2"
+              "error": "('Connection broken: IncompleteRead(2097152 bytes read, 21711345 more expected)', IncompleteRead(2097152 bytes read, 21711345 more expected))"
             },
             {
               "initialization": "2026080506",
@@ -1076,14 +1078,16 @@
               "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260812/18/monthly_grib_01/pgbf.01.2026081218.202701.avrg.grib.grb2",
               "cache_file": ".cache/cfsv2/2026081218/member_01/pgbf.01.2026081218.202701.avrg.grib.grb2",
               "state_file": ".cache/cfsv2/rolling/202701/hgt500.2026081218.m01.csv.gz",
-              "status": "missing",
-              "error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260812/18/monthly_grib_01/pgbf.01.2026081218.202701.avrg.grib.grb2"
+              "storage": "nomads_grib2",
+              "downloaded": true,
+              "decoded_field": "HGT:500 mb",
+              "status": "available"
             }
           ],
           "status": "partial",
           "ensemble_expected_members": 40,
           "ensemble_complete": false,
-          "ensemble_label": "27/40-cycle rolling mean",
+          "ensemble_label": "28/40-cycle rolling mean",
           "baseline": {
             "file": ".cache/cfsv2/calibration/2026081218/pgbf.08.12.18.l05.fclm.1982.2010.grb2",
             "label": "NCEI CFS reforecast calibration climatology; 1982-2010",
@@ -1108,7 +1112,7 @@
           "members": [
             1
           ],
-          "ensemble_members": 27,
+          "ensemble_members": 28,
           "ensemble_scope": "rolling_initial_conditions",
           "source_files": [
             {
@@ -1208,7 +1212,7 @@
               "cache_file": ".cache/cfsv2/2026080500/member_01/pgbf.01.2026080500.202702.avrg.grib.grb2",
               "state_file": ".cache/cfsv2/rolling/202702/hgt500.2026080500.m01.csv.gz",
               "status": "missing",
-              "error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260805/00/monthly_grib_01/pgbf.01.2026080500.202702.avrg.grib.grb2"
+              "error": "('Connection broken: IncompleteRead(2097152 bytes read, 22484952 more expected)', IncompleteRead(2097152 bytes read, 22484952 more expected))"
             },
             {
               "initialization": "2026080506",
@@ -1602,14 +1606,16 @@
               "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260812/18/monthly_grib_01/pgbf.01.2026081218.202702.avrg.grib.grb2",
               "cache_file": ".cache/cfsv2/2026081218/member_01/pgbf.01.2026081218.202702.avrg.grib.grb2",
               "state_file": ".cache/cfsv2/rolling/202702/hgt500.2026081218.m01.csv.gz",
-              "status": "missing",
-              "error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260812/18/monthly_grib_01/pgbf.01.2026081218.202702.avrg.grib.grb2"
+              "storage": "nomads_grib2",
+              "downloaded": true,
+              "decoded_field": "HGT:500 mb",
+              "status": "available"
             }
           ],
           "status": "partial",
           "ensemble_expected_members": 40,
           "ensemble_complete": false,
-          "ensemble_label": "27/40-cycle rolling mean",
+          "ensemble_label": "28/40-cycle rolling mean",
           "baseline": {
             "file": ".cache/cfsv2/calibration/2026081218/pgbf.08.12.18.l06.fclm.1982.2010.grb2",
             "label": "NCEI CFS reforecast calibration climatology; 1982-2010",
@@ -1634,7 +1640,7 @@
           "members": [
             1
           ],
-          "ensemble_members": 27,
+          "ensemble_members": 28,
           "ensemble_scope": "rolling_initial_conditions",
           "monthly_leads": [
             4,
@@ -1750,7 +1756,7 @@
               "cache_file": ".cache/cfsv2/2026080506/member_01/pgbf.01.2026080506.202612.avrg.grib.grb2",
               "state_file": ".cache/cfsv2/rolling/202612/hgt500.2026080506.m01.csv.gz",
               "status": "missing",
-              "error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260805/06/monthly_grib_01/pgbf.01.2026080506.202612.avrg.grib.grb2"
+              "error": "('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))"
             },
             {
               "initialization": "2026080512",
@@ -1761,7 +1767,7 @@
               "cache_file": ".cache/cfsv2/2026080512/member_01/pgbf.01.2026080512.202612.avrg.grib.grb2",
               "state_file": ".cache/cfsv2/rolling/202612/hgt500.2026080512.m01.csv.gz",
               "status": "missing",
-              "error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260805/12/monthly_grib_01/pgbf.01.2026080512.202612.avrg.grib.grb2"
+              "error": "('Connection broken: IncompleteRead(2097152 bytes read, 22104909 more expected)', IncompleteRead(2097152 bytes read, 22104909 more expected))"
             },
             {
               "initialization": "2026080518",
@@ -1772,7 +1778,7 @@
               "cache_file": ".cache/cfsv2/2026080518/member_01/pgbf.01.2026080518.202612.avrg.grib.grb2",
               "state_file": ".cache/cfsv2/rolling/202612/hgt500.2026080518.m01.csv.gz",
               "status": "missing",
-              "error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260805/18/monthly_grib_01/pgbf.01.2026080518.202612.avrg.grib.grb2"
+              "error": "('Connection broken: IncompleteRead(2097152 bytes read, 22012814 more expected)', IncompleteRead(2097152 bytes read, 22012814 more expected))"
             },
             {
               "initialization": "2026080600",
@@ -2133,8 +2139,10 @@
               "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260812/18/monthly_grib_01/pgbf.01.2026081218.202612.avrg.grib.grb2",
               "cache_file": ".cache/cfsv2/2026081218/member_01/pgbf.01.2026081218.202612.avrg.grib.grb2",
               "state_file": ".cache/cfsv2/rolling/202612/hgt500.2026081218.m01.csv.gz",
-              "status": "missing",
-              "error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260812/18/monthly_grib_01/pgbf.01.2026081218.202612.avrg.grib.grb2"
+              "storage": "nomads_grib2",
+              "downloaded": true,
+              "decoded_field": "HGT:500 mb",
+              "status": "available"
             },
             {
               "initialization": "2026080300",
@@ -2233,7 +2241,7 @@
               "cache_file": ".cache/cfsv2/2026080500/member_01/pgbf.01.2026080500.202701.avrg.grib.grb2",
               "state_file": ".cache/cfsv2/rolling/202701/hgt500.2026080500.m01.csv.gz",
               "status": "missing",
-              "error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260805/00/monthly_grib_01/pgbf.01.2026080500.202701.avrg.grib.grb2"
+              "error": "('Connection broken: IncompleteRead(2097152 bytes read, 21711345 more expected)', IncompleteRead(2097152 bytes read, 21711345 more expected))"
             },
             {
               "initialization": "2026080506",
@@ -2627,8 +2635,10 @@
               "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260812/18/monthly_grib_01/pgbf.01.2026081218.202701.avrg.grib.grb2",
               "cache_file": ".cache/cfsv2/2026081218/member_01/pgbf.01.2026081218.202701.avrg.grib.grb2",
               "state_file": ".cache/cfsv2/rolling/202701/hgt500.2026081218.m01.csv.gz",
-              "status": "missing",
-              "error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260812/18/monthly_grib_01/pgbf.01.2026081218.202701.avrg.grib.grb2"
+              "storage": "nomads_grib2",
+              "downloaded": true,
+              "decoded_field": "HGT:500 mb",
+              "status": "available"
             },
             {
               "initialization": "2026080300",
@@ -2727,7 +2737,7 @@
               "cache_file": ".cache/cfsv2/2026080500/member_01/pgbf.01.2026080500.202702.avrg.grib.grb2",
               "state_file": ".cache/cfsv2/rolling/202702/hgt500.2026080500.m01.csv.gz",
               "status": "missing",
-              "error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260805/00/monthly_grib_01/pgbf.01.2026080500.202702.avrg.grib.grb2"
+              "error": "('Connection broken: IncompleteRead(2097152 bytes read, 22484952 more expected)', IncompleteRead(2097152 bytes read, 22484952 more expected))"
             },
             {
               "initialization": "2026080506",
@@ -3121,8 +3131,10 @@
               "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260812/18/monthly_grib_01/pgbf.01.2026081218.202702.avrg.grib.grb2",
               "cache_file": ".cache/cfsv2/2026081218/member_01/pgbf.01.2026081218.202702.avrg.grib.grb2",
               "state_file": ".cache/cfsv2/rolling/202702/hgt500.2026081218.m01.csv.gz",
-              "status": "missing",
-              "error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260812/18/monthly_grib_01/pgbf.01.2026081218.202702.avrg.grib.grb2"
+              "storage": "nomads_grib2",
+              "downloaded": true,
+              "decoded_field": "HGT:500 mb",
+              "status": "available"
             }
           ],
           "status": "partial",
