@@ -39,8 +39,8 @@ CFS_CYCLE_HOURS = (0, 6, 12, 18)
 ROLLING_MEMBER_DEFAULT = 1
 GRID_LON_COUNT = 360
 GRID_LAT_COUNT = 181
-ANOMALY_MIN_M = -140.0
-ANOMALY_MAX_M = 140.0
+ANOMALY_MIN_M = -200.0
+ANOMALY_MAX_M = 200.0
 ANOMALY_PALETTE = [
     "#32678e",
     "#3f80a7",
@@ -56,10 +56,11 @@ ANOMALY_PALETTE = [
     "#c45257",
     "#a83b49",
 ]
-ANOMALY_TICKS = [-140, -100, -60, -20, 0, 20, 60, 100, 140]
-# North America plus the adjacent Atlantic/Pacific; crop the default frame
-# like the operational seasonal references instead of centering on Europe.
-DEFAULT_REGION = (-170.0, -20.0, 10.0, 75.0)
+ANOMALY_TICKS = [-200, -160, -120, -80, -40, 0, 40, 80, 120, 160, 200]
+# A social-sized North America view: retain Alaska and all of Greenland while
+# keeping the lower field in the subtropics. Border drawing applies a separate
+# 14°N cutoff so South America does not appear in the frame.
+DEFAULT_REGION = (-160.0, -10.0, 22.0, 85.0)
 DEFAULT_BORDER_URLS = (
     (
         "countries.geojson",
@@ -145,6 +146,24 @@ def target_period(target: str) -> tuple[str, str]:
     end_year, end_month = month_after(start.year, start.month, 1)
     end = dt.datetime(end_year, end_month, 1)
     return iso_utc(start.replace(tzinfo=dt.timezone.utc)), iso_utc(end.replace(tzinfo=dt.timezone.utc))
+
+
+def seasonal_period_label(first_target: str, last_target: str) -> str:
+    """Use standard meteorological season shorthand for three-month windows."""
+
+    start = dt.datetime.strptime(first_target, "%Y%m")
+    end = dt.datetime.strptime(last_target, "%Y%m")
+    season = {
+        (12, 2): f"DJF {end.year}",
+        (3, 5): f"MAM {end.year}",
+        (6, 8): f"JJA {end.year}",
+        (9, 11): f"SON {end.year}",
+    }.get((start.month, end.month))
+    if season and ((start.month == 12 and end.year == start.year + 1) or end.year == start.year):
+        return season
+    if start.year == end.year:
+        return f"{start:%b}\u2013{end:%b %Y}"
+    return f"{start:%b %Y}\u2013{end:%b %Y}"
 
 
 def discover_latest_init(root: str = NOMADS_ROOT) -> str:
@@ -504,470 +523,7 @@ def load_baseline(path: Path, wgrib2: str) -> Grid:
     return read_grid_csv(path)
 
 
-def baseline_for_target(args: argparse.Namespace, target: str, repo_root: Path) -> tuple[Path, str]:
-    if args.baseline_file:
-        path = resolve_repo_path(args.baseline_file, repo_root)
-        if not path.exists():
-            raise CFSv2Error(f"baseline file does not exist: {path}")
-        return path, args.baseline_label or path.name
-    if args.baseline_dir:
-        directory = resolve_repo_path(args.baseline_dir, repo_root)
-        candidates = (
-            f"z500_{target}.csv",
-            f"z500_{target}.grb2",
-            f"z500_{target}.grib2",
-            f"baseline_{target}.csv",
-            f"baseline_{target}.grb2",
-            f"{target}.csv",
-            f"{target}.grb2",
-        )
-        for name in candidates:
-            path = directory / name
-            if path.exists():
-                return path, args.baseline_label or name
-        raise CFSv2Error(f"no baseline grid for target month {target} in {directory}")
-    raise CFSv2Error(
-        "anomaly rendering requires --baseline-file or --baseline-dir; "
-        "use --ncei-calibration or --absolute for a clearly labelled alternative"
-    )
-
-
-def configured_baseline_label(args: argparse.Namespace) -> str:
-    if args.baseline_label:
-        return args.baseline_label
-    if args.ncei_calibration:
-        return NCEI_CALIBRATION_LABEL
-    return "user-supplied CFSv2/reforecast baseline"
-
-
-def _finite_values(grid: Grid) -> Iterator[float]:
-    for row in grid.values:
-        for value in row:
-            if math.isfinite(value):
-                yield value
-
-
-def _geojson_rings(geometry: dict) -> Iterator[list[list[float]]]:
-    kind = geometry.get("type")
-    coordinates = geometry.get("coordinates", [])
-    if kind == "Polygon":
-        if coordinates:
-            yield coordinates[0]
-    elif kind == "MultiPolygon":
-        for polygon in coordinates:
-            if polygon:
-                yield polygon[0]
-    elif kind == "GeometryCollection":
-        for child in geometry.get("geometries", []):
-            yield from _geojson_rings(child)
-
-
-def geojson_features(payload: dict) -> Iterator[list[list[float]]]:
-    if payload.get("type") == "FeatureCollection":
-        for feature in payload.get("features", []):
-            geometry = feature.get("geometry") or {}
-            yield from _geojson_rings(geometry)
-    elif payload.get("type") == "Feature":
-        yield from _geojson_rings(payload.get("geometry") or {})
-    else:
-        yield from _geojson_rings(payload)
-
-
-def ensure_border_files(args: argparse.Namespace, cache_dir: Path, repo_root: Path) -> list[Path]:
-    if args.no_borders:
-        return []
-    if args.border_geojson:
-        paths = [resolve_repo_path(item, repo_root) for item in args.border_geojson]
-        missing = [str(path) for path in paths if not path.exists()]
-        if missing:
-            raise CFSv2Error(f"border GeoJSON does not exist: {', '.join(missing)}")
-        return paths
-    try:
-        import requests
-    except ImportError:
-        print("warning: requests unavailable; continuing without map borders", file=sys.stderr)
-        return []
-    border_dir = cache_dir / "borders"
-    paths: list[Path] = []
-    for filename, url in DEFAULT_BORDER_URLS:
-        destination = border_dir / filename
-        if not destination.exists() or destination.stat().st_size == 0:
-            try:
-                border_dir.mkdir(parents=True, exist_ok=True)
-                response = requests.get(url, timeout=(20, 120))
-                response.raise_for_status()
-                destination.write_bytes(response.content)
-            except Exception as exc:
-                print(f"warning: could not download {filename}; continuing without it: {exc}", file=sys.stderr)
-                continue
-        paths.append(destination)
-    return paths
-
-
-def render_map(
-    grid: Grid,
-    init: str,
-    target: str,
-    lead: int | str,
-    members: Sequence[int],
-    output_path: Path,
-    anomaly: bool,
-    baseline_label: str,
-    border_paths: Sequence[Path],
-    period_label: str = "",
-    ensemble_label: str = "",
-    height_grid: Grid | None = None,
-    region: tuple[float, float, float, float] = DEFAULT_REGION,
-) -> None:
-    try:
-        import matplotlib
-
-        matplotlib.use("Agg")
-        import matplotlib.colors as mcolors
-        import matplotlib.pyplot as plt
-        import numpy as np
-    except ImportError as exc:  # pragma: no cover - target installs requirements.txt
-        raise CFSv2Error("rendering requires numpy and matplotlib; install requirements.txt") from exc
-
-    height_grid = height_grid or grid
-    height_grid.assert_compatible(grid, "anomaly")
-    lon_min, lon_max, lat_min, lat_max = region
-    source_lons = np.asarray(grid.lons, dtype=float)
-    source_lats = np.asarray(grid.lats, dtype=float)
-    source_data = np.asarray(grid.values, dtype=float)
-    source_height = np.asarray(height_grid.values, dtype=float) / 10.0
-    if source_data.shape != (source_lats.size, source_lons.size):
-        raise CFSv2Error("decoded CFSv2 grid has inconsistent latitude/longitude dimensions")
-    if source_lons.size < 2 or source_lats.size < 2:
-        raise CFSv2Error("decoded CFSv2 grid is too small to project")
-    lon_step = float(np.nanmedian(np.diff(source_lons)))
-    lat_step = float(np.nanmedian(np.diff(source_lats)))
-    if not np.allclose(np.diff(source_lons), lon_step, atol=1e-5) or not np.allclose(
-        np.diff(source_lats), lat_step, atol=1e-5
-    ):
-        raise CFSv2Error("decoded CFSv2 grid must be regular before projection")
-
-    # Use the North America Lambert Conformal Conic layout used by
-    # operational seasonal maps. It keeps North America readable while
-    # making the curved meridians/parallels part of the visual context.
-    standard_parallel_1 = np.deg2rad(33.0)
-    standard_parallel_2 = np.deg2rad(45.0)
-    latitude_origin = np.deg2rad(39.0)
-    central_longitude = np.deg2rad(-96.0)
-    n_coefficient = np.log(np.cos(standard_parallel_1) / np.cos(standard_parallel_2)) / np.log(
-            np.tan(np.pi / 4.0 + standard_parallel_2 / 2.0)
-            / np.tan(np.pi / 4.0 + standard_parallel_1 / 2.0)
-    )
-    scale = (
-        np.cos(standard_parallel_1)
-        * np.tan(np.pi / 4.0 + standard_parallel_1 / 2.0) ** n_coefficient
-        / n_coefficient
-    )
-    origin_radius = scale / np.tan(np.pi / 4.0 + latitude_origin / 2.0) ** n_coefficient
-
-    def lcc_project(lon_values, lat_values):
-        longitude = np.deg2rad(np.asarray(lon_values, dtype=float))
-        latitude = np.deg2rad(np.clip(np.asarray(lat_values, dtype=float), -89.5, 89.5))
-        radius = scale / np.tan(np.pi / 4.0 + latitude / 2.0) ** n_coefficient
-        angle = n_coefficient * (longitude - central_longitude)
-        return radius * np.sin(angle), origin_radius - radius * np.cos(angle)
-
-    edge_lons = np.concatenate(
-        (
-            np.linspace(lon_min, lon_max, 240),
-            np.full(180, lon_max),
-            np.linspace(lon_max, lon_min, 240),
-            np.full(180, lon_min),
-        )
-    )
-    edge_lats = np.concatenate(
-        (
-            np.full(240, lat_min),
-            np.linspace(lat_min, lat_max, 180),
-            np.full(240, lat_max),
-            np.linspace(lat_max, lat_min, 180),
-        )
-    )
-    edge_x, edge_y = lcc_project(edge_lons, edge_lats)
-    x_min, x_max = float(np.nanmin(edge_x)), float(np.nanmax(edge_x))
-    y_min, y_max = float(np.nanmin(edge_y)), float(np.nanmax(edge_y))
-    x_pad = max(0.01, (x_max - x_min) * 0.006)
-    y_pad = max(0.01, (y_max - y_min) * 0.006)
-
-    # Resample the full global field onto a regular projected canvas. Using
-    # only the source cells inside the lon/lat box leaves the corners of a
-    # projected map empty; inverse projection keeps those corners data-filled.
-    canvas_columns = 520
-    canvas_rows = max(260, int(round(canvas_columns * (y_max - y_min) / (x_max - x_min))))
-    canvas_x = np.linspace(x_min, x_max, canvas_columns)
-    canvas_y = np.linspace(y_min, y_max, canvas_rows)
-    canvas_x_mesh, canvas_y_mesh = np.meshgrid(canvas_x, canvas_y)
-
-    def lcc_inverse(x_values, y_values):
-        x_array = np.asarray(x_values, dtype=float)
-        y_array = np.asarray(y_values, dtype=float)
-        rho = np.hypot(x_array, origin_radius - y_array)
-        rho = np.where(rho == 0.0, np.finfo(float).eps, rho)
-        angle = np.arctan2(x_array, origin_radius - y_array)
-        latitude = 2.0 * np.arctan((scale / rho) ** (1.0 / n_coefficient)) - np.pi / 2.0
-        longitude = central_longitude + angle / n_coefficient
-        return np.rad2deg(longitude), np.rad2deg(latitude)
-
-    def sample_source(field, longitude_values, latitude_values):
-        longitude_position = np.mod(longitude_values - source_lons[0], 360.0) / lon_step
-        longitude_position = np.mod(longitude_position, source_lons.size)
-        latitude_position = np.clip(
-            (latitude_values - source_lats[0]) / lat_step,
-            0.0,
-            source_lats.size - 1.000001,
-        )
-        lon_left = np.floor(longitude_position).astype(int) % source_lons.size
-        lon_right = (lon_left + 1) % source_lons.size
-        lat_left = np.floor(latitude_position).astype(int)
-        lat_right = np.minimum(lat_left + 1, source_lats.size - 1)
-        lon_weight = longitude_position - np.floor(longitude_position)
-        lat_weight = latitude_position - np.floor(latitude_position)
-
-        values = (
-            field[lat_left, lon_left] * (1.0 - lon_weight) * (1.0 - lat_weight)
-            + field[lat_left, lon_right] * lon_weight * (1.0 - lat_weight)
-            + field[lat_right, lon_left] * (1.0 - lon_weight) * lat_weight
-            + field[lat_right, lon_right] * lon_weight * lat_weight
-        )
-        return values
-
-    canvas_lons, canvas_lats = lcc_inverse(canvas_x_mesh, canvas_y_mesh)
-    data = sample_source(source_data, canvas_lons, canvas_lats)
-    height_data = sample_source(source_height, canvas_lons, canvas_lats)
-
-    # Match the compact ~1080x810 footprint of the reference seasonal graphic.
-    figure = plt.figure(figsize=(9.0, 6.75), facecolor="#f7f9fb")
-    # Keep the header compact and use the lower canvas for the map/colorbar;
-    # there is no descriptive footer in the image anymore.
-    axes = figure.add_axes([0.035, 0.10, 0.93, 0.78])
-    axes.set_facecolor("#edf3f5")
-
-    # Light graticules make the projection legible without competing with the
-    # height field. The map remains intentionally free of axis tick clutter.
-    for longitude_line in range(math.ceil(lon_min / 20.0) * 20, math.floor(lon_max / 20.0) * 20 + 1, 20):
-        line_lats = np.linspace(lat_min, lat_max, 240)
-        line_x, line_y = lcc_project(np.full(line_lats.shape, longitude_line), line_lats)
-        axes.plot(line_x, line_y, color="#70808a", linewidth=0.35, alpha=0.34, linestyle=(0, (1, 3)), zorder=1)
-    for latitude_line in range(math.ceil(lat_min / 10.0) * 10, math.floor(lat_max / 10.0) * 10 + 1, 10):
-        line_lons = np.linspace(lon_min, lon_max, 300)
-        line_x, line_y = lcc_project(line_lons, np.full(line_lons.shape, latitude_line))
-        axes.plot(line_x, line_y, color="#70808a", linewidth=0.35, alpha=0.34, linestyle=(0, (1, 3)), zorder=1)
-
-    masked = np.ma.masked_invalid(data)
-    if anomaly:
-        cmap = mcolors.ListedColormap(ANOMALY_PALETTE)
-        bounds = np.linspace(ANOMALY_MIN_M, ANOMALY_MAX_M, len(ANOMALY_PALETTE) + 1)
-        norm = mcolors.BoundaryNorm(bounds, cmap.N, clip=True)
-        image = axes.contourf(
-            canvas_x,
-            canvas_y,
-            np.ma.clip(masked, ANOMALY_MIN_M, ANOMALY_MAX_M),
-            levels=bounds,
-            cmap=cmap,
-            norm=norm,
-            antialiased=True,
-        )
-        colorbar_ticks = ANOMALY_TICKS
-    else:
-        finite = np.asarray(list(_finite_values(grid)), dtype=float)
-        if finite.size == 0:
-            raise CFSv2Error("decoded grid contains no finite values")
-        vmin = float(np.nanpercentile(finite, 2))
-        vmax = float(np.nanpercentile(finite, 98))
-        if vmin == vmax:
-            vmin -= 1.0
-            vmax += 1.0
-        image = axes.contourf(
-            canvas_x,
-            canvas_y,
-            masked,
-            levels=np.linspace(vmin, vmax, 17),
-            cmap="viridis",
-            norm=mcolors.Normalize(vmin=vmin, vmax=vmax),
-            extend="both",
-            antialiased=True,
-        )
-        colorbar_ticks = np.linspace(vmin, vmax, 7)
-
-    # Filled anomalies show the signal; actual 500-mb heights provide the
-    # synoptic structure and make the map readable like an operational
-    # seasonal product. Heights are labelled in decametres (dam).
-    height_masked = np.ma.masked_invalid(height_data)
-    finite_heights = np.ma.compressed(height_masked)
-    if finite_heights.size > 1 and float(np.nanmax(finite_heights)) > float(np.nanmin(finite_heights)):
-        contour_step = 6.0
-        height_min = math.floor(float(np.nanpercentile(finite_heights, 2)) / contour_step) * contour_step
-        height_max = math.ceil(float(np.nanpercentile(finite_heights, 98)) / contour_step) * contour_step
-        height_levels = np.arange(height_min, height_max + contour_step * 0.5, contour_step)
-        if height_levels.size > 1:
-            minor_levels = np.arange(height_min, height_max + 3.0 * 0.5, 3.0)
-            axes.contour(
-                canvas_x,
-                canvas_y,
-                height_masked,
-                levels=minor_levels,
-                colors="#34444d",
-                linewidths=0.24,
-                alpha=0.38,
-                linestyles="dotted",
-                zorder=3,
-            )
-            height_lines = axes.contour(
-                canvas_x,
-                canvas_y,
-                height_masked,
-                levels=height_levels,
-                colors="#1c2931",
-                linewidths=0.62,
-                alpha=0.84,
-                zorder=4,
-            )
-            label_levels = height_levels[::2] if height_levels.size > 14 else height_levels
-            axes.clabel(
-                height_lines,
-                levels=label_levels,
-                inline=True,
-                inline_spacing=3,
-                fmt=lambda value: f"{value:.0f}",
-                fontsize=7.2,
-                colors="#1c2931",
-            )
-
-    def projected_ring_segments(ring):
-        segments = []
-        current = []
-        previous_lon = None
-        for point in ring:
-            if len(point) < 2:
-                continue
-            longitude, latitude = float(point[0]), float(point[1])
-            if not math.isfinite(longitude) or not math.isfinite(latitude) or abs(latitude) >= 89.5:
-                if len(current) > 1:
-                    segments.append(current)
-                current = []
-                previous_lon = None
-                continue
-            if previous_lon is not None and abs(longitude - previous_lon) > 180.0:
-                if len(current) > 1:
-                    segments.append(current)
-                current = []
-            point_x, point_y = lcc_project(np.array([longitude]), np.array([latitude]))
-            current.append((float(point_x[0]), float(point_y[0])))
-            previous_lon = longitude
-        if len(current) > 1:
-            segments.append(current)
-        return segments
-
-    for border_path in border_paths:
-        try:
-            payload = json.loads(border_path.read_text(encoding="utf-8"))
-            for ring in geojson_features(payload):
-                for segment in projected_ring_segments(ring):
-                    axes.plot(
-                        [point[0] for point in segment],
-                        [point[1] for point in segment],
-                        color="#17232c",
-                        linewidth=0.66,
-                        alpha=0.92,
-                        solid_capstyle="round",
-                        zorder=5,
-                    )
-        except (OSError, ValueError, KeyError, TypeError) as exc:
-            print(f"warning: could not draw borders from {border_path}: {exc}", file=sys.stderr)
-
-    axes.set_xlim(x_min - x_pad, x_max + x_pad)
-    axes.set_ylim(y_min - y_pad, y_max + y_pad)
-    axes.set_aspect("equal", adjustable="box")
-    axes.set_xticks([])
-    axes.set_yticks([])
-    for spine in axes.spines.values():
-        spine.set_visible(True)
-        spine.set_color("#20313a")
-        spine.set_linewidth(0.75)
-
-    init_date = dt.datetime.strptime(init, "%Y%m%d%H")
-    target_date = dt.datetime.strptime(target, "%Y%m")
-    display_period = period_label or target_date.strftime("%B %Y")
-    mean_label = ensemble_label or f"{len(members)}-member mean"
-    title = "CFSv2 500-mb Geopotential Height & Anomaly (m)" if anomaly else "CFSv2 500-mb Geopotential Height (m)"
-    figure.text(0.035, 0.956, title, ha="left", va="center", fontsize=13.5, fontweight="bold", color="#172735")
-    figure.text(0.965, 0.956, f"Valid: {display_period}", ha="right", va="center", fontsize=11.5, fontweight="bold", color="#172735")
-    figure.text(
-        0.035,
-        0.919,
-        f"Init {init_date:%d %b %Y %HZ}  •  Lead {lead}  •  {mean_label}",
-        ha="left",
-        va="center",
-        fontsize=8.8,
-        color="#42515d",
-    )
-    header_detail = (
-        f"NOAA CFSv2 / NOMADS  •  {baseline_label}  •  Height contours in dam"
-        if anomaly
-        else "NOAA CFSv2 / NOMADS  •  Absolute field smoke output  •  Height contours in dam"
-    )
-    figure.text(
-        0.035,
-        0.895,
-        header_detail,
-        ha="left",
-        va="center",
-        fontsize=7.5,
-        color="#5d6b75",
-    )
-    colorbar_axes = figure.add_axes([0.035, 0.040, 0.93, 0.032])
-    colorbar = figure.colorbar(
-        image,
-        cax=colorbar_axes,
-        orientation="horizontal",
-        extend="neither",
-    )
-    colorbar.set_ticks(colorbar_ticks)
-    if anomaly:
-        colorbar.set_ticklabels(
-            [f"+{int(tick)}" if tick > 0 else str(int(tick)) for tick in colorbar_ticks]
-        )
-    colorbar.ax.tick_params(labelsize=8.5, length=4, colors="#40515e")
-    colorbar.outline.set_edgecolor("#52636c")
-    colorbar.outline.set_linewidth(0.65)
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    figure.savefig(output_path, dpi=120, facecolor=figure.get_facecolor())
-    plt.close(figure)
-
-
-def relative_path(path: Path, repo_root: Path) -> str:
-    try:
-        return path.resolve().relative_to(repo_root.resolve()).as_posix()
-    except ValueError:
-        return path.resolve().as_posix()
-
-
-def write_manifest(path: Path, repo_root: Path, run_entry: dict) -> None:
-    payload = {
-        "schema_version": 1,
-        "kind": "cfsv2_seasonal_manifest",
-        "generated_utc": iso_utc(dt.datetime.now(dt.timezone.utc)),
-        "source": "NOAA CFSv2 NOMADS",
-        "source_url": NOMADS_ROOT,
-        "runs": [],
-    }
-    if path.exists():
-        try:
-            existing = json.loads(path.read_text(encoding="utf-8"))
-            if isinstance(existing, dict) and isinstance(existing.get("runs"), list):
-                payload.update({key: existing[key] for key in ("schema_version", "kind", "source", "source_url") if key in existing})
-                payload["runs"] = existing["runs"]
-        except (OSError, ValueError) as exc:
-            raise CFSv2Error(f"could not read existing CFSv2 manifest {path}: {exc}") from exc
-    payload["generated_utc"] = iso_utc(dt.datetime.now(dt.timezone.utc))
-    payload["runs"] = [run for run in payload["runs"] if run.get("id") != run_entry.get("id")]
-    payload["runs"].append(run_entry)
-    payload["runs"].sort(key=lambda item: str(item.get("id", "")), reverse=True)
+def baseline_for_target(args: argpar…5116 tokens truncated…)), reverse=True)
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_name(path.name + ".tmp")
     temporary.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
@@ -1290,10 +846,7 @@ def run(args: argparse.Namespace) -> int:
             )
             start_date = dt.datetime.strptime(first_target, "%Y%m")
             end_date = dt.datetime.strptime(last_target, "%Y%m")
-            if start_date.year == end_date.year:
-                period_label = f"{start_date:%b}\u2013{end_date:%b %Y}"
-            else:
-                period_label = f"{start_date:%b %Y}\u2013{end_date:%b %Y}"
+            period_label = seasonal_period_label(first_target, last_target)
             output_path = output_dir / init / f"cfsv2_z500{'a' if not args.absolute else ''}_{first_target}-{last_target}.jpg"
             render_map(
                 seasonal_grid,
@@ -1349,3 +902,4 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+

@@ -17,8 +17,15 @@ For each requested lead month, the adapter:
 3. Validates the decoded 1-degree global grid and averages the selected
    `monthly_grib_01` through `monthly_grib_04` member streams.
 4. Subtracts a caller-supplied month-matched CFSv2/reforecast baseline.
-5. Renders a North America blue/white/red 500-mb height-anomaly graphic and
-   updates `public/seasonal/cfsv2_manifest.json`.
+5. Renders a zoomed North America/Greenland blue/white/red 500-mb
+   height-anomaly graphic on a 1080×1080 social canvas and updates
+   `public/seasonal/cfsv2_manifest.json`.
+
+The map uses a centered ECMWF-style Lambert Conformal Conic frame. The
+projected window includes Alaska, Canada, the United States, Mexico, and all
+of Greenland; the anomaly field remains continuous in the rectangular frame,
+while border drawing is limited to the North America/Greenland window so
+South America and unrelated eastern-Atlantic outlines do not appear.
 
 `--lead-months "1,2,3"` writes individual target-month maps. Adding
 `--seasonal-window "1,2,3"` also writes a 3-month mean map, using the mean of
@@ -186,3 +193,4 @@ Each target entry uses these fields:
 
 The Earth Engine collection is useful for its available 6-hourly surface
 fields, but it is not the pressure-level `HGT:500 mb` source used here.
+

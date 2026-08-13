@@ -59,11 +59,23 @@ def main() -> int:
         "header_detail",
         "Init {init_date:%d %b %Y %HZ}",
         "Height contours in dam",
+        "seasonal_period_label",
+        "DJF {end.year}",
         '"status"',
     ):
         check(term in adapter, f"adapter missing contract term: {term}")
     check("colorbar.set_label" not in adapter, "footer colorbar description should be absent")
-    check("0.045" not in adapter, "footer text position should be absent")
+    check("figure.text(0.035, 0.045" not in adapter, "footer text position should be absent")
+    check("ANOMALY_MIN_M = -200.0" in adapter, "anomaly lower scale bound should be -200 m")
+    check("ANOMALY_MAX_M = 200.0" in adapter, "anomaly upper scale bound should be +200 m")
+    check("[-200, -160, -120, -80, -40, 0, 40, 80, 120, 160, 200]" in adapter, "anomaly scale ticks should span -200 to +200 m")
+    check("DEFAULT_REGION = (-160.0, -10.0, 22.0, 85.0)" in adapter, "seasonal graphic should use the centered North America and Greenland region")
+    check("figsize=(9.0, 9.0)" in adapter, "seasonal graphic should use the 1080x1080 social canvas")
+    check("map_height = map_width * (y_max - y_min) / (x_max - x_min)" in adapter, "seasonal map box should preserve projection aspect")
+    check("horizontal_x, _ = lcc_project" in adapter, "projected map window should be centered from projection coordinates")
+    check("top_edge_lons = np.linspace(lon_min, lon_max, 240)" in adapter, "projected map window should retain the full Greenland edge")
+    check("border_lat_min = 14.0" in adapter, "border rendering should exclude South America")
+    check("if not (lon_min <= longitude <= lon_max) or latitude < border_lat_min:" in adapter, "border rendering should stay inside the North America/Greenland window")
     workflow = WORKFLOW.read_text(encoding="utf-8")
     for term in ("product:", "500mb_height_anomaly", "500mb_height_absolute", "CFSV2_PRODUCT"):
         check(term in workflow, f"workflow missing product selector term: {term}")
@@ -78,3 +90,4 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
