@@ -42,25 +42,29 @@ GRID_LAT_COUNT = 181
 ANOMALY_MIN_M = -200.0
 ANOMALY_MAX_M = 200.0
 ANOMALY_PALETTE = [
-    "#32678e",
-    "#3f80a7",
-    "#5796b8",
-    "#72abc6",
-    "#98c1d2",
-    "#c0d8e1",
-    "#e8eef0",
-    "#f9e4e2",
-    "#f2c2c0",
-    "#e39a97",
-    "#d87573",
-    "#c45257",
-    "#a83b49",
+    "#24527a",
+    "#2e6d94",
+    "#3e86a8",
+    "#569fba",
+    "#75b5c8",
+    "#9bc9d6",
+    "#d9e6ea",
+    "#f6dedd",
+    "#efb8b6",
+    "#e49290",
+    "#d56b6e",
+    "#c24a57",
+    "#a63449",
+    "#84283f",
 ]
 ANOMALY_TICKS = [-200, -160, -120, -80, -40, 0, 40, 80, 120, 160, 200]
 # A social-sized North America view: retain Alaska and all of Greenland while
 # keeping the lower field in the subtropics. Border drawing applies a separate
 # 14°N cutoff so South America does not appear in the frame.
 DEFAULT_REGION = (-160.0, -10.0, 22.0, 85.0)
+# Shift the projected window slightly west so the CONUS sits at the visual
+# center of the square canvas while preserving Alaska and all of Greenland.
+PROJECTED_X_SHIFT_FRACTION = 0.035
 DEFAULT_BORDER_URLS = (
     (
         "countries.geojson",
@@ -708,6 +712,9 @@ def render_map(
     _, top_edge_y = lcc_project(top_edge_lons, np.full(top_edge_lons.shape, lat_max))
     x_min, x_max = float(np.nanmin(horizontal_x)), float(np.nanmax(horizontal_x))
     y_min, y_max = float(np.nanmin(bottom_y)), float(np.nanmax(top_edge_y))
+    projected_x_shift = (x_max - x_min) * PROJECTED_X_SHIFT_FRACTION
+    x_min -= projected_x_shift
+    x_max -= projected_x_shift
     x_pad = max(0.01, (x_max - x_min) * 0.006)
     y_pad = max(0.01, (y_max - y_min) * 0.006)
 
@@ -923,8 +930,37 @@ def render_map(
     display_period = period_label or target_date.strftime("%B %Y")
     mean_label = ensemble_label or f"{len(members)}-member mean"
     title = "CFSv2 500-mb Geopotential Height & Anomaly (m)" if anomaly else "CFSv2 500-mb Geopotential Height (m)"
-    figure.text(0.035, 0.965, title, ha="left", va="center", fontsize=15.5, fontweight="bold", color="#172735")
-    figure.text(0.965, 0.965, f"Valid: {display_period}", ha="right", va="center", fontsize=13.0, fontweight="bold", color="#172735")
+    title_text = figure.text(
+        0.035,
+        0.965,
+        title,
+        ha="left",
+        va="center",
+        fontsize=15.5,
+        fontweight="bold",
+        color="#172735",
+    )
+    valid_text = figure.text(
+        0.965,
+        0.965,
+        f"Valid: {display_period}",
+        ha="right",
+        va="center",
+        fontsize=13.0,
+        fontweight="bold",
+        color="#172735",
+    )
+    # A long calendar-month label such as "Valid: December 2026" must not
+    # overlap the title and visually erase the first characters of "Valid".
+    # Fit only the title when the two header artists do not leave a readable
+    # gap, preserving the prominent right-aligned valid-period label.
+    figure.canvas.draw()
+    renderer = figure.canvas.get_renderer()
+    title_box = title_text.get_window_extent(renderer=renderer)
+    valid_box = valid_text.get_window_extent(renderer=renderer)
+    available_title_width = max(1.0, valid_box.x0 - title_box.x0 - 16.0)
+    if title_box.width > available_title_width:
+        title_text.set_fontsize(max(12.5, 15.5 * available_title_width / title_box.width))
     figure.text(
         0.035,
         0.925,
@@ -963,7 +999,16 @@ def render_map(
         colorbar.set_ticklabels(
             [f"+{int(tick)}" if tick > 0 else str(int(tick)) for tick in colorbar_ticks]
         )
-    colorbar.ax.tick_params(labelsize=9.5, length=4.5, colors="#40515e")
+    colorbar.ax.tick_params(
+        axis="x",
+        which="major",
+        labelsize=10.0,
+        length=5.0,
+        width=0.85,
+        pad=1.8,
+        colors="#263640",
+        direction="out",
+    )
     colorbar.outline.set_edgecolor("#52636c")
     colorbar.outline.set_linewidth(0.65)
     output_path.parent.mkdir(parents=True, exist_ok=True)
