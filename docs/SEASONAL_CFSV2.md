@@ -11,15 +11,33 @@ WeatherNext `forecast_hour` schema.
 
 For each requested lead month, the adapter:
 
-1. Builds the official NOMADS `pgbf.<member>.<init>.<target>.avrg.grib.grb2`
-   URL for the requested CFSv2 cycle and target month.
-2. Caches the raw GRIB2 file and runs `wgrib2 -match ":HGT:500 mb:" -csv`.
-3. Validates the decoded 1-degree global grid and averages the selected
+1. Builds the official NOMADS monthly URL for the selected product and target
+   month. Height products use `pgbf`; precipitation uses the matching `flxf`
+   monthly file.
+2. Caches the raw GRIB2 file and runs a product-specific `wgrib2` field filter.
+3. Validates the decoded global grid and averages the selected
    `monthly_grib_01` through `monthly_grib_04` member streams.
-4. Subtracts a caller-supplied month-matched CFSv2/reforecast baseline.
-5. Renders a zoomed North America/Greenland blue/white/red 500-mb
-   height-anomaly graphic on a 1080×1080 social canvas and updates
-   `public/seasonal/cfsv2_manifest.json`.
+4. Subtracts a caller-supplied or official month-matched CFSv2/reforecast
+   baseline.
+5. Renders the selected operational map on a 1080×1080 social canvas and
+   updates `public/seasonal/cfsv2_manifest.json`.
+
+The supported production products are:
+
+| Product | Source field | Display units | Seasonal reduction |
+| --- | --- | --- | --- |
+| `500mb_height_anomaly` | `HGT:500 mb` from `pgbf` | m | 3-month mean |
+| `precipitation_anomaly` | `PRATE:surface` from `flxf` | in | 3-month total |
+
+For precipitation, the source rate (`kg m-2 s-1`) is multiplied by the actual
+number of seconds in each target calendar month. Since `1 kg m-2 = 1 mm` of
+water, the result is converted from millimetres to inches. Individual maps and
+seasonal totals are therefore shown in inches. Precipitation graphics use a
+CONUS-only projection with brown negative anomalies and green positive
+anomalies; the scale runs from -8 to +8 inches with a labeled tick at every
+inch. The precipitation FLXF files use the native 384×190 Gaussian grid; the
+renderer interpolates that grid directly so the entire CONUS projection is
+filled.
 
 The map uses a centered ECMWF-style Lambert Conformal Conic frame. The
 projected window includes Alaska, Canada, the United States, Mexico, and all
@@ -28,8 +46,9 @@ while border drawing is limited to the North America/Greenland window so
 South America and unrelated eastern-Atlantic outlines do not appear.
 
 `--lead-months "1,2,3"` writes individual target-month maps. Adding
-`--seasonal-window "1,2,3"` also writes a 3-month mean map, using the mean of
-the selected forecast months and the corresponding mean baseline.
+`--seasonal-window "1,2,3"` also writes a seasonal map. Height uses the mean
+of the selected forecast months and corresponding mean baseline; precipitation
+uses the total across the selected months and corresponding total baseline.
 
 The adapter also supports the CPC-style lagged initial-condition window with
 `--rolling-days 10`. CFSv2 is run four times per day, so this produces 40
@@ -40,7 +59,7 @@ initial-condition period, while remaining explicit that this is a model-based
 product and not CPC's official outlook.
 
 The NOMADS real-time archive rotates after seven days. Each rolling run writes
-the decoded HGT500 grids to `--rolling-state-dir` so a scheduled daily job can
+the decoded product grids to `--rolling-state-dir` so a scheduled daily job can
 carry the older members forward. A full 40-member product therefore requires
 the state cache to be retained between runs; `--allow-partial-rolling` is
 available only for clearly marked incomplete smoke products.
@@ -57,16 +76,21 @@ presenting an incomplete forecast as current.
 ## Baseline rule
 
 An anomaly image is only produced when `--baseline-file`, `--baseline-dir`, or
-`--ncei-calibration` is provided. A baseline may be a CSV in the adapter's decoded-grid format or a
-GRIB2 file containing `HGT:500 mb:`. With `--baseline-dir`, the preferred
-month-specific names are `z500_YYYYMM.csv`, `z500_YYYYMM.grb2`, or
-`z500_YYYYMM.grib2`.
+`--ncei-calibration` is provided. A baseline may be a CSV in the adapter's
+decoded-grid format or a GRIB2 file containing the selected source field. For
+`500mb_height_anomaly`, preferred month-specific files in
+`--baseline-dir` are `z500_YYYYMM.csv`, `z500_YYYYMM.grb2`, or
+`z500_YYYYMM.grib2`. For precipitation, use `prate_YYYYMM.csv` or the
+corresponding GRIB2 name; CSV precipitation baselines must already be monthly
+totals in inches.
 
 The `--ncei-calibration` option downloads the matching official NCEI CFS
 reforecast calibration file for the initialization month/day/cycle and lead.
-That published pressure-level calibration is `1982-2010` and is recorded in
-the manifest; it is separate from the current CPC display convention of
-`1991-2020` for the public monthly/seasonal anomaly pages.
+Height uses the pressure-level `pgbf` calibration; precipitation uses the
+official `flxf` flux calibration. Both published calibrations cover
+`1982-2010` and are recorded in the manifest; this is separate from the
+current CPC display convention of `1991-2020` for the public monthly/seasonal
+anomaly pages.
 
 In rolling mode, NCEI calibration uses the anchor initialization's matching
 lead to avoid downloading a separate calibration file for every lagged member.
@@ -91,9 +115,8 @@ and `Pillow`; `wgrib2` must be installed separately. The adapter honors
 
 The GitHub Actions workflow includes a **CFSv2 product** dropdown. The current
 adapter supports `500mb_height_anomaly` (the production output, selected by
-default) and `500mb_height_absolute` (a clearly labelled decoder/source smoke
-output). CFSv2 parameter choices such as 850-mb temperature or precipitation
-are not shown until their data decoding and baseline logic are implemented.
+default), `precipitation_anomaly`, and `500mb_height_absolute` (a clearly
+labelled decoder/source smoke output).
 
 Decode one target without requiring a baseline or rendering dependencies:
 
@@ -126,6 +149,20 @@ Use the official NCEI calibration automatically:
   -Init "2026081000" `
   -LeadMonths "1" `
   -Members "1,2,3,4" `
+  -UseNceiCalibration
+```
+
+Generate precipitation anomaly graphics using the same DJF rolling workflow
+as the height maps:
+
+```powershell
+.\scripts\render_cfsv2.ps1 `
+  -Product "precipitation_anomaly" `
+  -Init "2026081000" `
+  -LeadMonths "4,5,6" `
+  -SeasonalWindow "4,5,6" `
+  -RollingDays 10 `
+  -RollingMember 1 `
   -UseNceiCalibration
 ```
 
@@ -168,9 +205,11 @@ Each target entry uses these fields:
 | `init_utc` | Forecast initialization time |
 | `valid_start_utc` / `valid_end_utc` | Calendar month represented |
 | `lead_month` / `target_month` | CFSv2 lead and `YYYYMM` target |
-| `aggregation` | Monthly forecast average |
-| `field` | `z500_anomaly` for production or `z500` for smoke output |
-| `units` | Metres |
+| `aggregation` | Monthly forecast average, monthly precipitation total, or 3-month seasonal total/mean |
+| `field` | `z500_anomaly`, `z500`, or `precipitation_anomaly` |
+| `units` | m for height; in for precipitation |
+| `raw_field` / `raw_units` | Source GRIB field and units before any conversion |
+| `conversion` | Product-specific unit conversion, including calendar-month PRATE totals |
 | `baseline` | Baseline file, label, and years when applicable |
 | `statistic` | `ensemble_mean` |
 | `ensemble_scope` | The selected streams' initialization-cycle scope |
@@ -187,6 +226,8 @@ Each target entry uses these fields:
 - [NOMADS CFS pressure-level filter](https://nomads.ncep.noaa.gov/cgi-bin/filter_cfs_pgb.pl)
 - [NOAA CFSv2 model page](https://www.ncei.noaa.gov/products/weather-climate-models/climate-forecast-system)
 - [NCEI CFS reforecast pressure-level calibration catalog](https://www.ncei.noaa.gov/thredds/catalog/model-cfs_refor_calclim_mm_9m_pgbf/catalog.html)
+- [NCEI CFS reforecast flux calibration catalog](https://www.ncei.noaa.gov/thredds/catalog/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/catalog.html)
+- [NOAA NOMADS CFS flux fields](https://nomads.ncep.noaa.gov/cgi-bin/filter_cfs_flx.pl)
 - [NCEP CPC CFSv2 seasonal forecasts](https://www.cpc.ncep.noaa.gov/products/CFSv2/CFSv2seasonal.shtml)
 - [CFSv2 forecast-file metadata notes](https://www.cpc.ncep.noaa.gov/products/tools/wgrib2/fix_CFSv2_fcst.html)
 - [Earth Engine CFSv2 collection](https://developers.google.com/earth-engine/datasets/catalog/NOAA_CFSV2_FOR6H_HARMONIZED)

@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
-"""Fetch and render CFSv2 monthly 500-mb height products.
+"""Fetch and render CFSv2 monthly seasonal products.
 
 This is intentionally a standalone seasonal adapter.  WeatherNext frames use
 Earth Engine and forecast-hour metadata; CFSv2 seasonal frames use the NOAA
 NOMADS monthly ``pgbf`` GRIB2 files and calendar-month lead metadata.
 
-The production anomaly path requires a caller-supplied CFSv2/reforecast
-baseline.  The script never substitutes a WeatherNext, ERA5, or MERRA-2
-climatology.  ``--absolute`` is available only for source/decoder smoke tests
-and is labelled as an absolute-height product in the manifest and image.
+The production anomaly path uses a month-matched CFSv2/reforecast baseline.
+The script never substitutes a WeatherNext, ERA5, or MERRA-2 climatology.
+``--absolute`` is available only for source/decoder smoke tests and is labelled
+as an absolute-height product in the manifest and image.
 """
 
 from __future__ import annotations
@@ -27,20 +27,29 @@ import subprocess
 import sys
 import time
 from dataclasses import dataclass
-from typing import Iterable, Iterator, Sequence
+from typing import Callable, Iterable, Iterator, Sequence
 from urllib.parse import urljoin
 
 
 NOMADS_ROOT = "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/"
 NCEI_CALIBRATION_ROOT = "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs_refor_calclim_mm_9m_pgbf/"
+NCEI_FLUX_CALIBRATION_ROOT = (
+    "https://www.ncei.noaa.gov/thredds/fileServer/"
+    "model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/"
+)
 NCEI_CALIBRATION_YEARS = "1982-2010"
 NCEI_CALIBRATION_LABEL = "NCEI CFS reforecast calibration climatology; 1982-2010"
+NCEI_FLUX_CALIBRATION_LABEL = "NCEI CFS reforecast flux calibration climatology; 1982-2010"
 CFS_CYCLE_HOURS = (0, 6, 12, 18)
 ROLLING_MEMBER_DEFAULT = 1
 GRID_LON_COUNT = 360
 GRID_LAT_COUNT = 181
+FLUX_GRID_LON_COUNT = 384
+FLUX_GRID_LAT_COUNT = 190
 ANOMALY_MIN_M = -200.0
 ANOMALY_MAX_M = 200.0
+PRECIP_ANOMALY_MIN_IN = -8.0
+PRECIP_ANOMALY_MAX_IN = 8.0
 ANOMALY_PALETTE = [
     "#24527a",
     "#2e6d94",
@@ -58,10 +67,32 @@ ANOMALY_PALETTE = [
     "#84283f",
 ]
 ANOMALY_TICKS = [-200, -160, -120, -80, -40, 0, 40, 80, 120, 160, 200]
+PRECIP_ANOMALY_TICKS = list(range(-8, 9))
+PRECIP_ANOMALY_PALETTE = [
+    "#7f3b08",
+    "#914b0d",
+    "#a6611a",
+    "#bd7a2d",
+    "#d0a052",
+    "#dfbd7d",
+    "#ead8b3",
+    "#f5ead8",
+    "#edf7e9",
+    "#d9efd2",
+    "#bfe4b6",
+    "#9bd694",
+    "#74c476",
+    "#41ab5d",
+    "#238b45",
+    "#006d2c",
+]
 # A social-sized North America view: retain Alaska and all of Greenland while
 # keeping the lower field in the subtropics. Border drawing applies a separate
 # 14°N cutoff so South America does not appear in the frame.
 DEFAULT_REGION = (-160.0, -10.0, 22.0, 85.0)
+# Precipitation is a CONUS-only product: the lower 48 states remain the
+# subject of the map, with a small surrounding margin for geographic context.
+CONUS_PRECIP_REGION = (-128.0, -65.0, 22.0, 52.0)
 # Shift the projected window slightly west so the CONUS sits at the visual
 # center of the square canvas while preserving Alaska and all of Greenland.
 PROJECTED_X_SHIFT_FRACTION = 0.035
@@ -76,6 +107,87 @@ DEFAULT_BORDER_URLS = (
     ),
 )
 
+PRODUCT_HEIGHT_ANOMALY = "500mb_height_anomaly"
+PRODUCT_HEIGHT_ABSOLUTE = "500mb_height_absolute"
+PRODUCT_PRECIPITATION_ANOMALY = "precipitation_anomaly"
+
+# The NOMADS filenames retain the ``pgbf.`` and ``flxf.`` product prefixes.
+# The FLXF monthly PRATE files are on the native CFSv2 Gaussian grid.  Keep
+# the source field and conversion metadata explicit so a manifest can explain
+# exactly how the displayed monthly precipitation total was made.
+PRODUCT_SPECS = {
+    PRODUCT_HEIGHT_ANOMALY: {
+        "name": PRODUCT_HEIGHT_ANOMALY,
+        "source_kind": "pgbf",
+        "match": ":HGT:500 mb:",
+        "raw_field": "HGT:500 mb",
+        "raw_units": "m",
+        "field": "z500_anomaly",
+        "units": "m",
+        "grid_shape": (GRID_LON_COUNT, GRID_LAT_COUNT),
+        "cache_tag": "hgt500",
+        "state_tag": "hgt500",
+        "id_token": "z500a",
+        "file_token": "z500a",
+        "title": "CFSv2 500-mb Geopotential Height & Anomaly (m)",
+        "absolute_title": "CFSv2 500-mb Geopotential Height (m)",
+        "height_contours": True,
+        "baseline_root": NCEI_CALIBRATION_ROOT,
+        "baseline_label": NCEI_CALIBRATION_LABEL,
+        "seasonal_reducer": "mean",
+        "seasonal_aggregation": "seasonal mean",
+        "seasonal_units": "m",
+    },
+    PRODUCT_HEIGHT_ABSOLUTE: {
+        "name": PRODUCT_HEIGHT_ABSOLUTE,
+        "source_kind": "pgbf",
+        "match": ":HGT:500 mb:",
+        "raw_field": "HGT:500 mb",
+        "raw_units": "m",
+        "field": "z500",
+        "units": "m",
+        "grid_shape": (GRID_LON_COUNT, GRID_LAT_COUNT),
+        "cache_tag": "hgt500",
+        "state_tag": "hgt500",
+        "id_token": "z500-absolute",
+        "file_token": "z500",
+        "title": "CFSv2 500-mb Geopotential Height & Anomaly (m)",
+        "absolute_title": "CFSv2 500-mb Geopotential Height (m)",
+        "height_contours": True,
+        "baseline_root": NCEI_CALIBRATION_ROOT,
+        "baseline_label": NCEI_CALIBRATION_LABEL,
+        "seasonal_reducer": "mean",
+        "seasonal_aggregation": "seasonal mean",
+        "seasonal_units": "m",
+    },
+    PRODUCT_PRECIPITATION_ANOMALY: {
+        "name": PRODUCT_PRECIPITATION_ANOMALY,
+        "source_kind": "flxf",
+        "match": ":PRATE:surface:",
+        "raw_field": "PRATE:surface",
+        "raw_units": "kg m-2 s-1",
+        "field": "precipitation_anomaly",
+        "units": "in",
+        "grid_shape": (FLUX_GRID_LON_COUNT, FLUX_GRID_LAT_COUNT),
+        "cache_tag": "prate",
+        # Keep inch-state files separate from the earlier mm implementation so
+        # a retained rolling grid can never be reused with the wrong units.
+        "state_tag": "prate_in",
+        "id_token": "prate-anomaly",
+        "file_token": "pratea",
+        "title": "CFSv2 CONUS Precipitation Anomaly (in)",
+        "absolute_title": "CFSv2 CONUS Precipitation (in)",
+        "region": CONUS_PRECIP_REGION,
+        "height_contours": False,
+        "baseline_root": NCEI_FLUX_CALIBRATION_ROOT,
+        "baseline_label": NCEI_FLUX_CALIBRATION_LABEL,
+        "seasonal_reducer": "sum",
+        "seasonal_aggregation": "seasonal total",
+        "seasonal_units": "in",
+        "conversion": "PRATE multiplied by calendar-month seconds, converted from mm to inches",
+    },
+}
+
 
 class CFSv2Error(RuntimeError):
     """A user-actionable CFSv2 pipeline error."""
@@ -83,7 +195,7 @@ class CFSv2Error(RuntimeError):
 
 @dataclass
 class Grid:
-    """A regular longitude/latitude grid represented without a hard dependency."""
+    """A longitude/latitude grid represented without a hard dependency."""
 
     lons: list[float]
     lats: list[float]
@@ -91,7 +203,25 @@ class Grid:
 
     def assert_compatible(self, other: "Grid", label: str) -> None:
         if self.lons != other.lons or self.lats != other.lats:
-            raise CFSv2Error(f"{label} grid does not match the CFSv2 1-degree grid")
+            raise CFSv2Error(f"{label} grid does not match the forecast grid")
+
+
+def get_product_spec(product: str) -> dict:
+    try:
+        return PRODUCT_SPECS[product]
+    except KeyError as exc:
+        available = ", ".join(sorted(PRODUCT_SPECS))
+        raise CFSv2Error(f"unsupported CFSv2 product {product!r}; choose from {available}") from exc
+
+
+def selected_product(args: argparse.Namespace) -> tuple[str, dict, bool]:
+    product = getattr(args, "product", PRODUCT_HEIGHT_ANOMALY)
+    if getattr(args, "absolute", False):
+        if product not in {PRODUCT_HEIGHT_ANOMALY, PRODUCT_HEIGHT_ABSOLUTE}:
+            raise CFSv2Error("--absolute is only valid with the 500mb_height_absolute product")
+        product = PRODUCT_HEIGHT_ABSOLUTE
+    spec = get_product_spec(product)
+    return product, spec, product == PRODUCT_HEIGHT_ABSOLUTE
 
 
 def iso_utc(value: dt.datetime) -> str:
@@ -213,28 +343,42 @@ def find_wgrib2(explicit: str) -> str:
     )
 
 
-def cfs_file_url(init: str, member: int, target: str) -> str:
+def cfs_file_url(init: str, member: int, target: str, source_kind: str = "pgbf") -> str:
     date_text, hour_text = init[:8], init[8:]
-    filename = f"pgbf.{member:02d}.{init}.{target}.avrg.grib.grb2"
+    filename = f"{source_kind}.{member:02d}.{init}.{target}.avrg.grib.grb2"
     return urljoin(
         NOMADS_ROOT,
         f"cfs.{date_text}/{hour_text}/monthly_grib_{member:02d}/{filename}",
     )
 
 
-def cached_source_path(cache_dir: Path, init: str, member: int, target: str) -> Path:
-    filename = Path(cfs_file_url(init, member, target)).name
+def cached_source_path(
+    cache_dir: Path,
+    init: str,
+    member: int,
+    target: str,
+    source_kind: str = "pgbf",
+) -> Path:
+    filename = Path(cfs_file_url(init, member, target, source_kind)).name
     return cache_dir / init / f"member_{member:02d}" / filename
 
 
-def ncei_calibration_url(init: str, lead: int) -> str:
+def ncei_calibration_url(init: str, lead: int, source_kind: str = "pgbf") -> str:
     month, day, hour = init[4:6], init[6:8], init[8:]
-    filename = f"pgbf.{month}.{day}.{hour}.l{lead:02d}.fclm.{NCEI_CALIBRATION_YEARS.replace('-', '.')}.grb2"
-    return urljoin(NCEI_CALIBRATION_ROOT, f"{month}/{filename}")
+    filename = f"{source_kind}.{month}.{day}.{hour}.l{lead:02d}.fclm.{NCEI_CALIBRATION_YEARS.replace('-', '.')}.grb2"
+    root = NCEI_FLUX_CALIBRATION_ROOT if source_kind == "flxf" else NCEI_CALIBRATION_ROOT
+    return urljoin(root, f"{month}/{filename}")
 
 
-def cached_calibration_path(cache_dir: Path, init: str, lead: int) -> Path:
-    return cache_dir / "calibration" / init / Path(ncei_calibration_url(init, lead)).name
+def cached_calibration_path(
+    cache_dir: Path,
+    init: str,
+    lead: int,
+    source_kind: str = "pgbf",
+) -> Path:
+    return cache_dir / "calibration" / source_kind / init / Path(
+        ncei_calibration_url(init, lead, source_kind)
+    ).name
 
 
 def rolling_cycle_inits(end_init: str, cycle_count: int) -> list[str]:
@@ -258,8 +402,18 @@ def lead_for_target(init: str, target: str) -> int:
     raise CFSv2Error(f"CFSv2 cycle {init} has no 1-9 month lead for target {target}")
 
 
-def rolling_state_path(state_dir: Path, init: str, member: int, target: str) -> Path:
-    return state_dir / target / f"hgt500.{init}.m{member:02d}.csv.gz"
+def rolling_state_path(
+    state_dir: Path,
+    init: str,
+    member: int,
+    target: str,
+    state_tag: str = "hgt500",
+) -> Path:
+    if state_tag == "hgt500":
+        # Preserve the original height-state layout so existing rolling cache
+        # entries remain usable after adding the FLXF product.
+        return state_dir / target / f"hgt500.{init}.m{member:02d}.csv.gz"
+    return state_dir / state_tag / target / f"{state_tag}.{init}.m{member:02d}.csv.gz"
 
 
 def write_grid_state(grid: Grid, path: Path) -> None:
@@ -326,7 +480,11 @@ def _normalize_lon(value: float) -> float:
     return round(lon, 6)
 
 
-def grid_from_rows(rows: Iterable[Sequence[str]], source: str) -> Grid:
+def grid_from_rows(
+    rows: Iterable[Sequence[str]],
+    source: str,
+    expected_shape: tuple[int, int] | None = None,
+) -> Grid:
     points: dict[tuple[float, float], float] = {}
     for row in rows:
         if len(row) < 3:
@@ -340,10 +498,14 @@ def grid_from_rows(rows: Iterable[Sequence[str]], source: str) -> Grid:
 
     lons = sorted({lon for lon, _ in points})
     lats = sorted({lat for _, lat in points})
-    if len(lons) != GRID_LON_COUNT or len(lats) != GRID_LAT_COUNT:
+    if expected_shape and (len(lons), len(lats)) != expected_shape:
+        expected_lons, expected_lats = expected_shape
         raise CFSv2Error(
-            f"{source} did not decode a 360x181 grid (got {len(lons)}x{len(lats)})"
+            f"{source} did not decode the expected {expected_lons}x{expected_lats} grid "
+            f"(got {len(lons)}x{len(lats)})"
         )
+    if len(lons) < 2 or len(lats) < 2:
+        raise CFSv2Error(f"{source} did not decode a usable longitude/latitude grid")
     values = []
     for lat in lats:
         row = []
@@ -355,20 +517,42 @@ def grid_from_rows(rows: Iterable[Sequence[str]], source: str) -> Grid:
     return Grid(lons=lons, lats=lats, values=values)
 
 
-def read_grid_csv(csv_path: Path) -> Grid:
+def read_grid_csv(csv_path: Path, expected_shape: tuple[int, int] | None = None) -> Grid:
     with csv_path.open("r", encoding="utf-8", newline="") as handle:
-        return grid_from_rows(csv.reader(handle), str(csv_path))
+        return grid_from_rows(csv.reader(handle), str(csv_path), expected_shape)
 
 
-def decode_grib(grib_path: Path, wgrib2: str, force: bool = False) -> Grid:
-    csv_path = grib_path.with_name(grib_path.name + ".hgt500.csv")
+def decode_grib(
+    grib_path: Path,
+    wgrib2: str,
+    force: bool = False,
+    match_pattern: str = ":HGT:500 mb:",
+    cache_tag: str = "hgt500",
+    expected_shape: tuple[int, int] | None = None,
+) -> Grid:
+    csv_path = grib_path.with_name(grib_path.name + f".{cache_tag}.csv")
     if force or not csv_path.exists() or csv_path.stat().st_size == 0:
-        command = [wgrib2, str(grib_path), "-match", ":HGT:500 mb:", "-csv", str(csv_path)]
+        command = [wgrib2, str(grib_path), "-match", match_pattern, "-csv", str(csv_path)]
         result = subprocess.run(command, capture_output=True, text=True)
         if result.returncode != 0:
             detail = (result.stderr or result.stdout or "wgrib2 failed").strip()
             raise CFSv2Error(f"wgrib2 failed for {grib_path.name}: {detail[-800:]}")
-    return read_grid_csv(csv_path)
+    return read_grid_csv(csv_path, expected_shape)
+
+
+def transform_grid(grid: Grid, transform: Callable[[float], float]) -> Grid:
+    values = []
+    for row in grid.values:
+        values.append([transform(value) if math.isfinite(value) else math.nan for value in row])
+    return Grid(grid.lons[:], grid.lats[:], values)
+
+
+def monthly_precipitation_total_inches(grid: Grid, target: str) -> Grid:
+    start = dt.datetime.strptime(target, "%Y%m")
+    next_year, next_month = month_after(start.year, start.month, 1)
+    end = dt.datetime(next_year, next_month, 1)
+    seconds = (end - start).total_seconds()
+    return transform_grid(grid, lambda value: value * seconds / 25.4)
 
 
 def mean_grids(grids: Sequence[Grid]) -> Grid:
@@ -388,6 +572,23 @@ def mean_grids(grids: Sequence[Grid]) -> Grid:
     return Grid(first.lons[:], first.lats[:], values)
 
 
+def sum_grids(grids: Sequence[Grid]) -> Grid:
+    if not grids:
+        raise CFSv2Error("cannot sum an empty CFSv2 grid set")
+    first = grids[0]
+    for grid in grids[1:]:
+        first.assert_compatible(grid, "seasonal member")
+    values: list[list[float]] = []
+    for row_index in range(len(first.lats)):
+        sum_row = []
+        for column_index in range(len(first.lons)):
+            samples = [grid.values[row_index][column_index] for grid in grids]
+            finite = [sample for sample in samples if math.isfinite(sample)]
+            sum_row.append(sum(finite) if finite else math.nan)
+        values.append(sum_row)
+    return Grid(first.lons[:], first.lats[:], values)
+
+
 def decode_target_ensemble(
     args: argparse.Namespace,
     init: str,
@@ -399,8 +600,28 @@ def decode_target_ensemble(
     wgrib2: str,
     repo_root: Path,
     last_request: float,
+    product_spec: dict,
 ) -> tuple[Grid, list[dict], int, int, str, float]:
     """Decode either the original single-cycle ensemble or a rolling blend."""
+
+    source_kind = product_spec["source_kind"]
+
+    def prepare_grid(grid: Grid) -> Grid:
+        if source_kind == "flxf":
+            return monthly_precipitation_total_inches(grid, target)
+        return grid
+
+    def source_metadata() -> dict:
+        metadata = {
+            "product": product_spec["name"],
+            "source_kind": source_kind.upper(),
+            "decoded_field": product_spec["raw_field"],
+            "raw_units": product_spec["raw_units"],
+            "units": product_spec["units"],
+        }
+        if product_spec.get("conversion"):
+            metadata["conversion"] = product_spec["conversion"]
+        return metadata
 
     grids: list[Grid] = []
     source_files: list[dict] = []
@@ -409,9 +630,15 @@ def decode_target_ensemble(
         rolling_member = args.rolling_member
         for cycle in rolling_inits:
             cycle_lead = lead_for_target(cycle, target)
-            url = cfs_file_url(cycle, rolling_member, target)
-            cache_path = cached_source_path(cache_dir, cycle, rolling_member, target)
-            state_path = rolling_state_path(state_dir, cycle, rolling_member, target)
+            url = cfs_file_url(cycle, rolling_member, target, source_kind)
+            cache_path = cached_source_path(cache_dir, cycle, rolling_member, target, source_kind)
+            state_path = rolling_state_path(
+                state_dir,
+                cycle,
+                rolling_member,
+                target,
+                product_spec["state_tag"],
+            )
             source_file = {
                 "initialization": cycle,
                 "initialization_utc": iso_utc(dt.datetime.strptime(cycle, "%Y%m%d%H").replace(tzinfo=dt.timezone.utc)),
@@ -428,12 +655,23 @@ def decode_target_ensemble(
                     max(0.0, args.request_delay),
                     last_request,
                 )
-                grid = decode_grib(cache_path, wgrib2, force=args.force_decode)
+                grid = prepare_grid(
+                    decode_grib(
+                        cache_path,
+                        wgrib2,
+                        force=args.force_decode,
+                        match_pattern=product_spec["match"],
+                        cache_tag=product_spec["cache_tag"],
+                        expected_shape=product_spec["grid_shape"],
+                    )
+                )
                 write_grid_state(grid, state_path)
                 if rolling_inits:
                     # The compressed decoded state is the durable rolling input;
                     # do not grow the CI cache with dozens of 25-MB GRIB2 files.
-                    decoded_csv = cache_path.with_name(cache_path.name + ".hgt500.csv")
+                    decoded_csv = cache_path.with_name(
+                        cache_path.name + f".{product_spec['cache_tag']}.csv"
+                    )
                     for temporary_source in (cache_path, decoded_csv):
                         try:
                             temporary_source.unlink()
@@ -443,9 +681,9 @@ def decode_target_ensemble(
                     {
                         "storage": "nomads_grib2",
                         "downloaded": downloaded,
-                        "decoded_field": "HGT:500 mb",
                     }
                 )
+                source_file.update(source_metadata())
             except Exception as exc:
                 if state_path.exists():
                     grid = read_grid_state(state_path)
@@ -453,10 +691,10 @@ def decode_target_ensemble(
                         {
                             "storage": "retained_decoded_grid",
                             "downloaded": False,
-                            "decoded_field": "HGT:500 mb",
                             "download_error": str(exc),
                         }
                     )
+                    source_file.update(source_metadata())
                 elif args.allow_partial_rolling:
                     source_file.update({"status": "missing", "error": str(exc)})
                     source_files.append(source_file)
@@ -481,29 +719,37 @@ def decode_target_ensemble(
         return mean_grids(grids), source_files, len(grids), expected_count, label, last_request
 
     for member in members:
-        url = cfs_file_url(init, member, target)
-        cache_path = cached_source_path(cache_dir, init, member, target)
+        url = cfs_file_url(init, member, target, source_kind)
+        cache_path = cached_source_path(cache_dir, init, member, target, source_kind)
         downloaded, last_request = download_file(
             url,
             cache_path,
             max(0.0, args.request_delay),
             last_request,
         )
-        grid = decode_grib(cache_path, wgrib2, force=args.force_decode)
-        grids.append(grid)
-        source_files.append(
-            {
-                "initialization": init,
-                "initialization_utc": iso_utc(dt.datetime.strptime(init, "%Y%m%d%H").replace(tzinfo=dt.timezone.utc)),
-                "lead_month": lead_for_target(init, target),
-                "member": member,
-                "url": url,
-                "cache_file": relative_path(cache_path, repo_root),
-                "downloaded": downloaded,
-                "decoded_field": "HGT:500 mb",
-                "status": "available",
-            }
+        grid = prepare_grid(
+            decode_grib(
+                cache_path,
+                wgrib2,
+                force=args.force_decode,
+                match_pattern=product_spec["match"],
+                cache_tag=product_spec["cache_tag"],
+                expected_shape=product_spec["grid_shape"],
+            )
         )
+        grids.append(grid)
+        source_file = {
+            "initialization": init,
+            "initialization_utc": iso_utc(dt.datetime.strptime(init, "%Y%m%d%H").replace(tzinfo=dt.timezone.utc)),
+            "lead_month": lead_for_target(init, target),
+            "member": member,
+            "url": url,
+            "cache_file": relative_path(cache_path, repo_root),
+            "downloaded": downloaded,
+            "status": "available",
+        }
+        source_file.update(source_metadata())
+        source_files.append(source_file)
     return mean_grids(grids), source_files, len(grids), len(grids), f"{len(grids)}-member mean", last_request
 
 
@@ -520,10 +766,19 @@ def subtract_grids(left: Grid, right: Grid) -> Grid:
     return Grid(left.lons[:], left.lats[:], values)
 
 
-def load_baseline(path: Path, wgrib2: str) -> Grid:
+def load_baseline(path: Path, wgrib2: str, product_spec: dict, target: str) -> Grid:
     suffix = path.suffix.lower()
     if suffix in {".grb2", ".grib2", ".grib"}:
-        return decode_grib(path, wgrib2)
+        grid = decode_grib(
+            path,
+            wgrib2,
+            match_pattern=product_spec["match"],
+            cache_tag=f"{product_spec['cache_tag']}_baseline",
+            expected_shape=product_spec["grid_shape"],
+        )
+        if product_spec["source_kind"] == "flxf":
+            return monthly_precipitation_total_inches(grid, target)
+        return grid
     return read_grid_csv(path)
 
 
@@ -535,10 +790,11 @@ def baseline_for_target(args: argparse.Namespace, target: str, repo_root: Path) 
         return path, args.baseline_label or path.name
     if args.baseline_dir:
         directory = resolve_repo_path(args.baseline_dir, repo_root)
+        prefix = "prate" if getattr(args, "product", "").startswith("precipitation") else "z500"
         candidates = (
-            f"z500_{target}.csv",
-            f"z500_{target}.grb2",
-            f"z500_{target}.grib2",
+            f"{prefix}_{target}.csv",
+            f"{prefix}_{target}.grb2",
+            f"{prefix}_{target}.grib2",
             f"baseline_{target}.csv",
             f"baseline_{target}.grb2",
             f"{target}.csv",
@@ -559,7 +815,8 @@ def configured_baseline_label(args: argparse.Namespace) -> str:
     if args.baseline_label:
         return args.baseline_label
     if args.ncei_calibration:
-        return NCEI_CALIBRATION_LABEL
+        product = getattr(args, "product", PRODUCT_HEIGHT_ANOMALY)
+        return get_product_spec(product)["baseline_label"]
     return "user-supplied CFSv2/reforecast baseline"
 
 
@@ -641,6 +898,7 @@ def render_map(
     ensemble_label: str = "",
     height_grid: Grid | None = None,
     region: tuple[float, float, float, float] = DEFAULT_REGION,
+    product_spec: dict | None = None,
 ) -> None:
     try:
         import matplotlib
@@ -652,23 +910,29 @@ def render_map(
     except ImportError as exc:  # pragma: no cover - target installs requirements.txt
         raise CFSv2Error("rendering requires numpy and matplotlib; install requirements.txt") from exc
 
-    height_grid = height_grid or grid
-    height_grid.assert_compatible(grid, "anomaly")
+    product_spec = product_spec or PRODUCT_SPECS[PRODUCT_HEIGHT_ANOMALY]
+    region = product_spec.get("region", region)
+    if product_spec["height_contours"]:
+        if height_grid is None:
+            height_grid = grid
+        height_grid.assert_compatible(grid, "height contour")
+    else:
+        height_grid = None
     lon_min, lon_max, lat_min, lat_max = region
     source_lons = np.asarray(grid.lons, dtype=float)
     source_lats = np.asarray(grid.lats, dtype=float)
     source_data = np.asarray(grid.values, dtype=float)
-    source_height = np.asarray(height_grid.values, dtype=float) / 10.0
+    source_height = (
+        np.asarray(height_grid.values, dtype=float) / 10.0
+        if height_grid is not None
+        else None
+    )
     if source_data.shape != (source_lats.size, source_lons.size):
         raise CFSv2Error("decoded CFSv2 grid has inconsistent latitude/longitude dimensions")
     if source_lons.size < 2 or source_lats.size < 2:
         raise CFSv2Error("decoded CFSv2 grid is too small to project")
-    lon_step = float(np.nanmedian(np.diff(source_lons)))
-    lat_step = float(np.nanmedian(np.diff(source_lats)))
-    if not np.allclose(np.diff(source_lons), lon_step, atol=1e-5) or not np.allclose(
-        np.diff(source_lats), lat_step, atol=1e-5
-    ):
-        raise CFSv2Error("decoded CFSv2 grid must be regular before projection")
+    if np.any(np.diff(source_lons) <= 0.0) or np.any(np.diff(source_lats) <= 0.0):
+        raise CFSv2Error("decoded CFSv2 grid longitude/latitude coordinates must be sorted")
 
     # Match the centered ECMWF-style North America Lambert Conformal Conic
     # framing: a -100° meridian center, 45° latitude origin, and broad
@@ -738,19 +1002,36 @@ def render_map(
         return np.rad2deg(longitude), np.rad2deg(latitude)
 
     def sample_source(field, longitude_values, latitude_values):
-        longitude_position = np.mod(longitude_values - source_lons[0], 360.0) / lon_step
-        longitude_position = np.mod(longitude_position, source_lons.size)
-        latitude_position = np.clip(
-            (latitude_values - source_lats[0]) / lat_step,
-            0.0,
-            source_lats.size - 1.000001,
+        # CFSv2 pressure-level files are regular 1-degree grids, while FLXF
+        # files use Gaussian latitudes.  Bracket coordinates directly so both
+        # grids can be resampled without inventing a regular-latitude grid.
+        wrapped_longitudes = np.mod(longitude_values - source_lons[0], 360.0) + source_lons[0]
+        longitude_right = np.searchsorted(source_lons, wrapped_longitudes, side="right")
+        longitude_wrap = longitude_right >= source_lons.size
+        lon_left = np.where(longitude_wrap, source_lons.size - 1, np.maximum(longitude_right - 1, 0))
+        lon_right = np.where(longitude_wrap, 0, np.minimum(longitude_right, source_lons.size - 1))
+        left_lon_value = source_lons[lon_left]
+        right_lon_value = np.where(longitude_wrap, source_lons[0] + 360.0, source_lons[lon_right])
+        lon_weight = np.divide(
+            wrapped_longitudes - left_lon_value,
+            right_lon_value - left_lon_value,
+            out=np.zeros_like(wrapped_longitudes, dtype=float),
+            where=(right_lon_value - left_lon_value) != 0.0,
         )
-        lon_left = np.floor(longitude_position).astype(int) % source_lons.size
-        lon_right = (lon_left + 1) % source_lons.size
-        lat_left = np.floor(latitude_position).astype(int)
-        lat_right = np.minimum(lat_left + 1, source_lats.size - 1)
-        lon_weight = longitude_position - np.floor(longitude_position)
-        lat_weight = latitude_position - np.floor(latitude_position)
+
+        clipped_latitudes = np.clip(latitude_values, source_lats[0], source_lats[-1])
+        latitude_right = np.searchsorted(source_lats, clipped_latitudes, side="right")
+        latitude_right = np.clip(latitude_right, 1, source_lats.size - 1)
+        lat_left = latitude_right - 1
+        lat_right = latitude_right
+        left_lat_value = source_lats[lat_left]
+        right_lat_value = source_lats[lat_right]
+        lat_weight = np.divide(
+            clipped_latitudes - left_lat_value,
+            right_lat_value - left_lat_value,
+            out=np.zeros_like(clipped_latitudes, dtype=float),
+            where=(right_lat_value - left_lat_value) != 0.0,
+        )
 
         values = (
             field[lat_left, lon_left] * (1.0 - lon_weight) * (1.0 - lat_weight)
@@ -762,7 +1043,11 @@ def render_map(
 
     canvas_lons, canvas_lats = lcc_inverse(canvas_x_mesh, canvas_y_mesh)
     data = sample_source(source_data, canvas_lons, canvas_lats)
-    height_data = sample_source(source_height, canvas_lons, canvas_lats)
+    height_data = (
+        sample_source(source_height, canvas_lons, canvas_lats)
+        if source_height is not None
+        else None
+    )
 
     # Match a 1080x1080 social-media footprint. Size the map box from the
     # projected bounds so the LCC geometry remains undistorted at square size.
@@ -788,19 +1073,31 @@ def render_map(
 
     masked = np.ma.masked_invalid(data)
     if anomaly:
-        cmap = mcolors.ListedColormap(ANOMALY_PALETTE)
-        bounds = np.linspace(ANOMALY_MIN_M, ANOMALY_MAX_M, len(ANOMALY_PALETTE) + 1)
+        if product_spec["name"] == PRODUCT_PRECIPITATION_ANOMALY:
+            anomaly_min = PRECIP_ANOMALY_MIN_IN
+            anomaly_max = PRECIP_ANOMALY_MAX_IN
+            colorbar_ticks = PRECIP_ANOMALY_TICKS
+        else:
+            anomaly_min = ANOMALY_MIN_M
+            anomaly_max = ANOMALY_MAX_M
+            colorbar_ticks = ANOMALY_TICKS
+        palette = (
+            PRECIP_ANOMALY_PALETTE
+            if product_spec["name"] == PRODUCT_PRECIPITATION_ANOMALY
+            else ANOMALY_PALETTE
+        )
+        cmap = mcolors.ListedColormap(palette)
+        bounds = np.linspace(anomaly_min, anomaly_max, len(palette) + 1)
         norm = mcolors.BoundaryNorm(bounds, cmap.N, clip=True)
         image = axes.contourf(
             canvas_x,
             canvas_y,
-            np.ma.clip(masked, ANOMALY_MIN_M, ANOMALY_MAX_M),
+            np.ma.clip(masked, anomaly_min, anomaly_max),
             levels=bounds,
             cmap=cmap,
             norm=norm,
             antialiased=True,
         )
-        colorbar_ticks = ANOMALY_TICKS
     else:
         finite = np.asarray(list(_finite_values(grid)), dtype=float)
         if finite.size == 0:
@@ -825,9 +1122,9 @@ def render_map(
     # Filled anomalies show the signal; actual 500-mb heights provide the
     # synoptic structure and make the map readable like an operational
     # seasonal product. Heights are labelled in decametres (dam).
-    height_masked = np.ma.masked_invalid(height_data)
-    finite_heights = np.ma.compressed(height_masked)
-    if finite_heights.size > 1 and float(np.nanmax(finite_heights)) > float(np.nanmin(finite_heights)):
+    height_masked = np.ma.masked_invalid(height_data) if height_data is not None else None
+    finite_heights = np.ma.compressed(height_masked) if height_masked is not None else np.asarray([])
+    if product_spec["height_contours"] and finite_heights.size > 1 and float(np.nanmax(finite_heights)) > float(np.nanmin(finite_heights)):
         contour_step = 6.0
         height_min = math.floor(float(np.nanpercentile(finite_heights, 2)) / contour_step) * contour_step
         height_max = math.ceil(float(np.nanpercentile(finite_heights, 98)) / contour_step) * contour_step
@@ -929,7 +1226,7 @@ def render_map(
     target_date = dt.datetime.strptime(target, "%Y%m")
     display_period = period_label or target_date.strftime("%B %Y")
     mean_label = ensemble_label or f"{len(members)}-member mean"
-    title = "CFSv2 500-mb Geopotential Height & Anomaly (m)" if anomaly else "CFSv2 500-mb Geopotential Height (m)"
+    title = product_spec["title"] if anomaly else product_spec["absolute_title"]
     title_text = figure.text(
         0.035,
         0.965,
@@ -970,11 +1267,16 @@ def render_map(
         fontsize=10.5,
         color="#42515d",
     )
-    header_detail = (
-        f"NOAA CFSv2 / NOMADS  •  {baseline_label}  •  Height contours in dam"
-        if anomaly
-        else "NOAA CFSv2 / NOMADS  •  Absolute field smoke output  •  Height contours in dam"
-    )
+    if product_spec["height_contours"]:
+        header_detail = (
+            f"NOAA CFSv2 / NOMADS  •  {baseline_label}  •  Height contours in dam"
+            if anomaly
+            else "NOAA CFSv2 / NOMADS  •  Absolute field smoke output  •  Height contours in dam"
+        )
+    else:
+        header_detail = (
+            f"NOAA CFSv2 / NOMADS  •  {baseline_label}  •  Precipitation accumulation (in)  •  CONUS domain"
+        )
     figure.text(
         0.035,
         0.899,
@@ -993,6 +1295,8 @@ def render_map(
         cax=colorbar_axes,
         orientation="horizontal",
         extend="neither",
+        spacing="uniform",
+        drawedges=product_spec["name"] == PRODUCT_PRECIPITATION_ANOMALY,
     )
     colorbar.set_ticks(colorbar_ticks)
     if anomaly:
@@ -1052,6 +1356,12 @@ def write_manifest(path: Path, repo_root: Path, run_entry: dict) -> None:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--product",
+        choices=tuple(PRODUCT_SPECS),
+        default=PRODUCT_HEIGHT_ANOMALY,
+        help="product to decode and render",
+    )
     parser.add_argument("--init", default="latest", help="CFSv2 cycle as YYYYMMDDHH, or latest")
     parser.add_argument("--lead-months", default="1,2,3", help="comma-separated target leads, usually 1,2,3")
     parser.add_argument("--seasonal-window", default="", help="optional comma-separated leads for an additional seasonal mean, e.g. 1,2,3")
@@ -1080,6 +1390,7 @@ def build_parser() -> argparse.ArgumentParser:
 
 def run(args: argparse.Namespace) -> int:
     repo_root = Path(__file__).resolve().parents[1]
+    product_name, product, absolute = selected_product(args)
     init = discover_latest_init() if args.init == "latest" else parse_init(args.init)
     leads = parse_int_list(args.lead_months, "lead months", 1, 9)
     seasonal_leads = parse_int_list(args.seasonal_window, "seasonal window", 1, 9) if args.seasonal_window else []
@@ -1103,7 +1414,7 @@ def run(args: argparse.Namespace) -> int:
         raise CFSv2Error(
             f"--ncei-calibration uses the published {NCEI_CALIBRATION_YEARS} baseline"
         )
-    if not args.absolute and not args.decode_only and configured_baselines == 0:
+    if not absolute and not args.decode_only and configured_baselines == 0:
         raise CFSv2Error(
             "production anomaly rendering needs a CFSv2/reforecast baseline; "
             "provide --baseline-file/--baseline-dir, use --ncei-calibration, or use --absolute for smoke testing"
@@ -1117,7 +1428,11 @@ def run(args: argparse.Namespace) -> int:
     border_paths = [] if args.decode_only else ensure_border_files(args, cache_dir, repo_root)
 
     init_date = dt.datetime.strptime(init, "%Y%m%d%H").replace(tzinfo=dt.timezone.utc)
-    run_id = f"cfsv2-{init}"
+    run_id = (
+        f"cfsv2-{init}"
+        if product_name == PRODUCT_HEIGHT_ANOMALY
+        else f"cfsv2-{init}-{product_name}"
+    )
     rolling_mode = bool(rolling_inits)
     ensemble_expected = len(rolling_inits) if rolling_mode else len(members)
     run_entry = {
@@ -1125,6 +1440,8 @@ def run(args: argparse.Namespace) -> int:
         "source": "NOAA CFSv2 NOMADS",
         "source_url": NOMADS_ROOT,
         "model": "CFSv2",
+        "product": product_name,
+        "source_kind": product["source_kind"].upper(),
         "init_utc": iso_utc(init_date),
         "decoder": {"tool": "wgrib2", "executable": wgrib2},
         "statistic": "ensemble_mean",
@@ -1132,12 +1449,21 @@ def run(args: argparse.Namespace) -> int:
         "ensemble_members": ensemble_expected,
         "ensemble_scope": "rolling_initial_conditions" if rolling_mode else "single_initial_condition_cycle",
         "aggregation": (
-            f"{args.rolling_days}-day rolling initial-condition mean"
-            if rolling_mode
-            else "monthly forecast average"
-        ) + ("; optional seasonal mean" if seasonal_leads else ""),
-        "field": "z500" if args.absolute else "z500_anomaly",
-        "units": "m",
+            (f"{args.rolling_days}-day rolling initial-condition mean; " if rolling_mode else "")
+            + (
+                f"{len(seasonal_leads)}-month {product['seasonal_aggregation']}"
+                if seasonal_leads
+                else (
+                    "monthly total precipitation"
+                    if product_name == PRODUCT_PRECIPITATION_ANOMALY
+                    else "monthly forecast average"
+                )
+            )
+        ),
+        "field": product["field"],
+        "units": product["units"],
+        "raw_field": product["raw_field"],
+        "raw_units": product["raw_units"],
         "border_sources": (
             []
             if args.no_borders
@@ -1161,7 +1487,9 @@ def run(args: argparse.Namespace) -> int:
             "end_init_utc": iso_utc(dt.datetime.strptime(rolling_inits[-1], "%Y%m%d%H").replace(tzinfo=dt.timezone.utc)),
             "source": "lagged CFSv2 initial conditions",
         }
-    if args.absolute:
+    if product.get("conversion"):
+        run_entry["conversion"] = product["conversion"]
+    if absolute:
         run_entry["baseline"] = {"status": "not_applicable", "reason": "absolute smoke output"}
     elif args.decode_only:
         run_entry["baseline"] = {
@@ -1172,9 +1500,9 @@ def run(args: argparse.Namespace) -> int:
         }
     elif args.ncei_calibration:
         run_entry["baseline"] = {
-            "source": NCEI_CALIBRATION_LABEL,
+            "source": product["baseline_label"],
             "years": NCEI_CALIBRATION_YEARS,
-            "url_root": NCEI_CALIBRATION_ROOT,
+            "url_root": product["baseline_root"],
             "required": True,
         }
     else:
@@ -1183,7 +1511,7 @@ def run(args: argparse.Namespace) -> int:
             "years": args.baseline_years or None,
             "required": True,
         }
-    if rolling_mode and not args.absolute:
+    if rolling_mode and not absolute:
         run_entry["baseline"]["rolling_policy"] = "anchor_initialization"
 
     last_request = 0.0
@@ -1195,14 +1523,16 @@ def run(args: argparse.Namespace) -> int:
         target = target_month(init, lead)
         valid_start, valid_end = target_period(target)
         target_entry = {
-            "id": f"cfsv2-{target}-z500{'-absolute' if args.absolute else 'a'}-lead{lead:02d}",
+            "id": f"cfsv2-{target}-{product['id_token']}-lead{lead:02d}",
             "valid_start_utc": valid_start,
             "valid_end_utc": valid_end,
             "lead_month": lead,
             "target_month": target,
-            "aggregation": "monthly forecast average",
-            "field": "z500" if args.absolute else "z500_anomaly",
-            "units": "m",
+            "aggregation": "monthly total precipitation" if product_name == PRODUCT_PRECIPITATION_ANOMALY else "monthly forecast average",
+            "field": product["field"],
+            "units": product["units"],
+            "raw_field": product["raw_field"],
+            "raw_units": product["raw_units"],
             "statistic": "ensemble_mean",
             "members": [args.rolling_member] if rolling_mode else members,
             "ensemble_members": ensemble_expected,
@@ -1222,6 +1552,7 @@ def run(args: argparse.Namespace) -> int:
                 wgrib2,
                 repo_root,
                 last_request,
+                product,
             )
             target_entry["source_files"] = source_files
             target_entry["ensemble_members"] = ensemble_count
@@ -1238,12 +1569,12 @@ def run(args: argparse.Namespace) -> int:
 
             baseline_label = "absolute field smoke output"
             anomaly_grid = ensemble
-            if not args.absolute:
+            if not absolute:
                 baseline_url = None
                 baseline_downloaded = False
                 if args.ncei_calibration:
-                    baseline_url = ncei_calibration_url(init, lead)
-                    baseline_path = cached_calibration_path(cache_dir, init, lead)
+                    baseline_url = ncei_calibration_url(init, lead, product["source_kind"])
+                    baseline_path = cached_calibration_path(cache_dir, init, lead, product["source_kind"])
                     baseline_downloaded, last_request = download_file(
                         baseline_url,
                         baseline_path,
@@ -1253,7 +1584,7 @@ def run(args: argparse.Namespace) -> int:
                     baseline_label = configured_baseline_label(args)
                 else:
                     baseline_path, baseline_label = baseline_for_target(args, target, repo_root)
-                baseline_grid = load_baseline(baseline_path, wgrib2)
+                baseline_grid = load_baseline(baseline_path, wgrib2, product, target)
                 baseline_grids[lead] = baseline_grid
                 anomaly_grid = subtract_grids(ensemble, baseline_grid)
                 target_entry["baseline"] = {
@@ -1268,7 +1599,7 @@ def run(args: argparse.Namespace) -> int:
                     target_entry["baseline"]["url"] = baseline_url
                     target_entry["baseline"]["downloaded"] = baseline_downloaded
 
-            output_path = output_dir / init / f"cfsv2_z500{'a' if not args.absolute else ''}_{target}.jpg"
+            output_path = output_dir / init / f"cfsv2_{product['file_token']}_{target}.jpg"
             render_map(
                 anomaly_grid,
                 init,
@@ -1276,11 +1607,12 @@ def run(args: argparse.Namespace) -> int:
                 lead,
                 members,
                 output_path,
-                anomaly=not args.absolute,
+                anomaly=not absolute,
                 baseline_label=baseline_label,
                 border_paths=border_paths,
                 ensemble_label=ensemble_label,
-                height_grid=ensemble,
+                height_grid=ensemble if product["height_contours"] else None,
+                product_spec=product,
             )
             target_entry["image"] = relative_path(output_path, repo_root)
             target_entry["status"] = "partial" if not target_entry["ensemble_complete"] else "rendered"
@@ -1298,16 +1630,19 @@ def run(args: argparse.Namespace) -> int:
         last_lead = seasonal_leads[-1]
         first_target = target_month(init, first_lead)
         last_target = target_month(init, last_lead)
-        seasonal_id_suffix = "-absolute" if args.absolute else "a"
         seasonal_entry = {
-            "id": f"cfsv2-{first_target}-{last_target}-z500{seasonal_id_suffix}-seasonal",
+            "id": f"cfsv2-{first_target}-{last_target}-{product['id_token']}-seasonal",
             "valid_start_utc": target_period(first_target)[0],
             "valid_end_utc": target_period(last_target)[1],
             "lead_month": f"{first_lead}-{last_lead}",
             "target_month": f"{first_target}-{last_target}",
-            "aggregation": f"{len(seasonal_leads)}-month seasonal mean",
-            "field": "z500" if args.absolute else "z500_anomaly",
-            "units": "m",
+            "aggregation": (
+                f"{len(seasonal_leads)}-month {product['seasonal_aggregation']}"
+            ),
+            "field": product["field"],
+            "units": product["seasonal_units"],
+            "raw_field": product["raw_field"],
+            "raw_units": product["raw_units"],
             "statistic": "ensemble_mean",
             "members": [args.rolling_member] if rolling_mode else members,
             "ensemble_members": ensemble_expected,
@@ -1320,14 +1655,22 @@ def run(args: argparse.Namespace) -> int:
             missing_forecasts = [lead for lead in seasonal_leads if lead not in forecast_grids]
             if missing_forecasts:
                 raise CFSv2Error(f"seasonal window is missing decoded lead(s): {missing_forecasts}")
-            seasonal_forecast = mean_grids([forecast_grids[lead] for lead in seasonal_leads])
+            seasonal_forecast = (
+                sum_grids([forecast_grids[lead] for lead in seasonal_leads])
+                if product["seasonal_reducer"] == "sum"
+                else mean_grids([forecast_grids[lead] for lead in seasonal_leads])
+            )
             seasonal_grid = seasonal_forecast
             baseline_label = "absolute field smoke output"
-            if not args.absolute:
+            if not absolute:
                 missing_baselines = [lead for lead in seasonal_leads if lead not in baseline_grids]
                 if missing_baselines:
                     raise CFSv2Error(f"seasonal window is missing baseline lead(s): {missing_baselines}")
-                seasonal_baseline = mean_grids([baseline_grids[lead] for lead in seasonal_leads])
+                seasonal_baseline = (
+                    sum_grids([baseline_grids[lead] for lead in seasonal_leads])
+                    if product["seasonal_reducer"] == "sum"
+                    else mean_grids([baseline_grids[lead] for lead in seasonal_leads])
+                )
                 seasonal_grid = subtract_grids(seasonal_forecast, seasonal_baseline)
                 baseline_label = configured_baseline_label(args)
                 seasonal_entry["baseline"] = {
@@ -1367,7 +1710,7 @@ def run(args: argparse.Namespace) -> int:
             start_date = dt.datetime.strptime(first_target, "%Y%m")
             end_date = dt.datetime.strptime(last_target, "%Y%m")
             period_label = seasonal_period_label(first_target, last_target)
-            output_path = output_dir / init / f"cfsv2_z500{'a' if not args.absolute else ''}_{first_target}-{last_target}.jpg"
+            output_path = output_dir / init / f"cfsv2_{product['file_token']}_{first_target}-{last_target}.jpg"
             render_map(
                 seasonal_grid,
                 init,
@@ -1375,7 +1718,7 @@ def run(args: argparse.Namespace) -> int:
                 f"{first_lead}\u2013{last_lead}",
                 members,
                 output_path,
-                anomaly=not args.absolute,
+                anomaly=not absolute,
                 baseline_label=baseline_label,
                 border_paths=border_paths,
                 period_label=period_label,
@@ -1384,11 +1727,12 @@ def run(args: argparse.Namespace) -> int:
                     if rolling_mode
                     else f"{len(members)}-member mean"
                 ),
-                height_grid=seasonal_forecast,
+                height_grid=seasonal_forecast if product["height_contours"] else None,
+                product_spec=product,
             )
             seasonal_entry["image"] = relative_path(output_path, repo_root)
             seasonal_entry["status"] = "rendered" if seasonal_entry["ensemble_complete"] else "partial"
-            print(f"rendered CFSv2 seasonal mean {first_target}-{last_target}: {output_path}")
+            print(f"rendered CFSv2 seasonal product {first_target}-{last_target}: {output_path}")
         except Exception as exc:
             failures += 1
             seasonal_entry["status"] = "failed"

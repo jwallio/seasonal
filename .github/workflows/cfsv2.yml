@@ -14,6 +14,7 @@ on:
         options:
           - 500mb_height_anomaly
           - 500mb_height_absolute
+          - precipitation_anomaly
       lead_months:
         description: "Target leads, comma-separated (DJF default: 4,5,6)"
         required: false
@@ -101,9 +102,11 @@ jobs:
             --request-delay 2
           )
           if [[ "$CFSV2_PRODUCT" == "500mb_height_absolute" ]]; then
-            args+=(--absolute)
+            args+=(--product "$CFSV2_PRODUCT" --absolute)
+          elif [[ "$CFSV2_PRODUCT" == "precipitation_anomaly" ]]; then
+            args+=(--product "$CFSV2_PRODUCT" --ncei-calibration)
           else
-            args+=(--ncei-calibration)
+            args+=(--product "$CFSV2_PRODUCT" --ncei-calibration)
           fi
           python "${args[@]}"
 

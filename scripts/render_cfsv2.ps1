@@ -1,4 +1,6 @@
 param(
+    [ValidateSet("500mb_height_anomaly", "500mb_height_absolute", "precipitation_anomaly")]
+    [string]$Product = "500mb_height_anomaly",
     [string]$Init = "latest",
     [string]$LeadMonths = "1,2,3",
     [string]$SeasonalWindow = "",
@@ -29,6 +31,7 @@ Push-Location $repoRoot
 try {
     $arguments = @(
         "scripts/cfsv2_seasonal.py",
+        "--product", $Product,
         "--init", $Init,
         "--lead-months", $LeadMonths,
         "--members", $Members,
@@ -54,6 +57,7 @@ try {
     if ($ForceDecode) { $arguments += "--force-decode" }
 
     Write-Host "Running CFSv2 seasonal adapter..."
+    Write-Host "  PRODUCT=$Product"
     Write-Host "  INIT=$Init"
     Write-Host "  LEAD_MONTHS=$LeadMonths"
     if ($SeasonalWindow) { Write-Host "  SEASONAL_WINDOW=$SeasonalWindow" }

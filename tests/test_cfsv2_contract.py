@@ -37,7 +37,27 @@ def main() -> int:
         "--rolling-state-dir",
         "allow_partial_rolling",
         "NCEI_CALIBRATION_ROOT",
+        "NCEI_FLUX_CALIBRATION_ROOT",
+        "flux-1982-2010",
         "z500_anomaly",
+        "PRODUCT_PRECIPITATION_ANOMALY",
+        "precipitation_anomaly",
+        "FLXF",
+        "PRATE:surface",
+        "kg m-2 s-1",
+        "monthly_precipitation_total_inches",
+        "FLUX_GRID_LON_COUNT = 384",
+        "FLUX_GRID_LAT_COUNT = 190",
+        "monthly total precipitation",
+        "PRECIP_ANOMALY_PALETTE",
+        "PRECIP_ANOMALY_MIN_IN = -8.0",
+        "PRECIP_ANOMALY_MAX_IN = 8.0",
+        "CONUS_PRECIP_REGION = (-128.0, -65.0, 22.0, 52.0)",
+        "CFSv2 CONUS Precipitation Anomaly (in)",
+        "CONUS domain",
+        "drawedges=product_spec[\"name\"] == PRODUCT_PRECIPITATION_ANOMALY",
+        "sum_grids",
+        "--product",
         "--baseline-file",
         "--baseline-dir",
         "--ncei-calibration",
@@ -68,6 +88,7 @@ def main() -> int:
     check("figure.text(0.035, 0.045" not in adapter, "footer text position should be absent")
     check("ANOMALY_MIN_M = -200.0" in adapter, "anomaly lower scale bound should be -200 m")
     check("ANOMALY_MAX_M = 200.0" in adapter, "anomaly upper scale bound should be +200 m")
+    check("PRECIP_ANOMALY_TICKS = list(range(-8, 9))" in adapter, "precipitation scale should label every inch from -8 to +8")
     check("[-200, -160, -120, -80, -40, 0, 40, 80, 120, 160, 200]" in adapter, "anomaly scale ticks should span -200 to +200 m")
     check("title_box = title_text.get_window_extent" in adapter, "header should prevent title/valid overlap")
     check("available_title_width" in adapter, "header should fit long valid-period labels")
@@ -83,7 +104,13 @@ def main() -> int:
     check("border_lat_min = 14.0" in adapter, "border rendering should exclude South America")
     check("if not (lon_min <= longitude <= lon_max) or latitude < border_lat_min:" in adapter, "border rendering should stay inside the North America/Greenland window")
     workflow = WORKFLOW.read_text(encoding="utf-8")
-    for term in ("product:", "500mb_height_anomaly", "500mb_height_absolute", "CFSV2_PRODUCT"):
+    for term in (
+        "product:",
+        "500mb_height_anomaly",
+        "500mb_height_absolute",
+        "precipitation_anomaly",
+        "CFSV2_PRODUCT",
+    ):
         check(term in workflow, f"workflow missing product selector term: {term}")
     for term in ("baseline", "reforecast", "monthly_grib_01", "lead_month", "GRIB2", "rolling", "NOMADS"):
         check(term in documentation, f"documentation missing contract term: {term}")
