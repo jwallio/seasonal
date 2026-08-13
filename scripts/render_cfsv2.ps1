@@ -1,4 +1,6 @@
 param(
+    [ValidateSet("500mb_height_anomaly", "500mb_height_absolute", "precipitation_anomaly", "snow_water_equivalent_anomaly")]
+    [string]$Product = "500mb_height_anomaly",
     [string]$Init = "latest",
     [string]$LeadMonths = "1,2,3",
     [string]$SeasonalWindow = "",
@@ -15,6 +17,8 @@ param(
     [string]$CacheDir = ".cache/cfsv2",
     [string]$OutputDir = "public/seasonal/cfsv2",
     [string]$Manifest = "public/seasonal/cfsv2_manifest.json",
+    [string]$PreviousManifest = "",
+    [int]$RetainRuns = 4,
     [string]$Wgrib2 = "",
     [switch]$Absolute,
     [switch]$DecodeOnly,
@@ -29,6 +33,7 @@ Push-Location $repoRoot
 try {
     $arguments = @(
         "scripts/cfsv2_seasonal.py",
+        "--product", $Product,
         "--init", $Init,
         "--lead-months", $LeadMonths,
         "--members", $Members,
@@ -37,7 +42,8 @@ try {
         "--rolling-state-dir", $RollingStateDir,
         "--cache-dir", $CacheDir,
         "--output-dir", $OutputDir,
-        "--manifest", $Manifest
+        "--manifest", $Manifest,
+        "--retain-runs", $RetainRuns
     )
 
     if ($SeasonalWindow) { $arguments += @("--seasonal-window", $SeasonalWindow) }
@@ -46,6 +52,7 @@ try {
     if ($BaselineDir) { $arguments += @("--baseline-dir", $BaselineDir) }
     if ($BaselineLabel) { $arguments += @("--baseline-label", $BaselineLabel) }
     if ($BaselineYears) { $arguments += @("--baseline-years", $BaselineYears) }
+    if ($PreviousManifest) { $arguments += @("--previous-manifest", $PreviousManifest) }
     if ($UseNceiCalibration) { $arguments += "--ncei-calibration" }
     if ($Wgrib2) { $arguments += @("--wgrib2", $Wgrib2) }
     if ($Absolute) { $arguments += "--absolute" }
@@ -54,6 +61,7 @@ try {
     if ($ForceDecode) { $arguments += "--force-decode" }
 
     Write-Host "Running CFSv2 seasonal adapter..."
+    Write-Host "  PRODUCT=$Product"
     Write-Host "  INIT=$Init"
     Write-Host "  LEAD_MONTHS=$LeadMonths"
     if ($SeasonalWindow) { Write-Host "  SEASONAL_WINDOW=$SeasonalWindow" }
