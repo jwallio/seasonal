@@ -1,3 +1,6 @@
+Exit code: 0
+Wall time: 0.2 seconds
+Output:
 name: CFSv2 Rolling Seasonal Graphics
 
 on:
@@ -15,14 +18,14 @@ on:
           - 500mb_height_anomaly
           - 500mb_height_absolute
       lead_months:
-        description: "Target leads, comma-separated"
+        description: "Target leads, comma-separated (DJF default: 4,5,6)"
         required: false
-        default: "1,2,3"
+        default: "4,5,6"
         type: string
       seasonal_window:
-        description: "Optional consecutive leads for a seasonal mean"
+        description: "Optional consecutive leads for a seasonal mean (DJF default: 4,5,6)"
         required: false
-        default: "1,2,3"
+        default: "4,5,6"
         type: string
       rolling_days:
         description: "Lagged initial-condition window; 10 means 40 cycles"
@@ -39,8 +42,8 @@ jobs:
     timeout-minutes: 240
     env:
       CFSV2_PRODUCT: ${{ inputs.product || '500mb_height_anomaly' }}
-      LEAD_MONTHS: ${{ inputs.lead_months || '1,2,3' }}
-      SEASONAL_WINDOW: ${{ inputs.seasonal_window || '1,2,3' }}
+      LEAD_MONTHS: ${{ inputs.lead_months || '4,5,6' }}
+      SEASONAL_WINDOW: ${{ inputs.seasonal_window || '4,5,6' }}
       ROLLING_DAYS: ${{ inputs.rolling_days || '10' }}
     steps:
       - name: Checkout
@@ -125,3 +128,4 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./public
           keep_files: true
+
