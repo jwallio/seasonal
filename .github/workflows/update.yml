@@ -563,9 +563,13 @@ jobs:
               merged=1
             done < <(find .shards -type d -path '*/runs' -print0)
             while IFS= read -r -d '' run_dir; do
-              cp -R "$run_dir" public/runs/
-              merged=1
-            done < <(find .shards -type d -regex '.*/[0-9]{10}$' -print0)
+              run_id="$(basename "$run_dir")"
+              if [[ "$run_id" =~ ^[0-9]{10}$ ]]; then
+                mkdir -p "public/runs/$run_id"
+                cp -R "${run_dir}/." "public/runs/$run_id/"
+                merged=1
+              fi
+            done < <(find .shards -type d -print0)
           fi
           if [ "$merged" -eq 0 ]; then
             echo "No shard run directories found after artifact download."
