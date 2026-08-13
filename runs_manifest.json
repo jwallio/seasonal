@@ -1,7 +1,7 @@
 {
-  "generated_utc": "2026-03-24T17:40:22Z",
+  "generated_utc": "2026-08-13T15:08:23Z",
   "history_hours": 24,
-  "default_run_id": "2026032406",
+  "default_run_id": "2026081306",
   "snow_products": [
     "carolinas_snow_accum",
     "conus_snow_accum",
@@ -17,6 +17,11 @@
     "conus_vort500": "CONUS 500mb Vorticity",
     "conus_t2m": "USA Region 2m Temperature",
     "conus_t2m_anom": "USA Region 2m Temperature Anomaly",
+    "conus_wind10": "CONUS 10m Wind Speed",
+    "conus_t850": "CONUS 850mb Temperature",
+    "conus_t500": "CONUS 500mb Temperature",
+    "conus_omega500": "CONUS 500mb Vertical Velocity",
+    "conus_sst": "CONUS Sea-Surface Temperature",
     "conus_snow_accum": "CONUS Snowfall Accumulation",
     "ne_snow_accum": "Northeast Snowfall Accumulation",
     "ne_zoom_snow_accum": "New England Zoom Snowfall Accumulation",
@@ -25,69 +30,37 @@
   },
   "runs": [
     {
-      "id": "2026032406",
-      "label": "2026-03-24 06Z",
-      "run_date": "202603240600_202603241200_0",
-      "init_utc": "2026-03-24T06:00:00Z",
+      "id": "2026081306",
+      "label": "2026-08-13 06Z",
+      "run_date": "202608130600_202608131200_0",
+      "init_utc": "2026-08-13T06:00:00Z",
+      "source": "projects/gcp-public-data-weathernext/assets/weathernext_2_0_0",
+      "source_label": "WeatherNext 2 (Earth Engine)",
+      "ensemble_mode": "first",
+      "ensemble_member": null,
+      "z500_style": "default",
       "hours": [
         6
       ],
       "products": [
-        "na_z500a",
-        "conus_mslp_ptype",
-        "conus_vort500",
-        "ne_zoom_snow_accum",
-        "mi_wi_snow_accum",
-        "carolinas_snow_accum"
+        "na_z500a"
       ],
-      "snow_ratios": [
-        10
-      ],
+      "snow_ratios": [],
       "product_hours": {
         "na_z500a": [
           6
-        ],
-        "conus_mslp_ptype": [
-          6
-        ],
-        "conus_vort500": [
-          6
-        ],
-        "ne_zoom_snow_accum": [
-          6
-        ],
-        "mi_wi_snow_accum": [
-          6
-        ],
-        "carolinas_snow_accum": [
-          6
         ]
       },
-      "product_snow_ratios": {
-        "ne_zoom_snow_accum": [
-          10
-        ],
-        "mi_wi_snow_accum": [
-          10
-        ],
-        "carolinas_snow_accum": [
-          10
-        ]
-      },
+      "product_snow_ratios": {},
       "enabled_products": [
-        "na_z500a",
-        "conus_mslp_ptype",
-        "conus_vort500",
-        "ne_zoom_snow_accum",
-        "mi_wi_snow_accum",
-        "carolinas_snow_accum"
+        "na_z500a"
       ],
       "missing_products": [],
       "failed_products": [],
       "failure_messages": {},
       "successful_exports": 0,
       "failed_exports": 0,
-      "updated_utc": "2026-03-24T17:40:22Z"
+      "updated_utc": "2026-08-13T15:08:23Z"
     }
   ]
 }

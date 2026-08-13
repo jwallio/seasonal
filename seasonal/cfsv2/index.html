@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>CFSv2 Seasonal Studio</title>
-  <meta name="description" content="CFSv2 seasonal 500-mb anomaly maps, rolling blend status, and forecast provenance.">
+  <title>CFSv2 500-mb Seasonal Guidance</title>
+  <meta name="description" content="Operational CFSv2 500-mb height anomaly maps with initialization, lead, ensemble, and source metadata.">
   <style>
     :root { color-scheme: dark; --ink:#f3f7f9; --muted:#a9bac3; --panel:#10232d; --panel2:#142d38; --line:#2b4855; --teal:#59d4c0; --coral:#ff927c; --blue:#75b8e8; }
     * { box-sizing:border-box; }
@@ -12,13 +12,8 @@
     a { color:var(--teal); }
     .shell { width:min(1240px,calc(100% - 32px)); margin:0 auto; padding:30px 0 52px; }
     .eyebrow { color:var(--teal); font-size:11px; font-weight:800; letter-spacing:.18em; text-transform:uppercase; }
-    h1 { max-width:780px; margin:10px 0 12px; font-size:clamp(32px,6vw,72px); line-height:.98; letter-spacing:-.055em; }
-    .lede { max-width:720px; margin:0; color:var(--muted); font-size:17px; }
-    .hero { display:flex; align-items:flex-end; justify-content:space-between; gap:24px; padding-bottom:32px; }
-    .orbit { width:140px; height:140px; border:1px solid #396273; border-radius:50%; position:relative; flex:none; box-shadow:0 0 80px #3ac5b533; }
-    .orbit:before,.orbit:after { content:""; position:absolute; inset:18px 2px; border:1px solid #59d4c066; border-radius:50%; transform:rotate(55deg); }
-    .orbit:after { transform:rotate(-55deg); border-color:#ff927c66; }
-    .orb { position:absolute; width:24px; height:24px; top:57px; left:57px; border-radius:50%; background:linear-gradient(135deg,var(--teal),var(--blue)); box-shadow:0 0 32px #59d4c0aa; }
+    h1 { margin:10px 0 0; font-size:clamp(30px,5vw,54px); line-height:1; letter-spacing:-.045em; }
+    .hero { padding-bottom:24px; }
     .grid { display:grid; grid-template-columns:minmax(0,1.55fr) minmax(290px,.72fr); gap:18px; }
     .card { background:linear-gradient(145deg,#132c37e8,#0c1d25e8); border:1px solid var(--line); border-radius:22px; box-shadow:0 18px 60px #0005; overflow:hidden; }
     .card-head { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:18px 20px; border-bottom:1px solid var(--line); }
@@ -42,18 +37,16 @@
     .links { display:flex; flex-wrap:wrap; gap:12px; padding:0 20px 20px; font-size:13px; }
     .warning { display:none; margin:0 16px 16px; padding:12px 14px; border:1px solid #ff927c66; border-radius:12px; color:#ffd0c7; background:#43282066; font-size:13px; }
     .footer { margin-top:20px; color:#8298a3; font-size:12px; }
-    @media (max-width:760px) { .shell{width:min(100% - 20px,1240px);padding-top:20px}.hero{align-items:flex-start}.orbit{width:88px;height:88px;margin-top:6px}.orb{top:32px;left:32px;width:20px;height:20px}.orbit:before,.orbit:after{inset:12px 0}.grid{grid-template-columns:1fr}.map-wrap{min-height:230px} }
+    @media (max-width:760px) { .shell{width:min(100% - 20px,1240px);padding-top:20px}.grid{grid-template-columns:1fr}.map-wrap{min-height:230px} }
   </style>
 </head>
 <body>
   <main class="shell">
     <section class="hero">
       <div>
-        <div class="eyebrow">WN2 / seasonal model desk</div>
-        <h1>CFSv2, with the signal left intact.</h1>
-        <p class="lede">A transparent view of 500-mb height anomalies, rolling initial-condition blends, and the data lineage behind each map.</p>
+        <div class="eyebrow">WN2 / CFSv2 operational desk</div>
+        <h1>CFSv2 500-mb Height Anomaly</h1>
       </div>
-      <div class="orbit" aria-hidden="true"><div class="orb"></div></div>
     </section>
     <section class="grid">
       <article class="card">
@@ -69,9 +62,8 @@
           <div class="fact"><small>Blend</small><strong id="blend">—</strong></div>
           <div class="fact"><small>Field</small><strong id="field">—</strong></div>
         </div></article>
-        <article class="card"><div class="card-head"><h2>What this product is</h2></div><div class="copy">
+        <article class="card"><div class="card-head"><h2>Run metadata</h2></div><div class="copy">
           <p id="scope">The manifest will identify the initialization window, available cycles, and calibration baseline.</p>
-          <p>Rolling status is shown as available data accumulates. It is a CFSv2-derived diagnostic, not CPC’s official outlook.</p>
         </div><div class="links"><a href="https://www.cpc.ncep.noaa.gov/products/CFSv2/CFSv2seasonal.shtml">CPC context</a><a href="https://cfs.ncep.noaa.gov/cfsv2/downloads.html">CFSv2 data</a><a href="https://github.com/jwallio/wn2/actions/workflows/cfsv2.yml">Workflow</a></div></article>
       </aside>
     </section>
