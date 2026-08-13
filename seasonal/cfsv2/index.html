@@ -75,7 +75,7 @@
     const cleanPath = value => `${base}/${String(value || '').replace(/^\/+/, '').replace(/^public\//, '')}`;
     const el = id => document.getElementById(id);
     let targets = [];
-    function dateLabel(value) { if (!value) return '—'; const date = new Date(value); return Number.isNaN(date.valueOf()) ? value : new Intl.DateTimeFormat(undefined,{month:'short',year:'numeric',timeZone:'UTC'}).format(date); }
+    function dateLabel(value) { if (!value) return '—'; const date = new Date(value); return Number.isNaN(date.valueOf()) ? value : new Intl.DateTimeFormat(undefined,{month:'short',year:'numeric'}).format(date); }
     function pick(index) {
       const item = targets[index]; if (!item) return;
       document.querySelectorAll('button[data-index]').forEach(button => button.classList.toggle('active', Number(button.dataset.index) === index));
