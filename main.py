@@ -2224,6 +2224,81 @@ def _align_arrays(a, b):
     return a_np[:h, :w], b_np[:h, :w]
 
 
+def _stitch_sampled_longitude_parts(arrays):
+    import numpy as np
+
+    parts = [np.asarray(arr, dtype=np.float32) for arr in arrays if np.asarray(arr).ndim == 2]
+    if not parts:
+        raise RuntimeError('No sampled array parts available for longitude stitch.')
+    min_height = min(arr.shape[0] for arr in parts)
+    return np.concatenate([arr[:min_height, :] for arr in parts], axis=1)
+
+
+def _sample_rect_array_parts(field_img, band_name, bounds_parts, base_scale_m, context='', use_target_crs=True):
+    target_scale = int(max(20000, float(base_scale_m)))
+    last_arrays = []
+    last_scale = target_scale
+    for _ in range(2):
+        arrays = []
+        scales = []
+        for idx, bounds in enumerate(bounds_parts):
+            arr, used_scale = _sample_rect_array(
+                field_img,
+                band_name,
+                bounds,
+                target_scale,
+                context=f'{context} part{idx}',
+                use_target_crs=use_target_crs,
+            )
+            arrays.append(arr)
+            scales.append(int(used_scale))
+        last_arrays = arrays
+        last_scale = max(scales)
+        if all(scale == last_scale for scale in scales):
+            break
+        target_scale = last_scale
+    return _stitch_sampled_longitude_parts(last_arrays), int(last_scale)
+
+
+def _sample_grouped_climo_array_parts(
+    source_collection,
+    band_name,
+    bounds_parts,
+    base_scale_m,
+    group_years=3,
+    context='',
+    start_year=None,
+    end_year=None,
+    use_target_crs=True,
+):
+    target_scale = int(max(20000, float(base_scale_m)))
+    last_arrays = []
+    last_scale = target_scale
+    for _ in range(2):
+        arrays = []
+        scales = []
+        for idx, bounds in enumerate(bounds_parts):
+            arr, used_scale = _sample_grouped_climo_array(
+                source_collection,
+                band_name,
+                bounds,
+                target_scale,
+                group_years=group_years,
+                context=f'{context} part{idx}',
+                start_year=start_year,
+                end_year=end_year,
+                use_target_crs=use_target_crs,
+            )
+            arrays.append(arr)
+            scales.append(int(used_scale))
+        last_arrays = arrays
+        last_scale = max(scales)
+        if all(scale == last_scale for scale in scales):
+            break
+        target_scale = last_scale
+    return _stitch_sampled_longitude_parts(last_arrays), int(last_scale)
+
+
 def _fill_nan_gaps(field, fill_value=0.0):
     import numpy as np
 
@@ -3932,7 +4007,11 @@ def _generate_z500_anomaly_map_local(img, h, region, prefix):
             map_dims = f'{polar_width}x{NH_POLAR_DIMS}'
         else:
             map_dims = NH_SOURCE_DIMS
-        sample_bounds = NH_SOURCE_REGION
+        # Keep the polar cap slightly inside the longitude/latitude edges and
+        # sample it in longitude pieces. A single near-global sampleRectangle
+        # request can hit Earth Engine's EPSG:4326 transform edge.
+        sample_bounds = [-179.0, 20.5, 179.0, 88.5]
+        sample_bounds_parts = split_region_longitude(sample_bounds, parts=4)
         plans = [
             {'dims': map_dims, 'sample_scale_m': LOCAL_Z500_NH_SCALES_M[0], 'minor_interval': 6, 'major_interval': 12, 'include_z540': True, 'include_border': True, 'label': 'local base'},
             {'dims': (map_dims if USE_NH_TRUE_POLAR_RENDER else shrink_dimensions(map_dims)), 'sample_scale_m': LOCAL_Z500_NH_SCALES_M[1], 'minor_interval': 0, 'major_interval': 18, 'include_z540': True, 'include_border': True, 'label': 'local coarse'},
@@ -3942,6 +4021,7 @@ def _generate_z500_anomaly_map_local(img, h, region, prefix):
     else:
         map_dims = region_dimensions(CONUS_DIMS, region)
         sample_bounds = region
+        sample_bounds_parts = None
         plans = [
             {
                 'dims': map_dims,
@@ -3992,14 +4072,24 @@ def _generate_z500_anomaly_map_local(img, h, region, prefix):
                 .clip(sample_geom)
                 .rename('h500_m')
             )
-            forecast_m_arr, used_scale = _sample_rect_array(
-                forecast_m_img,
-                'h500_m',
-                sample_bounds,
-                plan['sample_scale_m'],
-                context=f'{prefix} forecast_h500_m',
-                use_target_crs=True,
-            )
+            if sample_bounds_parts:
+                forecast_m_arr, used_scale = _sample_rect_array_parts(
+                    forecast_m_img,
+                    'h500_m',
+                    sample_bounds_parts,
+                    plan['sample_scale_m'],
+                    context=f'{prefix} forecast_h500_m',
+                    use_target_crs=True,
+                )
+            else:
+                forecast_m_arr, used_scale = _sample_rect_array(
+                    forecast_m_img,
+                    'h500_m',
+                    sample_bounds,
+                    plan['sample_scale_m'],
+                    context=f'{prefix} forecast_h500_m',
+                    use_target_crs=True,
+                )
             climo_cache_key = (
                 'h500',
                 Z500_CLIMO_START_YEAR,
@@ -4018,17 +4108,30 @@ def _generate_z500_anomaly_map_local(img, h, region, prefix):
                     start_year=Z500_CLIMO_START_YEAR,
                     end_year=Z500_CLIMO_END_YEAR,
                 )
-                climo_m_arr, _ = _sample_grouped_climo_array(
-                    climo_source,
-                    CLIMO_H500_BAND,
-                    sample_bounds,
-                    used_scale,
-                    group_years=CLIMO_H500_GROUP_YEARS,
-                    context=f'{prefix} climo_h500_m',
-                    start_year=Z500_CLIMO_START_YEAR,
-                    end_year=Z500_CLIMO_END_YEAR,
-                    use_target_crs=True,
-                )
+                if sample_bounds_parts:
+                    climo_m_arr, _ = _sample_grouped_climo_array_parts(
+                        climo_source,
+                        CLIMO_H500_BAND,
+                        sample_bounds_parts,
+                        used_scale,
+                        group_years=CLIMO_H500_GROUP_YEARS,
+                        context=f'{prefix} climo_h500_m',
+                        start_year=Z500_CLIMO_START_YEAR,
+                        end_year=Z500_CLIMO_END_YEAR,
+                        use_target_crs=True,
+                    )
+                else:
+                    climo_m_arr, _ = _sample_grouped_climo_array(
+                        climo_source,
+                        CLIMO_H500_BAND,
+                        sample_bounds,
+                        used_scale,
+                        group_years=CLIMO_H500_GROUP_YEARS,
+                        context=f'{prefix} climo_h500_m',
+                        start_year=Z500_CLIMO_START_YEAR,
+                        end_year=Z500_CLIMO_END_YEAR,
+                        use_target_crs=True,
+                    )
                 LOCAL_CLIMO_ARRAY_CACHE[climo_cache_key] = climo_m_arr
             else:
                 climo_m_arr = cached_climo
@@ -4127,10 +4230,33 @@ def _generate_z500_anomaly_map_local(img, h, region, prefix):
 
 
 def generate_z500_anomaly_map(img, h, region, prefix):
+    local_render_failed = False
     if prefix == 'nh_z500a' and USE_NH_TRUE_POLAR_RENDER:
-        return _generate_z500_anomaly_map_local(img, h, NH_SOURCE_REGION, prefix)
-    if LOCAL_TRUE_ANOMALY_RENDER:
-        return _generate_z500_anomaly_map_local(img, h, region, prefix)
+        try:
+            return _generate_z500_anomaly_map_local(img, h, NH_SOURCE_REGION, prefix)
+        except Exception as exc:
+            # Earth Engine can reject the EPSG:4326 sampled-array request at a
+            # projection edge. Preserve the product by using the existing
+            # tile-based renderer instead of returning an empty shard.
+            message = str(exc)
+            if 'sampleRectangle failed' not in message and 'Unable to transform' not in message:
+                raise
+            local_render_failed = True
+            print(
+                f'[{ts()}] {prefix} hour {h}: local polar sample failed; '
+                'falling back to the Earth Engine-native renderer.'
+            )
+    if LOCAL_TRUE_ANOMALY_RENDER and not local_render_failed:
+        try:
+            return _generate_z500_anomaly_map_local(img, h, region, prefix)
+        except Exception as exc:
+            message = str(exc)
+            if 'sampleRectangle failed' not in message and 'Unable to transform' not in message:
+                raise
+            print(
+                f'[{ts()}] {prefix} hour {h}: local sampled-array render failed; '
+                'falling back to the Earth Engine-native renderer.'
+            )
 
     tile_parts = 4
     if prefix == 'nh_z500a':

@@ -188,9 +188,6 @@ Current workflow presets include:
 - `regional_zoom`
 - `z500_anomalies`
 - `weather_parameters`
-- `surface_parameters` (10 m wind and sea-surface temperature)
-- `upper_air_parameters` (850 mb temperature, 500 mb temperature, and 500 mb omega)
-- `temperature_parameters` (850 mb and 500 mb temperature)
 - `temperature`
 - `snowfall`
 - `custom_csv`

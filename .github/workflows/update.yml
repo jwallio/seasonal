@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       run_target:
-        description: "[Run] Product or parameter preset"
+        description: "[Run] Product bundle or single product"
         required: false
         default: "flagship"
         type: choice
@@ -15,9 +15,6 @@ on:
           - regional_zoom
           - z500_anomalies
           - weather_parameters
-          - surface_parameters
-          - upper_air_parameters
-          - temperature_parameters
           - temperature
           - snowfall
           - all
@@ -296,9 +293,6 @@ jobs:
               "regional_zoom": ["na_z500a", "ne_mslp_ptype", "ne_zoom_snow_accum", "mi_wi_snow_accum", "carolinas_snow_accum"],
               "z500_anomalies": ["nh_z500a", "na_z500a"],
               "weather_parameters": ["conus_wind10", "conus_t850", "conus_t500", "conus_omega500", "conus_sst"],
-              "surface_parameters": ["conus_wind10", "conus_sst"],
-              "upper_air_parameters": ["conus_t850", "conus_t500", "conus_omega500"],
-              "temperature_parameters": ["conus_t850", "conus_t500"],
               "temperature": ["conus_t2m", "conus_t2m_anom"],
               "snowfall": ["conus_snow_accum", "ne_snow_accum", "ne_zoom_snow_accum", "mi_wi_snow_accum", "carolinas_snow_accum"],
           }
@@ -569,9 +563,13 @@ jobs:
               merged=1
             done < <(find .shards -type d -path '*/runs' -print0)
             while IFS= read -r -d '' run_dir; do
-              cp -R "$run_dir" public/runs/
-              merged=1
-            done < <(find .shards -type d -regex '.*/[0-9]{10}$' -print0)
+              run_id="$(basename "$run_dir")"
+              if [[ "$run_id" =~ ^[0-9]{10}$ ]]; then
+                mkdir -p "public/runs/$run_id"
+                cp -R "${run_dir}/." "public/runs/$run_id/"
+                merged=1
+              fi
+            done < <(find .shards -type d -print0)
           fi
           if [ "$merged" -eq 0 ]; then
             echo "No shard run directories found after artifact download."

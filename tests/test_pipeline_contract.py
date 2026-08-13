@@ -31,8 +31,6 @@ def main() -> int:
 
     for mode in ("first", "mean", "median", "member"):
         check(mode in MAIN, f"missing ensemble mode: {mode}")
-    for preset in ("weather_parameters", "surface_parameters", "upper_air_parameters", "temperature_parameters"):
-        check(preset in WORKFLOWS, f"missing parameter preset in workflow inputs: {preset}")
     for env_name in ("WN2_ENSEMBLE_MODE", "WN2_ENSEMBLE_MEMBER", "WN2_Z500_STYLE"):
         check(env_name in MAIN and env_name in WORKFLOWS, f"missing runtime control: {env_name}")
 
