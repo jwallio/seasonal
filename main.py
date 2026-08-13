@@ -4127,10 +4127,33 @@ def _generate_z500_anomaly_map_local(img, h, region, prefix):
 
 
 def generate_z500_anomaly_map(img, h, region, prefix):
+    local_render_failed = False
     if prefix == 'nh_z500a' and USE_NH_TRUE_POLAR_RENDER:
-        return _generate_z500_anomaly_map_local(img, h, NH_SOURCE_REGION, prefix)
-    if LOCAL_TRUE_ANOMALY_RENDER:
-        return _generate_z500_anomaly_map_local(img, h, region, prefix)
+        try:
+            return _generate_z500_anomaly_map_local(img, h, NH_SOURCE_REGION, prefix)
+        except Exception as exc:
+            # Earth Engine can reject the EPSG:4326 sampled-array request at a
+            # projection edge. Preserve the product by using the existing
+            # tile-based renderer instead of returning an empty shard.
+            message = str(exc)
+            if 'sampleRectangle failed' not in message and 'Unable to transform' not in message:
+                raise
+            local_render_failed = True
+            print(
+                f'[{ts()}] {prefix} hour {h}: local polar sample failed; '
+                'falling back to the Earth Engine-native renderer.'
+            )
+    if LOCAL_TRUE_ANOMALY_RENDER and not local_render_failed:
+        try:
+            return _generate_z500_anomaly_map_local(img, h, region, prefix)
+        except Exception as exc:
+            message = str(exc)
+            if 'sampleRectangle failed' not in message and 'Unable to transform' not in message:
+                raise
+            print(
+                f'[{ts()}] {prefix} hour {h}: local sampled-array render failed; '
+                'falling back to the Earth Engine-native renderer.'
+            )
 
     tile_parts = 4
     if prefix == 'nh_z500a':
