@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>CFSv2 500-mb Seasonal Guidance</title>
-  <meta name="description" content="Operational CFSv2 500-mb height anomaly maps with initialization, lead, ensemble, and source metadata.">
+  <title>CFSv2 Model Viewer</title>
+  <meta name="description" content="Operational CFSv2 model viewer with selectable parameters, runs, leads, ensembles, and source metadata.">
   <style>
     :root { color-scheme: dark; --ink:#f3f7f9; --muted:#a9bac3; --panel:#10232d; --panel2:#142d38; --line:#2b4855; --teal:#59d4c0; --coral:#ff927c; --blue:#75b8e8; }
     * { box-sizing:border-box; }
@@ -23,6 +23,11 @@
     .map-wrap { min-height:360px; display:grid; place-items:center; background:#dfeaf0; border:1px solid #486774; border-radius:15px; overflow:hidden; }
     .map-wrap img { display:block; width:100%; height:auto; max-height:680px; object-fit:contain; }
     .empty { padding:64px 24px; color:#24404b; text-align:center; }
+    .selectors { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:10px; padding:0 16px 16px; }
+    .selector { display:grid; gap:5px; }
+    .selector label { color:var(--muted); font-size:10px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; }
+    select { width:100%; border:1px solid var(--line); border-radius:10px; background:#0d2029; color:var(--ink); cursor:pointer; padding:9px 10px; font:inherit; font-size:13px; }
+    select:focus { outline:2px solid var(--teal); outline-offset:1px; }
     .controls { display:flex; flex-wrap:wrap; gap:8px; padding:0 16px 16px; }
     button { appearance:none; border:1px solid var(--line); border-radius:999px; background:#0d2029; color:var(--muted); cursor:pointer; padding:8px 12px; font:inherit; font-size:12px; }
     button:hover,button.active { border-color:var(--teal); background:#173c45; color:var(--ink); }
@@ -44,14 +49,18 @@
   <main class="shell">
     <section class="hero">
       <div>
-        <div class="eyebrow">WN2 / CFSv2 operational desk</div>
-        <h1>CFSv2 500-mb Height Anomaly</h1>
+        <div class="eyebrow">WN2 / CFSv2 operational model viewer</div>
+        <h1 id="page-title">CFSv2 Model Viewer</h1>
       </div>
     </section>
     <section class="grid">
       <article class="card">
         <div class="card-head"><h2 id="map-title">Loading CFSv2 manifest…</h2><span class="status" id="run-status">loading</span></div>
         <div class="viewer"><div class="map-wrap" id="map-wrap"><div class="empty">Reading the latest seasonal run.</div></div></div>
+        <div class="selectors">
+          <div class="selector"><label for="product-select">Parameter</label><select id="product-select" disabled><option>Loading…</option></select></div>
+          <div class="selector"><label for="run-select">Run history</label><select id="run-select" disabled><option>Loading…</option></select></div>
+        </div>
         <div class="controls" id="controls"></div>
         <div class="warning" id="warning"></div>
       </article>
@@ -75,13 +84,72 @@
     const cleanPath = value => `${base}/${String(value || '').replace(/^\/+/, '').replace(/^public\//, '')}`;
     const el = id => document.getElementById(id);
     let targets = [];
+    let runs = [];
+    let selectedRun = null;
+    const PRODUCT_LABELS = {
+      '500mb_height_anomaly': '500-mb Height Anomaly',
+      '500mb_height_absolute': '500-mb Geopotential Height',
+      'precipitation_anomaly': 'CONUS Precipitation Anomaly',
+      'snow_water_equivalent_anomaly': 'Snow-Water-Equivalent Anomaly',
+    };
+    function productLabel(run, target) {
+      return PRODUCT_LABELS[run?.product] || target?.field || run?.product || 'Seasonal Guidance';
+    }
+    function productKey(run) { return run?.product || run?.targets?.[0]?.field || 'unknown'; }
+    function runKey(run) { return run?.id || `${productKey(run)}-${run?.init_utc || 'unknown'}`; }
+    function initLabel(value) {
+      if (!value) return 'Unknown initialization';
+      const date = new Date(value);
+      if (Number.isNaN(date.valueOf())) return value;
+      return new Intl.DateTimeFormat(undefined,{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit',hour12:false,timeZone:'UTC'}).format(date).replace(',', '') + 'Z';
+    }
+    function targetLabel(target) {
+      const value = target?.target_month || target?.valid_start_utc;
+      if (/^\d{6}$/.test(value || '')) return dateLabel(`${value.slice(0,4)}-${value.slice(4,6)}-01T00:00:00Z`);
+      return value || 'Selected target';
+    }
+    function productText(key) { return PRODUCT_LABELS[key] || String(key).replace(/_/g, ' '); }
+    function populateSelect(select, options, selectedValue) {
+      select.replaceChildren();
+      options.forEach(optionData => {
+        const option = document.createElement('option');
+        option.value = optionData.value;
+        option.textContent = optionData.label;
+        select.appendChild(option);
+      });
+      select.disabled = options.length === 0;
+      if (options.some(optionData => optionData.value === selectedValue)) select.value = selectedValue;
+    }
+    function renderProductSelector() {
+      const select = el('product-select');
+      const current = select.value;
+      const products = [...new Set(runs.map(productKey))];
+      populateSelect(select, products.map(key => ({value:key,label:productText(key)})), products.includes(current) ? current : products[0]);
+    }
+    function renderRunSelector(requestedRunKey = '') {
+      const product = el('product-select').value;
+      const available = runs.filter(run => productKey(run) === product);
+      const current = requestedRunKey || (selectedRun ? runKey(selectedRun) : '');
+      const select = el('run-select');
+      populateSelect(select, available.map(run => ({value:runKey(run),label:`Init ${initLabel(run.init_utc)} · ${run.status || 'unknown'}`})), available.some(run => runKey(run) === current) ? current : runKey(available[0]));
+      selectedRun = available.find(run => runKey(run) === select.value) || available[0] || null;
+      targets = selectedRun?.targets || [];
+      el('controls').replaceChildren(...targets.map((target,index) => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.dataset.index = String(index);
+        button.textContent = targetLabel(target);
+        button.addEventListener('click', () => pick(index));
+        return button;
+      }));
+    }
     function dateLabel(value) { if (!value) return '—'; const date = new Date(value); return Number.isNaN(date.valueOf()) ? value : new Intl.DateTimeFormat(undefined,{month:'short',year:'numeric',timeZone:'UTC'}).format(date); }
     function pick(index) {
-      const item = targets[index]; if (!item) return;
+      const target = targets[index], run = selectedRun; if (!target || !run) return;
       document.querySelectorAll('button[data-index]').forEach(button => button.classList.toggle('active', Number(button.dataset.index) === index));
-      const run = item.run, target = item.target;
-      el('map-title').textContent = `${dateLabel(target.valid_start_utc)} · 500-mb height anomaly`;
-      el('target').textContent = target.target_month || dateLabel(target.valid_start_utc);
+      const label = productLabel(run, target);
+      el('map-title').textContent = `${targetLabel(target)} · ${label}`;
+      el('target').textContent = targetLabel(target);
       el('lead').textContent = `Month ${target.lead_month ?? '—'}`;
       el('blend').textContent = run.ensemble_scope === 'rolling_initial_conditions' ? `${target.ensemble_members || 0}/${target.ensemble_expected_members || 40} cycles` : `${target.ensemble_members || run.ensemble_members || '—'} member${(target.ensemble_members || run.ensemble_members) === 1 ? '' : 's'}`;
       el('field').textContent = target.units ? `${target.field || 'z500'} (${target.units})` : (target.field || '—');
@@ -90,15 +158,17 @@
       const warning = el('warning');
       if (target.status === 'partial' || target.ensemble_complete === false) { warning.style.display='block'; warning.textContent=`Partial blend: ${target.ensemble_members || 0} of ${target.ensemble_expected_members || 40} requested cycles are available. The workflow retains state for the next run.`; } else { warning.style.display='none'; }
       const image = target.image ? cleanPath(target.image) : '';
-      el('map-wrap').innerHTML = image ? `<img src="${image}" alt="CFSv2 500-mb height anomaly for ${target.target_month || 'selected target'}" loading="eager">` : '<div class="empty">No rendered image is available for this target.</div>';
+      el('map-wrap').innerHTML = image ? `<img src="${image}" alt="CFSv2 ${label} for ${target.target_month || 'selected target'}" loading="eager">` : '<div class="empty">No rendered image is available for this target.</div>';
     }
+    el('product-select').addEventListener('change', () => { renderRunSelector(); pick(0); });
+    el('run-select').addEventListener('change', () => { renderRunSelector(el('run-select').value); pick(0); });
     fetch(manifestUrl).then(response => { if (!response.ok) throw new Error(`Manifest returned ${response.status}`); return response.json(); }).then(manifest => {
-      const run = (manifest.runs || [])[0];
-      if (!run) throw new Error('No CFSv2 run is present yet.');
-      targets = (run.targets || []).map(target => ({run,target}));
-      el('controls').innerHTML = targets.map((item,index) => `<button data-index="${index}" type="button">${item.target.target_month || `Lead ${item.target.lead_month}`}</button>`).join('');
-      document.querySelectorAll('button[data-index]').forEach(button => button.addEventListener('click', () => pick(Number(button.dataset.index))));
-      el('footer').textContent = `Source: ${manifest.source || 'NOAA CFSv2 NOMADS'} · Generated ${manifest.generated_utc || '—'} · Baseline: ${run.baseline?.source || 'manifest-defined'}`;
+      runs = (manifest.runs || []).filter(run => run && Array.isArray(run.targets)).sort((left,right) => String(right.init_utc || '').localeCompare(String(left.init_utc || '')));
+      if (!runs.length) throw new Error('No CFSv2 run is present yet.');
+      renderProductSelector();
+      renderRunSelector();
+      const history = manifest.retention?.history_runs ?? Math.max(0, runs.length - 1);
+      el('footer').textContent = `Source: ${manifest.source || 'NOAA CFSv2 NOMADS'} · Generated ${manifest.generated_utc || '—'} · Retaining ${history} prior run${history === 1 ? '' : 's'}`;
       pick(0);
     }).catch(error => { el('map-title').textContent='CFSv2 manifest unavailable'; el('run-status').textContent='waiting'; el('map-wrap').innerHTML=`<div class="empty">${error.message}<br><br>The scheduled workflow will populate this page after its next successful run.</div>`; el('footer').textContent='Source: NOAA CFSv2 NOMADS · Waiting for the first published manifest.'; });
   </script>

@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
 """Static CFSv2 contract checks that do not require network or plotting libraries."""
 
+import importlib.util
+import json
 from pathlib import Path
+import sys
+import tempfile
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -10,6 +14,16 @@ WRAPPER = ROOT / "scripts" / "render_cfsv2.ps1"
 DOC = ROOT / "docs" / "SEASONAL_CFSV2.md"
 WORKFLOW = ROOT / ".github" / "workflows" / "cfsv2.yml"
 PAGE = ROOT / "public" / "seasonal" / "cfsv2" / "index.html"
+
+
+def load_adapter():
+    spec = importlib.util.spec_from_file_location("cfsv2_seasonal_contract", ADAPTER)
+    if spec is None or spec.loader is None:
+        raise AssertionError("could not load CFSv2 adapter for conversion check")
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    return module
 
 
 def check(condition: bool, message: str) -> None:
@@ -58,12 +72,23 @@ def main() -> int:
         "CONUS_PRECIP_REGION = (-128.0, -65.0, 22.0, 52.0)",
         "CFSv2 CONUS Precipitation Anomaly (in)",
         "CONUS domain",
-        "drawedges=product_spec[\"name\"] == PRODUCT_PRECIPITATION_ANOMALY",
+        "PRODUCT_SWE_ANOMALY",
+        "snow_water_equivalent_anomaly",
+        "WEASD:surface",
+        "snow_water_equivalent_inches",
+        "SWE_ANOMALY_PALETTE",
+        "SWE_ANOMALY_MIN_IN = -8.0",
+        "SWE_ANOMALY_MAX_IN = 8.0",
+        "monthly snow-water-equivalent average",
+        "Snow-water equivalent (in)",
+        "drawedges=product_spec[\"name\"] in {PRODUCT_PRECIPITATION_ANOMALY, PRODUCT_SWE_ANOMALY}",
         "sum_grids",
         "--product",
         "--baseline-file",
         "--baseline-dir",
         "--ncei-calibration",
+        "--previous-manifest",
+        "--retain-runs",
         "--seasonal-window",
         "--absolute",
         "cfsv2_manifest",
@@ -107,12 +132,44 @@ def main() -> int:
     check("border_lat_min = 14.0" in adapter, "border rendering should exclude South America")
     check("if not (lon_min <= longitude <= lon_max) or latitude < border_lat_min:" in adapter, "border rendering should stay inside the North America/Greenland window")
     check("timeZone:'UTC'" in page, "Pages month labels should remain aligned with UTC map validity dates")
+    check('<title>CFSv2 Model Viewer</title>' in page, "Pages title should use generic CFSv2 model-viewer branding")
+    check('id="product-select"' in page, "Pages viewer missing parameter selector")
+    check('id="run-select"' in page, "Pages viewer missing run-history selector")
+    check("Retaining ${history} prior run" in page, "Pages viewer should report retained run history")
+    adapter_module = load_adapter()
+    converted = adapter_module.snow_water_equivalent_inches(
+        adapter_module.Grid([0.0], [0.0], [[25.4]])
+    )
+    check(converted.values == [[1.0]], "WEASD should convert from kg m-2 to inches")
+    with tempfile.TemporaryDirectory() as temporary:
+        temporary_root = Path(temporary)
+        previous = temporary_root / "previous.json"
+        output = temporary_root / "manifest.json"
+        previous.write_text(
+            json.dumps({
+                "runs": [
+                    {"id": f"old-{index}", "init_utc": f"2026-08-{index:02d}T00:00:00Z"}
+                    for index in range(1, 5)
+                ]
+            }),
+            encoding="utf-8",
+        )
+        adapter_module.write_manifest(
+            output,
+            ROOT,
+            {"id": "current", "init_utc": "2026-08-13T00:00:00Z"},
+            previous,
+            4,
+        )
+        retained = json.loads(output.read_text(encoding="utf-8"))["runs"]
+        check([run["id"] for run in retained] == ["current", "old-4", "old-3", "old-2"], "manifest should retain current plus three prior runs")
     workflow = WORKFLOW.read_text(encoding="utf-8")
     for term in (
         "product:",
         "500mb_height_anomaly",
         "500mb_height_absolute",
         "precipitation_anomaly",
+        "snow_water_equivalent_anomaly",
         "CFSV2_PRODUCT",
     ):
         check(term in workflow, f"workflow missing product selector term: {term}")
@@ -120,8 +177,10 @@ def main() -> int:
         check(term in documentation, f"documentation missing contract term: {term}")
     for term in ("rolling-days", "rolling-state-dir", "actions/cache", "--ncei-calibration"):
         check(term in workflow, f"workflow missing contract term: {term}")
+    for term in ("Restore published CFSv2 run history", "previous_manifest.json", "--previous-manifest", "--retain-runs 4"):
+        check(term in workflow, f"workflow missing history-retention term: {term}")
 
-    print("CFSV2 CONTRACT OK: NOMADS source, HGT500 decode, baseline gate, manifest, wrapper")
+    print("CFSV2 CONTRACT OK: NOMADS source, HGT500/FLXF fields, conversions, baseline gate, manifest, wrapper")
     return 0
 
 

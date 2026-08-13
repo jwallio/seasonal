@@ -15,6 +15,7 @@ on:
           - 500mb_height_anomaly
           - 500mb_height_absolute
           - precipitation_anomaly
+          - snow_water_equivalent_anomaly
       lead_months:
         description: "Target leads, comma-separated (DJF default: 4,5,6)"
         required: false
@@ -65,6 +66,22 @@ jobs:
           restore-keys: |
             cfsv2-rolling-
 
+      - name: Restore published CFSv2 run history
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .cache/cfsv2
+          published_manifest=".cache/cfsv2/previous_manifest.json"
+          temporary_manifest="${published_manifest}.tmp"
+          pages_url="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/seasonal/cfsv2_manifest.json"
+          if curl -fsSL --retry 2 --connect-timeout 10 "$pages_url" -o "$temporary_manifest"; then
+            mv "$temporary_manifest" "$published_manifest"
+            echo "Restored prior CFSv2 manifest for current-plus-three run retention."
+          else
+            rm -f "$temporary_manifest" "$published_manifest"
+            echo "No prior published CFSv2 manifest was available; starting a new history."
+          fi
+
       - name: Build wgrib2
         shell: bash
         run: |
@@ -99,6 +116,8 @@ jobs:
             --cache-dir .cache/cfsv2
             --output-dir public/seasonal/cfsv2
             --manifest public/seasonal/cfsv2_manifest.json
+            --previous-manifest .cache/cfsv2/previous_manifest.json
+            --retain-runs 4
             --request-delay 2
           )
           if [[ "$CFSV2_PRODUCT" == "500mb_height_absolute" ]]; then

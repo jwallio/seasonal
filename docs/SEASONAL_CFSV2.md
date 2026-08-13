@@ -12,8 +12,8 @@ WeatherNext `forecast_hour` schema.
 For each requested lead month, the adapter:
 
 1. Builds the official NOMADS monthly URL for the selected product and target
-   month. Height products use `pgbf`; precipitation uses the matching `flxf`
-   monthly file.
+   month. Height products use `pgbf`; precipitation and snow-water-equivalent
+   products use the matching `flxf` monthly file.
 2. Caches the raw GRIB2 file and runs a product-specific `wgrib2` field filter.
 3. Validates the decoded global grid and averages the selected
    `monthly_grib_01` through `monthly_grib_04` member streams.
@@ -28,6 +28,7 @@ The supported production products are:
 | --- | --- | --- | --- |
 | `500mb_height_anomaly` | `HGT:500 mb` from `pgbf` | m | 3-month mean |
 | `precipitation_anomaly` | `PRATE:surface` from `flxf` | in | 3-month total |
+| `snow_water_equivalent_anomaly` | `WEASD:surface` from `flxf` | in | 3-month mean |
 
 For precipitation, the source rate (`kg m-2 s-1`) is multiplied by the actual
 number of seconds in each target calendar month. Since `1 kg m-2 = 1 mm` of
@@ -39,6 +40,15 @@ inch. The precipitation FLXF files use the native 384×190 Gaussian grid; the
 renderer interpolates that grid directly so the entire CONUS projection is
 filled.
 
+Snow-water-equivalent (`WEASD`) is a snowpack state, not a snowfall rate or
+accumulation. The source is reported in `kg m-2`, equivalent to millimetres of
+liquid water, and is divided by 25.4 for display in inches. Individual maps and
+seasonal maps use the mean snow-water-equivalent state across the selected
+months and the matching mean calibration baseline. SWE graphics use the full
+North America/Greenland projection with brown negative anomalies and blue
+positive anomalies; the scale runs from -8 to +8 inches with a labeled tick at
+every inch.
+
 The map uses a centered ECMWF-style Lambert Conformal Conic frame. The
 projected window includes Alaska, Canada, the United States, Mexico, and all
 of Greenland; the anomaly field remains continuous in the rectangular frame,
@@ -48,7 +58,9 @@ South America and unrelated eastern-Atlantic outlines do not appear.
 `--lead-months "1,2,3"` writes individual target-month maps. Adding
 `--seasonal-window "1,2,3"` also writes a seasonal map. Height uses the mean
 of the selected forecast months and corresponding mean baseline; precipitation
-uses the total across the selected months and corresponding total baseline.
+uses the total across the selected months and corresponding total baseline;
+snow-water equivalent uses the mean state across the selected months and
+corresponding mean baseline.
 
 The adapter also supports the CPC-style lagged initial-condition window with
 `--rolling-days 10`. CFSv2 is run four times per day, so this produces 40
@@ -73,6 +85,11 @@ per-target status (`planned`, `decoded`, `rendered`, `partial`, or `failed`).
 That keeps a failed or stale seasonal run visible instead of silently
 presenting an incomplete forecast as current.
 
+The scheduled workflow downloads the previously published manifest before each
+render and retains the current run plus three prior runs. The static CFSv2
+viewer exposes those retained runs through Parameter and Run history selectors;
+the Pages publish step keeps the referenced historical image paths available.
+
 ## Baseline rule
 
 An anomaly image is only produced when `--baseline-file`, `--baseline-dir`, or
@@ -82,12 +99,14 @@ decoded-grid format or a GRIB2 file containing the selected source field. For
 `--baseline-dir` are `z500_YYYYMM.csv`, `z500_YYYYMM.grb2`, or
 `z500_YYYYMM.grib2`. For precipitation, use `prate_YYYYMM.csv` or the
 corresponding GRIB2 name; CSV precipitation baselines must already be monthly
-totals in inches.
+totals in inches. For snow-water equivalent, use `weasd_YYYYMM.csv` or the
+corresponding GRIB2 name; CSV SWE baselines must already be in inches.
 
 The `--ncei-calibration` option downloads the matching official NCEI CFS
 reforecast calibration file for the initialization month/day/cycle and lead.
-Height uses the pressure-level `pgbf` calibration; precipitation uses the
-official `flxf` flux calibration. Both published calibrations cover
+Height uses the pressure-level `pgbf` calibration; precipitation and
+snow-water equivalent use the official `flxf` flux calibration. Both published
+calibrations cover
 `1982-2010` and are recorded in the manifest; this is separate from the
 current CPC display convention of `1991-2020` for the public monthly/seasonal
 anomaly pages.
@@ -115,8 +134,10 @@ and `Pillow`; `wgrib2` must be installed separately. The adapter honors
 
 The GitHub Actions workflow includes a **CFSv2 product** dropdown. The current
 adapter supports `500mb_height_anomaly` (the production output, selected by
-default), `precipitation_anomaly`, and `500mb_height_absolute` (a clearly
-labelled decoder/source smoke output).
+default), `precipitation_anomaly`, `snow_water_equivalent_anomaly`, and
+`500mb_height_absolute` (a clearly labelled decoder/source smoke output).
+The workflow passes `--previous-manifest` and `--retain-runs 4` so the live
+viewer can show the current run and three historical runs.
 
 Decode one target without requiring a baseline or rendering dependencies:
 
@@ -180,6 +201,20 @@ local directory:
   -UseNceiCalibration
 ```
 
+Generate snow-water-equivalent anomaly graphics using the same DJF rolling
+workflow:
+
+```powershell
+.\scripts\render_cfsv2.ps1 `
+  -Product "snow_water_equivalent_anomaly" `
+  -Init "2026081000" `
+  -LeadMonths "4,5,6" `
+  -SeasonalWindow "4,5,6" `
+  -RollingDays 10 `
+  -RollingMember 1 `
+  -UseNceiCalibration
+```
+
 For an initial source smoke output before the baseline is available:
 
 ```powershell
@@ -205,9 +240,9 @@ Each target entry uses these fields:
 | `init_utc` | Forecast initialization time |
 | `valid_start_utc` / `valid_end_utc` | Calendar month represented |
 | `lead_month` / `target_month` | CFSv2 lead and `YYYYMM` target |
-| `aggregation` | Monthly forecast average, monthly precipitation total, or 3-month seasonal total/mean |
-| `field` | `z500_anomaly`, `z500`, or `precipitation_anomaly` |
-| `units` | m for height; in for precipitation |
+| `aggregation` | Monthly forecast average, monthly precipitation total, monthly SWE mean, or 3-month seasonal total/mean |
+| `field` | `z500_anomaly`, `z500`, `precipitation_anomaly`, or `snow_water_equivalent_anomaly` |
+| `units` | m for height; in for precipitation and snow-water equivalent |
 | `raw_field` / `raw_units` | Source GRIB field and units before any conversion |
 | `conversion` | Product-specific unit conversion, including calendar-month PRATE totals |
 | `baseline` | Baseline file, label, and years when applicable |
@@ -218,6 +253,9 @@ Each target entry uses these fields:
 | `rolling_window` | Cycle interval, dates, member stream, and expected count when rolling |
 | `status` | Decode/render outcome |
 | `image` | Relative rendered image path when successful |
+
+The top-level manifest also includes `retention.max_runs` and
+`retention.history_runs`; the production workflow sets these to `4` and `3`.
 
 ## Source notes
 

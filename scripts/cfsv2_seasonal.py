@@ -3,7 +3,7 @@
 
 This is intentionally a standalone seasonal adapter.  WeatherNext frames use
 Earth Engine and forecast-hour metadata; CFSv2 seasonal frames use the NOAA
-NOMADS monthly ``pgbf`` GRIB2 files and calendar-month lead metadata.
+NOMADS monthly ``pgbf``/``flxf`` GRIB2 files and calendar-month lead metadata.
 
 The production anomaly path uses a month-matched CFSv2/reforecast baseline.
 The script never substitutes a WeatherNext, ERA5, or MERRA-2 climatology.
@@ -50,6 +50,8 @@ ANOMALY_MIN_M = -200.0
 ANOMALY_MAX_M = 200.0
 PRECIP_ANOMALY_MIN_IN = -8.0
 PRECIP_ANOMALY_MAX_IN = 8.0
+SWE_ANOMALY_MIN_IN = -8.0
+SWE_ANOMALY_MAX_IN = 8.0
 ANOMALY_PALETTE = [
     "#24527a",
     "#2e6d94",
@@ -86,6 +88,26 @@ PRECIP_ANOMALY_PALETTE = [
     "#238b45",
     "#006d2c",
 ]
+SWE_ANOMALY_TICKS = list(range(-8, 9))
+SWE_ANOMALY_PALETTE = [
+    "#6b2d0c",
+    "#85400f",
+    "#a65f1b",
+    "#bd7d34",
+    "#d09b57",
+    "#dfbd84",
+    "#ead9b8",
+    "#f4eee4",
+    "#dceef3",
+    "#b9dce8",
+    "#91c8d8",
+    "#68aec8",
+    "#448fb4",
+    "#2f7198",
+    "#245b83",
+    "#1d496f",
+    "#143b5f",
+]
 # A social-sized North America view: retain Alaska and all of Greenland while
 # keeping the lower field in the subtropics. Border drawing applies a separate
 # 14°N cutoff so South America does not appear in the frame.
@@ -110,11 +132,12 @@ DEFAULT_BORDER_URLS = (
 PRODUCT_HEIGHT_ANOMALY = "500mb_height_anomaly"
 PRODUCT_HEIGHT_ABSOLUTE = "500mb_height_absolute"
 PRODUCT_PRECIPITATION_ANOMALY = "precipitation_anomaly"
+PRODUCT_SWE_ANOMALY = "snow_water_equivalent_anomaly"
 
 # The NOMADS filenames retain the ``pgbf.`` and ``flxf.`` product prefixes.
-# The FLXF monthly PRATE files are on the native CFSv2 Gaussian grid.  Keep
-# the source field and conversion metadata explicit so a manifest can explain
-# exactly how the displayed monthly precipitation total was made.
+# The FLXF monthly files are on the native CFSv2 Gaussian grid. Keep the
+# source field and conversion metadata explicit so a manifest can explain
+# exactly how each displayed surface product was made.
 PRODUCT_SPECS = {
     PRODUCT_HEIGHT_ANOMALY: {
         "name": PRODUCT_HEIGHT_ANOMALY,
@@ -137,6 +160,7 @@ PRODUCT_SPECS = {
         "seasonal_reducer": "mean",
         "seasonal_aggregation": "seasonal mean",
         "seasonal_units": "m",
+        "monthly_aggregation": "monthly forecast average",
     },
     PRODUCT_HEIGHT_ABSOLUTE: {
         "name": PRODUCT_HEIGHT_ABSOLUTE,
@@ -159,6 +183,7 @@ PRODUCT_SPECS = {
         "seasonal_reducer": "mean",
         "seasonal_aggregation": "seasonal mean",
         "seasonal_units": "m",
+        "monthly_aggregation": "monthly forecast average",
     },
     PRODUCT_PRECIPITATION_ANOMALY: {
         "name": PRODUCT_PRECIPITATION_ANOMALY,
@@ -184,7 +209,34 @@ PRODUCT_SPECS = {
         "seasonal_reducer": "sum",
         "seasonal_aggregation": "seasonal total",
         "seasonal_units": "in",
+        "monthly_aggregation": "monthly total precipitation",
+        "conversion_kind": "monthly_precipitation_total_inches",
         "conversion": "PRATE multiplied by calendar-month seconds, converted from mm to inches",
+    },
+    PRODUCT_SWE_ANOMALY: {
+        "name": PRODUCT_SWE_ANOMALY,
+        "source_kind": "flxf",
+        "match": ":WEASD:surface:",
+        "raw_field": "WEASD:surface",
+        "raw_units": "kg m-2",
+        "field": "snow_water_equivalent_anomaly",
+        "units": "in",
+        "grid_shape": (FLUX_GRID_LON_COUNT, FLUX_GRID_LAT_COUNT),
+        "cache_tag": "weasd",
+        "state_tag": "weasd_in",
+        "id_token": "swe-anomaly",
+        "file_token": "swea",
+        "title": "CFSv2 Snow-Water-Equivalent Anomaly (in)",
+        "absolute_title": "CFSv2 Snow-Water Equivalent (in)",
+        "height_contours": False,
+        "baseline_root": NCEI_FLUX_CALIBRATION_ROOT,
+        "baseline_label": NCEI_FLUX_CALIBRATION_LABEL,
+        "seasonal_reducer": "mean",
+        "seasonal_aggregation": "seasonal mean snow-water equivalent",
+        "seasonal_units": "in",
+        "monthly_aggregation": "monthly snow-water-equivalent average",
+        "conversion_kind": "snow_water_equivalent_inches",
+        "conversion": "WEASD divided by 25.4 to convert kg m-2/mm of liquid water equivalent to inches",
     },
 }
 
@@ -555,6 +607,21 @@ def monthly_precipitation_total_inches(grid: Grid, target: str) -> Grid:
     return transform_grid(grid, lambda value: value * seconds / 25.4)
 
 
+def snow_water_equivalent_inches(grid: Grid) -> Grid:
+    """Convert WEASD from kg m-2 (equivalent to mm of liquid water) to inches."""
+
+    return transform_grid(grid, lambda value: value / 25.4)
+
+
+def prepare_product_grid(grid: Grid, product_spec: dict, target: str) -> Grid:
+    conversion_kind = product_spec.get("conversion_kind")
+    if conversion_kind == "monthly_precipitation_total_inches":
+        return monthly_precipitation_total_inches(grid, target)
+    if conversion_kind == "snow_water_equivalent_inches":
+        return snow_water_equivalent_inches(grid)
+    return grid
+
+
 def mean_grids(grids: Sequence[Grid]) -> Grid:
     if not grids:
         raise CFSv2Error("cannot average an empty CFSv2 member set")
@@ -607,9 +674,7 @@ def decode_target_ensemble(
     source_kind = product_spec["source_kind"]
 
     def prepare_grid(grid: Grid) -> Grid:
-        if source_kind == "flxf":
-            return monthly_precipitation_total_inches(grid, target)
-        return grid
+        return prepare_product_grid(grid, product_spec, target)
 
     def source_metadata() -> dict:
         metadata = {
@@ -776,9 +841,7 @@ def load_baseline(path: Path, wgrib2: str, product_spec: dict, target: str) -> G
             cache_tag=f"{product_spec['cache_tag']}_baseline",
             expected_shape=product_spec["grid_shape"],
         )
-        if product_spec["source_kind"] == "flxf":
-            return monthly_precipitation_total_inches(grid, target)
-        return grid
+        return prepare_product_grid(grid, product_spec, target)
     return read_grid_csv(path)
 
 
@@ -790,7 +853,14 @@ def baseline_for_target(args: argparse.Namespace, target: str, repo_root: Path) 
         return path, args.baseline_label or path.name
     if args.baseline_dir:
         directory = resolve_repo_path(args.baseline_dir, repo_root)
-        prefix = "prate" if getattr(args, "product", "").startswith("precipitation") else "z500"
+        product_name = getattr(args, "product", "")
+        prefix = (
+            "prate"
+            if product_name.startswith("precipitation")
+            else "weasd"
+            if product_name == PRODUCT_SWE_ANOMALY
+            else "z500"
+        )
         candidates = (
             f"{prefix}_{target}.csv",
             f"{prefix}_{target}.grb2",
@@ -1077,15 +1147,17 @@ def render_map(
             anomaly_min = PRECIP_ANOMALY_MIN_IN
             anomaly_max = PRECIP_ANOMALY_MAX_IN
             colorbar_ticks = PRECIP_ANOMALY_TICKS
+            palette = PRECIP_ANOMALY_PALETTE
+        elif product_spec["name"] == PRODUCT_SWE_ANOMALY:
+            anomaly_min = SWE_ANOMALY_MIN_IN
+            anomaly_max = SWE_ANOMALY_MAX_IN
+            colorbar_ticks = SWE_ANOMALY_TICKS
+            palette = SWE_ANOMALY_PALETTE
         else:
             anomaly_min = ANOMALY_MIN_M
             anomaly_max = ANOMALY_MAX_M
             colorbar_ticks = ANOMALY_TICKS
-        palette = (
-            PRECIP_ANOMALY_PALETTE
-            if product_spec["name"] == PRODUCT_PRECIPITATION_ANOMALY
-            else ANOMALY_PALETTE
-        )
+            palette = ANOMALY_PALETTE
         cmap = mcolors.ListedColormap(palette)
         bounds = np.linspace(anomaly_min, anomaly_max, len(palette) + 1)
         norm = mcolors.BoundaryNorm(bounds, cmap.N, clip=True)
@@ -1277,6 +1349,10 @@ def render_map(
         header_detail = (
             f"NOAA CFSv2 / NOMADS  •  {baseline_label}  •  Precipitation accumulation (in)  •  CONUS domain"
         )
+    if product_spec["name"] == PRODUCT_SWE_ANOMALY:
+        header_detail = (
+            f"NOAA CFSv2 / NOMADS  •  {baseline_label}  •  Snow-water equivalent (in)  •  North America domain"
+        )
     figure.text(
         0.035,
         0.899,
@@ -1296,7 +1372,7 @@ def render_map(
         orientation="horizontal",
         extend="neither",
         spacing="uniform",
-        drawedges=product_spec["name"] == PRODUCT_PRECIPITATION_ANOMALY,
+        drawedges=product_spec["name"] in {PRODUCT_PRECIPITATION_ANOMALY, PRODUCT_SWE_ANOMALY},
     )
     colorbar.set_ticks(colorbar_ticks)
     if anomaly:
@@ -1327,27 +1403,56 @@ def relative_path(path: Path, repo_root: Path) -> str:
         return path.resolve().as_posix()
 
 
-def write_manifest(path: Path, repo_root: Path, run_entry: dict) -> None:
+def write_manifest(
+    path: Path,
+    repo_root: Path,
+    run_entry: dict,
+    previous_manifest: Path | None = None,
+    retain_runs: int = 4,
+) -> None:
+    if retain_runs < 1:
+        raise CFSv2Error("manifest retention must keep at least one run")
     payload = {
         "schema_version": 1,
         "kind": "cfsv2_seasonal_manifest",
         "generated_utc": iso_utc(dt.datetime.now(dt.timezone.utc)),
         "source": "NOAA CFSv2 NOMADS",
         "source_url": NOMADS_ROOT,
+        "retention": {
+            "max_runs": retain_runs,
+            "history_runs": max(0, retain_runs - 1),
+        },
         "runs": [],
     }
-    if path.exists():
+    existing_paths = [path]
+    if previous_manifest and previous_manifest.resolve() != path.resolve():
+        existing_paths.append(previous_manifest)
+    for existing_path in existing_paths:
+        if not existing_path.exists():
+            continue
         try:
-            existing = json.loads(path.read_text(encoding="utf-8"))
+            existing = json.loads(existing_path.read_text(encoding="utf-8"))
             if isinstance(existing, dict) and isinstance(existing.get("runs"), list):
                 payload.update({key: existing[key] for key in ("schema_version", "kind", "source", "source_url") if key in existing})
-                payload["runs"] = existing["runs"]
+                payload["runs"].extend(existing["runs"])
         except (OSError, ValueError) as exc:
-            raise CFSv2Error(f"could not read existing CFSv2 manifest {path}: {exc}") from exc
+            raise CFSv2Error(f"could not read existing CFSv2 manifest {existing_path}: {exc}") from exc
     payload["generated_utc"] = iso_utc(dt.datetime.now(dt.timezone.utc))
-    payload["runs"] = [run for run in payload["runs"] if run.get("id") != run_entry.get("id")]
-    payload["runs"].append(run_entry)
-    payload["runs"].sort(key=lambda item: str(item.get("id", "")), reverse=True)
+    unique_runs = {}
+    for run in payload["runs"]:
+        if isinstance(run, dict) and run.get("id"):
+            unique_runs[run["id"]] = run
+    unique_runs[run_entry["id"]] = run_entry
+    payload["runs"] = list(unique_runs.values())
+    payload["runs"].sort(
+        key=lambda item: (
+            str(item.get("init_utc", "")),
+            str(item.get("generated_utc", "")),
+            str(item.get("id", "")),
+        ),
+        reverse=True,
+    )
+    payload["runs"] = payload["runs"][:retain_runs]
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_name(path.name + ".tmp")
     temporary.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
@@ -1373,6 +1478,8 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--cache-dir", default=".cache/cfsv2", help="raw GRIB2/decoder/border cache")
     parser.add_argument("--output-dir", default="public/seasonal/cfsv2", help="rendered image directory")
     parser.add_argument("--manifest", default="public/seasonal/cfsv2_manifest.json", help="seasonal manifest path")
+    parser.add_argument("--previous-manifest", type=Path, help="previous published manifest used to retain older runs")
+    parser.add_argument("--retain-runs", type=int, default=4, help="number of current and historical runs to retain in the manifest")
     parser.add_argument("--baseline-file", type=Path, help="one CFSv2/reforecast baseline CSV or GRIB2 grid")
     parser.add_argument("--baseline-dir", type=Path, help="directory containing a baseline grid for each YYYYMM target")
     parser.add_argument("--ncei-calibration", action="store_true", help="fetch the matching official NCEI CFS reforecast calibration baseline (1982-2010)")
@@ -1453,11 +1560,7 @@ def run(args: argparse.Namespace) -> int:
             + (
                 f"{len(seasonal_leads)}-month {product['seasonal_aggregation']}"
                 if seasonal_leads
-                else (
-                    "monthly total precipitation"
-                    if product_name == PRODUCT_PRECIPITATION_ANOMALY
-                    else "monthly forecast average"
-                )
+                else product.get("monthly_aggregation", "monthly forecast average")
             )
         ),
         "field": product["field"],
@@ -1528,7 +1631,7 @@ def run(args: argparse.Namespace) -> int:
             "valid_end_utc": valid_end,
             "lead_month": lead,
             "target_month": target,
-            "aggregation": "monthly total precipitation" if product_name == PRODUCT_PRECIPITATION_ANOMALY else "monthly forecast average",
+            "aggregation": product.get("monthly_aggregation", "monthly forecast average"),
             "field": product["field"],
             "units": product["units"],
             "raw_field": product["raw_field"],
@@ -1749,7 +1852,8 @@ def run(args: argparse.Namespace) -> int:
     else:
         run_entry["status"] = "rendered"
     run_entry["output_dir"] = relative_path(output_dir, repo_root)
-    write_manifest(manifest_path, repo_root, run_entry)
+    previous_manifest = resolve_repo_path(args.previous_manifest, repo_root) if args.previous_manifest else None
+    write_manifest(manifest_path, repo_root, run_entry, previous_manifest, args.retain_runs)
     print(f"wrote CFSv2 manifest: {manifest_path}")
     return 2 if failures else 0
 

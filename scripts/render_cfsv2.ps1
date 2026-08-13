@@ -1,5 +1,5 @@
 param(
-    [ValidateSet("500mb_height_anomaly", "500mb_height_absolute", "precipitation_anomaly")]
+    [ValidateSet("500mb_height_anomaly", "500mb_height_absolute", "precipitation_anomaly", "snow_water_equivalent_anomaly")]
     [string]$Product = "500mb_height_anomaly",
     [string]$Init = "latest",
     [string]$LeadMonths = "1,2,3",
@@ -17,6 +17,8 @@ param(
     [string]$CacheDir = ".cache/cfsv2",
     [string]$OutputDir = "public/seasonal/cfsv2",
     [string]$Manifest = "public/seasonal/cfsv2_manifest.json",
+    [string]$PreviousManifest = "",
+    [int]$RetainRuns = 4,
     [string]$Wgrib2 = "",
     [switch]$Absolute,
     [switch]$DecodeOnly,
@@ -40,7 +42,8 @@ try {
         "--rolling-state-dir", $RollingStateDir,
         "--cache-dir", $CacheDir,
         "--output-dir", $OutputDir,
-        "--manifest", $Manifest
+        "--manifest", $Manifest,
+        "--retain-runs", $RetainRuns
     )
 
     if ($SeasonalWindow) { $arguments += @("--seasonal-window", $SeasonalWindow) }
@@ -49,6 +52,7 @@ try {
     if ($BaselineDir) { $arguments += @("--baseline-dir", $BaselineDir) }
     if ($BaselineLabel) { $arguments += @("--baseline-label", $BaselineLabel) }
     if ($BaselineYears) { $arguments += @("--baseline-years", $BaselineYears) }
+    if ($PreviousManifest) { $arguments += @("--previous-manifest", $PreviousManifest) }
     if ($UseNceiCalibration) { $arguments += "--ncei-calibration" }
     if ($Wgrib2) { $arguments += @("--wgrib2", $Wgrib2) }
     if ($Absolute) { $arguments += "--absolute" }
