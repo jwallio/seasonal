@@ -228,6 +228,7 @@ PRODUCT_SPECS = {
         "file_token": "swea",
         "title": "CFSv2 Snow-Water-Equivalent Anomaly (in)",
         "absolute_title": "CFSv2 Snow-Water Equivalent (in)",
+        "region": CONUS_PRECIP_REGION,
         "height_contours": False,
         "baseline_root": NCEI_FLUX_CALIBRATION_ROOT,
         "baseline_label": NCEI_FLUX_CALIBRATION_LABEL,
@@ -1365,7 +1366,7 @@ def render_map(
         )
     if product_spec["name"] == PRODUCT_SWE_ANOMALY:
         header_detail = (
-            f"{source_label}  •  {baseline_label}  •  Snow-water equivalent (in)  •  North America domain"
+            f"{source_label}  •  {baseline_label}  •  Snow-water equivalent (in)  •  CONUS domain"
         )
     figure.text(
         0.035,
