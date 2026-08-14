@@ -1,0 +1,124 @@
+name: ECMWF SEAS5 Seasonal Graphics
+
+on:
+  schedule:
+    # C3S/SEAS5 monthly archive products are published during the second week.
+    - cron: "30 14 11 * *"
+  workflow_dispatch:
+    inputs:
+      product:
+        description: "SEAS5 parameter to generate"
+        required: false
+        default: "500mb_height_anomaly"
+        type: choice
+        options:
+          - 500mb_height_anomaly
+          - 2m_temperature_anomaly
+          - precipitation_anomaly
+          - snowfall_anomaly
+          - sst_anomaly
+          - mslp_anomaly
+      init:
+        description: "SEAS5 initialization as YYYYMM or latest"
+        required: false
+        default: "latest"
+        type: string
+      lead_months:
+        description: "Target leads, comma-separated"
+        required: false
+        default: "4,5,6"
+        type: string
+      seasonal_window:
+        description: "Seasonal leads, comma-separated"
+        required: false
+        default: "4,5,6"
+        type: string
+      climo_years:
+        description: "SEAS5 hindcast climatology years"
+        required: false
+        default: "1981-2016"
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    env:
+      SEAS5_PRODUCT: ${{ inputs.product || '500mb_height_anomaly' }}
+      SEAS5_INIT: ${{ inputs.init || 'latest' }}
+      LEAD_MONTHS: ${{ inputs.lead_months || '4,5,6' }}
+      SEASONAL_WINDOW: ${{ inputs.seasonal_window || '4,5,6' }}
+      CLIMO_YEARS: ${{ inputs.climo_years || '1981-2016' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Install SEAS5 rendering dependencies
+        run: python -m pip install --upgrade xarray zarr icechunk "dask[array]" matplotlib Pillow requests numpy
+
+      - name: Restore SEAS5 climatology cache
+        uses: actions/cache@v4
+        with:
+          path: .cache/seas5
+          key: seas5-${{ runner.os }}-${{ env.SEAS5_PRODUCT }}-${{ env.CLIMO_YEARS }}-v1
+          restore-keys: |
+            seas5-${{ runner.os }}-${{ env.SEAS5_PRODUCT }}-${{ env.CLIMO_YEARS }}-
+
+      - name: Restore published SEAS5 run history
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .cache/seas5
+          published_manifest=".cache/seas5/previous_manifest.json"
+          temporary_manifest="${published_manifest}.tmp"
+          pages_url="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/seasonal/seas5_manifest.json"
+          if curl -fsSL --retry 2 --connect-timeout 10 "$pages_url" -o "$temporary_manifest"; then
+            mv "$temporary_manifest" "$published_manifest"
+            echo "Restored prior SEAS5 manifest for current-plus-three run retention."
+          else
+            rm -f "$temporary_manifest" "$published_manifest"
+            echo "No prior published SEAS5 manifest was available; starting a new history."
+          fi
+
+      - name: Render SEAS5 products
+        run: |
+          python scripts/seas5_seasonal.py \
+            --product "$SEAS5_PRODUCT" \
+            --init "$SEAS5_INIT" \
+            --lead-months "$LEAD_MONTHS" \
+            --seasonal-window "$SEASONAL_WINDOW" \
+            --climo-years "$CLIMO_YEARS" \
+            --cache-dir .cache/seas5 \
+            --output-dir public/seasonal/seas5 \
+            --manifest public/seasonal/seas5_manifest.json \
+            --previous-manifest .cache/seas5/previous_manifest.json \
+            --retain-runs 4
+
+      - name: Upload SEAS5 artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: seas5-seasonal-${{ github.run_id }}
+          path: |
+            public/seasonal/seas5/**
+            public/seasonal/seas5_manifest.json
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Publish SEAS5 assets to GitHub Pages
+        if: success()
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
+          keep_files: true
