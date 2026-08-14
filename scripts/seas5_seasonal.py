@@ -64,8 +64,10 @@ CDS_LICENSE_URL = "https://cds.climate.copernicus.eu/datasets/seasonal-postproce
 
 Z500_ANOMALY = "500mb_height_anomaly"
 T2M_ANOMALY = "2m_temperature_anomaly"
+T850_ANOMALY = "850mb_temperature_anomaly"
 PRECIP_ANOMALY = "precipitation_anomaly"
 SNOWFALL_ANOMALY = "snowfall_anomaly"
+SNOW_DEPTH_ANOMALY = "snow_depth_anomaly"
 SST_ANOMALY = "sst_anomaly"
 MSLP_ANOMALY = "mslp_anomaly"
 
@@ -149,6 +151,30 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "cds_dataset": CDS_SINGLE_ANOMALY_DATASET,
         "cds_variable": "2m_temperature_anomaly",
     },
+    T850_ANOMALY: {
+        "name": T850_ANOMALY,
+        "variable": "t850",
+        "field": "t850_anomaly",
+        "raw_field": "t850 / temperature",
+        "raw_units": "K",
+        "units": "°C",
+        "seasonal_units": "°C",
+        "title": "SEAS5 850-mb Temperature Anomaly (°C)",
+        "absolute_title": "SEAS5 850-mb Temperature (°C)",
+        "height_contours": False,
+        "region": DEFAULT_REGION,
+        "monthly_reducer": "mean",
+        "seasonal_reducer": "mean",
+        "anomaly_min": -6.0,
+        "anomaly_max": 6.0,
+        "anomaly_ticks": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6],
+        "anomaly_palette": TEMP_PALETTE,
+        "conversion": "Kelvin-to-Celsius offset cancels in anomaly differences",
+        "header_detail": "{source_label}  •  {baseline_label}  •  850-mb temperature anomaly (°C)",
+        "cds_dataset": CDS_PRESSURE_ANOMALY_DATASET,
+        "cds_variable": "temperature_anomaly",
+        "cds_pressure_level": "850",
+    },
     PRECIP_ANOMALY: {
         "name": PRECIP_ANOMALY,
         "variable": "pr",
@@ -194,6 +220,29 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "header_detail": "{source_label}  •  {baseline_label}  •  Snowfall liquid-water equivalent (in)  •  CONUS domain",
         "cds_dataset": CDS_SINGLE_ANOMALY_DATASET,
         "cds_variable": "snowfall_anomalous_rate_of_accumulation",
+    },
+    SNOW_DEPTH_ANOMALY: {
+        "name": SNOW_DEPTH_ANOMALY,
+        "variable": "snow_depth",
+        "field": "snow_depth_anomaly",
+        "raw_field": "snow depth",
+        "raw_units": "m of water equivalent",
+        "units": "in w.e.",
+        "seasonal_units": "in w.e.",
+        "title": "SEAS5 CONUS Snow-Depth Anomaly (in w.e.)",
+        "absolute_title": "SEAS5 CONUS Snow Depth (in w.e.)",
+        "height_contours": False,
+        "region": CONUS_PRECIP_REGION,
+        "monthly_reducer": "mean",
+        "seasonal_reducer": "mean",
+        "anomaly_min": -8.0,
+        "anomaly_max": 8.0,
+        "anomaly_ticks": list(range(-8, 9)),
+        "anomaly_palette": SWE_ANOMALY_PALETTE,
+        "conversion": "CDS snow-depth anomaly converted from metres of water equivalent to inches",
+        "header_detail": "{source_label}  •  {baseline_label}  •  Snow depth water equivalent (in)  •  CONUS domain",
+        "cds_dataset": CDS_SINGLE_ANOMALY_DATASET,
+        "cds_variable": "snow_depth_anomaly",
     },
     SST_ANOMALY: {
         "name": SST_ANOMALY,
@@ -356,13 +405,15 @@ def convert_values(values: np.ndarray, product: dict[str, Any], target: str) -> 
     converted = np.asarray(values, dtype=float)
     if variable == "z500":
         return converted / GEOPOTENTIAL_GRAVITY
-    if variable in {"t2m", "sst"}:
+    if variable in {"t2m", "t850", "sst"}:
         # Anomaly fields have the same numerical increment in K and °C.
         return converted
     if variable == "pr":
         return converted * month_seconds(target) * M_TO_INCH
     if variable == "sf":
         return converted * month_seconds(target) * M_TO_INCH
+    if variable == "snow_depth":
+        return converted * M_TO_INCH
     if variable == "slp":
         return converted / 100.0
     raise SEAS5Error(f"no unit conversion is defined for SEAS5 variable {variable}")

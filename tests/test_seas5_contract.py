@@ -59,8 +59,10 @@ def main() -> int:
         "HINDCAST_END = 2016",
         "500mb_height_anomaly",
         "2m_temperature_anomaly",
+        "850mb_temperature_anomaly",
         "precipitation_anomaly",
         "snowfall_anomaly",
+        "snow_depth_anomaly",
         "sst_anomaly",
         "mslp_anomaly",
         "CDS_API_KEY",
@@ -85,7 +87,15 @@ def main() -> int:
     check("peaceiris/actions-gh-pages" not in workflow, "SEAS5 workflow must not publish Pages directly")
     for term in ("workflow_run:", "ECMWF SEAS5 Seasonal Graphics", "actions/download-artifact@v4", "keep_files: false"):
         check(term in pages_workflow, f"central Pages workflow missing term: {term}")
-    for term in ("id=\"product-select\"", "id=\"run-select\"", "seas5_manifest.json", "timeZone:'UTC'"):
+    for term in (
+        "id=\"product-select\"",
+        "id=\"run-select\"",
+        "seas5_manifest.json",
+        "timeZone:'UTC'",
+        "850mb_temperature_anomaly",
+        "snow_depth_anomaly",
+        "Copernicus CDS",
+    ):
         check(term in page, f"viewer missing SEAS5 term: {term}")
     module = load_adapter()
     check(module.latest_cds_init(dt.datetime(2026, 8, 6, 12, 0)) == "2026080100", "release-time init should use the current ECMWF month")
@@ -95,6 +105,8 @@ def main() -> int:
     check(module.seasonal_period_label("202512", "202602") == "DJF 2026", "DJF label should use the ending year")
     check(round(float(module.convert_values([[module.GEOPOTENTIAL_GRAVITY]], module.PRODUCT_SPECS[module.Z500_ANOMALY], "202512")[0][0]), 5) == 1.0, "z500 conversion should divide by gravity")
     check(round(float(module.convert_values([[0.001]], module.PRODUCT_SPECS[module.PRECIP_ANOMALY], "202601")[0][0]), 5) == round(0.001 * 31 * 86400 * 1000 / 25.4, 5), "precipitation conversion should use calendar-month seconds and metres-to-inches")
+    check(round(float(module.convert_values([[2.5]], module.PRODUCT_SPECS[module.T850_ANOMALY], "202601")[0][0]), 5) == 2.5, "850-mb temperature anomaly should preserve Kelvin increments in Celsius")
+    check(round(float(module.convert_values([[0.0254]], module.PRODUCT_SPECS[module.SNOW_DEPTH_ANOMALY], "202601")[0][0]), 5) == 1.0, "snow-depth conversion should convert metres of water equivalent to inches")
     with tempfile.TemporaryDirectory() as temporary:
         output = Path(temporary) / "manifest.json"
         previous = Path(temporary) / "previous.json"
