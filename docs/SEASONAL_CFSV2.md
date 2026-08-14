@@ -86,9 +86,11 @@ That keeps a failed or stale seasonal run visible instead of silently
 presenting an incomplete forecast as current.
 
 The scheduled workflow downloads the previously published manifest before each
-render and retains the current run plus three prior runs. The static CFSv2
+render and retains the current run plus three prior runs. It uploads a scoped
+Pages payload; `.github/workflows/publish-pages.yml` serializes that payload
+with WN2 and SEAS5 output before the single Pages publish. The static CFSv2
 viewer exposes those retained runs through Parameter and Run history selectors;
-the Pages publish step keeps the referenced historical image paths available.
+the central publisher keeps the referenced historical image paths available.
 
 ## Baseline rule
 

@@ -104,21 +104,23 @@ jobs:
             --previous-manifest .cache/seas5/previous_manifest.json \
             --retain-runs 4
 
-      - name: Upload SEAS5 artifacts
-        if: always()
+      - name: Package SEAS5 Pages payload
+        if: success()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -d public/seasonal/seas5
+          test -f public/seasonal/seas5_manifest.json
+          rm -rf pages-payload
+          mkdir -p pages-payload/seas5
+          cp -R public/seasonal/seas5/. pages-payload/seas5/
+          cp public/seasonal/seas5_manifest.json pages-payload/seas5_manifest.json
+
+      - name: Upload SEAS5 Pages payload
+        if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: seas5-seasonal-${{ github.run_id }}
-          path: |
-            public/seasonal/seas5/**
-            public/seasonal/seas5_manifest.json
-          if-no-files-found: warn
+          name: seas5-pages-${{ github.run_id }}
+          path: pages-payload
+          if-no-files-found: error
           retention-days: 14
-
-      - name: Publish SEAS5 assets to GitHub Pages
-        if: success()
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./public
-          keep_files: true

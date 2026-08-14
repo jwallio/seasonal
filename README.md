@@ -33,9 +33,9 @@ pipeline as the existing graphics. They are opt-in for a plain local
 `python main.py` run so the existing local output set remains stable; the
 `weather_parameters` workflow preset enables all five.
 
-The standalone CFSv2 seasonal adapter is documented in [`docs/SEASONAL_CFSV2.md`](/d:/weather-projects/wn2/docs/SEASONAL_CFSV2.md). It downloads official NOAA NOMADS monthly `pgbf` GRIB2 files, extracts 500-mb height with `wgrib2`, computes an ensemble mean, and writes calendar-month products under `public/seasonal/cfsv2/`. Production anomaly images require an explicitly selected CFSv2/reforecast baseline (custom or official NCEI calibration); the adapter never substitutes the WN2 ERA5/MERRA-2 baselines. Use `-RollingDays 10` to build the CPC-style 40-cycle lagged initial-condition blend; the rolling state directory must persist between runs because NOMADS retains only seven days. The scheduled [`cfsv2.yml`](/d:/weather-projects/wn2/.github/workflows/cfsv2.yml) workflow carries that state with GitHub Actions cache and publishes the seasonal assets alongside the existing Pages output. The Earth Engine CFSv2 collection remains a separate surface-data option.
+The standalone CFSv2 seasonal adapter is documented in [`docs/SEASONAL_CFSV2.md`](/d:/weather-projects/wn2/docs/SEASONAL_CFSV2.md). It downloads official NOAA NOMADS monthly `pgbf` GRIB2 files, extracts 500-mb height with `wgrib2`, computes an ensemble mean, and writes calendar-month products under `public/seasonal/cfsv2/`. Production anomaly images require an explicitly selected CFSv2/reforecast baseline (custom or official NCEI calibration); the adapter never substitutes the WN2 ERA5/MERRA-2 baselines. Use `-RollingDays 10` to build the CPC-style 40-cycle lagged initial-condition blend; the rolling state directory must persist between runs because NOMADS retains only seven days. The scheduled [`cfsv2.yml`](/d:/weather-projects/wn2/.github/workflows/cfsv2.yml) workflow uploads a CFSv2 Pages payload; the central [`publish-pages.yml`](/d:/weather-projects/wn2/.github/workflows/publish-pages.yml) workflow merges it with WN2 and SEAS5 outputs before publishing. The Earth Engine CFSv2 collection remains a separate surface-data option.
 
-The ECMWF SEAS5 seasonal adapter is documented in [`docs/SEASONAL_SEAS5.md`](/d:/weather-projects/wn2/docs/SEASONAL_SEAS5.md). It reads the public Planette/C3S AWS Icechunk/Zarr archive, computes matched SEAS5 hindcast climatologies, and publishes parameter-selectable seasonal maps under `public/seasonal/seas5/`. The scheduled [`seas5.yml`](/d:/weather-projects/wn2/.github/workflows/seas5.yml) workflow retains the current run plus three prior runs. SEAS5 has its own viewer and manifest so its model climatology and provenance remain distinct from CFSv2.
+The ECMWF SEAS5 seasonal adapter is documented in [`docs/SEASONAL_SEAS5.md`](/d:/weather-projects/wn2/docs/SEASONAL_SEAS5.md). It reads the public Planette/C3S AWS Icechunk/Zarr archive, computes matched SEAS5 hindcast climatologies, and publishes parameter-selectable seasonal maps under `public/seasonal/seas5/`. The scheduled [`seas5.yml`](/d:/weather-projects/wn2/.github/workflows/seas5.yml) workflow uploads a SEAS5 Pages payload; the central publisher retains the current run plus three prior runs and keeps SEAS5 provenance separate from CFSv2.
 
 ## Repo Layout
 
@@ -49,6 +49,7 @@ The ECMWF SEAS5 seasonal adapter is documented in [`docs/SEASONAL_SEAS5.md`](/d:
 - [`scripts/render_seas5.ps1`](/d:/weather-projects/wn2/scripts/render_seas5.ps1): ECMWF SEAS5 seasonal adapter helper
 - [`scripts/seas5_seasonal.py`](/d:/weather-projects/wn2/scripts/seas5_seasonal.py): public C3S/SEAS5 Zarr adapter
 - [`.github/workflows/seas5.yml`](/d:/weather-projects/wn2/.github/workflows/seas5.yml): monthly SEAS5 workflow
+- [`.github/workflows/publish-pages.yml`](/d:/weather-projects/wn2/.github/workflows/publish-pages.yml): single serialized WN2/CFSv2/SEAS5 Pages publisher
 - [`scripts/clean.ps1`](/d:/weather-projects/wn2/scripts/clean.ps1): remove root `.tmp_*` files and `*.log`
 - [`tests/smoke_outputs.py`](/d:/weather-projects/wn2/tests/smoke_outputs.py): output sanity/smoke test
 - [`tests/test_pipeline_contract.py`](/d:/weather-projects/wn2/tests/test_pipeline_contract.py): static pipeline contract check
@@ -322,4 +323,4 @@ The GitHub Actions workflows require:
 - `main` is the source/default branch
 - `gh-pages` is the published static site branch
 
-The workflows restore recent `gh-pages` outputs, merge newly rendered frames, rebuild the manifest, and deploy the site again.
+The renderer workflows upload scoped payloads. The single `publish-pages.yml` workflow serializes successful WN2, CFSv2, and SEAS5 completions, merges each payload into the existing `gh-pages` tree, and publishes the complete site so one product cannot remove another product's assets.

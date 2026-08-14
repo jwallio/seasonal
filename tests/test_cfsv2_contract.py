@@ -13,6 +13,8 @@ ADAPTER = ROOT / "scripts" / "cfsv2_seasonal.py"
 WRAPPER = ROOT / "scripts" / "render_cfsv2.ps1"
 DOC = ROOT / "docs" / "SEASONAL_CFSV2.md"
 WORKFLOW = ROOT / ".github" / "workflows" / "cfsv2.yml"
+PAGES_WORKFLOW = ROOT / ".github" / "workflows" / "publish-pages.yml"
+UPDATE_WORKFLOW = ROOT / ".github" / "workflows" / "update.yml"
 PAGE = ROOT / "public" / "seasonal" / "cfsv2" / "index.html"
 
 
@@ -36,6 +38,8 @@ def main() -> int:
     check(WRAPPER.exists(), "CFSv2 PowerShell wrapper missing")
     check(DOC.exists(), "CFSv2 documentation missing")
     check(WORKFLOW.exists(), "CFSv2 workflow missing")
+    check(PAGES_WORKFLOW.exists(), "central Pages workflow missing")
+    check(UPDATE_WORKFLOW.exists(), "WeatherNext workflow missing")
     check(PAGE.exists(), "CFSv2 Pages index missing")
 
     adapter = ADAPTER.read_text(encoding="utf-8")
@@ -164,6 +168,8 @@ def main() -> int:
         retained = json.loads(output.read_text(encoding="utf-8"))["runs"]
         check([run["id"] for run in retained] == ["current", "old-4", "old-3", "old-2"], "manifest should retain current plus three prior runs")
     workflow = WORKFLOW.read_text(encoding="utf-8")
+    pages_workflow = PAGES_WORKFLOW.read_text(encoding="utf-8")
+    update_workflow = UPDATE_WORKFLOW.read_text(encoding="utf-8")
     for term in (
         "product:",
         "500mb_height_anomaly",
@@ -179,6 +185,20 @@ def main() -> int:
         check(term in workflow, f"workflow missing contract term: {term}")
     for term in ("Restore published CFSv2 run history", "previous_manifest.json", "--previous-manifest", "--retain-runs 4"):
         check(term in workflow, f"workflow missing history-retention term: {term}")
+    check("peaceiris/actions-gh-pages" not in workflow, "CFSv2 workflow must not publish Pages directly")
+    check("peaceiris/actions-gh-pages" not in update_workflow, "WeatherNext workflow must not publish Pages directly")
+    for term in ("Package WN2 Pages payload", "wn2-pages-${{ github.run_id }}"):
+        check(term in update_workflow, f"WeatherNext workflow missing Pages payload term: {term}")
+    for term in (
+        "workflow_run:",
+        "CFSv2 Rolling Seasonal Graphics",
+        "ECMWF SEAS5 Seasonal Graphics",
+        "WeatherNext Runner",
+        "actions/download-artifact@v4",
+        "wn2-pages-publish",
+        "keep_files: false",
+    ):
+        check(term in pages_workflow, f"central Pages workflow missing term: {term}")
 
     print("CFSV2 CONTRACT OK: NOMADS source, HGT500/FLXF fields, conversions, baseline gate, manifest, wrapper")
     return 0

@@ -1,0 +1,148 @@
+name: Publish WN2 GitHub Pages
+
+on:
+  workflow_run:
+    workflows:
+      - WeatherNext Runner
+      - WeatherNext Runner Custom
+      - CFSv2 Rolling Seasonal Graphics
+      - ECMWF SEAS5 Seasonal Graphics
+    types:
+      - completed
+  workflow_dispatch:
+    inputs:
+      source_workflow:
+        description: "Completed workflow whose Pages artifact should be published"
+        required: true
+        type: choice
+        options:
+          - WeatherNext Runner
+          - WeatherNext Runner Custom
+          - CFSv2 Rolling Seasonal Graphics
+          - ECMWF SEAS5 Seasonal Graphics
+      source_run_id:
+        description: "GitHub Actions run ID containing the uploaded Pages artifact"
+        required: true
+        type: string
+
+permissions:
+  actions: read
+  contents: write
+
+concurrency:
+  group: wn2-pages-publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    env:
+      SOURCE_WORKFLOW: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.name || inputs.source_workflow }}
+      SOURCE_RUN_ID: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.id || inputs.source_run_id }}
+    steps:
+      - name: Checkout current Pages tree
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: site
+          fetch-depth: 1
+
+      - name: Download WN2 payload
+        if: ${{ env.SOURCE_WORKFLOW == 'WeatherNext Runner' || env.SOURCE_WORKFLOW == 'WeatherNext Runner Custom' }}
+        uses: actions/download-artifact@v4
+        with:
+          name: wn2-pages-${{ env.SOURCE_RUN_ID }}
+          path: incoming/wn2
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: ${{ env.SOURCE_RUN_ID }}
+
+      - name: Download CFSv2 payload
+        if: ${{ env.SOURCE_WORKFLOW == 'CFSv2 Rolling Seasonal Graphics' }}
+        uses: actions/download-artifact@v4
+        with:
+          name: cfsv2-pages-${{ env.SOURCE_RUN_ID }}
+          path: incoming/cfsv2
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: ${{ env.SOURCE_RUN_ID }}
+
+      - name: Download SEAS5 payload
+        if: ${{ env.SOURCE_WORKFLOW == 'ECMWF SEAS5 Seasonal Graphics' }}
+        uses: actions/download-artifact@v4
+        with:
+          name: seas5-pages-${{ env.SOURCE_RUN_ID }}
+          path: incoming/seas5
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: ${{ env.SOURCE_RUN_ID }}
+
+      - name: Merge payload into the Pages tree
+        env:
+          SOURCE_WORKFLOW: ${{ github.event.workflow_run.name }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f site/index.html
+          test -f site/seasonal/cfsv2/index.html
+          test -f site/seasonal/seas5/index.html
+
+          case "$SOURCE_WORKFLOW" in
+            "WeatherNext Runner"|"WeatherNext Runner Custom")
+              payload_root=incoming/wn2
+              if [ -d "$payload_root/pages-payload" ]; then
+                payload_root="$payload_root/pages-payload"
+              elif [ -d "$payload_root/.pages-payload" ]; then
+                payload_root="$payload_root/.pages-payload"
+              fi
+              test -f "$payload_root/index.html"
+              test -f "$payload_root/runs_manifest.json"
+              cp "$payload_root/index.html" site/index.html
+              cp "$payload_root/runs_manifest.json" site/runs_manifest.json
+              mkdir -p site/runs
+              if [ -d "$payload_root/runs" ]; then
+                cp -R "$payload_root/runs/." site/runs/
+              fi
+              ;;
+            "CFSv2 Rolling Seasonal Graphics")
+              payload_root=incoming/cfsv2
+              if [ -d "$payload_root/pages-payload" ]; then
+                payload_root="$payload_root/pages-payload"
+              elif [ -d "$payload_root/.pages-payload" ]; then
+                payload_root="$payload_root/.pages-payload"
+              fi
+              test -f "$payload_root/cfsv2_manifest.json"
+              mkdir -p site/seasonal/cfsv2
+              cp -R "$payload_root/cfsv2/." site/seasonal/cfsv2/
+              cp "$payload_root/cfsv2_manifest.json" site/seasonal/cfsv2_manifest.json
+              ;;
+            "ECMWF SEAS5 Seasonal Graphics")
+              payload_root=incoming/seas5
+              if [ -d "$payload_root/pages-payload" ]; then
+                payload_root="$payload_root/pages-payload"
+              elif [ -d "$payload_root/.pages-payload" ]; then
+                payload_root="$payload_root/.pages-payload"
+              fi
+              test -f "$payload_root/seas5_manifest.json"
+              mkdir -p site/seasonal/seas5
+              cp -R "$payload_root/seas5/." site/seasonal/seas5/
+              cp "$payload_root/seas5_manifest.json" site/seasonal/seas5_manifest.json
+              ;;
+            *)
+              echo "Unsupported workflow_run source: $SOURCE_WORKFLOW" >&2
+              exit 1
+              ;;
+          esac
+
+          rm -rf site/.git
+
+      - name: Publish the merged Pages tree
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./site
+          publish_branch: gh-pages
+          keep_files: false
+          force_orphan: false
+          enable_jekyll: false

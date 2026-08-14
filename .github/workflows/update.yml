@@ -630,30 +630,35 @@ jobs:
         run: |
           echo "Reconcile run failed; deploying retained/partial outputs from public/."
 
-      - name: Upload Final Public Artifacts
-        if: ${{ always() && env.ENABLE_FORGEJO_ARTIFACT_UPLOAD == '1' }}
+      - name: Package WN2 Pages payload
+        if: ${{ success() && github.server_url == 'https://github.com' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f public/index.html
+          test -f public/runs_manifest.json
+          rm -rf pages-payload
+          mkdir -p pages-payload/runs
+          cp public/index.html pages-payload/index.html
+          cp public/runs_manifest.json pages-payload/runs_manifest.json
+          if [ -d public/runs ]; then
+            cp -R public/runs/. pages-payload/runs/
+          fi
+
+      - name: Upload WN2 Pages payload
+        if: ${{ success() && github.server_url == 'https://github.com' }}
         uses: actions/upload-artifact@v4
         with:
-          name: public-final
-          path: |
-            public/index.html
-            public/runs_manifest.json
-            public/runs/**
-          if-no-files-found: warn
-          retention-days: 5
+          name: wn2-pages-${{ github.run_id }}
+          path: pages-payload
+          if-no-files-found: error
+          retention-days: 14
 
       - name: List final public outputs when artifact upload is disabled
         if: ${{ always() && env.ENABLE_FORGEJO_ARTIFACT_UPLOAD != '1' }}
         run: |
           echo "Artifact upload disabled; listing final public files instead."
           find public -maxdepth 3 -type f | sort | sed -n '1,300p'
-
-      - name: Deploy to GitHub Pages
-        if: ${{ success() && github.server_url == 'https://github.com' }}
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./public
 
       - name: Publish to local Caddy root
         if: ${{ success() && github.server_url != 'https://github.com' && env.LOCAL_WN2_PUBLISH_DIR != '' }}
