@@ -10,12 +10,9 @@
     * { box-sizing:border-box; }
     body { margin:0; min-height:100vh; background:radial-gradient(circle at 15% 0%,#1a3d4b 0,transparent 34rem),#08141b; color:var(--ink); font:15px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
     a { color:var(--teal); }
-    .shell { width:min(1440px,calc(100% - 32px)); margin:0 auto; padding:30px 0 52px; }
-    .eyebrow { color:var(--teal); font-size:11px; font-weight:800; letter-spacing:.18em; text-transform:uppercase; }
-    h1 { margin:10px 0 0; font-size:clamp(30px,5vw,54px); line-height:1; letter-spacing:-.045em; }
-    .hero { display:flex; align-items:flex-end; justify-content:space-between; gap:24px; padding-bottom:24px; }
-    .hero p { max-width:680px; margin:14px 0 0; color:var(--muted); font-size:16px; }
-    .nav { display:flex; flex-wrap:wrap; justify-content:flex-end; gap:10px 16px; padding-bottom:4px; font-size:13px; white-space:nowrap; }
+    .shell { width:min(1440px,calc(100% - 32px)); margin:0 auto; padding:18px 0 52px; }
+    h1 { margin:0; font-size:clamp(30px,5vw,54px); line-height:1; letter-spacing:-.045em; }
+    .hero { padding-bottom:14px; }
     .card { background:linear-gradient(145deg,#132c37e8,#0c1d25e8); border:1px solid var(--line); border-radius:22px; box-shadow:0 18px 60px #0005; overflow:hidden; }
     .toolbar { display:grid; grid-template-columns:minmax(180px,.9fr) minmax(230px,1.3fr) minmax(260px,1.5fr); gap:12px; padding:16px; margin-bottom:18px; }
     .selector { display:grid; gap:5px; }
@@ -52,23 +49,14 @@
     .copy p:last-child { margin-bottom:0; }
     .links { display:flex; flex-wrap:wrap; gap:12px; padding:0 20px 20px; font-size:13px; }
     .footer { margin-top:20px; color:#8298a3; font-size:12px; }
-    @media (max-width:900px) { .hero{display:block}.nav{justify-content:flex-start;margin-top:18px}.toolbar{grid-template-columns:1fr 1fr}.toolbar .selector:first-child{grid-column:1 / -1}.grid{grid-template-columns:1fr} }
-    @media (max-width:600px) { .shell{width:min(100% - 20px,1440px);padding-top:20px}.toolbar{grid-template-columns:1fr}.toolbar .selector:first-child{grid-column:auto}.map-wrap{min-height:280px}.card-head{padding:15px}.viewer{padding:10px}.controls{padding:0 10px 12px}.ratio-control{margin-left:0}.facts{padding:10px}.links{padding:0 15px 15px} }
+    @media (max-width:900px) { .toolbar{grid-template-columns:1fr 1fr}.toolbar .selector:first-child{grid-column:1 / -1}.grid{grid-template-columns:1fr} }
+    @media (max-width:600px) { .shell{width:min(100% - 20px,1440px);padding-top:12px}.toolbar{grid-template-columns:1fr}.toolbar .selector:first-child{grid-column:auto}.map-wrap{min-height:280px}.card-head{padding:15px}.viewer{padding:10px}.controls{padding:0 10px 12px}.ratio-control{margin-left:0}.facts{padding:10px}.links{padding:0 15px 15px} }
   </style>
 </head>
 <body>
   <main class="shell">
     <header class="hero">
-      <div>
-        <div class="eyebrow">Operational seasonal guidance</div>
-        <h1>Seasonal Model Dashboard</h1>
-        <p>One control surface for WeatherNext 2, CFSv2, and ECMWF SEAS5 model guidance. Model-specific initialization, lead, ensemble, and source metadata stay attached to every map.</p>
-      </div>
-      <nav class="nav" aria-label="Direct model viewers">
-        <a href="../">WeatherNext 2</a>
-        <a href="cfsv2/">CFSv2</a>
-        <a href="seas5/">ECMWF SEAS5</a>
-      </nav>
+      <h1>Seasonal Model Dashboard</h1>
     </header>
 
     <section class="toolbar card" aria-label="Dashboard selectors">
