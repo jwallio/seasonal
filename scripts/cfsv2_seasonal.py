@@ -54,18 +54,14 @@ SWE_ANOMALY_MIN_IN = -8.0
 SWE_ANOMALY_MAX_IN = 8.0
 ANOMALY_PALETTE = [
     "#24527a",
-    "#2e6d94",
     "#3e86a8",
-    "#569fba",
     "#75b5c8",
-    "#9bc9d6",
     "#d9e6ea",
-    "#f6dedd",
+    "#ffffff",
+    "#ffffff",
     "#efb8b6",
     "#e49290",
-    "#d56b6e",
     "#c24a57",
-    "#a63449",
     "#84283f",
 ]
 ANOMALY_TICKS = [-200, -160, -120, -80, -40, 0, 40, 80, 120, 160, 200]
@@ -78,8 +74,8 @@ PRECIP_ANOMALY_PALETTE = [
     "#d0a052",
     "#dfbd7d",
     "#ead8b3",
-    "#f5ead8",
-    "#edf7e9",
+    "#ffffff",
+    "#ffffff",
     "#d9efd2",
     "#bfe4b6",
     "#9bd694",
@@ -97,7 +93,7 @@ SWE_ANOMALY_PALETTE = [
     "#d09b57",
     "#dfbd84",
     "#ead9b8",
-    "#f4eee4",
+    "#ffffff",
     "#ffffff",
     "#b9dce8",
     "#91c8d8",
@@ -105,7 +101,6 @@ SWE_ANOMALY_PALETTE = [
     "#448fb4",
     "#2f7198",
     "#245b83",
-    "#1d496f",
     "#143b5f",
 ]
 # A social-sized North America view: retain Alaska and all of Greenland while
@@ -1165,7 +1160,13 @@ def render_map(
             colorbar_ticks = ANOMALY_TICKS
             palette = ANOMALY_PALETTE
         cmap = mcolors.ListedColormap(palette)
-        bounds = np.linspace(anomaly_min, anomaly_max, len(palette) + 1)
+        bounds = np.asarray(colorbar_ticks, dtype=float)
+        if bounds.size != len(palette) + 1:
+            raise CFSv2Error(
+                "anomaly palette must have exactly one color per numbered colorbar interval"
+            )
+        if not np.isclose(bounds[0], anomaly_min) or not np.isclose(bounds[-1], anomaly_max):
+            raise CFSv2Error("anomaly colorbar ticks must span the configured anomaly range")
         norm = mcolors.BoundaryNorm(bounds, cmap.N, clip=True)
         image = axes.contourf(
             canvas_x,
@@ -1387,7 +1388,7 @@ def render_map(
         orientation="horizontal",
         extend="neither",
         spacing="uniform",
-        drawedges=product_spec["name"] in {PRODUCT_PRECIPITATION_ANOMALY, PRODUCT_SWE_ANOMALY},
+        drawedges=anomaly,
     )
     colorbar.set_ticks(colorbar_ticks)
     if anomaly:
