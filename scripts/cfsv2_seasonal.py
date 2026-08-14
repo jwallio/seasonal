@@ -1143,7 +1143,12 @@ def render_map(
 
     masked = np.ma.masked_invalid(data)
     if anomaly:
-        if product_spec["name"] == PRODUCT_PRECIPITATION_ANOMALY:
+        if "anomaly_min" in product_spec:
+            anomaly_min = float(product_spec["anomaly_min"])
+            anomaly_max = float(product_spec["anomaly_max"])
+            colorbar_ticks = product_spec.get("anomaly_ticks", [])
+            palette = product_spec.get("anomaly_palette", ANOMALY_PALETTE)
+        elif product_spec["name"] == PRODUCT_PRECIPITATION_ANOMALY:
             anomaly_min = PRECIP_ANOMALY_MIN_IN
             anomaly_max = PRECIP_ANOMALY_MAX_IN
             colorbar_ticks = PRECIP_ANOMALY_TICKS
@@ -1339,19 +1344,28 @@ def render_map(
         fontsize=10.5,
         color="#42515d",
     )
-    if product_spec["height_contours"]:
+    source_label = product_spec.get("source_label", "NOAA CFSv2 / NOMADS")
+    configured_header_detail = product_spec.get("header_detail", "")
+    if configured_header_detail:
+        header_detail = configured_header_detail.format(
+            source_label=source_label,
+            baseline_label=(
+                "Absolute field smoke output" if not anomaly else baseline_label
+            ),
+        )
+    elif product_spec["height_contours"]:
         header_detail = (
-            f"NOAA CFSv2 / NOMADS  •  {baseline_label}  •  Height contours in dam"
+            f"{source_label}  •  {baseline_label}  •  Height contours in dam"
             if anomaly
-            else "NOAA CFSv2 / NOMADS  •  Absolute field smoke output  •  Height contours in dam"
+            else f"{source_label}  •  Absolute field smoke output  •  Height contours in dam"
         )
     else:
         header_detail = (
-            f"NOAA CFSv2 / NOMADS  •  {baseline_label}  •  Precipitation accumulation (in)  •  CONUS domain"
+            f"{source_label}  •  {baseline_label}  •  Precipitation accumulation (in)  •  CONUS domain"
         )
     if product_spec["name"] == PRODUCT_SWE_ANOMALY:
         header_detail = (
-            f"NOAA CFSv2 / NOMADS  •  {baseline_label}  •  Snow-water equivalent (in)  •  North America domain"
+            f"{source_label}  •  {baseline_label}  •  Snow-water equivalent (in)  •  North America domain"
         )
     figure.text(
         0.035,
