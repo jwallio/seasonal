@@ -637,12 +637,12 @@ jobs:
           set -euo pipefail
           test -f public/index.html
           test -f public/runs_manifest.json
-          rm -rf .pages-payload
-          mkdir -p .pages-payload/runs
-          cp public/index.html .pages-payload/index.html
-          cp public/runs_manifest.json .pages-payload/runs_manifest.json
+          rm -rf pages-payload
+          mkdir -p pages-payload/runs
+          cp public/index.html pages-payload/index.html
+          cp public/runs_manifest.json pages-payload/runs_manifest.json
           if [ -d public/runs ]; then
-            cp -R public/runs/. .pages-payload/runs/
+            cp -R public/runs/. pages-payload/runs/
           fi
 
       - name: Upload WN2 Pages payload
@@ -650,7 +650,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: wn2-pages-${{ github.run_id }}
-          path: .pages-payload
+          path: pages-payload
           if-no-files-found: error
           retention-days: 14
 

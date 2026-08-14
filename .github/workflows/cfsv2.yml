@@ -136,16 +136,16 @@ jobs:
           set -euo pipefail
           test -d public/seasonal/cfsv2
           test -f public/seasonal/cfsv2_manifest.json
-          rm -rf .pages-payload
-          mkdir -p .pages-payload/cfsv2
-          cp -R public/seasonal/cfsv2/. .pages-payload/cfsv2/
-          cp public/seasonal/cfsv2_manifest.json .pages-payload/cfsv2_manifest.json
+          rm -rf pages-payload
+          mkdir -p pages-payload/cfsv2
+          cp -R public/seasonal/cfsv2/. pages-payload/cfsv2/
+          cp public/seasonal/cfsv2_manifest.json pages-payload/cfsv2_manifest.json
 
       - name: Upload CFSv2 Pages payload
         if: success()
         uses: actions/upload-artifact@v4
         with:
           name: cfsv2-pages-${{ github.run_id }}
-          path: .pages-payload
+          path: pages-payload
           if-no-files-found: error
           retention-days: 14

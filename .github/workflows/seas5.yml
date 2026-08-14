@@ -111,16 +111,16 @@ jobs:
           set -euo pipefail
           test -d public/seasonal/seas5
           test -f public/seasonal/seas5_manifest.json
-          rm -rf .pages-payload
-          mkdir -p .pages-payload/seas5
-          cp -R public/seasonal/seas5/. .pages-payload/seas5/
-          cp public/seasonal/seas5_manifest.json .pages-payload/seas5_manifest.json
+          rm -rf pages-payload
+          mkdir -p pages-payload/seas5
+          cp -R public/seasonal/seas5/. pages-payload/seas5/
+          cp public/seasonal/seas5_manifest.json pages-payload/seas5_manifest.json
 
       - name: Upload SEAS5 Pages payload
         if: success()
         uses: actions/upload-artifact@v4
         with:
           name: seas5-pages-${{ github.run_id }}
-          path: .pages-payload
+          path: pages-payload
           if-no-files-found: error
           retention-days: 14
