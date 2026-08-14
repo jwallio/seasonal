@@ -40,6 +40,10 @@ def main() -> int:
         check(term in page, f"unified dashboard missing term: {term}")
 
     check("WN2 /" not in page, "unified dashboard should use a generic dashboard title")
+    check('id="availability"' not in page, "dashboard should not show the manifest availability sentence")
+    check("model manifests available" not in page, "dashboard should not show the manifest availability sentence")
+    check('id="map-title"' not in page, "map card should not duplicate titles already rendered in the image")
+    check('id="run-status"' not in page, "map card should not duplicate image status in a header badge")
     for term in (
         "name: Publish Seasonal Model Dashboard Pages",
         "name: Checkout dashboard source",
