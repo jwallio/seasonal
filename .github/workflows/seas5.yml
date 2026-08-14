@@ -2,7 +2,7 @@ name: ECMWF SEAS5 Seasonal Graphics
 
 on:
   schedule:
-    # C3S/SEAS5 monthly archive products are published during the second week.
+    # ECMWF SEAS5 products are released through CDS on/around the 6th.
     - cron: "30 14 11 * *"
   workflow_dispatch:
     inputs:
@@ -64,15 +64,28 @@ jobs:
           cache-dependency-path: requirements.txt
 
       - name: Install SEAS5 rendering dependencies
-        run: python -m pip install --upgrade xarray zarr icechunk "dask[array]" matplotlib Pillow requests numpy
+        run: python -m pip install --upgrade "cdsapi>=0.7.7" cfgrib eccodes xarray matplotlib Pillow requests numpy
 
-      - name: Restore SEAS5 climatology cache
+      - name: Configure Copernicus CDS API
+        env:
+          CDS_API_KEY: ${{ secrets.CDS_API_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "${CDS_API_KEY:-}" ]; then
+            echo "::error::The CDS_API_KEY repository secret is required for current SEAS5 data."
+            exit 1
+          fi
+          printf 'url: https://cds.climate.copernicus.eu/api\nkey: %s\n' "$CDS_API_KEY" > "$HOME/.cdsapirc"
+          chmod 600 "$HOME/.cdsapirc"
+
+      - name: Restore SEAS5 CDS cache
         uses: actions/cache@v4
         with:
           path: .cache/seas5
-          key: seas5-${{ runner.os }}-${{ env.SEAS5_PRODUCT }}-${{ env.CLIMO_YEARS }}-v1
+          key: seas5-${{ runner.os }}-${{ env.SEAS5_PRODUCT }}-${{ env.CLIMO_YEARS }}-cds-v1
           restore-keys: |
-            seas5-${{ runner.os }}-${{ env.SEAS5_PRODUCT }}-${{ env.CLIMO_YEARS }}-
+            seas5-${{ runner.os }}-${{ env.SEAS5_PRODUCT }}-${{ env.CLIMO_YEARS }}-cds-
 
       - name: Restore published SEAS5 run history
         shell: bash

@@ -1,60 +1,56 @@
 # Seasonal ECMWF SEAS5 products
 
-WN2 now includes a standalone SEAS5 adapter at
+WN2 includes a standalone SEAS5 adapter at
 [`scripts/seas5_seasonal.py`](/d:/weather-projects/wn2/scripts/seas5_seasonal.py).
-It reads the public Planette/AWS cloud-native copy of the Copernicus Climate
-Change Service archive and publishes a separate viewer at
+It uses the current ECMWF/System 51 products distributed by the official
+Copernicus Climate Data Store (CDS) and publishes a separate viewer at
 [`/seasonal/seas5/`](https://jwallio.github.io/wn2/seasonal/seas5/).
 
 ## Source and provenance
 
-The source is the public
-[`planette-c3s-seasonal-forecasts`](https://registry.opendata.aws/planette_c3s_seasonal_forecast_data/)
-S3 bucket. It contains ECMWF SEAS5 daily ensemble fields at 1° global
-resolution. SEAS5 hindcasts cover 1981–2016 and real-time forecast stores are
-organized by initialization year. Access is anonymous and does not require AWS
-credentials.
+The adapter requests only the selected initialization month, lead month, and
+North American area from the CDS API:
 
-Each yearly variable store is an Icechunk-backed Zarr dataset with
-`init_time`, `number`, `lead`, `valid_time`, `lat`, and `lon` dimensions. The
-adapter averages all available forecast members and daily values in the
-selected calendar month. It does not treat the archive as CFSv2 or use the
-WN2 Earth Engine climatology.
+- [`seasonal-postprocessed-pressure-levels`](https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-pressure-levels)
+  supplies the 500-mb geopotential anomaly.
+- [`seasonal-postprocessed-single-levels`](https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-single-levels)
+  supplies the surface anomalies.
+- [`seasonal-monthly-pressure-levels`](https://cds.climate.copernicus.eu/datasets/seasonal-monthly-pressure-levels)
+  supplies raw 500-mb geopotential for the contour overlay and the optional
+  absolute-field smoke output.
+
+The request is filtered to originating centre `ecmwf`, system `51`, and the
+`ensemble_mean` product. CDS publishes ECMWF seasonal forecasts monthly on or
+around the 6th. The nominal initialization date is the first day of the
+released month, matching the C3S seasonal data convention.
+
+The workflow requires a repository secret named `CDS_API_KEY`. Local runs can
+use the same token through `CDS_API_KEY` or the official `~/.cdsapirc` file.
+The current SEAS5 dataset terms must be accepted once in the user's CDS
+account before the first download. The acceptance page is the dataset's
+Download tab: [manage CDS licences](https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-pressure-levels?tab=download#manage-licences).
 
 ## Products
 
-| Product | Archive variable | Display | Reduction |
+| Product | CDS variable | Display | Reduction |
 | --- | --- | --- | --- |
-| `500mb_height_anomaly` | `z500` | geopotential-height anomaly in m; height contours in dam | monthly/seasonal mean |
-| `2m_temperature_anomaly` | `t2m` | anomaly in °C | monthly/seasonal mean |
-| `precipitation_anomaly` | `pr` | CONUS total anomaly in inches | monthly/seasonal total |
-| `snowfall_anomaly` | `sf` | CONUS liquid-water-equivalent anomaly in inches | monthly/seasonal total |
-| `sst_anomaly` | `sst` | sea-surface-temperature anomaly in °C | monthly/seasonal mean |
-| `mslp_anomaly` | `slp` | mean-sea-level-pressure anomaly in hPa | monthly/seasonal mean |
+| `500mb_height_anomaly` | `geopotential_anomaly` at 500 hPa | height anomaly in m; contours in dam | monthly/seasonal mean |
+| `2m_temperature_anomaly` | `2m_temperature_anomaly` | anomaly in °C | monthly/seasonal mean |
+| `precipitation_anomaly` | `total_precipitation_anomalous_rate_of_accumulation` | CONUS total anomaly in inches | monthly/seasonal total |
+| `snowfall_anomaly` | `snowfall_anomalous_rate_of_accumulation` | CONUS liquid-water-equivalent anomaly in inches | monthly/seasonal total |
+| `sst_anomaly` | `sea_surface_temperature_anomaly` | anomaly in °C | monthly/seasonal mean |
+| `mslp_anomaly` | `mean_sea_level_pressure_anomaly` | anomaly in hPa | monthly/seasonal mean |
 
-The `z500` archive field is geopotential in `m² s⁻²`; it is divided by
-standard gravity (`9.80665 m s⁻²`) before plotting. The precipitation and
-snowfall variables are rates; each is multiplied by the actual number of
-seconds in its target month and converted from liquid-water millimetres to
-inches before aggregation.
-
-## Anomaly baseline
-
-Anomalies use a matched SEAS5 hindcast climatology. For every target month,
-the adapter selects hindcasts with the same initialization month and averages
-the same target calendar month across the requested hindcast years, ensemble
-members, and daily leads. The default baseline is the full available
-`1981-2016` hindcast period. Baseline grids are cached under `.cache/seas5`
-and the manifest records the years actually used.
-
-This is a model climatology, not an ERA5 or CPC observed climatology. The
-adapter records the source and baseline explicitly in both the image header
-and `public/seasonal/seas5_manifest.json`.
+The CDS anomaly datasets are already bias-adjusted monthly ensemble-mean
+anomalies. WN2 therefore does not subtract a second local hindcast
+climatology. Geopotential is divided by standard gravity (`9.80665 m s⁻²`);
+precipitation and snowfall anomaly rates are multiplied by the actual seconds
+in the target month and converted from metres to inches.
 
 ## Local usage
 
-Install the repository requirements, including `xarray`, `zarr`, `icechunk`,
-and `dask[array]`. Then render the default 500-mb DJF-style lead window:
+Install the repository requirements and configure CDS credentials. Then render
+the default DJF-style lead window:
 
 ```powershell
 .\scripts\render_seas5.ps1 `
@@ -73,25 +69,26 @@ Render a different parameter:
   -SeasonalWindow "4,5,6"
 ```
 
-Use `-DecodeOnly` to validate public source access and forecast fields without
-building climatologies or images. Use `-NoBorders` for a source-only smoke
-test. The workflow and local wrapper retain the current run plus three prior
-runs in the manifest.
+Use `-DecodeOnly` to validate CDS retrieval and GRIB decoding without building
+images. Use `-NoBorders` for a source-only smoke test. The workflow and local
+wrapper retain the current run plus three prior runs in the manifest.
 
 ## Workflow and viewer
 
-The scheduled/manual workflow is
-`.github/workflows/seas5.yml`. It restores cached climatology grids, retrieves
-the previous Pages manifest, renders the selected parameter, and uploads a
-scoped Pages payload. The central `.github/workflows/publish-pages.yml`
-workflow serializes successful WN2, CFSv2, and SEAS5 payloads, merges each
-payload into the existing `gh-pages` tree, and performs the only GitHub Pages
-publish. The viewer is intentionally separate from CFSv2 so model, source,
-initialization, and baseline metadata cannot be confused.
+The scheduled/manual workflow is `.github/workflows/seas5.yml`. It restores
+the CDS GRIB cache, retrieves the previous Pages manifest, renders the
+selected parameter, and uploads a scoped Pages payload. The central
+`.github/workflows/publish-pages.yml` workflow serializes successful WN2,
+CFSv2, and SEAS5 payloads, merges each payload into the existing `gh-pages`
+tree, and performs the only GitHub Pages publish.
+
+The viewer remains separate from CFSv2 so model, source, initialization, and
+anomaly methodology cannot be confused.
 
 ## Source notes
 
-- [Planette C3S Seasonal Forecast Data registry](https://registry.opendata.aws/planette_c3s_seasonal_forecast_data/)
-- [Planette archive documentation](https://github.com/PlanetteAI/planette_c3s_archive/blob/main/README.md)
-- [ECMWF seasonal forecasts](https://www.ecmwf.int/en/forecasts/documentation-and-support/seasonal)
-- [C3S seasonal forecasts](https://climate.copernicus.eu/seasonal-forecasts)
+- [C3S seasonal forecast monthly pressure-level data](https://cds.climate.copernicus.eu/datasets/seasonal-monthly-pressure-levels)
+- [C3S seasonal forecast pressure-level anomalies](https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-pressure-levels)
+- [C3S seasonal forecast single-level anomalies](https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-single-levels)
+- [CDS API setup](https://cds.climate.copernicus.eu/how-to-api)
+- [ECMWF C3S seasonal forecast service](https://www.ecmwf.int/en/forecasts/datasets/c3s-seasonal-forecasts)

@@ -2,6 +2,7 @@
 """Static SEAS5 adapter and viewer contract checks."""
 
 import importlib.util
+import datetime as dt
 import json
 from pathlib import Path
 import sys
@@ -42,16 +43,18 @@ def main() -> int:
     pages_workflow = PAGES_WORKFLOW.read_text(encoding="utf-8")
     documentation = DOC.read_text(encoding="utf-8")
     for term in (
-        "planette-c3s-seasonal-forecasts",
-        "AWS_REGION = \"us-east-2\"",
-        "icechunk",
-        "readonly_session(\"main\")",
+        "cds.climate.copernicus.eu",
+        "CDS_API_ROOT",
+        "seasonal-postprocessed-pressure-levels",
+        "seasonal-postprocessed-single-levels",
+        "seasonal-monthly-pressure-levels",
+        "originating_centre",
+        "system",
+        "data_format",
+        "cfgrib",
         "z500",
         "m**2 s**-2",
         "GEOPOTENTIAL_GRAVITY = 9.80665",
-        "init_time",
-        "valid_time",
-        "hindcast_climatology",
         "HINDCAST_START = 1981",
         "HINDCAST_END = 2016",
         "500mb_height_anomaly",
@@ -60,18 +63,20 @@ def main() -> int:
         "snowfall_anomaly",
         "sst_anomaly",
         "mslp_anomaly",
-        "dask[array]",
+        "CDS_API_KEY",
+        "CDS_LICENSE_URL",
+        "official_postprocessed",
         "seasonal_period_label",
         "write_manifest",
         "archive_latest_init",
-        "source_store_year",
-        "Retaining",
+        "archive_age_days",
     ):
         check(term in adapter or term in workflow or term in page, f"missing SEAS5 contract term: {term}")
     for term in (
         "product:",
         "SEAS5_PRODUCT",
-        "Restore SEAS5 climatology cache",
+        "Configure Copernicus CDS API",
+        "Restore SEAS5 CDS cache",
         "Restore published SEAS5 run history",
         "--previous-manifest",
         "--retain-runs 4",
@@ -83,11 +88,13 @@ def main() -> int:
     for term in ("id=\"product-select\"", "id=\"run-select\"", "seas5_manifest.json", "timeZone:'UTC'"):
         check(term in page, f"viewer missing SEAS5 term: {term}")
     module = load_adapter()
+    check(module.latest_cds_init(dt.datetime(2026, 8, 6, 12, 0)) == "2026080100", "release-time init should use the current ECMWF month")
+    check(module.latest_cds_init(dt.datetime(2026, 8, 6, 11, 59)) == "2026070100", "pre-release init should use the prior ECMWF month")
     check(module.target_month("2025080100", 4) == "202512", "lead-month target conversion should produce December")
     check(module.target_month("2025080100", 5) == "202601", "lead-month target conversion should cross the year boundary")
     check(module.seasonal_period_label("202512", "202602") == "DJF 2026", "DJF label should use the ending year")
     check(round(float(module.convert_values([[module.GEOPOTENTIAL_GRAVITY]], module.PRODUCT_SPECS[module.Z500_ANOMALY], "202512")[0][0]), 5) == 1.0, "z500 conversion should divide by gravity")
-    check(round(float(module.convert_values([[1.0]], module.PRODUCT_SPECS[module.PRECIP_ANOMALY], "202601")[0][0]), 5) == round(31 * 86400 / 25.4, 5), "precipitation conversion should use calendar-month seconds")
+    check(round(float(module.convert_values([[0.001]], module.PRODUCT_SPECS[module.PRECIP_ANOMALY], "202601")[0][0]), 5) == round(0.001 * 31 * 86400 * 1000 / 25.4, 5), "precipitation conversion should use calendar-month seconds and metres-to-inches")
     with tempfile.TemporaryDirectory() as temporary:
         output = Path(temporary) / "manifest.json"
         previous = Path(temporary) / "previous.json"
@@ -95,7 +102,7 @@ def main() -> int:
         module.write_manifest(output, ROOT, {"id": "current", "init_utc": "2026-08-13T00:00:00Z"}, previous, 4)
         retained = json.loads(output.read_text(encoding="utf-8"))["runs"]
         check([run["id"] for run in retained] == ["current", "old-4", "old-3", "old-2"], "manifest should retain current plus three prior runs")
-    print("SEAS5 CONTRACT OK: public archive, Zarr access, conversions, hindcast baseline, viewer, workflow, retention")
+    print("SEAS5 CONTRACT OK: CDS source, GRIB access, conversions, official anomalies, viewer, workflow, retention")
     return 0
 
 

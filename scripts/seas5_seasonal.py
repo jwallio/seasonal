@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
-"""Fetch and render ECMWF SEAS5 seasonal products from the public C3S archive.
+"""Fetch and render current ECMWF SEAS5 seasonal products through the CDS API.
 
-The Planette/AWS archive stores the original SEAS5 daily ensemble fields in
-Icechunk-backed Zarr stores.  This adapter keeps the source access explicit,
-reduces daily/member data to calendar-month means or totals, and derives
-anomalies from the matching SEAS5 hindcast initialization/target-month
-climatology.  It shares WN2's operational map renderer and static manifest
-contract with the CFSv2 viewer without treating the two models as the same
-source.
+The Copernicus Climate Data Store publishes the current ECMWF/System 51
+monthly ensemble-mean anomalies at 1-degree resolution.  This adapter keeps
+the source and nominal initialization explicit, requests only the selected
+lead months and North American area, and shares WN2's operational map
+renderer and static manifest contract with the CFSv2 viewer without treating
+the two models as the same source.
 """
 
 from __future__ import annotations
@@ -16,6 +15,7 @@ import argparse
 import datetime as dt
 import json
 import math
+import os
 import re
 import sys
 from pathlib import Path
@@ -39,16 +39,28 @@ from cfsv2_seasonal import (
 )
 
 
-AWS_BUCKET = "planette-c3s-seasonal-forecasts"
-AWS_REGION = "us-east-2"
-AWS_ROOT = f"s3://{AWS_BUCKET}/seas5/"
-S3_LIST_URL = f"https://s3.{AWS_REGION}.amazonaws.com/{AWS_BUCKET}/"
+# The CDS catalogue currently identifies ECMWF SEAS5 as originating centre
+# ``ecmwf`` and system ``51``.  The postprocessed datasets contain the official
+# monthly anomaly fields; the monthly statistics dataset supplies the raw
+# geopotential field used only for 500-mb contour lines.
+CDS_API_ROOT = "https://cds.climate.copernicus.eu/api"
+CDS_PRESSURE_ANOMALY_DATASET = "seasonal-postprocessed-pressure-levels"
+CDS_SINGLE_ANOMALY_DATASET = "seasonal-postprocessed-single-levels"
+CDS_PRESSURE_MONTHLY_DATASET = "seasonal-monthly-pressure-levels"
+CDS_ORIGINATING_CENTRE = "ecmwf"
+CDS_SYSTEM = "51"
+CDS_ECMWF_RELEASE_DAY = 6
+CDS_ECMWF_RELEASE_HOUR = 12
+CDS_NORTH_AMERICA_AREA = [90.0, -170.0, 15.0, 0.0]
+CDS_CONUS_AREA = [60.0, -135.0, 20.0, -55.0]
+CDS_ENSEMBLE_MEMBERS = 51
 HINDCAST_START = 1981
 HINDCAST_END = 2016
 GEOPOTENTIAL_GRAVITY = 9.80665
-MM_TO_INCH = 1.0 / 25.4
-SOURCE_LABEL = "ECMWF SEAS5 / C3S archive"
-SOURCE_URL = "https://registry.opendata.aws/planette_c3s_seasonal_forecast_data/"
+M_TO_INCH = 1000.0 / 25.4
+SOURCE_LABEL = "ECMWF SEAS5 / Copernicus CDS"
+SOURCE_URL = "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-pressure-levels"
+CDS_LICENSE_URL = "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-pressure-levels?tab=download#manage-licences"
 
 Z500_ANOMALY = "500mb_height_anomaly"
 T2M_ANOMALY = "2m_temperature_anomaly"
@@ -108,6 +120,11 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "anomaly_palette": ANOMALY_PALETTE,
         "conversion": "geopotential divided by standard gravity to convert m² s⁻² to geopotential meters",
         "header_detail": "{source_label}  •  {baseline_label}  •  Height contours in dam",
+        "cds_dataset": CDS_PRESSURE_ANOMALY_DATASET,
+        "cds_variable": "geopotential_anomaly",
+        "cds_pressure_level": "500",
+        "cds_raw_dataset": CDS_PRESSURE_MONTHLY_DATASET,
+        "cds_raw_variable": "geopotential",
     },
     T2M_ANOMALY: {
         "name": T2M_ANOMALY,
@@ -129,13 +146,15 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "anomaly_palette": TEMP_PALETTE,
         "conversion": "Kelvin-to-Celsius offset cancels in anomaly differences",
         "header_detail": "{source_label}  •  {baseline_label}  •  2-m temperature anomaly (°C)",
+        "cds_dataset": CDS_SINGLE_ANOMALY_DATASET,
+        "cds_variable": "2m_temperature_anomaly",
     },
     PRECIP_ANOMALY: {
         "name": PRECIP_ANOMALY,
         "variable": "pr",
         "field": "precipitation_anomaly",
         "raw_field": "pr / total precipitation",
-        "raw_units": "kg m**-2 s**-1",
+        "raw_units": "m s**-1",
         "units": "in",
         "seasonal_units": "in",
         "title": "SEAS5 CONUS Precipitation Anomaly (in)",
@@ -148,15 +167,17 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "anomaly_max": 8.0,
         "anomaly_ticks": list(range(-8, 9)),
         "anomaly_palette": PRECIP_ANOMALY_PALETTE,
-        "conversion": "daily rate multiplied by target-month seconds, converted from liquid-water millimetres to inches",
+        "conversion": "CDS anomalous water rate multiplied by target-month seconds and converted from metres to inches",
         "header_detail": "{source_label}  •  {baseline_label}  •  Precipitation accumulation (in)  •  CONUS domain",
+        "cds_dataset": CDS_SINGLE_ANOMALY_DATASET,
+        "cds_variable": "total_precipitation_anomalous_rate_of_accumulation",
     },
     SNOWFALL_ANOMALY: {
         "name": SNOWFALL_ANOMALY,
         "variable": "sf",
         "field": "snowfall_anomaly",
         "raw_field": "sf / snowfall",
-        "raw_units": "kg m**-2 s**-1",
+        "raw_units": "m s**-1",
         "units": "in",
         "seasonal_units": "in",
         "title": "SEAS5 CONUS Snowfall Water-Equivalent Anomaly (in)",
@@ -169,8 +190,10 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "anomaly_max": 4.0,
         "anomaly_ticks": [-4, -3, -2, -1, 0, 1, 2, 3, 4],
         "anomaly_palette": SWE_ANOMALY_PALETTE,
-        "conversion": "daily snowfall liquid-water-equivalent rate multiplied by target-month seconds and converted to inches",
+        "conversion": "CDS anomalous snowfall water rate multiplied by target-month seconds and converted from metres to inches",
         "header_detail": "{source_label}  •  {baseline_label}  •  Snowfall liquid-water equivalent (in)  •  CONUS domain",
+        "cds_dataset": CDS_SINGLE_ANOMALY_DATASET,
+        "cds_variable": "snowfall_anomalous_rate_of_accumulation",
     },
     SST_ANOMALY: {
         "name": SST_ANOMALY,
@@ -192,6 +215,8 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "anomaly_palette": TEMP_PALETTE,
         "conversion": "Kelvin-to-Celsius offset cancels in anomaly differences",
         "header_detail": "{source_label}  •  {baseline_label}  •  Sea-surface temperature anomaly (°C)",
+        "cds_dataset": CDS_SINGLE_ANOMALY_DATASET,
+        "cds_variable": "sea_surface_temperature_anomaly",
     },
     MSLP_ANOMALY: {
         "name": MSLP_ANOMALY,
@@ -213,6 +238,8 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "anomaly_palette": MSLP_PALETTE,
         "conversion": "Pa divided by 100 to convert mean sea-level pressure to hPa",
         "header_detail": "{source_label}  •  {baseline_label}  •  Mean sea-level pressure anomaly (hPa)",
+        "cds_dataset": CDS_SINGLE_ANOMALY_DATASET,
+        "cds_variable": "mean_sea_level_pressure_anomaly",
     },
 }
 
@@ -318,131 +345,6 @@ def seasonal_period_label(first_target: str, last_target: str) -> str:
     return f"{start:%b %Y}–{end:%b %Y}"
 
 
-def store_prefix(variable: str, year: int) -> str:
-    return f"seas5/sys51/{variable}/day/1latx1lon/seas5_sys51_{variable}_day_1latx1lon_{year}.zarr"
-
-
-def available_years(variable: str) -> list[int]:
-    try:
-        import requests
-    except ImportError as exc:  # pragma: no cover - environment contract
-        raise SEAS5Error("requests is required for the public SEAS5 archive") from exc
-    prefix = f"seas5/sys51/{variable}/day/1latx1lon/"
-    try:
-        response = requests.get(
-            S3_LIST_URL,
-            params={"list-type": "2", "prefix": prefix, "delimiter": "/"},
-            timeout=(20, 60),
-        )
-        response.raise_for_status()
-    except Exception as exc:
-        raise SEAS5Error(f"could not list the public SEAS5 {variable} archive: {exc}") from exc
-    years = sorted(
-        {
-            int(match.group(1))
-            for match in re.finditer(
-                rf"seas5_sys51_{re.escape(variable)}_day_1latx1lon_(\d{{4}})\.zarr/",
-                response.text,
-            )
-        }
-    )
-    if not years:
-        raise SEAS5Error(f"the public SEAS5 archive has no {variable} yearly stores")
-    return years
-
-
-def datetime64_to_init(value: np.datetime64) -> str:
-    text = np.datetime_as_string(value, unit="D")
-    return f"{text.replace('-', '')}00"
-
-
-class SEAS5Archive:
-    def __init__(self, cache_dir: Path):
-        self.cache_dir = cache_dir
-        self._datasets: dict[tuple[str, int], Any] = {}
-        self._years: dict[str, list[int]] = {}
-
-    def years(self, variable: str) -> list[int]:
-        if variable not in self._years:
-            self._years[variable] = available_years(variable)
-        return self._years[variable]
-
-    def latest_init(self) -> str:
-        variable = "z500"
-        for year in reversed(self.years(variable)):
-            dataset = self.open(variable, year)
-            if dataset.sizes.get("init_time", 0):
-                return datetime64_to_init(np.asarray(dataset.init_time.values)[-1])
-        raise SEAS5Error("the public SEAS5 archive listed no usable initialization")
-
-    def open(self, variable: str, year: int):
-        key = (variable, year)
-        if key in self._datasets:
-            return self._datasets[key]
-        try:
-            import icechunk as ic
-            import xarray as xr
-        except ImportError as exc:  # pragma: no cover - environment contract
-            raise SEAS5Error(
-                "SEAS5 rendering requires xarray, zarr, icechunk, and dask[array]"
-            ) from exc
-        if year not in self.years(variable):
-            raise SEAS5Error(f"SEAS5 {variable} archive has no store for {year}")
-        prefix = store_prefix(variable, year)
-        try:
-            storage = ic.s3_storage(
-                bucket=AWS_BUCKET,
-                prefix=prefix,
-                region=AWS_REGION,
-                anonymous=True,
-            )
-            repository = ic.Repository.open(storage=storage)
-            session = repository.readonly_session("main")
-            dataset = xr.open_dataset(
-                session.store,
-                engine="zarr",
-                consolidated=False,
-                decode_timedelta=True,
-                chunks={},
-            )
-        except Exception as exc:
-            raise SEAS5Error(f"could not open SEAS5 {variable} {year} store: {exc}") from exc
-        self._datasets[key] = dataset
-        return dataset
-
-
-def dataset_init_index(dataset: Any, init: str) -> int:
-    wanted = np.datetime64(f"{init[:4]}-{init[4:6]}-{init[6:8]}")
-    values = np.asarray(dataset.init_time.values).astype("datetime64[D]")
-    matches = np.flatnonzero(values == wanted)
-    if not len(matches):
-        available = ", ".join(np.datetime_as_string(value, unit="D") for value in values[:5])
-        raise SEAS5Error(f"SEAS5 store has no initialization {init[:8]} (starts with {available})")
-    return int(matches[0])
-
-
-def target_lead_indices(dataset: Any, target: str, init_index: int) -> np.ndarray:
-    wanted = np.datetime64(f"{target[:4]}-{target[4:6]}")
-    values = np.asarray(dataset.valid_time.values)
-    if values.ndim == 2:
-        values = values[init_index]
-    elif dataset.sizes.get("init_time", 1) > 1:
-        # Some yearly stores expose valid_time only for their newest
-        # initialization even though the data variable has several
-        # init_time entries.  The lead coordinate is authoritative for an
-        # explicit historical initialization request.
-        init_value = np.asarray(dataset.init_time.values)[init_index].astype("datetime64[ns]")
-        values = init_value + np.asarray(dataset.lead.values).astype("timedelta64[ns]")
-    values = values.astype("datetime64[M]")
-    indices = np.flatnonzero(values == wanted)
-    if not len(indices):
-        raise SEAS5Error(
-            f"SEAS5 store does not reach target month {target}; available valid period is "
-            f"{np.datetime_as_string(values[0], unit='M')} to {np.datetime_as_string(values[-1], unit='M')}"
-        )
-    return indices
-
-
 def month_seconds(target: str) -> int:
     start = dt.datetime.strptime(target, "%Y%m")
     next_year, next_month = month_after(start.year, start.month, 1)
@@ -455,167 +357,224 @@ def convert_values(values: np.ndarray, product: dict[str, Any], target: str) -> 
     if variable == "z500":
         return converted / GEOPOTENTIAL_GRAVITY
     if variable in {"t2m", "sst"}:
-        return converted - 273.15
+        # Anomaly fields have the same numerical increment in K and °C.
+        return converted
     if variable == "pr":
-        return converted * month_seconds(target) * MM_TO_INCH
+        return converted * month_seconds(target) * M_TO_INCH
     if variable == "sf":
-        return converted * month_seconds(target) * MM_TO_INCH
+        return converted * month_seconds(target) * M_TO_INCH
     if variable == "slp":
         return converted / 100.0
     raise SEAS5Error(f"no unit conversion is defined for SEAS5 variable {variable}")
 
 
-def grid_from_dataset(
-    dataset: Any,
-    product: dict[str, Any],
-    init: str,
-    target: str,
-) -> tuple[Grid, int]:
-    init_index = dataset_init_index(dataset, init)
-    lead_indices = target_lead_indices(dataset, target, init_index)
-    lats = np.asarray(dataset.lat.values, dtype=float)
-    lons = np.asarray(dataset.lon.values, dtype=float)
-    # The archive has descending north-to-south latitudes and 0.5–359.5 or
-    # -179.5–179.5 longitudes depending on the producer conversion. Normalize
-    # both into the renderer's ascending [-180, 180] convention.
-    lon_order = np.argsort(((lons + 180.0) % 360.0) - 180.0)
-    normalized_lons = (((lons + 180.0) % 360.0) - 180.0)[lon_order]
+def latest_cds_init(now: dt.datetime | None = None) -> str:
+    """Return the newest nominal ECMWF start month released by the CDS."""
+    current = now or dt.datetime.now(dt.timezone.utc)
+    year, month = current.year, current.month
+    if (current.day, current.hour) < (CDS_ECMWF_RELEASE_DAY, CDS_ECMWF_RELEASE_HOUR):
+        year, month = month_after(year, month, -1)
+    return f"{year:04d}{month:02d}0100"
+
+
+def cds_area(product: dict[str, Any]) -> list[float]:
+    return list(CDS_CONUS_AREA if product["region"] == CONUS_PRECIP_REGION else CDS_NORTH_AMERICA_AREA)
+
+
+def cds_dataset_url(dataset: str) -> str:
+    return f"https://cds.climate.copernicus.eu/datasets/{dataset}"
+
+
+def _coord_name(data: Any, candidates: tuple[str, ...]) -> str:
+    for name in candidates:
+        if name in data.dims or name in data.coords:
+            return name
+    raise SEAS5Error(f"CDS GRIB field is missing a {candidates[0]}/{candidates[-1]} coordinate")
+
+
+def _select_forecast_month(data: Any, lead: int) -> Any:
+    for name in ("forecastMonth", "leadtime_month"):
+        if name not in data.dims:
+            continue
+        coordinate = np.asarray(data[name].values)
+        numeric = np.asarray([int(value) for value in coordinate], dtype=int)
+        matches = np.flatnonzero(numeric == lead)
+        if not len(matches):
+            raise SEAS5Error(f"CDS GRIB field has no forecastMonth={lead}")
+        return data.isel({name: int(matches[0])})
+    return data
+
+
+def grid_from_grib(path: Path, product: dict[str, Any], target: str, lead: int) -> Grid:
+    try:
+        import xarray as xr
+    except ImportError as exc:  # pragma: no cover - environment contract
+        raise SEAS5Error("SEAS5 rendering requires xarray and cfgrib") from exc
+
+    backend_attempts = (
+        {"filter_by_keys": {"dataType": "em"}, "time_dims": ("forecastMonth", "time")},
+        {"time_dims": ("forecastMonth", "time")},
+        {"filter_by_keys": {"dataType": "em"}},
+        {},
+    )
+    dataset = None
+    errors: list[str] = []
+    for backend_kwargs in backend_attempts:
+        try:
+            candidate = xr.open_dataset(path, engine="cfgrib", backend_kwargs=backend_kwargs)
+            candidate.load()
+            dataset = candidate
+            break
+        except Exception as exc:
+            errors.append(str(exc))
+            try:
+                candidate.close()
+            except Exception:
+                pass
+    if dataset is None:
+        detail = errors[-1] if errors else "unknown cfgrib error"
+        raise SEAS5Error(f"could not decode CDS GRIB {path.name}: {detail}")
+
+    try:
+        variables = list(dataset.data_vars)
+        if not variables:
+            raise SEAS5Error(f"CDS GRIB {path.name} contains no data variable")
+        data = dataset[variables[0]]
+        data = _select_forecast_month(data, lead).squeeze(drop=True)
+        latitude_name = _coord_name(data, ("latitude", "lat"))
+        longitude_name = _coord_name(data, ("longitude", "lon"))
+        for dimension in list(data.dims):
+            if dimension not in {latitude_name, longitude_name}:
+                data = data.mean(dim=dimension, skipna=True)
+        data = data.transpose(latitude_name, longitude_name)
+        lats = np.asarray(data[latitude_name].values, dtype=float)
+        lons = np.asarray(data[longitude_name].values, dtype=float)
+        raw = np.asarray(data.values, dtype=float)
+    finally:
+        dataset.close()
+
+    if raw.ndim != 2:
+        raise SEAS5Error(f"CDS GRIB {path.name} did not reduce to a 2-D latitude/longitude field")
+    normalized_lons = ((lons + 180.0) % 360.0) - 180.0
+    lon_order = np.argsort(normalized_lons)
     lat_order = np.argsort(lats)
-    lat_indices = lat_order
-    variable = dataset[product["variable"]]
-    selected = variable.isel(
-        init_time=init_index,
-        lead=lead_indices,
-        lat=lat_indices,
-        lon=lon_order,
-    )
-    try:
-        raw = selected.mean(dim=("number", "lead")).compute().values
-    except Exception as exc:
-        raise SEAS5Error(
-            f"could not compute the SEAS5 {product['variable']} ensemble/month mean for {target}: {exc}"
-        ) from exc
-    converted = convert_values(raw, product, target)
+    converted = convert_values(raw[np.ix_(lat_order, lon_order)], product, target)
     return Grid(
-        lons=[float(value) for value in normalized_lons],
-        lats=[float(value) for value in lats[lat_indices]],
+        lons=[float(value) for value in normalized_lons[lon_order]],
+        lats=[float(value) for value in lats[lat_order]],
         values=converted.tolist(),
-    ), int(dataset.sizes.get("number", 0))
-
-
-def climo_cache_path(
-    cache_dir: Path,
-    product: dict[str, Any],
-    init_month: int,
-    target: str,
-    lead: int,
-    years: tuple[int, int],
-) -> Path:
-    return cache_dir / "climo" / (
-        f"{product['variable']}_{init_month:02d}_{target[4:]}_lead{lead:02d}_{years[0]}-{years[1]}.npz"
     )
 
 
-def read_cached_grid(path: Path) -> Grid | None:
-    if not path.exists():
-        return None
-    try:
-        payload = np.load(path)
-        return Grid(
-            lons=[float(value) for value in payload["lons"]],
-            lats=[float(value) for value in payload["lats"]],
-            values=payload["values"].astype(float).tolist(),
-        )
-    except (OSError, KeyError, ValueError):
-        return None
+class CDSArchive:
+    def __init__(self, cache_dir: Path):
+        self.cache_dir = cache_dir
+        self._client: Any | None = None
 
+    def latest_init(self) -> str:
+        return latest_cds_init()
 
-def write_cached_grid(path: Path, grid: Grid) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    temporary = path.with_suffix(path.suffix + ".tmp")
-    with temporary.open("wb") as handle:
-        np.savez_compressed(
-            handle,
-            lons=np.asarray(grid.lons, dtype=float),
-            lats=np.asarray(grid.lats, dtype=float),
-            values=np.asarray(grid.values, dtype=float),
-        )
-    temporary.replace(path)
-
-
-def hindcast_climatology(
-    archive: SEAS5Archive,
-    product: dict[str, Any],
-    init_month: int,
-    target: str,
-    lead: int,
-    years: tuple[int, int],
-    cache_dir: Path,
-) -> tuple[Grid, list[int]]:
-    cache_path = climo_cache_path(cache_dir, product, init_month, target, lead, years)
-    cached = read_cached_grid(cache_path)
-    if cached is not None:
-        metadata_path = cache_path.with_suffix(".json")
+    def _client_or_raise(self) -> Any:
+        if self._client is not None:
+            return self._client
         try:
-            metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
-            return cached, [int(value) for value in metadata.get("years_used", [])]
-        except (OSError, ValueError, TypeError):
-            pass
-
-    year_values: list[int] = []
-    accumulated: np.ndarray | None = None
-    template: Grid | None = None
-    available = set(archive.years(product["variable"]))
-    for year in range(years[0], years[1] + 1):
-        if year not in available:
-            continue
+            import cdsapi
+        except ImportError as exc:  # pragma: no cover - environment contract
+            raise SEAS5Error("SEAS5 rendering requires cdsapi>=0.7.7") from exc
+        url = os.environ.get("CDS_API_URL", CDS_API_ROOT)
+        key = os.environ.get("CDS_API_KEY", "").strip()
         try:
-            dataset = archive.open(product["variable"], year)
-            init_values = np.asarray(dataset.init_time.values).astype("datetime64[M]")
-            init_matches = np.flatnonzero(
-                np.array([int(str(value)[5:7]) for value in init_values]) == init_month
-            )
-            if not len(init_matches):
-                continue
-            hindcast_init = datetime64_to_init(np.asarray(dataset.init_time.values)[int(init_matches[0])])
-            hindcast_target = target_month(hindcast_init, lead)
-            monthly_grid, _ = grid_from_dataset(dataset, product, hindcast_init, hindcast_target)
-        except SEAS5Error as exc:
-            print(f"warning: skipping SEAS5 hindcast year {year} for {target}: {exc}", file=sys.stderr)
-            continue
-        array = np.asarray(monthly_grid.values, dtype=float)
-        if accumulated is None:
-            accumulated = np.zeros_like(array, dtype=float)
-            template = monthly_grid
-        accumulated += np.nan_to_num(array, nan=0.0)
-        year_values.append(year)
+            if key:
+                self._client = cdsapi.Client(url=url, key=key, quiet=True)
+            else:
+                # Local users can keep the official token in ~/.cdsapirc.
+                self._client = cdsapi.Client(quiet=True)
+        except Exception as exc:
+            raise SEAS5Error(
+                "could not initialize the CDS API client; configure CDS_API_KEY "
+                "or ~/.cdsapirc"
+            ) from exc
+        return self._client
 
-    if accumulated is None or template is None or len(year_values) < 10:
-        raise SEAS5Error(
-            f"SEAS5 hindcast climatology for {product['variable']} {target} has only "
-            f"{len(year_values)} usable years; at least 10 are required"
+    def _cache_path(self, dataset: str, variable: str, product: dict[str, Any], init: str, lead: int) -> Path:
+        area_name = "conus" if product["region"] == CONUS_PRECIP_REGION else "north-america"
+        safe_dataset = dataset.replace("-", "_")
+        safe_variable = variable.replace("-", "_")
+        return self.cache_dir / "cds" / area_name / (
+            f"{safe_dataset}_{safe_variable}_{init[:6]}_lead{lead:02d}.grib"
         )
-    climatology = Grid(
-        lons=template.lons,
-        lats=template.lats,
-        values=(accumulated / len(year_values)).tolist(),
-    )
-    write_cached_grid(cache_path, climatology)
-    metadata_path = cache_path.with_suffix(".json")
-    metadata_path.write_text(
-        json.dumps({"years_used": year_values, "target": target, "init_month": init_month}) + "\n",
-        encoding="utf-8",
-    )
-    return climatology, year_values
 
+    def _retrieve(
+        self,
+        dataset: str,
+        variable: str,
+        product: dict[str, Any],
+        init: str,
+        lead: int,
+        pressure_level: str | None = None,
+    ) -> Path:
+        path = self._cache_path(dataset, variable, product, init, lead)
+        if path.exists() and path.stat().st_size > 0:
+            return path
+        request: dict[str, Any] = {
+            "originating_centre": CDS_ORIGINATING_CENTRE,
+            "system": CDS_SYSTEM,
+            "variable": [variable],
+            "product_type": ["ensemble_mean"],
+            "year": [init[:4]],
+            "month": [init[4:6]],
+            "leadtime_month": [str(lead)],
+            "area": cds_area(product),
+            "data_format": "grib",
+        }
+        if pressure_level is not None:
+            request["pressure_level"] = [pressure_level]
+        path.parent.mkdir(parents=True, exist_ok=True)
+        temporary = path.with_name(path.name + ".tmp")
+        try:
+            temporary.unlink(missing_ok=True)
+            self._client_or_raise().retrieve(dataset, request, str(temporary))
+            if not temporary.exists() or temporary.stat().st_size == 0:
+                raise SEAS5Error(f"CDS returned no data for {dataset} {variable} lead {lead}")
+            temporary.replace(path)
+        except SEAS5Error:
+            temporary.unlink(missing_ok=True)
+            raise
+        except Exception as exc:
+            temporary.unlink(missing_ok=True)
+            if "required licen" in str(exc).lower():
+                raise SEAS5Error(
+                    "the CDS dataset licence has not been accepted; accept the current SEAS5 "
+                    f"dataset terms at {CDS_LICENSE_URL} and retry"
+                ) from exc
+            raise SEAS5Error(
+                f"CDS request failed for {dataset} {variable} {init[:6]} lead {lead}: {exc}"
+            ) from exc
+        return path
 
-def subtract_grids(left: Grid, right: Grid) -> Grid:
-    if left.lons != right.lons or left.lats != right.lats:
-        raise SEAS5Error("forecast and SEAS5 climatology grids do not match")
-    values = (
-        np.asarray(left.values, dtype=float) - np.asarray(right.values, dtype=float)
-    ).tolist()
-    return Grid(lons=left.lons[:], lats=left.lats[:], values=values)
+    def anomaly_grid(self, product: dict[str, Any], init: str, target: str, lead: int) -> tuple[Grid, Path]:
+        path = self._retrieve(
+            product["cds_dataset"],
+            product["cds_variable"],
+            product,
+            init,
+            lead,
+            product.get("cds_pressure_level"),
+        )
+        return grid_from_grib(path, product, target, lead), path
+
+    def height_grid(self, product: dict[str, Any], init: str, target: str, lead: int) -> tuple[Grid, Path]:
+        if product["name"] != Z500_ANOMALY:
+            raise SEAS5Error("raw geopotential contours are only available for the 500-mb product")
+        path = self._retrieve(
+            product["cds_raw_dataset"],
+            product["cds_raw_variable"],
+            product,
+            init,
+            lead,
+            product["cds_pressure_level"],
+        )
+        return grid_from_grib(path, product, target, lead), path
 
 
 def write_manifest(
@@ -632,8 +591,9 @@ def write_manifest(
         "kind": "seas5_seasonal_manifest",
         "generated_utc": iso_utc(dt.datetime.now(dt.timezone.utc)),
         "source": SOURCE_LABEL,
-        "source_url": SOURCE_URL,
-        "archive_root": AWS_ROOT,
+        "source_url": run_entry.get("source_url", SOURCE_URL),
+        "source_urls": run_entry.get("source_urls", [SOURCE_URL]),
+        "archive_root": CDS_API_ROOT,
         "retention": {"max_runs": retain_runs, "history_runs": max(0, retain_runs - 1)},
         "runs": [],
     }
@@ -671,7 +631,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--init", default="latest", help="SEAS5 initialization as YYYYMM, YYYYMMDD, or latest")
     parser.add_argument("--lead-months", default="4,5,6", help="comma-separated target leads")
     parser.add_argument("--seasonal-window", default="4,5,6", help="consecutive target leads for the seasonal map")
-    parser.add_argument("--climo-years", default="1981-2016", help="SEAS5 hindcast climatology years")
+    parser.add_argument("--climo-years", default="1981-2016", help="legacy compatibility option; official CDS anomaly baseline is used")
     parser.add_argument("--cache-dir", default=".cache/seas5")
     parser.add_argument("--output-dir", default="public/seasonal/seas5")
     parser.add_argument("--manifest", default="public/seasonal/seas5_manifest.json")
@@ -687,40 +647,52 @@ def build_parser() -> argparse.ArgumentParser:
 def run(args: argparse.Namespace) -> int:
     repo_root = Path(__file__).resolve().parents[1]
     product = get_product_spec(args.product)
-    archive = SEAS5Archive(resolve_repo_path(args.cache_dir, repo_root))
+    archive = CDSArchive(resolve_repo_path(args.cache_dir, repo_root))
     init = archive.latest_init() if args.init == "latest" else parse_init(args.init)
     init_date = dt.datetime.strptime(init, "%Y%m%d%H").replace(tzinfo=dt.timezone.utc)
-    leads = parse_int_list(args.lead_months, "lead months", 1, 7)
-    seasonal_leads = parse_int_list(args.seasonal_window, "seasonal window", 1, 7) if args.seasonal_window else []
+    leads = parse_int_list(args.lead_months, "lead months", 1, 6)
+    seasonal_leads = parse_int_list(args.seasonal_window, "seasonal window", 1, 6) if args.seasonal_window else []
     if seasonal_leads:
         expected = list(range(min(seasonal_leads), max(seasonal_leads) + 1))
         if seasonal_leads != expected:
             raise SEAS5Error("--seasonal-window must contain consecutive lead months")
         leads = sorted(set(leads).union(seasonal_leads))
+    # Retain the option for workflow compatibility, but the official CDS
+    # anomaly fields already contain the matched model post-processing.
     climo_years = parse_years(args.climo_years)
     if args.absolute and args.product != Z500_ANOMALY:
         raise SEAS5Error("--absolute is only supported for the 500-mb field")
+
     output_dir = resolve_repo_path(args.output_dir, repo_root)
     manifest_path = resolve_repo_path(args.manifest, repo_root)
     cache_dir = resolve_repo_path(args.cache_dir, repo_root)
     border_paths = [] if args.decode_only else ensure_border_files(args, cache_dir, repo_root)
     run_id = f"seas5-{init}-{args.product}"
+    anomaly_baseline = "C3S official postprocessed anomaly; ECMWF/System 51"
+    source_datasets = [product["cds_dataset"]]
+    if product["height_contours"]:
+        source_datasets.append(product["cds_raw_dataset"])
+    source_urls = [cds_dataset_url(dataset) for dataset in source_datasets]
     run_entry: dict[str, Any] = {
         "id": run_id,
         "source": SOURCE_LABEL,
-        "source_url": SOURCE_URL,
-        "archive_root": AWS_ROOT,
+        "source_url": cds_dataset_url(product["cds_dataset"]),
+        "source_urls": source_urls,
+        "archive_root": CDS_API_ROOT,
+        "source_datasets": source_datasets,
+        "originating_centre": CDS_ORIGINATING_CENTRE,
+        "system": CDS_SYSTEM,
         "model": "ECMWF SEAS5",
         "product": args.product,
         "variable": product["variable"],
         "init_utc": iso_utc(init_date),
         "statistic": "ensemble_mean",
-        "ensemble_scope": "SEAS5 forecast ensemble",
-        "ensemble_members": None,
+        "ensemble_scope": "ECMWF SEAS5/System 51 forecast ensemble",
+        "ensemble_members": CDS_ENSEMBLE_MEMBERS,
         "aggregation": (
-            f"{len(seasonal_leads)}-month {product['seasonal_reducer']} of daily ensemble means"
+            f"{len(seasonal_leads)}-month {product['seasonal_reducer']} of official CDS monthly ensemble-mean anomalies"
             if seasonal_leads
-            else "calendar-month daily ensemble mean"
+            else "official CDS monthly ensemble-mean anomaly"
         ),
         "field": product["field"],
         "units": product["units"],
@@ -728,35 +700,30 @@ def run(args: argparse.Namespace) -> int:
         "raw_units": product["raw_units"],
         "conversion": product["conversion"],
         "climatology": {
-            "source": "SEAS5 hindcasts",
+            "source": "C3S postprocessed anomaly field",
             "years_requested": f"{climo_years[0]}-{climo_years[1]}",
-            "method": "matching initialization month and target calendar month; ensemble and daily means",
+            "method": "official CDS bias-adjusted monthly ensemble-mean anomaly; no local hindcast subtraction",
+            "status": "not_used",
         },
         "border_sources": [] if args.no_borders else [{"name": path.name} for path in border_paths],
         "targets": [],
         "status": "planned",
     }
-    try:
-        run_entry["archive_latest_init"] = archive.latest_init()
-        run_entry["archive_years"] = archive.years(product["variable"])
-        archive_date = dt.datetime.strptime(run_entry["archive_latest_init"], "%Y%m%d%H").replace(
-            tzinfo=dt.timezone.utc
+    latest_init = archive.latest_init()
+    run_entry["archive_latest_init"] = latest_init
+    run_entry["archive_age_days"] = max(
+        0,
+        (dt.datetime.now(dt.timezone.utc) - dt.datetime.strptime(latest_init, "%Y%m%d%H").replace(tzinfo=dt.timezone.utc)).days,
+    )
+    if run_entry["archive_age_days"] > 45:
+        run_entry["source_warning"] = (
+            f"The latest nominal ECMWF SEAS5 initialization selected by the release calendar is "
+            f"{latest_init}; confirm the monthly CDS release before rendering."
         )
-        archive_age_days = max(0, (dt.datetime.now(dt.timezone.utc) - archive_date).days)
-        run_entry["archive_age_days"] = archive_age_days
-        if archive_age_days > 62:
-            run_entry["source_warning"] = (
-                f"The newest SEAS5 initialization currently available in the public archive is "
-                f"{run_entry['archive_latest_init']}; it is {archive_age_days} days old."
-            )
-    except SEAS5Error as exc:
-        raise SEAS5Error(f"could not establish SEAS5 archive metadata: {exc}") from exc
 
     forecast_grids: dict[int, Grid] = {}
-    baseline_grids: dict[int, Grid] = {}
-    target_entries: dict[int, dict[str, Any]] = {}
+    height_grids: dict[int, Grid] = {}
     failures = 0
-    used_climo_years: set[int] = set()
     for lead in leads:
         target = target_month(init, lead)
         valid_start, valid_end = target_period(target)
@@ -772,68 +739,65 @@ def run(args: argparse.Namespace) -> int:
             "raw_field": product["raw_field"],
             "raw_units": product["raw_units"],
             "statistic": "ensemble_mean",
-            "source_store_year": int(init[:4]),
+            "originating_centre": CDS_ORIGINATING_CENTRE,
+            "system": CDS_SYSTEM,
+            "ensemble_members": CDS_ENSEMBLE_MEMBERS,
             "status": "planned",
         }
         try:
-            dataset = archive.open(product["variable"], int(init[:4]))
-            forecast, member_count = grid_from_dataset(dataset, product, init, target)
-            forecast_grids[lead] = forecast
-            target_entry["ensemble_members"] = member_count
-            run_entry["ensemble_members"] = member_count
-            target_entry["status"] = "decoded"
-            if args.decode_only:
-                run_entry["targets"].append(target_entry)
-                target_entries[lead] = target_entry
-                continue
-            years_used: list[int] = []
             if args.absolute:
-                anomaly = forecast
+                forecast, source_path = archive.height_grid(product, init, target, lead)
+                height_grids[lead] = forecast
+                target_entry["source_dataset"] = product["cds_raw_dataset"]
+                target_entry["source_variable"] = product["cds_raw_variable"]
             else:
-                baseline, years_used = hindcast_climatology(
-                    archive,
-                    product,
-                init_date.month,
-                target,
-                lead,
-                climo_years,
-                cache_dir,
-                )
-                baseline_grids[lead] = baseline
-                used_climo_years.update(years_used)
-                anomaly = subtract_grids(forecast, baseline)
-            output_path = output_dir / init[:8] / f"seas5_{product['variable']}_{target}.jpg"
-            render_map(
-                anomaly if not args.absolute else forecast,
-                init,
-                target,
-                lead,
-                list(range(member_count)),
-                output_path,
-                anomaly=not args.absolute,
-                baseline_label=f"SEAS5 hindcast climatology; {climo_years[0]}-{climo_years[1]}",
-                border_paths=border_paths,
-                height_grid=forecast if product["height_contours"] else None,
-                product_spec={**product, "source_label": SOURCE_LABEL},
+                forecast, source_path = archive.anomaly_grid(product, init, target, lead)
+                if product["height_contours"] and not args.decode_only:
+                    height, _ = archive.height_grid(product, init, target, lead)
+                    height_grids[lead] = height
+                target_entry["source_dataset"] = product["cds_dataset"]
+                target_entry["source_variable"] = product["cds_variable"]
+            forecast_grids[lead] = forecast
+            target_entry["source_file"] = relative_path(source_path, repo_root)
+            target_entry["source_url"] = cds_dataset_url(
+                product["cds_raw_dataset"] if args.absolute else product["cds_dataset"]
             )
+            target_entry["area"] = cds_area(product)
             target_entry["baseline"] = (
                 {"status": "not_applicable", "reason": "absolute source smoke output"}
                 if args.absolute
                 else {
-                    "source": "SEAS5 hindcasts",
-                    "years_requested": f"{climo_years[0]}-{climo_years[1]}",
-                    "years_used": years_used,
+                    "status": "official_postprocessed",
+                    "source": anomaly_baseline,
+                    "dataset": product["cds_dataset"],
                 }
             )
-            target_entry["image"] = relative_path(output_path, repo_root)
-            target_entry["status"] = "rendered"
+            if args.decode_only:
+                target_entry["status"] = "decoded"
+            else:
+                output_path = output_dir / init[:8] / f"seas5_{product['variable']}_{target}.jpg"
+                render_map(
+                    forecast,
+                    init,
+                    target,
+                    lead,
+                    list(range(CDS_ENSEMBLE_MEMBERS)),
+                    output_path,
+                    anomaly=not args.absolute,
+                    baseline_label=("Absolute field smoke output" if args.absolute else anomaly_baseline),
+                    border_paths=border_paths,
+                    height_grid=height_grids.get(lead),
+                    ensemble_label=f"{CDS_ENSEMBLE_MEMBERS}-member mean",
+                    product_spec={**product, "source_label": SOURCE_LABEL},
+                )
+                target_entry["image"] = relative_path(output_path, repo_root)
+                target_entry["status"] = "rendered"
         except Exception as exc:
             failures += 1
             target_entry["status"] = "failed"
             target_entry["error"] = str(exc)
             print(f"SEAS5 target {target} lead {lead} failed: {exc}", file=sys.stderr)
         run_entry["targets"].append(target_entry)
-        target_entries[lead] = target_entry
 
     if seasonal_leads and not args.decode_only:
         first_lead, last_lead = seasonal_leads[0], seasonal_leads[-1]
@@ -851,44 +815,49 @@ def run(args: argparse.Namespace) -> int:
             "raw_units": product["raw_units"],
             "statistic": "ensemble_mean",
             "monthly_leads": seasonal_leads,
+            "originating_centre": CDS_ORIGINATING_CENTRE,
+            "system": CDS_SYSTEM,
+            "ensemble_members": CDS_ENSEMBLE_MEMBERS,
             "status": "planned",
         }
         try:
             if any(lead not in forecast_grids for lead in seasonal_leads):
-                raise SEAS5Error("seasonal window is missing one or more forecast grids")
-            if not args.absolute and any(lead not in baseline_grids for lead in seasonal_leads):
-                raise SEAS5Error("seasonal window is missing one or more climatology grids")
+                raise SEAS5Error("seasonal window is missing one or more CDS forecast grids")
             combine = sum_grids if product["seasonal_reducer"] == "sum" else mean_grids
             seasonal_forecast = combine([forecast_grids[lead] for lead in seasonal_leads])
-            if args.absolute:
-                seasonal_anomaly = seasonal_forecast
-            else:
-                seasonal_baseline = combine([baseline_grids[lead] for lead in seasonal_leads])
-                seasonal_anomaly = subtract_grids(seasonal_forecast, seasonal_baseline)
+            seasonal_height = (
+                combine([height_grids[lead] for lead in seasonal_leads])
+                if product["height_contours"] and all(lead in height_grids for lead in seasonal_leads)
+                else None
+            )
             output_path = output_dir / init[:8] / f"seas5_{product['variable']}_{first_target}-{last_target}.jpg"
             render_map(
-                seasonal_anomaly if not args.absolute else seasonal_forecast,
+                seasonal_forecast,
                 init,
                 first_target,
                 f"{first_lead}–{last_lead}",
-                list(range(int(run_entry.get("ensemble_members") or 0))),
+                list(range(CDS_ENSEMBLE_MEMBERS)),
                 output_path,
                 anomaly=not args.absolute,
-                baseline_label=f"SEAS5 hindcast climatology; {climo_years[0]}-{climo_years[1]}",
+                baseline_label=("Absolute field smoke output" if args.absolute else anomaly_baseline),
                 border_paths=border_paths,
                 period_label=seasonal_period_label(first_target, last_target),
-                ensemble_label=f"{run_entry.get('ensemble_members') or '—'}-member mean",
-                height_grid=seasonal_forecast if product["height_contours"] else None,
+                ensemble_label=f"{CDS_ENSEMBLE_MEMBERS}-member mean",
+                height_grid=seasonal_height,
                 product_spec={**product, "source_label": SOURCE_LABEL},
             )
             seasonal_entry["image"] = relative_path(output_path, repo_root)
+            seasonal_entry["source_dataset"] = product["cds_dataset"] if not args.absolute else product["cds_raw_dataset"]
+            seasonal_entry["source_url"] = cds_dataset_url(
+                product["cds_raw_dataset"] if args.absolute else product["cds_dataset"]
+            )
             seasonal_entry["baseline"] = (
                 {"status": "not_applicable", "reason": "absolute source smoke output"}
                 if args.absolute
                 else {
-                    "source": "SEAS5 hindcasts",
-                    "years_requested": f"{climo_years[0]}-{climo_years[1]}",
-                    "years_used": sorted(used_climo_years),
+                    "status": "official_postprocessed",
+                    "source": anomaly_baseline,
+                    "dataset": product["cds_dataset"],
                 }
             )
             seasonal_entry["status"] = "rendered"
@@ -900,7 +869,6 @@ def run(args: argparse.Namespace) -> int:
         run_entry["targets"].append(seasonal_entry)
 
     statuses = [target.get("status") for target in run_entry["targets"]]
-    run_entry["climatology"]["years_used"] = sorted(used_climo_years)
     run_entry["status"] = "failed" if failures and not any(status != "failed" for status in statuses) else (
         "partial" if failures else ("decoded" if args.decode_only else "rendered")
     )
