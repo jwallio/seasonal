@@ -1,15 +1,197 @@
 {
   "schema_version": 1,
   "kind": "seas5_seasonal_manifest",
-  "generated_utc": "2026-08-14T11:30:18Z",
-  "source": "ECMWF SEAS5 / C3S archive",
-  "source_url": "https://registry.opendata.aws/planette_c3s_seasonal_forecast_data/",
-  "archive_root": "s3://planette-c3s-seasonal-forecasts/seas5/",
+  "generated_utc": "2026-08-14T17:46:18Z",
+  "source": "ECMWF SEAS5 / Copernicus CDS",
+  "source_url": "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-pressure-levels",
+  "source_urls": [
+    "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-pressure-levels",
+    "https://cds.climate.copernicus.eu/datasets/seasonal-monthly-pressure-levels"
+  ],
+  "archive_root": "https://cds.climate.copernicus.eu/api",
   "retention": {
     "max_runs": 4,
     "history_runs": 3
   },
   "runs": [
+    {
+      "id": "seas5-2026080100-500mb_height_anomaly",
+      "source": "ECMWF SEAS5 / Copernicus CDS",
+      "source_url": "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-pressure-levels",
+      "source_urls": [
+        "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-pressure-levels",
+        "https://cds.climate.copernicus.eu/datasets/seasonal-monthly-pressure-levels"
+      ],
+      "archive_root": "https://cds.climate.copernicus.eu/api",
+      "source_datasets": [
+        "seasonal-postprocessed-pressure-levels",
+        "seasonal-monthly-pressure-levels"
+      ],
+      "originating_centre": "ecmwf",
+      "system": "51",
+      "model": "ECMWF SEAS5",
+      "product": "500mb_height_anomaly",
+      "variable": "z500",
+      "init_utc": "2026-08-01T00:00:00Z",
+      "statistic": "ensemble_mean",
+      "ensemble_scope": "ECMWF SEAS5/System 51 forecast ensemble",
+      "ensemble_members": 51,
+      "aggregation": "3-month mean of official CDS monthly ensemble-mean anomalies",
+      "field": "z500_anomaly",
+      "units": "m",
+      "raw_field": "z500 / geopotential",
+      "raw_units": "m**2 s**-2",
+      "conversion": "geopotential divided by standard gravity to convert m\u00b2 s\u207b\u00b2 to geopotential meters",
+      "climatology": {
+        "source": "C3S postprocessed anomaly field",
+        "years_requested": "1981-2016",
+        "method": "official CDS bias-adjusted monthly ensemble-mean anomaly; no local hindcast subtraction",
+        "status": "not_used"
+      },
+      "border_sources": [
+        {
+          "name": "countries.geojson"
+        },
+        {
+          "name": "us-states.geojson"
+        }
+      ],
+      "targets": [
+        {
+          "id": "seas5-2026080100-500mb_height_anomaly-lead04",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-01-01T00:00:00Z",
+          "lead_month": 4,
+          "target_month": "202612",
+          "aggregation": "monthly mean",
+          "field": "z500_anomaly",
+          "units": "m",
+          "raw_field": "z500 / geopotential",
+          "raw_units": "m**2 s**-2",
+          "statistic": "ensemble_mean",
+          "originating_centre": "ecmwf",
+          "system": "51",
+          "ensemble_members": 51,
+          "status": "rendered",
+          "source_dataset": "seasonal-postprocessed-pressure-levels",
+          "source_variable": "geopotential_anomaly",
+          "source_file": ".cache/seas5/cds/north-america/seasonal_postprocessed_pressure_levels_geopotential_anomaly_202608_lead04.grib",
+          "source_url": "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-pressure-levels",
+          "area": [
+            90.0,
+            -170.0,
+            15.0,
+            0.0
+          ],
+          "baseline": {
+            "status": "official_postprocessed",
+            "source": "C3S official postprocessed anomaly; ECMWF/System 51",
+            "dataset": "seasonal-postprocessed-pressure-levels"
+          },
+          "image": "public/seasonal/seas5/20260801/seas5_z500_202612.jpg"
+        },
+        {
+          "id": "seas5-2026080100-500mb_height_anomaly-lead05",
+          "valid_start_utc": "2027-01-01T00:00:00Z",
+          "valid_end_utc": "2027-02-01T00:00:00Z",
+          "lead_month": 5,
+          "target_month": "202701",
+          "aggregation": "monthly mean",
+          "field": "z500_anomaly",
+          "units": "m",
+          "raw_field": "z500 / geopotential",
+          "raw_units": "m**2 s**-2",
+          "statistic": "ensemble_mean",
+          "originating_centre": "ecmwf",
+          "system": "51",
+          "ensemble_members": 51,
+          "status": "rendered",
+          "source_dataset": "seasonal-postprocessed-pressure-levels",
+          "source_variable": "geopotential_anomaly",
+          "source_file": ".cache/seas5/cds/north-america/seasonal_postprocessed_pressure_levels_geopotential_anomaly_202608_lead05.grib",
+          "source_url": "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-pressure-levels",
+          "area": [
+            90.0,
+            -170.0,
+            15.0,
+            0.0
+          ],
+          "baseline": {
+            "status": "official_postprocessed",
+            "source": "C3S official postprocessed anomaly; ECMWF/System 51",
+            "dataset": "seasonal-postprocessed-pressure-levels"
+          },
+          "image": "public/seasonal/seas5/20260801/seas5_z500_202701.jpg"
+        },
+        {
+          "id": "seas5-2026080100-500mb_height_anomaly-lead06",
+          "valid_start_utc": "2027-02-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": 6,
+          "target_month": "202702",
+          "aggregation": "monthly mean",
+          "field": "z500_anomaly",
+          "units": "m",
+          "raw_field": "z500 / geopotential",
+          "raw_units": "m**2 s**-2",
+          "statistic": "ensemble_mean",
+          "originating_centre": "ecmwf",
+          "system": "51",
+          "ensemble_members": 51,
+          "status": "rendered",
+          "source_dataset": "seasonal-postprocessed-pressure-levels",
+          "source_variable": "geopotential_anomaly",
+          "source_file": ".cache/seas5/cds/north-america/seasonal_postprocessed_pressure_levels_geopotential_anomaly_202608_lead06.grib",
+          "source_url": "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-pressure-levels",
+          "area": [
+            90.0,
+            -170.0,
+            15.0,
+            0.0
+          ],
+          "baseline": {
+            "status": "official_postprocessed",
+            "source": "C3S official postprocessed anomaly; ECMWF/System 51",
+            "dataset": "seasonal-postprocessed-pressure-levels"
+          },
+          "image": "public/seasonal/seas5/20260801/seas5_z500_202702.jpg"
+        },
+        {
+          "id": "seas5-2026080100-500mb_height_anomaly-202612-202702",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": "4-6",
+          "target_month": "202612-202702",
+          "aggregation": "3-month mean",
+          "field": "z500_anomaly",
+          "units": "m",
+          "raw_field": "z500 / geopotential",
+          "raw_units": "m**2 s**-2",
+          "statistic": "ensemble_mean",
+          "monthly_leads": [
+            4,
+            5,
+            6
+          ],
+          "originating_centre": "ecmwf",
+          "system": "51",
+          "ensemble_members": 51,
+          "status": "rendered",
+          "image": "public/seasonal/seas5/20260801/seas5_z500_202612-202702.jpg",
+          "source_dataset": "seasonal-postprocessed-pressure-levels",
+          "source_url": "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-pressure-levels",
+          "baseline": {
+            "status": "official_postprocessed",
+            "source": "C3S official postprocessed anomaly; ECMWF/System 51",
+            "dataset": "seasonal-postprocessed-pressure-levels"
+          }
+        }
+      ],
+      "status": "rendered",
+      "archive_latest_init": "2026080100",
+      "archive_age_days": 13,
+      "output_dir": "public/seasonal/seas5"
+    },
     {
       "id": "seas5-2025100100-precipitation_anomaly",
       "source": "ECMWF SEAS5 / C3S archive",
