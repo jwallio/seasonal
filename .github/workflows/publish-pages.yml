@@ -79,8 +79,6 @@ jobs:
           run-id: ${{ env.SOURCE_RUN_ID }}
 
       - name: Merge payload into the Pages tree
-        env:
-          SOURCE_WORKFLOW: ${{ github.event.workflow_run.name }}
         shell: bash
         run: |
           set -euo pipefail
