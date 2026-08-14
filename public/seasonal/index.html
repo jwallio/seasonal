@@ -23,9 +23,6 @@
     .grid { display:grid; grid-template-columns:minmax(0,1.55fr) minmax(310px,.72fr); gap:18px; }
     .card-head { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:18px 20px; border-bottom:1px solid var(--line); }
     .card-head h2 { margin:0; font-size:16px; letter-spacing:.01em; }
-    .model-line { color:var(--teal); font-size:10px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; margin-bottom:4px; }
-    .status { border:1px solid #59d4c066; border-radius:999px; padding:5px 10px; color:var(--teal); font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.08em; }
-    .status.warn { border-color:#ff927c66; color:#ffd0c7; }
     .viewer { padding:16px; }
     .map-wrap { min-height:520px; display:grid; place-items:center; background:#dfeaf0; border:1px solid #486774; border-radius:15px; overflow:hidden; }
     .map-wrap img { display:block; width:100%; height:auto; max-height:760px; object-fit:contain; }
@@ -65,10 +62,6 @@
 
     <section class="grid">
       <article class="card">
-        <div class="card-head">
-          <div><div class="model-line" id="model-line">Seasonal model</div><h2 id="map-title">Loading model data…</h2></div>
-          <span class="status" id="run-status">loading</span>
-        </div>
         <div class="viewer"><div class="map-wrap" id="map-wrap"><div class="empty">Reading the latest published run.</div></div></div>
         <div class="controls" id="target-controls"></div>
         <div class="warning" id="warning"></div>
@@ -212,9 +205,6 @@
       el('run-select').replaceChildren(); el('run-select').disabled = true;
       el('target-controls').replaceChildren();
       el('ratio-control')?.remove();
-      el('model-line').textContent = model.label;
-      el('map-title').textContent = `${model.label} manifest unavailable`;
-      el('run-status').textContent = 'waiting'; el('run-status').classList.add('warn');
       setMessage(modelStates[selection.model].error || 'No published manifest is available for this model yet.');
       ['fact-model','fact-target','fact-lead','fact-ensemble','fact-field','fact-status'].forEach(id => el(id).textContent = id === 'fact-model' ? model.label : '—');
       el('scope').textContent = 'The model workflow has not published a readable manifest for this dashboard.';
@@ -238,7 +228,6 @@
       renderModelOptions();
       const model = MODEL_CONFIG[selection.model]; const modelState = modelStates[selection.model];
       if (!modelState.manifest) { renderUnavailable(model); return; }
-      el('model-line').textContent = model.label;
       const products = manifestProducts(model); selection.product = products.includes(selection.product) ? selection.product : (products[0] || '');
       populate(el('product-select'), products.map(value => ({ value, label: productLabel(model, value) })), selection.product);
       const runs = modelState.runs.filter(run => supportsProduct(model, run, selection.product));
@@ -249,11 +238,9 @@
       selection.target = targets.some(target => String(target.key) === String(selection.target)) ? selection.target : String(preferredTarget?.key || '');
       renderControls(model, run, targets);
       const target = targets.find(item => String(item.key) === String(selection.target)) || targets[0];
-      if (!run || !target) { el('map-title').textContent = `${model.label} data unavailable`; el('run-status').textContent = 'waiting'; el('run-status').classList.add('warn'); setMessage('No rendered target is available for the selected parameter.'); return; }
+      if (!run || !target) { setMessage('No rendered target is available for the selected parameter.'); return; }
       const targetValue = target.value;
       const label = productLabel(model, selection.product);
-      el('map-title').textContent = `${targetText(model, target)} · ${label}`;
-      el('run-status').textContent = targetValue?.status || run.status || 'available'; el('run-status').classList.toggle('warn', ['failed','partial'].includes(el('run-status').textContent));
       el('fact-model').textContent = model.label; el('fact-target').textContent = model.kind === 'weathernext' ? targetText(model, target) : periodLabel(targetValue.target_month || targetValue.valid_start_utc);
       el('fact-lead').textContent = leadText(model, target); el('fact-ensemble').textContent = ensembleText(model, run, target); el('fact-field').textContent = fieldText(target); el('fact-status').textContent = targetValue?.status || run.status || 'available';
       if (model.kind === 'weathernext') {
