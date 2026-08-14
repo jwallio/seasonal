@@ -13,6 +13,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 ADAPTER = ROOT / "scripts" / "seas5_seasonal.py"
 WRAPPER = ROOT / "scripts" / "render_seas5.ps1"
 WORKFLOW = ROOT / ".github" / "workflows" / "seas5.yml"
+PAGES_WORKFLOW = ROOT / ".github" / "workflows" / "publish-pages.yml"
 DOC = ROOT / "docs" / "SEASONAL_SEAS5.md"
 PAGE = ROOT / "public" / "seasonal" / "seas5" / "index.html"
 
@@ -33,11 +34,12 @@ def check(condition: bool, message: str) -> None:
 
 
 def main() -> int:
-    for path, label in ((ADAPTER, "adapter"), (WRAPPER, "wrapper"), (WORKFLOW, "workflow"), (DOC, "documentation"), (PAGE, "viewer")):
+    for path, label in ((ADAPTER, "adapter"), (WRAPPER, "wrapper"), (WORKFLOW, "workflow"), (PAGES_WORKFLOW, "central Pages workflow"), (DOC, "documentation"), (PAGE, "viewer")):
         check(path.exists(), f"SEAS5 {label} missing")
     adapter = ADAPTER.read_text(encoding="utf-8")
     workflow = WORKFLOW.read_text(encoding="utf-8")
     page = PAGE.read_text(encoding="utf-8")
+    pages_workflow = PAGES_WORKFLOW.read_text(encoding="utf-8")
     documentation = DOC.read_text(encoding="utf-8")
     for term in (
         "planette-c3s-seasonal-forecasts",
@@ -73,9 +75,11 @@ def main() -> int:
         "Restore published SEAS5 run history",
         "--previous-manifest",
         "--retain-runs 4",
-        "peaceiris/actions-gh-pages@v4",
     ):
         check(term in workflow, f"workflow missing SEAS5 term: {term}")
+    check("peaceiris/actions-gh-pages" not in workflow, "SEAS5 workflow must not publish Pages directly")
+    for term in ("workflow_run:", "ECMWF SEAS5 Seasonal Graphics", "actions/download-artifact@v4", "keep_files: false"):
+        check(term in pages_workflow, f"central Pages workflow missing term: {term}")
     for term in ("id=\"product-select\"", "id=\"run-select\"", "seas5_manifest.json", "timeZone:'UTC'"):
         check(term in page, f"viewer missing SEAS5 term: {term}")
     module = load_adapter()

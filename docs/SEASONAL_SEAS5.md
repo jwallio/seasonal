@@ -82,10 +82,12 @@ runs in the manifest.
 
 The scheduled/manual workflow is
 `.github/workflows/seas5.yml`. It restores cached climatology grids, retrieves
-the previous Pages manifest, renders the selected parameter, uploads an
-artifact, and publishes `public/` with the existing Pages mechanism. The
-viewer is intentionally separate from CFSv2 so model, source, initialization,
-and baseline metadata cannot be confused.
+the previous Pages manifest, renders the selected parameter, and uploads a
+scoped Pages payload. The central `.github/workflows/publish-pages.yml`
+workflow serializes successful WN2, CFSv2, and SEAS5 payloads, merges each
+payload into the existing `gh-pages` tree, and performs the only GitHub Pages
+publish. The viewer is intentionally separate from CFSv2 so model, source,
+initialization, and baseline metadata cannot be confused.
 
 ## Source notes
 

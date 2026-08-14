@@ -129,21 +129,23 @@ jobs:
           fi
           python "${args[@]}"
 
-      - name: Upload CFSv2 artifacts
-        if: always()
+      - name: Package CFSv2 Pages payload
+        if: success()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -d public/seasonal/cfsv2
+          test -f public/seasonal/cfsv2_manifest.json
+          rm -rf .pages-payload
+          mkdir -p .pages-payload/cfsv2
+          cp -R public/seasonal/cfsv2/. .pages-payload/cfsv2/
+          cp public/seasonal/cfsv2_manifest.json .pages-payload/cfsv2_manifest.json
+
+      - name: Upload CFSv2 Pages payload
+        if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: cfsv2-seasonal-${{ github.run_id }}
-          path: |
-            public/seasonal/cfsv2/**
-            public/seasonal/cfsv2_manifest.json
-          if-no-files-found: warn
+          name: cfsv2-pages-${{ github.run_id }}
+          path: .pages-payload
+          if-no-files-found: error
           retention-days: 14
-
-      - name: Publish CFSv2 assets to GitHub Pages
-        if: success()
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./public
-          keep_files: true
