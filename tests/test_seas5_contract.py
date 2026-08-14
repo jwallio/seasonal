@@ -97,6 +97,9 @@ def main() -> int:
         "Copernicus CDS",
     ):
         check(term in page, f"viewer missing SEAS5 term: {term}")
+    check("WN2 / ECMWF SEAS5" not in page, "SEAS5 direct viewer should not use the umbrella dashboard branding")
+    check('href="../">Seasonal dashboard</a>' in page, "SEAS5 direct viewer should link to the unified seasonal dashboard")
+    check("preferredTargetIndex" in page, "SEAS5 viewer should default to the seasonal aggregate when one is present")
     module = load_adapter()
     check(module.latest_cds_init(dt.datetime(2026, 8, 6, 12, 0)) == "2026080100", "release-time init should use the current ECMWF month")
     check(module.latest_cds_init(dt.datetime(2026, 8, 6, 11, 59)) == "2026070100", "pre-release init should use the prior ECMWF month")

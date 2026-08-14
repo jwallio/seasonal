@@ -49,7 +49,7 @@
   <main class="shell">
     <section class="hero">
       <div>
-        <div class="eyebrow">WN2 / CFSv2 operational model viewer</div>
+        <div class="eyebrow">CFSv2 operational model viewer</div>
         <h1 id="page-title">CFSv2 Model Viewer</h1>
       </div>
     </section>
@@ -73,7 +73,7 @@
         </div></article>
         <article class="card"><div class="card-head"><h2>Run metadata</h2></div><div class="copy">
           <p id="scope">The manifest will identify the initialization window, available cycles, and calibration baseline.</p>
-        </div><div class="links"><a href="https://www.cpc.ncep.noaa.gov/products/CFSv2/CFSv2seasonal.shtml">CPC context</a><a href="https://cfs.ncep.noaa.gov/cfsv2/downloads.html">CFSv2 data</a><a href="https://github.com/jwallio/wn2/actions/workflows/cfsv2.yml">Workflow</a></div></article>
+        </div><div class="links"><a href="../">Seasonal dashboard</a><a href="https://www.cpc.ncep.noaa.gov/products/CFSv2/CFSv2seasonal.shtml">CPC context</a><a href="https://cfs.ncep.noaa.gov/cfsv2/downloads.html">CFSv2 data</a><a href="https://github.com/jwallio/wn2/actions/workflows/cfsv2.yml">Workflow</a></div></article>
       </aside>
     </section>
     <div class="footer" id="footer">Source: NOAA CFSv2 NOMADS · Loading provenance…</div>
@@ -143,6 +143,10 @@
         return button;
       }));
     }
+    function preferredTargetIndex() {
+      const seasonalIndex = targets.findIndex(target => /^\d{6}-\d{6}$/.test(String(target.target_month || '')));
+      return seasonalIndex >= 0 ? seasonalIndex : 0;
+    }
     function dateLabel(value) { if (!value) return '—'; const date = new Date(value); return Number.isNaN(date.valueOf()) ? value : new Intl.DateTimeFormat(undefined,{month:'short',year:'numeric',timeZone:'UTC'}).format(date); }
     function pick(index) {
       const target = targets[index], run = selectedRun; if (!target || !run) return;
@@ -160,8 +164,8 @@
       const image = target.image ? cleanPath(target.image) : '';
       el('map-wrap').innerHTML = image ? `<img src="${image}" alt="CFSv2 ${label} for ${target.target_month || 'selected target'}" loading="eager">` : '<div class="empty">No rendered image is available for this target.</div>';
     }
-    el('product-select').addEventListener('change', () => { renderRunSelector(); pick(0); });
-    el('run-select').addEventListener('change', () => { renderRunSelector(el('run-select').value); pick(0); });
+    el('product-select').addEventListener('change', () => { renderRunSelector(); pick(preferredTargetIndex()); });
+    el('run-select').addEventListener('change', () => { renderRunSelector(el('run-select').value); pick(preferredTargetIndex()); });
     fetch(manifestUrl).then(response => { if (!response.ok) throw new Error(`Manifest returned ${response.status}`); return response.json(); }).then(manifest => {
       runs = (manifest.runs || []).filter(run => run && Array.isArray(run.targets)).sort((left,right) => String(right.init_utc || '').localeCompare(String(left.init_utc || '')));
       if (!runs.length) throw new Error('No CFSv2 run is present yet.');
@@ -169,7 +173,7 @@
       renderRunSelector();
       const history = manifest.retention?.history_runs ?? Math.max(0, runs.length - 1);
       el('footer').textContent = `Source: ${manifest.source || 'NOAA CFSv2 NOMADS'} · Generated ${manifest.generated_utc || '—'} · Retaining ${history} prior run${history === 1 ? '' : 's'}`;
-      pick(0);
+      pick(preferredTargetIndex());
     }).catch(error => { el('map-title').textContent='CFSv2 manifest unavailable'; el('run-status').textContent='waiting'; el('map-wrap').innerHTML=`<div class="empty">${error.message}<br><br>The scheduled workflow will populate this page after its next successful run.</div>`; el('footer').textContent='Source: NOAA CFSv2 NOMADS · Waiting for the first published manifest.'; });
   </script>
 </body>

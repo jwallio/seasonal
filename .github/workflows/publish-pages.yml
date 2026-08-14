@@ -1,4 +1,4 @@
-name: Publish WN2 GitHub Pages
+name: Publish Seasonal Model Dashboard Pages
 
 on:
   workflow_run:
@@ -48,6 +48,15 @@ jobs:
           path: site
           fetch-depth: 1
 
+      - name: Checkout dashboard source
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: dashboard-source
+          sparse-checkout: |
+            public/seasonal/index.html
+          sparse-checkout-cone-mode: false
+
       - name: Download WN2 payload
         if: ${{ env.SOURCE_WORKFLOW == 'WeatherNext Runner' || env.SOURCE_WORKFLOW == 'WeatherNext Runner Custom' }}
         uses: actions/download-artifact@v4
@@ -85,6 +94,9 @@ jobs:
           test -f site/index.html
           test -f site/seasonal/cfsv2/index.html
           test -f site/seasonal/seas5/index.html
+          test -f dashboard-source/public/seasonal/index.html
+          mkdir -p site/seasonal
+          cp dashboard-source/public/seasonal/index.html site/seasonal/index.html
 
           case "$SOURCE_WORKFLOW" in
             "WeatherNext Runner"|"WeatherNext Runner Custom")
