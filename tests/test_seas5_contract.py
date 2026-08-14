@@ -98,6 +98,21 @@ def main() -> int:
     ):
         check(term in page, f"viewer missing SEAS5 term: {term}")
     module = load_adapter()
+    for product in (
+        module.Z500_ANOMALY,
+        module.T2M_ANOMALY,
+        module.T850_ANOMALY,
+        module.PRECIP_ANOMALY,
+        module.SNOWFALL_ANOMALY,
+        module.SNOW_DEPTH_ANOMALY,
+        module.SST_ANOMALY,
+        module.MSLP_ANOMALY,
+    ):
+        palette = module.PRODUCT_SPECS[product]["anomaly_palette"]
+        ticks = module.PRODUCT_SPECS[product]["anomaly_ticks"]
+        check(len(palette) == len(ticks) - 1, f"{product} palette should have one color per numbered interval")
+        center = len(palette) // 2
+        check(palette[center - 1].lower() == "#ffffff" and palette[center].lower() == "#ffffff", f"{product} neutral zero bins should be white")
     check(module.latest_cds_init(dt.datetime(2026, 8, 6, 12, 0)) == "2026080100", "release-time init should use the current ECMWF month")
     check(module.latest_cds_init(dt.datetime(2026, 8, 6, 11, 59)) == "2026070100", "pre-release init should use the prior ECMWF month")
     check(module.target_month("2025080100", 4) == "202512", "lead-month target conversion should produce December")

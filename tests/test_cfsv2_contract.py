@@ -85,7 +85,7 @@ def main() -> int:
         "SWE_ANOMALY_MAX_IN = 8.0",
         "monthly snow-water-equivalent average",
         "Snow-water equivalent (in)",
-        "drawedges=product_spec[\"name\"] in {PRODUCT_PRECIPITATION_ANOMALY, PRODUCT_SWE_ANOMALY}",
+        "drawedges=anomaly",
         "sum_grids",
         "--product",
         "--baseline-file",
@@ -122,6 +122,8 @@ def main() -> int:
     check("ANOMALY_MAX_M = 200.0" in adapter, "anomaly upper scale bound should be +200 m")
     check("PRECIP_ANOMALY_TICKS = list(range(-8, 9))" in adapter, "precipitation scale should label every inch from -8 to +8")
     check("[-200, -160, -120, -80, -40, 0, 40, 80, 120, 160, 200]" in adapter, "anomaly scale ticks should span -200 to +200 m")
+    check("bounds = np.asarray(colorbar_ticks, dtype=float)" in adapter, "color boundaries should use the numbered colorbar ticks")
+    check("one color per numbered colorbar interval" in adapter, "anomaly palette should align with numbered colorbar intervals")
     check("title_box = title_text.get_window_extent" in adapter, "header should prevent title/valid overlap")
     check("available_title_width" in adapter, "header should fit long valid-period labels")
     check('pad=1.8' in adapter, "colorbar labels should sit close to the scale")
@@ -146,6 +148,14 @@ def main() -> int:
     check('id="run-select"' in page, "Pages viewer missing run-history selector")
     check("Retaining ${history} prior run" in page, "Pages viewer should report retained run history")
     adapter_module = load_adapter()
+    for ticks, palette in (
+        (adapter_module.ANOMALY_TICKS, adapter_module.ANOMALY_PALETTE),
+        (adapter_module.PRECIP_ANOMALY_TICKS, adapter_module.PRECIP_ANOMALY_PALETTE),
+        (adapter_module.SWE_ANOMALY_TICKS, adapter_module.SWE_ANOMALY_PALETTE),
+    ):
+        check(len(palette) == len(ticks) - 1, "CFSv2 palette should have one color per numbered interval")
+        center = len(palette) // 2
+        check(palette[center - 1].lower() == "#ffffff" and palette[center].lower() == "#ffffff", "CFSv2 neutral zero bins should be white")
     converted = adapter_module.snow_water_equivalent_inches(
         adapter_module.Grid([0.0], [0.0], [[25.4]])
     )

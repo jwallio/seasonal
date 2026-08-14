@@ -73,13 +73,12 @@ MSLP_ANOMALY = "mslp_anomaly"
 
 TEMP_PALETTE = [
     "#244f78",
-    "#326d99",
     "#4f91b5",
     "#75b5ca",
     "#a7ced9",
     "#dce9eb",
-    "#f8f8f4",
-    "#f4d8d3",
+    "#ffffff",
+    "#ffffff",
     "#eeb2aa",
     "#df8d86",
     "#ce696b",
@@ -90,14 +89,49 @@ MSLP_PALETTE = [
     "#315f85",
     "#4e83a3",
     "#72a6bb",
-    "#a5c6cf",
-    "#d9e5e6",
-    "#f7f7f2",
-    "#f0d9d4",
-    "#dfa69f",
+    "#ffffff",
+    "#ffffff",
     "#c87974",
     "#ac4f55",
     "#8a3542",
+]
+SST_PALETTE = [
+    "#326d99",
+    "#75b5ca",
+    "#ffffff",
+    "#ffffff",
+    "#df8d86",
+    "#b84857",
+]
+
+
+def zero_centered_palette(palette: list[str]) -> list[str]:
+    """Give an anomaly palette a true white bin centered on zero.
+
+    Symmetric anomaly bounds should show neutral values as white. When a
+    shared palette has an even number of colors, replace the two central bins
+    so zero is not left on a color boundary; when it is odd, replace the
+    center color.
+    """
+
+    center = len(palette) // 2
+    if len(palette) % 2:
+        return [*palette[:center], "#ffffff", *palette[center + 1 :]]
+    return [*palette[: center - 1], "#ffffff", "#ffffff", *palette[center + 1 :]]
+
+
+SEAS5_ANOMALY_PALETTE = zero_centered_palette(ANOMALY_PALETTE)
+SEAS5_PRECIP_ANOMALY_PALETTE = zero_centered_palette(PRECIP_ANOMALY_PALETTE)
+SEAS5_SWE_ANOMALY_PALETTE = zero_centered_palette(SWE_ANOMALY_PALETTE)
+SEAS5_SNOWFALL_PALETTE = [
+    "#6b2d0c",
+    "#a65f1b",
+    "#d09b57",
+    "#ffffff",
+    "#ffffff",
+    "#91c8d8",
+    "#448fb4",
+    "#143b5f",
 ]
 
 
@@ -119,7 +153,7 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "anomaly_min": -200.0,
         "anomaly_max": 200.0,
         "anomaly_ticks": [-200, -160, -120, -80, -40, 0, 40, 80, 120, 160, 200],
-        "anomaly_palette": ANOMALY_PALETTE,
+        "anomaly_palette": SEAS5_ANOMALY_PALETTE,
         "conversion": "geopotential divided by standard gravity to convert m² s⁻² to geopotential meters",
         "header_detail": "{source_label}  •  {baseline_label}  •  Height contours in dam",
         "cds_dataset": CDS_PRESSURE_ANOMALY_DATASET,
@@ -192,7 +226,7 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "anomaly_min": -8.0,
         "anomaly_max": 8.0,
         "anomaly_ticks": list(range(-8, 9)),
-        "anomaly_palette": PRECIP_ANOMALY_PALETTE,
+        "anomaly_palette": SEAS5_PRECIP_ANOMALY_PALETTE,
         "conversion": "CDS anomalous water rate multiplied by target-month seconds and converted from metres to inches",
         "header_detail": "{source_label}  •  {baseline_label}  •  Precipitation accumulation (in)  •  CONUS domain",
         "cds_dataset": CDS_SINGLE_ANOMALY_DATASET,
@@ -215,7 +249,7 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "anomaly_min": -4.0,
         "anomaly_max": 4.0,
         "anomaly_ticks": [-4, -3, -2, -1, 0, 1, 2, 3, 4],
-        "anomaly_palette": SWE_ANOMALY_PALETTE,
+        "anomaly_palette": SEAS5_SNOWFALL_PALETTE,
         "conversion": "CDS anomalous snowfall water rate multiplied by target-month seconds and converted from metres to inches",
         "header_detail": "{source_label}  •  {baseline_label}  •  Snowfall liquid-water equivalent (in)  •  CONUS domain",
         "cds_dataset": CDS_SINGLE_ANOMALY_DATASET,
@@ -238,7 +272,7 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "anomaly_min": -8.0,
         "anomaly_max": 8.0,
         "anomaly_ticks": list(range(-8, 9)),
-        "anomaly_palette": SWE_ANOMALY_PALETTE,
+        "anomaly_palette": SEAS5_SWE_ANOMALY_PALETTE,
         "conversion": "CDS snow-depth anomaly converted from metres of water equivalent to inches",
         "header_detail": "{source_label}  •  {baseline_label}  •  Snow depth water equivalent (in)  •  CONUS domain",
         "cds_dataset": CDS_SINGLE_ANOMALY_DATASET,
@@ -261,7 +295,7 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "anomaly_min": -3.0,
         "anomaly_max": 3.0,
         "anomaly_ticks": [-3, -2, -1, 0, 1, 2, 3],
-        "anomaly_palette": TEMP_PALETTE,
+        "anomaly_palette": SST_PALETTE,
         "conversion": "Kelvin-to-Celsius offset cancels in anomaly differences",
         "header_detail": "{source_label}  •  {baseline_label}  •  Sea-surface temperature anomaly (°C)",
         "cds_dataset": CDS_SINGLE_ANOMALY_DATASET,
