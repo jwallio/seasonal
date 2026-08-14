@@ -20,8 +20,6 @@
     select { width:100%; border:1px solid var(--line); border-radius:10px; background:#0d2029; color:var(--ink); cursor:pointer; padding:10px 11px; font:inherit; font-size:13px; }
     select:focus { outline:2px solid var(--teal); outline-offset:1px; }
     select:disabled { cursor:wait; opacity:.65; }
-    .availability { grid-column:1 / -1; margin:0 2px 0; color:var(--muted); font-size:12px; }
-    .availability strong { color:var(--ink); }
     .grid { display:grid; grid-template-columns:minmax(0,1.55fr) minmax(310px,.72fr); gap:18px; }
     .card-head { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:18px 20px; border-bottom:1px solid var(--line); }
     .card-head h2 { margin:0; font-size:16px; letter-spacing:.01em; }
@@ -49,8 +47,8 @@
     .copy p:last-child { margin-bottom:0; }
     .links { display:flex; flex-wrap:wrap; gap:12px; padding:0 20px 20px; font-size:13px; }
     .footer { margin-top:20px; color:#8298a3; font-size:12px; }
-    @media (max-width:900px) { .toolbar{grid-template-columns:1fr 1fr}.toolbar .selector:first-child{grid-column:1 / -1}.grid{grid-template-columns:1fr} }
-    @media (max-width:600px) { .shell{width:min(100% - 20px,1440px);padding-top:12px}.toolbar{grid-template-columns:1fr}.toolbar .selector:first-child{grid-column:auto}.map-wrap{min-height:280px}.card-head{padding:15px}.viewer{padding:10px}.controls{padding:0 10px 12px}.ratio-control{margin-left:0}.facts{padding:10px}.links{padding:0 15px 15px} }
+    @media (max-width:900px) { .toolbar{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.grid{grid-template-columns:1fr} }
+    @media (max-width:600px) { .shell{width:min(100% - 20px,1440px);padding-top:12px}.toolbar{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.toolbar .selector:nth-child(3){grid-column:1 / -1}.map-wrap{min-height:280px}.card-head{padding:15px}.viewer{padding:10px}.controls{padding:0 10px 12px}.ratio-control{margin-left:0}.facts{padding:10px}.links{padding:0 15px 15px} }
   </style>
 </head>
 <body>
@@ -63,7 +61,6 @@
       <div class="selector"><label for="model-select">Model</label><select id="model-select"></select></div>
       <div class="selector"><label for="product-select">Parameter</label><select id="product-select" disabled><option>Loading…</option></select></div>
       <div class="selector"><label for="run-select">Run history</label><select id="run-select" disabled><option>Loading…</option></select></div>
-      <div class="availability" id="availability">Reading published model manifests…</div>
     </section>
 
     <section class="grid">
@@ -240,7 +237,7 @@
     function renderAll() {
       renderModelOptions();
       const model = MODEL_CONFIG[selection.model]; const modelState = modelStates[selection.model];
-      if (!modelState.manifest) { renderUnavailable(model); updateAvailability(); return; }
+      if (!modelState.manifest) { renderUnavailable(model); return; }
       el('model-line').textContent = model.label;
       const products = manifestProducts(model); selection.product = products.includes(selection.product) ? selection.product : (products[0] || '');
       populate(el('product-select'), products.map(value => ({ value, label: productLabel(model, value) })), selection.product);
@@ -276,11 +273,6 @@
       else if (run.source_warning) { warning.style.display = 'block'; warning.textContent = run.source_warning; }
       else warning.style.display = 'none';
       el('footer').textContent = `${model.source} · ${modelState.manifest.generated_utc ? `Manifest generated ${initLabel(modelState.manifest.generated_utc)}` : 'Published manifest loaded'} · Direct model pages remain available.`;
-      updateAvailability();
-    }
-    function updateAvailability() {
-      const available = Object.entries(modelStates).filter(([, state]) => state.manifest).length;
-      el('availability').innerHTML = `<strong>${available} of ${Object.keys(MODEL_CONFIG).length} model manifests available.</strong> Select a model, parameter, run, and target/hour from the controls above.`;
     }
     el('model-select').addEventListener('change', event => { selection.model = event.target.value; selection.product = ''; selection.run = ''; selection.target = ''; renderAll(); });
     el('product-select').addEventListener('change', event => { selection.product = event.target.value; selection.run = ''; selection.target = ''; renderAll(); });
