@@ -122,6 +122,8 @@ def main() -> int:
     check("ANOMALY_MAX_M = 200.0" in adapter, "anomaly upper scale bound should be +200 m")
     check("PRECIP_ANOMALY_TICKS = list(range(-8, 9))" in adapter, "precipitation scale should label every inch from -8 to +8")
     check("[-200, -160, -120, -80, -40, 0, 40, 80, 120, 160, 200]" in adapter, "anomaly scale ticks should span -200 to +200 m")
+    check("bounds = np.asarray(colorbar_ticks, dtype=float)" in adapter, "anomaly bounds should be anchored to labelled ticks")
+    check('colorbar_options["boundaries"] = bounds' in adapter, "colorbar should use the labelled anomaly bounds")
     check("title_box = title_text.get_window_extent" in adapter, "header should prevent title/valid overlap")
     check("available_title_width" in adapter, "header should fit long valid-period labels")
     check('pad=1.8' in adapter, "colorbar labels should sit close to the scale")
@@ -149,6 +151,8 @@ def main() -> int:
     check('id="run-select"' in page, "Pages viewer missing run-history selector")
     check("Retaining ${history} prior run" in page, "Pages viewer should report retained run history")
     adapter_module = load_adapter()
+    check(len(adapter_module.ANOMALY_PALETTE) == len(adapter_module.ANOMALY_TICKS) - 1, "height anomaly colors should align with labelled transitions")
+    check(len(adapter_module.SWE_ANOMALY_PALETTE) == len(adapter_module.SWE_ANOMALY_TICKS) - 1, "SWE colors should align with labelled transitions")
     converted = adapter_module.snow_water_equivalent_inches(
         adapter_module.Grid([0.0], [0.0], [[25.4]])
     )

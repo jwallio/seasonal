@@ -54,18 +54,14 @@ SWE_ANOMALY_MIN_IN = -8.0
 SWE_ANOMALY_MAX_IN = 8.0
 ANOMALY_PALETTE = [
     "#24527a",
-    "#2e6d94",
     "#3e86a8",
     "#569fba",
     "#75b5c8",
-    "#9bc9d6",
     "#d9e6ea",
     "#f6dedd",
-    "#efb8b6",
     "#e49290",
     "#d56b6e",
     "#c24a57",
-    "#a63449",
     "#84283f",
 ]
 ANOMALY_TICKS = [-200, -160, -120, -80, -40, 0, 40, 80, 120, 160, 200]
@@ -100,7 +96,6 @@ SWE_ANOMALY_PALETTE = [
     "#f4eee4",
     "#ffffff",
     "#b9dce8",
-    "#91c8d8",
     "#68aec8",
     "#448fb4",
     "#2f7198",
@@ -1164,8 +1159,13 @@ def render_map(
             anomaly_max = ANOMALY_MAX_M
             colorbar_ticks = ANOMALY_TICKS
             palette = ANOMALY_PALETTE
+        # Use one color interval for every labelled tick-to-tick range. This
+        # keeps the labels and tick marks on the actual color transitions
+        # instead of drifting into the middle of adjacent swatches.
+        bounds = np.asarray(colorbar_ticks, dtype=float)
+        if bounds.size != len(palette) + 1:
+            raise CFSv2Error("anomaly palette must have one fewer color than labelled bounds")
         cmap = mcolors.ListedColormap(palette)
-        bounds = np.linspace(anomaly_min, anomaly_max, len(palette) + 1)
         norm = mcolors.BoundaryNorm(bounds, cmap.N, clip=True)
         image = axes.contourf(
             canvas_x,
@@ -1381,6 +1381,9 @@ def render_map(
     colorbar_gap = 0.025
     colorbar_bottom = max(0.055, map_bottom - colorbar_gap - colorbar_height)
     colorbar_axes = figure.add_axes([map_left, colorbar_bottom, map_width, colorbar_height])
+    colorbar_options = {"ticks": colorbar_ticks}
+    if anomaly:
+        colorbar_options["boundaries"] = bounds
     colorbar = figure.colorbar(
         image,
         cax=colorbar_axes,
@@ -1388,6 +1391,7 @@ def render_map(
         extend="neither",
         spacing="uniform",
         drawedges=product_spec["name"] in {PRODUCT_PRECIPITATION_ANOMALY, PRODUCT_SWE_ANOMALY},
+        **colorbar_options,
     )
     colorbar.set_ticks(colorbar_ticks)
     if anomaly:
