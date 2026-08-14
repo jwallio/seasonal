@@ -98,7 +98,7 @@ SWE_ANOMALY_PALETTE = [
     "#dfbd84",
     "#ead9b8",
     "#f4eee4",
-    "#dceef3",
+    "#ffffff",
     "#b9dce8",
     "#91c8d8",
     "#68aec8",
