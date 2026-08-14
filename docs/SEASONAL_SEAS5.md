@@ -84,8 +84,11 @@ selected parameter, and uploads a scoped Pages payload. The central
 CFSv2, and SEAS5 payloads, merges each payload into the existing `gh-pages`
 tree, and performs the only GitHub Pages publish.
 
-The viewer remains separate from CFSv2 so model, source, initialization, and
-anomaly methodology cannot be confused.
+The unified seasonal dashboard at `/seasonal/` provides one model and
+parameter control surface for WeatherNext 2, CFSv2, and SEAS5. The direct
+SEAS5 viewer remains available at `/seasonal/seas5/` so model, source,
+initialization, and anomaly methodology can still be reviewed without the
+cross-model controls.
 
 ## Source notes
 

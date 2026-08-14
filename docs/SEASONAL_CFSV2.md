@@ -91,6 +91,9 @@ Pages payload; `.github/workflows/publish-pages.yml` serializes that payload
 with WN2 and SEAS5 output before the single Pages publish. The static CFSv2
 viewer exposes those retained runs through Parameter and Run history selectors;
 the central publisher keeps the referenced historical image paths available.
+The unified seasonal dashboard at `/seasonal/` adds CFSv2 to the same model and
+parameter control surface while preserving this direct viewer for focused
+source and run-history review.
 
 ## Baseline rule
 

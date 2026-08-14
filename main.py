@@ -6343,6 +6343,13 @@ html_template = """
             font-weight:700;
             letter-spacing:0.01em;
         }
+        .dashboard-link {
+            margin:-2px 0 10px;
+            font-size:13px;
+        }
+        .dashboard-link a {
+            color:#8fe8d8;
+        }
         button {
             padding:10px 16px;
             font-size:16px;
@@ -6410,6 +6417,7 @@ html_template = """
 <body>
     <div class="wrap">
         <h2 id="title">WeatherNext2 viewer</h2>
+        <div class="dashboard-link"><a href="seasonal/">Open Seasonal Model Dashboard</a></div>
         <div class="map-wrap">
             <img id="map" src="" alt="WN2 map">
         </div>
