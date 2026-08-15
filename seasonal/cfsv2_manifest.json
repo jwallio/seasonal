@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "kind": "cfsv2_seasonal_manifest",
-  "generated_utc": "2026-08-14T23:45:47Z",
+  "generated_utc": "2026-08-15T00:32:40Z",
   "source": "NOAA CFSv2 NOMADS",
   "source_url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/",
   "retention": {
@@ -122,7 +122,7 @@
               "cache_file": ".cache/cfsv2/2026080600/member_01/flxf.01.2026080600.202612.avrg.grib.grb2",
               "state_file": ".cache/cfsv2/rolling/weasd_in/202612/weasd_in.2026080600.m01.csv.gz",
               "status": "missing",
-              "error": "('Connection broken: IncompleteRead(2097152 bytes read, 3134641 more expected)', IncompleteRead(2097152 bytes read, 3134641 more expected))"
+              "error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260806/00/monthly_grib_01/flxf.01.2026080600.202612.avrg.grib.grb2"
             },
             {
               "initialization": "2026080606",
@@ -144,7 +144,7 @@
               "cache_file": ".cache/cfsv2/2026080612/member_01/flxf.01.2026080612.202612.avrg.grib.grb2",
               "state_file": ".cache/cfsv2/rolling/weasd_in/202612/weasd_in.2026080612.m01.csv.gz",
               "status": "missing",
-              "error": "('Connection broken: IncompleteRead(2097152 bytes read, 3129960 more expected)', IncompleteRead(2097152 bytes read, 3129960 more expected))"
+              "error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260806/12/monthly_grib_01/flxf.01.2026080612.202612.avrg.grib.grb2"
             },
             {
               "initialization": "2026080618",
@@ -183,9 +183,8 @@
               "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260807/06/monthly_grib_01/flxf.01.2026080706.202612.avrg.grib.grb2",
               "cache_file": ".cache/cfsv2/2026080706/member_01/flxf.01.2026080706.202612.avrg.grib.grb2",
               "state_file": ".cache/cfsv2/rolling/weasd_in/202612/weasd_in.2026080706.m01.csv.gz",
-              "storage": "retained_decoded_grid",
-              "downloaded": false,
-              "download_error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260807/06/monthly_grib_01/flxf.01.2026080706.202612.avrg.grib.grb2",
+              "storage": "nomads_grib2",
+              "downloaded": true,
               "product": "snow_water_equivalent_anomaly",
               "source_kind": "FLXF",
               "decoded_field": "WEASD:surface",
@@ -204,7 +203,7 @@
               "state_file": ".cache/cfsv2/rolling/weasd_in/202612/weasd_in.2026080712.m01.csv.gz",
               "storage": "retained_decoded_grid",
               "downloaded": false,
-              "download_error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260807/12/monthly_grib_01/flxf.01.2026080712.202612.avrg.grib.grb2",
+              "download_error": "Response ended prematurely",
               "product": "snow_water_equivalent_anomaly",
               "source_kind": "FLXF",
               "decoded_field": "WEASD:surface",
@@ -223,7 +222,7 @@
               "state_file": ".cache/cfsv2/rolling/weasd_in/202612/weasd_in.2026080718.m01.csv.gz",
               "storage": "retained_decoded_grid",
               "downloaded": false,
-              "download_error": "('Connection broken: IncompleteRead(2097152 bytes read, 3130609 more expected)', IncompleteRead(2097152 bytes read, 3130609 more expected))",
+              "download_error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260807/18/monthly_grib_01/flxf.01.2026080718.202612.avrg.grib.grb2",
               "product": "snow_water_equivalent_anomaly",
               "source_kind": "FLXF",
               "decoded_field": "WEASD:surface",
@@ -741,7 +740,7 @@
             "rolling_policy": "anchor_initialization",
             "anchor_init": "2026081418",
             "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/08/flxf.08.14.18.l04.fclm.1982.2010.grb2",
-            "downloaded": true
+            "downloaded": false
           },
           "image": "public/seasonal/cfsv2/2026081418/cfsv2_swea_202612.jpg"
         },
@@ -816,7 +815,7 @@
               "cache_file": ".cache/cfsv2/2026080600/member_01/flxf.01.2026080600.202701.avrg.grib.grb2",
               "state_file": ".cache/cfsv2/rolling/weasd_in/202701/weasd_in.2026080600.m01.csv.gz",
               "status": "missing",
-              "error": "Response ended prematurely"
+              "error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260806/00/monthly_grib_01/flxf.01.2026080600.202701.avrg.grib.grb2"
             },
             {
               "initialization": "2026080606",
@@ -859,8 +858,9 @@
               "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260807/00/monthly_grib_01/flxf.01.2026080700.202701.avrg.grib.grb2",
               "cache_file": ".cache/cfsv2/2026080700/member_01/flxf.01.2026080700.202701.avrg.grib.grb2",
               "state_file": ".cache/cfsv2/rolling/weasd_in/202701/weasd_in.2026080700.m01.csv.gz",
-              "storage": "nomads_grib2",
-              "downloaded": true,
+              "storage": "retained_decoded_grid",
+              "downloaded": false,
+              "download_error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260807/00/monthly_grib_01/flxf.01.2026080700.202701.avrg.grib.grb2",
               "product": "snow_water_equivalent_anomaly",
               "source_kind": "FLXF",
               "decoded_field": "WEASD:surface",
@@ -915,8 +915,9 @@
               "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260807/18/monthly_grib_01/flxf.01.2026080718.202701.avrg.grib.grb2",
               "cache_file": ".cache/cfsv2/2026080718/member_01/flxf.01.2026080718.202701.avrg.grib.grb2",
               "state_file": ".cache/cfsv2/rolling/weasd_in/202701/weasd_in.2026080718.m01.csv.gz",
-              "storage": "nomads_grib2",
-              "downloaded": true,
+              "storage": "retained_decoded_grid",
+              "downloaded": false,
+              "download_error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260807/18/monthly_grib_01/flxf.01.2026080718.202701.avrg.grib.grb2",
               "product": "snow_water_equivalent_anomaly",
               "source_kind": "FLXF",
               "decoded_field": "WEASD:surface",
@@ -1434,7 +1435,7 @@
             "rolling_policy": "anchor_initialization",
             "anchor_init": "2026081418",
             "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/08/flxf.08.14.18.l05.fclm.1982.2010.grb2",
-            "downloaded": true
+            "downloaded": false
           },
           "image": "public/seasonal/cfsv2/2026081418/cfsv2_swea_202701.jpg"
         },
@@ -1531,7 +1532,7 @@
               "cache_file": ".cache/cfsv2/2026080612/member_01/flxf.01.2026080612.202702.avrg.grib.grb2",
               "state_file": ".cache/cfsv2/rolling/weasd_in/202702/weasd_in.2026080612.m01.csv.gz",
               "status": "missing",
-              "error": "('Connection broken: IncompleteRead(2097152 bytes read, 3166973 more expected)', IncompleteRead(2097152 bytes read, 3166973 more expected))"
+              "error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260806/12/monthly_grib_01/flxf.01.2026080612.202702.avrg.grib.grb2"
             },
             {
               "initialization": "2026080618",
@@ -1573,7 +1574,7 @@
               "state_file": ".cache/cfsv2/rolling/weasd_in/202702/weasd_in.2026080706.m01.csv.gz",
               "storage": "retained_decoded_grid",
               "downloaded": false,
-              "download_error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260807/06/monthly_grib_01/flxf.01.2026080706.202702.avrg.grib.grb2",
+              "download_error": "Response ended prematurely",
               "product": "snow_water_equivalent_anomaly",
               "source_kind": "FLXF",
               "decoded_field": "WEASD:surface",
@@ -2128,7 +2129,7 @@
             "rolling_policy": "anchor_initialization",
             "anchor_init": "2026081418",
             "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/08/flxf.08.14.18.l06.fclm.1982.2010.grb2",
-            "downloaded": true
+            "downloaded": false
           },
           "image": "public/seasonal/cfsv2/2026081418/cfsv2_swea_202702.jpg"
         },
@@ -2208,7 +2209,7 @@
               "cache_file": ".cache/cfsv2/2026080600/member_01/flxf.01.2026080600.202612.avrg.grib.grb2",
               "state_file": ".cache/cfsv2/rolling/weasd_in/202612/weasd_in.2026080600.m01.csv.gz",
               "status": "missing",
-              "error": "('Connection broken: IncompleteRead(2097152 bytes read, 3134641 more expected)', IncompleteRead(2097152 bytes read, 3134641 more expected))"
+              "error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260806/00/monthly_grib_01/flxf.01.2026080600.202612.avrg.grib.grb2"
             },
             {
               "initialization": "2026080606",
@@ -2230,7 +2231,7 @@
               "cache_file": ".cache/cfsv2/2026080612/member_01/flxf.01.2026080612.202612.avrg.grib.grb2",
               "state_file": ".cache/cfsv2/rolling/weasd_in/202612/weasd_in.2026080612.m01.csv.gz",
               "status": "missing",
-              "error": "('Connection broken: IncompleteRead(2097152 bytes read, 3129960 more expected)', IncompleteRead(2097152 bytes read, 3129960 more expected))"
+              "error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260806/12/monthly_grib_01/flxf.01.2026080612.202612.avrg.grib.grb2"
             },
             {
               "initialization": "2026080618",
@@ -2269,9 +2270,8 @@
               "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260807/06/monthly_grib_01/flxf.01.2026080706.202612.avrg.grib.grb2",
               "cache_file": ".cache/cfsv2/2026080706/member_01/flxf.01.2026080706.202612.avrg.grib.grb2",
               "state_file": ".cache/cfsv2/rolling/weasd_in/202612/weasd_in.2026080706.m01.csv.gz",
-              "storage": "retained_decoded_grid",
-              "downloaded": false,
-              "download_error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260807/06/monthly_grib_01/flxf.01.2026080706.202612.avrg.grib.grb2",
+              "storage": "nomads_grib2",
+              "downloaded": true,
               "product": "snow_water_equivalent_anomaly",
               "source_kind": "FLXF",
               "decoded_field": "WEASD:surface",
@@ -2290,7 +2290,7 @@
               "state_file": ".cache/cfsv2/rolling/weasd_in/202612/weasd_in.2026080712.m01.csv.gz",
               "storage": "retained_decoded_grid",
               "downloaded": false,
-              "download_error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260807/12/monthly_grib_01/flxf.01.2026080712.202612.avrg.grib.grb2",
+              "download_error": "Response ended prematurely",
               "product": "snow_water_equivalent_anomaly",
               "source_kind": "FLXF",
               "decoded_field": "WEASD:surface",
@@ -2309,7 +2309,7 @@
               "state_file": ".cache/cfsv2/rolling/weasd_in/202612/weasd_in.2026080718.m01.csv.gz",
               "storage": "retained_decoded_grid",
               "downloaded": false,
-              "download_error": "('Connection broken: IncompleteRead(2097152 bytes read, 3130609 more expected)', IncompleteRead(2097152 bytes read, 3130609 more expected))",
+              "download_error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260807/18/monthly_grib_01/flxf.01.2026080718.202612.avrg.grib.grb2",
               "product": "snow_water_equivalent_anomaly",
               "source_kind": "FLXF",
               "decoded_field": "WEASD:surface",
@@ -2868,7 +2868,7 @@
               "cache_file": ".cache/cfsv2/2026080600/member_01/flxf.01.2026080600.202701.avrg.grib.grb2",
               "state_file": ".cache/cfsv2/rolling/weasd_in/202701/weasd_in.2026080600.m01.csv.gz",
               "status": "missing",
-              "error": "Response ended prematurely"
+              "error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260806/00/monthly_grib_01/flxf.01.2026080600.202701.avrg.grib.grb2"
             },
             {
               "initialization": "2026080606",
@@ -2911,8 +2911,9 @@
               "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260807/00/monthly_grib_01/flxf.01.2026080700.202701.avrg.grib.grb2",
               "cache_file": ".cache/cfsv2/2026080700/member_01/flxf.01.2026080700.202701.avrg.grib.grb2",
               "state_file": ".cache/cfsv2/rolling/weasd_in/202701/weasd_in.2026080700.m01.csv.gz",
-              "storage": "nomads_grib2",
-              "downloaded": true,
+              "storage": "retained_decoded_grid",
+              "downloaded": false,
+              "download_error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260807/00/monthly_grib_01/flxf.01.2026080700.202701.avrg.grib.grb2",
               "product": "snow_water_equivalent_anomaly",
               "source_kind": "FLXF",
               "decoded_field": "WEASD:surface",
@@ -2967,8 +2968,9 @@
               "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260807/18/monthly_grib_01/flxf.01.2026080718.202701.avrg.grib.grb2",
               "cache_file": ".cache/cfsv2/2026080718/member_01/flxf.01.2026080718.202701.avrg.grib.grb2",
               "state_file": ".cache/cfsv2/rolling/weasd_in/202701/weasd_in.2026080718.m01.csv.gz",
-              "storage": "nomads_grib2",
-              "downloaded": true,
+              "storage": "retained_decoded_grid",
+              "downloaded": false,
+              "download_error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260807/18/monthly_grib_01/flxf.01.2026080718.202701.avrg.grib.grb2",
               "product": "snow_water_equivalent_anomaly",
               "source_kind": "FLXF",
               "decoded_field": "WEASD:surface",
@@ -3549,7 +3551,7 @@
               "cache_file": ".cache/cfsv2/2026080612/member_01/flxf.01.2026080612.202702.avrg.grib.grb2",
               "state_file": ".cache/cfsv2/rolling/weasd_in/202702/weasd_in.2026080612.m01.csv.gz",
               "status": "missing",
-              "error": "('Connection broken: IncompleteRead(2097152 bytes read, 3166973 more expected)', IncompleteRead(2097152 bytes read, 3166973 more expected))"
+              "error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260806/12/monthly_grib_01/flxf.01.2026080612.202702.avrg.grib.grb2"
             },
             {
               "initialization": "2026080618",
@@ -3591,7 +3593,7 @@
               "state_file": ".cache/cfsv2/rolling/weasd_in/202702/weasd_in.2026080706.m01.csv.gz",
               "storage": "retained_decoded_grid",
               "downloaded": false,
-              "download_error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260807/06/monthly_grib_01/flxf.01.2026080706.202702.avrg.grib.grb2",
+              "download_error": "Response ended prematurely",
               "product": "snow_water_equivalent_anomaly",
               "source_kind": "FLXF",
               "decoded_field": "WEASD:surface",
