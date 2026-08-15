@@ -919,6 +919,32 @@ def geojson_features(payload: dict) -> Iterator[list[list[float]]]:
         yield from _geojson_rings(payload)
 
 
+def land_mask_from_borders(border_paths: Sequence[Path], longitude_values, latitude_values):
+    """Return a land-only mask for a projected longitude/latitude canvas."""
+    try:
+        import numpy as np
+        from matplotlib.path import Path as MatplotlibPath
+    except ImportError:  # pragma: no cover - matplotlib is required by render_map
+        return None
+
+    longitudes = np.asarray(longitude_values, dtype=float)
+    latitudes = np.asarray(latitude_values, dtype=float)
+    points = np.column_stack((longitudes.ravel(), latitudes.ravel()))
+    land = np.zeros(points.shape[0], dtype=bool)
+    country_paths = [path for path in border_paths if path.name == "countries.geojson"]
+    for border_path in country_paths:
+        try:
+            payload = json.loads(border_path.read_text(encoding="utf-8"))
+            for ring in geojson_features(payload):
+                vertices = np.asarray(ring, dtype=float)
+                if vertices.ndim != 2 or vertices.shape[0] < 3 or vertices.shape[1] < 2:
+                    continue
+                land |= MatplotlibPath(vertices[:, :2], closed=True).contains_points(points)
+        except (OSError, ValueError, KeyError, TypeError):
+            continue
+    return land.reshape(longitudes.shape)
+
+
 def ensure_border_files(args: argparse.Namespace, cache_dir: Path, repo_root: Path) -> list[Path]:
     if args.no_borders:
         return []
@@ -1124,7 +1150,7 @@ def render_map(
     map_top = 0.88
     map_bottom = map_top - map_height
     axes = figure.add_axes([map_left, map_bottom, map_width, map_height])
-    axes.set_facecolor("#edf3f5")
+    axes.set_facecolor("#ffffff" if product_spec["name"] == PRODUCT_SWE_ANOMALY else "#edf3f5")
 
     # Light graticules make the projection legible without competing with the
     # height field. The map remains intentionally free of axis tick clutter.
@@ -1138,6 +1164,13 @@ def render_map(
         axes.plot(line_x, line_y, color="#70808a", linewidth=0.35, alpha=0.34, linestyle=(0, (1, 3)), zorder=1)
 
     masked = np.ma.masked_invalid(data)
+    if product_spec["name"] == PRODUCT_SWE_ANOMALY:
+        land_mask = land_mask_from_borders(border_paths, canvas_lons, canvas_lats)
+        if land_mask is not None and np.any(land_mask):
+            # SWE is not applicable over open water. Mask it before contouring
+            # so ocean cells reveal the intentional white map background rather
+            # than a near-zero negative anomaly swatch.
+            masked = np.ma.masked_where(~land_mask, masked)
     if anomaly:
         if "anomaly_min" in product_spec:
             anomaly_min = float(product_spec["anomaly_min"])
