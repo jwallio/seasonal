@@ -409,4 +409,542 @@ def cfs_file_url(init: str, member: int, target: str, source_kind: str = "pgbf")
     filename = f"{source_kind}.{member:02d}.{init}.{target}.avrg.grib.grb2"
     return urljoin(
         NOMADS_ROOT,
-      Û^·ÖÚ$z{-®éÜj×¢ÖVÖ&W'2ÀÐ¢÷WGWE÷F‚ÀÐ¢æöÖÇ“Öæ÷B'6öÇWFRÀÐ¢&6VÆ–æUöÆ&VÃÖ&6VÆ–æUöÆ&VÂÀÐ¢&÷&FW%÷F‡3Ö&÷&FW%÷F‡2ÀÐ¢Vç6VÖ&ÆUöÆ&VÃÖVç6VÖ&ÆUöÆ&VÂÀÐ¢†V–v‡Eöw&–CÖVç6VÖ&ÆR–b&öGV7E²&†V–v‡Eö6öçF÷W'2%ÒVÇ6RæöæRÀÐ¢&öGV7E÷7V3×&öGV7BÀÐ¢Ð¢F&vWEöVçG'•²&–ÖvR%ÒÒ&VÆF—fU÷F‚†÷WGWE÷F‚Â&Wõ÷&ö÷B¢F&vWEöVçG'•²'7FGW2%ÒÒ''F–Â"–bæ÷BF&vWEöVçG'•²&Vç6VÖ&ÆUö6ö×ÆWFR%ÒVÇ6R'&VæFW&VB ¢&–çB†b'&VæFW&VB4e7c"·F&vWGÒÆVB¶ÆVGÓ¢¶÷WGWE÷F‡Ò"¢–b6öÖÖöå÷&VfW&Væ6UöVæ&ÆVC ¢G'“ ¢6öÖÖöå÷&VfW&Væ6RÂ&VfW&Væ6U÷F‚Â&VfW&Væ6U÷W&ÂÂ&VfW&Væ6UöF÷væÆöFVBÂÆ7E÷&WVW7BÒÆöEö6öÖÖöå÷&VfW&Væ6R€¢F&vWBÀ¢6öÖÖöå÷&VfW&Væ6UöF—"À¢&w2æ6öÖÖöå÷&VfW&Væ6U÷W&ÂÀ¢Ö‚ƒãÂ&w2ç&WVW7EöFVÆ’’À¢Æ7E÷&WVW7BÀ¢¢6öÖÖöå÷&VfW&Væ6RÒ&Vw&–EöæV&W7B€¢6öÖÖöå÷&VfW&Væ6RÀ¢Vç6VÖ&ÆRæÆöç2À¢Vç6VÖ&ÆRæÆG2À¢b&6öÖÖöâ&VfW&Væ6R·F&vWGÒ"À¢¢6öÖÖöåöw&–BÒ7V'G&7Eöw&–G2†Vç6VÖ&ÆRÂ6öÖÖöå÷&VfW&Væ6R¢6öÖÖöåö÷WGWBÒ÷WGWEöF—"ò–æ—Bòb&6g7c%÷·&öGV7E²vf–ÆU÷Fö¶Vâu×Õ÷·F&vWGÕö6öÖÖöâÓ““Ó##æ§r ¢&VæFW%öÖ€¢6öÖÖöåöw&–BÀ¢–æ—BÀ¢F&vWBÀ¢ÆVBÀ¢ÖVÖ&W'2À¢6öÖÖöåö÷WGWBÀ¢æöÖÇ“ÕG'VRÀ¢&6VÆ–æUöÆ&VÃÔ4ôÔÔôåõ$TdU$Tä4UôÄ$TÂÀ¢&÷&FW%÷F‡3Ö&÷&FW%÷F‡2À¢Vç6VÖ&ÆUöÆ&VÃÖVç6VÖ&ÆUöÆ&VÂÀ¢†V–v‡Eöw&–CÖVç6VÖ&ÆRÀ¢&öGV7E÷7V3×&öGV7BÀ¢¢F&vWEöVçG'•²&6ö×&—6öâ%ÒÒ°¢&6öÖÖöåó““ó###¢°¢&–ÖvR#¢&VÆF—fU÷F‚†6öÖÖöåö÷WGWBÂ&Wõ÷&ö÷B’À¢'7FGW2#¢'&VæFW&VB"À¢&&6VÆ–æR#¢°¢&Æ&VÂ#¢4ôÔÔôåõ$TdU$Tä4UôÄ$TÂÀ¢'–V'2#¢4ôÔÔôåõ$TdU$Tä4Uõ”T%2À¢'6÷W&6R#¢$6å4•2c2†–æF67B6Æ–ÖFöÆöw’"À¢&f–ÆR#¢&VÆF—fU÷F‚‡&VfW&Væ6U÷F‚Â&Wõ÷&ö÷B’À¢'W&Â#¢&VfW&Væ6U÷W&Â÷"æöæRÀ¢&F÷væÆöFVB#¢&VfW&Væ6UöF÷væÆöFVBÀ¢ÒÀ¢Ð¢Ð¢W†6WBW†6WF–öâ2W†3 ¢F&vWEöVçG'•²&6ö×&—6öâ%ÒÒ°¢&6öÖÖöåó““ó###¢°¢'7FGW2#¢'Væf–Æ&ÆR"À¢&&6VÆ–æR#¢°¢&Æ&VÂ#¢4ôÔÔôåõ$TdU$Tä4UôÄ$TÂÀ¢'–V'2#¢4ôÔÔôåõ$TdU$Tä4Uõ”T%2À¢'6÷W&6R#¢$6å4•2c2†–æF67B6Æ–ÖFöÆöw’"À¢ÒÀ¢&W'&÷"#¢7G"†W†2’À¢Ð¢Ð¢&–çB†b$4e7c"6öÖÖöâ6ö×&—6öâF&vWB·F&vWGÒVæf–Æ&ÆS¢¶W†7Ò"Âf–ÆS×7—2ç7FFW'"¢W†6WBW†6WF–öâ2W†3 Ð¢f–ÇW&W2³ÒÐ¢F&vWEöVçG'•²'7FGW2%ÒÒ&f–ÆVB Ð¢F&vWEöVçG'•²&W'&÷"%ÒÒ7G"†W†2Ð¢&–çB†b$4e7c"F&vWB·F&vWGÒÆVB¶ÆVGÒf–ÆVC¢¶W†7Ò"Âf–ÆS×7—2ç7FFW'"Ð¢'VåöVçG'•²'F&vWG2%ÒæVæB‡F&vWEöVçG'’Ð¢F&vWEöVçG&–W5ö'•öÆVE¶ÆVEÒÒF&vWEöVçG'Ð Ð¢–b6V6öæÅöÆVG2æBæ÷B&w2æFV6öFUööæÇ“ Ð¢f—'7EöÆVBÒ6V6öæÅöÆVG5³ÐÐ¢Æ7EöÆVBÒ6V6öæÅöÆVG5²ÓÐÐ¢f—'7E÷F&vWBÒF&vWEöÖöçF‚†–æ—BÂf—'7EöÆVBÐ¢Æ7E÷F&vWBÒF&vWEöÖöçF‚†–æ—BÂÆ7EöÆVBÐ¢6V6öæÅöVçG'’Ò°Ð¢&–B#¢b&6g7c"×¶f—'7E÷F&vWGÒ×¶Æ7E÷F&vWGÒ×·&öGV7E²v–E÷Fö¶Vâu×Ò×6V6öæÂ"ÀÐ¢'fÆ–E÷7F'E÷WF2#¢F&vWE÷W&–öB†f—'7E÷F&vWB•³ÒÀÐ¢'fÆ–EöVæE÷WF2#¢F&vWE÷W&–öB†Æ7E÷F&vWB•³ÒÀÐ¢&ÆVEöÖöçF‚#¢b'¶f—'7EöÆVGÒ×¶Æ7EöÆVGÒ"ÀÐ¢'F&vWEöÖöçF‚#¢b'¶f—'7E÷F&vWGÒ×¶Æ7E÷F&vWGÒ"ÀÐ¢&vw&VvF–öâ#¢€Ð¢b'¶ÆVâ‡6V6öæÅöÆVG2—ÒÖÖöçF‚·&öGV7E²w6V6öæÅövw&VvF–öâu×Ò Ð¢’ÀÐ¢&f–VÆB#¢&öGV7E²&f–VÆB%ÒÀÐ¢'Væ—G2#¢&öGV7E²'6V6öæÅ÷Væ—G2%ÒÀÐ¢'&uöf–VÆB#¢&öGV7E²'&uöf–VÆB%ÒÀÐ¢'&u÷Væ—G2#¢&öGV7E²'&u÷Væ—G2%ÒÀÐ¢'7FF—7F–2#¢&Vç6VÖ&ÆUöÖVâ"ÀÐ¢&ÖVÖ&W'2#¢¶&w2ç&öÆÆ–æuöÖVÖ&W%Ò–b&öÆÆ–æuöÖöFRVÇ6RÖVÖ&W'2ÀÐ¢&Vç6VÖ&ÆUöÖVÖ&W'2#¢Vç6VÖ&ÆUöW‡V7FVBÀÐ¢&Vç6VÖ&ÆU÷66÷R#¢'&öÆÆ–æuö–æ—F–Åö6öæF—F–öç2"–b&öÆÆ–æuöÖöFRVÇ6R'6–ævÆUö–æ—F–Åö6öæF—F–öåö7–6ÆR"ÀÐ¢&ÖöçF†Ç•öÆVG2#¢6V6öæÅöÆVG2ÀÐ¢'6÷W&6Uöf–ÆW2#¢µÒÀÐ¢'7FGW2#¢'ÆææVB"ÀÐ¢ÐÐ¢G'“ Ð¢Ö—76–æuöf÷&V67G2Ò¶ÆVBf÷"ÆVB–â6V6öæÅöÆVG2–bÆVBæ÷B–âf÷&V67Eöw&–G5ÐÐ¢–bÖ—76–æuöf÷&V67G3 Ð¢&—6R4e7c$W'&÷"†b'6V6öæÂv–æF÷r—2Ö—76–ærFV6öFVBÆVB‡2“¢¶Ö—76–æuöf÷&V67G7Ò"Ð¢6V6öæÅöf÷&V67BÒ€Ð¢7VÕöw&–G2…¶f÷&V67Eöw&–G5¶ÆVEÒf÷"ÆVB–â6V6öæÅöÆVG5ÒÐ¢–b&öGV7E²'6V6öæÅ÷&VGV6W"%ÒÓÒ'7VÒ Ð¢VÇ6RÖVåöw&–G2…¶f÷&V67Eöw&–G5¶ÆVEÒf÷"ÆVB–â6V6öæÅöÆVG5ÒÐ¢Ð¢6V6öæÅöw&–BÒ6V6öæÅöf÷&V67@Ð¢&6VÆ–æUöÆ&VÂÒ&'6öÇWFRf–VÆB6Öö¶R÷WGWB Ð¢–bæ÷B'6öÇWFS Ð¢Ö—76–æuö&6VÆ–æW2Ò¶ÆVBf÷"ÆVB–â6V6öæÅöÆVG2–bÆVBæ÷B–â&6VÆ–æUöw&–G5ÐÐ¢–bÖ—76–æuö&6VÆ–æW3 Ð¢&—6R4e7c$W'&÷"†b'6V6öæÂv–æF÷r—2Ö—76–ær&6VÆ–æRÆVB‡2“¢¶Ö—76–æuö&6VÆ–æW7Ò"Ð¢6V6öæÅö&6VÆ–æRÒ€Ð¢7VÕöw&–G2…¶&6VÆ–æUöw&–G5¶ÆVEÒf÷"ÆVB–â6V6öæÅöÆVG5ÒÐ¢–b&öGV7E²'6V6öæÅ÷&VGV6W"%ÒÓÒ'7VÒ Ð¢VÇ6RÖVåöw&–G2…¶&6VÆ–æUöw&–G5¶ÆVEÒf÷"ÆVB–â6V6öæÅöÆVG5ÒÐ¢Ð¢6V6öæÅöw&–BÒ7V'G&7Eöw&–G2‡6V6öæÅöf÷&V67BÂ6V6öæÅö&6VÆ–æRÐ¢&6VÆ–æUöÆ&VÂÒ6öæf–wW&VEö&6VÆ–æUöÆ&VÂ†&w2Ð¢6V6öæÅöVçG'•²&&6VÆ–æR%ÒÒ°Ð¢&f–ÆW2#¢°Ð¢F&vWEöVçG&–W5ö'•öÆVE¶ÆVEÕ²&&6VÆ–æR%Õ²&f–ÆR%ÐÐ¢f÷"ÆVB–â6V6öæÅöÆVG0Ð¢–b&&6VÆ–æR"–âF&vWEöVçG&–W5ö'•öÆVBævWB†ÆVBÂ·ÒÐ¢ÒÀÐ¢&Æ&VÂ#¢&6VÆ–æUöÆ&VÂÀÐ¢'–V'2#¢ä4T•ô4Ä”%$D”ôåõ”T%2–b&w2ææ6V•ö6Æ–'&F–öâVÇ6R†&w2æ&6VÆ–æU÷–V'2÷"æöæR’ÀÐ¢ÐÐ¢–b&öÆÆ–æuöÖöFS Ð¢6V6öæÅöVçG'•²&&6VÆ–æR%Õ²'&öÆÆ–æu÷öÆ–7’%ÒÒ&æ6†÷%ö–æ—F–Æ—¦F–öâ Ð¢6V6öæÅöVçG'•²&&6VÆ–æR%Õ²&æ6†÷%ö–æ—B%ÒÒ–æ—@Ð¢&6VÆ–æU÷W&Ç2Ò°Ð¢F&vWEöVçG&–W5ö'•öÆVE¶ÆVEÕ²&&6VÆ–æR%ÒævWB‚'W&Â"Ð¢f÷"ÆVB–â6V6öæÅöÆVG0Ð¢–bF&vWEöVçG&–W5ö'•öÆVE¶ÆVEÒævWB‚&&6VÆ–æR"Â·Ò’ævWB‚'W&Â"Ð¢ÐÐ¢–b&6VÆ–æU÷W&Ç3 Ð¢6V6öæÅöVçG'•²&&6VÆ–æR%Õ²'W&Ç2%ÒÒ&6VÆ–æU÷W&Ç0Ð¢VÇ6S Ð¢6V6öæÅöVçG'•²&&6VÆ–æR%ÒÒ²'7FGW2#¢&æ÷EöÆ–6&ÆR"Â'&V6öâ#¢&'6öÇWFR6Öö¶R÷WGWB'ÐÐ¢6V6öæÅöVçG'•²'6÷W&6Uöf–ÆW2%ÒÒ°Ð¢6÷W&6Uöf–ÆPÐ¢f÷"ÆVB–â6V6öæÅöÆVG0Ð¢f÷"6÷W&6Uöf–ÆR–âF&vWEöVçG&–W5ö'•öÆVE¶ÆVEÒævWB‚'6÷W&6Uöf–ÆW2"ÂµÒÐ¢ÐÐ¢6V6öæÅöVçG'•²&Vç6VÖ&ÆUö6ö×ÆWFR%ÒÒÆÂ€Ð¢F&vWEöVçG&–W5ö'•öÆVE¶ÆVEÒævWB‚&Vç6VÖ&ÆUö6ö×ÆWFR"ÂfÇ6RÐ¢f÷"ÆVB–â6V6öæÅöÆVG0Ð¢Ð¢6V6öæÅöVçG'•²&Vç6VÖ&ÆUöÖVÖ&W'2%ÒÒÖ–â€Ð¢F&vWEöVçG&–W5ö'•öÆVE¶ÆVEÒævWB‚&Vç6VÖ&ÆUöÖVÖ&W'2"ÂÐ¢f÷"ÆVB–â6V6öæÅöÆVG0Ð¢Ð¢7F'EöFFRÒGBæFFWF–ÖRç7G'F–ÖR†f—'7E÷F&vWBÂ"U’VÒ"Ð¢VæEöFFRÒGBæFFWF–ÖRç7G'F–ÖR†Æ7E÷F&vWBÂ"U’VÒ"Ð¢W&–öEöÆ&VÂÒ6V6öæÅ÷W&–öEöÆ&VÂ†f—'7E÷F&vWBÂÆ7E÷F&vWBÐ¢÷WGWE÷F‚Ò÷WGWEöF—"ò–æ—Bòb&6g7c%÷·&öGV7E²vf–ÆU÷Fö¶Vâu×Õ÷¶f—'7E÷F&vWGÒ×¶Æ7E÷F&vWGÒæ§r Ð¢&VæFW%öÖ€Ð¢6V6öæÅöw&–BÀÐ¢–æ—BÀÐ¢f—'7E÷F&vWBÀÐ¢b'¶f—'7EöÆVGÕÇS#7¶Æ7EöÆVGÒ"ÀÐ¢ÖVÖ&W'2ÀÐ¢÷WGWE÷F‚ÀÐ¢æöÖÇ“Öæ÷B'6öÇWFRÀÐ¢&6VÆ–æUöÆ&VÃÖ&6VÆ–æUöÆ&VÂÀÐ¢&÷&FW%÷F‡3Ö&÷&FW%÷F‡2ÀÐ¢W&–öEöÆ&VÃ×W&–öEöÆ&VÂÀÐ¢Vç6VÖ&ÆUöÆ&VÃÒ€Ð¢b'·6V6öæÅöVçG'•²vVç6VÖ&ÆUöÖVÖ&W'2u×Ò÷¶Vç6VÖ&ÆUöW‡V7FVGÒÖ7–6ÆR&öÆÆ–ærÖVâ Ð¢–b&öÆÆ–æuöÖöFPÐ¢VÇ6Rb'¶ÆVâ†ÖVÖ&W'2—ÒÖÖVÖ&W"ÖVâ Ð¢’ÀÐ¢†V–v‡Eöw&–C×6V6öæÅöf÷&V67B–b&öGV7E²&†V–v‡Eö6öçF÷W'2%ÒVÇ6RæöæRÀÐ¢&öGV7E÷7V3×&öGV7BÀÐ¢Ð¢6V6öæÅöVçG'•²&–ÖvR%ÒÒ&VÆF—fU÷F‚†÷WGWE÷F‚Â&Wõ÷&ö÷B¢6V6öæÅöVçG'•²'7FGW2%ÒÒ'&VæFW&VB"–b6V6öæÅöVçG'•²&Vç6VÖ&ÆUö6ö×ÆWFR%ÒVÇ6R''F–Â ¢&–çB†b'&VæFW&VB4e7c"6V6öæÂ&öGV7B¶f—'7E÷F&vWGÒ×¶Æ7E÷F&vWGÓ¢¶÷WGWE÷F‡Ò"¢–b6öÖÖöå÷&VfW&Væ6UöVæ&ÆVC ¢G'“ ¢6öÖÖöå÷&VfW&Væ6W2ÒµÐ¢&VfW&Væ6Uöf–ÆW2ÒµÐ¢&VfW&Væ6U÷W&Ç2ÒµÐ¢f÷"ÆVB–â6V6öæÅöÆVG3 ¢F&vWBÒF&vWEöÖöçF‚†–æ—BÂÆVB¢&VfW&Væ6RÂ&VfW&Væ6U÷F‚Â&VfW&Væ6U÷W&ÂÂ&VfW&Væ6UöF÷væÆöFVBÂÆ7E÷&WVW7BÒÆöEö6öÖÖöå÷&VfW&Væ6R€¢F&vWBÀ¢6öÖÖöå÷&VfW&Væ6UöF—"À¢&w2æ6öÖÖöå÷&VfW&Væ6U÷W&ÂÀ¢Ö‚ƒãÂ&w2ç&WVW7EöFVÆ’’À¢Æ7E÷&WVW7BÀ¢¢6öÖÖöå÷&VfW&Væ6W2æVæB‡&Vw&–EöæV&W7B€¢&VfW&Væ6RÀ¢6V6öæÅöf÷&V67BæÆöç2À¢6V6öæÅöf÷&V67BæÆG2À¢b&6öÖÖöâ&VfW&Væ6R·F&vWGÒ"À¢’¢&VfW&Væ6Uöf–ÆW2æVæB‡&VÆF—fU÷F‚‡&VfW&Væ6U÷F‚Â&Wõ÷&ö÷B’¢–b&VfW&Væ6U÷W&Ã ¢&VfW&Væ6U÷W&Ç2æVæB‡&VfW&Væ6U÷W&Â¢6öÖÖöåö&6VÆ–æRÒ€¢7VÕöw&–G2†6öÖÖöå÷&VfW&Væ6W2¢–b&öGV7E²'6V6öæÅ÷&VGV6W"%ÒÓÒ'7VÒ ¢VÇ6RÖVåöw&–G2†6öÖÖöå÷&VfW&Væ6W2¢¢6öÖÖöåöw&–BÒ7V'G&7Eöw&–G2‡6V6öæÅöf÷&V67BÂ6öÖÖöåö&6VÆ–æR¢6öÖÖöåö÷WGWBÒ÷WGWEöF—"ò–æ—Bòb&6g7c%÷·&öGV7E²vf–ÆU÷Fö¶Vâu×Õ÷¶f—'7E÷F&vWGÒ×¶Æ7E÷F&vWGÕö6öÖÖöâÓ““Ó##æ§r ¢&VæFW%öÖ€¢6öÖÖöåöw&–BÀ¢–æ—BÀ¢f—'7E÷F&vWBÀ¢b'¶f—'7EöÆVGÕÇS#7¶Æ7EöÆVGÒ"À¢ÖVÖ&W'2À¢6öÖÖöåö÷WGWBÀ¢æöÖÇ“ÕG'VRÀ¢&6VÆ–æUöÆ&VÃÔ4ôÔÔôåõ$TdU$Tä4UôÄ$TÂÀ¢&÷&FW%÷F‡3Ö&÷&FW%÷F‡2À¢W&–öEöÆ&VÃ×W&–öEöÆ&VÂÀ¢Vç6VÖ&ÆUöÆ&VÃÒ€¢b'·6V6öæÅöVçG'•²vVç6VÖ&ÆUöÖVÖ&W'2u×Ò÷¶Vç6VÖ&ÆUöW‡V7FVGÒÖ7–6ÆR&öÆÆ–ærÖVâ ¢–b&öÆÆ–æuöÖöFP¢VÇ6Rb'¶ÆVâ†ÖVÖ&W'2—ÒÖÖVÖ&W"ÖVâ ¢’À¢†V–v‡Eöw&–C×6V6öæÅöf÷&V67BÀ¢&öGV7E÷7V3×&öGV7BÀ¢¢6V6öæÅöVçG'•²&6ö×&—6öâ%ÒÒ°¢&6öÖÖöåó““ó###¢°¢&–ÖvR#¢&VÆF—fU÷F‚†6öÖÖöåö÷WGWBÂ&Wõ÷&ö÷B’À¢'7FGW2#¢'&VæFW&VB"À¢&&6VÆ–æR#¢°¢&Æ&VÂ#¢4ôÔÔôåõ$TdU$Tä4UôÄ$TÂÀ¢'–V'2#¢4ôÔÔôåõ$TdU$Tä4Uõ”T%2À¢'6÷W&6R#¢$6å4•2c2†–æF67B6Æ–ÖFöÆöw’"À¢&f–ÆW2#¢&VfW&Væ6Uöf–ÆW2À¢'W&Ç2#¢&VfW&Væ6U÷W&Ç2À¢ÒÀ¢Ð¢Ð¢W†6WBW†6WF–öâ2W†3 ¢6V6öæÅöVçG'•²&6ö×&—6öâ%ÒÒ°¢&6öÖÖöåó““ó###¢°¢'7FGW2#¢'Væf–Æ&ÆR"À¢&&6VÆ–æR#¢°¢&Æ&VÂ#¢4ôÔÔôåõ$TdU$Tä4UôÄ$TÂÀ¢'–V'2#¢4ôÔÔôåõ$TdU$Tä4Uõ”T%2À¢'6÷W&6R#¢$6å4•2c2†–æF67B6Æ–ÖFöÆöw’"À¢ÒÀ¢&W'&÷"#¢7G"†W†2’À¢Ð¢Ð¢&–çB€¢b$4e7c"6öÖÖöâ6ö×&—6öâ6V6öæÂv–æF÷r¶f—'7E÷F&vWGÒ×¶Æ7E÷F&vWGÒVæf–Æ&ÆS¢¶W†7Ò"À¢f–ÆS×7—2ç7FFW'"À¢¢W†6WBW†6WF–öâ2W†3 Ð¢f–ÇW&W2³ÒÐ¢6V6öæÅöVçG'•²'7FGW2%ÒÒ&f–ÆVB Ð¢6V6öæÅöVçG'•²&W'&÷"%ÒÒ7G"†W†2Ð¢&–çB†b$4e7c"6V6öæÂv–æF÷r¶f—'7E÷F&vWGÒ×¶Æ7E÷F&vWGÒf–ÆVC¢¶W†7Ò"Âf–ÆS×7—2ç7FFW'"Ð¢'VåöVçG'•²'F&vWG2%ÒæVæB‡6V6öæÅöVçG'’Ð Ð¢7FGW6W2Ò·F&vWE²'7FGW2%Òf÷"F&vWB–â'VåöVçG'•²'F&vWG2%ÕÐÐ¢'F–Å÷F&vWG2Òç’‡7FGW2ÓÒ''F–Â"f÷"7FGW2–â7FGW6W2Ð¢–bf–ÇW&W2÷"'F–Å÷F&vWG3 Ð¢'VåöVçG'•²'7FGW2%ÒÒ''F–Â"–bç’‡7FGW2Ò&f–ÆVB"f÷"7FGW2–â7FGW6W2’VÇ6R&f–ÆVB Ð¢VÆ–b&w2æFV6öFUööæÇ“ Ð¢'VåöVçG'•²'7FGW2%ÒÒ&FV6öFVB Ð¢VÇ6S Ð¢'VåöVçG'•²'7FGW2%ÒÒ'&VæFW&VB Ð¢'VåöVçG'•²&÷WGWEöF—"%ÒÒ&VÆF—fU÷F‚†÷WGWEöF—"Â&Wõ÷&ö÷BÐ¢&Wf–÷W5öÖæ–fW7BÒ&W6öÇfU÷&Wõ÷F‚†&w2ç&Wf–÷W5öÖæ–fW7BÂ&Wõ÷&ö÷B’–b&w2ç&Wf–÷W5öÖæ–fW7BVÇ6RæöæPÐ¢w&—FUöÖæ–fW7B†Öæ–fW7E÷F‚Â&Wõ÷&ö÷BÂ'VåöVçG'’Â&Wf–÷W5öÖæ–fW7BÂ&w2ç&WF–å÷'Vç2Ð¢&–çB†b'w&÷FR4e7c"Öæ–fW7C¢¶Öæ–fW7E÷F‡Ò"Ð¢&WGW&â"–bf–ÇW&W2VÇ6R Ð Ð Ð¦FVbÖ–â‚’Óâ–çC Ð¢'6W"Ò'V–ÆE÷'6W"‚Ð¢&w2Ò'6W"ç'6Uö&w2‚Ð¢G'“ Ð¢&WGW&â'Vâ†&w2Ð¢W†6WB4e7c$W'&÷"2W†3 Ð¢&–çB†b$4e7c"W'&÷#¢¶W†7Ò"Âf–ÆS×7—2ç7FFW'"Ð¢&WGW&â Ð Ð Ð¦–bõöæÖUõòÓÒ%õöÖ–åõò# Ð¢&—6R7—7FVÔW†—B†Ö–â‚’Ð 
+        f"cfs.{date_text}/{hour_text}/monthly_grib_{member:02d}/{filename}",
+    )
+
+
+def cached_source_path(
+    cache_dir: Path,
+    init: str,
+    member: int,
+    target: str,
+    source_kind: str = "pgbf",
+) -> Path:
+    filename = Path(cfs_file_url(init, member, target, source_kind)).name
+    return cache_dir / init / f"member_{member:02d}" / filename
+
+
+def ncei_calibration_url(init: str, lead: int, source_kind: str = "pgbf") -> str:
+    month, day, hour = init[4:6], init[6:8], init[8:]
+    filename = f"{source_kind}.{month}.{day}.{hour}.l{lead:02d}.fclm.{NCEI_CALIBRATION_YEARS.replace('-', '.')}.grb2"
+    root = NCEI_FLUX_CALIBRATION_ROOT if source_kind == "flxf" else NCEI_CALIBRATION_ROOT
+    return urljoin(root, f"{month}/{filename}")
+
+
+def cached_calibration_path(
+    cache_dir: Path,
+    init: str,
+    lead: int,
+    source_kind: str = "pgbf",
+) -> Path:
+    return cache_dir / "calibration" / source_kind / init / Path(
+        ncei_calibration_url(init, lead, source_kind)
+    ).name
+
+
+def rolling_cycle_inits(end_init: str, cycle_count: int) -> list[str]:
+    """Return the most recent six-hourly cycles, oldest first."""
+
+    if cycle_count < 1:
+        raise CFSv2Error("rolling cycle count must be positive")
+    end_date = dt.datetime.strptime(end_init, "%Y%m%d%H")
+    return [
+        (end_date - dt.timedelta(hours=6 * offset)).strftime("%Y%m%d%H")
+        for offset in range(cycle_count - 1, -1, -1)
+    ]
+
+
+def lead_for_target(init: str, target: str) -> int:
+    """Find the monthly lead that reaches a fixed target month."""
+
+    for lead in range(1, 10):
+        if target_month(init, lead) == target:
+            return lead
+    raise CFSv2Error(f"CFSv2 cycle {init} has no 1-9 month lead for target {target}")
+
+
+def rolling_state_path(
+    state_dir: Path,
+    init: str,
+    member: int,
+    target: str,
+    state_tag: str = "hgt500",
+) -> Path:
+    if state_tag == "hgt500":
+        # Preserve the original height-state layout so existing rolling cache
+        # entries remain usable after adding the FLXF product.
+        return state_dir / target / f"hgt500.{init}.m{member:02d}.csv.gz"
+    return state_dir / state_tag / target / f"{state_tag}.{init}.m{member:02d}.csv.gz"
+
+
+def write_grid_state(grid: Grid, path: Path) -> None:
+    """Persist a decoded grid compactly so it survives the 7-day NOMADS rotation."""
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_name(path.name + ".part")
+    with gzip.open(temporary, "wt", encoding="utf-8", newline="") as handle:
+        writer = csv.writer(handle)
+        writer.writerow(("lon", "lat", "value"))
+        for lat, row in zip(grid.lats, grid.values):
+            for lon, value in zip(grid.lons, row):
+                writer.writerow((lon, lat, value))
+    temporary.replace(path)
+
+
+def read_grid_state(path: Path) -> Grid:
+    with gzip.open(path, "rt", encoding="utf-8", newline="") as handle:
+        return grid_from_rows(csv.reader(handle), str(path))
+
+
+def download_file(
+    url: str,
+    destination: Path,
+    request_delay: float,
+    last_request: float,
+    *,
+    attempts: int = 1,
+    timeout: tuple[int, int] = (30, 300),
+) -> tuple[bool, float]:
+    if destination.exists() and destination.stat().st_size > 0:
+        return False, last_request
+    try:
+        import requests
+    except ImportError as exc:  # pragma: no cover - exercised only on minimal installs
+        raise CFSv2Error("requests is required to download CFSv2 files") from exc
+
+    elapsed = time.monotonic() - last_request if last_request else request_delay
+    if last_request and elapsed < request_delay:
+        time.sleep(request_delay - elapsed)
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    partial = destination.with_name(destination.name + ".part")
+    attempts = max(1, attempts)
+    for attempt in range(1, attempts + 1):
+        try:
+            response = requests.get(url, stream=True, timeout=timeout)
+            response.raise_for_status()
+            with partial.open("wb") as handle:
+                for chunk in response.iter_content(chunk_size=1024 * 1024):
+                    if chunk:
+                        handle.write(chunk)
+            if partial.stat().st_size == 0:
+                raise CFSv2Error(f"empty download from {url}")
+            partial.replace(destination)
+            return True, time.monotonic()
+        except Exception:
+            if partial.exists():
+                partial.unlink()
+            if attempt >= attempts:
+                raise
+            time.sleep(min(30.0, float(2 ** (attempt - 1))))
+    raise AssertionError("download retry loop did not return or raise")
+
+
+def common_reference_path(directory: Path, target: str) -> Path:
+    return directory / COMMON_REFERENCE_FILENAME.format(target=target)
+
+
+def common_reference_url(root: str, target: str) -> str:
+    return urljoin(root.rstrip("/") + "/", common_refeâ€¦13722 tokens truncatedâ€¦e"] = {
+            "source": product["baseline_label"],
+            "years": NCEI_CALIBRATION_YEARS,
+            "url_root": product["baseline_root"],
+            "required": True,
+        }
+    else:
+        run_entry["baseline"] = {
+            "source": configured_baseline_label(args),
+            "years": args.baseline_years or None,
+            "required": True,
+        }
+    if rolling_mode and not absolute:
+        run_entry["baseline"]["rolling_policy"] = "anchor_initialization"
+
+    last_request = 0.0
+    failures = 0
+    forecast_grids: dict[int, Grid] = {}
+    baseline_grids: dict[int, Grid] = {}
+    target_entries_by_lead: dict[int, dict] = {}
+    for lead in leads:
+        target = target_month(init, lead)
+        valid_start, valid_end = target_period(target)
+        target_entry = {
+            "id": f"cfsv2-{target}-{product['id_token']}-lead{lead:02d}",
+            "valid_start_utc": valid_start,
+            "valid_end_utc": valid_end,
+            "lead_month": lead,
+            "target_month": target,
+            "aggregation": product.get("monthly_aggregation", "monthly forecast average"),
+            "field": product["field"],
+            "units": product["units"],
+            "raw_field": product["raw_field"],
+            "raw_units": product["raw_units"],
+            "statistic": "ensemble_mean",
+            "members": [args.rolling_member] if rolling_mode else members,
+            "ensemble_members": ensemble_expected,
+            "ensemble_scope": "rolling_initial_conditions" if rolling_mode else "single_initial_condition_cycle",
+            "source_files": [],
+            "status": "planned",
+        }
+        try:
+            ensemble, source_files, ensemble_count, ensemble_expected_for_target, ensemble_label, last_request = decode_target_ensemble(
+                args,
+                init,
+                target,
+                members,
+                rolling_inits,
+                cache_dir,
+                state_dir,
+                wgrib2,
+                repo_root,
+                last_request,
+                product,
+            )
+            target_entry["source_files"] = source_files
+            target_entry["ensemble_members"] = ensemble_count
+            target_entry["ensemble_expected_members"] = ensemble_expected_for_target
+            target_entry["ensemble_complete"] = ensemble_count == ensemble_expected_for_target
+            target_entry["ensemble_label"] = ensemble_label
+            forecast_grids[lead] = ensemble
+            target_entry["status"] = "partial" if ensemble_count < ensemble_expected_for_target else "decoded"
+            if args.decode_only:
+                run_entry["targets"].append(target_entry)
+                target_entries_by_lead[lead] = target_entry
+                print(f"decoded CFSv2 {target} lead {lead} from {ensemble_count}/{ensemble_expected_for_target} member(s)")
+                continue
+
+            baseline_label = "absolute field smoke output"
+            anomaly_grid = ensemble
+            if not absolute:
+                baseline_url = None
+                baseline_downloaded = False
+                if args.ncei_calibration:
+                    baseline_url = ncei_calibration_url(init, lead, product["source_kind"])
+                    baseline_path = cached_calibration_path(cache_dir, init, lead, product["source_kind"])
+                    baseline_downloaded, last_request = download_file(
+                        baseline_url,
+                        baseline_path,
+                        max(0.0, args.request_delay),
+                        last_request,
+                    )
+                    baseline_label = configured_baseline_label(args)
+                else:
+                    baseline_path, baseline_label = baseline_for_target(args, target, repo_root)
+                baseline_grid = load_baseline(baseline_path, wgrib2, product, target)
+                baseline_grids[lead] = baseline_grid
+                anomaly_grid = subtract_grids(ensemble, baseline_grid)
+                target_entry["baseline"] = {
+                    "file": relative_path(baseline_path, repo_root),
+                    "label": baseline_label,
+                    "years": NCEI_CALIBRATION_YEARS if args.ncei_calibration else (args.baseline_years or None),
+                }
+                if rolling_mode:
+                    target_entry["baseline"]["rolling_policy"] = "anchor_initialization"
+                    target_entry["baseline"]["anchor_init"] = init
+                if baseline_url:
+                    target_entry["baseline"]["url"] = baseline_url
+                    target_entry["baseline"]["downloaded"] = baseline_downloaded
+
+            output_path = output_dir / init / f"cfsv2_{product['file_token']}_{target}.jpg"
+            render_map(
+                anomaly_grid,
+                init,
+                target,
+                lead,
+                members,
+                output_path,
+                anomaly=not absolute,
+                baseline_label=baseline_label,
+                border_paths=border_paths,
+                ensemble_label=ensemble_label,
+                height_grid=ensemble if product["height_contours"] else None,
+                product_spec=product,
+            )
+            target_entry["image"] = relative_path(output_path, repo_root)
+            target_entry["status"] = "partial" if not target_entry["ensemble_complete"] else "rendered"
+            print(f"rendered CFSv2 {target} lead {lead}: {output_path}")
+            if common_reference_enabled:
+                try:
+                    common_reference, reference_path, reference_url, reference_downloaded, last_request = load_common_reference(
+                        target,
+                        common_reference_dir,
+                        args.common_reference_url,
+                        max(0.0, args.request_delay),
+                        last_request,
+                    )
+                    common_reference = regrid_nearest(
+                        common_reference,
+                        ensemble.lons,
+                        ensemble.lats,
+                        f"common reference {target}",
+                    )
+                    common_grid = subtract_grids(ensemble, common_reference)
+                    common_output = output_dir / init / f"cfsv2_{product['file_token']}_{target}_common-1991-2020.jpg"
+                    render_map(
+                        common_grid,
+                        init,
+                        target,
+                        lead,
+                        members,
+                        common_output,
+                        anomaly=True,
+                        baseline_label=COMMON_REFERENCE_LABEL,
+                        border_paths=border_paths,
+                        ensemble_label=ensemble_label,
+                        height_grid=ensemble,
+                        product_spec=product,
+                    )
+                    target_entry["comparison"] = {
+                        "common_1991_2020": {
+                            "image": relative_path(common_output, repo_root),
+                            "status": "rendered",
+                            "baseline": {
+                                "label": COMMON_REFERENCE_LABEL,
+                                "years": COMMON_REFERENCE_YEARS,
+                                "source": "CanSIPS v3 hindcast climatology",
+                                "file": relative_path(reference_path, repo_root),
+                                "url": reference_url or None,
+                                "downloaded": reference_downloaded,
+                            },
+                        }
+                    }
+                except Exception as exc:
+                    target_entry["comparison"] = {
+                        "common_1991_2020": {
+                            "status": "unavailable",
+                            "baseline": {
+                                "label": COMMON_REFERENCE_LABEL,
+                                "years": COMMON_REFERENCE_YEARS,
+                                "source": "CanSIPS v3 hindcast climatology",
+                            },
+                            "error": str(exc),
+                        }
+                    }
+                    print(f"CFSv2 common comparison target {target} unavailable: {exc}", file=sys.stderr)
+        except Exception as exc:
+            failures += 1
+            target_entry["status"] = "failed"
+            target_entry["error"] = str(exc)
+            print(f"CFSv2 target {target} lead {lead} failed: {exc}", file=sys.stderr)
+        run_entry["targets"].append(target_entry)
+        target_entries_by_lead[lead] = target_entry
+
+    if seasonal_leads and not args.decode_only:
+        first_lead = seasonal_leads[0]
+        last_lead = seasonal_leads[-1]
+        first_target = target_month(init, first_lead)
+        last_target = target_month(init, last_lead)
+        seasonal_entry = {
+            "id": f"cfsv2-{first_target}-{last_target}-{product['id_token']}-seasonal",
+            "valid_start_utc": target_period(first_target)[0],
+            "valid_end_utc": target_period(last_target)[1],
+            "lead_month": f"{first_lead}-{last_lead}",
+            "target_month": f"{first_target}-{last_target}",
+            "aggregation": (
+                f"{len(seasonal_leads)}-month {product['seasonal_aggregation']}"
+            ),
+            "field": product["field"],
+            "units": product["seasonal_units"],
+            "raw_field": product["raw_field"],
+            "raw_units": product["raw_units"],
+            "statistic": "ensemble_mean",
+            "members": [args.rolling_member] if rolling_mode else members,
+            "ensemble_members": ensemble_expected,
+            "ensemble_scope": "rolling_initial_conditions" if rolling_mode else "single_initial_condition_cycle",
+            "monthly_leads": seasonal_leads,
+            "source_files": [],
+            "status": "planned",
+        }
+        try:
+            missing_forecasts = [lead for lead in seasonal_leads if lead not in forecast_grids]
+            if missing_forecasts:
+                raise CFSv2Error(f"seasonal window is missing decoded lead(s): {missing_forecasts}")
+            seasonal_forecast = (
+                sum_grids([forecast_grids[lead] for lead in seasonal_leads])
+                if product["seasonal_reducer"] == "sum"
+                else mean_grids([forecast_grids[lead] for lead in seasonal_leads])
+            )
+            seasonal_grid = seasonal_forecast
+            baseline_label = "absolute field smoke output"
+            if not absolute:
+                missing_baselines = [lead for lead in seasonal_leads if lead not in baseline_grids]
+                if missing_baselines:
+                    raise CFSv2Error(f"seasonal window is missing baseline lead(s): {missing_baselines}")
+                seasonal_baseline = (
+                    sum_grids([baseline_grids[lead] for lead in seasonal_leads])
+                    if product["seasonal_reducer"] == "sum"
+                    else mean_grids([baseline_grids[lead] for lead in seasonal_leads])
+                )
+                seasonal_grid = subtract_grids(seasonal_forecast, seasonal_baseline)
+                baseline_label = configured_baseline_label(args)
+                seasonal_entry["baseline"] = {
+                    "files": [
+                        target_entries_by_lead[lead]["baseline"]["file"]
+                        for lead in seasonal_leads
+                        if "baseline" in target_entries_by_lead.get(lead, {})
+                    ],
+                    "label": baseline_label,
+                    "years": NCEI_CALIBRATION_YEARS if args.ncei_calibration else (args.baseline_years or None),
+                }
+                if rolling_mode:
+                    seasonal_entry["baseline"]["rolling_policy"] = "anchor_initialization"
+                    seasonal_entry["baseline"]["anchor_init"] = init
+                baseline_urls = [
+                    target_entries_by_lead[lead]["baseline"].get("url")
+                    for lead in seasonal_leads
+                    if target_entries_by_lead[lead].get("baseline", {}).get("url")
+                ]
+                if baseline_urls:
+                    seasonal_entry["baseline"]["urls"] = baseline_urls
+            else:
+                seasonal_entry["baseline"] = {"status": "not_applicable", "reason": "absolute smoke output"}
+            seasonal_entry["source_files"] = [
+                source_file
+                for lead in seasonal_leads
+                for source_file in target_entries_by_lead[lead].get("source_files", [])
+            ]
+            seasonal_entry["ensemble_complete"] = all(
+                target_entries_by_lead[lead].get("ensemble_complete", False)
+                for lead in seasonal_leads
+            )
+            seasonal_entry["ensemble_members"] = min(
+                target_entries_by_lead[lead].get("ensemble_members", 0)
+                for lead in seasonal_leads
+            )
+            start_date = dt.datetime.strptime(first_target, "%Y%m")
+            end_date = dt.datetime.strptime(last_target, "%Y%m")
+            period_label = seasonal_period_label(first_target, last_target)
+            output_path = output_dir / init / f"cfsv2_{product['file_token']}_{first_target}-{last_target}.jpg"
+            render_map(
+                seasonal_grid,
+                init,
+                first_target,
+                f"{first_lead}\u2013{last_lead}",
+                members,
+                output_path,
+                anomaly=not absolute,
+                baseline_label=baseline_label,
+                border_paths=border_paths,
+                period_label=period_label,
+                ensemble_label=(
+                    f"{seasonal_entry['ensemble_members']}/{ensemble_expected}-cycle rolling mean"
+                    if rolling_mode
+                    else f"{len(members)}-member mean"
+                ),
+                height_grid=seasonal_forecast if product["height_contours"] else None,
+                product_spec=product,
+            )
+            seasonal_entry["image"] = relative_path(output_path, repo_root)
+            seasonal_entry["status"] = "rendered" if seasonal_entry["ensemble_complete"] else "partial"
+            print(f"rendered CFSv2 seasonal product {first_target}-{last_target}: {output_path}")
+            if common_reference_enabled:
+                try:
+                    common_references = []
+                    reference_files = []
+                    reference_urls = []
+                    for lead in seasonal_leads:
+                        target = target_month(init, lead)
+                        reference, reference_path, reference_url, reference_downloaded, last_request = load_common_reference(
+                            target,
+                            common_reference_dir,
+                            args.common_reference_url,
+                            max(0.0, args.request_delay),
+                            last_request,
+                        )
+                        common_references.append(regrid_nearest(
+                            reference,
+                            seasonal_forecast.lons,
+                            seasonal_forecast.lats,
+                            f"common reference {target}",
+                        ))
+                        reference_files.append(relative_path(reference_path, repo_root))
+                        if reference_url:
+                            reference_urls.append(reference_url)
+                    common_baseline = (
+                        sum_grids(common_references)
+                        if product["seasonal_reducer"] == "sum"
+                        else mean_grids(common_references)
+                    )
+                    common_grid = subtract_grids(seasonal_forecast, common_baseline)
+                    common_output = output_dir / init / f"cfsv2_{product['file_token']}_{first_target}-{last_target}_common-1991-2020.jpg"
+                    render_map(
+                        common_grid,
+                        init,
+                        first_target,
+                        f"{first_lead}\u2013{last_lead}",
+                        members,
+                        common_output,
+                        anomaly=True,
+                        baseline_label=COMMON_REFERENCE_LABEL,
+                        border_paths=border_paths,
+                        period_label=period_label,
+                        ensemble_label=(
+                            f"{seasonal_entry['ensemble_members']}/{ensemble_expected}-cycle rolling mean"
+                            if rolling_mode
+                            else f"{len(members)}-member mean"
+                        ),
+                        height_grid=seasonal_forecast,
+                        product_spec=product,
+                    )
+                    seasonal_entry["comparison"] = {
+                        "common_1991_2020": {
+                            "image": relative_path(common_output, repo_root),
+                            "status": "rendered",
+                            "baseline": {
+                                "label": COMMON_REFERENCE_LABEL,
+                                "years": COMMON_REFERENCE_YEARS,
+                                "source": "CanSIPS v3 hindcast climatology",
+                                "files": reference_files,
+                                "urls": reference_urls,
+                            },
+                        }
+                    }
+                except Exception as exc:
+                    seasonal_entry["comparison"] = {
+                        "common_1991_2020": {
+                            "status": "unavailable",
+                            "baseline": {
+                                "label": COMMON_REFERENCE_LABEL,
+                                "years": COMMON_REFERENCE_YEARS,
+                                "source": "CanSIPS v3 hindcast climatology",
+                            },
+                            "error": str(exc),
+                        }
+                    }
+                    print(
+                        f"CFSv2 common comparison seasonal window {first_target}-{last_target} unavailable: {exc}",
+                        file=sys.stderr,
+                    )
+        except Exception as exc:
+            failures += 1
+            seasonal_entry["status"] = "failed"
+            seasonal_entry["error"] = str(exc)
+            print(f"CFSv2 seasonal window {first_target}-{last_target} failed: {exc}", file=sys.stderr)
+        run_entry["targets"].append(seasonal_entry)
+
+    statuses = [target["status"] for target in run_entry["targets"]]
+    partial_targets = any(status == "partial" for status in statuses)
+    if failures or partial_targets:
+        run_entry["status"] = "partial" if any(status != "failed" for status in statuses) else "failed"
+    elif args.decode_only:
+        run_entry["status"] = "decoded"
+    else:
+        run_entry["status"] = "rendered"
+    run_entry["output_dir"] = relative_path(output_dir, repo_root)
+    previous_manifest = resolve_repo_path(args.previous_manifest, repo_root) if args.previous_manifest else None
+    write_manifest(manifest_path, repo_root, run_entry, previous_manifest, args.retain_runs)
+    print(f"wrote CFSv2 manifest: {manifest_path}")
+    return 2 if failures else 0
+
+
+def main() -> int:
+    parser = build_parser()
+    args = parser.parse_args()
+    try:
+        return run(args)
+    except CFSv2Error as exc:
+        print(f"CFSv2 error: {exc}", file=sys.stderr)
+        return 2
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
