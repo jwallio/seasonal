@@ -45,7 +45,9 @@ parameter, run, and target control surface for CFSv2, ECMWF SEAS5, and CanSIPS
 v3. WeatherNext 2 remains published by its own workflow at the repository root,
 but is intentionally not listed as a seasonal model. The model-specific pages remain available at
 `/seasonal/cfsv2/`, `/seasonal/seas5/`, and `/seasonal/cansips/` when focused
-provenance review is needed.
+provenance review is needed. The dashboard's Compare tab places the latest
+matching 500-mb height-anomaly map from each seasonal model side by side and
+uses one shared monthly or seasonal-period selector.
 
 ## Repo Layout
 
