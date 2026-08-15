@@ -104,7 +104,7 @@ def main() -> int:
     module = load_adapter()
     check(module.PRODUCT_SPECS[module.PRECIP_ANOMALY]["anomaly_palette"] == module.SEAS5_PRECIP_ANOMALY_PALETTE, "SEAS5 precipitation should use its darker negative palette")
     check(module.SEAS5_PRECIP_ANOMALY_PALETTE[7] == "#e1aa67", "SEAS5 weak negative precipitation colors should be darker")
-    check(module.SEAS5_PRECIP_ANOMALY_PALETTE[8] == "#ffffff", "SEAS5 zero precipitation anomaly should be white")
+    check(module.SEAS5_PRECIP_ANOMALY_PALETTE[8] == "#edf7e9", "SEAS5 near-zero precipitation anomaly should use the smooth neutral transition")
     check(module.latest_cds_init(dt.datetime(2026, 8, 6, 12, 0)) == "2026080100", "release-time init should use the current ECMWF month")
     check(module.latest_cds_init(dt.datetime(2026, 8, 6, 11, 59)) == "2026070100", "pre-release init should use the prior ECMWF month")
     check(module.target_month("2025080100", 4) == "202512", "lead-month target conversion should produce December")

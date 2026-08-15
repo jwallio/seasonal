@@ -108,7 +108,7 @@ SEAS5_PRECIP_ANOMALY_PALETTE = [
     "#cb7929",
     "#d88f42",
     "#e1aa67",
-    "#ffffff",
+    "#edf7e9",
     "#d9efd2",
     "#bfe4b6",
     "#9bd694",
