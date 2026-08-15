@@ -24,7 +24,6 @@ from typing import Any
 import numpy as np
 
 from cfsv2_seasonal import (
-    ANOMALY_PALETTE,
     CONUS_PRECIP_REGION,
     CFSv2Error,
     DEFAULT_REGION,
@@ -119,6 +118,19 @@ SEAS5_PRECIP_ANOMALY_PALETTE = [
 ]
 
 
+SEAS5_Z500_ANOMALY_PALETTE = [
+    "#24527a",
+    "#3d83a6",
+    "#539cb8",
+    "#70b2c6",
+    "#c4dce3",
+    "#eee0e0",
+    "#eaaaa8",
+    "#db797b",
+    "#ca5861",
+    "#84283f",
+]
+
 PRODUCT_SPECS: dict[str, dict[str, Any]] = {
     Z500_ANOMALY: {
         "name": Z500_ANOMALY,
@@ -137,7 +149,7 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "anomaly_min": -200.0,
         "anomaly_max": 200.0,
         "anomaly_ticks": [-200, -160, -120, -80, -40, 0, 40, 80, 120, 160, 200],
-        "anomaly_palette": ANOMALY_PALETTE,
+        "anomaly_palette": SEAS5_Z500_ANOMALY_PALETTE,
         "conversion": "geopotential divided by standard gravity to convert m² s⁻² to geopotential meters",
         "header_detail": "{source_label}  •  {baseline_label}  •  Height contours in dam",
         "cds_dataset": CDS_PRESSURE_ANOMALY_DATASET,
