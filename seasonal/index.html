@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Seasonal Model Dashboard</title>
-  <meta name="description" content="Operational seasonal model dashboard for WeatherNext 2, CFSv2, and ECMWF SEAS5 guidance.">
+  <meta name="description" content="Operational seasonal model dashboard for CFSv2, ECMWF SEAS5, and CanSIPS v3 guidance.">
   <style>
     :root { color-scheme: dark; --ink:#f3f7f9; --muted:#a9bac3; --panel:#10232d; --line:#2b4855; --teal:#59d4c0; --coral:#ff927c; --blue:#75b8e8; }
     * { box-sizing:border-box; }
@@ -94,7 +94,6 @@
     const assetPath = value => `${root}/${String(value || '').replace(/^\/+/, '').replace(/^public\//, '')}`;
     const el = id => document.getElementById(id);
     const MODEL_CONFIG = {
-      weathernext: { label: 'WeatherNext 2', kind: 'weathernext', manifest: assetPath('runs_manifest.json'), direct: assetPath(''), source: 'Google Earth Engine' },
       cfsv2: { label: 'CFSv2', kind: 'seasonal', manifest: assetPath('seasonal/cfsv2_manifest.json'), direct: assetPath('seasonal/cfsv2/'), source: 'NOAA CFSv2 NOMADS' },
       seas5: { label: 'ECMWF SEAS5', kind: 'seasonal', manifest: assetPath('seasonal/seas5_manifest.json'), direct: assetPath('seasonal/seas5/'), source: 'ECMWF SEAS5 / Copernicus CDS' },
       cansips: { label: 'CanSIPS v3', kind: 'seasonal', manifest: assetPath('seasonal/cansips_manifest.json'), direct: assetPath('seasonal/cansips/'), source: 'ECCC MSC Datamart' },
