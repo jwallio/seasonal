@@ -54,17 +54,27 @@ SWE_ANOMALY_MIN_IN = -8.0
 SWE_ANOMALY_MAX_IN = 8.0
 ANOMALY_PALETTE = [
     "#24527a",
-    "#3e86a8",
-    "#569fba",
-    "#75b5c8",
-    "#d9e6ea",
-    "#f6dedd",
-    "#e49290",
-    "#d56b6e",
-    "#c24a57",
+    "#306b90",
+    "#3d83a6",
+    "#4891b0",
+    "#539cb8",
+    "#61a7bf",
+    "#70b2c6",
+    "#95c4d3",
+    "#c4dce3",
+    "#e1e4e7",
+    "#eee0e0",
+    "#f2cecd",
+    "#eaaaa8",
+    "#e28c8b",
+    "#db797b",
+    "#d3686c",
+    "#ca5861",
+    "#bf4856",
+    "#a1384a",
     "#84283f",
 ]
-ANOMALY_TICKS = [-200, -160, -120, -80, -40, 0, 40, 80, 120, 160, 200]
+ANOMALY_TICKS = list(range(-200, 201, 20))
 PRECIP_ANOMALY_TICKS = list(range(-8, 9))
 PRECIP_ANOMALY_PALETTE = [
     "#7f3b08",
