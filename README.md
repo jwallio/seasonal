@@ -37,12 +37,13 @@ The standalone CFSv2 seasonal adapter is documented in [`docs/SEASONAL_CFSV2.md`
 
 The ECMWF SEAS5 seasonal adapter is documented in [`docs/SEASONAL_SEAS5.md`](/d:/weather-projects/wn2/docs/SEASONAL_SEAS5.md). It reads current ECMWF/System 51 monthly anomaly fields from the official Copernicus CDS API and publishes parameter-selectable seasonal maps under `public/seasonal/seas5/`. The scheduled [`seas5.yml`](/d:/weather-projects/wn2/.github/workflows/seas5.yml) workflow requires the `CDS_API_KEY` repository secret, uploads a SEAS5 Pages payload, and keeps SEAS5 provenance separate from CFSv2 while retaining the current run plus three prior runs.
 
-The CanSIPS v3 seasonal adapter is documented in [`docs/SEASONAL_CANSIPS.md`](/d:/weather-projects/wn2/docs/SEASONAL_CANSIPS.md). It reads the official ECCC MSC Datamart 40-member GRIB2 files, computes monthly 500-mb height anomalies against matching 1991-2020 CanSIPS hindcasts, and publishes a DJF-default North American map under `public/seasonal/cansips/`. The scheduled [`cansips.yml`](/d:/weather-projects/wn2/.github/workflows/cansips.yml) workflow requires no model secret, caches decoded ensemble means, and retains the current run plus three prior runs.
+The CanSIPS v3 seasonal adapter is documented in [`docs/SEASONAL_CANSIPS.md`](/d:/weather-projects/wn2/docs/SEASONAL_CANSIPS.md). It reads the official ECCC MSC Datamart 40-member GRIB2 files, computes matching 1991-2020 hindcast anomalies for 500-mb height, 850-mb and 2-metre temperature, precipitation, MSLP, sea-surface temperature, and sea-surface height, and publishes DJF-default North American maps under `public/seasonal/cansips/`. The scheduled [`cansips.yml`](/d:/weather-projects/wn2/.github/workflows/cansips.yml) workflow requires no model secret, caches decoded ensemble means, and retains the current run plus three prior runs independently for each parameter.
 
 The unified [Seasonal Model Dashboard](/d:/weather-projects/wn2/public/seasonal/index.html) is published at
 [`/seasonal/`](https://jwallio.github.io/wn2/seasonal/). It provides one model,
-parameter, run, and target/hour control surface for WeatherNext 2, CFSv2,
-ECMWF SEAS5, and CanSIPS v3. The model-specific pages remain available at
+parameter, run, and target control surface for CFSv2, ECMWF SEAS5, and CanSIPS
+v3. WeatherNext 2 remains published by its own workflow at the repository root,
+but is intentionally not listed as a seasonal model. The model-specific pages remain available at
 `/seasonal/cfsv2/`, `/seasonal/seas5/`, and `/seasonal/cansips/` when focused
 provenance review is needed.
 

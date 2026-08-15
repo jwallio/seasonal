@@ -53,14 +53,17 @@ def main() -> int:
         "ISBL-0500", "MM-ENS", "CANSIPS_ENSEMBLE_MEMBERS = 40",
         "GEM5.2-NEMO", "CanESM5", "CANSIPS_HINDCAST_START = 1991",
         "CANSIPS_HINDCAST_END = 2020", "ens_processing", "forecast mean",
-        "matching-initialization-month", "500mb_height_anomaly", "ANOMALY_PALETTE",
+        "matching-initialization-month", "500mb_height_anomaly", "850mb_temperature_anomaly",
+        "2m_temperature_anomaly", "precipitation_anomaly", "mslp_anomaly", "sst_anomaly",
+        "sea_surface_height_anomaly", "AirTemp", "AGL-2m", "ISBL-0850", "PrecipRate",
+        "Pressure", "WaterTemp", "SeaSfcHeight-Geoid", "PRODUCT_ALL", "ANOMALY_PALETTE",
         "ANOMALY_TICKS", "seasonal_period_label", "DJF", "write_manifest",
         "--climo-start", "--climo-end", "--previous-manifest", "--retain-runs",
         "CANSIPS_DOWNLOAD_ATTEMPTS", "CANSIPS_DOWNLOAD_TIMEOUT",
     ):
         check(term in adapter or term in workflow or term in documentation, f"missing CanSIPS contract term: {term}")
     for term in (
-        "CanSIPS v3 Seasonal Graphics", "cansips-pages-${{ github.run_id }}",
+        "CanSIPS v3 Seasonal Graphics", "cansips-pages-${{ github.run_id }}", 'default: "all"',
         "Restore CanSIPS decoded-grid cache", "Restore published CanSIPS run history",
         "--climo-start", "--climo-end", "--retain-runs 4", "CANSIPS_WGRIB2",
     ):
@@ -70,7 +73,10 @@ def main() -> int:
         "cansips_manifest.json", "incoming/cansips",
     ):
         check(term in pages_workflow, f"Pages workflow missing CanSIPS term: {term}")
-    for term in ("cansips_manifest.json", "CanSIPS v3", "500mb_height_anomaly"):
+    for term in (
+        "cansips_manifest.json", "CanSIPS v3", "500mb_height_anomaly",
+        "850mb_temperature_anomaly", "sea_surface_height_anomaly",
+    ):
         check(term in page or term in dashboard, f"viewer/dashboard missing CanSIPS term: {term}")
     module = load_adapter()
     check(module.parse_init("202608") == "2026080100", "YYYYMM initialization should normalize to 00Z on day 1")
@@ -79,7 +85,11 @@ def main() -> int:
     check(module.file_name("2026080100", 4, False).endswith("P04M.grib2"), "forecast lead filename is incorrect")
     check(module.file_name("1991080100", 4, True).startswith("199108_MSC_CanSIPS-Hindcast_"), "hindcast filename is incorrect")
     check(module.source_url("2026080100", 4, False).endswith("forecast/2026/08/202608_MSC_CanSIPS_GeopotentialHeight_ISBL-0500_LatLon1.0_P04M.grib2"), "forecast source URL is incorrect")
+    check(module.file_name("2026080100", 4, False, module.PRODUCT_SPECS[module.PRODUCT_2M_TEMPERATURE_ANOMALY]).endswith("AirTemp_AGL-2m_LatLon1.0_P04M.grib2"), "2-m temperature filename is incorrect")
+    check(module.file_name("2026080100", 4, False, module.PRODUCT_SPECS[module.PRODUCT_SEA_SURFACE_HEIGHT_ANOMALY]).endswith("SeaSfcHeight-Geoid_LatLon1.0_P04M.grib2"), "sea-surface height filename is incorrect")
+    check([product["name"] for product in module.selected_products(module.PRODUCT_ALL)] == list(module.PRODUCT_SPECS), "all-product selection should include every CanSIPS scalar product")
     check(len(module.ANOMALY_PALETTE) == len(module.ANOMALY_TICKS) - 1, "CanSIPS height anomaly colors must align with labelled bounds")
+    check(len(module.SSH_ANOMALY_PALETTE) == len(module.SSH_ANOMALY_TICKS) - 1, "CanSIPS sea-surface height colors must align with labelled bounds")
     with tempfile.TemporaryDirectory() as temporary:
         output = Path(temporary) / "manifest.json"
         previous = Path(temporary) / "previous.json"
@@ -87,6 +97,18 @@ def main() -> int:
         module.write_manifest(output, ROOT, {"id": "current", "init_utc": "2026-08-01T00:00:00Z"}, previous, 4)
         retained = json.loads(output.read_text(encoding="utf-8"))["runs"]
         check([run["id"] for run in retained] == ["current", "old-4", "old-3", "old-2"], "manifest should retain current plus three prior runs")
+        legacy = Path(temporary) / "legacy.json"
+        legacy.write_text(json.dumps({"runs": [{"id": "cansips-2026080100", "init_utc": "2026-08-01T00:00:00Z"}]}), encoding="utf-8")
+        replacement = Path(temporary) / "replacement.json"
+        module.write_manifest(
+            replacement,
+            ROOT,
+            {"id": "cansips-2026080100-500mb_height_anomaly", "product": module.PRODUCT_Z500_ANOMALY, "init_utc": "2026-08-01T00:00:00Z"},
+            legacy,
+            4,
+        )
+        migrated = json.loads(replacement.read_text(encoding="utf-8"))["runs"]
+        check([run["id"] for run in migrated] == ["cansips-2026080100-500mb_height_anomaly"], "legacy z500 run should be replaced by the product-aware entry")
     print("CANSIPS CONTRACT OK: ECCC Datamart, 40-member means, hindcast anomalies, workflow, viewer, retention")
     return 0
 

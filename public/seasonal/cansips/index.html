@@ -75,7 +75,15 @@
     const manifestUrl = `${base}/seasonal/cansips_manifest.json`;
     const cleanPath = value => `${base}/${String(value || '').replace(/^\/+/, '').replace(/^public\//, '')}`;
     const el = id => document.getElementById(id);
-    const labels = { '500mb_height_anomaly':'500-mb Height Anomaly' };
+    const labels = {
+      '500mb_height_anomaly':'500-mb Height Anomaly',
+      '850mb_temperature_anomaly':'850-mb Temperature Anomaly',
+      '2m_temperature_anomaly':'2-m Temperature Anomaly',
+      'precipitation_anomaly':'Precipitation Anomaly',
+      'mslp_anomaly':'MSLP Anomaly',
+      'sst_anomaly':'Sea-Surface Temperature Anomaly',
+      'sea_surface_height_anomaly':'Sea-Surface Height Anomaly',
+    };
     let runs = [], targets = [], selectedRun = null;
     const key = run => run?.product || 'unknown';
     const runKey = run => run?.id || `${key(run)}-${run?.init_utc || 'unknown'}`;
