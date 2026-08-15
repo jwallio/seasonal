@@ -135,6 +135,7 @@ def main() -> int:
     check("Snow-water equivalent (in)  •  CONUS domain" in adapter, "SWE header should identify the CONUS crop")
     swe_palette = adapter.split("SWE_ANOMALY_PALETTE =", 1)[1].split("]", 1)[0]
     check('"#ffffff"' in swe_palette, "SWE zero anomaly color should be white")
+    check(swe_palette.count('"#ffffff"') >= 2, "SWE -1 to 0 inch interval should also be white")
     check("land_mask_from_borders" in adapter, "SWE renderer should mask ocean cells using the land geometry")
     check('axes.set_facecolor("#ffffff" if product_spec["name"] == PRODUCT_SWE_ANOMALY' in adapter, "SWE ocean background should be white")
     check("x_min -= projected_x_shift" in adapter and "x_max -= projected_x_shift" in adapter, "projected map window should shift west to move the CONUS right")
