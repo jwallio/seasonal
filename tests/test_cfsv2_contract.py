@@ -121,7 +121,7 @@ def main() -> int:
     check("ANOMALY_MIN_M = -200.0" in adapter, "anomaly lower scale bound should be -200 m")
     check("ANOMALY_MAX_M = 200.0" in adapter, "anomaly upper scale bound should be +200 m")
     check("PRECIP_ANOMALY_TICKS = list(range(-8, 9))" in adapter, "precipitation scale should label every inch from -8 to +8")
-    check("[-200, -160, -120, -80, -40, 0, 40, 80, 120, 160, 200]" in adapter, "anomaly scale ticks should span -200 to +200 m")
+    check("ANOMALY_TICKS = list(range(-200, 201, 20))" in adapter, "anomaly scale should label every 20 m from -200 to +200")
     check("bounds = np.asarray(colorbar_ticks, dtype=float)" in adapter, "anomaly bounds should be anchored to labelled ticks")
     check('colorbar_options["boundaries"] = bounds' in adapter, "colorbar should use the labelled anomaly bounds")
     check("title_box = title_text.get_window_extent" in adapter, "header should prevent title/valid overlap")
