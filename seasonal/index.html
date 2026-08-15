@@ -97,6 +97,7 @@
       weathernext: { label: 'WeatherNext 2', kind: 'weathernext', manifest: assetPath('runs_manifest.json'), direct: assetPath(''), source: 'Google Earth Engine' },
       cfsv2: { label: 'CFSv2', kind: 'seasonal', manifest: assetPath('seasonal/cfsv2_manifest.json'), direct: assetPath('seasonal/cfsv2/'), source: 'NOAA CFSv2 NOMADS' },
       seas5: { label: 'ECMWF SEAS5', kind: 'seasonal', manifest: assetPath('seasonal/seas5_manifest.json'), direct: assetPath('seasonal/seas5/'), source: 'ECMWF SEAS5 / Copernicus CDS' },
+      cansips: { label: 'CanSIPS v3', kind: 'seasonal', manifest: assetPath('seasonal/cansips_manifest.json'), direct: assetPath('seasonal/cansips/'), source: 'ECCC MSC Datamart' },
     };
     const modelStates = Object.fromEntries(Object.keys(MODEL_CONFIG).map(key => [key, { manifest: null, runs: [], error: null }]));
     const selection = { model: 'cfsv2', product: '', run: '', target: '', ratio: '10' };
