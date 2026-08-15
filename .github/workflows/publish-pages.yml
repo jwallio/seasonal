@@ -7,6 +7,7 @@ on:
       - WeatherNext Runner Custom
       - CFSv2 Rolling Seasonal Graphics
       - ECMWF SEAS5 Seasonal Graphics
+      - CanSIPS v3 Seasonal Graphics
     types:
       - completed
   workflow_dispatch:
@@ -20,6 +21,7 @@ on:
           - WeatherNext Runner Custom
           - CFSv2 Rolling Seasonal Graphics
           - ECMWF SEAS5 Seasonal Graphics
+          - CanSIPS v3 Seasonal Graphics
       source_run_id:
         description: "GitHub Actions run ID containing the uploaded Pages artifact"
         required: true
@@ -87,6 +89,16 @@ jobs:
           repository: ${{ github.repository }}
           run-id: ${{ env.SOURCE_RUN_ID }}
 
+      - name: Download CanSIPS payload
+        if: ${{ env.SOURCE_WORKFLOW == 'CanSIPS v3 Seasonal Graphics' }}
+        uses: actions/download-artifact@v4
+        with:
+          name: cansips-pages-${{ env.SOURCE_RUN_ID }}
+          path: incoming/cansips
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: ${{ env.SOURCE_RUN_ID }}
+
       - name: Merge payload into the Pages tree
         shell: bash
         run: |
@@ -138,6 +150,18 @@ jobs:
               mkdir -p site/seasonal/seas5
               cp -R "$payload_root/seas5/." site/seasonal/seas5/
               cp "$payload_root/seas5_manifest.json" site/seasonal/seas5_manifest.json
+              ;;
+            "CanSIPS v3 Seasonal Graphics")
+              payload_root=incoming/cansips
+              if [ -d "$payload_root/pages-payload" ]; then
+                payload_root="$payload_root/pages-payload"
+              elif [ -d "$payload_root/.pages-payload" ]; then
+                payload_root="$payload_root/.pages-payload"
+              fi
+              test -f "$payload_root/cansips_manifest.json"
+              mkdir -p site/seasonal/cansips
+              cp -R "$payload_root/cansips/." site/seasonal/cansips/
+              cp "$payload_root/cansips_manifest.json" site/seasonal/cansips_manifest.json
               ;;
             *)
               echo "Unsupported workflow_run source: $SOURCE_WORKFLOW" >&2

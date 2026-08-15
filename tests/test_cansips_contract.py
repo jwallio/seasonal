@@ -1,0 +1,94 @@
+#!/usr/bin/env python3
+"""Static CanSIPS v3 contract checks without network or plotting libraries."""
+
+import importlib.util
+import json
+from pathlib import Path
+import sys
+import tempfile
+
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "scripts"))
+ADAPTER = ROOT / "scripts" / "cansips_seasonal.py"
+WRAPPER = ROOT / "scripts" / "render_cansips.ps1"
+WORKFLOW = ROOT / ".github" / "workflows" / "cansips.yml"
+PAGES_WORKFLOW = ROOT / ".github" / "workflows" / "publish-pages.yml"
+DOC = ROOT / "docs" / "SEASONAL_CANSIPS.md"
+PAGE = ROOT / "public" / "seasonal" / "cansips" / "index.html"
+DASHBOARD = ROOT / "public" / "seasonal" / "index.html"
+
+
+def load_adapter():
+    spec = importlib.util.spec_from_file_location("cansips_seasonal_contract", ADAPTER)
+    if spec is None or spec.loader is None:
+        raise AssertionError("could not load CanSIPS adapter")
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
+def check(condition: bool, message: str) -> None:
+    if not condition:
+        raise AssertionError(message)
+
+
+def main() -> int:
+    for path, label in (
+        (ADAPTER, "adapter"), (WRAPPER, "wrapper"), (WORKFLOW, "workflow"),
+        (PAGES_WORKFLOW, "central Pages workflow"), (DOC, "documentation"),
+        (PAGE, "viewer"), (DASHBOARD, "dashboard"),
+    ):
+        check(path.exists(), f"CanSIPS {label} missing")
+
+    adapter = ADAPTER.read_text(encoding="utf-8")
+    workflow = WORKFLOW.read_text(encoding="utf-8")
+    pages_workflow = PAGES_WORKFLOW.read_text(encoding="utf-8")
+    documentation = DOC.read_text(encoding="utf-8")
+    page = PAGE.read_text(encoding="utf-8")
+    dashboard = DASHBOARD.read_text(encoding="utf-8")
+    for term in (
+        "CANSIPS_FORECAST_ROOT", "CANSIPS_HINDCAST_ROOT", "GeopotentialHeight",
+        "ISBL-0500", "MM-ENS", "CANSIPS_ENSEMBLE_MEMBERS = 40",
+        "GEM5.2-NEMO", "CanESM5", "CANSIPS_HINDCAST_START = 1991",
+        "CANSIPS_HINDCAST_END = 2020", "ens_processing", "forecast mean",
+        "matching-initialization-month", "500mb_height_anomaly", "ANOMALY_PALETTE",
+        "ANOMALY_TICKS", "seasonal_period_label", "DJF", "write_manifest",
+        "--climo-start", "--climo-end", "--previous-manifest", "--retain-runs",
+    ):
+        check(term in adapter or term in workflow or term in documentation, f"missing CanSIPS contract term: {term}")
+    for term in (
+        "CanSIPS v3 Seasonal Graphics", "cansips-pages-${{ github.run_id }}",
+        "Restore CanSIPS decoded-grid cache", "Restore published CanSIPS run history",
+        "--climo-start", "--climo-end", "--retain-runs 4", "CANSIPS_WGRIB2",
+    ):
+        check(term in workflow, f"workflow missing CanSIPS term: {term}")
+    for term in (
+        "CanSIPS v3 Seasonal Graphics", "Download CanSIPS payload",
+        "cansips_manifest.json", "incoming/cansips",
+    ):
+        check(term in pages_workflow, f"Pages workflow missing CanSIPS term: {term}")
+    for term in ("cansips_manifest.json", "CanSIPS v3", "500mb_height_anomaly"):
+        check(term in page or term in dashboard, f"viewer/dashboard missing CanSIPS term: {term}")
+    module = load_adapter()
+    check(module.parse_init("202608") == "2026080100", "YYYYMM initialization should normalize to 00Z on day 1")
+    check(module.target_month("2026080100", 4) == "202612", "lead 4 from August should target December")
+    check(module.target_month("2026080100", 6) == "202702", "lead 6 from August should target February")
+    check(module.file_name("2026080100", 4, False).endswith("P04M.grib2"), "forecast lead filename is incorrect")
+    check(module.file_name("1991080100", 4, True).startswith("199108_MSC_CanSIPS-Hindcast_"), "hindcast filename is incorrect")
+    check(module.source_url("2026080100", 4, False).endswith("forecast/2026/08/202608_MSC_CanSIPS_GeopotentialHeight_ISBL-0500_LatLon1.0_P04M.grib2"), "forecast source URL is incorrect")
+    check(len(module.ANOMALY_PALETTE) == len(module.ANOMALY_TICKS) - 1, "CanSIPS height anomaly colors must align with labelled bounds")
+    with tempfile.TemporaryDirectory() as temporary:
+        output = Path(temporary) / "manifest.json"
+        previous = Path(temporary) / "previous.json"
+        previous.write_text(json.dumps({"runs": [{"id": f"old-{index}", "init_utc": f"2025-0{index}-01T00:00:00Z"} for index in range(1, 5)]}), encoding="utf-8")
+        module.write_manifest(output, ROOT, {"id": "current", "init_utc": "2026-08-01T00:00:00Z"}, previous, 4)
+        retained = json.loads(output.read_text(encoding="utf-8"))["runs"]
+        check([run["id"] for run in retained] == ["current", "old-4", "old-3", "old-2"], "manifest should retain current plus three prior runs")
+    print("CANSIPS CONTRACT OK: ECCC Datamart, 40-member means, hindcast anomalies, workflow, viewer, retention")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

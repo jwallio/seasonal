@@ -37,12 +37,14 @@ The standalone CFSv2 seasonal adapter is documented in [`docs/SEASONAL_CFSV2.md`
 
 The ECMWF SEAS5 seasonal adapter is documented in [`docs/SEASONAL_SEAS5.md`](/d:/weather-projects/wn2/docs/SEASONAL_SEAS5.md). It reads current ECMWF/System 51 monthly anomaly fields from the official Copernicus CDS API and publishes parameter-selectable seasonal maps under `public/seasonal/seas5/`. The scheduled [`seas5.yml`](/d:/weather-projects/wn2/.github/workflows/seas5.yml) workflow requires the `CDS_API_KEY` repository secret, uploads a SEAS5 Pages payload, and keeps SEAS5 provenance separate from CFSv2 while retaining the current run plus three prior runs.
 
+The CanSIPS v3 seasonal adapter is documented in [`docs/SEASONAL_CANSIPS.md`](/d:/weather-projects/wn2/docs/SEASONAL_CANSIPS.md). It reads the official ECCC MSC Datamart 40-member GRIB2 files, computes monthly 500-mb height anomalies against matching 1991-2020 CanSIPS hindcasts, and publishes a DJF-default North American map under `public/seasonal/cansips/`. The scheduled [`cansips.yml`](/d:/weather-projects/wn2/.github/workflows/cansips.yml) workflow requires no model secret, caches decoded ensemble means, and retains the current run plus three prior runs.
+
 The unified [Seasonal Model Dashboard](/d:/weather-projects/wn2/public/seasonal/index.html) is published at
 [`/seasonal/`](https://jwallio.github.io/wn2/seasonal/). It provides one model,
-parameter, run, and target/hour control surface for WeatherNext 2, CFSv2, and
-ECMWF SEAS5. The model-specific pages remain available at
-`/seasonal/cfsv2/` and `/seasonal/seas5/` when focused provenance review is
-needed.
+parameter, run, and target/hour control surface for WeatherNext 2, CFSv2,
+ECMWF SEAS5, and CanSIPS v3. The model-specific pages remain available at
+`/seasonal/cfsv2/`, `/seasonal/seas5/`, and `/seasonal/cansips/` when focused
+provenance review is needed.
 
 ## Repo Layout
 
@@ -56,7 +58,9 @@ needed.
 - [`scripts/render_seas5.ps1`](/d:/weather-projects/wn2/scripts/render_seas5.ps1): ECMWF SEAS5 seasonal adapter helper
 - [`scripts/seas5_seasonal.py`](/d:/weather-projects/wn2/scripts/seas5_seasonal.py): Copernicus CDS/SEAS5 GRIB adapter
 - [`.github/workflows/seas5.yml`](/d:/weather-projects/wn2/.github/workflows/seas5.yml): monthly SEAS5 workflow
-- [`.github/workflows/publish-pages.yml`](/d:/weather-projects/wn2/.github/workflows/publish-pages.yml): single serialized WN2/CFSv2/SEAS5 Pages publisher
+- [`scripts/cansips_seasonal.py`](/d:/weather-projects/wn2/scripts/cansips_seasonal.py): ECCC MSC Datamart/CanSIPS v3 GRIB adapter
+- [`.github/workflows/cansips.yml`](/d:/weather-projects/wn2/.github/workflows/cansips.yml): monthly CanSIPS v3 workflow
+- [`.github/workflows/publish-pages.yml`](/d:/weather-projects/wn2/.github/workflows/publish-pages.yml): single serialized WN2/CFSv2/SEAS5/CanSIPS Pages publisher
 - [`public/seasonal/index.html`](/d:/weather-projects/wn2/public/seasonal/index.html): unified seasonal model dashboard shell
 - [`scripts/clean.ps1`](/d:/weather-projects/wn2/scripts/clean.ps1): remove root `.tmp_*` files and `*.log`
 - [`tests/smoke_outputs.py`](/d:/weather-projects/wn2/tests/smoke_outputs.py): output sanity/smoke test
