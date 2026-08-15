@@ -47,10 +47,9 @@ but is intentionally not listed as a seasonal model. The model-specific pages re
 `/seasonal/cfsv2/`, `/seasonal/seas5/`, and `/seasonal/cansips/` when focused
 provenance review is needed. The dashboard's Compare tab places the latest
 matching 500-mb height-anomaly map from each seasonal model side by side and
-uses one shared monthly or seasonal-period selector. Its Reference selector
-can show each model's native anomaly or a common 1991-2020 reference based on
-the CanSIPS v3 hindcast mean; native images remain available as a fallback
-until all model workflows have published the comparison assets.
+uses one shared monthly or seasonal-period selector. It defaults to each
+model's native anomaly; its Reference selector can optionally show a common
+1991-2020 reference based on the CanSIPS v3 hindcast mean.
 
 ## Repo Layout
 

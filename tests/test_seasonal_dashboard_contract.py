@@ -39,6 +39,7 @@ def main() -> int:
         "COMPARE_PRODUCT = '500mb_height_anomaly'",
         "common_1991_2020",
         "function renderCompare()",
+        "if (!selection.compareBaseline) selection.compareBaseline = 'native';",
         "product_hours",
         "target_month",
         "source_url",
@@ -49,6 +50,7 @@ def main() -> int:
     check("WN2 /" not in page, "unified dashboard should use a generic dashboard title")
     check("WeatherNext 2" not in page, "seasonal dashboard should not present WeatherNext 2 as a seasonal model")
     check("weathernext:" not in page, "seasonal dashboard should not register a WeatherNext model selector")
+    check("commonComplete ? 'common_1991_2020' : 'native'" not in page, "comparison should default to native model maps")
     check('id="availability"' not in page, "dashboard should not show the manifest availability sentence")
     check("model manifests available" not in page, "dashboard should not show the manifest availability sentence")
     check('id="map-title"' not in page, "map card should not duplicate titles already rendered in the image")
