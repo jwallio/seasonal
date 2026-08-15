@@ -1451,8 +1451,18 @@ def render_map(
     )
     colorbar.set_ticks(colorbar_ticks)
     if anomaly:
+        tick_decimals = int(product_spec.get("anomaly_tick_decimals", 0))
+
+        def format_anomaly_tick(value: float) -> str:
+            numeric = float(value)
+            if abs(numeric) < 0.5 * (10 ** -tick_decimals):
+                numeric = 0.0
+            if tick_decimals:
+                return f"{numeric:+.{tick_decimals}f}" if numeric else f"{numeric:.{tick_decimals}f}"
+            return f"+{int(round(numeric))}" if numeric > 0 else str(int(round(numeric)))
+
         colorbar.set_ticklabels(
-            [f"+{int(tick)}" if tick > 0 else str(int(tick)) for tick in colorbar_ticks]
+            [format_anomaly_tick(tick) for tick in colorbar_ticks]
         )
     colorbar.ax.tick_params(
         axis="x",

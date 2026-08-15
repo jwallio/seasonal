@@ -23,12 +23,12 @@ def main() -> int:
     for term in (
         "<title>Seasonal Model Dashboard</title>",
         "<h1>Seasonal Model Dashboard</h1>",
-        "WeatherNext 2",
         "CFSv2",
         "ECMWF SEAS5",
-        "runs_manifest.json",
+        "CanSIPS v3",
         "seasonal/cfsv2_manifest.json",
         "seasonal/seas5_manifest.json",
+        "seasonal/cansips_manifest.json",
         'id="model-select"',
         'id="product-select"',
         'id="run-select"',
@@ -40,12 +40,16 @@ def main() -> int:
         check(term in page, f"unified dashboard missing term: {term}")
 
     check("WN2 /" not in page, "unified dashboard should use a generic dashboard title")
+    check("WeatherNext 2" not in page, "seasonal dashboard should not present WeatherNext 2 as a seasonal model")
+    check("weathernext:" not in page, "seasonal dashboard should not register a WeatherNext model selector")
     check('id="availability"' not in page, "dashboard should not show the manifest availability sentence")
     check("model manifests available" not in page, "dashboard should not show the manifest availability sentence")
     check('id="map-title"' not in page, "map card should not duplicate titles already rendered in the image")
     check('id="run-status"' not in page, "map card should not duplicate image status in a header badge")
     for term in (
         "name: Publish Seasonal Model Dashboard Pages",
+        "WeatherNext Runner",
+        "WeatherNext Runner Custom",
         "name: Checkout dashboard source",
         "ref: main",
         "public/seasonal/index.html",
