@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "kind": "cfsv2_seasonal_manifest",
-  "generated_utc": "2026-08-15T22:14:34Z",
+  "generated_utc": "2026-08-15T22:33:56Z",
   "source": "NOAA CFSv2 NOMADS",
   "source_url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/",
   "retention": {
@@ -239,8 +239,9 @@
               "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260808/06/monthly_grib_01/pgbf.01.2026080806.202612.avrg.grib.grb2",
               "cache_file": ".cache/cfsv2/2026080806/member_01/pgbf.01.2026080806.202612.avrg.grib.grb2",
               "state_file": ".cache/cfsv2/rolling/202612/hgt500.2026080806.m01.csv.gz",
-              "storage": "nomads_grib2",
-              "downloaded": true,
+              "storage": "retained_decoded_grid",
+              "downloaded": false,
+              "download_error": "('Connection broken: IncompleteRead(2097152 bytes read, 22005352 more expected)', IncompleteRead(2097152 bytes read, 22005352 more expected))",
               "product": "500mb_height_anomaly",
               "source_kind": "PGBF",
               "decoded_field": "HGT:500 mb",
@@ -258,7 +259,7 @@
               "state_file": ".cache/cfsv2/rolling/202612/hgt500.2026080812.m01.csv.gz",
               "storage": "retained_decoded_grid",
               "downloaded": false,
-              "download_error": "('Connection broken: IncompleteRead(2097152 bytes read, 21868689 more expected)', IncompleteRead(2097152 bytes read, 21868689 more expected))",
+              "download_error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260808/12/monthly_grib_01/pgbf.01.2026080812.202612.avrg.grib.grb2",
               "product": "500mb_height_anomaly",
               "source_kind": "PGBF",
               "decoded_field": "HGT:500 mb",
@@ -771,13 +772,16 @@
           "image": "public/seasonal/cfsv2/2026081518/cfsv2_z500a_202612.jpg",
           "comparison": {
             "common_1991_2020": {
-              "status": "unavailable",
+              "image": "public/seasonal/cfsv2/2026081518/cfsv2_z500a_202612_common-1991-2020.jpg",
+              "status": "rendered",
               "baseline": {
                 "label": "Common 1991-2020 reference (CanSIPS v3 hindcast)",
                 "years": "1991-2020",
-                "source": "CanSIPS v3 hindcast climatology"
-              },
-              "error": "404 Client Error: Not Found for url: https://jwallio.github.io/wn2/seasonal/common_reference/1991-2020/z500_202612.csv.gz"
+                "source": "CanSIPS v3 hindcast climatology",
+                "file": ".cache/cfsv2/common-reference/z500_202612.csv.gz",
+                "url": "https://jwallio.github.io/wn2/seasonal/common_reference/1991-2020/z500_202612.csv.gz",
+                "downloaded": true
+              }
             }
           }
         },
@@ -917,7 +921,7 @@
               "state_file": ".cache/cfsv2/rolling/202701/hgt500.2026080712.m01.csv.gz",
               "storage": "retained_decoded_grid",
               "downloaded": false,
-              "download_error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260807/12/monthly_grib_01/pgbf.01.2026080712.202701.avrg.grib.grb2",
+              "download_error": "Response ended prematurely",
               "product": "500mb_height_anomaly",
               "source_kind": "PGBF",
               "decoded_field": "HGT:500 mb",
@@ -951,8 +955,9 @@
               "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260808/00/monthly_grib_01/pgbf.01.2026080800.202701.avrg.grib.grb2",
               "cache_file": ".cache/cfsv2/2026080800/member_01/pgbf.01.2026080800.202701.avrg.grib.grb2",
               "state_file": ".cache/cfsv2/rolling/202701/hgt500.2026080800.m01.csv.gz",
-              "storage": "nomads_grib2",
-              "downloaded": true,
+              "storage": "retained_decoded_grid",
+              "downloaded": false,
+              "download_error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260808/00/monthly_grib_01/pgbf.01.2026080800.202701.avrg.grib.grb2",
               "product": "500mb_height_anomaly",
               "source_kind": "PGBF",
               "decoded_field": "HGT:500 mb",
@@ -970,7 +975,7 @@
               "state_file": ".cache/cfsv2/rolling/202701/hgt500.2026080806.m01.csv.gz",
               "storage": "retained_decoded_grid",
               "downloaded": false,
-              "download_error": "('Connection broken: IncompleteRead(18874368 bytes read, 5457583 more expected)', IncompleteRead(18874368 bytes read, 5457583 more expected))",
+              "download_error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260808/06/monthly_grib_01/pgbf.01.2026080806.202701.avrg.grib.grb2",
               "product": "500mb_height_anomaly",
               "source_kind": "PGBF",
               "decoded_field": "HGT:500 mb",
@@ -988,7 +993,7 @@
               "state_file": ".cache/cfsv2/rolling/202701/hgt500.2026080812.m01.csv.gz",
               "storage": "retained_decoded_grid",
               "downloaded": false,
-              "download_error": "('Connection broken: IncompleteRead(6291456 bytes read, 17615831 more expected)', IncompleteRead(6291456 bytes read, 17615831 more expected))",
+              "download_error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260808/12/monthly_grib_01/pgbf.01.2026080812.202701.avrg.grib.grb2",
               "product": "500mb_height_anomaly",
               "source_kind": "PGBF",
               "decoded_field": "HGT:500 mb",
@@ -1501,13 +1506,16 @@
           "image": "public/seasonal/cfsv2/2026081518/cfsv2_z500a_202701.jpg",
           "comparison": {
             "common_1991_2020": {
-              "status": "unavailable",
+              "image": "public/seasonal/cfsv2/2026081518/cfsv2_z500a_202701_common-1991-2020.jpg",
+              "status": "rendered",
               "baseline": {
                 "label": "Common 1991-2020 reference (CanSIPS v3 hindcast)",
                 "years": "1991-2020",
-                "source": "CanSIPS v3 hindcast climatology"
-              },
-              "error": "404 Client Error: Not Found for url: https://jwallio.github.io/wn2/seasonal/common_reference/1991-2020/z500_202701.csv.gz"
+                "source": "CanSIPS v3 hindcast climatology",
+                "file": ".cache/cfsv2/common-reference/z500_202701.csv.gz",
+                "url": "https://jwallio.github.io/wn2/seasonal/common_reference/1991-2020/z500_202701.csv.gz",
+                "downloaded": true
+              }
             }
           }
         },
@@ -1683,7 +1691,7 @@
               "state_file": ".cache/cfsv2/rolling/202702/hgt500.2026080800.m01.csv.gz",
               "storage": "retained_decoded_grid",
               "downloaded": false,
-              "download_error": "('Connection broken: IncompleteRead(6291456 bytes read, 17892860 more expected)', IncompleteRead(6291456 bytes read, 17892860 more expected))",
+              "download_error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260808/00/monthly_grib_01/pgbf.01.2026080800.202702.avrg.grib.grb2",
               "product": "500mb_height_anomaly",
               "source_kind": "PGBF",
               "decoded_field": "HGT:500 mb",
@@ -1699,8 +1707,9 @@
               "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260808/06/monthly_grib_01/pgbf.01.2026080806.202702.avrg.grib.grb2",
               "cache_file": ".cache/cfsv2/2026080806/member_01/pgbf.01.2026080806.202702.avrg.grib.grb2",
               "state_file": ".cache/cfsv2/rolling/202702/hgt500.2026080806.m01.csv.gz",
-              "storage": "nomads_grib2",
-              "downloaded": true,
+              "storage": "retained_decoded_grid",
+              "downloaded": false,
+              "download_error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260808/06/monthly_grib_01/pgbf.01.2026080806.202702.avrg.grib.grb2",
               "product": "500mb_height_anomaly",
               "source_kind": "PGBF",
               "decoded_field": "HGT:500 mb",
@@ -2231,13 +2240,16 @@
           "image": "public/seasonal/cfsv2/2026081518/cfsv2_z500a_202702.jpg",
           "comparison": {
             "common_1991_2020": {
-              "status": "unavailable",
+              "image": "public/seasonal/cfsv2/2026081518/cfsv2_z500a_202702_common-1991-2020.jpg",
+              "status": "rendered",
               "baseline": {
                 "label": "Common 1991-2020 reference (CanSIPS v3 hindcast)",
                 "years": "1991-2020",
-                "source": "CanSIPS v3 hindcast climatology"
-              },
-              "error": "404 Client Error: Not Found for url: https://jwallio.github.io/wn2/seasonal/common_reference/1991-2020/z500_202702.csv.gz"
+                "source": "CanSIPS v3 hindcast climatology",
+                "file": ".cache/cfsv2/common-reference/z500_202702.csv.gz",
+                "url": "https://jwallio.github.io/wn2/seasonal/common_reference/1991-2020/z500_202702.csv.gz",
+                "downloaded": true
+              }
             }
           }
         },
@@ -2434,8 +2446,9 @@
               "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260808/06/monthly_grib_01/pgbf.01.2026080806.202612.avrg.grib.grb2",
               "cache_file": ".cache/cfsv2/2026080806/member_01/pgbf.01.2026080806.202612.avrg.grib.grb2",
               "state_file": ".cache/cfsv2/rolling/202612/hgt500.2026080806.m01.csv.gz",
-              "storage": "nomads_grib2",
-              "downloaded": true,
+              "storage": "retained_decoded_grid",
+              "downloaded": false,
+              "download_error": "('Connection broken: IncompleteRead(2097152 bytes read, 22005352 more expected)', IncompleteRead(2097152 bytes read, 22005352 more expected))",
               "product": "500mb_height_anomaly",
               "source_kind": "PGBF",
               "decoded_field": "HGT:500 mb",
@@ -2453,7 +2466,7 @@
               "state_file": ".cache/cfsv2/rolling/202612/hgt500.2026080812.m01.csv.gz",
               "storage": "retained_decoded_grid",
               "downloaded": false,
-              "download_error": "('Connection broken: IncompleteRead(2097152 bytes read, 21868689 more expected)', IncompleteRead(2097152 bytes read, 21868689 more expected))",
+              "download_error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260808/12/monthly_grib_01/pgbf.01.2026080812.202612.avrg.grib.grb2",
               "product": "500mb_height_anomaly",
               "source_kind": "PGBF",
               "decoded_field": "HGT:500 mb",
@@ -3067,7 +3080,7 @@
               "state_file": ".cache/cfsv2/rolling/202701/hgt500.2026080712.m01.csv.gz",
               "storage": "retained_decoded_grid",
               "downloaded": false,
-              "download_error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260807/12/monthly_grib_01/pgbf.01.2026080712.202701.avrg.grib.grb2",
+              "download_error": "Response ended prematurely",
               "product": "500mb_height_anomaly",
               "source_kind": "PGBF",
               "decoded_field": "HGT:500 mb",
@@ -3101,8 +3114,9 @@
               "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260808/00/monthly_grib_01/pgbf.01.2026080800.202701.avrg.grib.grb2",
               "cache_file": ".cache/cfsv2/2026080800/member_01/pgbf.01.2026080800.202701.avrg.grib.grb2",
               "state_file": ".cache/cfsv2/rolling/202701/hgt500.2026080800.m01.csv.gz",
-              "storage": "nomads_grib2",
-              "downloaded": true,
+              "storage": "retained_decoded_grid",
+              "downloaded": false,
+              "download_error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260808/00/monthly_grib_01/pgbf.01.2026080800.202701.avrg.grib.grb2",
               "product": "500mb_height_anomaly",
               "source_kind": "PGBF",
               "decoded_field": "HGT:500 mb",
@@ -3120,7 +3134,7 @@
               "state_file": ".cache/cfsv2/rolling/202701/hgt500.2026080806.m01.csv.gz",
               "storage": "retained_decoded_grid",
               "downloaded": false,
-              "download_error": "('Connection broken: IncompleteRead(18874368 bytes read, 5457583 more expected)', IncompleteRead(18874368 bytes read, 5457583 more expected))",
+              "download_error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260808/06/monthly_grib_01/pgbf.01.2026080806.202701.avrg.grib.grb2",
               "product": "500mb_height_anomaly",
               "source_kind": "PGBF",
               "decoded_field": "HGT:500 mb",
@@ -3138,7 +3152,7 @@
               "state_file": ".cache/cfsv2/rolling/202701/hgt500.2026080812.m01.csv.gz",
               "storage": "retained_decoded_grid",
               "downloaded": false,
-              "download_error": "('Connection broken: IncompleteRead(6291456 bytes read, 17615831 more expected)', IncompleteRead(6291456 bytes read, 17615831 more expected))",
+              "download_error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260808/12/monthly_grib_01/pgbf.01.2026080812.202701.avrg.grib.grb2",
               "product": "500mb_height_anomaly",
               "source_kind": "PGBF",
               "decoded_field": "HGT:500 mb",
@@ -3788,7 +3802,7 @@
               "state_file": ".cache/cfsv2/rolling/202702/hgt500.2026080800.m01.csv.gz",
               "storage": "retained_decoded_grid",
               "downloaded": false,
-              "download_error": "('Connection broken: IncompleteRead(6291456 bytes read, 17892860 more expected)', IncompleteRead(6291456 bytes read, 17892860 more expected))",
+              "download_error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260808/00/monthly_grib_01/pgbf.01.2026080800.202702.avrg.grib.grb2",
               "product": "500mb_height_anomaly",
               "source_kind": "PGBF",
               "decoded_field": "HGT:500 mb",
@@ -3804,8 +3818,9 @@
               "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260808/06/monthly_grib_01/pgbf.01.2026080806.202702.avrg.grib.grb2",
               "cache_file": ".cache/cfsv2/2026080806/member_01/pgbf.01.2026080806.202702.avrg.grib.grb2",
               "state_file": ".cache/cfsv2/rolling/202702/hgt500.2026080806.m01.csv.gz",
-              "storage": "nomads_grib2",
-              "downloaded": true,
+              "storage": "retained_decoded_grid",
+              "downloaded": false,
+              "download_error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260808/06/monthly_grib_01/pgbf.01.2026080806.202702.avrg.grib.grb2",
               "product": "500mb_height_anomaly",
               "source_kind": "PGBF",
               "decoded_field": "HGT:500 mb",
@@ -4341,13 +4356,23 @@
           "image": "public/seasonal/cfsv2/2026081518/cfsv2_z500a_202612-202702.jpg",
           "comparison": {
             "common_1991_2020": {
-              "status": "unavailable",
+              "image": "public/seasonal/cfsv2/2026081518/cfsv2_z500a_202612-202702_common-1991-2020.jpg",
+              "status": "rendered",
               "baseline": {
                 "label": "Common 1991-2020 reference (CanSIPS v3 hindcast)",
                 "years": "1991-2020",
-                "source": "CanSIPS v3 hindcast climatology"
-              },
-              "error": "404 Client Error: Not Found for url: https://jwallio.github.io/wn2/seasonal/common_reference/1991-2020/z500_202612.csv.gz"
+                "source": "CanSIPS v3 hindcast climatology",
+                "files": [
+                  ".cache/cfsv2/common-reference/z500_202612.csv.gz",
+                  ".cache/cfsv2/common-reference/z500_202701.csv.gz",
+                  ".cache/cfsv2/common-reference/z500_202702.csv.gz"
+                ],
+                "urls": [
+                  "https://jwallio.github.io/wn2/seasonal/common_reference/1991-2020/z500_202612.csv.gz",
+                  "https://jwallio.github.io/wn2/seasonal/common_reference/1991-2020/z500_202701.csv.gz",
+                  "https://jwallio.github.io/wn2/seasonal/common_reference/1991-2020/z500_202702.csv.gz"
+                ]
+              }
             }
           }
         }
