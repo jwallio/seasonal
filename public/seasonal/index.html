@@ -186,7 +186,46 @@
       const availableSets = COMPARE_MODELS.map(compareTargetKeys).filter(set => set.size);
       if (!availableSets.length) return [];
       const common = [...availableSets[0]].filter(key => availableSets.every(set => set.has(key)));
-      const keys = common.length ? common : [...new Set(availableSets.reduce((all, set) => [...all, ...set]ï­­¢G§²ÚîÆ­yÕct) {
+      const keys = common.length ? common : [...new Set(availableSets.reduce((all, set) => [...all, ...set], []))];
+      return keys.sort(comparePeriodSort).map(value => ({ value, label: periodLabel(value) }));
+    }
+    function compareRunForTarget(modelKey, targetKey) {
+      return compareRuns(modelKey).find(run => compareTarget(run, targetKey)) || null;
+    }
+    function manifestProducts(model) {
+      const keys = new Set();
+      modelStates[selection.model].runs.forEach(run => {
+        if (model.kind === 'weathernext') {
+          (Array.isArray(run.products) ? run.products : Object.keys(run.product_hours || {})).forEach(key => keys.add(String(key)));
+        } else if (run.product) keys.add(String(run.product));
+      });
+      return [...keys];
+    }
+    function productLabel(model, key) {
+      const configured = modelStates[selection.model].manifest?.product_labels?.[key];
+      return configured || PRODUCT_LABELS[key] || pretty(key) || 'Seasonal guidance';
+    }
+    function supportsProduct(model, run, product) {
+      if (model.kind === 'weathernext') return (Array.isArray(run.products) && run.products.includes(product)) || Boolean(run.product_hours?.[product]);
+      return String(run.product || '') === String(product);
+    }
+    function runLabel(model, run) {
+      if (model.kind === 'weathernext') return `${run.label || run.run_date || run.id || 'Published run'} Â· ${run.status || 'available'}`;
+      return `Init ${initLabel(run.init_utc)} Â· ${run.status || 'available'}`;
+    }
+    function selectedRun(model) {
+      const available = modelStates[selection.model].runs.filter(run => supportsProduct(model, run, selection.product));
+      return available.find(run => String(run.id) === String(selection.run)) || available[0] || null;
+    }
+    function targetItems(model, run) {
+      if (!run) return [];
+      if (model.kind === 'weathernext') {
+        const hours = numberList(run.product_hours?.[selection.product] || run.hours, 0);
+        return hours.map(hour => ({ key: `hour:${hour}`, value: hour, label: `Hour ${String(hour).padStart(3, '0')}` }));
+      }
+      return (Array.isArray(run.targets) ? run.targets : []).map((target, index) => ({ key: String(target.id || index), value: target, label: periodLabel(target.target_month || target.valid_start_utc || `Target ${index + 1}`) }));
+    }
+    function isSnowProduct(model, product) {
       return model.kind === 'weathernext' && ((modelStates[selection.model].manifest?.snow_products || []).includes(product) || product.includes('snow'));
     }
     function frameName(run, hour, ratio) {
@@ -370,3 +409,4 @@
   </script>
 </body>
 </html>
+
