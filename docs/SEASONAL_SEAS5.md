@@ -49,6 +49,15 @@ climatology. Geopotential is divided by standard gravity (`9.80665 m s⁻²`);
 precipitation and snowfall anomaly rates are multiplied by the actual seconds
 in the target month and converted from metres to inches.
 
+For the unified dashboard's Compare tab, the 500-mb product also supports a
+shared reference mode. The workflow reads the CanSIPS v3 1991-2020 hindcast
+mean grid published under `seasonal/common_reference/1991-2020/`, regrids it
+to the SEAS5 axes, and subtracts it from the raw SEAS5 500-mb height field.
+Those images are labeled `Common 1991-2020 reference (CanSIPS v3 hindcast)`.
+The native C3S postprocessed anomaly remains the default fallback when a
+common-reference image is unavailable; this does not change the native SEAS5
+anomaly methodology.
+
 ## Local usage
 
 Install the repository requirements and configure CDS credentials. Then render

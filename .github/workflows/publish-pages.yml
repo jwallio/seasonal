@@ -162,6 +162,10 @@ jobs:
               mkdir -p site/seasonal/cansips
               cp -R "$payload_root/cansips/." site/seasonal/cansips/
               cp "$payload_root/cansips_manifest.json" site/seasonal/cansips_manifest.json
+              if [ -d "$payload_root/common_reference" ]; then
+                mkdir -p site/seasonal/common_reference
+                cp -R "$payload_root/common_reference/." site/seasonal/common_reference/
+              fi
               ;;
             *)
               echo "Unsupported workflow_run source: $SOURCE_WORKFLOW" >&2
