@@ -118,6 +118,8 @@ jobs:
             --manifest public/seasonal/cfsv2_manifest.json
             --previous-manifest .cache/cfsv2/previous_manifest.json
             --retain-runs 4
+            --common-reference-dir .cache/cfsv2/common-reference
+            --common-reference-url "https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/seasonal/common_reference/1991-2020/"
             --request-delay 2
           )
           if [[ "$CFSV2_PRODUCT" == "500mb_height_absolute" ]]; then

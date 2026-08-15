@@ -59,6 +59,14 @@ temperature and sea-surface temperature products use a compact ±8 °C scale,
 MSLP uses ±20 hPa, precipitation uses the operational brown/green ±8-inch
 scale, and SSH uses a ±0.50-metre scale with two-decimal labels.
 
+When the production climatology window is `1991-2020`, the 500-mb hindcast
+means are also written as compact reference grids under
+`public/seasonal/common_reference/1991-2020/`. The unified Compare tab uses
+these CanSIPS v3 grids as its shared 1991-2020 reference for CFSv2 and SEAS5;
+the CanSIPS native anomaly image already uses the same hindcast mean. This
+keeps the common mode scientifically explicit while preserving each model's
+native reference option.
+
 ## Local usage
 
 Install the repository requirements and make `wgrib2` available. Then render

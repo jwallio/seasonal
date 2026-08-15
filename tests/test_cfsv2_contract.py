@@ -91,6 +91,13 @@ def main() -> int:
         "--baseline-file",
         "--baseline-dir",
         "--ncei-calibration",
+        "COMMON_REFERENCE_YEARS = \"1991-2020\"",
+        "COMMON_REFERENCE_LABEL",
+        "load_common_reference",
+        "regrid_nearest",
+        "--common-reference-dir",
+        "--common-reference-url",
+        "common_1991_2020",
         "--previous-manifest",
         "--retain-runs",
         "--seasonal-window",
@@ -160,8 +167,19 @@ def main() -> int:
         adapter_module.Grid([0.0], [0.0], [[25.4]])
     )
     check(converted.values == [[1.0]], "WEASD should convert from kg m-2 to inches")
+    reference = adapter_module.Grid([0.0, 1.0], [0.0, 1.0], [[500.0, 501.0], [502.0, 503.0]])
+    regridded = adapter_module.regrid_nearest(reference, [0.1, 0.9], [0.1, 0.9], "test")
+    check(regridded.values == [[500.0, 501.0], [502.0, 503.0]], "common reference regrid should preserve nearest source values")
     with tempfile.TemporaryDirectory() as temporary:
         temporary_root = Path(temporary)
+        common_dir = temporary_root / "common"
+        common_dir.mkdir()
+        adapter_module.write_grid_state(reference, common_dir / "z500_202612.csv.gz")
+        loaded, loaded_path, loaded_url, downloaded, _ = adapter_module.load_common_reference(
+            "202612", common_dir, "", 0.0, 0.0
+        )
+        check(loaded.values == reference.values, "common reference loader should read compressed grid state")
+        check(loaded_path.name == "z500_202612.csv.gz" and not loaded_url and not downloaded, "common reference metadata should identify local state")
         previous = temporary_root / "previous.json"
         output = temporary_root / "manifest.json"
         previous.write_text(
@@ -196,7 +214,7 @@ def main() -> int:
         check(term in workflow, f"workflow missing product selector term: {term}")
     for term in ("baseline", "reforecast", "monthly_grib_01", "lead_month", "GRIB2", "rolling", "NOMADS"):
         check(term in documentation, f"documentation missing contract term: {term}")
-    for term in ("rolling-days", "rolling-state-dir", "actions/cache", "--ncei-calibration"):
+    for term in ("rolling-days", "rolling-state-dir", "actions/cache", "--ncei-calibration", "--common-reference-dir", "--common-reference-url"):
         check(term in workflow, f"workflow missing contract term: {term}")
     for term in ("Restore published CFSv2 run history", "previous_manifest.json", "--previous-manifest", "--retain-runs 4"):
         check(term in workflow, f"workflow missing history-retention term: {term}")

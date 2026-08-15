@@ -79,6 +79,21 @@ available only for clearly marked incomplete smoke products.
 The original single-cycle mode remains available when `--rolling-days` is zero
 and records its scope as `single_initial_condition_cycle`.
 
+## Comparison-tab reference
+
+The unified dashboard's Compare tab can request a common 500-mb reference in
+addition to each model's native anomaly. CanSIPS publishes its absolute
+1991-2020 hindcast mean as compact grids under
+`public/seasonal/common_reference/1991-2020/`; the CFSv2 workflow downloads
+those grids, regrids them to the CFSv2 axes, and subtracts them from the
+absolute CFSv2 forecast before rendering the comparison image. The manifest
+labels this explicitly as `Common 1991-2020 reference (CanSIPS v3 hindcast)`.
+
+This is a shared comparison baseline, not a relabeling of the native CFSv2
+1982-2010 calibration. The native CFSv2 image remains available in the
+selector, and the common image is marked unavailable rather than silently
+substituted if the reference grid has not yet been published.
+
 The manifest records the source URL, initialization time, target month, lead,
 members, decoder, aggregation, baseline, cache paths, image path, and a
 per-target status (`planned`, `decoded`, `rendered`, `partial`, or `failed`).

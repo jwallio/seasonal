@@ -60,12 +60,13 @@ def main() -> int:
         "ANOMALY_TICKS", "seasonal_period_label", "DJF", "write_manifest",
         "--climo-start", "--climo-end", "--previous-manifest", "--retain-runs",
         "CANSIPS_DOWNLOAD_ATTEMPTS", "CANSIPS_DOWNLOAD_TIMEOUT",
+        "--common-reference-dir", "common_reference", "write_grid_state", "common_1991_2020",
     ):
         check(term in adapter or term in workflow or term in documentation, f"missing CanSIPS contract term: {term}")
     for term in (
         "CanSIPS v3 Seasonal Graphics", "cansips-pages-${{ github.run_id }}", 'default: "all"',
         "Restore CanSIPS decoded-grid cache", "Restore published CanSIPS run history",
-        "--climo-start", "--climo-end", "--retain-runs 4", "CANSIPS_WGRIB2",
+        "--climo-start", "--climo-end", "--retain-runs 4", "--common-reference-dir", "CANSIPS_WGRIB2",
     ):
         check(term in workflow, f"workflow missing CanSIPS term: {term}")
     for term in (
@@ -74,7 +75,7 @@ def main() -> int:
     ):
         check(term in pages_workflow, f"Pages workflow missing CanSIPS term: {term}")
     for term in (
-        "cansips_manifest.json", "CanSIPS v3", "500mb_height_anomaly",
+        "cansips_manifest.json", "CanSIPS v3", "500mb_height_anomaly", "common_1991_2020",
         "850mb_temperature_anomaly", "sea_surface_height_anomaly",
     ):
         check(term in page or term in dashboard, f"viewer/dashboard missing CanSIPS term: {term}")

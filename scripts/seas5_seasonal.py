@@ -26,16 +26,21 @@ import numpy as np
 from cfsv2_seasonal import (
     ANOMALY_PALETTE,
     ANOMALY_TICKS,
+    COMMON_REFERENCE_LABEL,
+    COMMON_REFERENCE_YEARS,
     CONUS_PRECIP_REGION,
     CFSv2Error,
     DEFAULT_REGION,
     PRECIP_ANOMALY_PALETTE,
     SWE_ANOMALY_PALETTE,
     Grid,
+    load_common_reference,
     ensure_border_files,
     mean_grids,
+    regrid_nearest,
     relative_path,
     render_map,
+    subtract_grids,
     sum_grids,
 )
 
@@ -403,559 +408,4 @@ def seasonal_period_label(first_target: str, last_target: str) -> str:
     season = {
         (12, 2): f"DJF {end.year}",
         (3, 5): f"MAM {end.year}",
-        (6, 8): f"JJA {end.year}",
-        (9, 11): f"SON {end.year}",
-    }.get((start.month, end.month))
-    if season and ((start.month == 12 and end.year == start.year + 1) or end.year == start.year):
-        return season
-    if start.year == end.year:
-        return f"{start:%b}â€“{end:%b %Y}"
-    return f"{start:%b %Y}â€“{end:%b %Y}"
-
-
-def month_seconds(target: str) -> int:
-    start = dt.datetime.strptime(target, "%Y%m")
-    next_year, next_month = month_after(start.year, start.month, 1)
-    return int((dt.datetime(next_year, next_month, 1) - start).total_seconds())
-
-
-def convert_values(values: np.ndarray, product: dict[str, Any], target: str) -> np.ndarray:
-    variable = product["variable"]
-    converted = np.asarray(values, dtype=float)
-    if variable == "z500":
-        return converted / GEOPOTENTIAL_GRAVITY
-    if variable in {"t2m", "t850", "sst"}:
-        # Anomaly fields have the same numerical increment in K and Â°C.
-        return converted
-    if variable == "pr":
-        return converted * month_seconds(target) * M_TO_INCH
-    if variable == "sf":
-        return converted * month_seconds(target) * M_TO_INCH
-    if variable == "snow_depth":
-        return converted * M_TO_INCH
-    if variable == "slp":
-        return converted / 100.0
-    raise SEAS5Error(f"no unit conversion is defined for SEAS5 variable {variable}")
-
-
-def latest_cds_init(now: dt.datetime | None = None) -> str:
-    """Return the newest nominal ECMWF start month released by the CDS."""
-    current = now or dt.datetime.now(dt.timezone.utc)
-    year, month = current.year, current.month
-    if (current.day, current.hour) < (CDS_ECMWF_RELEASE_DAY, CDS_ECMWF_RELEASE_HOUR):
-        year, month = month_after(year, month, -1)
-    return f"{year:04d}{month:02d}0100"
-
-
-def cds_area(product: dict[str, Any]) -> list[float]:
-    return list(CDS_CONUS_AREA if product["region"] == CONUS_PRECIP_REGION else CDS_NORTH_AMERICA_AREA)
-
-
-def cds_dataset_url(dataset: str) -> str:
-    return f"https://cds.climate.copernicus.eu/datasets/{dataset}"
-
-
-def _coord_name(data: Any, candidates: tuple[str, ...]) -> str:
-    for name in candidates:
-        if name in data.dims or name in data.coords:
-            return name
-    raise SEAS5Error(f"CDS GRIB field is missing a {candidates[0]}/{candidates[-1]} coordinate")
-
-
-def _select_forecast_month(data: Any, lead: int) -> Any:
-    for name in ("forecastMonth", "leadtime_month"):
-        if name not in data.dims:
-            continue
-        coordinate = np.asarray(data[name].values)
-        numeric = np.asarray([int(value) for value in coordinate], dtype=int)
-        matches = np.flatnonzero(numeric == lead)
-        if not len(matches):
-            raise SEAS5Error(f"CDS GRIB field has no forecastMonth={lead}")
-        return data.isel({name: int(matches[0])})
-    return data
-
-
-def grid_from_grib(path: Path, product: dict[str, Any], target: str, lead: int) -> Grid:
-    try:
-        import xarray as xr
-    except ImportError as exc:  # pragma: no cover - environment contract
-        raise SEAS5Error("SEAS5 rendering requires xarray and cfgrib") from exc
-
-    backend_attempts = (
-        {"filter_by_keys": {"dataType": "em"}, "time_dims": ("forecastMonth", "time")},
-        {"time_dims": ("forecastMonth", "time")},
-        {"filter_by_keys": {"dataType": "em"}},
-        {},
-    )
-    dataset = None
-    errors: list[str] = []
-    for backend_kwargs in backend_attempts:
-        try:
-            candidate = xr.open_dataset(path, engine="cfgrib", backend_kwargs=backend_kwargs)
-            candidate.load()
-            dataset = candidate
-            break
-        except Exception as exc:
-            errors.append(str(exc))
-            try:
-                candidate.close()
-            except Exception:
-                pass
-    if dataset is None:
-        detail = errors[-1] if errors else "unknown cfgrib error"
-        raise SEAS5Error(f"could not decode CDS GRIB {path.name}: {detail}")
-
-    try:
-        variables = list(dataset.data_vars)
-        if not variables:
-            raise SEAS5Error(f"CDS GRIB {path.name} contains no data variable")
-        data = dataset[variables[0]]
-        data = _select_forecast_month(data, lead).squeeze(drop=True)
-        latitude_name = _coord_name(data, ("latitude", "lat"))
-        longitude_name = _coord_name(data, ("longitude", "lon"))
-        for dimension in list(data.dims):
-            if dimension not in {latitude_name, longitude_name}:
-                data = data.mean(dim=dimension, skipna=True)
-        data = data.transpose(latitude_name, longitude_name)
-        lats = np.asarray(data[latitude_name].values, dtype=float)
-        lons = np.asarray(data[longitude_name].values, dtype=float)
-        raw = np.asarray(data.values, dtype=float)
-    finally:
-        dataset.close()
-
-    if raw.ndim != 2:
-        raise SEAS5Error(f"CDS GRIB {path.name} did not reduce to a 2-D latitude/longitude field")
-    normalized_lons = ((lons + 180.0) % 360.0) - 180.0
-    lon_order = np.argsort(normalized_lons)
-    lat_order = np.argsort(lats)
-    converted = convert_values(raw[np.ix_(lat_order, lon_order)], product, target)
-    return Grid(
-        lons=[float(value) for value in normalized_lons[lon_order]],
-        lats=[float(value) for value in lats[lat_order]],
-        values=converted.tolist(),
-    )
-
-
-class CDSArchive:
-    def __init__(self, cache_dir: Path):
-        self.cache_dir = cache_dir
-        self._client: Any | None = None
-
-    def latest_init(self) -> str:
-        return latest_cds_init()
-
-    def _client_or_raise(self) -> Any:
-        if self._client is not None:
-            return self._client
-        try:
-            import cdsapi
-        except ImportError as exc:  # pragma: no cover - environment contract
-            raise SEAS5Error("SEAS5 rendering requires cdsapi>=0.7.7") from exc
-        url = os.environ.get("CDS_API_URL", CDS_API_ROOT)
-        key = os.environ.get("CDS_API_KEY", "").strip()
-        try:
-            if key:
-                self._client = cdsapi.Client(url=url, key=key, quiet=True)
-            else:
-                # Local users can keep the official token in ~/.cdsapirc.
-                self._client = cdsapi.Client(quiet=True)
-        except Exception as exc:
-            raise SEAS5Error(
-                "could not initialize the CDS API client; configure CDS_API_KEY "
-                "or ~/.cdsapirc"
-            ) from exc
-        return self._client
-
-    def _cache_path(self, dataset: str, variable: str, product: dict[str, Any], init: str, lead: int) -> Path:
-        area_name = "conus" if product["region"] == CONUS_PRECIP_REGION else "north-america"
-        safe_dataset = dataset.replace("-", "_")
-        safe_variable = variable.replace("-", "_")
-        return self.cache_dir / "cds" / area_name / (
-            f"{safe_dataset}_{safe_variable}_{init[:6]}_lead{lead:02d}.grib"
-        )
-
-    def _retrieve(
-        self,
-        dataset: str,
-        variable: str,
-        product: dict[str, Any],
-        init: str,
-        lead: int,
-        pressure_level: str | None = None,
-    ) -> Path:
-        path = self._cache_path(dataset, variable, product, init, lead)
-        if path.exists() and path.stat().st_size > 0:
-            return path
-        request: dict[str, Any] = {
-            "originating_centre": CDS_ORIGINATING_CENTRE,
-            "system": CDS_SYSTEM,
-            "variable": [variable],
-            "product_type": ["ensemble_mean"],
-            "year": [init[:4]],
-            "month": [init[4:6]],
-            "leadtime_month": [str(lead)],
-            "area": cds_area(product),
-            "data_format": "grib",
-        }
-        if pressure_level is not None:
-            request["pressure_level"] = [pressure_level]
-        path.parent.mkdir(parents=True, exist_ok=True)
-        temporary = path.with_name(path.name + ".tmp")
-        try:
-            temporary.unlink(missing_ok=True)
-            self._client_or_raise().retrieve(dataset, request, str(temporary))
-            if not temporary.exists() or temporary.stat().st_size == 0:
-                raise SEAS5Error(f"CDS returned no data for {dataset} {variable} lead {lead}")
-            temporary.replace(path)
-        except SEAS5Error:
-            temporary.unlink(missing_ok=True)
-            raise
-        except Exception as exc:
-            temporary.unlink(missing_ok=True)
-            if "required licen" in str(exc).lower():
-                raise SEAS5Error(
-                    "the CDS dataset licence has not been accepted; accept the current SEAS5 "
-                    f"dataset terms at {CDS_LICENSE_URL} and retry"
-                ) from exc
-            raise SEAS5Error(
-                f"CDS request failed for {dataset} {variable} {init[:6]} lead {lead}: {exc}"
-            ) from exc
-        return path
-
-    def anomaly_grid(self, product: dict[str, Any], init: str, target: str, lead: int) -> tuple[Grid, Path]:
-        path = self._retrieve(
-            product["cds_dataset"],
-            product["cds_variable"],
-            product,
-            init,
-            lead,
-            product.get("cds_pressure_level"),
-        )
-        return grid_from_grib(path, product, target, lead), path
-
-    def height_grid(self, product: dict[str, Any], init: str, target: str, lead: int) -> tuple[Grid, Path]:
-        if product["name"] != Z500_ANOMALY:
-            raise SEAS5Error("raw geopotential contours are only available for the 500-mb product")
-        path = self._retrieve(
-            product["cds_raw_dataset"],
-            product["cds_raw_variable"],
-            product,
-            init,
-            lead,
-            product["cds_pressure_level"],
-        )
-        return grid_from_grib(path, product, target, lead), path
-
-
-def write_manifest(
-    path: Path,
-    repo_root: Path,
-    run_entry: dict[str, Any],
-    previous_manifest: Path | None,
-    retain_runs: int,
-) -> None:
-    if retain_runs < 1:
-        raise SEAS5Error("manifest retention must keep at least one run")
-    payload: dict[str, Any] = {
-        "schema_version": 1,
-        "kind": "seas5_seasonal_manifest",
-        "generated_utc": iso_utc(dt.datetime.now(dt.timezone.utc)),
-        "source": SOURCE_LABEL,
-        "source_url": run_entry.get("source_url", SOURCE_URL),
-        "source_urls": run_entry.get("source_urls", [SOURCE_URL]),
-        "archive_root": CDS_API_ROOT,
-        "retention": {"max_runs": retain_runs, "history_runs": max(0, retain_runs - 1)},
-        "runs": [],
-    }
-    existing_paths = [path]
-    if previous_manifest and previous_manifest.resolve() != path.resolve():
-        existing_paths.append(previous_manifest)
-    for existing_path in existing_paths:
-        if not existing_path.exists():
-            continue
-        try:
-            existing = json.loads(existing_path.read_text(encoding="utf-8"))
-        except (OSError, ValueError) as exc:
-            raise SEAS5Error(f"could not read existing SEAS5 manifest {existing_path}: {exc}") from exc
-        if isinstance(existing, dict) and isinstance(existing.get("runs"), list):
-            payload["runs"].extend(existing["runs"])
-    unique_runs: dict[str, dict[str, Any]] = {}
-    for run in payload["runs"]:
-        if isinstance(run, dict) and run.get("id"):
-            unique_runs[str(run["id"])] = run
-    unique_runs[str(run_entry["id"])] = run_entry
-    payload["runs"] = sorted(
-        unique_runs.values(),
-        key=lambda item: (str(item.get("init_utc", "")), str(item.get("generated_utc", "")), str(item.get("id", ""))),
-        reverse=True,
-    )[:retain_runs]
-    path.parent.mkdir(parents=True, exist_ok=True)
-    temporary = path.with_name(path.name + ".tmp")
-    temporary.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
-    temporary.replace(path)
-
-
-def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--product", choices=tuple(PRODUCT_SPECS), default=Z500_ANOMALY)
-    parser.add_argument("--init", default="latest", help="SEAS5 initialization as YYYYMM, YYYYMMDD, or latest")
-    parser.add_argument("--lead-months", default="4,5,6", help="comma-separated target leads")
-    parser.add_argument("--seasonal-window", default="4,5,6", help="consecutive target leads for the seasonal map")
-    parser.add_argument("--climo-years", default="1981-2016", help="legacy compatibility option; official CDS anomaly baseline is used")
-    parser.add_argument("--cache-dir", default=".cache/seas5")
-    parser.add_argument("--output-dir", default="public/seasonal/seas5")
-    parser.add_argument("--manifest", default="public/seasonal/seas5_manifest.json")
-    parser.add_argument("--previous-manifest", type=Path)
-    parser.add_argument("--retain-runs", type=int, default=4)
-    parser.add_argument("--border-geojson", action="append", type=Path)
-    parser.add_argument("--no-borders", action="store_true")
-    parser.add_argument("--decode-only", action="store_true")
-    parser.add_argument("--absolute", action="store_true", help="render the raw 500-mb field for a source smoke test")
-    return parser
-
-
-def run(args: argparse.Namespace) -> int:
-    repo_root = Path(__file__).resolve().parents[1]
-    product = get_product_spec(args.product)
-    archive = CDSArchive(resolve_repo_path(args.cache_dir, repo_root))
-    init = archive.latest_init() if args.init == "latest" else parse_init(args.init)
-    init_date = dt.datetime.strptime(init, "%Y%m%d%H").replace(tzinfo=dt.timezone.utc)
-    leads = parse_int_list(args.lead_months, "lead months", 1, 6)
-    seasonal_leads = parse_int_list(args.seasonal_window, "seasonal window", 1, 6) if args.seasonal_window else []
-    if seasonal_leads:
-        expected = list(range(min(seasonal_leads), max(seasonal_leads) + 1))
-        if seasonal_leads != expected:
-            raise SEAS5Error("--seasonal-window must contain consecutive lead months")
-        leads = sorted(set(leads).union(seasonal_leads))
-    # Retain the option for workflow compatibility, but the official CDS
-    # anomaly fields already contain the matched model post-processing.
-    climo_years = parse_years(args.climo_years)
-    if args.absolute and args.product != Z500_ANOMALY:
-        raise SEAS5Error("--absolute is only supported for the 500-mb field")
-
-    output_dir = resolve_repo_path(args.output_dir, repo_root)
-    manifest_path = resolve_repo_path(args.manifest, repo_root)
-    cache_dir = resolve_repo_path(args.cache_dir, repo_root)
-    border_paths = [] if args.decode_only else ensure_border_files(args, cache_dir, repo_root)
-    run_id = f"seas5-{init}-{args.product}"
-    anomaly_baseline = "C3S official postprocessed anomaly; ECMWF/System 51"
-    source_datasets = [product["cds_dataset"]]
-    if product["height_contours"]:
-        source_datasets.append(product["cds_raw_dataset"])
-    source_urls = [cds_dataset_url(dataset) for dataset in source_datasets]
-    run_entry: dict[str, Any] = {
-        "id": run_id,
-        "source": SOURCE_LABEL,
-        "source_url": cds_dataset_url(product["cds_dataset"]),
-        "source_urls": source_urls,
-        "archive_root": CDS_API_ROOT,
-        "source_datasets": source_datasets,
-        "originating_centre": CDS_ORIGINATING_CENTRE,
-        "system": CDS_SYSTEM,
-        "model": "ECMWF SEAS5",
-        "product": args.product,
-        "variable": product["variable"],
-        "init_utc": iso_utc(init_date),
-        "statistic": "ensemble_mean",
-        "ensemble_scope": "ECMWF SEAS5/System 51 forecast ensemble",
-        "ensemble_members": CDS_ENSEMBLE_MEMBERS,
-        "aggregation": (
-            f"{len(seasonal_leads)}-month {product['seasonal_reducer']} of official CDS monthly ensemble-mean anomalies"
-            if seasonal_leads
-            else "official CDS monthly ensemble-mean anomaly"
-        ),
-        "field": product["field"],
-        "units": product["units"],
-        "raw_field": product["raw_field"],
-        "raw_units": product["raw_units"],
-        "conversion": product["conversion"],
-        "climatology": {
-            "source": "C3S postprocessed anomaly field",
-            "years_requested": f"{climo_years[0]}-{climo_years[1]}",
-            "method": "official CDS bias-adjusted monthly ensemble-mean anomaly; no local hindcast subtraction",
-            "status": "not_used",
-        },
-        "border_sources": [] if args.no_borders else [{"name": path.name} for path in border_paths],
-        "targets": [],
-        "status": "planned",
-    }
-    latest_init = archive.latest_init()
-    run_entry["archive_latest_init"] = latest_init
-    run_entry["archive_age_days"] = max(
-        0,
-        (dt.datetime.now(dt.timezone.utc) - dt.datetime.strptime(latest_init, "%Y%m%d%H").replace(tzinfo=dt.timezone.utc)).days,
-    )
-    if run_entry["archive_age_days"] > 45:
-        run_entry["source_warning"] = (
-            f"The latest nominal ECMWF SEAS5 initialization selected by the release calendar is "
-            f"{latest_init}; confirm the monthly CDS release before rendering."
-        )
-
-    forecast_grids: dict[int, Grid] = {}
-    height_grids: dict[int, Grid] = {}
-    failures = 0
-    for lead in leads:
-        target = target_month(init, lead)
-        valid_start, valid_end = target_period(target)
-        target_entry: dict[str, Any] = {
-            "id": f"{run_id}-lead{lead:02d}",
-            "valid_start_utc": valid_start,
-            "valid_end_utc": valid_end,
-            "lead_month": lead,
-            "target_month": target,
-            "aggregation": "monthly total" if product["monthly_reducer"] == "total" else "monthly mean",
-            "field": product["field"],
-            "units": product["units"],
-            "raw_field": product["raw_field"],
-            "raw_units": product["raw_units"],
-            "statistic": "ensemble_mean",
-            "originating_centre": CDS_ORIGINATING_CENTRE,
-            "system": CDS_SYSTEM,
-            "ensemble_members": CDS_ENSEMBLE_MEMBERS,
-            "status": "planned",
-        }
-        try:
-            if args.absolute:
-                forecast, source_path = archive.height_grid(product, init, target, lead)
-                height_grids[lead] = forecast
-                target_entry["source_dataset"] = product["cds_raw_dataset"]
-                target_entry["source_variable"] = product["cds_raw_variable"]
-            else:
-                forecast, source_path = archive.anomaly_grid(product, init, target, lead)
-                if product["height_contours"] and not args.decode_only:
-                    height, _ = archive.height_grid(product, init, target, lead)
-                    height_grids[lead] = height
-                target_entry["source_dataset"] = product["cds_dataset"]
-                target_entry["source_variable"] = product["cds_variable"]
-            forecast_grids[lead] = forecast
-            target_entry["source_file"] = relative_path(source_path, repo_root)
-            target_entry["source_url"] = cds_dataset_url(
-                product["cds_raw_dataset"] if args.absolute else product["cds_dataset"]
-            )
-            target_entry["area"] = cds_area(product)
-            target_entry["baseline"] = (
-                {"status": "not_applicable", "reason": "absolute source smoke output"}
-                if args.absolute
-                else {
-                    "status": "official_postprocessed",
-                    "source": anomaly_baseline,
-                    "dataset": product["cds_dataset"],
-                }
-            )
-            if args.decode_only:
-                target_entry["status"] = "decoded"
-            else:
-                output_path = output_dir / init[:8] / f"seas5_{product['variable']}_{target}.jpg"
-                render_map(
-                    forecast,
-                    init,
-                    target,
-                    lead,
-                    list(range(CDS_ENSEMBLE_MEMBERS)),
-                    output_path,
-                    anomaly=not args.absolute,
-                    baseline_label=("Absolute field smoke output" if args.absolute else anomaly_baseline),
-                    border_paths=border_paths,
-                    height_grid=height_grids.get(lead),
-                    ensemble_label=f"{CDS_ENSEMBLE_MEMBERS}-member mean",
-                    product_spec={**product, "source_label": SOURCE_LABEL},
-                )
-                target_entry["image"] = relative_path(output_path, repo_root)
-                target_entry["status"] = "rendered"
-        except Exception as exc:
-            failures += 1
-            target_entry["status"] = "failed"
-            target_entry["error"] = str(exc)
-            print(f"SEAS5 target {target} lead {lead} failed: {exc}", file=sys.stderr)
-        run_entry["targets"].append(target_entry)
-
-    if seasonal_leads and not args.decode_only:
-        first_lead, last_lead = seasonal_leads[0], seasonal_leads[-1]
-        first_target, last_target = target_month(init, first_lead), target_month(init, last_lead)
-        seasonal_entry: dict[str, Any] = {
-            "id": f"{run_id}-{first_target}-{last_target}",
-            "valid_start_utc": target_period(first_target)[0],
-            "valid_end_utc": target_period(last_target)[1],
-            "lead_month": f"{first_lead}-{last_lead}",
-            "target_month": f"{first_target}-{last_target}",
-            "aggregation": f"{len(seasonal_leads)}-month {product['seasonal_reducer']}",
-            "field": product["field"],
-            "units": product["seasonal_units"],
-            "raw_field": product["raw_field"],
-            "raw_units": product["raw_units"],
-            "statistic": "ensemble_mean",
-            "monthly_leads": seasonal_leads,
-            "originating_centre": CDS_ORIGINATING_CENTRE,
-            "system": CDS_SYSTEM,
-            "ensemble_members": CDS_ENSEMBLE_MEMBERS,
-            "status": "planned",
-        }
-        try:
-            if any(lead not in forecast_grids for lead in seasonal_leads):
-                raise SEAS5Error("seasonal window is missing one or more CDS forecast grids")
-            combine = sum_grids if product["seasonal_reducer"] == "sum" else mean_grids
-            seasonal_forecast = combine([forecast_grids[lead] for lead in seasonal_leads])
-            seasonal_height = (
-                combine([height_grids[lead] for lead in seasonal_leads])
-                if product["height_contours"] and all(lead in height_grids for lead in seasonal_leads)
-                else None
-            )
-            output_path = output_dir / init[:8] / f"seas5_{product['variable']}_{first_target}-{last_target}.jpg"
-            render_map(
-                seasonal_forecast,
-                init,
-                first_target,
-                f"{first_lead}â€“{last_lead}",
-                list(range(CDS_ENSEMBLE_MEMBERS)),
-                output_path,
-                anomaly=not args.absolute,
-                baseline_label=("Absolute field smoke output" if args.absolute else anomaly_baseline),
-                border_paths=border_paths,
-                period_label=seasonal_period_label(first_target, last_target),
-                ensemble_label=f"{CDS_ENSEMBLE_MEMBERS}-member mean",
-                height_grid=seasonal_height,
-                product_spec={**product, "source_label": SOURCE_LABEL},
-            )
-            seasonal_entry["image"] = relative_path(output_path, repo_root)
-            seasonal_entry["source_dataset"] = product["cds_dataset"] if not args.absolute else product["cds_raw_dataset"]
-            seasonal_entry["source_url"] = cds_dataset_url(
-                product["cds_raw_dataset"] if args.absolute else product["cds_dataset"]
-            )
-            seasonal_entry["baseline"] = (
-                {"status": "not_applicable", "reason": "absolute source smoke output"}
-                if args.absolute
-                else {
-                    "status": "official_postprocessed",
-                    "source": anomaly_baseline,
-                    "dataset": product["cds_dataset"],
-                }
-            )
-            seasonal_entry["status"] = "rendered"
-        except Exception as exc:
-            failures += 1
-            seasonal_entry["status"] = "failed"
-            seasonal_entry["error"] = str(exc)
-            print(f"SEAS5 seasonal window {first_target}-{last_target} failed: {exc}", file=sys.stderr)
-        run_entry["targets"].append(seasonal_entry)
-
-    statuses = [target.get("status") for target in run_entry["targets"]]
-    run_entry["status"] = "failed" if failures and not any(status != "failed" for status in statuses) else (
-        "partial" if failures else ("decoded" if args.decode_only else "rendered")
-    )
-    run_entry["output_dir"] = relative_path(output_dir, repo_root)
-    previous = resolve_repo_path(args.previous_manifest, repo_root) if args.previous_manifest else None
-    write_manifest(manifest_path, repo_root, run_entry, previous, args.retain_runs)
-    print(f"wrote SEAS5 manifest: {manifest_path}")
-    return 2 if failures else 0
-
-
-def main() -> int:
-    try:
-        return run(build_parser().parse_args())
-    except SEAS5Error as exc:
-        print(f"SEAS5 ERROR: {exc}", file=sys.stderr)
-        return 2
-
-
-if __name__ == "__main__":
-    raise SystemExit(main())
+        (6, 8): f"ënu¶‰žËkºwµçI½‘ÕÑl‰™¥•±‰t°(€€€€€€€€€€€€‰Õ¹¥ÑÌˆèÁÉ½‘ÕÑl‰Õ¹¥ÑÌ‰t°(€€€€€€€€€€€€‰É…Ý}™¥•±ˆèÁÉ½‘ÕÑl‰É…Ý}™¥•±‰t°(€€€€€€€€€€€€‰É…Ý}Õ¹¥ÑÌˆèÁÉ½‘ÕÑl‰É…Ý}Õ¹¥ÑÌ‰t°(€€€€€€€€€€€€‰ÍÑ…Ñ¥ÍÑ¥Œˆè€‰•¹Í•µ‰±•}µ•…¸ˆ°(€€€€€€€€€€€€‰½É¥¥¹…Ñ¥¹}•¹ÑÉ”ˆèM}=I%%9Q%9}9QI°(€€€€€€€€€€€€‰ÍåÍÑ•´ˆèM}MeMQ4°(€€€€€€€€€€€€‰•¹Í•µ‰±•}µ•µ‰•ÉÌˆèM}9M5	1}55	IL°(€€€€€€€€€€€€‰ÍÑ…ÑÕÌˆè€‰Á±…¹¹•ˆ°(€€€€€€€ô(€€€€€€€ÑÉäè(€€€€€€€€€€€¥˜…ÉÌ¹…‰Í½±ÕÑ”è(€€€€€€€€€€€€€€€™½É•…ÍÐ°Í½ÕÉ•}Á…Ñ €ô…É¡¥Ù”¹¡•¥¡Ñ}É¥¡ÁÉ½‘ÕÐ°¥¹¥Ð°Ñ…É•Ð°±•…¤(€€€€€€€€€€€€€€€¡•¥¡Ñ}É¥‘Ím±•…‘t€ô™½É•…ÍÐ(€€€€€€€€€€€€€€€Ñ…É•Ñ}•¹ÑÉål‰Í½ÕÉ•}‘…Ñ…Í•Ð‰t€ôÁÉ½‘ÕÑl‰‘Í}É…Ý}‘…Ñ…Í•Ð‰t(€€€€€€€€€€€€€€€Ñ…É•Ñ}•¹ÑÉål‰Í½ÕÉ•}Ù…É¥…‰±”‰t€ôÁÉ½‘ÕÑl‰‘Í}É…Ý}Ù…É¥…‰±”‰t(€€€€€€€€€€€•±Í”è(€€€€€€€€€€€€€€€™½É•…ÍÐ°Í½ÕÉ•}Á…Ñ €ô…É¡¥Ù”¹…¹½µ…±å}É¥¡ÁÉ½‘ÕÐ°¥¹¥Ð°Ñ…É•Ð°±•…¤(€€€€€€€€€€€€€€€¥˜ÁÉ½‘ÕÑl‰¡•¥¡Ñ}½¹Ñ½ÕÉÌ‰t…¹¹½Ð…ÉÌ¹‘•½‘•}½¹±äè(€€€€€€€€€€€€€€€€€€€¡•¥¡Ð°|€ô…É¡¥Ù”¹¡•¥¡Ñ}É¥¡ÁÉ½‘ÕÐ°¥¹¥Ð°Ñ…É•Ð°±•…¤(€€€€€€€€€€€€€€€€€€€¡•¥¡Ñ}É¥‘Ím±•…‘t€ô¡•¥¡Ð(€€€€€€€€€€€€€€€Ñ…É•Ñ}•¹ÑÉål‰Í½ÕÉ•}‘…Ñ…Í•Ð‰t€ôÁÉ½‘ÕÑl‰‘Í}‘…Ñ…Í•Ð‰t(€€€€€€€€€€€€€€€Ñ…É•Ñ}•¹ÑÉål‰Í½ÕÉ•}Ù…É¥…‰±”‰t€ôÁÉ½‘ÕÑl‰‘Í}Ù…É¥…‰±”‰t(€€€€€€€€€€€™½É•…ÍÑ}É¥‘Ím±•…‘t€ô™½É•…ÍÐ(€€€€€€€€€€€Ñ…É•Ñ}•¹ÑÉål‰Í½ÕÉ•}™¥±”‰t€ôÉ•±…Ñ¥Ù•}Á…Ñ ¡Í½ÕÉ•}Á…Ñ °É•Á½}É½½Ð¤(€€€€€€€€€€€Ñ…É•Ñ}•¹ÑÉål‰Í½ÕÉ•}ÕÉ°‰t€ô‘Í}‘…Ñ…Í•Ñ}ÕÉ° (€€€€€€€€€€€€€€€ÁÉ½‘ÕÑl‰‘Í}É…Ý}‘…Ñ…Í•Ð‰t¥˜…ÉÌ¹…‰Í½±ÕÑ”•±Í”ÁÉ½‘ÕÑl‰‘Í}‘…Ñ…Í•Ð‰t(€€€€€€€€€€€€¤(€€€€€€€€€€€Ñ…É•Ñ}•¹ÑÉål‰…É•„‰t€ô‘Í}…É•„¡ÁÉ½‘ÕÐ¤(€€€€€€€€€€€Ñ…É•Ñ}•¹ÑÉål‰‰…Í•±¥¹”‰t€ô€ (€€€€€€€€€€€€€€€ì‰ÍÑ…ÑÕÌˆè€‰¹½Ñ}…ÁÁ±¥…‰±”ˆ°€‰É•…Í½¸ˆè€‰…‰Í½±ÕÑ”Í½ÕÉ”Íµ½­”½ÕÑÁÕÐ‰ô(€€€€€€€€€€€€€€€¥˜…ÉÌ¹…‰Í½±ÕÑ”(€€€€€€€€€€€€€€€•±Í”ì(€€€€€€€€€€€€€€€€€€€€‰ÍÑ…ÑÕÌˆè€‰½™™¥¥…±}Á½ÍÑÁÉ½•ÍÍ•ˆ°(€€€€€€€€€€€€€€€€€€€€‰Í½ÕÉ”ˆè…¹½µ…±å}‰…Í•±¥¹”°(€€€€€€€€€€€€€€€€€€€€‰‘…Ñ…Í•ÐˆèÁÉ½‘ÕÑl‰‘Í}‘…Ñ…Í•Ð‰t°(€€€€€€€€€€€€€€€ô(€€€€€€€€€€€€¤(€€€€€€€€€€€¥˜…ÉÌ¹‘•½‘•}½¹±äè(€€€€€€€€€€€€€€€Ñ…É•Ñ}•¹ÑÉål‰ÍÑ…ÑÕÌ‰t€ô€‰‘•½‘•ˆ(€€€€€€€€€€€•±Í”è(€€€€€€€€€€€€€€€½ÕÑÁÕÑ}Á…Ñ €ô½ÕÑÁÕÑ}‘¥È€¼¥¹¥Ñlèát€¼˜‰Í•…ÌÕ}íÁÉ½‘ÕÑlÙ…É¥…‰±”uõ}íÑ…É•Ñô¹©Áœˆ(€€€€€€€€€€€€€€€É•¹‘•É}µ…À (€€€€€€€€€€€€€€€€€€€™½É•…ÍÐ°(€€€€€€€€€€€€€€€€€€€¥¹¥Ð°(€€€€€€€€€€€€€€€€€€€Ñ…É•Ð°(€€€€€€€€€€€€€€€€€€€±•…°(€€€€€€€€€€€€€€€€€€€±¥ÍÐ¡É…¹”¡M}9M5	1}55	IL¤¤°(€€€€€€€€€€€€€€€€€€€½ÕÑÁÕÑ}Á…Ñ °(€€€€€€€€€€€€€€€€€€€…¹½µ…±äõ¹½Ð…ÉÌ¹…‰Í½±ÕÑ”°(€€€€€€€€€€€€€€€€€€€‰…Í•±¥¹•}±…‰•°ô ‰‰Í½±ÕÑ”™¥•±Íµ½­”½ÕÑÁÕÐˆ¥˜…ÉÌ¹…‰Í½±ÕÑ”•±Í”…¹½µ…±å}‰…Í•±¥¹”¤°(€€€€€€€€€€€€€€€€€€€‰½É‘•É}Á…Ñ¡Ìõ‰½É‘•É}Á…Ñ¡Ì°(€€€€€€€€€€€€€€€€€€€¡•¥¡Ñ}É¥õ¡•¥¡Ñ}É¥‘Ì¹•Ð¡±•…¤°(€€€€€€€€€€€€€€€€€€€•¹Í•µ‰±•}±…‰•°õ˜‰íM}9M5	1}55	IMôµµ•µ‰•Èµ•…¸ˆ°(€€€€€€€€€€€€€€€€€€€ÁÉ½‘ÕÑ}ÍÁ•Œõì¨©ÁÉ½‘ÕÐ°€‰Í½ÕÉ•}±…‰•°ˆèM=UI}1	1ô°(€€€€€€€€€€€€€€€€¤(€€€€€€€€€€€€€€€Ñ…É•Ñ}•¹ÑÉål‰¥µ…”‰t€ôÉ•±…Ñ¥Ù•}Á…Ñ ¡½ÕÑÁÕÑ}Á…Ñ °É•Á½}É½½Ð¤(€€€€€€€€€€€€€€€Ñ…É•Ñ}•¹ÑÉål‰ÍÑ…ÑÕÌ‰t€ô€‰É•¹‘•É•ˆ(€€€€€€€€€€€€€€€¥˜½µµ½¹}É•™•É•¹•}•¹…‰±•è(€€€€€€€€€€€€€€€€€€€ÑÉäè(€€€€€€€€€€€€€€€€€€€€€€€¥˜±•…¹½Ð¥¸¡•¥¡Ñ}É¥‘Ìè(€€€€€€€€€€€€€€€€€€€€€€€€€€€É…¥Í”MLÕÉÉ½È ‰É…Ü€ÔÀÀµµˆ¡•¥¡ÐÝ…Ì¹½Ð…Ù…¥±…‰±”™½ÈÑ¡”½µµ½¸½µÁ…É¥Í½¸ˆ¤(€€€€€€€€€€€€€€€€€€€€€€€½µµ½¹}É•™•É•¹”°É•™•É•¹•}Á…Ñ °É•™•É•¹•}ÕÉ°°É•™•É•¹•}‘½Ý¹±½…‘•°½µµ½¹}É•™•É•¹•}±…ÍÑ}É•ÅÕ•ÍÐ€ô±½…‘}½µµ½¹}É•™•É•¹” (€€€€€€€€€€€€€€€€€€€€€€€€€€€Ñ…É•Ð°(€€€€€€€€€€€€€€€€€€€€€€€€€€€½µµ½¹}É•™•É•¹•}‘¥È°(€€€€€€€€€€€€€€€€€€€€€€€€€€€…ÉÌ¹½µµ½¹}É•™•É•¹•}ÕÉ°°(€€€€€€€€€€€€€€€€€€€€€€€€€€€µ…à À¸À°…ÉÌ¹½µµ½¹}É•™•É•¹•}É•ÅÕ•ÍÑ}‘•±…ä¤°(€€€€€€€€€€€€€€€€€€€€€€€€€€€½µµ½¹}É•™•É•¹•}±…ÍÑ}É•ÅÕ•ÍÐ°(€€€€€€€€€€€€€€€€€€€€€€€€¤(€€€€€€€€€€€€€€€€€€€€€€€½µµ½¹}É•™•É•¹”€ôÉ•É¥‘}¹•…É•ÍÐ (€€€€€€€€€€€€€€€€€€€€€€€€€€€½µµ½¹}É•™•É•¹”°(€€€€€€€€€€€€€€€€€€€€€€€€€€€¡•¥¡Ñ}É¥‘Ím±•…‘t¹±½¹Ì°(€€€€€€€€€€€€€€€€€€€€€€€€€€€¡•¥¡Ñ}É¥‘Ím±•…‘t¹±…ÑÌ°(€€€€€€€€€€€€€€€€€€€€€€€€€€€˜‰½µµ½¸É•™•É•¹”íÑ…É•Ñôˆ°(€€€€€€€€€€€€€€€€€€€€€€€€¤(€€€€€€€€€€€€€€€€€€€€€€€½µµ½¹}É¥€ôÍÕ‰ÑÉ…Ñ}É¥‘Ì¡¡•¥¡Ñ}É¥‘Ím±•…‘t°½µµ½¹}É•™•É•¹”¤(€€€€€€€€€€€€€€€€€€€€€€€½µµ½¹}½ÕÑÁÕÐ€ô½ÕÑÁÕÑ}‘¥È€¼¥¹¥Ñlèát€¼˜‰Í•…ÌÕ}íÁÉ½‘ÕÑlÙ…É¥…‰±”uõ}íÑ…É•Ñõ}½µµ½¸´ÄääÄ´ÈÀÈÀ¹©Áœˆ(€€€€€€€€€€€€€€€€€€€€€€€É•¹‘•É}µ…À (€€€€€€€€€€€€€€€€€€€€€€€€€€€½µµ½¹}É¥°(€€€€€€€€€€€€€€€€€€€€€€€€€€€¥¹¥Ð°(€€€€€€€€€€€€€€€€€€€€€€€€€€€Ñ…É•Ð°(€€€€€€€€€€€€€€€€€€€€€€€€€€€±•…°(€€€€€€€€€€€€€€€€€€€€€€€€€€€±¥ÍÐ¡É…¹”¡M}9M5	1}55	IL¤¤°(€€€€€€€€€€€€€€€€€€€€€€€€€€€½µµ½¹}½ÕÑÁÕÐ°(€€€€€€€€€€€€€€€€€€€€€€€€€€€…¹½µ…±äõQÉÕ”°(€€€€€€€€€€€€€€€€€€€€€€€€€€€‰…Í•±¥¹•}±…‰•°õ=55=9}II9}1	0°(€€€€€€€€€€€€€€€€€€€€€€€€€€€‰½É‘•É}Á…Ñ¡Ìõ‰½É‘•É}Á…Ñ¡Ì°(€€€€€€€€€€€€€€€€€€€€€€€€€€€¡•¥¡Ñ}É¥õ¡•¥¡Ñ}É¥‘Ím±•…‘t°(€€€€€€€€€€€€€€€€€€€€€€€€€€€•¹Í•µ‰±•}±…‰•°õ˜‰íM}9M5	1}55	IMôµµ•µ‰•Èµ•…¸ˆ°(€€€€€€€€€€€€€€€€€€€€€€€€€€€ÁÉ½‘ÕÑ}ÍÁ•Œõì¨©ÁÉ½‘ÕÐ°€‰Í½ÕÉ•}±…‰•°ˆèM=UI}1	1ô°(€€€€€€€€€€€€€€€€€€€€€€€€¤(€€€€€€€€€€€€€€€€€€€€€€€Ñ…É•Ñ}•¹ÑÉål‰½µÁ…É¥Í½¸‰t€ôì(€€€€€€€€€€€€€€€€€€€€€€€€€€€€‰½µµ½¹|ÄääÅ|ÈÀÈÀˆèì(€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€‰¥µ…”ˆèÉ•±…Ñ¥Ù•}Á…Ñ ¡½µµ½¹}½ÕÑÁÕÐ°É•Á½}É½½Ð¤°(€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€‰ÍÑ…ÑÕÌˆè€‰É•¹‘•É•ˆ°(€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€‰‰…Í•±¥¹”ˆèì(€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€‰±…‰•°ˆè=55=9}II9}1	0°(€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€‰å•…ÉÌˆè=55=9}II9}eIL°(€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€‰Í½ÕÉ”ˆè€‰…¹M%ALØÌ¡¥¹‘…ÍÐ±¥µ…Ñ½±½äˆ°(€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€‰™¥±”ˆèÉ•±…Ñ¥Ù•}Á…Ñ ¡É•™•É•¹•}Á…Ñ °É•Á½}É½½Ð¤°(€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€‰ÕÉ°ˆèÉ•™•É•¹•}ÕÉ°½È9½¹”°(€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€‰‘½Ý¹±½…‘•ˆèÉ•™•É•¹•}‘½Ý¹±½…‘•°(€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€ô°(€€€€€€€€€€€€€€€€€€€€€€€€€€€ô(€€€€€€€€€€€€€€€€€€€€€€€ô(€€€€€€€€€€€€€€€€€€€•á•ÁÐá•ÁÑ¥½¸…Ì•áŒè(€€€€€€€€€€€€€€€€€€€€€€€Ñ…É•Ñ}•¹ÑÉål‰½µÁ…É¥Í½¸‰t€ôì(€€€€€€€€€€€€€€€€€€€€€€€€€€€€‰½µµ½¹|ÄääÅ|ÈÀÈÀˆèì(€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€‰ÍÑ…ÑÕÌˆè€‰Õ¹…Ù…¥±…‰±”ˆ°(€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€‰‰…Í•±¥¹”ˆèì(€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€‰±…‰•°ˆè=55=9}II9}1	0°(€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€‰å•…ÉÌˆè=55=9}II9}eIL°(€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€‰Í½ÕÉ”ˆè€‰…¹M%ALØÌ¡¥¹‘…ÍÐ±¥µ…Ñ½±½äˆ°(€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€ô°(€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€‰•ÉÉ½ÈˆèÍÑÈ¡•áŒ¤°(€€€€€€€€€€€€€€€€€€€€€€€€€€€ô(€€€€€€€€€€€€€€€€€€€€€€€ô(€€€€€€€€€€€€€€€€€€€€€€€ÁÉ¥¹Ð¡˜‰MLÔ½µµ½¸½µÁ…É¥Í½¸Ñ…É•ÐíÑ…É•ÑôÕ¹…Ù…¥±…‰±”èí•áôˆ°™¥±”õÍåÌ¹ÍÑ‘•ÉÈ¤(€€€€€€€•á•ÁÐá•ÁÑ¥½¸…Ì•áŒè(€€€€€€€€€€€™…¥±ÕÉ•Ì€¬ô€Ä(€€€€€€€€€€€Ñ…É•Ñ}•¹ÑÉål‰ÍÑ…ÑÕÌ‰t€ô€‰™…¥±•ˆ(€€€€€€€€€€€Ñ…É•Ñ}•¹ÑÉål‰•ÉÉ½È‰t€ôÍÑÈ¡•áŒ¤(€€€€€€€€€€€ÁÉ¥¹Ð¡˜‰MLÔÑ…É•ÐíÑ…É•Ñô±•…í±•…‘ô™…¥±•èí•áôˆ°™¥±”õÍåÌ¹ÍÑ‘•ÉÈ¤(€€€€€€€ÉÕ¹}•¹ÑÉål‰Ñ…É•ÑÌ‰t¹…ÁÁ•¹¡Ñ…É•Ñ}•¹ÑÉä¤((€€€¥˜Í•…Í½¹…±}±•…‘Ì…¹¹½Ð…ÉÌ¹‘•½‘•}½¹±äè(€€€€€€€™¥ÉÍÑ}±•…°±…ÍÑ}±•…€ôÍ•…Í½¹…±}±•…‘ÍlÁt°Í•…Í½¹…±}±•…‘Íl´Åt(€€€€€€€™¥ÉÍÑ}Ñ…É•Ð°±…ÍÑ}Ñ…É•Ð€ôÑ…É•Ñ}µ½¹Ñ ¡¥¹¥Ð°™¥ÉÍÑ}±•…¤°Ñ…É•Ñ}µ½¹Ñ ¡¥¹¥Ð°±…ÍÑ}±•…¤(€€€€€€€Í•…Í½¹…±}•¹ÑÉäè‘¥ÑmÍÑÈ°¹åt€ôì(€€€€€€€€€€€€‰¥ˆè˜‰íÉÕ¹}¥‘ôµí™¥ÉÍÑ}Ñ…É•Ñôµí±…ÍÑ}Ñ…É•Ñôˆ°(€€€€€€€€€€€€‰Ù…±¥‘}ÍÑ…ÉÑ}ÕÑŒˆèÑ…É•Ñ}Á•É¥½¡™¥ÉÍÑ}Ñ…É•Ð¥lÁt°(€€€€€€€€€€€€‰Ù…±¥‘}•¹‘}ÕÑŒˆèÑ…É•Ñ}Á•É¥½¡±…ÍÑ}Ñ…É•Ð¥lÅt°(€€€€€€€€€€€€‰±•…‘}µ½¹Ñ ˆè˜‰í™¥ÉÍÑ}±•…‘ôµí±…ÍÑ}±•…‘ôˆ°(€€€€€€€€€€€€‰Ñ…É•Ñ}µ½¹Ñ ˆè˜‰í™¥ÉÍÑ}Ñ…É•Ñôµí±…ÍÑ}Ñ…É•Ñôˆ°(€€€€€€€€€€€€‰…É•…Ñ¥½¸ˆè˜‰í±•¸¡Í•…Í½¹…±}±•…‘Ì¥ôµµ½¹Ñ íÁÉ½‘ÕÑlÍ•…Í½¹…±}É•‘Õ•Èuôˆ°(€€€€€€€€€€€€‰™¥•±ˆèÁÉ½‘ÕÑl‰™¥•±‰t°(€€€€€€€€€€€€‰Õ¹¥ÑÌˆèÁÉ½‘ÕÑl‰Í•…Í½¹…±}Õ¹¥ÑÌ‰t°(€€€€€€€€€€€€‰É…Ý}™¥•±ˆèÁÉ½‘ÕÑl‰É…Ý}™¥•±‰t°(€€€€€€€€€€€€‰É…Ý}Õ¹¥ÑÌˆèÁÉ½‘ÕÑl‰É…Ý}Õ¹¥ÑÌ‰t°(€€€€€€€€€€€€‰ÍÑ…Ñ¥ÍÑ¥Œˆè€‰•¹Í•µ‰±•}µ•…¸ˆ°(€€€€€€€€€€€€‰µ½¹Ñ¡±å}±•…‘ÌˆèÍ•…Í½¹…±}±•…‘Ì°(€€€€€€€€€€€€‰½É¥¥¹…Ñ¥¹}•¹ÑÉ”ˆèM}=I%%9Q%9}9QI°(€€€€€€€€€€€€‰ÍåÍÑ•´ˆèM}MeMQ4°(€€€€€€€€€€€€‰•¹Í•µ‰±•}µ•µ‰•ÉÌˆèM}9M5	1}55	IL°(€€€€€€€€€€€€‰ÍÑ…ÑÕÌˆè€‰Á±…¹¹•ˆ°(€€€€€€€ô(€€€€€€€ÑÉäè(€€€€€€€€€€€¥˜…¹ä¡±•…¹½Ð¥¸™½É•…ÍÑ}É¥‘Ì™½È±•…¥¸Í•…Í½¹…±}±•…‘Ì¤è(€€€€€€€€€€€€€€€É…¥Í”MLÕÉÉ½È ‰Í•…Í½¹…°Ý¥¹‘½Ü¥Ìµ¥ÍÍ¥¹œ½¹”½Èµ½É”L™½É•…ÍÐÉ¥‘Ìˆ¤(€€€€€€€€€€€½µ‰¥¹”€ôÍÕµ}É¥‘Ì¥˜ÁÉ½‘ÕÑl‰Í•…Í½¹…±}É•‘Õ•È‰t€ôô€‰ÍÕ´ˆ•±Í”µ•…¹}É¥‘Ì(€€€€€€€€€€€Í•…Í½¹…±}™½É•…ÍÐ€ô½µ‰¥¹”¡m™½É•…ÍÑ}É¥‘Ím±•…‘t™½È±•…¥¸Í•…Í½¹…±}±•…‘Ít¤(€€€€€€€€€€€Í•…Í½¹…±}¡•¥¡Ð€ô€ (€€€€€€€€€€€€€€€½µ‰¥¹”¡m¡•¥¡Ñ}É¥‘Ím±•…‘t™½È±•…¥¸Í•…Í½¹…±}±•…‘Ít¤(€€€€€€€€€€€€€€€¥˜ÁÉ½‘ÕÑl‰¡•¥¡Ñ}½¹Ñ½ÕÉÌ‰t…¹…±°¡±•…¥¸¡•¥¡Ñ}É¥‘Ì™½È±•…¥¸Í•…Í½¹…±}±•…‘Ì¤(€€€€€€€€€€€€€€€•±Í”9½¹”(€€€€€€€€€€€€¤(€€€€€€€€€€€½ÕÑÁÕÑ}Á…Ñ €ô½ÕÑÁÕÑ}‘¥È€¼¥¹¥Ñlèát€¼˜‰Í•…ÌÕ}íÁÉ½‘ÕÑlÙ…É¥…‰±”uõ}í™¥ÉÍÑ}Ñ…É•Ñôµí±…ÍÑ}Ñ…É•Ñô¹©Áœˆ(€€€€€€€€€€€É•¹‘•É}µ…À (€€€€€€€€€€€€€€€Í•…Í½¹…±}™½É•…ÍÐ°(€€€€€€€€€€€€€€€¥¹¥Ð°(€€€€€€€€€€€€€€€™¥ÉÍÑ}Ñ…É•Ð°(€€€€€€€€€€€€€€€˜‰í™¥ÉÍÑ}±•…‘÷ŠMí±…ÍÑ}±•…‘ôˆ°(€€€€€€€€€€€€€€€±¥ÍÐ¡É…¹”¡M}9M5	1}55	IL¤¤°(€€€€€€€€€€€€€€€½ÕÑÁÕÑ}Á…Ñ °(€€€€€€€€€€€€€€€…¹½µ…±äõ¹½Ð…ÉÌ¹…‰Í½±ÕÑ”°(€€€€€€€€€€€€€€€‰…Í•±¥¹•}±…‰•°ô ‰‰Í½±ÕÑ”™¥•±Íµ½­”½ÕÑÁÕÐˆ¥˜…ÉÌ¹…‰Í½±ÕÑ”•±Í”…¹½µ…±å}‰…Í•±¥¹”¤°(€€€€€€€€€€€€€€€‰½É‘•É}Á…Ñ¡Ìõ‰½É‘•É}Á…Ñ¡Ì°(€€€€€€€€€€€€€€€Á•É¥½‘}±…‰•°õÍ•…Í½¹…±}Á•É¥½‘}±…‰•°¡™¥ÉÍÑ}Ñ…É•Ð°±…ÍÑ}Ñ…É•Ð¤°(€€€€€€€€€€€€€€€•¹Í•µ‰±•}±…‰•°õ˜‰íM}9M5	1}55	IMôµµ•µ‰•Èµ•…¸ˆ°(€€€€€€€€€€€€€€€¡•¥¡Ñ}É¥õÍ•…Í½¹…±}¡•¥¡Ð°(€€€€€€€€€€€€€€€ÁÉ½‘ÕÑ}ÍÁ•Œõì¨©ÁÉ½‘ÕÐ°€‰Í½ÕÉ•}±…‰•°ˆèM=UI}1	1ô°(€€€€€€€€€€€€¤(€€€€€€€€€€€Í•…Í½¹…±}•¹ÑÉål‰¥µ…”‰t€ôÉ•±…Ñ¥Ù•}Á…Ñ ¡½ÕÑÁÕÑ}Á…Ñ °É•Á½}É½½Ð¤(€€€€€€€€€€€Í•…Í½¹…±}•¹ÑÉål‰Í½ÕÉ•}‘…Ñ…Í•Ð‰t€ôÁÉ½‘ÕÑl‰‘Í}‘…Ñ…Í•Ð‰t¥˜¹½Ð…ÉÌ¹…‰Í½±ÕÑ”•±Í”ÁÉ½‘ÕÑl‰‘Í}É…Ý}‘…Ñ…Í•Ð‰t(€€€€€€€€€€€Í•…Í½¹…±}•¹ÑÉål‰Í½ÕÉ•}ÕÉ°‰t€ô‘Í}‘…Ñ…Í•Ñ}ÕÉ° (€€€€€€€€€€€€€€€ÁÉ½‘ÕÑl‰‘Í}É…Ý}‘…Ñ…Í•Ð‰t¥˜…ÉÌ¹…‰Í½±ÕÑ”•±Í”ÁÉ½‘ÕÑl‰‘Í}‘…Ñ…Í•Ð‰t(€€€€€€€€€€€€¤(€€€€€€€€€€€Í•…Í½¹…±}•¹ÑÉål‰‰…Í•±¥¹”‰t€ô€ (€€€€€€€€€€€€€€€ì‰ÍÑ…ÑÕÌˆè€‰¹½Ñ}…ÁÁ±¥…‰±”ˆ°€‰É•…Í½¸ˆè€‰…‰Í½±ÕÑ”Í½ÕÉ”Íµ½­”½ÕÑÁÕÐ‰ô(€€€€€€€€€€€€€€€¥˜…ÉÌ¹…‰Í½±ÕÑ”(€€€€€€€€€€€€€€€•±Í”ì(€€€€€€€€€€€€€€€€€€€€‰ÍÑ…ÑÕÌˆè€‰½™™¥¥…±}Á½ÍÑÁÉ½•ÍÍ•ˆ°(€€€€€€€€€€€€€€€€€€€€‰Í½ÕÉ”ˆè…¹½µ…±å}‰…Í•±¥¹”°(€€€€€€€€€€€€€€€€€€€€‰‘…Ñ…Í•ÐˆèÁÉ½‘ÕÑl‰‘Í}‘…Ñ…Í•Ð‰t°(€€€€€€€€€€€€€€€ô(€€€€€€€€€€€€¤(€€€€€€€€€€€Í•…Í½¹…±}•¹ÑÉål‰ÍÑ…ÑÕÌ‰t€ô€‰É•¹‘•É•ˆ(€€€€€€€€€€€¥˜½µµ½¹}É•™•É•¹•}•¹…‰±•è(€€€€€€€€€€€€€€€ÑÉäè(€€€€€€€€€€€€€€€€€€€¥˜…¹ä¡±•…¹½Ð¥¸¡•¥¡Ñ}É¥‘Ì™½È±•…¥¸Í•…Í½¹…±}±•…‘Ì¤è(€€€€€€€€€€€€€€€€€€€€€€€É…¥Í”MLÕÉÉ½È ‰É…Ü€ÔÀÀµµˆ¡•¥¡ÐÝ…Ì¹½Ð…Ù…¥±…‰±”™½ÈÑ¡”½µµ½¸Í•…Í½¹…°½µÁ…É¥Í½¸ˆ¤(€€€€€€€€€€€€€€€€€€€½µµ½¹}É•™•É•¹•Ì€ômt(€€€€€€€€€€€€€€€€€€€É•™•É•¹•}™¥±•Ì€ômt(€€€€€€€€€€€€€€€€€€€É•™•É•¹•}ÕÉ±Ì€ômt(€€€€€€€€€€€€€€€€€€€™½È±•…¥¸Í•…Í½¹…±}±•…‘Ìè(€€€€€€€€€€€€€€€€€€€€€€€Ñ…É•Ð€ôÑ…É•Ñ}µ½¹Ñ ¡¥¹¥Ð°±•…¤(€€€€€€€€€€€€€€€€€€€€€€€É•™•É•¹”°É•™•É•¹•}Á…Ñ °É•™•É•¹•}ÕÉ°°É•™•É•¹•}‘½Ý¹±½…‘•°½µµ½¹}É•™•É•¹•}±…ÍÑ}É•ÅÕ•ÍÐ€ô±½…‘}½µµ½¹}É•™•É•¹” (€€€€€€€€€€€€€€€€€€€€€€€€€€€Ñ…É•Ð°(€€€€€€€€€€€€€€€€€€€€€€€€€€€½µµ½¹}É•™•É•¹•}‘¥È°(€€€€€€€€€€€€€€€€€€€€€€€€€€€…ÉÌ¹½µµ½¹}É•™•É•¹•}ÕÉ°°(€€€€€€€€€€€€€€€€€€€€€€€€€€€µ…à À¸À°…ÉÌ¹½µµ½¹}É•™•É•¹•}É•ÅÕ•ÍÑ}‘•±…ä¤°(€€€€€€€€€€€€€€€€€€€€€€€€€€€½µµ½¹}É•™•É•¹•}±…ÍÑ}É•ÅÕ•ÍÐ°(€€€€€€€€€€€€€€€€€€€€€€€€¤(€€€€€€€€€€€€€€€€€€€€€€€½µµ½¹}É•™•É•¹•Ì¹…ÁÁ•¹¡É•É¥‘}¹•…É•ÍÐ (€€€€€€€€€€€€€€€€€€€€€€€€€€€É•™•É•¹”°(€€€€€€€€€€€€€€€€€€€€€€€€€€€Í•…Í½¹…±}¡•¥¡Ð¹±½¹Ì°(€€€€€€€€€€€€€€€€€€€€€€€€€€€Í•…Í½¹…±}¡•¥¡Ð¹±…ÑÌ°(€€€€€€€€€€€€€€€€€€€€€€€€€€€˜‰½µµ½¸É•™•É•¹”íÑ…É•Ñôˆ°(€€€€€€€€€€€€€€€€€€€€€€€€¤¤(€€€€€€€€€€€€€€€€€€€€€€€É•™•É•¹•}™¥±•Ì¹…ÁÁ•¹¡É•±…Ñ¥Ù•}Á…Ñ ¡É•™•É•¹•}Á…Ñ °É•Á½}É½½Ð¤¤(€€€€€€€€€€€€€€€€€€€€€€€¥˜É•™•É•¹•}ÕÉ°è(€€€€€€€€€€€€€€€€€€€€€€€€€€€É•™•É•¹•}ÕÉ±Ì¹…ÁÁ•¹¡É•™•É•¹•}ÕÉ°¤(€€€€€€€€€€€€€€€€€€€½µµ½¹}‰…Í•±¥¹”€ôµ•…¹}É¥‘Ì¡½µµ½¹}É•™•É•¹•Ì¤(€€€€€€€€€€€€€€€€€€€½µµ½¹}É¥€ôÍÕ‰ÑÉ…Ñ}É¥‘Ì¡Í•…Í½¹…±}¡•¥¡Ð°½µµ½¹}‰…Í•±¥¹”¤(€€€€€€€€€€€€€€€€€€€½µµ½¹}½ÕÑÁÕÐ€ô½ÕÑÁÕÑ}‘¥È€¼¥¹¥Ñlèát€¼˜‰Í•…ÌÕ}íÁÉ½‘ÕÑlÙ…É¥…‰±”uõ}í™¥ÉÍÑ}Ñ…É•Ñôµí±…ÍÑ}Ñ…É•Ñõ}½µµ½¸´ÄääÄ´ÈÀÈÀ¹©Áœˆ(€€€€€€€€€€€€€€€€€€€É•¹‘•É}µ…À (€€€€€€€€€€€€€€€€€€€€€€€½µµ½¹}É¥°(€€€€€€€€€€€€€€€€€€€€€€€¥¹¥Ð°(€€€€€€€€€€€€€€€€€€€€€€€™¥ÉÍÑ}Ñ…É•Ð°(€€€€€€€€€€€€€€€€€€€€€€€˜‰í™¥ÉÍÑ}±•…‘õqÔÈÀÄÍí±…ÍÑ}±•…‘ôˆ°(€€€€€€€€€€€€€€€€€€€€€€€±¥ÍÐ¡É…¹”¡M}9M5	1}55	IL¤¤°(€€€€€€€€€€€€€€€€€€€€€€€½µµ½¹}½ÕÑÁÕÐ°(€€€€€€€€€€€€€€€€€€€€€€€…¹½µ…±äõQÉÕ”°(€€€€€€€€€€€€€€€€€€€€€€€‰…Í•±¥¹•}±…‰•°õ=55=9}II9}1	0°(€€€€€€€€€€€€€€€€€€€€€€€‰½É‘•É}Á…Ñ¡Ìõ‰½É‘•É}Á…Ñ¡Ì°(€€€€€€€€€€€€€€€€€€€€€€€Á•É¥½‘}±…‰•°õÍ•…Í½¹…±}Á•É¥½‘}±…‰•°¡™¥ÉÍÑ}Ñ…É•Ð°±…ÍÑ}Ñ…É•Ð¤°(€€€€€€€€€€€€€€€€€€€€€€€•¹Í•µ‰±•}±…‰•°õ˜‰íM}9M5	1}55	IMôµµ•µ‰•Èµ•…¸ˆ°(€€€€€€€€€€€€€€€€€€€€€€€¡•¥¡Ñ}É¥õÍ•…Í½¹…±}¡•¥¡Ð°(€€€€€€€€€€€€€€€€€€€€€€€ÁÉ½‘ÕÑ}ÍÁ•Œõì¨©ÁÉ½‘ÕÐ°€‰Í½ÕÉ•}±…‰•°ˆèM=UI}1	1ô°(€€€€€€€€€€€€€€€€€€€€¤(€€€€€€€€€€€€€€€€€€€Í•…Í½¹…±}•¹ÑÉål‰½µÁ…É¥Í½¸‰t€ôì(€€€€€€€€€€€€€€€€€€€€€€€€‰½µµ½¹|ÄääÅ|ÈÀÈÀˆèì(€€€€€€€€€€€€€€€€€€€€€€€€€€€€‰¥µ…”ˆèÉ•±…Ñ¥Ù•}Á…Ñ ¡½µµ½¹}½ÕÑÁÕÐ°É•Á½}É½½Ð¤°(€€€€€€€€€€€€€€€€€€€€€€€€€€€€‰ÍÑ…ÑÕÌˆè€‰É•¹‘•É•ˆ°(€€€€€€€€€€€€€€€€€€€€€€€€€€€€‰‰…Í•±¥¹”ˆèì(€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€‰±…‰•°ˆè=55=9}II9}1	0°(€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€‰å•…ÉÌˆè=55=9}II9}eIL°(€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€‰Í½ÕÉ”ˆè€‰…¹M%ALØÌ¡¥¹‘…ÍÐ±¥µ…Ñ½±½äˆ°(€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€‰™¥±•ÌˆèÉ•™•É•¹•}™¥±•Ì°(€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€‰ÕÉ±ÌˆèÉ•™•É•¹•}ÕÉ±Ì°(€€€€€€€€€€€€€€€€€€€€€€€€€€€ô°(€€€€€€€€€€€€€€€€€€€€€€€ô(€€€€€€€€€€€€€€€€€€€ô(€€€€€€€€€€€€€€€•á•ÁÐá•ÁÑ¥½¸…Ì•áŒè(€€€€€€€€€€€€€€€€€€€Í•…Í½¹…±}•¹ÑÉål‰½µÁ…É¥Í½¸‰t€ôì(€€€€€€€€€€€€€€€€€€€€€€€€‰½µµ½¹|ÄääÅ|ÈÀÈÀˆèì(€€€€€€€€€€€€€€€€€€€€€€€€€€€€‰ÍÑ…ÑÕÌˆè€‰Õ¹…Ù…¥±…‰±”ˆ°(€€€€€€€€€€€€€€€€€€€€€€€€€€€€‰‰…Í•±¥¹”ˆèì(€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€‰±…‰•°ˆè=55=9}II9}1	0°(€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€‰å•…ÉÌˆè=55=9}II9}eIL°(€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€‰Í½ÕÉ”ˆè€‰…¹M%ALØÌ¡¥¹‘…ÍÐ±¥µ…Ñ½±½äˆ°(€€€€€€€€€€€€€€€€€€€€€€€€€€€ô°(€€€€€€€€€€€€€€€€€€€€€€€€€€€€‰•ÉÉ½ÈˆèÍÑÈ¡•áŒ¤°(€€€€€€€€€€€€€€€€€€€€€€€ô(€€€€€€€€€€€€€€€€€€€ô(€€€€€€€€€€€€€€€€€€€ÁÉ¥¹Ð (€€€€€€€€€€€€€€€€€€€€€€€˜‰MLÔ½µµ½¸½µÁ…É¥Í½¸Í•…Í½¹…°Ý¥¹‘½Üí™¥ÉÍÑ}Ñ…É•Ñôµí±…ÍÑ}Ñ…É•ÑôÕ¹…Ù…¥±…‰±”èí•áôˆ°(€€€€€€€€€€€€€€€€€€€€€€€™¥±”õÍåÌ¹ÍÑ‘•ÉÈ°(€€€€€€€€€€€€€€€€€€€€¤(€€€€€€€•á•ÁÐá•ÁÑ¥½¸…Ì•áŒè(€€€€€€€€€€€™…¥±ÕÉ•Ì€¬ô€Ä(€€€€€€€€€€€Í•…Í½¹…±}•¹ÑÉål‰ÍÑ…ÑÕÌ‰t€ô€‰™…¥±•ˆ(€€€€€€€€€€€Í•…Í½¹…±}•¹ÑÉål‰•ÉÉ½È‰t€ôÍÑÈ¡•áŒ¤(€€€€€€€€€€€ÁÉ¥¹Ð¡˜‰MLÔÍ•…Í½¹…°Ý¥¹‘½Üí™¥ÉÍÑ}Ñ…É•Ñôµí±…ÍÑ}Ñ…É•Ñô™…¥±•èí•áôˆ°™¥±”õÍåÌ¹ÍÑ‘•ÉÈ¤(€€€€€€€ÉÕ¹}•¹ÑÉål‰Ñ…É•ÑÌ‰t¹…ÁÁ•¹¡Í•…Í½¹…±}•¹ÑÉä¤((€€€ÍÑ…ÑÕÍ•Ì€ômÑ…É•Ð¹•Ð ‰ÍÑ…ÑÕÌˆ¤™½ÈÑ…É•Ð¥¸ÉÕ¹}•¹ÑÉål‰Ñ…É•ÑÌ‰ut(€€€ÉÕ¹}•¹ÑÉål‰ÍÑ…ÑÕÌ‰t€ô€‰™…¥±•ˆ¥˜™…¥±ÕÉ•Ì…¹¹½Ð…¹ä¡ÍÑ…ÑÕÌ€„ô€‰™…¥±•ˆ™½ÈÍÑ…ÑÕÌ¥¸ÍÑ…ÑÕÍ•Ì¤•±Í”€ (€€€€€€€€‰Á…ÉÑ¥…°ˆ¥˜™…¥±ÕÉ•Ì•±Í”€ ‰‘•½‘•ˆ¥˜…ÉÌ¹‘•½‘•}½¹±ä•±Í”€‰É•¹‘•É•ˆ¤(€€€€¤(€€€ÉÕ¹}•¹ÑÉål‰½ÕÑÁÕÑ}‘¥È‰t€ôÉ•±…Ñ¥Ù•}Á…Ñ ¡½ÕÑÁÕÑ}‘¥È°É•Á½}É½½Ð¤(€€€ÁÉ•Ù¥½ÕÌ€ôÉ•Í½±Ù•}É•Á½}Á…Ñ ¡…ÉÌ¹ÁÉ•Ù¥½ÕÍ}µ…¹¥™•ÍÐ°É•Á½}É½½Ð¤¥˜…ÉÌ¹ÁÉ•Ù¥½ÕÍ}µ…¹¥™•ÍÐ•±Í”9½¹”(€€€ÝÉ¥Ñ•}µ…¹¥™•ÍÐ¡µ…¹¥™•ÍÑ}Á…Ñ °É•Á½}É½½Ð°ÉÕ¹}•¹ÑÉä°ÁÉ•Ù¥½ÕÌ°…ÉÌ¹É•Ñ…¥¹}ÉÕ¹Ì¤(€€€ÁÉ¥¹Ð¡˜‰ÝÉ½Ñ”MLÔµ…¹¥™•ÍÐèíµ…¹¥™•ÍÑ}Á…Ñ¡ôˆ¤(€€€É•ÑÕÉ¸€È¥˜™…¥±ÕÉ•Ì•±Í”€À(()‘•˜µ…¥¸ ¤€´ø¥¹Ðè(€€€ÑÉäè4(€€€€€€€É•ÑÕÉ¸ÉÕ¸¡‰Õ¥±‘}Á…ÉÍ•È ¤¹Á…ÉÍ•}…ÉÌ ¤¤4(€€€•á•ÁÐMLÕÉÉ½È…Ì•áŒè4(€€€€€€€ÁÉ¥¹Ð¡˜‰MLÔII=Hèí•áôˆ°™¥±”õÍåÌ¹ÍÑ‘•ÉÈ¤4(€€€€€€€É•ÑÕÉ¸€È4(4(4)¥˜}}¹…µ•}|€ôô€‰}}µ…¥¹}|ˆè4(€€€É…¥Í”MåÍÑ•µá¥Ð¡µ…¥¸ ¤¤4(
