@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "kind": "seas5_seasonal_manifest",
-  "generated_utc": "2026-08-15T19:33:38Z",
+  "generated_utc": "2026-08-15T22:26:48Z",
   "source": "ECMWF SEAS5 / Copernicus CDS",
   "source_url": "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-pressure-levels",
   "source_urls": [
@@ -264,7 +264,21 @@
             "source": "C3S official postprocessed anomaly; ECMWF/System 51",
             "dataset": "seasonal-postprocessed-pressure-levels"
           },
-          "image": "public/seasonal/seas5/20260801/seas5_z500_202612.jpg"
+          "image": "public/seasonal/seas5/20260801/seas5_z500_202612.jpg",
+          "comparison": {
+            "common_1991_2020": {
+              "image": "public/seasonal/seas5/20260801/seas5_z500_202612_common-1991-2020.jpg",
+              "status": "rendered",
+              "baseline": {
+                "label": "Common 1991-2020 reference (CanSIPS v3 hindcast)",
+                "years": "1991-2020",
+                "source": "CanSIPS v3 hindcast climatology",
+                "file": ".cache/seas5/common-reference/z500_202612.csv.gz",
+                "url": "https://jwallio.github.io/wn2/seasonal/common_reference/1991-2020/z500_202612.csv.gz",
+                "downloaded": true
+              }
+            }
+          }
         },
         {
           "id": "seas5-2026080100-500mb_height_anomaly-lead05",
@@ -297,7 +311,21 @@
             "source": "C3S official postprocessed anomaly; ECMWF/System 51",
             "dataset": "seasonal-postprocessed-pressure-levels"
           },
-          "image": "public/seasonal/seas5/20260801/seas5_z500_202701.jpg"
+          "image": "public/seasonal/seas5/20260801/seas5_z500_202701.jpg",
+          "comparison": {
+            "common_1991_2020": {
+              "image": "public/seasonal/seas5/20260801/seas5_z500_202701_common-1991-2020.jpg",
+              "status": "rendered",
+              "baseline": {
+                "label": "Common 1991-2020 reference (CanSIPS v3 hindcast)",
+                "years": "1991-2020",
+                "source": "CanSIPS v3 hindcast climatology",
+                "file": ".cache/seas5/common-reference/z500_202701.csv.gz",
+                "url": "https://jwallio.github.io/wn2/seasonal/common_reference/1991-2020/z500_202701.csv.gz",
+                "downloaded": true
+              }
+            }
+          }
         },
         {
           "id": "seas5-2026080100-500mb_height_anomaly-lead06",
@@ -330,7 +358,21 @@
             "source": "C3S official postprocessed anomaly; ECMWF/System 51",
             "dataset": "seasonal-postprocessed-pressure-levels"
           },
-          "image": "public/seasonal/seas5/20260801/seas5_z500_202702.jpg"
+          "image": "public/seasonal/seas5/20260801/seas5_z500_202702.jpg",
+          "comparison": {
+            "common_1991_2020": {
+              "image": "public/seasonal/seas5/20260801/seas5_z500_202702_common-1991-2020.jpg",
+              "status": "rendered",
+              "baseline": {
+                "label": "Common 1991-2020 reference (CanSIPS v3 hindcast)",
+                "years": "1991-2020",
+                "source": "CanSIPS v3 hindcast climatology",
+                "file": ".cache/seas5/common-reference/z500_202702.csv.gz",
+                "url": "https://jwallio.github.io/wn2/seasonal/common_reference/1991-2020/z500_202702.csv.gz",
+                "downloaded": true
+              }
+            }
+          }
         },
         {
           "id": "seas5-2026080100-500mb_height_anomaly-202612-202702",
@@ -360,10 +402,38 @@
             "status": "official_postprocessed",
             "source": "C3S official postprocessed anomaly; ECMWF/System 51",
             "dataset": "seasonal-postprocessed-pressure-levels"
+          },
+          "comparison": {
+            "common_1991_2020": {
+              "image": "public/seasonal/seas5/20260801/seas5_z500_202612-202702_common-1991-2020.jpg",
+              "status": "rendered",
+              "baseline": {
+                "label": "Common 1991-2020 reference (CanSIPS v3 hindcast)",
+                "years": "1991-2020",
+                "source": "CanSIPS v3 hindcast climatology",
+                "files": [
+                  ".cache/seas5/common-reference/z500_202612.csv.gz",
+                  ".cache/seas5/common-reference/z500_202701.csv.gz",
+                  ".cache/seas5/common-reference/z500_202702.csv.gz"
+                ],
+                "urls": [
+                  "https://jwallio.github.io/wn2/seasonal/common_reference/1991-2020/z500_202612.csv.gz",
+                  "https://jwallio.github.io/wn2/seasonal/common_reference/1991-2020/z500_202701.csv.gz",
+                  "https://jwallio.github.io/wn2/seasonal/common_reference/1991-2020/z500_202702.csv.gz"
+                ]
+              }
+            }
           }
         }
       ],
       "status": "rendered",
+      "comparison_reference": {
+        "id": "common_1991_2020",
+        "label": "Common 1991-2020 reference (CanSIPS v3 hindcast)",
+        "years": "1991-2020",
+        "source": "CanSIPS v3 hindcast climatology",
+        "url_root": "https://jwallio.github.io/wn2/seasonal/common_reference/1991-2020/"
+      },
       "archive_latest_init": "2026080100",
       "archive_age_days": 14,
       "output_dir": "public/seasonal/seas5"
