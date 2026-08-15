@@ -72,6 +72,7 @@ def main() -> int:
         "write_manifest",
         "archive_latest_init",
         "archive_age_days",
+        "SEAS5_PRECIP_ANOMALY_PALETTE",
     ):
         check(term in adapter or term in workflow or term in page, f"missing SEAS5 contract term: {term}")
     for term in (
@@ -101,6 +102,9 @@ def main() -> int:
     check('href="../">Seasonal dashboard</a>' in page, "SEAS5 direct viewer should link to the unified seasonal dashboard")
     check("preferredTargetIndex" in page, "SEAS5 viewer should default to the seasonal aggregate when one is present")
     module = load_adapter()
+    check(module.PRODUCT_SPECS[module.PRECIP_ANOMALY]["anomaly_palette"] == module.SEAS5_PRECIP_ANOMALY_PALETTE, "SEAS5 precipitation should use its darker negative palette")
+    check(module.SEAS5_PRECIP_ANOMALY_PALETTE[7] == "#e1aa67", "SEAS5 weak negative precipitation colors should be darker")
+    check(module.SEAS5_PRECIP_ANOMALY_PALETTE[8] == "#ffffff", "SEAS5 zero precipitation anomaly should be white")
     check(module.latest_cds_init(dt.datetime(2026, 8, 6, 12, 0)) == "2026080100", "release-time init should use the current ECMWF month")
     check(module.latest_cds_init(dt.datetime(2026, 8, 6, 11, 59)) == "2026070100", "pre-release init should use the prior ECMWF month")
     check(module.target_month("2025080100", 4) == "202512", "lead-month target conversion should produce December")

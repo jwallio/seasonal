@@ -99,6 +99,24 @@ MSLP_PALETTE = [
     "#ac4f55",
     "#8a3542",
 ]
+SEAS5_PRECIP_ANOMALY_PALETTE = [
+    "#6b2d05",
+    "#7f3608",
+    "#93430d",
+    "#a95213",
+    "#bc661b",
+    "#cb7929",
+    "#d88f42",
+    "#e1aa67",
+    "#ffffff",
+    "#d9efd2",
+    "#bfe4b6",
+    "#9bd694",
+    "#74c476",
+    "#41ab5d",
+    "#238b45",
+    "#006d2c",
+]
 
 
 PRODUCT_SPECS: dict[str, dict[str, Any]] = {
@@ -192,7 +210,7 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "anomaly_min": -8.0,
         "anomaly_max": 8.0,
         "anomaly_ticks": list(range(-8, 9)),
-        "anomaly_palette": PRECIP_ANOMALY_PALETTE,
+        "anomaly_palette": SEAS5_PRECIP_ANOMALY_PALETTE,
         "conversion": "CDS anomalous water rate multiplied by target-month seconds and converted from metres to inches",
         "header_detail": "{source_label}  •  {baseline_label}  •  Precipitation accumulation (in)  •  CONUS domain",
         "cds_dataset": CDS_SINGLE_ANOMALY_DATASET,
