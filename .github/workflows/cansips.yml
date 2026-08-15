@@ -126,7 +126,7 @@ jobs:
             --previous-manifest .cache/cansips/previous_manifest.json \
             --retain-runs 4 \
             --wgrib2 "$CANSIPS_WGRIB2" \
-            --request-delay 0.25
+            --request-delay 1.0
 
       - name: Package CanSIPS Pages payload
         if: success()

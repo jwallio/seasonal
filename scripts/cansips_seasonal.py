@@ -50,6 +50,9 @@ CANSIPS_HINDCAST_START = 1991
 CANSIPS_HINDCAST_END = 2020
 CANSIPS_MEAN_RECORD = 3
 CANSIPS_DEFAULT_REGION = DEFAULT_REGION
+CANSIPS_DOWNLOAD_ATTEMPTS = 4
+CANSIPS_DOWNLOAD_TIMEOUT = (60, 600)
+CANSIPS_REQUEST_DELAY = 1.0
 
 PRODUCT_Z500_ANOMALY = "500mb_height_anomaly"
 PRODUCT_SPECS: dict[str, dict[str, Any]] = {
@@ -236,8 +239,10 @@ def load_ensemble_mean(
     downloaded, last_request = download_file(
         url,
         raw_path,
-        max(0.0, request_delay),
+        max(CANSIPS_REQUEST_DELAY, request_delay),
         last_request,
+        attempts=CANSIPS_DOWNLOAD_ATTEMPTS,
+        timeout=CANSIPS_DOWNLOAD_TIMEOUT,
     )
     validate_member_inventory(raw_path, wgrib2)
     mean_path = raw_path.with_name(raw_path.name + ".ensmean.grib2")

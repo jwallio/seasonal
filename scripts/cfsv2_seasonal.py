@@ -493,7 +493,15 @@ def read_grid_state(path: Path) -> Grid:
         return grid_from_rows(csv.reader(handle), str(path))
 
 
-def download_file(url: str, destination: Path, request_delay: float, last_request: float) -> tuple[bool, float]:
+def download_file(
+    url: str,
+    destination: Path,
+    request_delay: float,
+    last_request: float,
+    *,
+    attempts: int = 1,
+    timeout: tuple[int, int] = (30, 300),
+) -> tuple[bool, float]:
     if destination.exists() and destination.stat().st_size > 0:
         return False, last_request
     try:
@@ -506,21 +514,26 @@ def download_file(url: str, destination: Path, request_delay: float, last_reques
         time.sleep(request_delay - elapsed)
     destination.parent.mkdir(parents=True, exist_ok=True)
     partial = destination.with_name(destination.name + ".part")
-    try:
-        response = requests.get(url, stream=True, timeout=(30, 300))
-        response.raise_for_status()
-        with partial.open("wb") as handle:
-            for chunk in response.iter_content(chunk_size=1024 * 1024):
-                if chunk:
-                    handle.write(chunk)
-        if partial.stat().st_size == 0:
-            raise CFSv2Error(f"empty download from {url}")
-        partial.replace(destination)
-    except Exception:
-        if partial.exists():
-            partial.unlink()
-        raise
-    return True, time.monotonic()
+    attempts = max(1, attempts)
+    for attempt in range(1, attempts + 1):
+        try:
+            response = requests.get(url, stream=True, timeout=timeout)
+            response.raise_for_status()
+            with partial.open("wb") as handle:
+                for chunk in response.iter_content(chunk_size=1024 * 1024):
+                    if chunk:
+                        handle.write(chunk)
+            if partial.stat().st_size == 0:
+                raise CFSv2Error(f"empty download from {url}")
+            partial.replace(destination)
+            return True, time.monotonic()
+        except Exception:
+            if partial.exists():
+                partial.unlink()
+            if attempt >= attempts:
+                raise
+            time.sleep(min(30.0, float(2 ** (attempt - 1))))
+    raise AssertionError("download retry loop did not return or raise")
 
 
 def _float_or_nan(value: str) -> float:

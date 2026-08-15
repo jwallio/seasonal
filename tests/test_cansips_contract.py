@@ -56,6 +56,7 @@ def main() -> int:
         "matching-initialization-month", "500mb_height_anomaly", "ANOMALY_PALETTE",
         "ANOMALY_TICKS", "seasonal_period_label", "DJF", "write_manifest",
         "--climo-start", "--climo-end", "--previous-manifest", "--retain-runs",
+        "CANSIPS_DOWNLOAD_ATTEMPTS", "CANSIPS_DOWNLOAD_TIMEOUT",
     ):
         check(term in adapter or term in workflow or term in documentation, f"missing CanSIPS contract term: {term}")
     for term in (
