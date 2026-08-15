@@ -1,0 +1,1061 @@
+{
+  "schema_version": 1,
+  "kind": "cansips_seasonal_manifest",
+  "generated_utc": "2026-08-15T12:14:44Z",
+  "source": "ECCC MSC CanSIPS v3 / Datamart",
+  "source_url": "https://eccc-msc.github.io/open-data/msc-data/nwp_cansips/readme_cansips-datamart_en/",
+  "source_urls": [
+    "https://eccc-msc.github.io/open-data/msc-data/nwp_cansips/readme_cansips-datamart_en/",
+    "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/",
+    "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/"
+  ],
+  "product_labels": {
+    "500mb_height_anomaly": "500-mb Height Anomaly"
+  },
+  "retention": {
+    "max_runs": 4,
+    "history_runs": 3
+  },
+  "runs": [
+    {
+      "id": "cansips-2026080100",
+      "source": "ECCC MSC CanSIPS v3 / Datamart",
+      "source_url": "https://eccc-msc.github.io/open-data/msc-data/nwp_cansips/readme_cansips-datamart_en/",
+      "source_urls": [
+        "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/",
+        "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/",
+        "https://eccc-msc.github.io/open-data/msc-data/nwp_cansips/readme_cansips-datamart_en/"
+      ],
+      "model": "CanSIPS v3",
+      "product": "500mb_height_anomaly",
+      "init_utc": "2026-08-01T00:00:00Z",
+      "ensemble_members": 40,
+      "ensemble_scope": "40-member CanSIPS v3 blend",
+      "member_groups": [
+        {
+          "model": "GEM5.2-NEMO",
+          "members": "1-20",
+          "count": 20
+        },
+        {
+          "model": "CanESM5",
+          "members": "21-40",
+          "count": 20
+        }
+      ],
+      "statistic": "ensemble_mean",
+      "aggregation": "3-month seasonal mean of monthly forecast anomalies",
+      "field": "z500_anomaly",
+      "units": "m",
+      "raw_field": "GeopotentialHeight at 500 hPa",
+      "raw_units": "m",
+      "grid": {
+        "longitude_count": 360,
+        "latitude_count": 180,
+        "resolution": "1 degree",
+        "layout": "LatLon1.0"
+      },
+      "climatology": {
+        "source": "CanSIPS v3 hindcast ensemble means",
+        "years": "1991-2020",
+        "initialization_month": "08",
+        "method": "forecast 40-member mean minus the matching-initialization-month and lead hindcast climatology"
+      },
+      "border_sources": [
+        {
+          "name": "countries.geojson"
+        },
+        {
+          "name": "us-states.geojson"
+        }
+      ],
+      "targets": [
+        {
+          "id": "cansips-2026080100-lead04",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-01-01T00:00:00Z",
+          "lead_month": 4,
+          "target_month": "202612",
+          "aggregation": "monthly forecast anomaly",
+          "field": "z500_anomaly",
+          "units": "m",
+          "raw_field": "GeopotentialHeight at 500 hPa",
+          "raw_units": "m",
+          "statistic": "ensemble_mean",
+          "ensemble_members": 40,
+          "source_files": [
+            {
+              "initialization": "2026080100",
+              "lead_month": 4,
+              "url": "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/2026/08/202608_MSC_CanSIPS_GeopotentialHeight_ISBL-0500_LatLon1.0_P04M.grib2",
+              "cache_file": ".cache/cansips/means/forecast/202608/z500_lead04.csv.gz",
+              "storage": "decoded_ensemble_mean_grid",
+              "downloaded": true,
+              "ensemble_members": 40
+            }
+          ],
+          "status": "rendered",
+          "baseline": {
+            "source": "CanSIPS v3 hindcast climatology; 1991-2020",
+            "years": "1991-2020",
+            "initialization_month": "08",
+            "lead_month": 4,
+            "ensemble_members": 40,
+            "files": [
+              {
+                "initialization": "1991080100",
+                "lead_month": 4,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1991/08/199108_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P04M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/199108/z500_lead04.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "1992080100",
+                "lead_month": 4,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1992/08/199208_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P04M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/199208/z500_lead04.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "1993080100",
+                "lead_month": 4,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1993/08/199308_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P04M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/199308/z500_lead04.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "1994080100",
+                "lead_month": 4,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1994/08/199408_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P04M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/199408/z500_lead04.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "1995080100",
+                "lead_month": 4,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1995/08/199508_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P04M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/199508/z500_lead04.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "1996080100",
+                "lead_month": 4,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1996/08/199608_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P04M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/199608/z500_lead04.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "1997080100",
+                "lead_month": 4,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1997/08/199708_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P04M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/199708/z500_lead04.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "1998080100",
+                "lead_month": 4,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1998/08/199808_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P04M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/199808/z500_lead04.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "1999080100",
+                "lead_month": 4,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1999/08/199908_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P04M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/199908/z500_lead04.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2000080100",
+                "lead_month": 4,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2000/08/200008_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P04M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/200008/z500_lead04.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2001080100",
+                "lead_month": 4,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2001/08/200108_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P04M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/200108/z500_lead04.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2002080100",
+                "lead_month": 4,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2002/08/200208_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P04M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/200208/z500_lead04.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2003080100",
+                "lead_month": 4,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2003/08/200308_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P04M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/200308/z500_lead04.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2004080100",
+                "lead_month": 4,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2004/08/200408_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P04M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/200408/z500_lead04.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2005080100",
+                "lead_month": 4,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2005/08/200508_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P04M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/200508/z500_lead04.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2006080100",
+                "lead_month": 4,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2006/08/200608_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P04M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/200608/z500_lead04.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2007080100",
+                "lead_month": 4,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2007/08/200708_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P04M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/200708/z500_lead04.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2008080100",
+                "lead_month": 4,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2008/08/200808_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P04M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/200808/z500_lead04.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2009080100",
+                "lead_month": 4,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2009/08/200908_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P04M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/200908/z500_lead04.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2010080100",
+                "lead_month": 4,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2010/08/201008_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P04M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/201008/z500_lead04.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2011080100",
+                "lead_month": 4,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2011/08/201108_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P04M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/201108/z500_lead04.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2012080100",
+                "lead_month": 4,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2012/08/201208_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P04M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/201208/z500_lead04.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2013080100",
+                "lead_month": 4,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2013/08/201308_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P04M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/201308/z500_lead04.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2014080100",
+                "lead_month": 4,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2014/08/201408_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P04M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/201408/z500_lead04.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2015080100",
+                "lead_month": 4,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2015/08/201508_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P04M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/201508/z500_lead04.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2016080100",
+                "lead_month": 4,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2016/08/201608_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P04M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/201608/z500_lead04.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2017080100",
+                "lead_month": 4,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2017/08/201708_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P04M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/201708/z500_lead04.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2018080100",
+                "lead_month": 4,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2018/08/201808_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P04M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/201808/z500_lead04.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2019080100",
+                "lead_month": 4,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2019/08/201908_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P04M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/201908/z500_lead04.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2020080100",
+                "lead_month": 4,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2020/08/202008_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P04M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/202008/z500_lead04.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              }
+            ]
+          },
+          "ensemble_complete": true,
+          "image": "public/seasonal/cansips/20260801/cansips_z500a_202612.jpg"
+        },
+        {
+          "id": "cansips-2026080100-lead05",
+          "valid_start_utc": "2027-01-01T00:00:00Z",
+          "valid_end_utc": "2027-02-01T00:00:00Z",
+          "lead_month": 5,
+          "target_month": "202701",
+          "aggregation": "monthly forecast anomaly",
+          "field": "z500_anomaly",
+          "units": "m",
+          "raw_field": "GeopotentialHeight at 500 hPa",
+          "raw_units": "m",
+          "statistic": "ensemble_mean",
+          "ensemble_members": 40,
+          "source_files": [
+            {
+              "initialization": "2026080100",
+              "lead_month": 5,
+              "url": "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/2026/08/202608_MSC_CanSIPS_GeopotentialHeight_ISBL-0500_LatLon1.0_P05M.grib2",
+              "cache_file": ".cache/cansips/means/forecast/202608/z500_lead05.csv.gz",
+              "storage": "decoded_ensemble_mean_grid",
+              "downloaded": true,
+              "ensemble_members": 40
+            }
+          ],
+          "status": "rendered",
+          "baseline": {
+            "source": "CanSIPS v3 hindcast climatology; 1991-2020",
+            "years": "1991-2020",
+            "initialization_month": "08",
+            "lead_month": 5,
+            "ensemble_members": 40,
+            "files": [
+              {
+                "initialization": "1991080100",
+                "lead_month": 5,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1991/08/199108_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P05M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/199108/z500_lead05.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "1992080100",
+                "lead_month": 5,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1992/08/199208_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P05M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/199208/z500_lead05.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "1993080100",
+                "lead_month": 5,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1993/08/199308_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P05M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/199308/z500_lead05.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "1994080100",
+                "lead_month": 5,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1994/08/199408_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P05M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/199408/z500_lead05.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "1995080100",
+                "lead_month": 5,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1995/08/199508_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P05M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/199508/z500_lead05.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "1996080100",
+                "lead_month": 5,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1996/08/199608_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P05M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/199608/z500_lead05.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "1997080100",
+                "lead_month": 5,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1997/08/199708_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P05M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/199708/z500_lead05.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "1998080100",
+                "lead_month": 5,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1998/08/199808_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P05M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/199808/z500_lead05.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "1999080100",
+                "lead_month": 5,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1999/08/199908_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P05M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/199908/z500_lead05.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2000080100",
+                "lead_month": 5,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2000/08/200008_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P05M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/200008/z500_lead05.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2001080100",
+                "lead_month": 5,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2001/08/200108_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P05M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/200108/z500_lead05.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2002080100",
+                "lead_month": 5,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2002/08/200208_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P05M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/200208/z500_lead05.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2003080100",
+                "lead_month": 5,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2003/08/200308_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P05M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/200308/z500_lead05.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2004080100",
+                "lead_month": 5,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2004/08/200408_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P05M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/200408/z500_lead05.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2005080100",
+                "lead_month": 5,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2005/08/200508_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P05M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/200508/z500_lead05.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2006080100",
+                "lead_month": 5,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2006/08/200608_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P05M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/200608/z500_lead05.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2007080100",
+                "lead_month": 5,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2007/08/200708_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P05M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/200708/z500_lead05.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2008080100",
+                "lead_month": 5,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2008/08/200808_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P05M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/200808/z500_lead05.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2009080100",
+                "lead_month": 5,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2009/08/200908_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P05M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/200908/z500_lead05.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2010080100",
+                "lead_month": 5,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2010/08/201008_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P05M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/201008/z500_lead05.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2011080100",
+                "lead_month": 5,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2011/08/201108_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P05M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/201108/z500_lead05.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2012080100",
+                "lead_month": 5,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2012/08/201208_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P05M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/201208/z500_lead05.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2013080100",
+                "lead_month": 5,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2013/08/201308_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P05M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/201308/z500_lead05.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2014080100",
+                "lead_month": 5,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2014/08/201408_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P05M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/201408/z500_lead05.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2015080100",
+                "lead_month": 5,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2015/08/201508_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P05M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/201508/z500_lead05.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2016080100",
+                "lead_month": 5,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2016/08/201608_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P05M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/201608/z500_lead05.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2017080100",
+                "lead_month": 5,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2017/08/201708_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P05M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/201708/z500_lead05.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2018080100",
+                "lead_month": 5,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2018/08/201808_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P05M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/201808/z500_lead05.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2019080100",
+                "lead_month": 5,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2019/08/201908_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P05M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/201908/z500_lead05.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2020080100",
+                "lead_month": 5,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2020/08/202008_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P05M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/202008/z500_lead05.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              }
+            ]
+          },
+          "ensemble_complete": true,
+          "image": "public/seasonal/cansips/20260801/cansips_z500a_202701.jpg"
+        },
+        {
+          "id": "cansips-2026080100-lead06",
+          "valid_start_utc": "2027-02-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": 6,
+          "target_month": "202702",
+          "aggregation": "monthly forecast anomaly",
+          "field": "z500_anomaly",
+          "units": "m",
+          "raw_field": "GeopotentialHeight at 500 hPa",
+          "raw_units": "m",
+          "statistic": "ensemble_mean",
+          "ensemble_members": 40,
+          "source_files": [
+            {
+              "initialization": "2026080100",
+              "lead_month": 6,
+              "url": "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/2026/08/202608_MSC_CanSIPS_GeopotentialHeight_ISBL-0500_LatLon1.0_P06M.grib2",
+              "cache_file": ".cache/cansips/means/forecast/202608/z500_lead06.csv.gz",
+              "storage": "decoded_ensemble_mean_grid",
+              "downloaded": true,
+              "ensemble_members": 40
+            }
+          ],
+          "status": "rendered",
+          "baseline": {
+            "source": "CanSIPS v3 hindcast climatology; 1991-2020",
+            "years": "1991-2020",
+            "initialization_month": "08",
+            "lead_month": 6,
+            "ensemble_members": 40,
+            "files": [
+              {
+                "initialization": "1991080100",
+                "lead_month": 6,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1991/08/199108_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P06M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/199108/z500_lead06.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "1992080100",
+                "lead_month": 6,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1992/08/199208_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P06M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/199208/z500_lead06.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "1993080100",
+                "lead_month": 6,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1993/08/199308_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P06M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/199308/z500_lead06.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "1994080100",
+                "lead_month": 6,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1994/08/199408_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P06M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/199408/z500_lead06.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "1995080100",
+                "lead_month": 6,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1995/08/199508_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P06M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/199508/z500_lead06.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "1996080100",
+                "lead_month": 6,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1996/08/199608_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P06M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/199608/z500_lead06.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "1997080100",
+                "lead_month": 6,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1997/08/199708_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P06M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/199708/z500_lead06.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "1998080100",
+                "lead_month": 6,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1998/08/199808_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P06M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/199808/z500_lead06.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "1999080100",
+                "lead_month": 6,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1999/08/199908_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P06M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/199908/z500_lead06.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2000080100",
+                "lead_month": 6,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2000/08/200008_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P06M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/200008/z500_lead06.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2001080100",
+                "lead_month": 6,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2001/08/200108_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P06M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/200108/z500_lead06.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2002080100",
+                "lead_month": 6,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2002/08/200208_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P06M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/200208/z500_lead06.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2003080100",
+                "lead_month": 6,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2003/08/200308_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P06M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/200308/z500_lead06.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2004080100",
+                "lead_month": 6,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2004/08/200408_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P06M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/200408/z500_lead06.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2005080100",
+                "lead_month": 6,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2005/08/200508_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P06M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/200508/z500_lead06.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2006080100",
+                "lead_month": 6,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2006/08/200608_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P06M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/200608/z500_lead06.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2007080100",
+                "lead_month": 6,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2007/08/200708_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P06M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/200708/z500_lead06.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2008080100",
+                "lead_month": 6,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2008/08/200808_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P06M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/200808/z500_lead06.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2009080100",
+                "lead_month": 6,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2009/08/200908_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P06M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/200908/z500_lead06.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2010080100",
+                "lead_month": 6,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2010/08/201008_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P06M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/201008/z500_lead06.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2011080100",
+                "lead_month": 6,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2011/08/201108_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P06M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/201108/z500_lead06.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2012080100",
+                "lead_month": 6,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2012/08/201208_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P06M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/201208/z500_lead06.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2013080100",
+                "lead_month": 6,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2013/08/201308_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P06M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/201308/z500_lead06.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2014080100",
+                "lead_month": 6,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2014/08/201408_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P06M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/201408/z500_lead06.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2015080100",
+                "lead_month": 6,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2015/08/201508_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P06M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/201508/z500_lead06.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2016080100",
+                "lead_month": 6,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2016/08/201608_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P06M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/201608/z500_lead06.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2017080100",
+                "lead_month": 6,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2017/08/201708_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P06M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/201708/z500_lead06.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2018080100",
+                "lead_month": 6,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2018/08/201808_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P06M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/201808/z500_lead06.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2019080100",
+                "lead_month": 6,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2019/08/201908_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P06M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/201908/z500_lead06.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2020080100",
+                "lead_month": 6,
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2020/08/202008_MSC_CanSIPS-Hindcast_GeopotentialHeight_ISBL-0500_LatLon1.0_P06M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/202008/z500_lead06.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              }
+            ]
+          },
+          "ensemble_complete": true,
+          "image": "public/seasonal/cansips/20260801/cansips_z500a_202702.jpg"
+        },
+        {
+          "id": "cansips-2026080100-202612-202702",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": "4-6",
+          "target_month": "202612-202702",
+          "aggregation": "3-month seasonal mean",
+          "field": "z500_anomaly",
+          "units": "m",
+          "raw_field": "GeopotentialHeight at 500 hPa",
+          "raw_units": "m",
+          "statistic": "ensemble_mean",
+          "ensemble_members": 40,
+          "monthly_leads": [
+            4,
+            5,
+            6
+          ],
+          "source_files": [
+            {
+              "initialization": "2026080100",
+              "lead_month": 4,
+              "url": "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/2026/08/202608_MSC_CanSIPS_GeopotentialHeight_ISBL-0500_LatLon1.0_P04M.grib2",
+              "cache_file": ".cache/cansips/means/forecast/202608/z500_lead04.csv.gz",
+              "storage": "decoded_ensemble_mean_grid",
+              "downloaded": true,
+              "ensemble_members": 40
+            },
+            {
+              "initialization": "2026080100",
+              "lead_month": 5,
+              "url": "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/2026/08/202608_MSC_CanSIPS_GeopotentialHeight_ISBL-0500_LatLon1.0_P05M.grib2",
+              "cache_file": ".cache/cansips/means/forecast/202608/z500_lead05.csv.gz",
+              "storage": "decoded_ensemble_mean_grid",
+              "downloaded": true,
+              "ensemble_members": 40
+            },
+            {
+              "initialization": "2026080100",
+              "lead_month": 6,
+              "url": "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/2026/08/202608_MSC_CanSIPS_GeopotentialHeight_ISBL-0500_LatLon1.0_P06M.grib2",
+              "cache_file": ".cache/cansips/means/forecast/202608/z500_lead06.csv.gz",
+              "storage": "decoded_ensemble_mean_grid",
+              "downloaded": true,
+              "ensemble_members": 40
+            }
+          ],
+          "status": "rendered",
+          "baseline": {
+            "source": "CanSIPS v3 hindcast climatology; 1991-2020",
+            "years": "1991-2020",
+            "initialization_month": "08",
+            "lead_months": [
+              4,
+              5,
+              6
+            ],
+            "method": "mean of monthly forecast-minus-hindcast anomalies"
+          },
+          "image": "public/seasonal/cansips/20260801/cansips_z500a_202612-202702.jpg"
+        }
+      ],
+      "status": "rendered",
+      "output_dir": "public/seasonal/cansips",
+      "generated_utc": "2026-08-15T12:14:44Z"
+    }
+  ]
+}
