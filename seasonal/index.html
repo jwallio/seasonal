@@ -351,8 +351,7 @@
       if (!options.some(item => String(item.value) === String(selection.compareTarget))) selection.compareTarget = preferred.value;
       populate(select, options, selection.compareTarget);
       selection.compareTarget = select.value || preferred.value;
-      const commonComplete = COMPARE_MODELS.every(modelKey => Boolean(compareRunForTarget(modelKey, selection.compareTarget, 'common_1991_2020')));
-      if (!selection.compareBaseline) selection.compareBaseline = commonComplete ? 'common_1991_2020' : 'native';
+      if (!selection.compareBaseline) selection.compareBaseline = 'native';
       populate(baselineSelect, COMPARE_BASELINES, selection.compareBaseline);
       selection.compareBaseline = baselineSelect.value || 'native';
       const availableCount = COMPARE_MODELS.filter(modelKey => Boolean(compareRunForTarget(modelKey, selection.compareTarget, selection.compareBaseline))).length;
