@@ -192,4 +192,48 @@ jobs:
               cp -R "$payload_root/cansips/." site/seasonal/cansips/
               cp "$payload_root/cansips_manifest.json" site/seasonal/cansips_manifest.json
               if [ -d "$payload_root/common_reference" ]; then
-                mkdir -p si
+                mkdir -p site/seasonal/common_reference
+                cp -R "$payload_root/common_reference/." site/seasonal/common_reference/
+              fi
+              ;;
+            "C3S Multi-System Seasonal Graphics")
+              payload_root=incoming/c3s
+              if [ -d "$payload_root/pages-payload" ]; then
+                payload_root="$payload_root/pages-payload"
+              elif [ -d "$payload_root/.pages-payload" ]; then
+                payload_root="$payload_root/.pages-payload"
+              fi
+              test -f "$payload_root/c3s_manifest.json"
+              mkdir -p site/seasonal/c3s
+              cp -R "$payload_root/c3s/." site/seasonal/c3s/
+              cp "$payload_root/c3s_manifest.json" site/seasonal/c3s_manifest.json
+              ;;
+            "NOAA NMME Seasonal Graphics")
+              payload_root=incoming/nmme
+              if [ -d "$payload_root/pages-payload" ]; then
+                payload_root="$payload_root/pages-payload"
+              elif [ -d "$payload_root/.pages-payload" ]; then
+                payload_root="$payload_root/.pages-payload"
+              fi
+              test -f "$payload_root/nmme_manifest.json"
+              mkdir -p site/seasonal/nmme
+              cp -R "$payload_root/nmme/." site/seasonal/nmme/
+              cp "$payload_root/nmme_manifest.json" site/seasonal/nmme_manifest.json
+              ;;
+            *)
+              echo "Unsupported workflow_run source: $SOURCE_WORKFLOW" >&2
+              exit 1
+              ;;
+          esac
+
+          rm -rf site/.git
+
+      - name: Publish the merged Pages tree
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./site
+          publish_branch: gh-pages
+          keep_files: false
+          force_orphan: false
+          enable_jekyll: false

@@ -97,4 +97,349 @@
             <div class="fact"><small>Model</small><strong id="fact-model">—</strong></div>
             <div class="fact"><small>Valid period</small><strong id="fact-target">—</strong></div>
             <div class="fact"><small>Lead / hour</small><strong id="fact-lead">—</strong></div>
-            <div class="fact"><small>Ensemb
+            <div class="fact"><small>Ensemble</small><strong id="fact-ensemble">—</strong></div>
+            <div class="fact"><small>Field</small><strong id="fact-field">—</strong></div>
+            <div class="fact"><small>Status</small><strong id="fact-status">—</strong></div>
+          </div>
+        </article>
+        <article class="card">
+          <div class="card-head"><h2>Run metadata</h2></div>
+          <div class="copy"><p id="scope">The selected manifest will identify its initialization, aggregation, and data lineage.</p><p id="source-detail">Source: —</p></div>
+          <div class="links"><a id="source-link" href="#">Source</a><a id="direct-link" href="../">Direct viewer</a><a href="https://github.com/jwallio/wn2/actions">Actions</a></div>
+        </article>
+      </aside>
+    </section>
+
+    <section class="compare-view" id="compare-view" hidden>
+      <div class="compare-toolbar card">
+        <div class="selector"><label for="compare-target-select">Valid period</label><select id="compare-target-select" disabled><option>Loading…</option></select></div>
+        <div class="selector"><label for="compare-baseline-select">Reference</label><select id="compare-baseline-select" disabled><option>Loading…</option></select></div>
+        <p class="compare-summary" id="compare-summary">500-mb height anomaly · matching published target across models</p>
+      </div>
+      <div class="compare-grid" id="compare-grid"></div>
+    </section>
+    <div class="footer" id="footer">Operational dashboard · Model-specific direct viewers remain available for focused review.</div>
+  </main>
+
+  <script>
+    const root = location.pathname.includes('/seasonal/') ? location.pathname.split('/seasonal/')[0] : '';
+    const assetPath = value => `${root}/${String(value || '').replace(/^\/+/, '').replace(/^public\//, '')}`;
+    const el = id => document.getElementById(id);
+    const MODEL_CONFIG = {
+      cfsv2: { label: 'CFSv2', kind: 'seasonal', manifest: assetPath('seasonal/cfsv2_manifest.json'), direct: assetPath('seasonal/cfsv2/'), source: 'NOAA CFSv2 NOMADS' },
+      seas5: { label: 'ECMWF SEAS5', kind: 'seasonal', manifest: assetPath('seasonal/seas5_manifest.json'), direct: assetPath('seasonal/seas5/'), source: 'ECMWF SEAS5 / Copernicus CDS' },
+      cansips: { label: 'CanSIPS v3', kind: 'seasonal', manifest: assetPath('seasonal/cansips_manifest.json'), direct: assetPath('seasonal/cansips/'), source: 'ECCC MSC Datamart' },
+      c3s: { label: 'C3S multi-system', kind: 'seasonal', manifest: assetPath('seasonal/c3s_manifest.json'), direct: assetPath('seasonal/c3s/'), source: 'Copernicus C3S seasonal forecasts' },
+      nmme: { label: 'NOAA NMME', kind: 'seasonal', manifest: assetPath('seasonal/nmme_manifest.json'), direct: assetPath('seasonal/nmme/'), source: 'NOAA CPC NMME' },
+    };
+    const modelStates = Object.fromEntries(Object.keys(MODEL_CONFIG).map(key => [key, { manifest: null, runs: [], error: null }]));
+    const selection = { view: 'single', model: 'cfsv2', product: '', run: '', target: '', compareTarget: '', compareBaseline: '', ratio: '10' };
+    const COMPARE_PRODUCT = '500mb_height_anomaly';
+    const COMPARE_MODELS = ['cfsv2', 'seas5', 'cansips', 'c3s'];
+    const COMPARE_BASELINES = [
+      { value: 'native', label: 'Native model reference' },
+      { value: 'common_1991_2020', label: 'Common 1991–2020 reference' },
+    ];
+    const PRODUCT_LABELS = {
+      '500mb_height_anomaly': '500-mb Height Anomaly', '500mb_height_absolute': '500-mb Geopotential Height',
+      '2m_temperature_anomaly': '2-m Temperature Anomaly', '850mb_temperature_anomaly': '850-mb Temperature Anomaly',
+      'precipitation_anomaly': 'CONUS Precipitation Anomaly', 'snow_water_equivalent_anomaly': 'Snow-Water-Equivalent Anomaly',
+      'snow_depth_anomaly': 'CONUS Snow-Depth Anomaly', 'snowfall_anomaly': 'CONUS Snowfall Anomaly',
+      'sst_anomaly': 'Sea-Surface Temperature Anomaly', 'mslp_anomaly': 'MSLP Anomaly',
+      'sea_surface_temperature_anomaly': 'Sea-Surface Temperature Anomaly', '200mb_height_anomaly': '200-mb Height Anomaly',
+      'probability_above_normal': 'Above Normal Probability', 'probability_near_normal': 'Near Normal Probability', 'probability_below_normal': 'Below Normal Probability',
+      'model_spread': 'Model Spread', 'multi_model_consensus': 'Multi-Model Consensus',
+    };
+    const numberList = (values, min = null, max = null) => [...new Set((Array.isArray(values) ? values : []).map(value => Number(value)).filter(value => Number.isFinite(value) && (min === null || value >= min) && (max === null || value <= max)))].sort((a,b) => a - b);
+    const pretty = value => String(value || '').replaceAll('_', ' ').replace(/\b\w/g, letter => letter.toUpperCase());
+    const initLabel = value => { if (!value) return '—'; const date = new Date(value); return Number.isNaN(date.valueOf()) ? value : new Intl.DateTimeFormat(undefined, {day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit', hour12:false, timeZone:'UTC'}).format(date).replace(',', '') + 'Z'; };
+    const monthLabel = value => { if (!value) return '—'; const date = new Date(value); return Number.isNaN(date.valueOf()) ? value : new Intl.DateTimeFormat(undefined, {month:'short', year:'numeric', timeZone:'UTC'}).format(date); };
+    const monthCodeLabel = code => /^\d{6}$/.test(String(code || '')) ? monthLabel(`${String(code).slice(0,4)}-${String(code).slice(4,6)}-01T00:00:00Z`) : String(code || '—');
+    function periodLabel(value) {
+      const text = String(value || '');
+      const match = /^(\d{4})(\d{2})-(\d{4})(\d{2})$/.exec(text);
+      if (!match) return monthCodeLabel(text);
+      const months = [Number(match[2]), Number(match[4])];
+      const season = months[0] === 12 && months[1] === 2 ? `DJF ${match[3]}` : months[0] === 3 && months[1] === 5 ? `MAM ${match[3]}` : months[0] === 6 && months[1] === 8 ? `JJA ${match[3]}` : months[0] === 9 && months[1] === 11 ? `SON ${match[3]}` : `${monthCodeLabel(match[1] + match[2])}–${monthCodeLabel(match[3] + match[4])}`;
+      return season;
+    }
+    function populate(select, values, chosen) {
+      select.replaceChildren();
+      values.forEach(item => { const option = document.createElement('option'); option.value = String(item.value); option.textContent = item.label; select.appendChild(option); });
+      select.disabled = values.length === 0;
+      if (values.some(item => String(item.value) === String(chosen))) select.value = String(chosen);
+    }
+    function compareRuns(modelKey) {
+      return (modelStates[modelKey]?.runs || [])
+        .filter(run => String(run.product || '') === COMPARE_PRODUCT)
+        .sort((left, right) => {
+          const leftBlend = modelKey === 'c3s' && String(left.component || '') === 'multisystem' ? 1 : 0;
+          const rightBlend = modelKey === 'c3s' && String(right.component || '') === 'multisystem' ? 1 : 0;
+          return rightBlend - leftBlend || String(right.init_utc || '').localeCompare(String(left.init_utc || ''));
+        });
+    }
+    function compareTargetAsset(target, baseline) {
+      if (!target || target.status === 'failed') return null;
+      if (baseline === 'native') return target.image ? { image: target.image, baseline: target.baseline || null } : null;
+      const comparison = target.comparison?.[baseline];
+      return comparison?.image ? comparison : null;
+    }
+    function compareTarget(run, targetKey, baseline = 'native') {
+      return (Array.isArray(run?.targets) ? run.targets : []).find(target => String(target.target_month || '') === String(targetKey || '') && compareTargetAsset(target, baseline)) || null;
+    }
+    function compareTargetKeys(modelKey) {
+      const keys = new Set();
+      compareRuns(modelKey).forEach(run => (Array.isArray(run.targets) ? run.targets : []).forEach(target => {
+        if (compareTargetAsset(target, 'native') && target.target_month) keys.add(String(target.target_month));
+      }));
+      return keys;
+    }
+    function comparePeriodSort(left, right) {
+      const startMonth = value => Number(String(value || '').slice(0, 6)) || Number.MAX_SAFE_INTEGER;
+      const startDifference = startMonth(left) - startMonth(right);
+      if (startDifference) return startDifference;
+      const leftIsRange = String(left).includes('-') ? 1 : 0;
+      const rightIsRange = String(right).includes('-') ? 1 : 0;
+      return leftIsRange - rightIsRange || String(left).localeCompare(String(right));
+    }
+    function comparePeriodOptions() {
+      const availableSets = COMPARE_MODELS.map(compareTargetKeys).filter(set => set.size);
+      if (!availableSets.length) return [];
+      const common = [...availableSets[0]].filter(key => availableSets.every(set => set.has(key)));
+      const keys = common.length ? common : [...new Set(availableSets.reduce((all, set) => [...all, ...set], []))];
+      return keys.sort(comparePeriodSort).map(value => ({ value, label: periodLabel(value) }));
+    }
+    function compareRunForTarget(modelKey, targetKey, baseline = 'native') {
+      return compareRuns(modelKey).find(run => compareTarget(run, targetKey, baseline)) || null;
+    }
+    function manifestProducts(model) {
+      const keys = new Set();
+      modelStates[selection.model].runs.forEach(run => {
+        if (model.kind === 'weathernext') {
+          (Array.isArray(run.products) ? run.products : Object.keys(run.product_hours || {})).forEach(key => keys.add(String(key)));
+        } else if (run.product) keys.add(String(run.product));
+      });
+      return [...keys];
+    }
+    function productLabel(model, key) {
+      const configured = modelStates[selection.model].manifest?.product_labels?.[key];
+      return configured || PRODUCT_LABELS[key] || pretty(key) || 'Seasonal guidance';
+    }
+    function supportsProduct(model, run, product) {
+      if (model.kind === 'weathernext') return (Array.isArray(run.products) && run.products.includes(product)) || Boolean(run.product_hours?.[product]);
+      return String(run.product || '') === String(product);
+    }
+    function runLabel(model, run) {
+      if (model.kind === 'weathernext') return `${run.label || run.run_date || run.id || 'Published run'} · ${run.status || 'available'}`;
+      return `Init ${initLabel(run.init_utc)} · ${run.status || 'available'}`;
+    }
+    function selectedRun(model) {
+      const available = modelStates[selection.model].runs.filter(run => supportsProduct(model, run, selection.product));
+      return available.find(run => String(run.id) === String(selection.run)) || available[0] || null;
+    }
+    function targetItems(model, run) {
+      if (!run) return [];
+      if (model.kind === 'weathernext') {
+        const hours = numberList(run.product_hours?.[selection.product] || run.hours, 0);
+        return hours.map(hour => ({ key: `hour:${hour}`, value: hour, label: `Hour ${String(hour).padStart(3, '0')}` }));
+      }
+      return (Array.isArray(run.targets) ? run.targets : []).map((target, index) => ({ key: String(target.id || index), value: target, label: periodLabel(target.target_month || target.valid_start_utc || `Target ${index + 1}`) }));
+    }
+    function isSnowProduct(model, product) {
+      return model.kind === 'weathernext' && ((modelStates[selection.model].manifest?.snow_products || []).includes(product) || product.includes('snow'));
+    }
+    function frameName(run, hour, ratio) {
+      const product = selection.product;
+      const hourText = String(hour).padStart(3, '0');
+      return isSnowProduct(MODEL_CONFIG[selection.model], product) ? `${product}_r${String(ratio || 10).padStart(2, '0')}_${hourText}.jpg` : `${product}_${hourText}.jpg`;
+    }
+    function imagePath(model, run, target) {
+      if (!run || !target) return '';
+      if (model.kind === 'weathernext') return assetPath(`runs/${run.id}/${frameName(run, target.value, selection.ratio)}`);
+      return target.value?.image ? assetPath(target.value.image) : '';
+    }
+    function targetText(model, target) {
+      if (!target) return '—';
+      if (model.kind === 'weathernext') return `Hour ${String(target.value).padStart(3, '0')}`;
+      return target.label;
+    }
+    function ensembleText(model, run, target) {
+      if (!run) return '—';
+      if (model.kind === 'weathernext') return run.ensemble_mode === 'member' ? `Member ${run.ensemble_member || '—'}` : pretty(run.ensemble_mode || 'ensemble');
+      const source = target?.value || {};
+      const members = source.ensemble_members || run.ensemble_members;
+      if (run.ensemble_scope === 'rolling_initial_conditions') return `${source.ensemble_members || members || 0}/${source.ensemble_expected_members || 40} cycles`;
+      return members ? `${members} members` : pretty(run.ensemble_scope || 'ensemble');
+    }
+    function leadText(model, target) {
+      if (!target) return '—';
+      if (model.kind === 'weathernext') return `Hour ${String(target.value).padStart(3, '0')}`;
+      const lead = target.value?.lead_month;
+      return lead === undefined || lead === null ? '—' : `Month ${lead}`;
+    }
+    function fieldText(target) {
+      const value = target?.value;
+      if (!value) return '—';
+      return value.units ? `${value.field || 'Field'} (${value.units})` : (value.field || '—');
+    }
+    function setMessage(message) { el('map-wrap').replaceChildren(Object.assign(document.createElement('div'), { className: 'empty', textContent: message })); }
+    function renderModelOptions() {
+      populate(el('model-select'), Object.entries(MODEL_CONFIG).map(([key, config]) => { const state = modelStates[key]; const suffix = state.error ? ' · unavailable' : state.manifest ? '' : ' · loading'; return { value: key, label: config.label + suffix }; }), selection.model);
+    }
+    function renderUnavailable(model) {
+      el('product-select').replaceChildren(); el('product-select').disabled = true;
+      el('run-select').replaceChildren(); el('run-select').disabled = true;
+      el('target-controls').replaceChildren();
+      el('ratio-control')?.remove();
+      setMessage(modelStates[selection.model].error || 'No published manifest is available for this model yet.');
+      ['fact-model','fact-target','fact-lead','fact-ensemble','fact-field','fact-status'].forEach(id => el(id).textContent = id === 'fact-model' ? model.label : '—');
+      el('scope').textContent = 'The model workflow has not published a readable manifest for this dashboard.';
+      el('source-detail').textContent = `Source: ${model.source}`;
+      el('source-link').href = model.direct;
+      el('direct-link').href = model.direct;
+      el('warning').style.display = 'none';
+    }
+    function compareEmpty(message) {
+      const empty = document.createElement('div'); empty.className = 'empty'; empty.textContent = message; return empty;
+    }
+    function compareBaselineLabel(value) {
+      return COMPARE_BASELINES.find(item => item.value === value)?.label || 'Model reference';
+    }
+    function renderCompareCard(modelKey, targetKey) {
+      const model = MODEL_CONFIG[modelKey];
+      const state = modelStates[modelKey];
+      const card = document.createElement('article'); card.className = 'card compare-card';
+      const header = document.createElement('div'); header.className = 'compare-card-head';
+      const title = document.createElement('h2'); title.textContent = model.label; header.appendChild(title);
+      const direct = document.createElement('a'); direct.href = model.direct; direct.textContent = 'Direct page'; header.appendChild(direct);
+      card.appendChild(header);
+      const imageWrap = document.createElement('div'); imageWrap.className = 'compare-image-wrap';
+      const baseline = selection.compareBaseline || 'native';
+      const run = compareRunForTarget(modelKey, targetKey, baseline);
+      const target = run ? compareTarget(run, targetKey, baseline) : null;
+      const asset = target ? compareTargetAsset(target, baseline) : null;
+      if (!state.manifest) {
+        imageWrap.appendChild(compareEmpty(state.error || 'Manifest unavailable.'));
+      } else if (!run || !target || !asset) {
+        const reference = baseline === 'native' ? '500-mb map' : 'common 1991–2020 comparison map';
+        imageWrap.appendChild(compareEmpty(targetKey ? `No ${reference} published for ${periodLabel(targetKey)}.` : `No ${reference} is available.`));
+      } else {
+        const image = document.createElement('img');
+        image.src = assetPath(asset.image);
+        image.alt = `${model.label} 500-mb height anomaly ${periodLabel(target.target_month)} · ${compareBaselineLabel(baseline)}`;
+        image.loading = 'lazy';
+        image.addEventListener('error', () => imageWrap.replaceChildren(compareEmpty('The manifest target exists, but its image is not in the published Pages tree.')));
+        imageWrap.appendChild(image);
+      }
+      card.appendChild(imageWrap);
+      const metadata = document.createElement('p'); metadata.className = 'compare-meta';
+      metadata.textContent = target && asset && run
+        ? `Valid: ${periodLabel(target.target_month)} · Init: ${initLabel(run.init_utc)} · ${compareBaselineLabel(baseline)} · ${asset.status || target.status || run.status || 'available'}`
+        : (state.manifest ? 'No matching published target for this period.' : `Unavailable: ${state.error || 'manifest not published'}`);
+      card.appendChild(metadata);
+      return card;
+    }
+    function renderCompare() {
+      const options = comparePeriodOptions();
+      const select = el('compare-target-select');
+      const baselineSelect = el('compare-baseline-select');
+      const grid = el('compare-grid');
+      if (!options.length) {
+        select.replaceChildren(Object.assign(document.createElement('option'), { textContent: 'No matching 500-mb targets' }));
+        select.disabled = true;
+        baselineSelect.replaceChildren(Object.assign(document.createElement('option'), { textContent: 'No reference available' }));
+        baselineSelect.disabled = true;
+        selection.compareTarget = '';
+        selection.compareBaseline = '';
+        el('compare-summary').textContent = '500-mb height anomaly · no matching target has been published across the model manifests';
+        grid.replaceChildren(...COMPARE_MODELS.map(modelKey => renderCompareCard(modelKey, '')));
+        el('footer').textContent = '500-mb height anomaly comparison · CFSv2 · ECMWF SEAS5 · CanSIPS v3 · C3S multi-system';
+        return;
+      }
+      const preferred = options.find(item => /^\d{6}-\d{6}$/.test(String(item.value))) || options[options.length - 1];
+      if (!options.some(item => String(item.value) === String(selection.compareTarget))) selection.compareTarget = preferred.value;
+      populate(select, options, selection.compareTarget);
+      selection.compareTarget = select.value || preferred.value;
+      if (!selection.compareBaseline) selection.compareBaseline = 'native';
+      populate(baselineSelect, COMPARE_BASELINES, selection.compareBaseline);
+      selection.compareBaseline = baselineSelect.value || 'native';
+      const availableCount = COMPARE_MODELS.filter(modelKey => Boolean(compareRunForTarget(modelKey, selection.compareTarget, selection.compareBaseline))).length;
+      el('compare-summary').textContent = `${periodLabel(selection.compareTarget)} · ${compareBaselineLabel(selection.compareBaseline)} · ${availableCount}/${COMPARE_MODELS.length} model maps available`;
+      grid.replaceChildren(...COMPARE_MODELS.map(modelKey => renderCompareCard(modelKey, selection.compareTarget)));
+      el('footer').textContent = `500-mb height anomaly comparison · ${compareBaselineLabel(selection.compareBaseline)} · CFSv2 · ECMWF SEAS5 · CanSIPS v3 · C3S multi-system`;
+    }
+    function renderControls(model, run, targets) {
+      const controls = el('target-controls'); controls.replaceChildren();
+      targets.forEach((target, index) => { const button = document.createElement('button'); button.type = 'button'; button.textContent = target.label; button.classList.toggle('active', String(target.key) === String(selection.target)); button.addEventListener('click', () => { selection.target = target.key; renderAll(); }); controls.appendChild(button); });
+      if (isSnowProduct(model, selection.product)) {
+        const wrapper = document.createElement('label'); wrapper.className = 'ratio-control'; wrapper.id = 'ratio-control'; wrapper.innerHTML = '<span class="control-label">Snow ratio</span><select id="ratio-select"></select>';
+        controls.appendChild(wrapper);
+        const ratios = numberList(run?.product_snow_ratios?.[selection.product] || run?.snow_ratios, 10, 20); const ratioSelect = wrapper.querySelector('select');
+        populate(ratioSelect, (ratios.length ? ratios : [10]).map(value => ({ value, label: `${value}:1` })), selection.ratio);
+        selection.ratio = ratioSelect.value || '10'; ratioSelect.addEventListener('change', () => { selection.ratio = ratioSelect.value; renderAll(); });
+      }
+    }
+    function renderAll() {
+      renderModelOptions();
+      const model = MODEL_CONFIG[selection.model]; const modelState = modelStates[selection.model];
+      if (!modelState.manifest) { renderUnavailable(model); return; }
+      const products = manifestProducts(model); selection.product = products.includes(selection.product) ? selection.product : (products[0] || '');
+      populate(el('product-select'), products.map(value => ({ value, label: productLabel(model, value) })), selection.product);
+      const runs = modelState.runs.filter(run => supportsProduct(model, run, selection.product));
+      selection.run = runs.some(run => String(run.id) === String(selection.run)) ? selection.run : String(runs[0]?.id || '');
+      populate(el('run-select'), runs.map(run => ({ value: run.id, label: runLabel(model, run) })), selection.run);
+      const run = selectedRun(model); const targets = targetItems(model, run);
+      const preferredTarget = targets.find(target => model.kind === 'seasonal' && /^\d{6}-\d{6}$/.test(String(target.value?.target_month || ''))) || targets[0];
+      selection.target = targets.some(target => String(target.key) === String(selection.target)) ? selection.target : String(preferredTarget?.key || '');
+      renderControls(model, run, targets);
+      const target = targets.find(item => String(item.key) === String(selection.target)) || targets[0];
+      if (!run || !target) { setMessage('No rendered target is available for the selected parameter.'); return; }
+      const targetValue = target.value;
+      const label = productLabel(model, selection.product);
+      el('fact-model').textContent = model.label; el('fact-target').textContent = model.kind === 'weathernext' ? targetText(model, target) : periodLabel(targetValue.target_month || targetValue.valid_start_utc);
+      el('fact-lead').textContent = leadText(model, target); el('fact-ensemble').textContent = ensembleText(model, run, target); el('fact-field').textContent = fieldText(target); el('fact-status').textContent = targetValue?.status || run.status || 'available';
+      if (model.kind === 'weathernext') {
+        el('scope').textContent = `${run.source_label || run.source || model.source} · Updated ${initLabel(run.updated_utc)}. ${run.successful_exports || 0} successful exports.`;
+      } else {
+        const baseline = run.climatology?.source || targetValue?.baseline?.source || 'model calibration baseline';
+        el('scope').textContent = `${run.aggregation || 'Seasonal ensemble mean'} from ${initLabel(run.init_utc)}. Baseline: ${baseline}.`;
+      }
+      el('source-detail').textContent = `Source: ${run.source || run.source_label || model.source}`;
+      el('source-link').href = run.source_url || model.direct; el('direct-link').href = model.direct;
+      const image = imagePath(model, run, target); setMessage('');
+      el('map-wrap').replaceChildren();
+      if (image) { const imageElement = document.createElement('img'); imageElement.src = image; imageElement.alt = `${model.label} ${label} ${targetText(model, target)}`; imageElement.loading = 'eager'; imageElement.addEventListener('error', () => { setMessage('The manifest is available, but this image is not present in the published Pages tree.'); }); el('map-wrap').appendChild(imageElement); } else setMessage('No rendered image is available for this target.');
+      const warning = el('warning');
+      if (targetValue?.status === 'failed') { warning.style.display = 'block'; warning.textContent = targetValue.error || 'This target failed; retained history remains selectable.'; }
+      else if (targetValue?.status === 'partial' || run.status === 'partial') { warning.style.display = 'block'; warning.textContent = 'This run is partial; retained history remains selectable.'; }
+      else if (run.source_warning) { warning.style.display = 'block'; warning.textContent = run.source_warning; }
+      else warning.style.display = 'none';
+      el('footer').textContent = `${model.source} · ${modelState.manifest.generated_utc ? `Manifest generated ${initLabel(modelState.manifest.generated_utc)}` : 'Published manifest loaded'} · Direct model pages remain available.`;
+    }
+    function renderCurrentView() { if (selection.view === 'compare') renderCompare(); else renderAll(); }
+    function setView(view) {
+      selection.view = view === 'compare' ? 'compare' : 'single';
+      const isCompare = selection.view === 'compare';
+      el('single-tab').classList.toggle('active', !isCompare); el('single-tab').setAttribute('aria-selected', String(!isCompare));
+      el('compare-tab').classList.toggle('active', isCompare); el('compare-tab').setAttribute('aria-selected', String(isCompare));
+      el('single-toolbar').hidden = isCompare; el('single-view').hidden = isCompare; el('compare-view').hidden = !isCompare;
+      renderCurrentView();
+    }
+    el('model-select').addEventListener('change', event => { selection.model = event.target.value; selection.product = ''; selection.run = ''; selection.target = ''; renderAll(); });
+    el('product-select').addEventListener('change', event => { selection.product = event.target.value; selection.run = ''; selection.target = ''; renderAll(); });
+    el('run-select').addEventListener('change', event => { selection.run = event.target.value; selection.target = ''; renderAll(); });
+    el('single-tab').addEventListener('click', () => setView('single'));
+    el('compare-tab').addEventListener('click', () => setView('compare'));
+    el('compare-target-select').addEventListener('change', event => { selection.compareTarget = event.target.value; renderCompare(); });
+    el('compare-baseline-select').addEventListener('change', event => { selection.compareBaseline = event.target.value; renderCompare(); });
+    renderModelOptions();
+    Promise.all(Object.entries(MODEL_CONFIG).map(async ([key, config]) => {
+      try { const response = await fetch(config.manifest); if (!response.ok) throw new Error(`Manifest returned ${response.status}`); const manifest = await response.json(); modelStates[key].manifest = manifest; modelStates[key].runs = Array.isArray(manifest.runs) ? manifest.runs.filter(run => run && run.id) : []; }
+      catch (error) { modelStates[key].error = error.message; }
+    })).then(() => {
+      if (!modelStates[selection.model].manifest) selection.model = Object.keys(MODEL_CONFIG).find(key => modelStates[key].manifest) || selection.model;
+      renderCurrentView();
+    });
+  </script>
+</body>
+</html>
