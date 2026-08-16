@@ -9,6 +9,7 @@ on:
       - ECMWF SEAS5 Seasonal Graphics
       - CanSIPS v3 Seasonal Graphics
       - C3S Multi-System Seasonal Graphics
+      - JMA Seasonal Graphics
       - NOAA NMME Seasonal Graphics
     types:
       - completed
@@ -25,6 +26,7 @@ on:
           - ECMWF SEAS5 Seasonal Graphics
           - CanSIPS v3 Seasonal Graphics
           - C3S Multi-System Seasonal Graphics
+          - JMA Seasonal Graphics
           - NOAA NMME Seasonal Graphics
       source_run_id:
         description: "GitHub Actions run ID containing the uploaded Pages artifact"
@@ -62,6 +64,7 @@ jobs:
           sparse-checkout: |
             public/seasonal/index.html
             public/seasonal/c3s/index.html
+            public/seasonal/jma/index.html
             public/seasonal/nmme/index.html
           sparse-checkout-cone-mode: false
 
@@ -125,6 +128,16 @@ jobs:
           repository: ${{ github.repository }}
           run-id: ${{ env.SOURCE_RUN_ID }}
 
+      - name: Download JMA payload
+        if: ${{ env.SOURCE_WORKFLOW == 'JMA Seasonal Graphics' }}
+        uses: actions/download-artifact@v4
+        with:
+          name: jma-pages-${{ env.SOURCE_RUN_ID }}
+          path: incoming/jma
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: ${{ env.SOURCE_RUN_ID }}
+
       - name: Merge payload into the Pages tree
         shell: bash
         run: |
@@ -135,8 +148,9 @@ jobs:
           test -f dashboard-source/public/seasonal/index.html
           mkdir -p site/seasonal
           cp dashboard-source/public/seasonal/index.html site/seasonal/index.html
-          mkdir -p site/seasonal/c3s site/seasonal/nmme
+          mkdir -p site/seasonal/c3s site/seasonal/jma site/seasonal/nmme
           cp dashboard-source/public/seasonal/c3s/index.html site/seasonal/c3s/index.html
+          cp dashboard-source/public/seasonal/jma/index.html site/seasonal/jma/index.html
           cp dashboard-source/public/seasonal/nmme/index.html site/seasonal/nmme/index.html
 
           case "$SOURCE_WORKFLOW" in
@@ -207,6 +221,18 @@ jobs:
               mkdir -p site/seasonal/c3s
               cp -R "$payload_root/c3s/." site/seasonal/c3s/
               cp "$payload_root/c3s_manifest.json" site/seasonal/c3s_manifest.json
+              ;;
+            "JMA Seasonal Graphics")
+              payload_root=incoming/jma
+              if [ -d "$payload_root/pages-payload" ]; then
+                payload_root="$payload_root/pages-payload"
+              elif [ -d "$payload_root/.pages-payload" ]; then
+                payload_root="$payload_root/.pages-payload"
+              fi
+              test -f "$payload_root/jma_manifest.json"
+              mkdir -p site/seasonal/jma
+              cp -R "$payload_root/jma/." site/seasonal/jma/
+              cp "$payload_root/jma_manifest.json" site/seasonal/jma_manifest.json
               ;;
             "NOAA NMME Seasonal Graphics")
               payload_root=incoming/nmme

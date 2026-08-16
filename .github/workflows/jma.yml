@@ -1,0 +1,138 @@
+name: JMA Seasonal Graphics
+
+on:
+  schedule:
+    # C3S publishes non-ECMWF components around the 10th at 12 UTC.
+    - cron: "30 15 10 * *"
+  workflow_dispatch:
+    inputs:
+      product:
+        description: "JMA parameter to generate"
+        required: false
+        default: "500mb_height_anomaly"
+        type: choice
+        options:
+          - 500mb_height_anomaly
+          - 850mb_temperature_anomaly
+          - 2m_temperature_anomaly
+          - precipitation_anomaly
+          - sea_surface_temperature_anomaly
+          - mslp_anomaly
+      systems:
+        description: "Optional JMA centre=system override"
+        required: false
+        default: ""
+        type: string
+      init:
+        description: "JMA initialization as YYYYMM or latest"
+        required: false
+        default: "latest"
+        type: string
+      lead_months:
+        description: "Target leads, comma-separated"
+        required: false
+        default: "4,5,6"
+        type: string
+      seasonal_window:
+        description: "Seasonal leads, comma-separated"
+        required: false
+        default: "4,5,6"
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    env:
+      JMA_PRODUCT: ${{ inputs.product || '500mb_height_anomaly' }}
+      JMA_SYSTEMS: ${{ inputs.systems || '' }}
+      JMA_INIT: ${{ inputs.init || 'latest' }}
+      LEAD_MONTHS: ${{ inputs.lead_months || '4,5,6' }}
+      SEASONAL_WINDOW: ${{ inputs.seasonal_window || '4,5,6' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Install JMA rendering dependencies
+        run: python -m pip install --upgrade "cdsapi>=0.7.7" cfgrib eccodes xarray matplotlib Pillow requests numpy
+
+      - name: Configure Copernicus CDS API
+        env:
+          CDS_API_KEY: ${{ secrets.CDS_API_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "${CDS_API_KEY:-}" ]; then
+            echo "::error::The CDS_API_KEY repository secret is required for current JMA/C3S data."
+            exit 1
+          fi
+          printf 'url: https://cds.climate.copernicus.eu/api\nkey: %s\n' "$CDS_API_KEY" > "$HOME/.cdsapirc"
+          chmod 600 "$HOME/.cdsapirc"
+
+      - name: Restore JMA cache
+        uses: actions/cache@v4
+        with:
+          path: .cache/jma
+          key: jma-${{ runner.os }}-${{ env.JMA_PRODUCT }}-cds-v1
+          restore-keys: |
+            jma-${{ runner.os }}-${{ env.JMA_PRODUCT }}-
+
+      - name: Restore published JMA run history
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .cache/jma
+          pages_url="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/seasonal/jma_manifest.json"
+          if curl -fsSL --retry 2 --connect-timeout 10 "$pages_url" -o .cache/jma/previous_manifest.json; then
+            echo "Restored prior JMA manifest."
+          else
+            rm -f .cache/jma/previous_manifest.json
+            echo "No prior JMA manifest was available."
+          fi
+
+      - name: Render JMA products
+        run: |
+          python scripts/c3s_seasonal.py \
+            --product "$JMA_PRODUCT" \
+            --centres jma \
+            --systems "$JMA_SYSTEMS" \
+            --init "$JMA_INIT" \
+            --lead-months "$LEAD_MONTHS" \
+            --seasonal-window "$SEASONAL_WINDOW" \
+            --cache-dir .cache/jma \
+            --output-dir public/seasonal/jma \
+            --manifest public/seasonal/jma_manifest.json \
+            --previous-manifest .cache/jma/previous_manifest.json \
+            --retain-cycles 4 \
+            --no-blend
+
+      - name: Package JMA Pages payload
+        if: success()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -d public/seasonal/jma
+          test -f public/seasonal/jma_manifest.json
+          rm -rf pages-payload
+          mkdir -p pages-payload/jma
+          cp -R public/seasonal/jma/. pages-payload/jma/
+          cp public/seasonal/jma_manifest.json pages-payload/jma_manifest.json
+
+      - name: Upload JMA Pages payload
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jma-pages-${{ github.run_id }}
+          path: pages-payload
+          if-no-files-found: error
+          retention-days: 14

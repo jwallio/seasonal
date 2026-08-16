@@ -130,12 +130,13 @@
       seas5: { label: 'ECMWF SEAS5', kind: 'seasonal', manifest: assetPath('seasonal/seas5_manifest.json'), direct: assetPath('seasonal/seas5/'), source: 'ECMWF SEAS5 / Copernicus CDS' },
       cansips: { label: 'CanSIPS v3', kind: 'seasonal', manifest: assetPath('seasonal/cansips_manifest.json'), direct: assetPath('seasonal/cansips/'), source: 'ECCC MSC Datamart' },
       c3s: { label: 'C3S multi-system', kind: 'seasonal', manifest: assetPath('seasonal/c3s_manifest.json'), direct: assetPath('seasonal/c3s/'), source: 'Copernicus C3S seasonal forecasts' },
+      jma: { label: 'JMA', kind: 'seasonal', manifest: assetPath('seasonal/jma_manifest.json'), direct: assetPath('seasonal/jma/'), source: 'JMA/MRI-CPS4 via Copernicus C3S' },
       nmme: { label: 'NOAA NMME', kind: 'seasonal', manifest: assetPath('seasonal/nmme_manifest.json'), direct: assetPath('seasonal/nmme/'), source: 'NOAA CPC NMME' },
     };
     const modelStates = Object.fromEntries(Object.keys(MODEL_CONFIG).map(key => [key, { manifest: null, runs: [], error: null }]));
     const selection = { view: 'single', model: 'cfsv2', product: '', run: '', target: '', compareTarget: '', compareBaseline: '', ratio: '10' };
     const COMPARE_PRODUCT = '500mb_height_anomaly';
-    const COMPARE_MODELS = ['cfsv2', 'seas5', 'cansips', 'c3s'];
+    const COMPARE_MODELS = ['cfsv2', 'seas5', 'cansips', 'c3s', 'jma'];
     const COMPARE_BASELINES = [
       { value: 'native', label: 'Native model reference' },
       { value: 'common_1991_2020', label: 'Common 1991–2020 reference' },
@@ -353,7 +354,7 @@
         selection.compareBaseline = '';
         el('compare-summary').textContent = '500-mb height anomaly · no matching target has been published across the model manifests';
         grid.replaceChildren(...COMPARE_MODELS.map(modelKey => renderCompareCard(modelKey, '')));
-        el('footer').textContent = '500-mb height anomaly comparison · CFSv2 · ECMWF SEAS5 · CanSIPS v3 · C3S multi-system';
+        el('footer').textContent = '500-mb height anomaly comparison · CFSv2 · ECMWF SEAS5 · CanSIPS v3 · C3S multi-system · JMA';
         return;
       }
       const preferred = options.find(item => /^\d{6}-\d{6}$/.test(String(item.value))) || options[options.length - 1];
@@ -366,7 +367,7 @@
       const availableCount = COMPARE_MODELS.filter(modelKey => Boolean(compareRunForTarget(modelKey, selection.compareTarget, selection.compareBaseline))).length;
       el('compare-summary').textContent = `${periodLabel(selection.compareTarget)} · ${compareBaselineLabel(selection.compareBaseline)} · ${availableCount}/${COMPARE_MODELS.length} model maps available`;
       grid.replaceChildren(...COMPARE_MODELS.map(modelKey => renderCompareCard(modelKey, selection.compareTarget)));
-      el('footer').textContent = `500-mb height anomaly comparison · ${compareBaselineLabel(selection.compareBaseline)} · CFSv2 · ECMWF SEAS5 · CanSIPS v3 · C3S multi-system`;
+      el('footer').textContent = `500-mb height anomaly comparison · ${compareBaselineLabel(selection.compareBaseline)} · CFSv2 · ECMWF SEAS5 · CanSIPS v3 · C3S multi-system · JMA`;
     }
     function renderControls(model, run, targets) {
       const controls = el('target-controls'); controls.replaceChildren();

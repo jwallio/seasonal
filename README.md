@@ -65,7 +65,9 @@ model's native anomaly; its Reference selector can optionally show a common
 - [`.github/workflows/seas5.yml`](/d:/weather-projects/wn2/.github/workflows/seas5.yml): monthly SEAS5 workflow
 - [`scripts/cansips_seasonal.py`](/d:/weather-projects/wn2/scripts/cansips_seasonal.py): ECCC MSC Datamart/CanSIPS v3 GRIB adapter
 - [`.github/workflows/cansips.yml`](/d:/weather-projects/wn2/.github/workflows/cansips.yml): monthly CanSIPS v3 workflow
-- [`.github/workflows/publish-pages.yml`](/d:/weather-projects/wn2/.github/workflows/publish-pages.yml): single serialized WN2/CFSv2/SEAS5/CanSIPS Pages publisher
+- [`scripts/c3s_seasonal.py`](/d:/weather-projects/wn2-seasonal-dashboard/scripts/c3s_seasonal.py): Copernicus C3S multi-system and component adapter, including JMA/MRI-CPS4
+- [`.github/workflows/jma.yml`](/d:/weather-projects/wn2-seasonal-dashboard/.github/workflows/jma.yml): monthly JMA/MRI-CPS4 component workflow
+- [`.github/workflows/publish-pages.yml`](/d:/weather-projects/wn2/.github/workflows/publish-pages.yml): single serialized WN2/CFSv2/SEAS5/CanSIPS/C3S/JMA Pages publisher
 - [`public/seasonal/index.html`](/d:/weather-projects/wn2/public/seasonal/index.html): unified seasonal model dashboard shell
 - [`scripts/clean.ps1`](/d:/weather-projects/wn2/scripts/clean.ps1): remove root `.tmp_*` files and `*.log`
 - [`tests/smoke_outputs.py`](/d:/weather-projects/wn2/tests/smoke_outputs.py): output sanity/smoke test
@@ -340,6 +342,6 @@ The GitHub Actions workflows require:
 - `main` is the source/default branch
 - `gh-pages` is the published static site branch
 
-The renderer workflows upload scoped payloads. The single `publish-pages.yml` workflow serializes successful WN2, CFSv2, SEAS5, CanSIPS, C3S, and NMME completions, merges each payload into the existing `gh-pages` tree, and publishes the complete site so one product cannot remove another product's assets.
+The renderer workflows upload scoped payloads. The single `publish-pages.yml` workflow serializes successful WN2, CFSv2, SEAS5, CanSIPS, C3S, JMA, and NMME completions, merges each payload into the existing `gh-pages` tree, and publishes the complete site so one product cannot remove another product's assets.
 
-Seasonal additions are documented in [`docs/SEASONAL_C3S.md`](/d:/weather-projects/wn2-seasonal-dashboard/docs/SEASONAL_C3S.md) and [`docs/SEASONAL_NMME.md`](/d:/weather-projects/wn2-seasonal-dashboard/docs/SEASONAL_NMME.md). The unified viewer includes native-model comparison maps, C3S component/multi-system entries, and NMME anomaly, probability, spread, and consensus products.
+Seasonal additions are documented in [`docs/SEASONAL_C3S.md`](/d:/weather-projects/wn2-seasonal-dashboard/docs/SEASONAL_C3S.md), [`docs/SEASONAL_JMA.md`](/d:/weather-projects/wn2-seasonal-dashboard/docs/SEASONAL_JMA.md), and [`docs/SEASONAL_NMME.md`](/d:/weather-projects/wn2-seasonal-dashboard/docs/SEASONAL_NMME.md). The unified viewer includes native-model comparison maps, C3S component/multi-system entries, JMA/MRI-CPS4, and NMME anomaly, probability, spread, and consensus products.
