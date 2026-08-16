@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "kind": "geos_s2s3_seasonal_manifest",
+  "generated_utc": "2026-08-16T20:19:46Z",
+  "source": "NASA GEOS-S2S-3 official seasonal charts",
+  "source_url": "https://gmao.gsfc.nasa.gov/seasonal-forecasts/seasonal-decadal-analysis-prediction-v3/",
+  "source_urls": [
+    "https://gmao.gsfc.nasa.gov/seasonal-forecasts/seasonal-decadal-analysis-prediction-v3/",
+    "https://gmao.gsfc.nasa.gov/seasonal-forecasts/seasonal-decadal-analysis-prediction-v3/forecast-data_atmospheric-anomalies/",
+    "https://gmao.gsfc.nasa.gov/lookup_images/"
+  ],
+  "rendering": "official NASA pre-rendered chart; not a common 500-mb field renderer",
+  "comparison_products": [],
+  "product_labels": {
+    "2m_temperature_anomaly": "2-m Temperature Anomaly",
+    "precipitation_anomaly": "Precipitation Anomaly"
+  },
+  "retention": {
+    "max_cycles": 4,
+    "history_cycles": 3
+  },
+  "runs": [
+    {
+      "id": "geos-s2s3-202608-precipitation_anomaly",
+      "init_utc": "2026-08-01T00:00:00Z",
+      "product": "precipitation_anomaly",
+      "status": "rendered",
+      "source": "NASA GEOS-S2S-3 official seasonal charts",
+      "source_url": "https://gmao.gsfc.nasa.gov/seasonal-forecasts/seasonal-decadal-analysis-prediction-v3/",
+      "targets": [
+        {
+          "id": "geos-s2s3-202608-precip",
+          "label": "North America seasonal panel (Aug 2026\u2013Apr 2027)",
+          "valid_start_utc": "2026-08-01T00:00:00Z",
+          "valid_end_utc": "2027-05-01T00:00:00Z",
+          "lead_month": "seasonal panel",
+          "target_month": "202608-202704",
+          "period_label": "Aug 2026\u2013Apr 2027",
+          "field": "precipitation anomaly",
+          "units": "mm",
+          "statistic": "NASA GEOS-S2S-3 ensemble mean",
+          "ensemble_scope": "NASA GEOS-S2S-3 official panel",
+          "status": "rendered",
+          "image": "public/seasonal/geos_s2s3/202608/geos_s2s3_precip_202608.png",
+          "source_url": "https://gmao.gsfc.nasa.gov/media/climate_forecasts/geos5/s2s_3/plots/2026/aug/anom_atm/S2S_aug_mean_202608_Precip_anom_fcst_NA.png"
+        }
+      ],
+      "output_dir": "public/seasonal/geos_s2s3"
+    },
+    {
+      "id": "geos-s2s3-202608-2m_temperature_anomaly",
+      "init_utc": "2026-08-01T00:00:00Z",
+      "product": "2m_temperature_anomaly",
+      "status": "rendered",
+      "source": "NASA GEOS-S2S-3 official seasonal charts",
+      "source_url": "https://gmao.gsfc.nasa.gov/seasonal-forecasts/seasonal-decadal-analysis-prediction-v3/",
+      "targets": [
+        {
+          "id": "geos-s2s3-202608-t2m",
+          "label": "North America seasonal panel (Aug 2026\u2013Apr 2027)",
+          "valid_start_utc": "2026-08-01T00:00:00Z",
+          "valid_end_utc": "2027-05-01T00:00:00Z",
+          "lead_month": "seasonal panel",
+          "target_month": "202608-202704",
+          "period_label": "Aug 2026\u2013Apr 2027",
+          "field": "2-m temperature anomaly",
+          "units": "\u00b0C",
+          "statistic": "NASA GEOS-S2S-3 ensemble mean",
+          "ensemble_scope": "NASA GEOS-S2S-3 official panel",
+          "status": "rendered",
+          "image": "public/seasonal/geos_s2s3/202608/geos_s2s3_t2m_202608.png",
+          "source_url": "https://gmao.gsfc.nasa.gov/media/climate_forecasts/geos5/s2s_3/plots/2026/aug/anom_atm/S2S_aug_mean_202608_T2M_anom_fcst_NA.png"
+        }
+      ],
+      "output_dir": "public/seasonal/geos_s2s3"
+    }
+  ]
+}
