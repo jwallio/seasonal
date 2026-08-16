@@ -346,7 +346,257 @@ def safe_extract(archive: Path, destination: Path) -> list[Path]:
     destination.mkdir(parents=True, exist_ok=True)
     extracted: list[Path] = []
     with zipfile.ZipFile(archive) as bundle:
-        root = destin5×«h‘éì¶»§q«^t
+        root = destination.resolve()
+        for member in bundle.infolist():
+            target = (destination / member.filename).resolve()
+            if root not in target.parents and target != root:
+                raise APCCError(f"refusing unsafe APCC archive member: {member.filename}")
+            if member.is_dir():
+                target.mkdir(parents=True, exist_ok=True)
+                continue
+            target.parent.mkdir(parents=True, exist_ok=True)
+            with bundle.open(member) as source, target.open("wb") as output:
+                output.write(source.read())
+            extracted.append(target)
+    return extracted
+
+
+def _coordinate_name(data: Any, tokens: tuple[str, ...]) -> str:
+    names = list(data.coords) + list(data.dims)
+    for name in names:
+        lower = str(name).lower()
+        if any(token in lower for token in tokens):
+            return str(name)
+    raise APCCError(f"APCC NetCDF field has no coordinate matching {tokens}")
+
+
+def _select_data_variable(dataset: Any, product: dict[str, Any]) -> Any:
+    candidates = list(dataset.data_vars)
+    token = product["api_variable"].lower()
+    exact = [name for name in candidates if str(name).lower() == token]
+    data = dataset[exact[0] if exact else candidates[0]] if candidates else None
+    if data is None:
+        raise APCCError("APCC NetCDF contains no data variable")
+    return data
+
+
+def read_netcdf_metadata(path: Path, product: dict[str, Any]) -> dict[str, Any]:
+    try:
+        import xarray as xr
+    except ImportError as exc:  # pragma: no cover - workflow installs xarray/netCDF4
+        raise APCCError("APCC NetCDF decoding requires xarray") from exc
+    try:
+        dataset = xr.open_dataset(path)
+    except Exception as exc:
+        raise APCCError(f"could not open APCC NetCDF {path.name}: {exc}") from exc
+    try:
+        data = _select_data_variable(dataset, product)
+        return {
+            "global_attrs": dict(dataset.attrs),
+            "data_attrs": dict(data.attrs),
+            "data_variable": str(data.name),
+        }
+    finally:
+        dataset.close()
+
+
+def _source_units(attrs: dict[str, Any]) -> str:
+    return str(attrs.get("units") or attrs.get("original_units") or "native APCC units")
+
+
+def _convert_values(
+    values: np.ndarray,
+    product: dict[str, Any],
+    attrs: dict[str, Any],
+    precip_days: int = 1,
+) -> np.ndarray:
+    units = _source_units(attrs).lower().replace("^", "")
+    if product["api_variable"] == "z500" and ("m2 s-2" in units or "m^2 s-2" in units or "m2/s2" in units):
+        return values / 9.80665
+    if product["api_variable"] == "slp" and ("pa" in units and "hpa" not in units):
+        return values / 100.0
+    if product["api_variable"] == "prec":
+        if units in {"m", "meter", "metre"} or "m water" in units:
+            values = values * 1000.0
+        elif "mm/day" in units or "mm day" in units:
+            values = values * max(1, precip_days)
+    return values
+
+
+def grid_from_netcdf(path: Path, product: dict[str, Any], precip_days: int = 1) -> Grid:
+    try:
+        import xarray as xr
+    except ImportError as exc:  # pragma: no cover - workflow installs xarray/netCDF4
+        raise APCCError("APCC NetCDF decoding requires xarray") from exc
+    try:
+        dataset = xr.open_dataset(path)
+    except Exception as exc:
+        raise APCCError(f"could not open APCC NetCDF {path.name}: {exc}") from exc
+    try:
+        data = _select_data_variable(dataset, product)
+        data = data.squeeze(drop=True)
+        lat_name = _coordinate_name(data, ("latitude", "lat"))
+        lon_name = _coordinate_name(data, ("longitude", "lon"))
+        for dimension in list(data.dims):
+            if dimension not in {lat_name, lon_name}:
+                data = data.mean(dim=dimension, skipna=True)
+        data = data.transpose(lat_name, lon_name)
+        lats = np.asarray(data[lat_name].values, dtype=float)
+        lons = np.asarray(data[lon_name].values, dtype=float)
+        values = _convert_values(
+            np.asarray(data.values, dtype=float), product, dict(data.attrs), precip_days=precip_days
+        )
+    finally:
+        dataset.close()
+    if values.ndim != 2:
+        raise APCCError(f"APCC NetCDF {path.name} did not reduce to a 2-D field")
+    normalized_lons = ((lons + 180.0) % 360.0) - 180.0
+    lon_order = np.argsort(normalized_lons)
+    lat_order = np.argsort(lats)
+    ordered = values[np.ix_(lat_order, lon_order)]
+    if not np.isfinite(ordered).any():
+        raise APCCError(f"APCC NetCDF {path.name} contains no finite values")
+    return Grid(
+        lons=[float(value) for value in normalized_lons[lon_order]],
+        lats=[float(value) for value in lats[lat_order]],
+        values=ordered.tolist(),
+    )
+
+
+def grid_stats(grid: Grid) -> dict[str, float]:
+    values = np.asarray(grid.values, dtype=float)
+    finite = values[np.isfinite(values)]
+    if finite.size == 0:
+        raise APCCError("decoded APCC grid contains no finite values")
+    return {
+        "min": round(float(np.min(finite)), 4),
+        "max": round(float(np.max(finite)), 4),
+        "p05": round(float(np.percentile(finite, 5)), 4),
+        "p95": round(float(np.percentile(finite, 95)), 4),
+        "finite_points": int(finite.size),
+    }
+
+
+def grid_resolution(grid: Grid) -> dict[str, float]:
+    lon_step = np.diff(np.asarray(grid.lons, dtype=float))
+    lat_step = np.diff(np.asarray(grid.lats, dtype=float))
+    return {
+        "longitude_degrees": round(float(np.median(np.abs(lon_step))), 4) if lon_step.size else 0.0,
+        "latitude_degrees": round(float(np.median(np.abs(lat_step))), 4) if lat_step.size else 0.0,
+    }
+
+
+def find_product_file(files: Iterable[Path], product: dict[str, Any], season_code: str) -> Path:
+    candidates = [path for path in files if path.suffix.lower() in {".nc", ".nc4", ".netcdf"}]
+    if not candidates:
+        raise APCCError("APCC result ZIP contained no NetCDF files")
+    token = product["api_variable"].lower()
+    matching = [path for path in candidates if token in path.name.lower()]
+    if not matching:
+        matching = candidates
+    seasonal = [path for path in matching if season_code and season_code.lower() in str(path).lower()]
+    return sorted(seasonal or matching)[0]
+
+
+def write_manifest(path: Path, entries: Iterable[dict[str, Any]], previous: Path | None, retain_cycles: int) -> None:
+    all_entries: list[dict[str, Any]] = []
+    for existing_path in (previous, path):
+        if not existing_path or not existing_path.exists():
+            continue
+        try:
+            payload = json.loads(existing_path.read_text(encoding="utf-8"))
+            all_entries.extend(run for run in payload.get("runs", []) if isinstance(run, dict))
+        except (OSError, ValueError) as exc:
+            raise APCCError(f"could not read previous APCC manifest {existing_path}: {exc}") from exc
+    all_entries.extend(entries)
+    unique = {str(run.get("id")): run for run in all_entries if run.get("id")}
+    ordered = sorted(unique.values(), key=lambda item: (str(item.get("init_utc", "")), str(item.get("id", ""))), reverse=True)
+    cycles: list[str] = []
+    for run in ordered:
+        cycle = str(run.get("init_utc", ""))
+        if cycle not in cycles:
+            cycles.append(cycle)
+    keep = set(cycles[:max(1, retain_cycles)])
+    payload = {
+        "schema_version": 1,
+        "kind": "apcc_seasonal_manifest",
+        "generated_utc": iso_utc(dt.datetime.now(dt.timezone.utc)),
+        "source": "APCC multi-model ensemble via CLIK",
+        "source_url": APCC_SOURCE_URL,
+        "source_urls": [APCC_SOURCE_URL, dataset_url(args.dataset), APCC_API_DOCS_URL],
+        "acknowledgement": APCC_ACKNOWLEDGEMENT,
+        "product_labels": {
+            "500mb_height_anomaly": "500-mb Height Anomaly",
+            "850mb_temperature_anomaly": "850-mb Temperature Anomaly",
+            "2m_temperature_anomaly": "2-m Temperature Anomaly",
+            "precipitation_anomaly": "Precipitation Anomaly",
+            "sea_surface_temperature_anomaly": "Sea-Surface Temperature Anomaly",
+            "mslp_anomaly": "MSLP Anomaly",
+        },
+        "retention": {"max_cycles": max(1, retain_cycles), "history_cycles": max(0, retain_cycles - 1)},
+        "runs": [run for run in ordered if str(run.get("init_utc", "")) in keep],
+    }
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_name(path.name + ".tmp")
+    temporary.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+    temporary.replace(path)
+
+
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--product", choices=("all", *PRODUCT_SPECS), default="all")
+    parser.add_argument("--init", default="latest", help="APCC initialization as YYYYMM or latest")
+    parser.add_argument("--target-window", default="0,1,2", help="fallback offsets; APCC NetCDF season metadata is authoritative")
+    parser.add_argument("--dataset", default="MME_3MONTH", choices=("MME_3MONTH", "MME_6MONTH"))
+    parser.add_argument("--lead-month", default="3-MON", choices=("3-MON", "6-MON"))
+    parser.add_argument("--resolution", default="2.5", choices=("1.0", "2.5"))
+    parser.add_argument("--method", default="SCM", choices=("SCM", "GAUS"))
+    parser.add_argument("--request-url", default=APCC_REQUEST_URL)
+    parser.add_argument("--status-url", default=APCC_STATUS_URL)
+    parser.add_argument("--timeout-minutes", type=int, default=45)
+    parser.add_argument("--poll-seconds", type=float, default=10.0)
+    parser.add_argument("--cache-dir", default=".cache/apcc")
+    parser.add_argument("--output-dir", default="public/seasonal/apcc")
+    parser.add_argument("--manifest", default="public/seasonal/apcc_manifest.json")
+    parser.add_argument("--previous-manifest", type=Path)
+    parser.add_argument("--retain-cycles", type=int, default=4)
+    parser.add_argument("--border-geojson", action="append", type=Path)
+    parser.add_argument("--no-borders", action="store_true")
+    parser.add_argument("--decode-only", action="store_true")
+    return parser
+
+
+def run(args: argparse.Namespace) -> int:
+    repo_root = Path(__file__).resolve().parents[1]
+    init = parse_init(args.init)
+    requested_target_code, requested_period, requested_first_target = target_window(init, args.target_window)
+    selected = list(PRODUCT_SPECS) if args.product == "all" else [args.product]
+    cache_dir = Path(args.cache_dir) if Path(args.cache_dir).is_absolute() else repo_root / args.cache_dir
+    output_dir = Path(args.output_dir) if Path(args.output_dir).is_absolute() else repo_root / args.output_dir
+    manifest_path = Path(args.manifest) if Path(args.manifest).is_absolute() else repo_root / args.manifest
+    previous = args.previous_manifest if not args.previous_manifest or args.previous_manifest.is_absolute() else repo_root / args.previous_manifest
+    borders = ensure_border_files(args, cache_dir, repo_root)
+    variables = sorted({PRODUCT_SPECS[product]["api_variable"] for product in selected})
+    archive = cache_dir / "archives" / f"{args.dataset.lower()}_{args.lead_month.lower()}_{init}_{'_'.join(variables)}.zip"
+    files: list[Path] = []
+    if not args.decode_only:
+        request_archive(_request_details(args, init, variables), archive, args)
+        files = safe_extract(archive, cache_dir / "extracted" / archive.stem)
+    requested_first_year, requested_first_month = int(requested_first_target[:4]), int(requested_first_target[4:])
+    requested_last_year, requested_last_month = month_after(requested_first_year, requested_first_month, 2)
+    requested_end_year, requested_end_month = month_after(requested_last_year, requested_last_month, 1)
+    native_period = {
+        "season_code": requested_period.split()[0],
+        "period_label": requested_period,
+        "target_code": requested_target_code,
+        "first_target": requested_first_target,
+        "valid_start_utc": f"{requested_target_code[:4]}-{requested_target_code[4:6]}-01T00:00:00Z",
+        "valid_end_utc": f"{requested_end_year:04d}-{requested_end_month:02d}-01T00:00:00Z",
+        "days": sum(
+            calendar.monthrange(year, month)[1]
+            for year, month in (
+                (requested_first_year, requested_first_month),
+                month_after(requested_first_year, requested_first_month, 1),
                 (requested_last_year, requested_last_month),
             )
         ),
@@ -465,3 +715,4 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
