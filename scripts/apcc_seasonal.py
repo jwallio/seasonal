@@ -498,7 +498,13 @@ def find_product_file(files: Iterable[Path], product: dict[str, Any], season_cod
     return sorted(seasonal or matching)[0]
 
 
-def write_manifest(path: Path, entries: Iterable[dict[str, Any]], previous: Path | None, retain_cycles: int) -> None:
+def write_manifest(
+    path: Path,
+    entries: Iterable[dict[str, Any]],
+    previous: Path | None,
+    retain_cycles: int,
+    dataset: str = "MME_3MONTH",
+) -> None:
     all_entries: list[dict[str, Any]] = []
     for existing_path in (previous, path):
         if not existing_path or not existing_path.exists():
@@ -523,7 +529,7 @@ def write_manifest(path: Path, entries: Iterable[dict[str, Any]], previous: Path
         "generated_utc": iso_utc(dt.datetime.now(dt.timezone.utc)),
         "source": "APCC multi-model ensemble via CLIK",
         "source_url": APCC_SOURCE_URL,
-        "source_urls": [APCC_SOURCE_URL, dataset_url(args.dataset), APCC_API_DOCS_URL],
+        "source_urls": [APCC_SOURCE_URL, dataset_url(dataset), APCC_API_DOCS_URL],
         "acknowledgement": APCC_ACKNOWLEDGEMENT,
         "product_labels": {
             "500mb_height_anomaly": "500-mb Height Anomaly",
@@ -700,7 +706,7 @@ def run(args: argparse.Namespace) -> int:
             run_entry["status"] = "failed"
             print(f"APCC {product_name} failed: {exc}")
         entries.append(run_entry)
-    write_manifest(manifest_path, entries, previous, args.retain_cycles)
+    write_manifest(manifest_path, entries, previous, args.retain_cycles, args.dataset)
     print(f"wrote APCC manifest: {manifest_path} ({len(entries)} product run(s))")
     return 0 if successes else 2
 
