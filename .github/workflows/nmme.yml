@@ -10,10 +10,10 @@ on:
       products:
         description: "Products to generate, comma-separated"
         required: false
-        default: "2m_temperature_anomaly,probability_above_normal,probability_near_normal,probability_below_normal,model_spread,multi_model_consensus"
+        default: "2m_temperature_anomaly,probability_above_normal,probability_near_normal,probability_below_normal,multi_model_consensus"
         type: string
       base_product:
-        description: "Base parameter for probability, spread, and consensus"
+        description: "Base parameter for probability and consensus"
         required: false
         default: "2m_temperature_anomaly"
         type: choice
@@ -53,7 +53,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 240
     env:
-      NMME_PRODUCTS: ${{ inputs.products || '2m_temperature_anomaly,probability_above_normal,probability_near_normal,probability_below_normal,model_spread,multi_model_consensus' }}
+      NMME_PRODUCTS: ${{ inputs.products || '2m_temperature_anomaly,probability_above_normal,probability_near_normal,probability_below_normal,multi_model_consensus' }}
       NMME_BASE_PRODUCT: ${{ inputs.base_product || '2m_temperature_anomaly' }}
       NMME_INIT: ${{ inputs.init || 'latest' }}
       LEAD_MONTHS: ${{ inputs.lead_months || '4,5,6' }}

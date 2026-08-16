@@ -5,7 +5,6 @@ NetCDF archive and the official CPC probability NetCDF archive. It supports
 2-m temperature, precipitation, and 200-mb height anomalies, plus:
 
 - official above/near/below-normal probability maps;
-- standard deviation across the available component-model means;
 - an equal-weight component-model consensus map; and
 - optional individual component-model maps.
 
@@ -15,9 +14,9 @@ does not imply that it is a 500-mb product.
 
 The GitHub workflow is `.github/workflows/nmme.yml`. It publishes
 `nmme_manifest.json` plus images under `seasonal/nmme/`. The default scheduled
-bundle uses 2-m temperature for the probability, spread, and consensus
-products. Change `base_product` to precipitation or 200-mb height for those
-derived products.
+bundle uses 2-m temperature for the probability and consensus products.
+Change `base_product` to precipitation or 200-mb height for those derived
+products.
 
 Official sources:
 

@@ -149,7 +149,7 @@
       'sst_anomaly': 'Sea-Surface Temperature Anomaly', 'mslp_anomaly': 'MSLP Anomaly',
       'sea_surface_temperature_anomaly': 'Sea-Surface Temperature Anomaly', '200mb_height_anomaly': '200-mb Height Anomaly',
       'probability_above_normal': 'Above Normal Probability', 'probability_near_normal': 'Near Normal Probability', 'probability_below_normal': 'Below Normal Probability',
-      'model_spread': 'Model Spread', 'multi_model_consensus': 'Multi-Model Consensus',
+      'multi_model_consensus': 'Multi-Model Consensus',
     };
     const numberList = (values, min = null, max = null) => [...new Set((Array.isArray(values) ? values : []).map(value => Number(value)).filter(value => Number.isFinite(value) && (min === null || value >= min) && (max === null || value <= max)))].sort((a,b) => a - b);
     const pretty = value => String(value || '').replaceAll('_', ' ').replace(/\b\w/g, letter => letter.toUpperCase());
@@ -220,7 +220,8 @@
           (Array.isArray(run.products) ? run.products : Object.keys(run.product_hours || {})).forEach(key => keys.add(String(key)));
         } else if (run.product) keys.add(String(run.product));
       });
-      return [...keys];
+      const retired = selection.model === 'nmme' ? new Set(['model_spread']) : new Set();
+      return [...keys].filter(key => !retired.has(key));
     }
     function productLabel(model, key) {
       const configured = modelStates[selection.model].manifest?.product_labels?.[key];
