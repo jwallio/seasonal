@@ -12,7 +12,9 @@
     a { color:var(--teal); }
     .shell { width:min(1440px,calc(100% - 32px)); margin:0 auto; padding:18px 0 52px; }
     h1 { margin:0; font-size:clamp(30px,5vw,54px); line-height:1; letter-spacing:-.045em; }
-    .hero { padding-bottom:14px; }
+    .hero { display:flex; align-items:flex-start; justify-content:space-between; gap:20px; padding-bottom:14px; }
+    .brand { color:var(--ink); font-size:clamp(18px,2.6vw,28px); font-weight:800; letter-spacing:-.04em; line-height:1; text-decoration:none; white-space:nowrap; }
+    .brand::first-letter { color:var(--teal); }
     .card { background:linear-gradient(145deg,#132c37e8,#0c1d25e8); border:1px solid var(--line); border-radius:22px; box-shadow:0 18px 60px #0005; overflow:hidden; }
     .view-tabs { display:flex; gap:8px; margin:0 0 12px; }
     .view-tabs button { border-radius:10px; padding:9px 14px; color:var(--muted); }
@@ -59,10 +61,12 @@
     .compare-image-wrap img { display:block; width:100%; height:auto; }
     .compare-image-wrap .empty { width:100%; padding:42px 18px; }
     .compare-meta { margin:0; padding:0 14px 14px; color:var(--muted); font-size:11px; line-height:1.45; }
-    .footer { margin-top:20px; color:#8298a3; font-size:12px; }
+    .footer { display:flex; align-items:center; flex-wrap:wrap; gap:8px; margin-top:20px; color:#8298a3; font-size:12px; }
+    .footer-copy { flex:1 1 260px; }
+    .footer-brand { color:var(--teal); font-weight:800; letter-spacing:-.02em; text-decoration:none; white-space:nowrap; }
     @media (max-width:1280px) { .compare-grid{grid-template-columns:repeat(2,minmax(0,1fr))} }
     @media (max-width:900px) { .toolbar{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.grid{grid-template-columns:1fr} }
-    @media (max-width:600px) { .shell{width:min(100% - 20px,1440px);padding-top:12px}.toolbar{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.toolbar .selector:nth-child(3){grid-column:1 / -1}.map-wrap{min-height:280px}.card-head{padding:15px}.viewer{padding:10px}.controls{padding:0 10px 12px}.ratio-control{margin-left:0}.facts{padding:10px}.links{padding:0 15px 15px} }
+    @media (max-width:600px) { .hero{display:block}.brand{display:block;margin-bottom:10px;text-align:right}.shell{width:min(100% - 20px,1440px);padding-top:12px}.toolbar{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.toolbar .selector:nth-child(3){grid-column:1 / -1}.map-wrap{min-height:280px}.card-head{padding:15px}.viewer{padding:10px}.controls{padding:0 10px 12px}.ratio-control{margin-left:0}.facts{padding:10px}.links{padding:0 15px 15px} }
     @media (max-width:600px) { .compare-grid{grid-template-columns:1fr}.compare-toolbar{align-items:stretch}.compare-summary{width:100%;margin:0}.compare-image-wrap{margin:10px}.view-tabs{margin-bottom:10px} }
   </style>
 </head>
@@ -70,6 +74,7 @@
   <main class="shell">
     <header class="hero">
       <h1>Seasonal Model Dashboard</h1>
+      <a class="brand" href="https://wall.cloud/" aria-label="wall.cloud">wall.cloud</a>
     </header>
 
     <nav class="view-tabs" aria-label="Dashboard view">
@@ -118,7 +123,7 @@
       </div>
       <div class="compare-grid" id="compare-grid"></div>
     </section>
-    <div class="footer" id="footer">Operational dashboard · Model-specific direct viewers remain available for focused review.</div>
+    <div class="footer" id="footer"><span class="footer-copy" id="footer-copy">Operational dashboard · Model-specific direct viewers remain available for focused review.</span><a class="footer-brand" href="https://wall.cloud/" aria-label="wall.cloud">wall.cloud</a></div>
   </main>
 
   <script>
@@ -355,7 +360,7 @@
         selection.compareBaseline = '';
         el('compare-summary').textContent = '500-mb height anomaly · no matching target has been published across the model manifests';
         grid.replaceChildren(...COMPARE_MODELS.map(modelKey => renderCompareCard(modelKey, '')));
-        el('footer').textContent = '500-mb height anomaly comparison · CFSv2 · ECMWF SEAS5 · CanSIPS v3 · C3S multi-system · JMA';
+        el('footer-copy').textContent = '500-mb height anomaly comparison · CFSv2 · ECMWF SEAS5 · CanSIPS v3 · C3S multi-system · JMA';
         return;
       }
       const preferred = options.find(item => /^\d{6}-\d{6}$/.test(String(item.value))) || options[options.length - 1];
@@ -368,7 +373,7 @@
       const availableCount = COMPARE_MODELS.filter(modelKey => Boolean(compareRunForTarget(modelKey, selection.compareTarget, selection.compareBaseline))).length;
       el('compare-summary').textContent = `${periodLabel(selection.compareTarget)} · ${compareBaselineLabel(selection.compareBaseline)} · ${availableCount}/${COMPARE_MODELS.length} model maps available`;
       grid.replaceChildren(...COMPARE_MODELS.map(modelKey => renderCompareCard(modelKey, selection.compareTarget)));
-      el('footer').textContent = `500-mb height anomaly comparison · ${compareBaselineLabel(selection.compareBaseline)} · CFSv2 · ECMWF SEAS5 · CanSIPS v3 · C3S multi-system · JMA`;
+      el('footer-copy').textContent = `500-mb height anomaly comparison · ${compareBaselineLabel(selection.compareBaseline)} · CFSv2 · ECMWF SEAS5 · CanSIPS v3 · C3S multi-system · JMA`;
     }
     function renderControls(model, run, targets) {
       const controls = el('target-controls'); controls.replaceChildren();
@@ -416,7 +421,7 @@
       else if (targetValue?.status === 'partial' || run.status === 'partial') { warning.style.display = 'block'; warning.textContent = 'This run is partial; retained history remains selectable.'; }
       else if (run.source_warning) { warning.style.display = 'block'; warning.textContent = run.source_warning; }
       else warning.style.display = 'none';
-      el('footer').textContent = `${model.source} · ${modelState.manifest.generated_utc ? `Manifest generated ${initLabel(modelState.manifest.generated_utc)}` : 'Published manifest loaded'} · Direct model pages remain available.`;
+      el('footer-copy').textContent = `${model.source} · ${modelState.manifest.generated_utc ? `Manifest generated ${initLabel(modelState.manifest.generated_utc)}` : 'Published manifest loaded'} · Direct model pages remain available.`;
     }
     function renderCurrentView() { if (selection.view === 'compare') renderCompare(); else renderAll(); }
     function setView(view) {
