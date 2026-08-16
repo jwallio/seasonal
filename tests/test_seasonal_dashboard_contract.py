@@ -51,7 +51,6 @@ def main() -> int:
         "source_url",
         "preferredTarget",
         "probability_above_normal",
-        "model_spread",
         "multi_model_consensus",
     ):
         check(term in page, f"unified dashboard missing term: {term}")
@@ -62,6 +61,7 @@ def main() -> int:
     check("commonComplete ? 'common_1991_2020' : 'native'" not in page, "comparison should default to native model maps")
     check('id="availability"' not in page, "dashboard should not show the manifest availability sentence")
     check("model manifests available" not in page, "dashboard should not show the manifest availability sentence")
+    check("'model_spread': 'Model Spread'" not in page, "dashboard must not expose retired NMME model spread")
     check('id="map-title"' not in page, "map card should not duplicate titles already rendered in the image")
     check('id="run-status"' not in page, "map card should not duplicate image status in a header badge")
     for term in (

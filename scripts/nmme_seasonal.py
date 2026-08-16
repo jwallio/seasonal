@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Fetch and render NOAA CPC North American Multi-Model Ensemble products.
 
-The realtime anomaly feed is a public NetCDF archive.  The adapter keeps the
-official NMME ensemble mean and probability files distinct from derived
-component consensus and model-spread products.
+The realtime anomaly feed is a public NetCDF archive. The adapter keeps the
+official NMME ensemble mean and probability files distinct from the derived
+component consensus product.
 """
 
 from __future__ import annotations
@@ -11,7 +11,6 @@ from __future__ import annotations
 import argparse
 import datetime as dt
 import json
-import math
 import re
 import sys
 from pathlib import Path
@@ -28,6 +27,7 @@ PROB_ROOT = "https://ftp.cpc.ncep.noaa.gov/NMME/prob/netcdf/"
 SOURCE_URL = "https://www.cpc.ncep.noaa.gov/products/NMME/data.html"
 NCEI_URL = "https://www.ncei.noaa.gov/products/weather-climate-models/north-american-multi-model"
 COMPONENTS = ("CanESM5", "CFSv2", "GEM5.2_NEMO", "NASA_GEOS5v2", "NCAR_CCSM4", "NCAR_CESM1")
+RETIRED_PRODUCTS = frozenset({"model_spread"})
 
 TEMP_PALETTE = [
     "#28567f", "#397ba2", "#5b9fba", "#82bdca", "#b4d6dc", "#e7eeee",
@@ -155,21 +155,6 @@ def month_seconds(target: str) -> int:
     return int((dt.datetime(year, month, 1) - start).total_seconds())
 
 
-def grid_std(grids: list[Grid]) -> Grid:
-    if not grids:
-        raise NMMEError("cannot calculate spread from an empty component set")
-    first = grids[0]
-    values: list[list[float]] = []
-    for row_index in range(len(first.lats)):
-        row: list[float] = []
-        for column_index in range(len(first.lons)):
-            samples = [grid.values[row_index][column_index] for grid in grids]
-            finite = [value for value in samples if math.isfinite(value)]
-            row.append(float(np.std(finite, ddof=0)) if finite else math.nan)
-        values.append(row)
-    return Grid(first.lons[:], first.lats[:], values)
-
-
 def download(url: str, path: Path) -> None:
     if path.exists() and path.stat().st_size > 0:
         return
@@ -277,21 +262,6 @@ def spec_for(product_name: str, base_name: str) -> dict[str, Any]:
             "anomaly_ticks": list(range(0, 101, 10)), "anomaly_palette": PROB_PALETTE, "anomaly_tick_format": "plain",
             "conversion": "official CPC NMME probability field", "header_detail": "{source_label}  •  Official CPC NMME probability product",
         }
-    if product_name == "model_spread":
-        if base_name == "2m_temperature_anomaly":
-            minimum, maximum, ticks, palette = 0.0, 6.0, list(range(0, 7)), TEMP_PALETTE[:6]
-        elif base_name == "precipitation_anomaly":
-            minimum, maximum, ticks, palette = 0.0, 8.0, list(range(0, 9)), PRECIP_PALETTE[:8]
-        else:
-            minimum, maximum, ticks, palette = 0.0, 200.0, list(range(0, 201, 20)), HEIGHT_PALETTE[:10]
-        return {
-            "name": product_name, "variable": base["file_var"], "field": f"{base['field']}_spread", "raw_field": "NMME component standard deviation",
-            "raw_units": base["units"], "units": base["units"], "seasonal_units": base["units"], "title": f"NMME Model Spread · {base['title']}",
-            "absolute_title": f"NMME Model Spread · {base['title']}", "height_contours": False, "region": base.get("region", DEFAULT_REGION),
-            "anomaly_min": minimum, "anomaly_max": maximum, "anomaly_ticks": ticks, "anomaly_palette": palette,
-            "anomaly_tick_format": "plain", "conversion": "standard deviation across available NMME component means",
-            "header_detail": "{source_label}  •  Component-model standard deviation",
-        }
     if product_name == "multi_model_consensus":
         return {
             **spec_for(base_name, base_name), "name": product_name, "title": f"NMME Multi-Model Consensus · {base['title']}",
@@ -311,8 +281,8 @@ def make_run_entry(product_name: str, base_name: str, init: str, component: str,
         "model": "NOAA NMME", "component": component, "components": components, "product": product_name,
         "base_product": base_name, "source": "NOAA CPC NMME", "source_url": SOURCE_URL, "source_urls": [SOURCE_URL, NCEI_URL],
         "archive_root": REALTIME_ROOT, "init_utc": iso_utc(dt.datetime.strptime(init, "%Y%m%d%H").replace(tzinfo=dt.timezone.utc)),
-        "statistic": "official NMME ensemble mean" if component == "ENSMEAN" else ("official CPC probability" if component == "PROBABILITY" else ("component standard deviation" if component == "SPREAD" else "equal-weight component mean")),
-        "ensemble_scope": "NMME realtime ensemble mean" if component == "ENSMEAN" else ("NMME component models" if component in {"SPREAD", "CONSENSUS"} else "CPC NMME probability product"),
+        "statistic": "official NMME ensemble mean" if component == "ENSMEAN" else ("official CPC probability" if component == "PROBABILITY" else "equal-weight component mean"),
+        "ensemble_scope": "NMME realtime ensemble mean" if component == "ENSMEAN" else ("NMME component models" if component == "CONSENSUS" else "CPC NMME probability product"),
         "field": product["field"], "units": product["units"], "raw_field": product["raw_field"], "raw_units": product["raw_units"],
         "conversion": product["conversion"], "probability_period": probability_period if component == "PROBABILITY" else None,
         "baseline": {"status": "official_nmme_anomaly_or_probability"}, "targets": [], "status": "planned",
@@ -394,10 +364,17 @@ def write_manifest(path: Path, entries: Iterable[dict[str, Any]], previous: Path
     old_entries: list[dict[str, Any]] = []
     if previous and previous.exists():
         try:
-            old_entries = [run for run in json.loads(previous.read_text(encoding="utf-8")).get("runs", []) if isinstance(run, dict)]
+            old_entries = [
+                run for run in json.loads(previous.read_text(encoding="utf-8")).get("runs", [])
+                if isinstance(run, dict) and str(run.get("product", "")) not in RETIRED_PRODUCTS
+            ]
         except (OSError, ValueError) as exc:
             raise NMMEError(f"could not read previous NMME manifest: {exc}") from exc
-    unique = {str(run.get("id")): run for run in [*old_entries, *entries] if run.get("id")}
+    unique = {
+        str(run.get("id")): run
+        for run in [*old_entries, *entries]
+        if run.get("id") and str(run.get("product", "")) not in RETIRED_PRODUCTS
+    }
     ordered = sorted(unique.values(), key=lambda run: (str(run.get("init_utc", "")), str(run.get("id", ""))), reverse=True)
     cycles: list[str] = []
     for run in ordered:
@@ -405,7 +382,7 @@ def write_manifest(path: Path, entries: Iterable[dict[str, Any]], previous: Path
         if cycle not in cycles:
             cycles.append(cycle)
     keep = set(cycles[:max(1, retain_cycles)])
-    labels = {**{key: value["title"] for key, value in BASE_PRODUCTS.items()}, "probability_above_normal": "Above Normal Probability", "probability_near_normal": "Near Normal Probability", "probability_below_normal": "Below Normal Probability", "model_spread": "NMME Model Spread", "multi_model_consensus": "NMME Multi-Model Consensus"}
+    labels = {**{key: value["title"] for key, value in BASE_PRODUCTS.items()}, "probability_above_normal": "Above Normal Probability", "probability_near_normal": "Near Normal Probability", "probability_below_normal": "Below Normal Probability", "multi_model_consensus": "NMME Multi-Model Consensus"}
     payload = {
         "schema_version": 1, "kind": "nmme_seasonal_manifest", "generated_utc": iso_utc(dt.datetime.now(dt.timezone.utc)),
         "source": "NOAA CPC NMME", "source_url": SOURCE_URL, "source_urls": [SOURCE_URL, NCEI_URL],
@@ -419,7 +396,7 @@ def write_manifest(path: Path, entries: Iterable[dict[str, Any]], previous: Path
 
 
 def build_parser() -> argparse.ArgumentParser:
-    product_choices = tuple(BASE_PRODUCTS) + ("probability_above_normal", "probability_near_normal", "probability_below_normal", "model_spread", "multi_model_consensus")
+    product_choices = tuple(BASE_PRODUCTS) + ("probability_above_normal", "probability_near_normal", "probability_below_normal", "multi_model_consensus")
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--product", choices=product_choices, default="2m_temperature_anomaly")
     parser.add_argument("--products", default="", help="optional comma-separated product list")
@@ -443,7 +420,7 @@ def build_parser() -> argparse.ArgumentParser:
 
 def run(args: argparse.Namespace) -> int:
     requested = [item.strip() for item in (args.products or args.product).split(",") if item.strip()]
-    choices = set(BASE_PRODUCTS) | {"probability_above_normal", "probability_near_normal", "probability_below_normal", "model_spread", "multi_model_consensus"}
+    choices = set(BASE_PRODUCTS) | {"probability_above_normal", "probability_near_normal", "probability_below_normal", "multi_model_consensus"}
     unknown = [item for item in requested if item not in choices]
     if unknown:
         raise NMMEError(f"unsupported NMME product(s): {', '.join(unknown)}")
@@ -519,16 +496,13 @@ def run(args: argparse.Namespace) -> int:
                         component_grid_by_lead[component][lead] = load(component, base_name, lead, "anomaly")
                         source_grids.append(component_grid_by_lead[component][lead])
                     source_grids = aligned(source_grids)
-                    if product_name == "model_spread":
-                        grid_by_lead[lead] = grid_std(source_grids)
-                    else:
-                        grid_by_lead[lead] = mean_grids(source_grids)
+                    grid_by_lead[lead] = mean_grids(source_grids)
                     files_by_lead[lead] = "component files: " + ", ".join(components)
             except Exception as exc:
                 failures += 1
                 print(f"NMME {product_name} lead {lead} unavailable: {exc}", file=sys.stderr)
         if grid_by_lead:
-            component = "ENSMEAN" if product_name in BASE_PRODUCTS else ("PROBABILITY" if product_name.startswith("probability_") else ("SPREAD" if product_name == "model_spread" else "CONSENSUS"))
+            component = "ENSMEAN" if product_name in BASE_PRODUCTS else ("PROBABILITY" if product_name.startswith("probability_") else "CONSENSUS")
             entry, count = render_run(product_name=product_name, base_name=base_name, init=init, component=component, components=components, product=spec, grid_by_lead=grid_by_lead, output_dir=output_dir, borders=borders, leads=leads, seasonal_leads=seasonal, probability_period=args.probability_period, source_files=files_by_lead, decode_only=args.decode_only)
             entries.append(entry)
             failures += count

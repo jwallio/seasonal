@@ -37,17 +37,20 @@ def main() -> int:
     pages = PAGES.read_text(encoding="utf-8")
     for term in (
         "realtime_anom", "prob/netcdf", "tmp2m", "prate", "z200",
-        "prob_above", "prob_norm", "prob_below", "model_spread", "multi_model_consensus",
+        "prob_above", "prob_norm", "prob_below", "multi_model_consensus", "RETIRED_PRODUCTS",
         "netCDF4", "probability-period", "retain-cycles", "components", "CPC NMME",
     ):
         check(term in adapter or term in workflow or term in pages, f"missing NMME term: {term}")
     module = load_adapter()
     check(module.target_month("2026080800", 1) == "202608", "NMME lead 1 should represent the initialization month in the CPC file")
     check(module.target_month("2026080800", 6) == "202701", "NMME lead conversion should cross the year boundary")
-    for product in ("probability_above_normal", "probability_near_normal", "probability_below_normal", "model_spread", "multi_model_consensus"):
+    for product in ("probability_above_normal", "probability_near_normal", "probability_below_normal", "multi_model_consensus"):
         base = module.spec_for(product, "2m_temperature_anomaly")
         check(len(base["anomaly_ticks"]) == len(base["anomaly_palette"]) + 1, f"NMME {product} color bounds must align with swatches")
-    print("NMME CONTRACT OK: official anomaly/probability feeds, derived spread/consensus, workflow, and viewer paths")
+    check("model_spread" in module.RETIRED_PRODUCTS, "retired NMME spread product must be purged from retained manifests")
+    check("model_spread" not in workflow, "NMME workflow must not schedule or expose model spread")
+    check("model_spread" not in pages, "Pages workflow must not expose model spread")
+    print("NMME CONTRACT OK: official anomaly/probability feeds, consensus, retired spread purge, workflow, and viewer paths")
     return 0
 
 
