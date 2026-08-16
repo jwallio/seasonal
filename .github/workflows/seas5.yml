@@ -117,8 +117,9 @@ jobs:
             --output-dir public/seasonal/seas5 \
             --manifest public/seasonal/seas5_manifest.json \
             --previous-manifest .cache/seas5/previous_manifest.json \
-            --retain-runs 4
-
+            --retain-runs 4 \
+            --common-reference-dir .cache/seas5/common-reference \
+            --common-reference-url "https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/seasonal/common_reference/1991-2020/"
       - name: Package SEAS5 Pages payload
         if: success()
         shell: bash

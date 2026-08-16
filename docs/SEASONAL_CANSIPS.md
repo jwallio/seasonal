@@ -28,19 +28,44 @@ download the same hindcasts.
 
 ## Product and lead mapping
 
-The first CanSIPS product is:
+The default workflow renders the complete scalar anomaly bundle. A single
+product can still be selected with `--product` when a faster or targeted run
+is needed:
 
 | Product | Source field | Display | Reduction |
 | --- | --- | --- | --- |
 | `500mb_height_anomaly` | `GeopotentialHeight` at `ISBL-0500` | 500-mb height anomaly in metres with height contours in dam | monthly mean; seasonal mean |
+| `850mb_temperature_anomaly` | `AirTemp` at `ISBL-0850` | 850-mb temperature anomaly in °C | monthly mean; seasonal mean |
+| `2m_temperature_anomaly` | `AirTemp` at `AGL-2m` | 2-m temperature anomaly in °C | monthly mean; seasonal mean |
+| `precipitation_anomaly` | `PrecipRate` at `Sfc` | precipitation anomaly in inches | calendar-month total; seasonal mean |
+| `mslp_anomaly` | `Pressure` at `MSL` | mean sea-level pressure anomaly in hPa | monthly mean; seasonal mean |
+| `sst_anomaly` | `WaterTemp` at `Sfc` | sea-surface temperature anomaly in °C | monthly mean; seasonal mean |
+| `sea_surface_height_anomaly` | `SeaSfcHeight-Geoid` | sea-surface height anomaly in metres | monthly mean; seasonal mean |
+
+The Datamart provides precipitation as a rate in kg m-2 s-1; the adapter
+converts each monthly field to a calendar-month accumulation in millimetres
+and then to inches before calculating the anomaly. Pressure is converted from
+Pa to hPa. Temperature anomalies are reported in °C because a temperature
+difference has the same numerical magnitude in kelvin and Celsius.
 
 CanSIPS uses `P00M` through `P11M`. Lead 0 is the initialization month. For
 example, an August 2026 initialization uses leads 4, 5, and 6 for December
 2026, January 2027, and February 2027; the seasonal aggregate is labelled
 `DJF 2027`.
 
-The map uses the shared operational 1080x1080 North American renderer and
-the blue-neutral-red 500-mb anomaly scale from -200 to +200 metres.
+The maps use the shared operational 1080x1080 North American renderer. The
+500-mb product uses the blue-neutral-red scale from -200 to +200 metres;
+temperature and sea-surface temperature products use a compact ±8 °C scale,
+MSLP uses ±20 hPa, precipitation uses the operational brown/green ±8-inch
+scale, and SSH uses a ±0.50-metre scale with two-decimal labels.
+
+When the production climatology window is `1991-2020`, the 500-mb hindcast
+means are also written as compact reference grids under
+`public/seasonal/common_reference/1991-2020/`. The unified Compare tab uses
+these CanSIPS v3 grids as its shared 1991-2020 reference for CFSv2 and SEAS5;
+the CanSIPS native anomaly image already uses the same hindcast mean. This
+keeps the common mode scientifically explicit while preserving each model's
+native reference option.
 
 ## Local usage
 
@@ -66,7 +91,10 @@ full published 1991-2020 hindcast period.
 
 The scheduled/manual workflow is `.github/workflows/cansips.yml`. It restores
 the decoded-grid cache, retrieves the previous Pages manifest, renders the
-selected product, and uploads a scoped CanSIPS Pages payload. The central
+selected product (all scalar products by default), and uploads a scoped
+CanSIPS Pages payload. Retention is applied independently per product, so the
+default `--retain-runs 4` keeps the current run plus three prior runs for each
+parameter. The central
 `.github/workflows/publish-pages.yml` workflow merges that payload with WN2,
 CFSv2, and SEAS5 before publishing GitHub Pages.
 

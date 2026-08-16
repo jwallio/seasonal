@@ -79,6 +79,21 @@ available only for clearly marked incomplete smoke products.
 The original single-cycle mode remains available when `--rolling-days` is zero
 and records its scope as `single_initial_condition_cycle`.
 
+## Comparison-tab reference
+
+The unified dashboard's Compare tab can request a common 500-mb reference in
+addition to each model's native anomaly. CanSIPS publishes its absolute
+1991-2020 hindcast mean as compact grids under
+`public/seasonal/common_reference/1991-2020/`; the CFSv2 workflow downloads
+those grids, regrids them to the CFSv2 axes, and subtracts them from the
+absolute CFSv2 forecast before rendering the comparison image. The manifest
+labels this explicitly as `Common 1991-2020 reference (CanSIPS v3 hindcast)`.
+
+This is a shared comparison baseline, not a relabeling of the native CFSv2
+1982-2010 calibration. The native CFSv2 image remains available in the
+selector, and the common image is marked unavailable rather than silently
+substituted if the reference grid has not yet been published.
+
 The manifest records the source URL, initialization time, target month, lead,
 members, decoder, aggregation, baseline, cache paths, image path, and a
 per-target status (`planned`, `decoded`, `rendered`, `partial`, or `failed`).
@@ -123,157 +138,4 @@ anchor_initialization`. A custom target-month baseline directory can be used
 when a month-specific 1991-2020 climatology is preferred.
 
 For a custom baseline, identify it in the command with `--baseline-label` and,
-when known, `--baseline-years`; `--ncei-calibration` supplies those values from
-the official file automatically. Do not use the WN2 ERA5/MERRA-2 baseline and
-call it a CFSv2 anomaly. The CFSv2 model/reforecast climatology is a separate
-scientific input and is intentionally not guessed by the script.
-
-`--absolute` renders raw 500-mb geopotential height for source/decoder smoke
-testing only. Its image and manifest say `z500`, not `z500_anomaly`.
-
-## Local usage
-
-The repository requirements already include `requests`, `numpy`, `matplotlib`,
-and `Pillow`; `wgrib2` must be installed separately. The adapter honors
-`CFSV2_WGRIB2` and auto-detects `C:\wgrib2\wgrib2.exe` on Windows.
-
-The GitHub Actions workflow includes a **CFSv2 product** dropdown. The current
-adapter supports `500mb_height_anomaly` (the production output, selected by
-default), `precipitation_anomaly`, `snow_water_equivalent_anomaly`, and
-`500mb_height_absolute` (a clearly labelled decoder/source smoke output).
-The workflow passes `--previous-manifest` and `--retain-runs 4` so the live
-viewer can show the current run and three historical runs.
-
-Decode one target without requiring a baseline or rendering dependencies:
-
-```powershell
-.\scripts\render_cfsv2.ps1 `
-  -Init "2026081000" `
-  -LeadMonths "1" `
-  -Members "1" `
-  -DecodeOnly `
-  -NoBorders
-```
-
-Render three monthly leads using four selected member streams:
-
-```powershell
-.\scripts\render_cfsv2.ps1 `
-  -Init "2026081000" `
-  -LeadMonths "1,2,3" `
-  -SeasonalWindow "1,2,3" `
-  -Members "1,2,3,4" `
-  -BaselineDir "baselines/cfsv2" `
-  -BaselineLabel "CFSv2 reforecast climatology" `
-  -BaselineYears "1991-2020"
-```
-
-Use the official NCEI calibration automatically:
-
-```powershell
-.\scripts\render_cfsv2.ps1 `
-  -Init "2026081000" `
-  -LeadMonths "1" `
-  -Members "1,2,3,4" `
-  -UseNceiCalibration
-```
-
-Generate precipitation anomaly graphics using the same DJF rolling workflow
-as the height maps:
-
-```powershell
-.\scripts\render_cfsv2.ps1 `
-  -Product "precipitation_anomaly" `
-  -Init "2026081000" `
-  -LeadMonths "4,5,6" `
-  -SeasonalWindow "4,5,6" `
-  -RollingDays 10 `
-  -RollingMember 1 `
-  -UseNceiCalibration
-```
-
-Build the CPC-style rolling 40-member blend. Persist `RollingStateDir` between
-daily runs using a GitHub Actions cache, private artifact store, or equivalent
-local directory:
-
-```powershell
-.\scripts\render_cfsv2.ps1 `
-  -Init "latest" `
-  -LeadMonths "1,2,3" `
-  -SeasonalWindow "1,2,3" `
-  -RollingDays 10 `
-  -RollingMember 1 `
-  -UseNceiCalibration
-```
-
-Generate snow-water-equivalent anomaly graphics using the same DJF rolling
-workflow:
-
-```powershell
-.\scripts\render_cfsv2.ps1 `
-  -Product "snow_water_equivalent_anomaly" `
-  -Init "2026081000" `
-  -LeadMonths "4,5,6" `
-  -SeasonalWindow "4,5,6" `
-  -RollingDays 10 `
-  -RollingMember 1 `
-  -UseNceiCalibration
-```
-
-For an initial source smoke output before the baseline is available:
-
-```powershell
-.\scripts\render_cfsv2.ps1 `
-  -Init "2026081000" `
-  -LeadMonths "1" `
-  -Members "1" `
-  -Absolute
-```
-
-The output is intentionally labelled as an absolute field and must not be
-used as an anomaly forecast.
-
-## Normalized seasonal product contract
-
-Each target entry uses these fields:
-
-| Field | Meaning |
-| --- | --- |
-| `id` | Stable CFSv2 target identifier |
-| `source` / `source_url` | NOAA CFSv2 NOMADS provenance |
-| `model` | `CFSv2` |
-| `init_utc` | Forecast initialization time |
-| `valid_start_utc` / `valid_end_utc` | Calendar month represented |
-| `lead_month` / `target_month` | CFSv2 lead and `YYYYMM` target |
-| `aggregation` | Monthly forecast average, monthly precipitation total, monthly SWE mean, or 3-month seasonal total/mean |
-| `field` | `z500_anomaly`, `z500`, `precipitation_anomaly`, or `snow_water_equivalent_anomaly` |
-| `units` | m for height; in for precipitation and snow-water equivalent |
-| `raw_field` / `raw_units` | Source GRIB field and units before any conversion |
-| `conversion` | Product-specific unit conversion, including calendar-month PRATE totals |
-| `baseline` | Baseline file, label, and years when applicable |
-| `statistic` | `ensemble_mean` |
-| `ensemble_scope` | The selected streams' initialization-cycle scope |
-| `ensemble_members` | Number of usable members in the mean |
-| `ensemble_expected_members` | Requested member count, including an incomplete rolling window |
-| `rolling_window` | Cycle interval, dates, member stream, and expected count when rolling |
-| `status` | Decode/render outcome |
-| `image` | Relative rendered image path when successful |
-
-The top-level manifest also includes `retention.max_runs` and
-`retention.history_runs`; the production workflow sets these to `4` and `3`.
-
-## Source notes
-
-- [NOAA CFSv2 downloads](https://cfs.ncep.noaa.gov/cfsv2/downloads.html)
-- [NOAA NOMADS CFSv2 operational directory](https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/)
-- [NOMADS CFS pressure-level filter](https://nomads.ncep.noaa.gov/cgi-bin/filter_cfs_pgb.pl)
-- [NOAA CFSv2 model page](https://www.ncei.noaa.gov/products/weather-climate-models/climate-forecast-system)
-- [NCEI CFS reforecast pressure-level calibration catalog](https://www.ncei.noaa.gov/thredds/catalog/model-cfs_refor_calclim_mm_9m_pgbf/catalog.html)
-- [NCEI CFS reforecast flux calibration catalog](https://www.ncei.noaa.gov/thredds/catalog/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/catalog.html)
-- [NOAA NOMADS CFS flux fields](https://nomads.ncep.noaa.gov/cgi-bin/filter_cfs_flx.pl)
-- [NCEP CPC CFSv2 seasonal forecasts](https://www.cpc.ncep.noaa.gov/products/CFSv2/CFSv2seasonal.shtml)
-- [CFSv2 forecast-file metadata notes](https://www.cpc.ncep.noaa.gov/products/tools/wgrib2/fix_CFSv2_fcst.html)
-- [Earth Engine CFSv2 collection](https://developers.google.com/earth-engine/datasets/catalog/NOAA_CFSV2_FOR6H_HARMONIZED)
-
-The Earth Engine collection is useful for its available 6-hourly surface
-fields, but it is not the pressure-level `HGT:500 mb` source used here.
+when known, `--baseline-years`; `--ncei-calibration` supplies those

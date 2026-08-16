@@ -91,6 +91,13 @@ def main() -> int:
         "--baseline-file",
         "--baseline-dir",
         "--ncei-calibration",
+        "COMMON_REFERENCE_YEARS = \"1991-2020\"",
+        "COMMON_REFERENCE_LABEL",
+        "load_common_reference",
+        "regrid_nearest",
+        "--common-reference-dir",
+        "--common-reference-url",
+        "common_1991_2020",
         "--previous-manifest",
         "--retain-runs",
         "--seasonal-window",
@@ -148,76 +155,4 @@ def main() -> int:
     check("timeZone:'UTC'" in page, "Pages month labels should remain aligned with UTC map validity dates")
     check('<title>CFSv2 Model Viewer</title>' in page, "Pages title should use generic CFSv2 model-viewer branding")
     check('WN2 / CFSv2' not in page, "CFSv2 direct viewer should not use the umbrella dashboard branding")
-    check('href="../">Seasonal dashboard</a>' in page, "CFSv2 direct viewer should link to the unified seasonal dashboard")
-    check("preferredTargetIndex" in page, "CFSv2 viewer should default to the seasonal aggregate when one is present")
-    check('id="product-select"' in page, "Pages viewer missing parameter selector")
-    check('id="run-select"' in page, "Pages viewer missing run-history selector")
-    check("Retaining ${history} prior run" in page, "Pages viewer should report retained run history")
-    adapter_module = load_adapter()
-    check(len(adapter_module.ANOMALY_PALETTE) == len(adapter_module.ANOMALY_TICKS) - 1, "height anomaly colors should align with labelled transitions")
-    check(len(adapter_module.SWE_ANOMALY_PALETTE) == len(adapter_module.SWE_ANOMALY_TICKS) - 1, "SWE colors should align with labelled transitions")
-    converted = adapter_module.snow_water_equivalent_inches(
-        adapter_module.Grid([0.0], [0.0], [[25.4]])
-    )
-    check(converted.values == [[1.0]], "WEASD should convert from kg m-2 to inches")
-    with tempfile.TemporaryDirectory() as temporary:
-        temporary_root = Path(temporary)
-        previous = temporary_root / "previous.json"
-        output = temporary_root / "manifest.json"
-        previous.write_text(
-            json.dumps({
-                "runs": [
-                    {"id": f"old-{index}", "init_utc": f"2026-08-{index:02d}T00:00:00Z"}
-                    for index in range(1, 5)
-                ]
-            }),
-            encoding="utf-8",
-        )
-        adapter_module.write_manifest(
-            output,
-            ROOT,
-            {"id": "current", "init_utc": "2026-08-13T00:00:00Z"},
-            previous,
-            4,
-        )
-        retained = json.loads(output.read_text(encoding="utf-8"))["runs"]
-        check([run["id"] for run in retained] == ["current", "old-4", "old-3", "old-2"], "manifest should retain current plus three prior runs")
-    workflow = WORKFLOW.read_text(encoding="utf-8")
-    pages_workflow = PAGES_WORKFLOW.read_text(encoding="utf-8")
-    update_workflow = UPDATE_WORKFLOW.read_text(encoding="utf-8")
-    for term in (
-        "product:",
-        "500mb_height_anomaly",
-        "500mb_height_absolute",
-        "precipitation_anomaly",
-        "snow_water_equivalent_anomaly",
-        "CFSV2_PRODUCT",
-    ):
-        check(term in workflow, f"workflow missing product selector term: {term}")
-    for term in ("baseline", "reforecast", "monthly_grib_01", "lead_month", "GRIB2", "rolling", "NOMADS"):
-        check(term in documentation, f"documentation missing contract term: {term}")
-    for term in ("rolling-days", "rolling-state-dir", "actions/cache", "--ncei-calibration"):
-        check(term in workflow, f"workflow missing contract term: {term}")
-    for term in ("Restore published CFSv2 run history", "previous_manifest.json", "--previous-manifest", "--retain-runs 4"):
-        check(term in workflow, f"workflow missing history-retention term: {term}")
-    check("peaceiris/actions-gh-pages" not in workflow, "CFSv2 workflow must not publish Pages directly")
-    check("peaceiris/actions-gh-pages" not in update_workflow, "WeatherNext workflow must not publish Pages directly")
-    for term in ("Package WN2 Pages payload", "wn2-pages-${{ github.run_id }}"):
-        check(term in update_workflow, f"WeatherNext workflow missing Pages payload term: {term}")
-    for term in (
-        "workflow_run:",
-        "CFSv2 Rolling Seasonal Graphics",
-        "ECMWF SEAS5 Seasonal Graphics",
-        "WeatherNext Runner",
-        "actions/download-artifact@v4",
-        "wn2-pages-publish",
-        "keep_files: false",
-    ):
-        check(term in pages_workflow, f"central Pages workflow missing term: {term}")
-
-    print("CFSV2 CONTRACT OK: NOMADS source, HGT500/FLXF fields, conversions, baseline gate, manifest, wrapper")
-    return 0
-
-
-if __name__ == "__main__":
-    raise SystemExit(main())
+    check('href="../">Seasonal dashboard</a>' in page, "CFSv2 dire

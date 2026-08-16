@@ -7,12 +7,19 @@ on:
   workflow_dispatch:
     inputs:
       product:
-        description: "CanSIPS v3 product to generate"
+        description: "CanSIPS v3 product bundle to generate"
         required: false
-        default: "500mb_height_anomaly"
+        default: "all"
         type: choice
         options:
+          - all
           - 500mb_height_anomaly
+          - 850mb_temperature_anomaly
+          - 2m_temperature_anomaly
+          - precipitation_anomaly
+          - mslp_anomaly
+          - sst_anomaly
+          - sea_surface_height_anomaly
       init:
         description: "CanSIPS initialization as YYYYMM, YYYYMM0100, or latest"
         required: false
@@ -47,7 +54,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 360
     env:
-      CANSIPS_PRODUCT: ${{ inputs.product || '500mb_height_anomaly' }}
+      CANSIPS_PRODUCT: ${{ inputs.product || 'all' }}
       CANSIPS_INIT: ${{ inputs.init || 'latest' }}
       LEAD_MONTHS: ${{ inputs.lead_months || '4,5,6' }}
       SEASONAL_WINDOW: ${{ inputs.seasonal_window || '4,5,6' }}
@@ -125,6 +132,7 @@ jobs:
             --manifest public/seasonal/cansips_manifest.json \
             --previous-manifest .cache/cansips/previous_manifest.json \
             --retain-runs 4 \
+            --common-reference-dir public/seasonal/common_reference/1991-2020 \
             --wgrib2 "$CANSIPS_WGRIB2" \
             --request-delay 1.0
 
@@ -140,6 +148,10 @@ jobs:
           mkdir -p pages-payload/cansips
           cp -R public/seasonal/cansips/. pages-payload/cansips/
           cp public/seasonal/cansips_manifest.json pages-payload/cansips_manifest.json
+          if [ -d public/seasonal/common_reference/1991-2020 ]; then
+            mkdir -p pages-payload/common_reference/1991-2020
+            cp -R public/seasonal/common_reference/1991-2020/. pages-payload/common_reference/1991-2020/
+          fi
 
       - name: Upload CanSIPS Pages payload
         if: success()

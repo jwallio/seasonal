@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Seasonal Model Dashboard</title>
-  <meta name="description" content="Operational seasonal model dashboard for WeatherNext 2, CFSv2, and ECMWF SEAS5 guidance.">
+  <meta name="description" content="Operational seasonal model dashboard for CFSv2, ECMWF SEAS5, CanSIPS v3, C3S, and NOAA NMME guidance.">
   <style>
     :root { color-scheme: dark; --ink:#f3f7f9; --muted:#a9bac3; --panel:#10232d; --line:#2b4855; --teal:#59d4c0; --coral:#ff927c; --blue:#75b8e8; }
     * { box-sizing:border-box; }
@@ -14,6 +14,10 @@
     h1 { margin:0; font-size:clamp(30px,5vw,54px); line-height:1; letter-spacing:-.045em; }
     .hero { padding-bottom:14px; }
     .card { background:linear-gradient(145deg,#132c37e8,#0c1d25e8); border:1px solid var(--line); border-radius:22px; box-shadow:0 18px 60px #0005; overflow:hidden; }
+    .view-tabs { display:flex; gap:8px; margin:0 0 12px; }
+    .view-tabs button { border-radius:10px; padding:9px 14px; color:var(--muted); }
+    .view-tabs button.active { border-color:var(--teal); background:#173c45; color:var(--ink); }
+    .compare-view[hidden], #single-toolbar[hidden], #single-view[hidden] { display:none; }
     .toolbar { display:grid; grid-template-columns:minmax(180px,.9fr) minmax(230px,1.3fr) minmax(260px,1.5fr); gap:12px; padding:16px; margin-bottom:18px; }
     .selector { display:grid; gap:5px; }
     .selector label, .control-label { color:var(--muted); font-size:10px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; }
@@ -43,9 +47,23 @@
     .copy p { margin:0 0 12px; }
     .copy p:last-child { margin-bottom:0; }
     .links { display:flex; flex-wrap:wrap; gap:12px; padding:0 20px 20px; font-size:13px; }
+    .compare-toolbar { display:flex; align-items:end; flex-wrap:wrap; gap:14px; padding:14px 16px; margin-bottom:18px; }
+    .compare-toolbar .selector { width:min(320px,100%); }
+    .compare-summary { margin:0 0 2px auto; color:var(--muted); font-size:12px; }
+    .compare-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:14px; }
+    .compare-card { min-width:0; }
+    .compare-card-head { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:14px 15px; border-bottom:1px solid var(--line); }
+    .compare-card-head h2 { margin:0; font-size:15px; }
+    .compare-card-head a { font-size:11px; white-space:nowrap; }
+    .compare-image-wrap { display:grid; place-items:center; min-height:230px; margin:12px; background:#dfeaf0; border:1px solid #486774; border-radius:12px; overflow:hidden; }
+    .compare-image-wrap img { display:block; width:100%; height:auto; }
+    .compare-image-wrap .empty { width:100%; padding:42px 18px; }
+    .compare-meta { margin:0; padding:0 14px 14px; color:var(--muted); font-size:11px; line-height:1.45; }
     .footer { margin-top:20px; color:#8298a3; font-size:12px; }
+    @media (max-width:1280px) { .compare-grid{grid-template-columns:repeat(2,minmax(0,1fr))} }
     @media (max-width:900px) { .toolbar{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.grid{grid-template-columns:1fr} }
     @media (max-width:600px) { .shell{width:min(100% - 20px,1440px);padding-top:12px}.toolbar{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.toolbar .selector:nth-child(3){grid-column:1 / -1}.map-wrap{min-height:280px}.card-head{padding:15px}.viewer{padding:10px}.controls{padding:0 10px 12px}.ratio-control{margin-left:0}.facts{padding:10px}.links{padding:0 15px 15px} }
+    @media (max-width:600px) { .compare-grid{grid-template-columns:1fr}.compare-toolbar{align-items:stretch}.compare-summary{width:100%;margin:0}.compare-image-wrap{margin:10px}.view-tabs{margin-bottom:10px} }
   </style>
 </head>
 <body>
@@ -54,13 +72,18 @@
       <h1>Seasonal Model Dashboard</h1>
     </header>
 
-    <section class="toolbar card" aria-label="Dashboard selectors">
+    <nav class="view-tabs" aria-label="Dashboard view">
+      <button id="single-tab" type="button" class="active" aria-selected="true">Single model</button>
+      <button id="compare-tab" type="button" aria-selected="false">Compare</button>
+    </nav>
+
+    <section class="toolbar card" id="single-toolbar" aria-label="Dashboard selectors">
       <div class="selector"><label for="model-select">Model</label><select id="model-select"></select></div>
       <div class="selector"><label for="product-select">Parameter</label><select id="product-select" disabled><option>Loading…</option></select></div>
       <div class="selector"><label for="run-select">Run history</label><select id="run-select" disabled><option>Loading…</option></select></div>
     </section>
 
-    <section class="grid">
+    <section class="grid" id="single-view">
       <article class="card">
         <div class="viewer"><div class="map-wrap" id="map-wrap"><div class="empty">Reading the latest published run.</div></div></div>
         <div class="controls" id="target-controls"></div>
@@ -74,205 +97,4 @@
             <div class="fact"><small>Model</small><strong id="fact-model">—</strong></div>
             <div class="fact"><small>Valid period</small><strong id="fact-target">—</strong></div>
             <div class="fact"><small>Lead / hour</small><strong id="fact-lead">—</strong></div>
-            <div class="fact"><small>Ensemble</small><strong id="fact-ensemble">—</strong></div>
-            <div class="fact"><small>Field</small><strong id="fact-field">—</strong></div>
-            <div class="fact"><small>Status</small><strong id="fact-status">—</strong></div>
-          </div>
-        </article>
-        <article class="card">
-          <div class="card-head"><h2>Run metadata</h2></div>
-          <div class="copy"><p id="scope">The selected manifest will identify its initialization, aggregation, and data lineage.</p><p id="source-detail">Source: —</p></div>
-          <div class="links"><a id="source-link" href="#">Source</a><a id="direct-link" href="../">Direct viewer</a><a href="https://github.com/jwallio/wn2/actions">Actions</a></div>
-        </article>
-      </aside>
-    </section>
-    <div class="footer" id="footer">Operational dashboard · Model-specific direct viewers remain available for focused review.</div>
-  </main>
-
-  <script>
-    const root = location.pathname.includes('/seasonal/') ? location.pathname.split('/seasonal/')[0] : '';
-    const assetPath = value => `${root}/${String(value || '').replace(/^\/+/, '').replace(/^public\//, '')}`;
-    const el = id => document.getElementById(id);
-    const MODEL_CONFIG = {
-      weathernext: { label: 'WeatherNext 2', kind: 'weathernext', manifest: assetPath('runs_manifest.json'), direct: assetPath(''), source: 'Google Earth Engine' },
-      cfsv2: { label: 'CFSv2', kind: 'seasonal', manifest: assetPath('seasonal/cfsv2_manifest.json'), direct: assetPath('seasonal/cfsv2/'), source: 'NOAA CFSv2 NOMADS' },
-      seas5: { label: 'ECMWF SEAS5', kind: 'seasonal', manifest: assetPath('seasonal/seas5_manifest.json'), direct: assetPath('seasonal/seas5/'), source: 'ECMWF SEAS5 / Copernicus CDS' },
-      cansips: { label: 'CanSIPS v3', kind: 'seasonal', manifest: assetPath('seasonal/cansips_manifest.json'), direct: assetPath('seasonal/cansips/'), source: 'ECCC MSC Datamart' },
-    };
-    const modelStates = Object.fromEntries(Object.keys(MODEL_CONFIG).map(key => [key, { manifest: null, runs: [], error: null }]));
-    const selection = { model: 'cfsv2', product: '', run: '', target: '', ratio: '10' };
-    const PRODUCT_LABELS = {
-      '500mb_height_anomaly': '500-mb Height Anomaly', '500mb_height_absolute': '500-mb Geopotential Height',
-      '2m_temperature_anomaly': '2-m Temperature Anomaly', '850mb_temperature_anomaly': '850-mb Temperature Anomaly',
-      'precipitation_anomaly': 'CONUS Precipitation Anomaly', 'snow_water_equivalent_anomaly': 'Snow-Water-Equivalent Anomaly',
-      'snow_depth_anomaly': 'CONUS Snow-Depth Anomaly', 'snowfall_anomaly': 'CONUS Snowfall Anomaly',
-      'sst_anomaly': 'Sea-Surface Temperature Anomaly', 'mslp_anomaly': 'MSLP Anomaly',
-    };
-    const numberList = (values, min = null, max = null) => [...new Set((Array.isArray(values) ? values : []).map(value => Number(value)).filter(value => Number.isFinite(value) && (min === null || value >= min) && (max === null || value <= max)))].sort((a,b) => a - b);
-    const pretty = value => String(value || '').replaceAll('_', ' ').replace(/\b\w/g, letter => letter.toUpperCase());
-    const initLabel = value => { if (!value) return '—'; const date = new Date(value); return Number.isNaN(date.valueOf()) ? value : new Intl.DateTimeFormat(undefined, {day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit', hour12:false, timeZone:'UTC'}).format(date).replace(',', '') + 'Z'; };
-    const monthLabel = value => { if (!value) return '—'; const date = new Date(value); return Number.isNaN(date.valueOf()) ? value : new Intl.DateTimeFormat(undefined, {month:'short', year:'numeric', timeZone:'UTC'}).format(date); };
-    const monthCodeLabel = code => /^\d{6}$/.test(String(code || '')) ? monthLabel(`${String(code).slice(0,4)}-${String(code).slice(4,6)}-01T00:00:00Z`) : String(code || '—');
-    function periodLabel(value) {
-      const text = String(value || '');
-      const match = /^(\d{4})(\d{2})-(\d{4})(\d{2})$/.exec(text);
-      if (!match) return monthCodeLabel(text);
-      const months = [Number(match[2]), Number(match[4])];
-      const season = months[0] === 12 && months[1] === 2 ? `DJF ${match[3]}` : months[0] === 3 && months[1] === 5 ? `MAM ${match[3]}` : months[0] === 6 && months[1] === 8 ? `JJA ${match[3]}` : months[0] === 9 && months[1] === 11 ? `SON ${match[3]}` : `${monthCodeLabel(match[1] + match[2])}–${monthCodeLabel(match[3] + match[4])}`;
-      return season;
-    }
-    function populate(select, values, chosen) {
-      select.replaceChildren();
-      values.forEach(item => { const option = document.createElement('option'); option.value = String(item.value); option.textContent = item.label; select.appendChild(option); });
-      select.disabled = values.length === 0;
-      if (values.some(item => String(item.value) === String(chosen))) select.value = String(chosen);
-    }
-    function manifestProducts(model) {
-      const keys = new Set();
-      modelStates[selection.model].runs.forEach(run => {
-        if (model.kind === 'weathernext') {
-          (Array.isArray(run.products) ? run.products : Object.keys(run.product_hours || {})).forEach(key => keys.add(String(key)));
-        } else if (run.product) keys.add(String(run.product));
-      });
-      return [...keys];
-    }
-    function productLabel(model, key) {
-      const configured = modelStates[selection.model].manifest?.product_labels?.[key];
-      return configured || PRODUCT_LABELS[key] || pretty(key) || 'Seasonal guidance';
-    }
-    function supportsProduct(model, run, product) {
-      if (model.kind === 'weathernext') return (Array.isArray(run.products) && run.products.includes(product)) || Boolean(run.product_hours?.[product]);
-      return String(run.product || '') === String(product);
-    }
-    function runLabel(model, run) {
-      if (model.kind === 'weathernext') return `${run.label || run.run_date || run.id || 'Published run'} · ${run.status || 'available'}`;
-      return `Init ${initLabel(run.init_utc)} · ${run.status || 'available'}`;
-    }
-    function selectedRun(model) {
-      const available = modelStates[selection.model].runs.filter(run => supportsProduct(model, run, selection.product));
-      return available.find(run => String(run.id) === String(selection.run)) || available[0] || null;
-    }
-    function targetItems(model, run) {
-      if (!run) return [];
-      if (model.kind === 'weathernext') {
-        const hours = numberList(run.product_hours?.[selection.product] || run.hours, 0);
-        return hours.map(hour => ({ key: `hour:${hour}`, value: hour, label: `Hour ${String(hour).padStart(3, '0')}` }));
-      }
-      return (Array.isArray(run.targets) ? run.targets : []).map((target, index) => ({ key: String(target.id || index), value: target, label: periodLabel(target.target_month || target.valid_start_utc || `Target ${index + 1}`) }));
-    }
-    function isSnowProduct(model, product) {
-      return model.kind === 'weathernext' && ((modelStates[selection.model].manifest?.snow_products || []).includes(product) || product.includes('snow'));
-    }
-    function frameName(run, hour, ratio) {
-      const product = selection.product;
-      const hourText = String(hour).padStart(3, '0');
-      return isSnowProduct(MODEL_CONFIG[selection.model], product) ? `${product}_r${String(ratio || 10).padStart(2, '0')}_${hourText}.jpg` : `${product}_${hourText}.jpg`;
-    }
-    function imagePath(model, run, target) {
-      if (!run || !target) return '';
-      if (model.kind === 'weathernext') return assetPath(`runs/${run.id}/${frameName(run, target.value, selection.ratio)}`);
-      return target.value?.image ? assetPath(target.value.image) : '';
-    }
-    function targetText(model, target) {
-      if (!target) return '—';
-      if (model.kind === 'weathernext') return `Hour ${String(target.value).padStart(3, '0')}`;
-      return target.label;
-    }
-    function ensembleText(model, run, target) {
-      if (!run) return '—';
-      if (model.kind === 'weathernext') return run.ensemble_mode === 'member' ? `Member ${run.ensemble_member || '—'}` : pretty(run.ensemble_mode || 'ensemble');
-      const source = target?.value || {};
-      const members = source.ensemble_members || run.ensemble_members;
-      if (run.ensemble_scope === 'rolling_initial_conditions') return `${source.ensemble_members || members || 0}/${source.ensemble_expected_members || 40} cycles`;
-      return members ? `${members} members` : pretty(run.ensemble_scope || 'ensemble');
-    }
-    function leadText(model, target) {
-      if (!target) return '—';
-      if (model.kind === 'weathernext') return `Hour ${String(target.value).padStart(3, '0')}`;
-      const lead = target.value?.lead_month;
-      return lead === undefined || lead === null ? '—' : `Month ${lead}`;
-    }
-    function fieldText(target) {
-      const value = target?.value;
-      if (!value) return '—';
-      return value.units ? `${value.field || 'Field'} (${value.units})` : (value.field || '—');
-    }
-    function setMessage(message) { el('map-wrap').replaceChildren(Object.assign(document.createElement('div'), { className: 'empty', textContent: message })); }
-    function renderModelOptions() {
-      populate(el('model-select'), Object.entries(MODEL_CONFIG).map(([key, config]) => { const state = modelStates[key]; const suffix = state.error ? ' · unavailable' : state.manifest ? '' : ' · loading'; return { value: key, label: config.label + suffix }; }), selection.model);
-    }
-    function renderUnavailable(model) {
-      el('product-select').replaceChildren(); el('product-select').disabled = true;
-      el('run-select').replaceChildren(); el('run-select').disabled = true;
-      el('target-controls').replaceChildren();
-      el('ratio-control')?.remove();
-      setMessage(modelStates[selection.model].error || 'No published manifest is available for this model yet.');
-      ['fact-model','fact-target','fact-lead','fact-ensemble','fact-field','fact-status'].forEach(id => el(id).textContent = id === 'fact-model' ? model.label : '—');
-      el('scope').textContent = 'The model workflow has not published a readable manifest for this dashboard.';
-      el('source-detail').textContent = `Source: ${model.source}`;
-      el('source-link').href = model.direct;
-      el('direct-link').href = model.direct;
-      el('warning').style.display = 'none';
-    }
-    function renderControls(model, run, targets) {
-      const controls = el('target-controls'); controls.replaceChildren();
-      targets.forEach((target, index) => { const button = document.createElement('button'); button.type = 'button'; button.textContent = target.label; button.classList.toggle('active', String(target.key) === String(selection.target)); button.addEventListener('click', () => { selection.target = target.key; renderAll(); }); controls.appendChild(button); });
-      if (isSnowProduct(model, selection.product)) {
-        const wrapper = document.createElement('label'); wrapper.className = 'ratio-control'; wrapper.id = 'ratio-control'; wrapper.innerHTML = '<span class="control-label">Snow ratio</span><select id="ratio-select"></select>';
-        controls.appendChild(wrapper);
-        const ratios = numberList(run?.product_snow_ratios?.[selection.product] || run?.snow_ratios, 10, 20); const ratioSelect = wrapper.querySelector('select');
-        populate(ratioSelect, (ratios.length ? ratios : [10]).map(value => ({ value, label: `${value}:1` })), selection.ratio);
-        selection.ratio = ratioSelect.value || '10'; ratioSelect.addEventListener('change', () => { selection.ratio = ratioSelect.value; renderAll(); });
-      }
-    }
-    function renderAll() {
-      renderModelOptions();
-      const model = MODEL_CONFIG[selection.model]; const modelState = modelStates[selection.model];
-      if (!modelState.manifest) { renderUnavailable(model); return; }
-      const products = manifestProducts(model); selection.product = products.includes(selection.product) ? selection.product : (products[0] || '');
-      populate(el('product-select'), products.map(value => ({ value, label: productLabel(model, value) })), selection.product);
-      const runs = modelState.runs.filter(run => supportsProduct(model, run, selection.product));
-      selection.run = runs.some(run => String(run.id) === String(selection.run)) ? selection.run : String(runs[0]?.id || '');
-      populate(el('run-select'), runs.map(run => ({ value: run.id, label: runLabel(model, run) })), selection.run);
-      const run = selectedRun(model); const targets = targetItems(model, run);
-      const preferredTarget = targets.find(target => model.kind === 'seasonal' && /^\d{6}-\d{6}$/.test(String(target.value?.target_month || ''))) || targets[0];
-      selection.target = targets.some(target => String(target.key) === String(selection.target)) ? selection.target : String(preferredTarget?.key || '');
-      renderControls(model, run, targets);
-      const target = targets.find(item => String(item.key) === String(selection.target)) || targets[0];
-      if (!run || !target) { setMessage('No rendered target is available for the selected parameter.'); return; }
-      const targetValue = target.value;
-      const label = productLabel(model, selection.product);
-      el('fact-model').textContent = model.label; el('fact-target').textContent = model.kind === 'weathernext' ? targetText(model, target) : periodLabel(targetValue.target_month || targetValue.valid_start_utc);
-      el('fact-lead').textContent = leadText(model, target); el('fact-ensemble').textContent = ensembleText(model, run, target); el('fact-field').textContent = fieldText(target); el('fact-status').textContent = targetValue?.status || run.status || 'available';
-      if (model.kind === 'weathernext') {
-        el('scope').textContent = `${run.source_label || run.source || model.source} · Updated ${initLabel(run.updated_utc)}. ${run.successful_exports || 0} successful exports.`;
-      } else {
-        const baseline = run.climatology?.source || targetValue?.baseline?.source || 'model calibration baseline';
-        el('scope').textContent = `${run.aggregation || 'Seasonal ensemble mean'} from ${initLabel(run.init_utc)}. Baseline: ${baseline}.`;
-      }
-      el('source-detail').textContent = `Source: ${run.source || run.source_label || model.source}`;
-      el('source-link').href = run.source_url || model.direct; el('direct-link').href = model.direct;
-      const image = imagePath(model, run, target); setMessage('');
-      el('map-wrap').replaceChildren();
-      if (image) { const imageElement = document.createElement('img'); imageElement.src = image; imageElement.alt = `${model.label} ${label} ${targetText(model, target)}`; imageElement.loading = 'eager'; imageElement.addEventListener('error', () => { setMessage('The manifest is available, but this image is not present in the published Pages tree.'); }); el('map-wrap').appendChild(imageElement); } else setMessage('No rendered image is available for this target.');
-      const warning = el('warning');
-      if (targetValue?.status === 'failed') { warning.style.display = 'block'; warning.textContent = targetValue.error || 'This target failed; retained history remains selectable.'; }
-      else if (targetValue?.status === 'partial' || run.status === 'partial') { warning.style.display = 'block'; warning.textContent = 'This run is partial; retained history remains selectable.'; }
-      else if (run.source_warning) { warning.style.display = 'block'; warning.textContent = run.source_warning; }
-      else warning.style.display = 'none';
-      el('footer').textContent = `${model.source} · ${modelState.manifest.generated_utc ? `Manifest generated ${initLabel(modelState.manifest.generated_utc)}` : 'Published manifest loaded'} · Direct model pages remain available.`;
-    }
-    el('model-select').addEventListener('change', event => { selection.model = event.target.value; selection.product = ''; selection.run = ''; selection.target = ''; renderAll(); });
-    el('product-select').addEventListener('change', event => { selection.product = event.target.value; selection.run = ''; selection.target = ''; renderAll(); });
-    el('run-select').addEventListener('change', event => { selection.run = event.target.value; selection.target = ''; renderAll(); });
-    renderModelOptions();
-    Promise.all(Object.entries(MODEL_CONFIG).map(async ([key, config]) => {
-      try { const response = await fetch(config.manifest); if (!response.ok) throw new Error(`Manifest returned ${response.status}`); const manifest = await response.json(); modelStates[key].manifest = manifest; modelStates[key].runs = Array.isArray(manifest.runs) ? manifest.runs.filter(run => run && run.id) : []; }
-      catch (error) { modelStates[key].error = error.message; }
-    })).then(() => {
-      if (!modelStates[selection.model].manifest) selection.model = Object.keys(MODEL_CONFIG).find(key => modelStates[key].manifest) || selection.model;
-      renderAll();
-    });
-  </script>
-</body>
-</html>
+            <div class="fact"><small>Ensemb
