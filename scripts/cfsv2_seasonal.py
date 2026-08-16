@@ -1096,9 +1096,15 @@ def render_map(
     product_spec = product_spec or PRODUCT_SPECS[PRODUCT_HEIGHT_ANOMALY]
     region = product_spec.get("region", region)
     if product_spec["height_contours"]:
-        if height_grid is None:
+        # Absolute products can contour their own field.  An anomaly product
+        # must never use the anomaly grid as a substitute for absolute heights:
+        # doing so produces lines labelled as dam that are actually anomaly
+        # values.  C3S/JMA raw geopotential decoding can legitimately be
+        # unavailable for a partial run, so fail closed and omit the overlay.
+        if height_grid is None and not anomaly:
             height_grid = grid
-        height_grid.assert_compatible(grid, "height contour")
+        if height_grid is not None:
+            height_grid.assert_compatible(grid, "height contour")
     else:
         height_grid = None
     lon_min, lon_max, lat_min, lat_max = region

@@ -10,6 +10,7 @@ import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
 ADAPTER = ROOT / "scripts" / "c3s_seasonal.py"
+GRIB_ADAPTER = ROOT / "scripts" / "seas5_seasonal.py"
 WORKFLOW = ROOT / ".github" / "workflows" / "c3s.yml"
 PAGES = ROOT / ".github" / "workflows" / "publish-pages.yml"
 PAGE = ROOT / "public" / "seasonal" / "c3s" / "index.html"
@@ -32,9 +33,10 @@ def load_adapter():
 
 
 def main() -> int:
-    for path in (ADAPTER, WORKFLOW, PAGES, PAGE):
+    for path in (ADAPTER, GRIB_ADAPTER, WORKFLOW, PAGES, PAGE):
         check(path.exists(), f"missing C3S contract file: {path.name}")
     adapter = ADAPTER.read_text(encoding="utf-8")
+    grib_adapter = GRIB_ADAPTER.read_text(encoding="utf-8")
     workflow = WORKFLOW.read_text(encoding="utf-8")
     pages = PAGES.read_text(encoding="utf-8")
     for term in (
@@ -44,6 +46,9 @@ def main() -> int:
         "retain-cycles", "systems", "system",
     ):
         check(term in adapter or term in workflow or term in pages, f"missing C3S term: {term}")
+    check("cfgrib.open_datasets" in grib_adapter, "C3S/JMA GRIB decoder should discover heterogeneous raw pressure-level groups")
+    check('"seasonal-monthly-pressure-levels"' in adapter, "C3S 500-mb product should retain the raw geopotential source")
+    check("height_grid=height" in adapter, "C3S renderer should pass decoded absolute heights to the map renderer")
     module = load_adapter()
     check(set(module.CENTRES) == {"ecmwf", "ukmo", "meteo_france", "dwd", "cmcc", "ncep", "jma", "eccc", "bom"}, "C3S centre catalog is incomplete")
     check(module.target_month("2026080100", 4) == "202612", "C3S lead conversion should produce December")
