@@ -43,7 +43,22 @@ def main() -> int:
     ):
         check(term in adapter or term in workflow or term in page or term in doc, f"missing APCC term: {term}")
     module = load_adapter()
-    check(module.target_window("202608", "4,5,6")[0] == "202612-202702", "APCC DJF target labeling is incorrect")
+    check(module.target_window("202608", "0,1,2")[0] == "202608-202610", "APCC fallback target labeling is incorrect")
+    aso = module.source_period_from_metadata(
+        {"MME_Forecast_Info": "Seasonal Mean Forecast for ASO (2026ASO)"},
+        "202608",
+    )
+    check(aso["period_label"] == "ASO 2026", "APCC source season metadata was not honored")
+    check(aso["target_code"] == "202608-202610", "APCC ASO target window is incorrect")
+    djf = module.source_period_from_metadata(
+        {"MME_Forecast_Info": "Seasonal Mean Forecast for DJF (2026SONDJF)"},
+        "202608",
+    )
+    check(djf["period_label"] == "DJF 2027", "APCC cross-year DJF label is incorrect")
+    check(djf["target_code"] == "202612-202702", "APCC cross-year DJF target window is incorrect")
+    check(module.PRODUCT_SPECS["precipitation_anomaly"]["raw_units"] == "mm/day", "APCC precipitation units are incorrect")
+    check(module.PRODUCT_SPECS["precipitation_anomaly"]["anomaly_max"] == 200.0, "APCC precipitation scale is not native")
+    check("6-MON" in module.dataset_url("MME_6MONTH"), "APCC 6-month provenance URL is incorrect")
     for name, spec in module.PRODUCT_SPECS.items():
         check(len(spec["anomaly_ticks"]) == len(spec["anomaly_palette"]) + 1, f"APCC {name} palette bounds are misaligned")
     print("APCC CONTRACT OK: authenticated CLIK request, native anomalies, products, workflow, and retention")

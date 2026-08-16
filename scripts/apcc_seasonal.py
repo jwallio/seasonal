@@ -10,6 +10,7 @@ America map renderer used by the other seasonal models.
 from __future__ import annotations
 
 import argparse
+import calendar
 import datetime as dt
 import json
 import os
@@ -23,7 +24,6 @@ import numpy as np
 
 from cfsv2_seasonal import (
     ANOMALY_PALETTE,
-    ANOMALY_TICKS,
     DEFAULT_REGION,
     Grid,
     ensure_border_files,
@@ -33,7 +33,10 @@ from cfsv2_seasonal import (
 
 
 APCC_SOURCE_URL = "https://apcc21.org/clik/processing/prediction"
-APCC_DATASET_URL = "https://apcc21.org/clik/dataset/mme/3-MON?lang=en"
+APCC_DATASET_URLS = {
+    "MME_3MONTH": "https://apcc21.org/clik/dataset/mme/3-MON?lang=en",
+    "MME_6MONTH": "https://apcc21.org/clik/dataset/mme/6-MON?lang=en",
+}
 APCC_API_DOCS_URL = "https://apcc21.org/clik/clikapi?lang=en"
 APCC_REQUEST_URL = "https://www.apcc21.org/clikapi/request/apccdata"
 APCC_STATUS_URL = "https://www.apcc21.org/clikapi/request/status"
@@ -42,20 +45,34 @@ APCC_ACKNOWLEDGEMENT = (
     "data produced by APCC MME Producing Centres."
 )
 
-TEMP_PALETTE = [
+APCC_Z500_TICKS = list(range(-100, 101, 10))
+APCC_TEMP_TICKS = [value / 2 for value in range(-6, 7)]
+APCC_TEMP_PALETTE = [
     "#28567f", "#397ba2", "#5b9fba", "#82bdca", "#b4d6dc", "#e7eeee",
     "#ffffff", "#f8dedd", "#efb6b5", "#e38e8e", "#d36c73", "#b84c5a",
 ]
-PRECIP_PALETTE = [
-    "#7f3b08", "#914b0d", "#a6611a", "#bd7a2d", "#d0a052", "#dfbd7d",
-    "#ead8b3", "#ffffff", "#e5f1dc", "#c8e4bf", "#aad89f", "#86c879",
-    "#5fba6b", "#3aa55b", "#1d8947", "#006d2c",
-]
+APCC_PRECIP_TICKS = list(range(-200, 201, 25))
 APCC_PRECIP_PALETTE = [
-    "#7f3b08", "#a6611a", "#bd7a2d", "#d0a052", "#dfbd7d", "#ead8b3",
-    "#ffffff", "#e5f1dc", "#c8e4bf", "#86c879", "#3aa55b", "#006d2c",
+    "#7f3b08", "#914b0d", "#a6611a", "#bd7a2d", "#d0a052", "#dfbd7d",
+    "#ead8b3", "#ffffff", "#ffffff", "#e5f1dc", "#c8e4bf", "#aad89f",
+    "#86c879", "#5fba6b", "#3aa55b", "#006d2c",
 ]
-SST_PALETTE = ["#28567f", "#5b9fba", "#b4d6dc", "#ffffff", "#efb6b5", "#b84c5a"]
+APCC_SST_TICKS = list(range(-4, 5))
+APCC_SST_PALETTE = [
+    "#28567f", "#397ba2", "#5b9fba", "#b4d6dc", "#ffffff", "#efb6b5",
+    "#d36c73", "#a1384a",
+]
+APCC_PRESSURE_TICKS = list(range(-6, 7))
+APCC_PRESSURE_PALETTE = [
+    "#306b90", "#4891b0", "#61a7bf", "#95c4d3", "#c4dce3", "#e1e4e7",
+    "#f2cecd", "#eaaaa8", "#e28c8b", "#d3686c", "#bf4856", "#84283f",
+]
+
+
+def dataset_url(dataset: str) -> str:
+    """Return the official APCC dataset page matching the requested horizon."""
+
+    return APCC_DATASET_URLS.get(dataset, APCC_DATASET_URLS["MME_3MONTH"])
 
 
 PRODUCT_SPECS: dict[str, dict[str, Any]] = {
@@ -63,8 +80,8 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "api_variable": "z500", "field": "z500_anomaly", "raw_field": "geopotential height anomaly",
         "raw_units": "native APCC units", "units": "m", "title": "APCC MME 500-mb Geopotential Height Anomaly (m)",
         "absolute_title": "APCC MME 500-mb Geopotential Height (m)", "height_contours": False,
-        "region": DEFAULT_REGION, "anomaly_min": -200.0, "anomaly_max": 200.0,
-        "anomaly_ticks": ANOMALY_TICKS, "anomaly_palette": ANOMALY_PALETTE,
+        "region": DEFAULT_REGION, "anomaly_min": -100.0, "anomaly_max": 100.0,
+        "anomaly_ticks": APCC_Z500_TICKS, "anomaly_palette": ANOMALY_PALETTE,
         "header_detail": "{source_label}  •  {baseline_label}  •  Native APCC seasonal MME anomaly",
         "id_token": "z500a",
     },
@@ -72,8 +89,9 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "api_variable": "t850", "field": "t850_anomaly", "raw_field": "850-mb temperature anomaly",
         "raw_units": "K", "units": "°C", "title": "APCC MME 850-mb Temperature Anomaly (°C)",
         "absolute_title": "APCC MME 850-mb Temperature (°C)", "height_contours": False,
-        "region": DEFAULT_REGION, "anomaly_min": -6.0, "anomaly_max": 6.0,
-        "anomaly_ticks": list(range(-6, 7)), "anomaly_palette": TEMP_PALETTE,
+        "region": DEFAULT_REGION, "anomaly_min": -3.0, "anomaly_max": 3.0,
+        "anomaly_ticks": APCC_TEMP_TICKS, "anomaly_palette": APCC_TEMP_PALETTE,
+        "anomaly_tick_decimals": 1,
         "header_detail": "{source_label}  •  {baseline_label}  •  Native APCC seasonal MME anomaly",
         "id_token": "t850a",
     },
@@ -81,17 +99,19 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "api_variable": "t2m", "field": "t2m_anomaly", "raw_field": "2-m temperature anomaly",
         "raw_units": "K", "units": "°C", "title": "APCC MME 2-m Temperature Anomaly (°C)",
         "absolute_title": "APCC MME 2-m Temperature (°C)", "height_contours": False,
-        "region": DEFAULT_REGION, "anomaly_min": -6.0, "anomaly_max": 6.0,
-        "anomaly_ticks": list(range(-6, 7)), "anomaly_palette": TEMP_PALETTE,
+        "region": DEFAULT_REGION, "anomaly_min": -3.0, "anomaly_max": 3.0,
+        "anomaly_ticks": APCC_TEMP_TICKS, "anomaly_palette": APCC_TEMP_PALETTE,
+        "anomaly_tick_decimals": 1,
         "header_detail": "{source_label}  •  {baseline_label}  •  Native APCC seasonal MME anomaly",
         "id_token": "t2ma",
     },
     "precipitation_anomaly": {
         "api_variable": "prec", "field": "precipitation_anomaly", "raw_field": "precipitation anomaly",
-        "raw_units": "native APCC units", "units": "mm", "title": "APCC MME Precipitation Anomaly (mm)",
+        "raw_units": "mm/day", "units": "mm", "title": "APCC MME Seasonal Precipitation Anomaly (mm)",
         "absolute_title": "APCC MME Precipitation (mm)", "height_contours": False,
-        "region": DEFAULT_REGION, "anomaly_min": -300.0, "anomaly_max": 300.0,
-        "anomaly_ticks": list(range(-300, 301, 50)), "anomaly_palette": APCC_PRECIP_PALETTE,
+        "region": DEFAULT_REGION, "anomaly_min": -200.0, "anomaly_max": 200.0,
+        "anomaly_ticks": APCC_PRECIP_TICKS, "anomaly_palette": APCC_PRECIP_PALETTE,
+        "precipitation_conversion": "seasonal mean mm/day × valid-season days = seasonal accumulation mm",
         "header_detail": "{source_label}  •  {baseline_label}  •  Native APCC seasonal MME anomaly",
         "id_token": "preca",
     },
@@ -99,17 +119,17 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "api_variable": "sst", "field": "sst_anomaly", "raw_field": "sea-surface temperature anomaly",
         "raw_units": "K", "units": "°C", "title": "APCC MME Sea-Surface Temperature Anomaly (°C)",
         "absolute_title": "APCC MME Sea-Surface Temperature (°C)", "height_contours": False,
-        "region": DEFAULT_REGION, "anomaly_min": -3.0, "anomaly_max": 3.0,
-        "anomaly_ticks": list(range(-3, 4)), "anomaly_palette": SST_PALETTE,
+        "region": DEFAULT_REGION, "anomaly_min": -4.0, "anomaly_max": 4.0,
+        "anomaly_ticks": APCC_SST_TICKS, "anomaly_palette": APCC_SST_PALETTE,
         "header_detail": "{source_label}  •  {baseline_label}  •  Native APCC seasonal MME anomaly",
         "id_token": "ssta",
     },
     "mslp_anomaly": {
         "api_variable": "slp", "field": "mslp_anomaly", "raw_field": "mean sea-level pressure anomaly",
-        "raw_units": "Pa", "units": "hPa", "title": "APCC MME Mean Sea-Level Pressure Anomaly (hPa)",
+        "raw_units": "mb", "units": "hPa", "title": "APCC MME Mean Sea-Level Pressure Anomaly (hPa)",
         "absolute_title": "APCC MME Mean Sea-Level Pressure (hPa)", "height_contours": False,
-        "region": DEFAULT_REGION, "anomaly_min": -20.0, "anomaly_max": 20.0,
-        "anomaly_ticks": list(range(-20, 21, 5)), "anomaly_palette": ANOMALY_PALETTE[:4] + ANOMALY_PALETTE[10:14],
+        "region": DEFAULT_REGION, "anomaly_min": -6.0, "anomaly_max": 6.0,
+        "anomaly_ticks": APCC_PRESSURE_TICKS, "anomaly_palette": APCC_PRESSURE_PALETTE,
         "header_detail": "{source_label}  •  {baseline_label}  •  Native APCC seasonal MME anomaly",
         "id_token": "slpa",
     },
@@ -118,6 +138,22 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
 
 class APCCError(RuntimeError):
     """A user-actionable APCC source or rendering error."""
+
+
+SEASON_START_MONTH = {
+    "JFM": 1,
+    "FMA": 2,
+    "MAM": 3,
+    "AMJ": 4,
+    "MJJ": 5,
+    "JJA": 6,
+    "JAS": 7,
+    "ASO": 8,
+    "SON": 9,
+    "OND": 10,
+    "NDJ": 11,
+    "DJF": 12,
+}
 
 
 def iso_utc(value: dt.datetime) -> str:
@@ -142,6 +178,34 @@ def month_after(year: int, month: int, offset: int) -> tuple[int, int]:
     return absolute // 12, absolute % 12 + 1
 
 
+def period_from_season(season_code: str, season_year: int) -> dict[str, Any]:
+    season = season_code.upper()
+    if season not in SEASON_START_MONTH:
+        raise APCCError(f"unsupported APCC season code: {season_code}")
+    start_month = SEASON_START_MONTH[season]
+    start_year = int(season_year)
+    last_year, last_month = month_after(start_year, start_month, 2)
+    end_year, end_month = month_after(last_year, last_month, 1)
+    days = sum(
+        calendar.monthrange(year, month)[1]
+        for year, month in (
+            (start_year, start_month),
+            month_after(start_year, start_month, 1),
+            (last_year, last_month),
+        )
+    )
+    return {
+        "season_code": season,
+        "season_year": start_year,
+        "period_label": f"{season} {last_year}",
+        "target_code": f"{start_year:04d}{start_month:02d}-{last_year:04d}{last_month:02d}",
+        "first_target": f"{start_year:04d}{start_month:02d}",
+        "valid_start_utc": f"{start_year:04d}-{start_month:02d}-01T00:00:00Z",
+        "valid_end_utc": f"{end_year:04d}-{end_month:02d}-01T00:00:00Z",
+        "days": days,
+    }
+
+
 def target_window(init: str, offsets: str) -> tuple[str, str, str]:
     values = [int(item.strip()) for item in offsets.split(",") if item.strip()]
     if not values or values != list(range(min(values), max(values) + 1)):
@@ -155,8 +219,46 @@ def target_window(init: str, offsets: str) -> tuple[str, str, str]:
     if season and ((first[1] == 12 and last[0] == first[0] + 1) or last[0] == first[0]):
         label = f"{season} {last[0]}"
     else:
-        label = f"{first:%b %Y}–{last:%b %Y}"
+        first_date = dt.date(first[0], first[1], 1)
+        last_date = dt.date(last[0], last[1], 1)
+        label = f"{first_date:%b %Y}–{last_date:%b %Y}"
     return f"{first_code}-{last_code}", label, first_code
+
+
+def source_period_from_metadata(
+    attrs: dict[str, Any], fallback_init: str, source_path: Path | None = None
+) -> dict[str, Any]:
+    forecast_info = str(attrs.get("MME_Forecast_Info", ""))
+    match = re.search(r"Forecast\s+for\s+([A-Z]{3})\s*\(\s*(\d{4})", forecast_info, re.IGNORECASE)
+    if not match and source_path is not None:
+        match = re.search(r"_([A-Z]{3})_(\d{4})", source_path.name, re.IGNORECASE)
+    if match:
+        period = period_from_season(match.group(1), int(match.group(2)))
+        period["forecast_info"] = forecast_info
+        return period
+    target_code, period_label, first_target = target_window(fallback_init, "0,1,2")
+    first_year, first_month = int(first_target[:4]), int(first_target[4:])
+    last_year, last_month = month_after(first_year, first_month, 2)
+    end_year, end_month = month_after(last_year, last_month, 1)
+    return {
+        "season_code": "",
+        "season_year": first_year,
+        "period_label": period_label,
+        "target_code": target_code,
+        "first_target": first_target,
+        "valid_start_utc": f"{first_year:04d}-{first_month:02d}-01T00:00:00Z",
+        "valid_end_utc": f"{end_year:04d}-{end_month:02d}-01T00:00:00Z",
+        "days": sum(
+            calendar.monthrange(year, month)[1]
+            for year, month in (
+                (first_year, first_month),
+                month_after(first_year, first_month, 1),
+                (last_year, last_month),
+            )
+        ),
+        "forecast_info": forecast_info,
+        "fallback": True,
+    }
 
 
 def _request_details(args: argparse.Namespace, init: str, variables: list[str]) -> dict[str, Any]:
@@ -244,189 +346,28 @@ def safe_extract(archive: Path, destination: Path) -> list[Path]:
     destination.mkdir(parents=True, exist_ok=True)
     extracted: list[Path] = []
     with zipfile.ZipFile(archive) as bundle:
-        root = destination.resolve()
-        for member in bundle.infolist():
-            target = (destination / member.filename).resolve()
-            if root not in target.parents and target != root:
-                raise APCCError(f"refusing unsafe APCC archive member: {member.filename}")
-            if member.is_dir():
-                target.mkdir(parents=True, exist_ok=True)
-                continue
-            target.parent.mkdir(parents=True, exist_ok=True)
-            with bundle.open(member) as source, target.open("wb") as output:
-                output.write(source.read())
-            extracted.append(target)
-    return extracted
-
-
-def _coordinate_name(data: Any, tokens: tuple[str, ...]) -> str:
-    names = list(data.coords) + list(data.dims)
-    for name in names:
-        lower = str(name).lower()
-        if any(token in lower for token in tokens):
-            return str(name)
-    raise APCCError(f"APCC NetCDF field has no coordinate matching {tokens}")
-
-
-def _convert_values(values: np.ndarray, product: dict[str, Any], attrs: dict[str, Any]) -> np.ndarray:
-    units = str(attrs.get("units", "")).lower().replace("^", "")
-    if product["api_variable"] == "z500" and ("m2 s-2" in units or "m^2 s-2" in units or "m2/s2" in units):
-        return values / 9.80665
-    if product["api_variable"] == "slp" and ("pa" in units and "hpa" not in units):
-        return values / 100.0
-    if product["api_variable"] == "prec" and (units in {"m", "meter", "metre"} or "m water" in units):
-        return values * 1000.0
-    return values
-
-
-def grid_from_netcdf(path: Path, product: dict[str, Any]) -> Grid:
-    try:
-        import xarray as xr
-    except ImportError as exc:  # pragma: no cover - workflow installs xarray/netCDF4
-        raise APCCError("APCC NetCDF decoding requires xarray") from exc
-    try:
-        dataset = xr.open_dataset(path)
-    except Exception as exc:
-        raise APCCError(f"could not open APCC NetCDF {path.name}: {exc}") from exc
-    try:
-        candidates = list(dataset.data_vars)
-        token = product["api_variable"].lower()
-        exact = [name for name in candidates if str(name).lower() == token]
-        data = dataset[exact[0] if exact else candidates[0]] if candidates else None
-        if data is None:
-            raise APCCError(f"APCC NetCDF {path.name} contains no data variable")
-        data = data.squeeze(drop=True)
-        lat_name = _coordinate_name(data, ("latitude", "lat"))
-        lon_name = _coordinate_name(data, ("longitude", "lon"))
-        for dimension in list(data.dims):
-            if dimension not in {lat_name, lon_name}:
-                data = data.mean(dim=dimension, skipna=True)
-        data = data.transpose(lat_name, lon_name)
-        lats = np.asarray(data[lat_name].values, dtype=float)
-        lons = np.asarray(data[lon_name].values, dtype=float)
-        values = _convert_values(np.asarray(data.values, dtype=float), product, dict(data.attrs))
-    finally:
-        dataset.close()
-    if values.ndim != 2:
-        raise APCCError(f"APCC NetCDF {path.name} did not reduce to a 2-D field")
-    normalized_lons = ((lons + 180.0) % 360.0) - 180.0
-    lon_order = np.argsort(normalized_lons)
-    lat_order = np.argsort(lats)
-    ordered = values[np.ix_(lat_order, lon_order)]
-    if not np.isfinite(ordered).any():
-        raise APCCError(f"APCC NetCDF {path.name} contains no finite values")
-    return Grid(
-        lons=[float(value) for value in normalized_lons[lon_order]],
-        lats=[float(value) for value in lats[lat_order]],
-        values=ordered.tolist(),
-    )
-
-
-def find_product_file(files: Iterable[Path], product: dict[str, Any], season_code: str) -> Path:
-    candidates = [path for path in files if path.suffix.lower() in {".nc", ".nc4", ".netcdf"}]
-    if not candidates:
-        raise APCCError("APCC result ZIP contained no NetCDF files")
-    token = product["api_variable"].lower()
-    matching = [path for path in candidates if token in path.name.lower()]
-    if not matching:
-        matching = candidates
-    seasonal = [path for path in matching if season_code.lower() in str(path).lower()]
-    return sorted(seasonal or matching)[0]
-
-
-def write_manifest(path: Path, entries: Iterable[dict[str, Any]], previous: Path | None, retain_cycles: int) -> None:
-    all_entries: list[dict[str, Any]] = []
-    for existing_path in (previous, path):
-        if not existing_path or not existing_path.exists():
-            continue
-        try:
-            payload = json.loads(existing_path.read_text(encoding="utf-8"))
-            all_entries.extend(run for run in payload.get("runs", []) if isinstance(run, dict))
-        except (OSError, ValueError) as exc:
-            raise APCCError(f"could not read previous APCC manifest {existing_path}: {exc}") from exc
-    all_entries.extend(entries)
-    unique = {str(run.get("id")): run for run in all_entries if run.get("id")}
-    ordered = sorted(unique.values(), key=lambda item: (str(item.get("init_utc", "")), str(item.get("id", ""))), reverse=True)
-    cycles: list[str] = []
-    for run in ordered:
-        cycle = str(run.get("init_utc", ""))
-        if cycle not in cycles:
-            cycles.append(cycle)
-    keep = set(cycles[:max(1, retain_cycles)])
-    payload = {
-        "schema_version": 1,
-        "kind": "apcc_seasonal_manifest",
-        "generated_utc": iso_utc(dt.datetime.now(dt.timezone.utc)),
-        "source": "APCC multi-model ensemble via CLIK",
-        "source_url": APCC_SOURCE_URL,
-        "source_urls": [APCC_SOURCE_URL, APCC_DATASET_URL, APCC_API_DOCS_URL],
-        "acknowledgement": APCC_ACKNOWLEDGEMENT,
-        "product_labels": {
-            "500mb_height_anomaly": "500-mb Height Anomaly",
-            "850mb_temperature_anomaly": "850-mb Temperature Anomaly",
-            "2m_temperature_anomaly": "2-m Temperature Anomaly",
-            "precipitation_anomaly": "Precipitation Anomaly",
-            "sea_surface_temperature_anomaly": "Sea-Surface Temperature Anomaly",
-            "mslp_anomaly": "MSLP Anomaly",
-        },
-        "retention": {"max_cycles": max(1, retain_cycles), "history_cycles": max(0, retain_cycles - 1)},
-        "runs": [run for run in ordered if str(run.get("init_utc", "")) in keep],
+        root = destin5׫h��춻�q�^t
+                (requested_last_year, requested_last_month),
+            )
+        ),
+        "forecast_info": "",
+        "fallback": True,
     }
-    path.parent.mkdir(parents=True, exist_ok=True)
-    temporary = path.with_name(path.name + ".tmp")
-    temporary.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
-    temporary.replace(path)
-
-
-def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--product", choices=("all", *PRODUCT_SPECS), default="all")
-    parser.add_argument("--init", default="latest", help="APCC initialization as YYYYMM or latest")
-    parser.add_argument("--target-window", default="4,5,6", help="viewer lead offsets used to label the native 3-month APCC period")
-    parser.add_argument("--dataset", default="MME_3MONTH", choices=("MME_3MONTH", "MME_6MONTH"))
-    parser.add_argument("--lead-month", default="3-MON", choices=("3-MON", "6-MON"))
-    parser.add_argument("--resolution", default="1.0", choices=("1.0", "2.5"))
-    parser.add_argument("--method", default="SCM", choices=("SCM", "GAUS"))
-    parser.add_argument("--request-url", default=APCC_REQUEST_URL)
-    parser.add_argument("--status-url", default=APCC_STATUS_URL)
-    parser.add_argument("--timeout-minutes", type=int, default=45)
-    parser.add_argument("--poll-seconds", type=float, default=10.0)
-    parser.add_argument("--cache-dir", default=".cache/apcc")
-    parser.add_argument("--output-dir", default="public/seasonal/apcc")
-    parser.add_argument("--manifest", default="public/seasonal/apcc_manifest.json")
-    parser.add_argument("--previous-manifest", type=Path)
-    parser.add_argument("--retain-cycles", type=int, default=4)
-    parser.add_argument("--border-geojson", action="append", type=Path)
-    parser.add_argument("--no-borders", action="store_true")
-    parser.add_argument("--decode-only", action="store_true")
-    return parser
-
-
-def run(args: argparse.Namespace) -> int:
-    repo_root = Path(__file__).resolve().parents[1]
-    init = parse_init(args.init)
-    target_code, period, first_target = target_window(init, args.target_window)
-    selected = list(PRODUCT_SPECS) if args.product == "all" else [args.product]
-    cache_dir = Path(args.cache_dir) if Path(args.cache_dir).is_absolute() else repo_root / args.cache_dir
-    output_dir = Path(args.output_dir) if Path(args.output_dir).is_absolute() else repo_root / args.output_dir
-    manifest_path = Path(args.manifest) if Path(args.manifest).is_absolute() else repo_root / args.manifest
-    previous = args.previous_manifest if not args.previous_manifest or args.previous_manifest.is_absolute() else repo_root / args.previous_manifest
-    borders = ensure_border_files(args, cache_dir, repo_root)
-    variables = sorted({PRODUCT_SPECS[product]["api_variable"] for product in selected})
-    season_code = period.split()[0]
-    archive = cache_dir / "archives" / f"{args.dataset.lower()}_{args.lead_month.lower()}_{init}_{'_'.join(variables)}.zip"
-    files: list[Path] = []
-    if not args.decode_only:
-        request_archive(_request_details(args, init, variables), archive, args)
-        files = safe_extract(archive, cache_dir / "extracted" / archive.stem)
+    if files:
+        reference_path = find_product_file(files, PRODUCT_SPECS[selected[0]], "")
+        reference_metadata = read_netcdf_metadata(reference_path, PRODUCT_SPECS[selected[0]])
+        native_period = source_period_from_metadata(
+            reference_metadata["global_attrs"], init, source_path=reference_path
+        )
+    target_code = native_period["target_code"]
+    period = native_period["period_label"]
+    first_target = native_period["first_target"]
     entries: list[dict[str, Any]] = []
     successes = 0
     init_utc = f"{init[:4]}-{init[4:]}-01T00:00:00Z"
-    valid_start = f"{target_code[:4]}-{target_code[4:6]}-01T00:00:00Z"
-    end_code = target_code[7:]
-    end_date = dt.datetime.strptime(end_code, "%Y%m")
-    end_next = month_after(end_date.year, end_date.month, 1)
-    valid_end = f"{end_next[0]:04d}-{end_next[1]:02d}-01T00:00:00Z"
+    valid_start = native_period["valid_start_utc"]
+    valid_end = native_period["valid_end_utc"]
+    source_season_code = str(native_period.get("season_code", ""))
     for product_name in selected:
         product = PRODUCT_SPECS[product_name]
         target_entry: dict[str, Any] = {
@@ -443,7 +384,8 @@ def run(args: argparse.Namespace) -> int:
             "raw_units": product["raw_units"],
             "statistic": "APCC multi-model ensemble mean",
             "ensemble_scope": "APCC MME seasonal product",
-            "source_urls": [APCC_DATASET_URL, APCC_API_DOCS_URL],
+            "source_urls": [dataset_url(args.dataset), APCC_API_DOCS_URL],
+            "source_period": native_period,
             "status": "planned",
         }
         run_entry: dict[str, Any] = {
@@ -457,14 +399,19 @@ def run(args: argparse.Namespace) -> int:
             "lead_month": args.lead_month,
             "resolution": args.resolution,
             "method": args.method,
+            "requested_target_window": args.target_window,
+            "native_period": native_period,
             "targets": [target_entry],
             "output_dir": relative_path(output_dir, repo_root),
         }
         try:
             if args.decode_only:
                 raise APCCError("--decode-only requires a cached APCC archive; provide the adapter cache first")
-            source_path = find_product_file(files, product, season_code)
-            grid = grid_from_netcdf(source_path, product)
+            source_path = find_product_file(files, product, source_season_code)
+            metadata = read_netcdf_metadata(source_path, product)
+            source_units = _source_units(metadata["data_attrs"])
+            grid = grid_from_netcdf(source_path, product, precip_days=int(native_period["days"]))
+            stats = grid_stats(grid)
             output = output_dir / init / f"apcc_{product['id_token']}_{target_code}.jpg"
             render_map(
                 grid,
@@ -486,7 +433,13 @@ def run(args: argparse.Namespace) -> int:
             )
             target_entry["image"] = relative_path(output, repo_root)
             target_entry["source_file"] = relative_path(source_path, repo_root)
+            target_entry["raw_units"] = source_units
+            target_entry["data_range"] = stats
+            target_entry["native_grid"] = grid_resolution(grid)
             target_entry["baseline"] = {"status": "native_source_anomaly", "label": "Native APCC MME anomaly"}
+            if product_name == "precipitation_anomaly":
+                target_entry["conversion"] = product["precipitation_conversion"]
+                target_entry["aggregation"] = "seasonal accumulation from native APCC seasonal mean"
             target_entry["status"] = "rendered"
             run_entry["status"] = "rendered"
             successes += 1

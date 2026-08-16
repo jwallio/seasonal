@@ -9,10 +9,21 @@ The API requires the repository secret `APCC_API_KEY`. The workflow fails early
 with an actionable message when that secret is not configured; no key is stored
 in the repository or in the generated Pages payload.
 
-The default request is `MME_3MONTH`, `3-MON`, 1-degree, seasonal mean, SCM
-processing, and the viewer labels the 4–6 lead window as DJF/MAM/JJA/SON when
-the dates match a standard meteorological season. The displayed anomalies are
-the native APCC MME anomaly fields, not a second climatology subtraction.
+The default request is `MME_3MONTH`, `3-MON`, 2.5-degree, seasonal mean, SCM
+processing. APCC's returned NetCDF `MME_Forecast_Info` metadata is authoritative
+for the valid season; the workflow does not relabel an APCC ASO file as DJF.
+The displayed anomalies are the native APCC MME anomaly fields, not a second
+climatology subtraction.
+
+APCC precipitation is delivered as a seasonal mean in `mm/day`. The renderer
+multiplies it by the number of days in the returned three-month season and
+labels the map in seasonal accumulation `mm`. The manifest records the native
+units, conversion, source season, grid resolution, and rendered data range.
+
+The six products use native parameter scales rather than the common ±200 m
+500-mb scale: height ±100 m, temperature ±3°C, precipitation ±200 mm, SST
+±4°C, and MSLP ±6 hPa. APCC's z500 archive contains anomalies only, so no
+absolute-height contour overlay is fabricated.
 
 APCC publishes monthly and seasonal variables including `z500`, `t850`,
 `t2m`, `prec`, `sst`, and `slp`. The manifest records the API dataset,
