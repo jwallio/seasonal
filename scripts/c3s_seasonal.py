@@ -55,7 +55,7 @@ CENTRES: dict[str, dict[str, Any]] = {
     "dwd": {"label": "DWD", "system": "22", "members": 50},
     "cmcc": {"label": "CMCC", "system": "4", "members": 50},
     "ncep": {"label": "NCEP", "system": "2", "members": 24},
-    "jma": {"label": "JMA", "system": "2", "members": 28},
+    "jma": {"label": "JMA", "system": "4", "members": 55, "model_version": "JMA/MRI-CPS4"},
     "eccc": {"label": "ECCC", "system": "5", "members": 20},
     "bom": {"label": "BOM", "system": "2", "members": 33},
 }
@@ -386,6 +386,7 @@ def base_run_entry(
         "source_urls": [dataset_url(dataset) for dataset in source_datasets],
         "archive_root": CDS_API_ROOT,
         "source_datasets": source_datasets,
+        "model_version": CENTRES.get(component, {}).get("model_version") if not multisystem else "C3S multi-system",
         "product": product_name,
         "variable": product["variable"],
         "init_utc": iso_utc(dt.datetime.strptime(init, "%Y%m%d%H").replace(tzinfo=dt.timezone.utc)),
@@ -521,6 +522,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--previous-manifest", type=Path)
     parser.add_argument("--retain-cycles", type=int, default=4)
     parser.add_argument("--no-components", action="store_true", help="publish only the C3S multi-system blend")
+    parser.add_argument("--no-blend", action="store_true", help="publish only the selected C3S component entries")
     parser.add_argument("--no-borders", action="store_true")
     parser.add_argument("--border-geojson", action="append", type=Path)
     parser.add_argument("--decode-only", action="store_true")
@@ -576,32 +578,33 @@ def run(args: argparse.Namespace) -> int:
         component_grids[centre] = lead_grids
         component_heights[centre] = lead_heights
 
-    blend_grids: dict[int, Grid] = {}
-    blend_heights: dict[int, Grid] = {}
     blend_failures = 0
-    for lead in leads:
-        available = [component_grids[centre][lead] for centre in centres if lead in component_grids.get(centre, {})]
-        if available:
-            reference = available[0]
-            # C3S systems normally share the one-degree axes.  If a centre
-            # returns a different grid, nearest-neighbour alignment keeps the
-            # blend explicit instead of silently dropping that component.
-            from cfsv2_seasonal import regrid_nearest
-            blend_grids[lead] = mean_grids([regrid_nearest(grid, reference.lons, reference.lats, "C3S blend") for grid in available])
-        heights = [component_heights[centre][lead] for centre in centres if lead in component_heights.get(centre, {})]
-        if heights:
-            reference = heights[0]
-            from cfsv2_seasonal import regrid_nearest
-            blend_heights[lead] = mean_grids([regrid_nearest(grid, reference.lons, reference.lats, "C3S height blend") for grid in heights])
-    if blend_grids:
-        entry, count = build_run(component="multisystem", label="multi-system", system="multiple", product_name=product_name, product=product_spec(product_name, "multi-system", multisystem=True), init=init, leads=leads, seasonal_leads=seasonal, archive=None, lead_grids=blend_grids, lead_heights=blend_heights, output_dir=output_dir, borders=borders, members=None, multisystem=True, centres=centres, decode_only=args.decode_only)
-        entry["available_components"] = [centre for centre in centres if component_grids.get(centre)]
-        entry["component_count"] = len(entry["available_components"])
-        entries.append(entry)
-        blend_failures += count
-    else:
-        print("C3S multi-system blend has no component fields", file=sys.stderr)
-        blend_failures += 1
+    if not args.no_blend:
+        blend_grids: dict[int, Grid] = {}
+        blend_heights: dict[int, Grid] = {}
+        for lead in leads:
+            available = [component_grids[centre][lead] for centre in centres if lead in component_grids.get(centre, {})]
+            if available:
+                reference = available[0]
+                # C3S systems normally share the one-degree axes.  If a centre
+                # returns a different grid, nearest-neighbour alignment keeps the
+                # blend explicit instead of silently dropping that component.
+                from cfsv2_seasonal import regrid_nearest
+                blend_grids[lead] = mean_grids([regrid_nearest(grid, reference.lons, reference.lats, "C3S blend") for grid in available])
+            heights = [component_heights[centre][lead] for centre in centres if lead in component_heights.get(centre, {})]
+            if heights:
+                reference = heights[0]
+                from cfsv2_seasonal import regrid_nearest
+                blend_heights[lead] = mean_grids([regrid_nearest(grid, reference.lons, reference.lats, "C3S height blend") for grid in heights])
+        if blend_grids:
+            entry, count = build_run(component="multisystem", label="multi-system", system="multiple", product_name=product_name, product=product_spec(product_name, "multi-system", multisystem=True), init=init, leads=leads, seasonal_leads=seasonal, archive=None, lead_grids=blend_grids, lead_heights=blend_heights, output_dir=output_dir, borders=borders, members=None, multisystem=True, centres=centres, decode_only=args.decode_only)
+            entry["available_components"] = [centre for centre in centres if component_grids.get(centre)]
+            entry["component_count"] = len(entry["available_components"])
+            entries.append(entry)
+            blend_failures += count
+        else:
+            print("C3S multi-system blend has no component fields", file=sys.stderr)
+            blend_failures += 1
     write_manifest(manifest_path, entries, previous, args.retain_cycles)
     print(f"wrote C3S manifest: {manifest_path} ({len(entries)} run entries)")
     # A missing centre should be visible in the manifest but should not make a
