@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "kind": "apcc_seasonal_manifest",
-  "generated_utc": "2026-08-16T21:43:55Z",
+  "generated_utc": "2026-08-16T23:28:26Z",
   "source": "APCC multi-model ensemble via CLIK",
   "source_url": "https://apcc21.org/clik/processing/prediction",
   "source_urls": [
@@ -32,30 +32,64 @@
       "source_url": "https://apcc21.org/clik/processing/prediction",
       "dataset": "MME_3MONTH",
       "lead_month": "3-MON",
-      "resolution": "1.0",
+      "resolution": "2.5",
       "method": "SCM",
+      "requested_target_window": "0,1,2",
+      "native_period": {
+        "season_code": "ASO",
+        "season_year": 2026,
+        "period_label": "ASO 2026",
+        "target_code": "202608-202610",
+        "first_target": "202608",
+        "valid_start_utc": "2026-08-01T00:00:00Z",
+        "valid_end_utc": "2026-11-01T00:00:00Z",
+        "days": 92,
+        "forecast_info": "Seasonal Mean Forecast for ASO (2026ASO)"
+      },
       "targets": [
         {
-          "id": "apcc-202608-ssta-202612-202702",
-          "valid_start_utc": "2026-12-01T00:00:00Z",
-          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "id": "apcc-202608-ssta-202608-202610",
+          "valid_start_utc": "2026-08-01T00:00:00Z",
+          "valid_end_utc": "2026-11-01T00:00:00Z",
           "lead_month": "3-MON",
-          "target_month": "202612-202702",
-          "period_label": "DJF 2027",
+          "target_month": "202608-202610",
+          "period_label": "ASO 2026",
           "aggregation": "native APCC seasonal mean",
           "field": "sst_anomaly",
           "units": "\u00b0C",
           "raw_field": "sea-surface temperature anomaly",
-          "raw_units": "K",
+          "raw_units": "deg K",
           "statistic": "APCC multi-model ensemble mean",
           "ensemble_scope": "APCC MME seasonal product",
           "source_urls": [
             "https://apcc21.org/clik/dataset/mme/3-MON?lang=en",
             "https://apcc21.org/clik/clikapi?lang=en"
           ],
+          "source_period": {
+            "season_code": "ASO",
+            "season_year": 2026,
+            "period_label": "ASO 2026",
+            "target_code": "202608-202610",
+            "first_target": "202608",
+            "valid_start_utc": "2026-08-01T00:00:00Z",
+            "valid_end_utc": "2026-11-01T00:00:00Z",
+            "days": 92,
+            "forecast_info": "Seasonal Mean Forecast for ASO (2026ASO)"
+          },
           "status": "rendered",
-          "image": "public/seasonal/apcc/202608/apcc_ssta_202612-202702.jpg",
+          "image": "public/seasonal/apcc/202608/apcc_ssta_202608-202610.jpg",
           "source_file": ".cache/apcc/extracted/mme_3month_3-mon_202608_prec_slp_sst_t2m_t850_z500/FORECAST_SCM_AUG_ASO_2026_sst.nc",
+          "data_range": {
+            "min": -1.9777,
+            "max": 5.9944,
+            "p05": -0.1202,
+            "p95": 2.1544,
+            "finite_points": 44558
+          },
+          "native_grid": {
+            "longitude_degrees": 1.0,
+            "latitude_degrees": 1.0
+          },
           "baseline": {
             "status": "native_source_anomaly",
             "label": "Native APCC MME anomaly"
@@ -73,34 +107,69 @@
       "source_url": "https://apcc21.org/clik/processing/prediction",
       "dataset": "MME_3MONTH",
       "lead_month": "3-MON",
-      "resolution": "1.0",
+      "resolution": "2.5",
       "method": "SCM",
+      "requested_target_window": "0,1,2",
+      "native_period": {
+        "season_code": "ASO",
+        "season_year": 2026,
+        "period_label": "ASO 2026",
+        "target_code": "202608-202610",
+        "first_target": "202608",
+        "valid_start_utc": "2026-08-01T00:00:00Z",
+        "valid_end_utc": "2026-11-01T00:00:00Z",
+        "days": 92,
+        "forecast_info": "Seasonal Mean Forecast for ASO (2026ASO)"
+      },
       "targets": [
         {
-          "id": "apcc-202608-preca-202612-202702",
-          "valid_start_utc": "2026-12-01T00:00:00Z",
-          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "id": "apcc-202608-preca-202608-202610",
+          "valid_start_utc": "2026-08-01T00:00:00Z",
+          "valid_end_utc": "2026-11-01T00:00:00Z",
           "lead_month": "3-MON",
-          "target_month": "202612-202702",
-          "period_label": "DJF 2027",
-          "aggregation": "native APCC seasonal mean",
+          "target_month": "202608-202610",
+          "period_label": "ASO 2026",
+          "aggregation": "seasonal accumulation from native APCC seasonal mean",
           "field": "precipitation_anomaly",
           "units": "mm",
           "raw_field": "precipitation anomaly",
-          "raw_units": "native APCC units",
+          "raw_units": "mm/day",
           "statistic": "APCC multi-model ensemble mean",
           "ensemble_scope": "APCC MME seasonal product",
           "source_urls": [
             "https://apcc21.org/clik/dataset/mme/3-MON?lang=en",
             "https://apcc21.org/clik/clikapi?lang=en"
           ],
+          "source_period": {
+            "season_code": "ASO",
+            "season_year": 2026,
+            "period_label": "ASO 2026",
+            "target_code": "202608-202610",
+            "first_target": "202608",
+            "valid_start_utc": "2026-08-01T00:00:00Z",
+            "valid_end_utc": "2026-11-01T00:00:00Z",
+            "days": 92,
+            "forecast_info": "Seasonal Mean Forecast for ASO (2026ASO)"
+          },
           "status": "rendered",
-          "image": "public/seasonal/apcc/202608/apcc_preca_202612-202702.jpg",
+          "image": "public/seasonal/apcc/202608/apcc_preca_202608-202610.jpg",
           "source_file": ".cache/apcc/extracted/mme_3month_3-mon_202608_prec_slp_sst_t2m_t850_z500/FORECAST_SCM_AUG_ASO_2026_prec.nc",
+          "data_range": {
+            "min": -685.0467,
+            "max": 710.3165,
+            "p05": -83.9484,
+            "p95": 64.2416,
+            "finite_points": 64800
+          },
+          "native_grid": {
+            "longitude_degrees": 1.0,
+            "latitude_degrees": 1.0
+          },
           "baseline": {
             "status": "native_source_anomaly",
             "label": "Native APCC MME anomaly"
-          }
+          },
+          "conversion": "seasonal mean mm/day \u00d7 valid-season days = seasonal accumulation mm"
         }
       ],
       "output_dir": "public/seasonal/apcc"
@@ -114,30 +183,64 @@
       "source_url": "https://apcc21.org/clik/processing/prediction",
       "dataset": "MME_3MONTH",
       "lead_month": "3-MON",
-      "resolution": "1.0",
+      "resolution": "2.5",
       "method": "SCM",
+      "requested_target_window": "0,1,2",
+      "native_period": {
+        "season_code": "ASO",
+        "season_year": 2026,
+        "period_label": "ASO 2026",
+        "target_code": "202608-202610",
+        "first_target": "202608",
+        "valid_start_utc": "2026-08-01T00:00:00Z",
+        "valid_end_utc": "2026-11-01T00:00:00Z",
+        "days": 92,
+        "forecast_info": "Seasonal Mean Forecast for ASO (2026ASO)"
+      },
       "targets": [
         {
-          "id": "apcc-202608-slpa-202612-202702",
-          "valid_start_utc": "2026-12-01T00:00:00Z",
-          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "id": "apcc-202608-slpa-202608-202610",
+          "valid_start_utc": "2026-08-01T00:00:00Z",
+          "valid_end_utc": "2026-11-01T00:00:00Z",
           "lead_month": "3-MON",
-          "target_month": "202612-202702",
-          "period_label": "DJF 2027",
+          "target_month": "202608-202610",
+          "period_label": "ASO 2026",
           "aggregation": "native APCC seasonal mean",
           "field": "mslp_anomaly",
           "units": "hPa",
           "raw_field": "mean sea-level pressure anomaly",
-          "raw_units": "Pa",
+          "raw_units": "mb",
           "statistic": "APCC multi-model ensemble mean",
           "ensemble_scope": "APCC MME seasonal product",
           "source_urls": [
             "https://apcc21.org/clik/dataset/mme/3-MON?lang=en",
             "https://apcc21.org/clik/clikapi?lang=en"
           ],
+          "source_period": {
+            "season_code": "ASO",
+            "season_year": 2026,
+            "period_label": "ASO 2026",
+            "target_code": "202608-202610",
+            "first_target": "202608",
+            "valid_start_utc": "2026-08-01T00:00:00Z",
+            "valid_end_utc": "2026-11-01T00:00:00Z",
+            "days": 92,
+            "forecast_info": "Seasonal Mean Forecast for ASO (2026ASO)"
+          },
           "status": "rendered",
-          "image": "public/seasonal/apcc/202608/apcc_slpa_202612-202702.jpg",
+          "image": "public/seasonal/apcc/202608/apcc_slpa_202608-202610.jpg",
           "source_file": ".cache/apcc/extracted/mme_3month_3-mon_202608_prec_slp_sst_t2m_t850_z500/FORECAST_SCM_AUG_ASO_2026_slp.nc",
+          "data_range": {
+            "min": -3.0397,
+            "max": 5.0512,
+            "p05": -1.7439,
+            "p95": 1.5493,
+            "finite_points": 64800
+          },
+          "native_grid": {
+            "longitude_degrees": 1.0,
+            "latitude_degrees": 1.0
+          },
           "baseline": {
             "status": "native_source_anomaly",
             "label": "Native APCC MME anomaly"
@@ -155,30 +258,64 @@
       "source_url": "https://apcc21.org/clik/processing/prediction",
       "dataset": "MME_3MONTH",
       "lead_month": "3-MON",
-      "resolution": "1.0",
+      "resolution": "2.5",
       "method": "SCM",
+      "requested_target_window": "0,1,2",
+      "native_period": {
+        "season_code": "ASO",
+        "season_year": 2026,
+        "period_label": "ASO 2026",
+        "target_code": "202608-202610",
+        "first_target": "202608",
+        "valid_start_utc": "2026-08-01T00:00:00Z",
+        "valid_end_utc": "2026-11-01T00:00:00Z",
+        "days": 92,
+        "forecast_info": "Seasonal Mean Forecast for ASO (2026ASO)"
+      },
       "targets": [
         {
-          "id": "apcc-202608-t850a-202612-202702",
-          "valid_start_utc": "2026-12-01T00:00:00Z",
-          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "id": "apcc-202608-t850a-202608-202610",
+          "valid_start_utc": "2026-08-01T00:00:00Z",
+          "valid_end_utc": "2026-11-01T00:00:00Z",
           "lead_month": "3-MON",
-          "target_month": "202612-202702",
-          "period_label": "DJF 2027",
+          "target_month": "202608-202610",
+          "period_label": "ASO 2026",
           "aggregation": "native APCC seasonal mean",
           "field": "t850_anomaly",
           "units": "\u00b0C",
           "raw_field": "850-mb temperature anomaly",
-          "raw_units": "K",
+          "raw_units": "deg K",
           "statistic": "APCC multi-model ensemble mean",
           "ensemble_scope": "APCC MME seasonal product",
           "source_urls": [
             "https://apcc21.org/clik/dataset/mme/3-MON?lang=en",
             "https://apcc21.org/clik/clikapi?lang=en"
           ],
+          "source_period": {
+            "season_code": "ASO",
+            "season_year": 2026,
+            "period_label": "ASO 2026",
+            "target_code": "202608-202610",
+            "first_target": "202608",
+            "valid_start_utc": "2026-08-01T00:00:00Z",
+            "valid_end_utc": "2026-11-01T00:00:00Z",
+            "days": 92,
+            "forecast_info": "Seasonal Mean Forecast for ASO (2026ASO)"
+          },
           "status": "rendered",
-          "image": "public/seasonal/apcc/202608/apcc_t850a_202612-202702.jpg",
+          "image": "public/seasonal/apcc/202608/apcc_t850a_202608-202610.jpg",
           "source_file": ".cache/apcc/extracted/mme_3month_3-mon_202608_prec_slp_sst_t2m_t850_z500/FORECAST_SCM_AUG_ASO_2026_t850.nc",
+          "data_range": {
+            "min": -1.1302,
+            "max": 2.2712,
+            "p05": 0.0431,
+            "p95": 1.426,
+            "finite_points": 64800
+          },
+          "native_grid": {
+            "longitude_degrees": 1.0,
+            "latitude_degrees": 1.0
+          },
           "baseline": {
             "status": "native_source_anomaly",
             "label": "Native APCC MME anomaly"
@@ -196,30 +333,64 @@
       "source_url": "https://apcc21.org/clik/processing/prediction",
       "dataset": "MME_3MONTH",
       "lead_month": "3-MON",
-      "resolution": "1.0",
+      "resolution": "2.5",
       "method": "SCM",
+      "requested_target_window": "0,1,2",
+      "native_period": {
+        "season_code": "ASO",
+        "season_year": 2026,
+        "period_label": "ASO 2026",
+        "target_code": "202608-202610",
+        "first_target": "202608",
+        "valid_start_utc": "2026-08-01T00:00:00Z",
+        "valid_end_utc": "2026-11-01T00:00:00Z",
+        "days": 92,
+        "forecast_info": "Seasonal Mean Forecast for ASO (2026ASO)"
+      },
       "targets": [
         {
-          "id": "apcc-202608-z500a-202612-202702",
-          "valid_start_utc": "2026-12-01T00:00:00Z",
-          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "id": "apcc-202608-z500a-202608-202610",
+          "valid_start_utc": "2026-08-01T00:00:00Z",
+          "valid_end_utc": "2026-11-01T00:00:00Z",
           "lead_month": "3-MON",
-          "target_month": "202612-202702",
-          "period_label": "DJF 2027",
+          "target_month": "202608-202610",
+          "period_label": "ASO 2026",
           "aggregation": "native APCC seasonal mean",
           "field": "z500_anomaly",
           "units": "m",
           "raw_field": "geopotential height anomaly",
-          "raw_units": "native APCC units",
+          "raw_units": "m",
           "statistic": "APCC multi-model ensemble mean",
           "ensemble_scope": "APCC MME seasonal product",
           "source_urls": [
             "https://apcc21.org/clik/dataset/mme/3-MON?lang=en",
             "https://apcc21.org/clik/clikapi?lang=en"
           ],
+          "source_period": {
+            "season_code": "ASO",
+            "season_year": 2026,
+            "period_label": "ASO 2026",
+            "target_code": "202608-202610",
+            "first_target": "202608",
+            "valid_start_utc": "2026-08-01T00:00:00Z",
+            "valid_end_utc": "2026-11-01T00:00:00Z",
+            "days": 92,
+            "forecast_info": "Seasonal Mean Forecast for ASO (2026ASO)"
+          },
           "status": "rendered",
-          "image": "public/seasonal/apcc/202608/apcc_z500a_202612-202702.jpg",
+          "image": "public/seasonal/apcc/202608/apcc_z500a_202608-202610.jpg",
           "source_file": ".cache/apcc/extracted/mme_3month_3-mon_202608_prec_slp_sst_t2m_t850_z500/FORECAST_SCM_AUG_ASO_2026_z500.nc",
+          "data_range": {
+            "min": -35.4113,
+            "max": 68.1985,
+            "p05": -7.1535,
+            "p95": 29.5889,
+            "finite_points": 64800
+          },
+          "native_grid": {
+            "longitude_degrees": 1.0,
+            "latitude_degrees": 1.0
+          },
           "baseline": {
             "status": "native_source_anomaly",
             "label": "Native APCC MME anomaly"
@@ -237,30 +408,64 @@
       "source_url": "https://apcc21.org/clik/processing/prediction",
       "dataset": "MME_3MONTH",
       "lead_month": "3-MON",
-      "resolution": "1.0",
+      "resolution": "2.5",
       "method": "SCM",
+      "requested_target_window": "0,1,2",
+      "native_period": {
+        "season_code": "ASO",
+        "season_year": 2026,
+        "period_label": "ASO 2026",
+        "target_code": "202608-202610",
+        "first_target": "202608",
+        "valid_start_utc": "2026-08-01T00:00:00Z",
+        "valid_end_utc": "2026-11-01T00:00:00Z",
+        "days": 92,
+        "forecast_info": "Seasonal Mean Forecast for ASO (2026ASO)"
+      },
       "targets": [
         {
-          "id": "apcc-202608-t2ma-202612-202702",
-          "valid_start_utc": "2026-12-01T00:00:00Z",
-          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "id": "apcc-202608-t2ma-202608-202610",
+          "valid_start_utc": "2026-08-01T00:00:00Z",
+          "valid_end_utc": "2026-11-01T00:00:00Z",
           "lead_month": "3-MON",
-          "target_month": "202612-202702",
-          "period_label": "DJF 2027",
+          "target_month": "202608-202610",
+          "period_label": "ASO 2026",
           "aggregation": "native APCC seasonal mean",
           "field": "t2m_anomaly",
           "units": "\u00b0C",
           "raw_field": "2-m temperature anomaly",
-          "raw_units": "K",
+          "raw_units": "deg K",
           "statistic": "APCC multi-model ensemble mean",
           "ensemble_scope": "APCC MME seasonal product",
           "source_urls": [
             "https://apcc21.org/clik/dataset/mme/3-MON?lang=en",
             "https://apcc21.org/clik/clikapi?lang=en"
           ],
+          "source_period": {
+            "season_code": "ASO",
+            "season_year": 2026,
+            "period_label": "ASO 2026",
+            "target_code": "202608-202610",
+            "first_target": "202608",
+            "valid_start_utc": "2026-08-01T00:00:00Z",
+            "valid_end_utc": "2026-11-01T00:00:00Z",
+            "days": 92,
+            "forecast_info": "Seasonal Mean Forecast for ASO (2026ASO)"
+          },
           "status": "rendered",
-          "image": "public/seasonal/apcc/202608/apcc_t2ma_202612-202702.jpg",
+          "image": "public/seasonal/apcc/202608/apcc_t2ma_202608-202610.jpg",
           "source_file": ".cache/apcc/extracted/mme_3month_3-mon_202608_prec_slp_sst_t2m_t850_z500/FORECAST_SCM_AUG_ASO_2026_t2m.nc",
+          "data_range": {
+            "min": -0.9519,
+            "max": 4.0523,
+            "p05": 0.0712,
+            "p95": 1.9357,
+            "finite_points": 64800
+          },
+          "native_grid": {
+            "longitude_degrees": 1.0,
+            "latitude_degrees": 1.0
+          },
           "baseline": {
             "status": "native_source_anomaly",
             "label": "Native APCC MME anomaly"
