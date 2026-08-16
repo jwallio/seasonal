@@ -8,6 +8,8 @@ on:
       - CFSv2 Rolling Seasonal Graphics
       - ECMWF SEAS5 Seasonal Graphics
       - CanSIPS v3 Seasonal Graphics
+      - C3S Multi-System Seasonal Graphics
+      - NOAA NMME Seasonal Graphics
     types:
       - completed
   workflow_dispatch:
@@ -22,6 +24,8 @@ on:
           - CFSv2 Rolling Seasonal Graphics
           - ECMWF SEAS5 Seasonal Graphics
           - CanSIPS v3 Seasonal Graphics
+          - C3S Multi-System Seasonal Graphics
+          - NOAA NMME Seasonal Graphics
       source_run_id:
         description: "GitHub Actions run ID containing the uploaded Pages artifact"
         required: true
@@ -57,6 +61,8 @@ jobs:
           path: dashboard-source
           sparse-checkout: |
             public/seasonal/index.html
+            public/seasonal/c3s/index.html
+            public/seasonal/nmme/index.html
           sparse-checkout-cone-mode: false
 
       - name: Download WN2 payload
@@ -99,6 +105,26 @@ jobs:
           repository: ${{ github.repository }}
           run-id: ${{ env.SOURCE_RUN_ID }}
 
+      - name: Download C3S payload
+        if: ${{ env.SOURCE_WORKFLOW == 'C3S Multi-System Seasonal Graphics' }}
+        uses: actions/download-artifact@v4
+        with:
+          name: c3s-pages-${{ env.SOURCE_RUN_ID }}
+          path: incoming/c3s
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: ${{ env.SOURCE_RUN_ID }}
+
+      - name: Download NMME payload
+        if: ${{ env.SOURCE_WORKFLOW == 'NOAA NMME Seasonal Graphics' }}
+        uses: actions/download-artifact@v4
+        with:
+          name: nmme-pages-${{ env.SOURCE_RUN_ID }}
+          path: incoming/nmme
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: ${{ env.SOURCE_RUN_ID }}
+
       - name: Merge payload into the Pages tree
         shell: bash
         run: |
@@ -109,6 +135,9 @@ jobs:
           test -f dashboard-source/public/seasonal/index.html
           mkdir -p site/seasonal
           cp dashboard-source/public/seasonal/index.html site/seasonal/index.html
+          mkdir -p site/seasonal/c3s site/seasonal/nmme
+          cp dashboard-source/public/seasonal/c3s/index.html site/seasonal/c3s/index.html
+          cp dashboard-source/public/seasonal/nmme/index.html site/seasonal/nmme/index.html
 
           case "$SOURCE_WORKFLOW" in
             "WeatherNext Runner"|"WeatherNext Runner Custom")
@@ -166,6 +195,30 @@ jobs:
                 mkdir -p site/seasonal/common_reference
                 cp -R "$payload_root/common_reference/." site/seasonal/common_reference/
               fi
+              ;;
+            "C3S Multi-System Seasonal Graphics")
+              payload_root=incoming/c3s
+              if [ -d "$payload_root/pages-payload" ]; then
+                payload_root="$payload_root/pages-payload"
+              elif [ -d "$payload_root/.pages-payload" ]; then
+                payload_root="$payload_root/.pages-payload"
+              fi
+              test -f "$payload_root/c3s_manifest.json"
+              mkdir -p site/seasonal/c3s
+              cp -R "$payload_root/c3s/." site/seasonal/c3s/
+              cp "$payload_root/c3s_manifest.json" site/seasonal/c3s_manifest.json
+              ;;
+            "NOAA NMME Seasonal Graphics")
+              payload_root=incoming/nmme
+              if [ -d "$payload_root/pages-payload" ]; then
+                payload_root="$payload_root/pages-payload"
+              elif [ -d "$payload_root/.pages-payload" ]; then
+                payload_root="$payload_root/.pages-payload"
+              fi
+              test -f "$payload_root/nmme_manifest.json"
+              mkdir -p site/seasonal/nmme
+              cp -R "$payload_root/nmme/." site/seasonal/nmme/
+              cp "$payload_root/nmme_manifest.json" site/seasonal/nmme_manifest.json
               ;;
             *)
               echo "Unsupported workflow_run source: $SOURCE_WORKFLOW" >&2

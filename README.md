@@ -340,4 +340,6 @@ The GitHub Actions workflows require:
 - `main` is the source/default branch
 - `gh-pages` is the published static site branch
 
-The renderer workflows upload scoped payloads. The single `publish-pages.yml` workflow serializes successful WN2, CFSv2, and SEAS5 completions, merges each payload into the existing `gh-pages` tree, and publishes the complete site so one product cannot remove another product's assets.
+The renderer workflows upload scoped payloads. The single `publish-pages.yml` workflow serializes successful WN2, CFSv2, SEAS5, CanSIPS, C3S, and NMME completions, merges each payload into the existing `gh-pages` tree, and publishes the complete site so one product cannot remove another product's assets.
+
+Seasonal additions are documented in [`docs/SEASONAL_C3S.md`](/d:/weather-projects/wn2-seasonal-dashboard/docs/SEASONAL_C3S.md) and [`docs/SEASONAL_NMME.md`](/d:/weather-projects/wn2-seasonal-dashboard/docs/SEASONAL_NMME.md). The unified viewer includes native-model comparison maps, C3S component/multi-system entries, and NMME anomaly, probability, spread, and consensus products.

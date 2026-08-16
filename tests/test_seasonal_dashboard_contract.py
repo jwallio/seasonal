@@ -26,9 +26,13 @@ def main() -> int:
         "CFSv2",
         "ECMWF SEAS5",
         "CanSIPS v3",
+        "C3S multi-system",
+        "NOAA NMME",
         "seasonal/cfsv2_manifest.json",
         "seasonal/seas5_manifest.json",
         "seasonal/cansips_manifest.json",
+        "seasonal/c3s_manifest.json",
+        "seasonal/nmme_manifest.json",
         'id="model-select"',
         'id="product-select"',
         'id="run-select"',
@@ -44,6 +48,9 @@ def main() -> int:
         "target_month",
         "source_url",
         "preferredTarget",
+        "probability_above_normal",
+        "model_spread",
+        "multi_model_consensus",
     ):
         check(term in page, f"unified dashboard missing term: {term}")
 
@@ -59,6 +66,8 @@ def main() -> int:
         "name: Publish Seasonal Model Dashboard Pages",
         "WeatherNext Runner",
         "WeatherNext Runner Custom",
+        "C3S Multi-System Seasonal Graphics",
+        "NOAA NMME Seasonal Graphics",
         "name: Checkout dashboard source",
         "ref: main",
         "public/seasonal/index.html",

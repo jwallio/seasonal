@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Seasonal Model Dashboard</title>
-  <meta name="description" content="Operational seasonal model dashboard for CFSv2, ECMWF SEAS5, and CanSIPS v3 guidance.">
+  <meta name="description" content="Operational seasonal model dashboard for CFSv2, ECMWF SEAS5, CanSIPS v3, C3S, and NOAA NMME guidance.">
   <style>
     :root { color-scheme: dark; --ink:#f3f7f9; --muted:#a9bac3; --panel:#10232d; --line:#2b4855; --teal:#59d4c0; --coral:#ff927c; --blue:#75b8e8; }
     * { box-sizing:border-box; }
@@ -50,7 +50,7 @@
     .compare-toolbar { display:flex; align-items:end; flex-wrap:wrap; gap:14px; padding:14px 16px; margin-bottom:18px; }
     .compare-toolbar .selector { width:min(320px,100%); }
     .compare-summary { margin:0 0 2px auto; color:var(--muted); font-size:12px; }
-    .compare-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; }
+    .compare-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:14px; }
     .compare-card { min-width:0; }
     .compare-card-head { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:14px 15px; border-bottom:1px solid var(--line); }
     .compare-card-head h2 { margin:0; font-size:15px; }
@@ -60,7 +60,7 @@
     .compare-image-wrap .empty { width:100%; padding:42px 18px; }
     .compare-meta { margin:0; padding:0 14px 14px; color:var(--muted); font-size:11px; line-height:1.45; }
     .footer { margin-top:20px; color:#8298a3; font-size:12px; }
-    @media (max-width:1100px) { .compare-grid{grid-template-columns:repeat(2,minmax(0,1fr))} }
+    @media (max-width:1280px) { .compare-grid{grid-template-columns:repeat(2,minmax(0,1fr))} }
     @media (max-width:900px) { .toolbar{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.grid{grid-template-columns:1fr} }
     @media (max-width:600px) { .shell{width:min(100% - 20px,1440px);padding-top:12px}.toolbar{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.toolbar .selector:nth-child(3){grid-column:1 / -1}.map-wrap{min-height:280px}.card-head{padding:15px}.viewer{padding:10px}.controls{padding:0 10px 12px}.ratio-control{margin-left:0}.facts{padding:10px}.links{padding:0 15px 15px} }
     @media (max-width:600px) { .compare-grid{grid-template-columns:1fr}.compare-toolbar{align-items:stretch}.compare-summary{width:100%;margin:0}.compare-image-wrap{margin:10px}.view-tabs{margin-bottom:10px} }
@@ -129,11 +129,13 @@
       cfsv2: { label: 'CFSv2', kind: 'seasonal', manifest: assetPath('seasonal/cfsv2_manifest.json'), direct: assetPath('seasonal/cfsv2/'), source: 'NOAA CFSv2 NOMADS' },
       seas5: { label: 'ECMWF SEAS5', kind: 'seasonal', manifest: assetPath('seasonal/seas5_manifest.json'), direct: assetPath('seasonal/seas5/'), source: 'ECMWF SEAS5 / Copernicus CDS' },
       cansips: { label: 'CanSIPS v3', kind: 'seasonal', manifest: assetPath('seasonal/cansips_manifest.json'), direct: assetPath('seasonal/cansips/'), source: 'ECCC MSC Datamart' },
+      c3s: { label: 'C3S multi-system', kind: 'seasonal', manifest: assetPath('seasonal/c3s_manifest.json'), direct: assetPath('seasonal/c3s/'), source: 'Copernicus C3S seasonal forecasts' },
+      nmme: { label: 'NOAA NMME', kind: 'seasonal', manifest: assetPath('seasonal/nmme_manifest.json'), direct: assetPath('seasonal/nmme/'), source: 'NOAA CPC NMME' },
     };
     const modelStates = Object.fromEntries(Object.keys(MODEL_CONFIG).map(key => [key, { manifest: null, runs: [], error: null }]));
     const selection = { view: 'single', model: 'cfsv2', product: '', run: '', target: '', compareTarget: '', compareBaseline: '', ratio: '10' };
     const COMPARE_PRODUCT = '500mb_height_anomaly';
-    const COMPARE_MODELS = ['cfsv2', 'seas5', 'cansips'];
+    const COMPARE_MODELS = ['cfsv2', 'seas5', 'cansips', 'c3s'];
     const COMPARE_BASELINES = [
       { value: 'native', label: 'Native model reference' },
       { value: 'common_1991_2020', label: 'Common 1991–2020 reference' },
@@ -144,6 +146,9 @@
       'precipitation_anomaly': 'CONUS Precipitation Anomaly', 'snow_water_equivalent_anomaly': 'Snow-Water-Equivalent Anomaly',
       'snow_depth_anomaly': 'CONUS Snow-Depth Anomaly', 'snowfall_anomaly': 'CONUS Snowfall Anomaly',
       'sst_anomaly': 'Sea-Surface Temperature Anomaly', 'mslp_anomaly': 'MSLP Anomaly',
+      'sea_surface_temperature_anomaly': 'Sea-Surface Temperature Anomaly', '200mb_height_anomaly': '200-mb Height Anomaly',
+      'probability_above_normal': 'Above Normal Probability', 'probability_near_normal': 'Near Normal Probability', 'probability_below_normal': 'Below Normal Probability',
+      'model_spread': 'Model Spread', 'multi_model_consensus': 'Multi-Model Consensus',
     };
     const numberList = (values, min = null, max = null) => [...new Set((Array.isArray(values) ? values : []).map(value => Number(value)).filter(value => Number.isFinite(value) && (min === null || value >= min) && (max === null || value <= max)))].sort((a,b) => a - b);
     const pretty = value => String(value || '').replaceAll('_', ' ').replace(/\b\w/g, letter => letter.toUpperCase());
@@ -167,7 +172,11 @@
     function compareRuns(modelKey) {
       return (modelStates[modelKey]?.runs || [])
         .filter(run => String(run.product || '') === COMPARE_PRODUCT)
-        .sort((left, right) => String(right.init_utc || '').localeCompare(String(left.init_utc || '')));
+        .sort((left, right) => {
+          const leftBlend = modelKey === 'c3s' && String(left.component || '') === 'multisystem' ? 1 : 0;
+          const rightBlend = modelKey === 'c3s' && String(right.component || '') === 'multisystem' ? 1 : 0;
+          return rightBlend - leftBlend || String(right.init_utc || '').localeCompare(String(left.init_utc || ''));
+        });
     }
     function compareTargetAsset(target, baseline) {
       if (!target || target.status === 'failed') return null;
@@ -344,7 +353,7 @@
         selection.compareBaseline = '';
         el('compare-summary').textContent = '500-mb height anomaly · no matching target has been published across the model manifests';
         grid.replaceChildren(...COMPARE_MODELS.map(modelKey => renderCompareCard(modelKey, '')));
-        el('footer').textContent = '500-mb height anomaly comparison · CFSv2 · ECMWF SEAS5 · CanSIPS v3';
+        el('footer').textContent = '500-mb height anomaly comparison · CFSv2 · ECMWF SEAS5 · CanSIPS v3 · C3S multi-system';
         return;
       }
       const preferred = options.find(item => /^\d{6}-\d{6}$/.test(String(item.value))) || options[options.length - 1];
@@ -357,7 +366,7 @@
       const availableCount = COMPARE_MODELS.filter(modelKey => Boolean(compareRunForTarget(modelKey, selection.compareTarget, selection.compareBaseline))).length;
       el('compare-summary').textContent = `${periodLabel(selection.compareTarget)} · ${compareBaselineLabel(selection.compareBaseline)} · ${availableCount}/${COMPARE_MODELS.length} model maps available`;
       grid.replaceChildren(...COMPARE_MODELS.map(modelKey => renderCompareCard(modelKey, selection.compareTarget)));
-      el('footer').textContent = `500-mb height anomaly comparison · ${compareBaselineLabel(selection.compareBaseline)} · CFSv2 · ECMWF SEAS5 · CanSIPS v3`;
+      el('footer').textContent = `500-mb height anomaly comparison · ${compareBaselineLabel(selection.compareBaseline)} · CFSv2 · ECMWF SEAS5 · CanSIPS v3 · C3S multi-system`;
     }
     function renderControls(model, run, targets) {
       const controls = el('target-controls'); controls.replaceChildren();
