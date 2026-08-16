@@ -2,8 +2,9 @@ name: ECMWF SEAS5 Seasonal Graphics
 
 on:
   schedule:
-    # ECMWF SEAS5 products are released through CDS on/around the 6th.
-    - cron: "30 14 11 * *"
+    # ECMWF releases the 7-month SEAS5 forecast on the 5th at 12 UTC.
+    # Leave time for CDS indexing before starting the download.
+    - cron: "30 15 5 * *"
   workflow_dispatch:
     inputs:
       product:
