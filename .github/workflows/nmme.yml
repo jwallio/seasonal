@@ -2,6 +2,8 @@ name: NOAA NMME Seasonal Graphics
 
 on:
   schedule:
+    # CPC receives the model deliveries by 17:00 ET on the 8th and updates
+    # the public NMME products on the 9th.
     - cron: "30 15 9 * *"
   workflow_dispatch:
     inputs:

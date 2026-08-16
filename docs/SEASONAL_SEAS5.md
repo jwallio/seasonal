@@ -20,9 +20,9 @@ North American area from the CDS API:
   absolute-field smoke output.
 
 The request is filtered to originating centre `ecmwf`, system `51`, and the
-`ensemble_mean` product. CDS publishes ECMWF seasonal forecasts monthly on or
-around the 6th. The nominal initialization date is the first day of the
-released month, matching the C3S seasonal data convention.
+`ensemble_mean` product. ECMWF's dissemination schedule releases the 7-month
+SEAS5 forecast on the 5th at 12 UTC. The nominal initialization date is the
+first day of the released month, matching the C3S seasonal data convention.
 
 The workflow requires a repository secret named `CDS_API_KEY`. Local runs can
 use the same token through `CDS_API_KEY` or the official `~/.cdsapirc` file.

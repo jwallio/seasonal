@@ -2,7 +2,7 @@ name: JMA Seasonal Graphics
 
 on:
   schedule:
-    # C3S publishes non-ECMWF components around the 10th at 12 UTC.
+    # JMA is a non-ECMWF C3S component; publish after the 10th/12 UTC window.
     - cron: "30 15 10 * *"
   workflow_dispatch:
     inputs:

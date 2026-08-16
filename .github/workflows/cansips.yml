@@ -2,7 +2,8 @@ name: CanSIPS v3 Seasonal Graphics
 
 on:
   schedule:
-    # ECCC's monthly CanSIPS cycle is normally available by the second day.
+    # ECCC refreshes CanSIPS on the first of each month; use the second-day
+    # afternoon buffer so the Datamart inventory has time to settle.
     - cron: "30 16 2 * *"
   workflow_dispatch:
     inputs:
