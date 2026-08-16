@@ -73,6 +73,12 @@ def main() -> int:
         "archive_latest_init",
         "archive_age_days",
         "SEAS5_PRECIP_ANOMALY_PALETTE",
+        "COMMON_REFERENCE_YEARS",
+        "load_common_reference",
+        "regrid_nearest",
+        "--common-reference-dir",
+        "--common-reference-url",
+        "common_1991_2020",
     ):
         check(term in adapter or term in workflow or term in page, f"missing SEAS5 contract term: {term}")
     for term in (
@@ -83,6 +89,8 @@ def main() -> int:
         "Restore published SEAS5 run history",
         "--previous-manifest",
         "--retain-runs 4",
+        "--common-reference-dir",
+        "--common-reference-url",
     ):
         check(term in workflow, f"workflow missing SEAS5 term: {term}")
     check("peaceiris/actions-gh-pages" not in workflow, "SEAS5 workflow must not publish Pages directly")

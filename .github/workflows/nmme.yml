@@ -1,0 +1,129 @@
+name: NOAA NMME Seasonal Graphics
+
+on:
+  schedule:
+    - cron: "30 15 9 * *"
+  workflow_dispatch:
+    inputs:
+      products:
+        description: "Products to generate, comma-separated"
+        required: false
+        default: "2m_temperature_anomaly,probability_above_normal,probability_near_normal,probability_below_normal,model_spread,multi_model_consensus"
+        type: string
+      base_product:
+        description: "Base parameter for probability, spread, and consensus"
+        required: false
+        default: "2m_temperature_anomaly"
+        type: choice
+        options:
+          - 2m_temperature_anomaly
+          - precipitation_anomaly
+          - 200mb_height_anomaly
+      init:
+        description: "NMME initialization as YYYYMM or latest"
+        required: false
+        default: "latest"
+        type: string
+      lead_months:
+        description: "Target leads, comma-separated"
+        required: false
+        default: "4,5,6"
+        type: string
+      seasonal_window:
+        description: "Seasonal leads, comma-separated"
+        required: false
+        default: "4,5,6"
+        type: string
+      probability_period:
+        description: "Official probability product period"
+        required: false
+        default: "seas"
+        type: choice
+        options:
+          - seas
+          - mon
+
+permissions:
+  contents: read
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    env:
+      NMME_PRODUCTS: ${{ inputs.products || '2m_temperature_anomaly,probability_above_normal,probability_near_normal,probability_below_normal,model_spread,multi_model_consensus' }}
+      NMME_BASE_PRODUCT: ${{ inputs.base_product || '2m_temperature_anomaly' }}
+      NMME_INIT: ${{ inputs.init || 'latest' }}
+      LEAD_MONTHS: ${{ inputs.lead_months || '4,5,6' }}
+      SEASONAL_WINDOW: ${{ inputs.seasonal_window || '4,5,6' }}
+      PROBABILITY_PERIOD: ${{ inputs.probability_period || 'seas' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Install NMME rendering dependencies
+        run: python -m pip install --upgrade xarray netCDF4 matplotlib Pillow requests numpy
+
+      - name: Restore NMME cache
+        uses: actions/cache@v4
+        with:
+          path: .cache/nmme
+          key: nmme-${{ runner.os }}-${{ env.NMME_BASE_PRODUCT }}-v1
+          restore-keys: |
+            nmme-${{ runner.os }}-
+
+      - name: Restore published NMME run history
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .cache/nmme
+          pages_url="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/seasonal/nmme_manifest.json"
+          if curl -fsSL --retry 2 --connect-timeout 10 "$pages_url" -o .cache/nmme/previous_manifest.json; then
+            echo "Restored prior NMME manifest."
+          else
+            rm -f .cache/nmme/previous_manifest.json
+            echo "No prior NMME manifest was available."
+          fi
+
+      - name: Render NMME products
+        run: |
+          python scripts/nmme_seasonal.py \
+            --products "$NMME_PRODUCTS" \
+            --base-product "$NMME_BASE_PRODUCT" \
+            --init "$NMME_INIT" \
+            --lead-months "$LEAD_MONTHS" \
+            --seasonal-window "$SEASONAL_WINDOW" \
+            --probability-period "$PROBABILITY_PERIOD" \
+            --cache-dir .cache/nmme \
+            --output-dir public/seasonal/nmme \
+            --manifest public/seasonal/nmme_manifest.json \
+            --previous-manifest .cache/nmme/previous_manifest.json \
+            --retain-cycles 4
+
+      - name: Package NMME Pages payload
+        if: success()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -d public/seasonal/nmme
+          test -f public/seasonal/nmme_manifest.json
+          rm -rf pages-payload
+          mkdir -p pages-payload/nmme
+          cp -R public/seasonal/nmme/. pages-payload/nmme/
+          cp public/seasonal/nmme_manifest.json pages-payload/nmme_manifest.json
+
+      - name: Upload NMME Pages payload
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nmme-pages-${{ github.run_id }}
+          path: pages-payload
+          if-no-files-found: error
+          retention-days: 14

@@ -8,6 +8,8 @@ on:
       - CFSv2 Rolling Seasonal Graphics
       - ECMWF SEAS5 Seasonal Graphics
       - CanSIPS v3 Seasonal Graphics
+      - C3S Multi-System Seasonal Graphics
+      - NOAA NMME Seasonal Graphics
     types:
       - completed
   workflow_dispatch:
@@ -22,6 +24,8 @@ on:
           - CFSv2 Rolling Seasonal Graphics
           - ECMWF SEAS5 Seasonal Graphics
           - CanSIPS v3 Seasonal Graphics
+          - C3S Multi-System Seasonal Graphics
+          - NOAA NMME Seasonal Graphics
       source_run_id:
         description: "GitHub Actions run ID containing the uploaded Pages artifact"
         required: true
@@ -57,6 +61,8 @@ jobs:
           path: dashboard-source
           sparse-checkout: |
             public/seasonal/index.html
+            public/seasonal/c3s/index.html
+            public/seasonal/nmme/index.html
           sparse-checkout-cone-mode: false
 
       - name: Download WN2 payload
@@ -99,6 +105,26 @@ jobs:
           repository: ${{ github.repository }}
           run-id: ${{ env.SOURCE_RUN_ID }}
 
+      - name: Download C3S payload
+        if: ${{ env.SOURCE_WORKFLOW == 'C3S Multi-System Seasonal Graphics' }}
+        uses: actions/download-artifact@v4
+        with:
+          name: c3s-pages-${{ env.SOURCE_RUN_ID }}
+          path: incoming/c3s
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: ${{ env.SOURCE_RUN_ID }}
+
+      - name: Download NMME payload
+        if: ${{ env.SOURCE_WORKFLOW == 'NOAA NMME Seasonal Graphics' }}
+        uses: actions/download-artifact@v4
+        with:
+          name: nmme-pages-${{ env.SOURCE_RUN_ID }}
+          path: incoming/nmme
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: ${{ env.SOURCE_RUN_ID }}
+
       - name: Merge payload into the Pages tree
         shell: bash
         run: |
@@ -109,6 +135,9 @@ jobs:
           test -f dashboard-source/public/seasonal/index.html
           mkdir -p site/seasonal
           cp dashboard-source/public/seasonal/index.html site/seasonal/index.html
+          mkdir -p site/seasonal/c3s site/seasonal/nmme
+          cp dashboard-source/public/seasonal/c3s/index.html site/seasonal/c3s/index.html
+          cp dashboard-source/public/seasonal/nmme/index.html site/seasonal/nmme/index.html
 
           case "$SOURCE_WORKFLOW" in
             "WeatherNext Runner"|"WeatherNext Runner Custom")
@@ -162,21 +191,5 @@ jobs:
               mkdir -p site/seasonal/cansips
               cp -R "$payload_root/cansips/." site/seasonal/cansips/
               cp "$payload_root/cansips_manifest.json" site/seasonal/cansips_manifest.json
-              ;;
-            *)
-              echo "Unsupported workflow_run source: $SOURCE_WORKFLOW" >&2
-              exit 1
-              ;;
-          esac
-
-          rm -rf site/.git
-
-      - name: Publish the merged Pages tree
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./site
-          publish_branch: gh-pages
-          keep_files: false
-          force_orphan: false
-          enable_jekyll: false
+              if [ -d "$payload_root/common_reference" ]; then
+                mkdir -p si

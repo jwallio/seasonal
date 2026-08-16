@@ -132,6 +132,7 @@ jobs:
             --manifest public/seasonal/cansips_manifest.json \
             --previous-manifest .cache/cansips/previous_manifest.json \
             --retain-runs 4 \
+            --common-reference-dir public/seasonal/common_reference/1991-2020 \
             --wgrib2 "$CANSIPS_WGRIB2" \
             --request-delay 1.0
 
@@ -147,6 +148,10 @@ jobs:
           mkdir -p pages-payload/cansips
           cp -R public/seasonal/cansips/. pages-payload/cansips/
           cp public/seasonal/cansips_manifest.json pages-payload/cansips_manifest.json
+          if [ -d public/seasonal/common_reference/1991-2020 ]; then
+            mkdir -p pages-payload/common_reference/1991-2020
+            cp -R public/seasonal/common_reference/1991-2020/. pages-payload/common_reference/1991-2020/
+          fi
 
       - name: Upload CanSIPS Pages payload
         if: success()
