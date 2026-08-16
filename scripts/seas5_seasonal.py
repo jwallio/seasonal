@@ -486,34 +486,59 @@ def grid_from_grib(path: Path, product: dict[str, Any], target: str, lead: int) 
     except ImportError as exc:  # pragma: no cover - environment contract
         raise SEAS5Error("SEAS5 rendering requires xarray and cfgrib") from exc
 
+    # C3S pressure-level GRIBs can contain more than one valid hypercube.  A
+    # plain xarray.open_dataset call may therefore select only a coordinate
+    # group (or fail before exposing the geopotential field).  open_datasets
+    # asks cfgrib to discover each valid group, which is important for the
+    # raw monthly geopotential files used by the C3S/JMA contour overlay.
     backend_attempts = (
         {"filter_by_keys": {"dataType": "em"}, "time_dims": ("forecastMonth", "time")},
         {"time_dims": ("forecastMonth", "time")},
         {"filter_by_keys": {"dataType": "em"}},
+        {"filter_by_keys": {"typeOfLevel": "isobaricInhPa", "level": 500}},
+        {"filter_by_keys": {"shortName": "gh"}},
+        {"filter_by_keys": {"shortName": "z"}},
         {},
     )
     dataset = None
     errors: list[str] = []
     for backend_kwargs in backend_attempts:
+        backend_kwargs = {**backend_kwargs, "indexpath": ""}
+        candidates: list[Any] = []
         try:
-            candidate = xr.open_dataset(path, engine="cfgrib", backend_kwargs=backend_kwargs)
-            candidate.load()
-            dataset = candidate
-            break
+            import cfgrib
+
+            candidates = list(cfgrib.open_datasets(path, backend_kwargs=backend_kwargs))
         except Exception as exc:
-            errors.append(str(exc))
+            errors.append(f"cfgrib.open_datasets: {exc}")
             try:
-                candidate.close()
-            except Exception:
-                pass
+                candidates = [xr.open_dataset(path, engine="cfgrib", backend_kwargs=backend_kwargs)]
+            except Exception as fallback_exc:
+                errors.append(f"xarray.open_dataset: {fallback_exc}")
+                candidates = []
+
+        for candidate in candidates:
+            try:
+                candidate.load()
+                if list(candidate.data_vars):
+                    dataset = candidate
+                    break
+                errors.append(f"{path.name}: candidate contains no data variable")
+            except Exception as exc:
+                errors.append(str(exc))
+            if dataset is not candidate:
+                try:
+                    candidate.close()
+                except Exception:
+                    pass
+        if dataset is not None:
+            break
     if dataset is None:
         detail = errors[-1] if errors else "unknown cfgrib error"
         raise SEAS5Error(f"could not decode CDS GRIB {path.name}: {detail}")
 
     try:
         variables = list(dataset.data_vars)
-        if not variables:
-            raise SEAS5Error(f"CDS GRIB {path.name} contains no data variable")
         data = dataset[variables[0]]
         data = _select_forecast_month(data, lead).squeeze(drop=True)
         latitude_name = _coord_name(data, ("latitude", "lat"))
