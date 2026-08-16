@@ -14,6 +14,8 @@ provider is late or a historical cycle needs to be regenerated.
 | ECMWF SEAS5 | ECMWF 7-month forecast on the 5th at 12:00 | 5th of each month at 15:30 |
 | C3S multi-system | Non-ECMWF systems on the 10th at 12:00 | 10th of each month at 15:30 |
 | JMA / MRI-CPS4 | JMA is a non-ECMWF C3S component | 10th of each month at 15:30 |
+| APCC MME | APCC seasonal MME around the middle of the month | 16th of each month at 16:30 |
+| NASA GEOS-S2S-3 | Public seasonal chart inventory during the first week | 6th of each month at 16:30 |
 
 The central `publish-pages.yml` workflow already serializes Pages updates with
 `cancel-in-progress: false`, so simultaneous model releases do not overwrite
@@ -27,3 +29,5 @@ load; the dates above are release-aligned targets, not provider SLAs.
 - [ECCC CanSIPS global forecast service](https://eccc-scenarios.collab.science.gc.ca/?page=cansips-global)
 - [NOAA CPC NMME User's Guide](https://www.cpc.ncep.noaa.gov/products/NMME/users_guide.html)
 - [NOAA NOMADS](https://nomads.ncep.noaa.gov/)
+- [APCC CLIK API](https://apcc21.org/clik/clikapi?lang=en)
+- [NASA GEOS-S2S-3 seasonal forecasts](https://gmao.gsfc.nasa.gov/seasonal-forecasts/seasonal-decadal-analysis-prediction-v3/)
