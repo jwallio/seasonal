@@ -25,9 +25,9 @@ on:
         default: "latest"
         type: string
       target_window:
-        description: "Viewer label offsets (DJF default: 4,5,6)"
+        description: "Fallback offsets; APCC NetCDF season metadata is authoritative"
         required: false
-        default: "4,5,6"
+        default: "0,1,2"
         type: string
       dataset:
         description: "APCC dataset horizon"
@@ -40,7 +40,7 @@ on:
       resolution:
         description: "APCC grid resolution"
         required: false
-        default: "1.0"
+        default: "2.5"
         type: choice
         options:
           - "1.0"
@@ -56,10 +56,10 @@ jobs:
     env:
       APCC_PRODUCT: ${{ inputs.product || 'all' }}
       APCC_INIT: ${{ inputs.init || 'latest' }}
-      TARGET_WINDOW: ${{ inputs.target_window || '4,5,6' }}
+      TARGET_WINDOW: ${{ inputs.target_window || '0,1,2' }}
       APCC_DATASET: ${{ inputs.dataset || 'MME_3MONTH' }}
       APCC_LEAD_MONTH: ${{ inputs.dataset == 'MME_6MONTH' && '6-MON' || '3-MON' }}
-      APCC_RESOLUTION: ${{ inputs.resolution || '1.0' }}
+      APCC_RESOLUTION: ${{ inputs.resolution || '2.5' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
