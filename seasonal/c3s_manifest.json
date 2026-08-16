@@ -1,0 +1,1045 @@
+{
+  "schema_version": 1,
+  "kind": "c3s_seasonal_manifest",
+  "generated_utc": "2026-08-16T02:40:29Z",
+  "source": "Copernicus C3S seasonal forecasts",
+  "source_url": "https://climate.copernicus.eu/seasonal-forecasts",
+  "source_urls": [
+    "https://climate.copernicus.eu/seasonal-forecasts",
+    "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-pressure-levels",
+    "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-single-levels"
+  ],
+  "product_labels": {
+    "500mb_height_anomaly": "500-mb Height Anomaly",
+    "850mb_temperature_anomaly": "850-mb Temperature Anomaly",
+    "2m_temperature_anomaly": "2-m Temperature Anomaly",
+    "precipitation_anomaly": "Precipitation Anomaly",
+    "sea_surface_temperature_anomaly": "Sea-Surface Temperature Anomaly",
+    "mslp_anomaly": "MSLP Anomaly"
+  },
+  "retention": {
+    "max_cycles": 4,
+    "history_cycles": 3
+  },
+  "runs": [
+    {
+      "id": "c3s-ukmo-2026080100-500mb_height_anomaly",
+      "model": "C3S UK Met Office",
+      "component": "ukmo",
+      "component_label": "UK Met Office",
+      "components": [
+        "ukmo"
+      ],
+      "originating_centre": "ukmo",
+      "system": "604",
+      "source": "Copernicus C3S / UK Met Office",
+      "source_url": "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-pressure-levels",
+      "source_urls": [
+        "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-pressure-levels",
+        "https://cds.climate.copernicus.eu/datasets/seasonal-monthly-pressure-levels"
+      ],
+      "archive_root": "https://cds.climate.copernicus.eu/api",
+      "source_datasets": [
+        "seasonal-postprocessed-pressure-levels",
+        "seasonal-monthly-pressure-levels"
+      ],
+      "product": "500mb_height_anomaly",
+      "variable": "z500",
+      "init_utc": "2026-08-01T00:00:00Z",
+      "statistic": "ensemble_mean",
+      "ensemble_scope": "UK Met Office/System 604 ensemble",
+      "ensemble_members": 62,
+      "aggregation": "official C3S monthly ensemble-mean anomaly",
+      "field": "z500_anomaly",
+      "units": "m",
+      "raw_field": "geopotential anomaly",
+      "raw_units": "m\u00b2 s\u207b\u00b2",
+      "baseline": {
+        "status": "official_postprocessed",
+        "source": "C3S native bias-adjusted anomaly"
+      },
+      "climatology": {
+        "status": "not_used",
+        "method": "native C3S postprocessed anomaly"
+      },
+      "targets": [
+        {
+          "id": "c3s-ukmo-2026080100-500mb_height_anomaly-lead04",
+          "target_month": "202612",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-01-01T00:00:00Z",
+          "lead_month": 4,
+          "field": "z500_anomaly",
+          "units": "m",
+          "statistic": "ensemble_mean",
+          "status": "failed",
+          "error": "C3S request failed for ukmo/604 geopotential_anomaly lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/processes/seasonal-postprocessed-pressure-levels/execution\ninvalid request\nRequest has not produced a valid combination of values, please check your selection.\n{'area': ['90.0', '-170.0', '15.0', '0.0'], 'data_format': ['grib'], 'leadtime_month': ['4'], 'month': ['08'], 'originating_centre': ['ukmo'], 'pressure_level': ['500'], 'product_type': ['ensemble_mean'], 'system': ['604'], 'variable': ['geopotential_anomaly'], 'year': ['2026']}"
+        },
+        {
+          "id": "c3s-ukmo-2026080100-500mb_height_anomaly-lead05",
+          "target_month": "202701",
+          "valid_start_utc": "2027-01-01T00:00:00Z",
+          "valid_end_utc": "2027-02-01T00:00:00Z",
+          "lead_month": 5,
+          "field": "z500_anomaly",
+          "units": "m",
+          "statistic": "ensemble_mean",
+          "status": "failed",
+          "error": "C3S request failed for ukmo/604 geopotential_anomaly lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/processes/seasonal-postprocessed-pressure-levels/execution\ninvalid request\nRequest has not produced a valid combination of values, please check your selection.\n{'area': ['90.0', '-170.0', '15.0', '0.0'], 'data_format': ['grib'], 'leadtime_month': ['5'], 'month': ['08'], 'originating_centre': ['ukmo'], 'pressure_level': ['500'], 'product_type': ['ensemble_mean'], 'system': ['604'], 'variable': ['geopotential_anomaly'], 'year': ['2026']}"
+        },
+        {
+          "id": "c3s-ukmo-2026080100-500mb_height_anomaly-lead06",
+          "target_month": "202702",
+          "valid_start_utc": "2027-02-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": 6,
+          "field": "z500_anomaly",
+          "units": "m",
+          "statistic": "ensemble_mean",
+          "status": "failed",
+          "error": "C3S request failed for ukmo/604 geopotential_anomaly lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/processes/seasonal-postprocessed-pressure-levels/execution\ninvalid request\nRequest has not produced a valid combination of values, please check your selection.\n{'area': ['90.0', '-170.0', '15.0', '0.0'], 'data_format': ['grib'], 'leadtime_month': ['6'], 'month': ['08'], 'originating_centre': ['ukmo'], 'pressure_level': ['500'], 'product_type': ['ensemble_mean'], 'system': ['604'], 'variable': ['geopotential_anomaly'], 'year': ['2026']}"
+        },
+        {
+          "id": "c3s-ukmo-2026080100-500mb_height_anomaly-202612-202702",
+          "target_month": "202612-202702",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": "4\u20136",
+          "monthly_leads": [
+            4,
+            5,
+            6
+          ],
+          "field": "z500_anomaly",
+          "units": "m",
+          "statistic": "ensemble_mean",
+          "status": "failed",
+          "error": "seasonal window is missing one or more component grids"
+        }
+      ],
+      "status": "failed",
+      "output_dir": "public/seasonal/c3s"
+    },
+    {
+      "id": "c3s-ncep-2026080100-500mb_height_anomaly",
+      "model": "C3S NCEP",
+      "component": "ncep",
+      "component_label": "NCEP",
+      "components": [
+        "ncep"
+      ],
+      "originating_centre": "ncep",
+      "system": "2",
+      "source": "Copernicus C3S / NCEP",
+      "source_url": "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-pressure-levels",
+      "source_urls": [
+        "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-pressure-levels",
+        "https://cds.climate.copernicus.eu/datasets/seasonal-monthly-pressure-levels"
+      ],
+      "archive_root": "https://cds.climate.copernicus.eu/api",
+      "source_datasets": [
+        "seasonal-postprocessed-pressure-levels",
+        "seasonal-monthly-pressure-levels"
+      ],
+      "product": "500mb_height_anomaly",
+      "variable": "z500",
+      "init_utc": "2026-08-01T00:00:00Z",
+      "statistic": "ensemble_mean",
+      "ensemble_scope": "NCEP/System 2 ensemble",
+      "ensemble_members": 24,
+      "aggregation": "official C3S monthly ensemble-mean anomaly",
+      "field": "z500_anomaly",
+      "units": "m",
+      "raw_field": "geopotential anomaly",
+      "raw_units": "m\u00b2 s\u207b\u00b2",
+      "baseline": {
+        "status": "official_postprocessed",
+        "source": "C3S native bias-adjusted anomaly"
+      },
+      "climatology": {
+        "status": "not_used",
+        "method": "native C3S postprocessed anomaly"
+      },
+      "targets": [
+        {
+          "id": "c3s-ncep-2026080100-500mb_height_anomaly-lead04",
+          "target_month": "202612",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-01-01T00:00:00Z",
+          "lead_month": 4,
+          "field": "z500_anomaly",
+          "units": "m",
+          "statistic": "ensemble_mean",
+          "status": "failed",
+          "source_file": ".cache/c3s/cds/ncep_2_seasonal_postprocessed_pressure_levels_geopotential_anomaly_202608_anom_l04/field.grib",
+          "error": "could not decode C3S raw geopotential field.grib: CDS GRIB field.grib contains no data variable"
+        },
+        {
+          "id": "c3s-ncep-2026080100-500mb_height_anomaly-lead05",
+          "target_month": "202701",
+          "valid_start_utc": "2027-01-01T00:00:00Z",
+          "valid_end_utc": "2027-02-01T00:00:00Z",
+          "lead_month": 5,
+          "field": "z500_anomaly",
+          "units": "m",
+          "statistic": "ensemble_mean",
+          "status": "failed",
+          "source_file": ".cache/c3s/cds/ncep_2_seasonal_postprocessed_pressure_levels_geopotential_anomaly_202608_anom_l05/field.grib",
+          "error": "could not decode C3S raw geopotential field.grib: CDS GRIB field.grib contains no data variable"
+        },
+        {
+          "id": "c3s-ncep-2026080100-500mb_height_anomaly-lead06",
+          "target_month": "202702",
+          "valid_start_utc": "2027-02-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": 6,
+          "field": "z500_anomaly",
+          "units": "m",
+          "statistic": "ensemble_mean",
+          "status": "failed",
+          "source_file": ".cache/c3s/cds/ncep_2_seasonal_postprocessed_pressure_levels_geopotential_anomaly_202608_anom_l06/field.grib",
+          "error": "could not decode C3S raw geopotential field.grib: CDS GRIB field.grib contains no data variable"
+        },
+        {
+          "id": "c3s-ncep-2026080100-500mb_height_anomaly-202612-202702",
+          "target_month": "202612-202702",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": "4\u20136",
+          "monthly_leads": [
+            4,
+            5,
+            6
+          ],
+          "field": "z500_anomaly",
+          "units": "m",
+          "statistic": "ensemble_mean",
+          "status": "rendered",
+          "image": "public/seasonal/c3s/20260801/c3s_ncep_z500_202612-202702.jpg"
+        }
+      ],
+      "status": "partial",
+      "output_dir": "public/seasonal/c3s"
+    },
+    {
+      "id": "c3s-multisystem-2026080100-500mb_height_anomaly",
+      "model": "C3S multi-system",
+      "component": "multisystem",
+      "component_label": "multi-system",
+      "components": [
+        "ecmwf",
+        "ukmo",
+        "meteo_france",
+        "dwd",
+        "cmcc",
+        "ncep",
+        "jma",
+        "eccc",
+        "bom"
+      ],
+      "originating_centre": "multi-system",
+      "system": "multiple",
+      "source": "Copernicus C3S / multi-system",
+      "source_url": "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-pressure-levels",
+      "source_urls": [
+        "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-pressure-levels",
+        "https://cds.climate.copernicus.eu/datasets/seasonal-monthly-pressure-levels"
+      ],
+      "archive_root": "https://cds.climate.copernicus.eu/api",
+      "source_datasets": [
+        "seasonal-postprocessed-pressure-levels",
+        "seasonal-monthly-pressure-levels"
+      ],
+      "product": "500mb_height_anomaly",
+      "variable": "z500",
+      "init_utc": "2026-08-01T00:00:00Z",
+      "statistic": "multi-system mean of native ensemble-mean anomalies",
+      "ensemble_scope": "C3S multi-system blend",
+      "ensemble_members": null,
+      "aggregation": "official C3S monthly ensemble-mean anomaly",
+      "field": "z500_anomaly",
+      "units": "m",
+      "raw_field": "geopotential anomaly",
+      "raw_units": "m\u00b2 s\u207b\u00b2",
+      "baseline": {
+        "status": "official_postprocessed",
+        "source": "C3S native bias-adjusted anomaly"
+      },
+      "climatology": {
+        "status": "not_used",
+        "method": "native C3S postprocessed anomaly"
+      },
+      "targets": [
+        {
+          "id": "c3s-multisystem-2026080100-500mb_height_anomaly-lead04",
+          "target_month": "202612",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-01-01T00:00:00Z",
+          "lead_month": 4,
+          "field": "z500_anomaly",
+          "units": "m",
+          "statistic": "multi-system mean of native ensemble-mean anomalies",
+          "status": "rendered",
+          "image": "public/seasonal/c3s/20260801/c3s_multisystem_z500_202612.jpg"
+        },
+        {
+          "id": "c3s-multisystem-2026080100-500mb_height_anomaly-lead05",
+          "target_month": "202701",
+          "valid_start_utc": "2027-01-01T00:00:00Z",
+          "valid_end_utc": "2027-02-01T00:00:00Z",
+          "lead_month": 5,
+          "field": "z500_anomaly",
+          "units": "m",
+          "statistic": "multi-system mean of native ensemble-mean anomalies",
+          "status": "rendered",
+          "image": "public/seasonal/c3s/20260801/c3s_multisystem_z500_202701.jpg"
+        },
+        {
+          "id": "c3s-multisystem-2026080100-500mb_height_anomaly-lead06",
+          "target_month": "202702",
+          "valid_start_utc": "2027-02-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": 6,
+          "field": "z500_anomaly",
+          "units": "m",
+          "statistic": "multi-system mean of native ensemble-mean anomalies",
+          "status": "rendered",
+          "image": "public/seasonal/c3s/20260801/c3s_multisystem_z500_202702.jpg"
+        },
+        {
+          "id": "c3s-multisystem-2026080100-500mb_height_anomaly-202612-202702",
+          "target_month": "202612-202702",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": "4\u20136",
+          "monthly_leads": [
+            4,
+            5,
+            6
+          ],
+          "field": "z500_anomaly",
+          "units": "m",
+          "statistic": "multi-system mean of native ensemble-mean anomalies",
+          "status": "rendered",
+          "image": "public/seasonal/c3s/20260801/c3s_multisystem_z500_202612-202702.jpg"
+        }
+      ],
+      "status": "rendered",
+      "output_dir": "public/seasonal/c3s",
+      "available_components": [
+        "ecmwf",
+        "meteo_france",
+        "dwd",
+        "cmcc",
+        "ncep",
+        "eccc",
+        "bom"
+      ],
+      "component_count": 7
+    },
+    {
+      "id": "c3s-meteo_france-2026080100-500mb_height_anomaly",
+      "model": "C3S M\u00e9t\u00e9o-France",
+      "component": "meteo_france",
+      "component_label": "M\u00e9t\u00e9o-France",
+      "components": [
+        "meteo_france"
+      ],
+      "originating_centre": "meteo_france",
+      "system": "9",
+      "source": "Copernicus C3S / M\u00e9t\u00e9o-France",
+      "source_url": "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-pressure-levels",
+      "source_urls": [
+        "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-pressure-levels",
+        "https://cds.climate.copernicus.eu/datasets/seasonal-monthly-pressure-levels"
+      ],
+      "archive_root": "https://cds.climate.copernicus.eu/api",
+      "source_datasets": [
+        "seasonal-postprocessed-pressure-levels",
+        "seasonal-monthly-pressure-levels"
+      ],
+      "product": "500mb_height_anomaly",
+      "variable": "z500",
+      "init_utc": "2026-08-01T00:00:00Z",
+      "statistic": "ensemble_mean",
+      "ensemble_scope": "M\u00e9t\u00e9o-France/System 9 ensemble",
+      "ensemble_members": 51,
+      "aggregation": "official C3S monthly ensemble-mean anomaly",
+      "field": "z500_anomaly",
+      "units": "m",
+      "raw_field": "geopotential anomaly",
+      "raw_units": "m\u00b2 s\u207b\u00b2",
+      "baseline": {
+        "status": "official_postprocessed",
+        "source": "C3S native bias-adjusted anomaly"
+      },
+      "climatology": {
+        "status": "not_used",
+        "method": "native C3S postprocessed anomaly"
+      },
+      "targets": [
+        {
+          "id": "c3s-meteo_france-2026080100-500mb_height_anomaly-lead04",
+          "target_month": "202612",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-01-01T00:00:00Z",
+          "lead_month": 4,
+          "field": "z500_anomaly",
+          "units": "m",
+          "statistic": "ensemble_mean",
+          "status": "failed",
+          "source_file": ".cache/c3s/cds/meteo_france_9_seasonal_postprocessed_pressure_levels_geopotential_anomaly_202608_anom_l04/field.grib",
+          "error": "could not decode C3S raw geopotential field.grib: CDS GRIB field.grib contains no data variable"
+        },
+        {
+          "id": "c3s-meteo_france-2026080100-500mb_height_anomaly-lead05",
+          "target_month": "202701",
+          "valid_start_utc": "2027-01-01T00:00:00Z",
+          "valid_end_utc": "2027-02-01T00:00:00Z",
+          "lead_month": 5,
+          "field": "z500_anomaly",
+          "units": "m",
+          "statistic": "ensemble_mean",
+          "status": "failed",
+          "source_file": ".cache/c3s/cds/meteo_france_9_seasonal_postprocessed_pressure_levels_geopotential_anomaly_202608_anom_l05/field.grib",
+          "error": "could not decode C3S raw geopotential field.grib: CDS GRIB field.grib contains no data variable"
+        },
+        {
+          "id": "c3s-meteo_france-2026080100-500mb_height_anomaly-lead06",
+          "target_month": "202702",
+          "valid_start_utc": "2027-02-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": 6,
+          "field": "z500_anomaly",
+          "units": "m",
+          "statistic": "ensemble_mean",
+          "status": "failed",
+          "source_file": ".cache/c3s/cds/meteo_france_9_seasonal_postprocessed_pressure_levels_geopotential_anomaly_202608_anom_l06/field.grib",
+          "error": "could not decode C3S raw geopotential field.grib: CDS GRIB field.grib contains no data variable"
+        },
+        {
+          "id": "c3s-meteo_france-2026080100-500mb_height_anomaly-202612-202702",
+          "target_month": "202612-202702",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": "4\u20136",
+          "monthly_leads": [
+            4,
+            5,
+            6
+          ],
+          "field": "z500_anomaly",
+          "units": "m",
+          "statistic": "ensemble_mean",
+          "status": "rendered",
+          "image": "public/seasonal/c3s/20260801/c3s_meteo_france_z500_202612-202702.jpg"
+        }
+      ],
+      "status": "partial",
+      "output_dir": "public/seasonal/c3s"
+    },
+    {
+      "id": "c3s-jma-2026080100-500mb_height_anomaly",
+      "model": "C3S JMA",
+      "component": "jma",
+      "component_label": "JMA",
+      "components": [
+        "jma"
+      ],
+      "originating_centre": "jma",
+      "system": "2",
+      "source": "Copernicus C3S / JMA",
+      "source_url": "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-pressure-levels",
+      "source_urls": [
+        "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-pressure-levels",
+        "https://cds.climate.copernicus.eu/datasets/seasonal-monthly-pressure-levels"
+      ],
+      "archive_root": "https://cds.climate.copernicus.eu/api",
+      "source_datasets": [
+        "seasonal-postprocessed-pressure-levels",
+        "seasonal-monthly-pressure-levels"
+      ],
+      "product": "500mb_height_anomaly",
+      "variable": "z500",
+      "init_utc": "2026-08-01T00:00:00Z",
+      "statistic": "ensemble_mean",
+      "ensemble_scope": "JMA/System 2 ensemble",
+      "ensemble_members": 28,
+      "aggregation": "official C3S monthly ensemble-mean anomaly",
+      "field": "z500_anomaly",
+      "units": "m",
+      "raw_field": "geopotential anomaly",
+      "raw_units": "m\u00b2 s\u207b\u00b2",
+      "baseline": {
+        "status": "official_postprocessed",
+        "source": "C3S native bias-adjusted anomaly"
+      },
+      "climatology": {
+        "status": "not_used",
+        "method": "native C3S postprocessed anomaly"
+      },
+      "targets": [
+        {
+          "id": "c3s-jma-2026080100-500mb_height_anomaly-lead04",
+          "target_month": "202612",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-01-01T00:00:00Z",
+          "lead_month": 4,
+          "field": "z500_anomaly",
+          "units": "m",
+          "statistic": "ensemble_mean",
+          "status": "failed",
+          "error": "C3S request failed for jma/2 geopotential_anomaly lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/processes/seasonal-postprocessed-pressure-levels/execution\ninvalid request\nRequest has not produced a valid combination of values, please check your selection.\n{'area': ['90.0', '-170.0', '15.0', '0.0'], 'data_format': ['grib'], 'leadtime_month': ['4'], 'month': ['08'], 'originating_centre': ['jma'], 'pressure_level': ['500'], 'product_type': ['ensemble_mean'], 'system': ['2'], 'variable': ['geopotential_anomaly'], 'year': ['2026']}"
+        },
+        {
+          "id": "c3s-jma-2026080100-500mb_height_anomaly-lead05",
+          "target_month": "202701",
+          "valid_start_utc": "2027-01-01T00:00:00Z",
+          "valid_end_utc": "2027-02-01T00:00:00Z",
+          "lead_month": 5,
+          "field": "z500_anomaly",
+          "units": "m",
+          "statistic": "ensemble_mean",
+          "status": "failed",
+          "error": "C3S request failed for jma/2 geopotential_anomaly lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/processes/seasonal-postprocessed-pressure-levels/execution\ninvalid request\nRequest has not produced a valid combination of values, please check your selection.\n{'area': ['90.0', '-170.0', '15.0', '0.0'], 'data_format': ['grib'], 'leadtime_month': ['5'], 'month': ['08'], 'originating_centre': ['jma'], 'pressure_level': ['500'], 'product_type': ['ensemble_mean'], 'system': ['2'], 'variable': ['geopotential_anomaly'], 'year': ['2026']}"
+        },
+        {
+          "id": "c3s-jma-2026080100-500mb_height_anomaly-lead06",
+          "target_month": "202702",
+          "valid_start_utc": "2027-02-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": 6,
+          "field": "z500_anomaly",
+          "units": "m",
+          "statistic": "ensemble_mean",
+          "status": "failed",
+          "error": "C3S request failed for jma/2 geopotential_anomaly lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/processes/seasonal-postprocessed-pressure-levels/execution\ninvalid request\nRequest has not produced a valid combination of values, please check your selection.\n{'area': ['90.0', '-170.0', '15.0', '0.0'], 'data_format': ['grib'], 'leadtime_month': ['6'], 'month': ['08'], 'originating_centre': ['jma'], 'pressure_level': ['500'], 'product_type': ['ensemble_mean'], 'system': ['2'], 'variable': ['geopotential_anomaly'], 'year': ['2026']}"
+        },
+        {
+          "id": "c3s-jma-2026080100-500mb_height_anomaly-202612-202702",
+          "target_month": "202612-202702",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": "4\u20136",
+          "monthly_leads": [
+            4,
+            5,
+            6
+          ],
+          "field": "z500_anomaly",
+          "units": "m",
+          "statistic": "ensemble_mean",
+          "status": "failed",
+          "error": "seasonal window is missing one or more component grids"
+        }
+      ],
+      "status": "failed",
+      "output_dir": "public/seasonal/c3s"
+    },
+    {
+      "id": "c3s-ecmwf-2026080100-500mb_height_anomaly",
+      "model": "C3S ECMWF",
+      "component": "ecmwf",
+      "component_label": "ECMWF",
+      "components": [
+        "ecmwf"
+      ],
+      "originating_centre": "ecmwf",
+      "system": "51",
+      "source": "Copernicus C3S / ECMWF",
+      "source_url": "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-pressure-levels",
+      "source_urls": [
+        "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-pressure-levels",
+        "https://cds.climate.copernicus.eu/datasets/seasonal-monthly-pressure-levels"
+      ],
+      "archive_root": "https://cds.climate.copernicus.eu/api",
+      "source_datasets": [
+        "seasonal-postprocessed-pressure-levels",
+        "seasonal-monthly-pressure-levels"
+      ],
+      "product": "500mb_height_anomaly",
+      "variable": "z500",
+      "init_utc": "2026-08-01T00:00:00Z",
+      "statistic": "ensemble_mean",
+      "ensemble_scope": "ECMWF/System 51 ensemble",
+      "ensemble_members": 51,
+      "aggregation": "official C3S monthly ensemble-mean anomaly",
+      "field": "z500_anomaly",
+      "units": "m",
+      "raw_field": "geopotential anomaly",
+      "raw_units": "m\u00b2 s\u207b\u00b2",
+      "baseline": {
+        "status": "official_postprocessed",
+        "source": "C3S native bias-adjusted anomaly"
+      },
+      "climatology": {
+        "status": "not_used",
+        "method": "native C3S postprocessed anomaly"
+      },
+      "targets": [
+        {
+          "id": "c3s-ecmwf-2026080100-500mb_height_anomaly-lead04",
+          "target_month": "202612",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-01-01T00:00:00Z",
+          "lead_month": 4,
+          "field": "z500_anomaly",
+          "units": "m",
+          "statistic": "ensemble_mean",
+          "status": "failed",
+          "source_file": ".cache/c3s/cds/ecmwf_51_seasonal_postprocessed_pressure_levels_geopotential_anomaly_202608_anom_l04/field.grib",
+          "error": "could not decode C3S raw geopotential field.grib: CDS GRIB field.grib contains no data variable"
+        },
+        {
+          "id": "c3s-ecmwf-2026080100-500mb_height_anomaly-lead05",
+          "target_month": "202701",
+          "valid_start_utc": "2027-01-01T00:00:00Z",
+          "valid_end_utc": "2027-02-01T00:00:00Z",
+          "lead_month": 5,
+          "field": "z500_anomaly",
+          "units": "m",
+          "statistic": "ensemble_mean",
+          "status": "failed",
+          "source_file": ".cache/c3s/cds/ecmwf_51_seasonal_postprocessed_pressure_levels_geopotential_anomaly_202608_anom_l05/field.grib",
+          "error": "could not decode C3S raw geopotential field.grib: CDS GRIB field.grib contains no data variable"
+        },
+        {
+          "id": "c3s-ecmwf-2026080100-500mb_height_anomaly-lead06",
+          "target_month": "202702",
+          "valid_start_utc": "2027-02-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": 6,
+          "field": "z500_anomaly",
+          "units": "m",
+          "statistic": "ensemble_mean",
+          "status": "failed",
+          "source_file": ".cache/c3s/cds/ecmwf_51_seasonal_postprocessed_pressure_levels_geopotential_anomaly_202608_anom_l06/field.grib",
+          "error": "could not decode C3S raw geopotential field.grib: CDS GRIB field.grib contains no data variable"
+        },
+        {
+          "id": "c3s-ecmwf-2026080100-500mb_height_anomaly-202612-202702",
+          "target_month": "202612-202702",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": "4\u20136",
+          "monthly_leads": [
+            4,
+            5,
+            6
+          ],
+          "field": "z500_anomaly",
+          "units": "m",
+          "statistic": "ensemble_mean",
+          "status": "rendered",
+          "image": "public/seasonal/c3s/20260801/c3s_ecmwf_z500_202612-202702.jpg"
+        }
+      ],
+      "status": "partial",
+      "output_dir": "public/seasonal/c3s"
+    },
+    {
+      "id": "c3s-eccc-2026080100-500mb_height_anomaly",
+      "model": "C3S ECCC",
+      "component": "eccc",
+      "component_label": "ECCC",
+      "components": [
+        "eccc"
+      ],
+      "originating_centre": "eccc",
+      "system": "5",
+      "source": "Copernicus C3S / ECCC",
+      "source_url": "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-pressure-levels",
+      "source_urls": [
+        "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-pressure-levels",
+        "https://cds.climate.copernicus.eu/datasets/seasonal-monthly-pressure-levels"
+      ],
+      "archive_root": "https://cds.climate.copernicus.eu/api",
+      "source_datasets": [
+        "seasonal-postprocessed-pressure-levels",
+        "seasonal-monthly-pressure-levels"
+      ],
+      "product": "500mb_height_anomaly",
+      "variable": "z500",
+      "init_utc": "2026-08-01T00:00:00Z",
+      "statistic": "ensemble_mean",
+      "ensemble_scope": "ECCC/System 5 ensemble",
+      "ensemble_members": 20,
+      "aggregation": "official C3S monthly ensemble-mean anomaly",
+      "field": "z500_anomaly",
+      "units": "m",
+      "raw_field": "geopotential anomaly",
+      "raw_units": "m\u00b2 s\u207b\u00b2",
+      "baseline": {
+        "status": "official_postprocessed",
+        "source": "C3S native bias-adjusted anomaly"
+      },
+      "climatology": {
+        "status": "not_used",
+        "method": "native C3S postprocessed anomaly"
+      },
+      "targets": [
+        {
+          "id": "c3s-eccc-2026080100-500mb_height_anomaly-lead04",
+          "target_month": "202612",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-01-01T00:00:00Z",
+          "lead_month": 4,
+          "field": "z500_anomaly",
+          "units": "m",
+          "statistic": "ensemble_mean",
+          "status": "failed",
+          "source_file": ".cache/c3s/cds/eccc_5_seasonal_postprocessed_pressure_levels_geopotential_anomaly_202608_anom_l04/field.grib",
+          "error": "could not decode C3S raw geopotential field.grib: CDS GRIB field.grib contains no data variable"
+        },
+        {
+          "id": "c3s-eccc-2026080100-500mb_height_anomaly-lead05",
+          "target_month": "202701",
+          "valid_start_utc": "2027-01-01T00:00:00Z",
+          "valid_end_utc": "2027-02-01T00:00:00Z",
+          "lead_month": 5,
+          "field": "z500_anomaly",
+          "units": "m",
+          "statistic": "ensemble_mean",
+          "status": "failed",
+          "source_file": ".cache/c3s/cds/eccc_5_seasonal_postprocessed_pressure_levels_geopotential_anomaly_202608_anom_l05/field.grib",
+          "error": "could not decode C3S raw geopotential field.grib: CDS GRIB field.grib contains no data variable"
+        },
+        {
+          "id": "c3s-eccc-2026080100-500mb_height_anomaly-lead06",
+          "target_month": "202702",
+          "valid_start_utc": "2027-02-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": 6,
+          "field": "z500_anomaly",
+          "units": "m",
+          "statistic": "ensemble_mean",
+          "status": "failed",
+          "source_file": ".cache/c3s/cds/eccc_5_seasonal_postprocessed_pressure_levels_geopotential_anomaly_202608_anom_l06/field.grib",
+          "error": "could not decode C3S raw geopotential field.grib: CDS GRIB field.grib contains no data variable"
+        },
+        {
+          "id": "c3s-eccc-2026080100-500mb_height_anomaly-202612-202702",
+          "target_month": "202612-202702",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": "4\u20136",
+          "monthly_leads": [
+            4,
+            5,
+            6
+          ],
+          "field": "z500_anomaly",
+          "units": "m",
+          "statistic": "ensemble_mean",
+          "status": "rendered",
+          "image": "public/seasonal/c3s/20260801/c3s_eccc_z500_202612-202702.jpg"
+        }
+      ],
+      "status": "partial",
+      "output_dir": "public/seasonal/c3s"
+    },
+    {
+      "id": "c3s-dwd-2026080100-500mb_height_anomaly",
+      "model": "C3S DWD",
+      "component": "dwd",
+      "component_label": "DWD",
+      "components": [
+        "dwd"
+      ],
+      "originating_centre": "dwd",
+      "system": "22",
+      "source": "Copernicus C3S / DWD",
+      "source_url": "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-pressure-levels",
+      "source_urls": [
+        "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-pressure-levels",
+        "https://cds.climate.copernicus.eu/datasets/seasonal-monthly-pressure-levels"
+      ],
+      "archive_root": "https://cds.climate.copernicus.eu/api",
+      "source_datasets": [
+        "seasonal-postprocessed-pressure-levels",
+        "seasonal-monthly-pressure-levels"
+      ],
+      "product": "500mb_height_anomaly",
+      "variable": "z500",
+      "init_utc": "2026-08-01T00:00:00Z",
+      "statistic": "ensemble_mean",
+      "ensemble_scope": "DWD/System 22 ensemble",
+      "ensemble_members": 50,
+      "aggregation": "official C3S monthly ensemble-mean anomaly",
+      "field": "z500_anomaly",
+      "units": "m",
+      "raw_field": "geopotential anomaly",
+      "raw_units": "m\u00b2 s\u207b\u00b2",
+      "baseline": {
+        "status": "official_postprocessed",
+        "source": "C3S native bias-adjusted anomaly"
+      },
+      "climatology": {
+        "status": "not_used",
+        "method": "native C3S postprocessed anomaly"
+      },
+      "targets": [
+        {
+          "id": "c3s-dwd-2026080100-500mb_height_anomaly-lead04",
+          "target_month": "202612",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-01-01T00:00:00Z",
+          "lead_month": 4,
+          "field": "z500_anomaly",
+          "units": "m",
+          "statistic": "ensemble_mean",
+          "status": "failed",
+          "source_file": ".cache/c3s/cds/dwd_22_seasonal_postprocessed_pressure_levels_geopotential_anomaly_202608_anom_l04/field.grib",
+          "error": "could not decode C3S raw geopotential field.grib: CDS GRIB field.grib contains no data variable"
+        },
+        {
+          "id": "c3s-dwd-2026080100-500mb_height_anomaly-lead05",
+          "target_month": "202701",
+          "valid_start_utc": "2027-01-01T00:00:00Z",
+          "valid_end_utc": "2027-02-01T00:00:00Z",
+          "lead_month": 5,
+          "field": "z500_anomaly",
+          "units": "m",
+          "statistic": "ensemble_mean",
+          "status": "failed",
+          "source_file": ".cache/c3s/cds/dwd_22_seasonal_postprocessed_pressure_levels_geopotential_anomaly_202608_anom_l05/field.grib",
+          "error": "could not decode C3S raw geopotential field.grib: CDS GRIB field.grib contains no data variable"
+        },
+        {
+          "id": "c3s-dwd-2026080100-500mb_height_anomaly-lead06",
+          "target_month": "202702",
+          "valid_start_utc": "2027-02-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": 6,
+          "field": "z500_anomaly",
+          "units": "m",
+          "statistic": "ensemble_mean",
+          "status": "failed",
+          "source_file": ".cache/c3s/cds/dwd_22_seasonal_postprocessed_pressure_levels_geopotential_anomaly_202608_anom_l06/field.grib",
+          "error": "could not decode C3S raw geopotential field.grib: CDS GRIB field.grib contains no data variable"
+        },
+        {
+          "id": "c3s-dwd-2026080100-500mb_height_anomaly-202612-202702",
+          "target_month": "202612-202702",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": "4\u20136",
+          "monthly_leads": [
+            4,
+            5,
+            6
+          ],
+          "field": "z500_anomaly",
+          "units": "m",
+          "statistic": "ensemble_mean",
+          "status": "rendered",
+          "image": "public/seasonal/c3s/20260801/c3s_dwd_z500_202612-202702.jpg"
+        }
+      ],
+      "status": "partial",
+      "output_dir": "public/seasonal/c3s"
+    },
+    {
+      "id": "c3s-cmcc-2026080100-500mb_height_anomaly",
+      "model": "C3S CMCC",
+      "component": "cmcc",
+      "component_label": "CMCC",
+      "components": [
+        "cmcc"
+      ],
+      "originating_centre": "cmcc",
+      "system": "4",
+      "source": "Copernicus C3S / CMCC",
+      "source_url": "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-pressure-levels",
+      "source_urls": [
+        "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-pressure-levels",
+        "https://cds.climate.copernicus.eu/datasets/seasonal-monthly-pressure-levels"
+      ],
+      "archive_root": "https://cds.climate.copernicus.eu/api",
+      "source_datasets": [
+        "seasonal-postprocessed-pressure-levels",
+        "seasonal-monthly-pressure-levels"
+      ],
+      "product": "500mb_height_anomaly",
+      "variable": "z500",
+      "init_utc": "2026-08-01T00:00:00Z",
+      "statistic": "ensemble_mean",
+      "ensemble_scope": "CMCC/System 4 ensemble",
+      "ensemble_members": 50,
+      "aggregation": "official C3S monthly ensemble-mean anomaly",
+      "field": "z500_anomaly",
+      "units": "m",
+      "raw_field": "geopotential anomaly",
+      "raw_units": "m\u00b2 s\u207b\u00b2",
+      "baseline": {
+        "status": "official_postprocessed",
+        "source": "C3S native bias-adjusted anomaly"
+      },
+      "climatology": {
+        "status": "not_used",
+        "method": "native C3S postprocessed anomaly"
+      },
+      "targets": [
+        {
+          "id": "c3s-cmcc-2026080100-500mb_height_anomaly-lead04",
+          "target_month": "202612",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-01-01T00:00:00Z",
+          "lead_month": 4,
+          "field": "z500_anomaly",
+          "units": "m",
+          "statistic": "ensemble_mean",
+          "status": "failed",
+          "source_file": ".cache/c3s/cds/cmcc_4_seasonal_postprocessed_pressure_levels_geopotential_anomaly_202608_anom_l04/field.grib",
+          "error": "could not decode C3S raw geopotential field.grib: CDS GRIB field.grib contains no data variable"
+        },
+        {
+          "id": "c3s-cmcc-2026080100-500mb_height_anomaly-lead05",
+          "target_month": "202701",
+          "valid_start_utc": "2027-01-01T00:00:00Z",
+          "valid_end_utc": "2027-02-01T00:00:00Z",
+          "lead_month": 5,
+          "field": "z500_anomaly",
+          "units": "m",
+          "statistic": "ensemble_mean",
+          "status": "failed",
+          "source_file": ".cache/c3s/cds/cmcc_4_seasonal_postprocessed_pressure_levels_geopotential_anomaly_202608_anom_l05/field.grib",
+          "error": "could not decode C3S raw geopotential field.grib: CDS GRIB field.grib contains no data variable"
+        },
+        {
+          "id": "c3s-cmcc-2026080100-500mb_height_anomaly-lead06",
+          "target_month": "202702",
+          "valid_start_utc": "2027-02-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": 6,
+          "field": "z500_anomaly",
+          "units": "m",
+          "statistic": "ensemble_mean",
+          "status": "failed",
+          "source_file": ".cache/c3s/cds/cmcc_4_seasonal_postprocessed_pressure_levels_geopotential_anomaly_202608_anom_l06/field.grib",
+          "error": "could not decode C3S raw geopotential field.grib: CDS GRIB field.grib contains no data variable"
+        },
+        {
+          "id": "c3s-cmcc-2026080100-500mb_height_anomaly-202612-202702",
+          "target_month": "202612-202702",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": "4\u20136",
+          "monthly_leads": [
+            4,
+            5,
+            6
+          ],
+          "field": "z500_anomaly",
+          "units": "m",
+          "statistic": "ensemble_mean",
+          "status": "rendered",
+          "image": "public/seasonal/c3s/20260801/c3s_cmcc_z500_202612-202702.jpg"
+        }
+      ],
+      "status": "partial",
+      "output_dir": "public/seasonal/c3s"
+    },
+    {
+      "id": "c3s-bom-2026080100-500mb_height_anomaly",
+      "model": "C3S BOM",
+      "component": "bom",
+      "component_label": "BOM",
+      "components": [
+        "bom"
+      ],
+      "originating_centre": "bom",
+      "system": "2",
+      "source": "Copernicus C3S / BOM",
+      "source_url": "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-pressure-levels",
+      "source_urls": [
+        "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-pressure-levels",
+        "https://cds.climate.copernicus.eu/datasets/seasonal-monthly-pressure-levels"
+      ],
+      "archive_root": "https://cds.climate.copernicus.eu/api",
+      "source_datasets": [
+        "seasonal-postprocessed-pressure-levels",
+        "seasonal-monthly-pressure-levels"
+      ],
+      "product": "500mb_height_anomaly",
+      "variable": "z500",
+      "init_utc": "2026-08-01T00:00:00Z",
+      "statistic": "ensemble_mean",
+      "ensemble_scope": "BOM/System 2 ensemble",
+      "ensemble_members": 33,
+      "aggregation": "official C3S monthly ensemble-mean anomaly",
+      "field": "z500_anomaly",
+      "units": "m",
+      "raw_field": "geopotential anomaly",
+      "raw_units": "m\u00b2 s\u207b\u00b2",
+      "baseline": {
+        "status": "official_postprocessed",
+        "source": "C3S native bias-adjusted anomaly"
+      },
+      "climatology": {
+        "status": "not_used",
+        "method": "native C3S postprocessed anomaly"
+      },
+      "targets": [
+        {
+          "id": "c3s-bom-2026080100-500mb_height_anomaly-lead04",
+          "target_month": "202612",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-01-01T00:00:00Z",
+          "lead_month": 4,
+          "field": "z500_anomaly",
+          "units": "m",
+          "statistic": "ensemble_mean",
+          "status": "failed",
+          "source_file": ".cache/c3s/cds/bom_2_seasonal_postprocessed_pressure_levels_geopotential_anomaly_202608_anom_l04/field.grib",
+          "error": "could not decode C3S raw geopotential field.grib: CDS GRIB field.grib contains no data variable"
+        },
+        {
+          "id": "c3s-bom-2026080100-500mb_height_anomaly-lead05",
+          "target_month": "202701",
+          "valid_start_utc": "2027-01-01T00:00:00Z",
+          "valid_end_utc": "2027-02-01T00:00:00Z",
+          "lead_month": 5,
+          "field": "z500_anomaly",
+          "units": "m",
+          "statistic": "ensemble_mean",
+          "status": "failed",
+          "source_file": ".cache/c3s/cds/bom_2_seasonal_postprocessed_pressure_levels_geopotential_anomaly_202608_anom_l05/field.grib",
+          "error": "could not decode C3S raw geopotential field.grib: CDS GRIB field.grib contains no data variable"
+        },
+        {
+          "id": "c3s-bom-2026080100-500mb_height_anomaly-lead06",
+          "target_month": "202702",
+          "valid_start_utc": "2027-02-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": 6,
+          "field": "z500_anomaly",
+          "units": "m",
+          "statistic": "ensemble_mean",
+          "status": "failed",
+          "source_file": ".cache/c3s/cds/bom_2_seasonal_postprocessed_pressure_levels_geopotential_anomaly_202608_anom_l06/field.grib",
+          "error": "could not decode C3S raw geopotential field.grib: CDS GRIB field.grib contains no data variable"
+        },
+        {
+          "id": "c3s-bom-2026080100-500mb_height_anomaly-202612-202702",
+          "target_month": "202612-202702",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": "4\u20136",
+          "monthly_leads": [
+            4,
+            5,
+            6
+          ],
+          "field": "z500_anomaly",
+          "units": "m",
+          "statistic": "ensemble_mean",
+          "status": "rendered",
+          "image": "public/seasonal/c3s/20260801/c3s_bom_z500_202612-202702.jpg"
+        }
+      ],
+      "status": "partial",
+      "output_dir": "public/seasonal/c3s"
+    }
+  ]
+}
