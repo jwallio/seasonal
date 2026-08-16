@@ -1,0 +1,91 @@
+name: NASA GEOS-S2S-3 Seasonal Graphics
+
+on:
+  schedule:
+    # NASA's public seasonal release is normally available during the first
+    # week of the month; leave a buffer for the official lookup inventory.
+    - cron: "30 16 6 * *"
+  workflow_dispatch:
+    inputs:
+      product:
+        description: "NASA GEOS-S2S-3 parameter to generate"
+        required: false
+        default: "all"
+        type: choice
+        options:
+          - all
+          - 2m_temperature_anomaly
+          - precipitation_anomaly
+      init:
+        description: "NASA release month as YYYYMM or latest"
+        required: false
+        default: "latest"
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      GEOS_PRODUCT: ${{ inputs.product || 'all' }}
+      GEOS_INIT: ${{ inputs.init || 'latest' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Install NASA download dependency
+        run: python -m pip install --upgrade requests
+
+      - name: Restore published NASA run history
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .cache/geos-s2s3
+          pages_url="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/seasonal/geos_s2s3_manifest.json"
+          if curl -fsSL --retry 2 --connect-timeout 10 "$pages_url" -o .cache/geos-s2s3/previous_manifest.json; then
+            echo "Restored prior NASA GEOS-S2S-3 manifest."
+          else
+            rm -f .cache/geos-s2s3/previous_manifest.json
+            echo "No prior NASA GEOS-S2S-3 manifest was available."
+          fi
+
+      - name: Download NASA GEOS-S2S-3 charts
+        run: |
+          python scripts/geos_s2s3_seasonal.py \
+            --product "$GEOS_PRODUCT" \
+            --init "$GEOS_INIT" \
+            --output-dir public/seasonal/geos_s2s3 \
+            --manifest public/seasonal/geos_s2s3_manifest.json \
+            --previous-manifest .cache/geos-s2s3/previous_manifest.json \
+            --retain-cycles 4
+
+      - name: Package NASA Pages payload
+        if: success()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -d public/seasonal/geos_s2s3
+          test -f public/seasonal/geos_s2s3_manifest.json
+          rm -rf pages-payload
+          mkdir -p pages-payload/geos_s2s3
+          cp -R public/seasonal/geos_s2s3/. pages-payload/geos_s2s3/
+          cp public/seasonal/geos_s2s3_manifest.json pages-payload/geos_s2s3_manifest.json
+
+      - name: Upload NASA Pages payload
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: geos-s2s3-pages-${{ github.run_id }}
+          path: pages-payload
+          if-no-files-found: error
+          retention-days: 14

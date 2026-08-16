@@ -39,10 +39,14 @@ The ECMWF SEAS5 seasonal adapter is documented in [`docs/SEASONAL_SEAS5.md`](/d:
 
 The CanSIPS v3 seasonal adapter is documented in [`docs/SEASONAL_CANSIPS.md`](/d:/weather-projects/wn2/docs/SEASONAL_CANSIPS.md). It reads the official ECCC MSC Datamart 40-member GRIB2 files, computes matching 1991-2020 hindcast anomalies for 500-mb height, 850-mb and 2-metre temperature, precipitation, MSLP, sea-surface temperature, and sea-surface height, and publishes DJF-default North American maps under `public/seasonal/cansips/`. The scheduled [`cansips.yml`](/d:/weather-projects/wn2/.github/workflows/cansips.yml) workflow requires no model secret, caches decoded ensemble means, and retains the current run plus three prior runs independently for each parameter.
 
+The APCC MME seasonal adapter is documented in [`docs/SEASONAL_APCC.md`](/d:/weather-projects/wn2/docs/SEASONAL_APCC.md). It uses the official APCC CLIK API for native APCC multi-model seasonal anomaly fields, including 500-mb height, temperature, precipitation, SST, and MSLP. The scheduled [`apcc.yml`](/d:/weather-projects/wn2/.github/workflows/apcc.yml) workflow requires the `APCC_API_KEY` repository secret and retains four release cycles.
+
+The NASA GEOS-S2S-3 adapter is documented in [`docs/SEASONAL_GEOS_S2S3.md`](/d:/weather-projects/wn2/docs/SEASONAL_GEOS_S2S3.md). It retains NASA's official North America 2-m temperature and precipitation seasonal panels from the public lookup service. The scheduled [`geos-s2s3.yml`](/d:/weather-projects/wn2/.github/workflows/geos-s2s3.yml) workflow requires no secret; NASA's public interface currently does not expose a 500-mb field.
+
 The unified [Seasonal Model Dashboard](/d:/weather-projects/wn2/public/seasonal/index.html) is published at
 [`/seasonal/`](https://jwallio.github.io/wn2/seasonal/). It provides one model,
 parameter, run, and target control surface for CFSv2, ECMWF SEAS5, and CanSIPS
-v3. WeatherNext 2 remains published by its own workflow at the repository root,
+v3, APCC MME, and NASA GEOS-S2S-3. WeatherNext 2 remains published by its own workflow at the repository root,
 but is intentionally not listed as a seasonal model. The model-specific pages remain available at
 `/seasonal/cfsv2/`, `/seasonal/seas5/`, and `/seasonal/cansips/` when focused
 provenance review is needed. The dashboard's Compare tab places the latest
@@ -69,7 +73,11 @@ in [`docs/SEASONAL_SCHEDULES.md`](/d:/weather-projects/wn2/docs/SEASONAL_SCHEDUL
 - [`.github/workflows/cansips.yml`](/d:/weather-projects/wn2/.github/workflows/cansips.yml): monthly CanSIPS v3 workflow
 - [`scripts/c3s_seasonal.py`](/d:/weather-projects/wn2-seasonal-dashboard/scripts/c3s_seasonal.py): Copernicus C3S multi-system and component adapter, including JMA/MRI-CPS4
 - [`.github/workflows/jma.yml`](/d:/weather-projects/wn2-seasonal-dashboard/.github/workflows/jma.yml): monthly JMA/MRI-CPS4 component workflow
-- [`.github/workflows/publish-pages.yml`](/d:/weather-projects/wn2/.github/workflows/publish-pages.yml): single serialized WN2/CFSv2/SEAS5/CanSIPS/C3S/JMA Pages publisher
+- [`scripts/apcc_seasonal.py`](/d:/weather-projects/wn2/scripts/apcc_seasonal.py): APCC CLIK MME seasonal adapter
+- [`.github/workflows/apcc.yml`](/d:/weather-projects/wn2/.github/workflows/apcc.yml): monthly APCC MME workflow
+- [`scripts/geos_s2s3_seasonal.py`](/d:/weather-projects/wn2/scripts/geos_s2s3_seasonal.py): NASA GEOS-S2S-3 official chart adapter
+- [`.github/workflows/geos-s2s3.yml`](/d:/weather-projects/wn2/.github/workflows/geos-s2s3.yml): monthly NASA GEOS-S2S-3 workflow
+- [`.github/workflows/publish-pages.yml`](/d:/weather-projects/wn2/.github/workflows/publish-pages.yml): single serialized WN2/CFSv2/SEAS5/CanSIPS/C3S/JMA/APCC/NASA Pages publisher
 - [`docs/SEASONAL_SCHEDULES.md`](/d:/weather-projects/wn2/docs/SEASONAL_SCHEDULES.md): provider release windows and UTC automation schedule
 - [`public/seasonal/index.html`](/d:/weather-projects/wn2/public/seasonal/index.html): unified seasonal model dashboard shell
 - [`scripts/clean.ps1`](/d:/weather-projects/wn2/scripts/clean.ps1): remove root `.tmp_*` files and `*.log`

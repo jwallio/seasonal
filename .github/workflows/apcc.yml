@@ -1,0 +1,146 @@
+name: APCC MME Seasonal Graphics
+
+on:
+  schedule:
+    # APCC disseminates its rolling MME guidance around the middle of each month.
+    - cron: "30 16 16 * *"
+  workflow_dispatch:
+    inputs:
+      product:
+        description: "APCC parameter to generate"
+        required: false
+        default: "all"
+        type: choice
+        options:
+          - all
+          - 500mb_height_anomaly
+          - 850mb_temperature_anomaly
+          - 2m_temperature_anomaly
+          - precipitation_anomaly
+          - sea_surface_temperature_anomaly
+          - mslp_anomaly
+      init:
+        description: "APCC initialization as YYYYMM or latest"
+        required: false
+        default: "latest"
+        type: string
+      target_window:
+        description: "Viewer label offsets (DJF default: 4,5,6)"
+        required: false
+        default: "4,5,6"
+        type: string
+      dataset:
+        description: "APCC dataset horizon"
+        required: false
+        default: "MME_3MONTH"
+        type: choice
+        options:
+          - MME_3MONTH
+          - MME_6MONTH
+      resolution:
+        description: "APCC grid resolution"
+        required: false
+        default: "1.0"
+        type: choice
+        options:
+          - "1.0"
+          - "2.5"
+
+permissions:
+  contents: read
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    env:
+      APCC_PRODUCT: ${{ inputs.product || 'all' }}
+      APCC_INIT: ${{ inputs.init || 'latest' }}
+      TARGET_WINDOW: ${{ inputs.target_window || '4,5,6' }}
+      APCC_DATASET: ${{ inputs.dataset || 'MME_3MONTH' }}
+      APCC_LEAD_MONTH: ${{ inputs.dataset == 'MME_6MONTH' && '6-MON' || '3-MON' }}
+      APCC_RESOLUTION: ${{ inputs.resolution || '1.0' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Install APCC rendering dependencies
+        run: python -m pip install --upgrade xarray netCDF4 matplotlib Pillow requests numpy
+
+      - name: Check APCC API secret
+        env:
+          APCC_API_KEY: ${{ secrets.APCC_API_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "${APCC_API_KEY:-}" ]; then
+            echo "::error::The APCC_API_KEY repository secret is required for APCC CLIK data."
+            exit 1
+          fi
+
+      - name: Restore APCC cache
+        uses: actions/cache@v4
+        with:
+          path: .cache/apcc
+          key: apcc-${{ runner.os }}-${{ env.APCC_INIT }}-${{ env.APCC_PRODUCT }}-${{ env.APCC_DATASET }}-${{ env.APCC_RESOLUTION }}-v1
+          restore-keys: |
+            apcc-${{ runner.os }}-${{ env.APCC_INIT }}-
+            apcc-${{ runner.os }}-
+
+      - name: Restore published APCC run history
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .cache/apcc
+          pages_url="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/seasonal/apcc_manifest.json"
+          if curl -fsSL --retry 2 --connect-timeout 10 "$pages_url" -o .cache/apcc/previous_manifest.json; then
+            echo "Restored prior APCC manifest."
+          else
+            rm -f .cache/apcc/previous_manifest.json
+            echo "No prior APCC manifest was available."
+          fi
+
+      - name: Render APCC products
+        env:
+          APCC_API_KEY: ${{ secrets.APCC_API_KEY }}
+        run: |
+          python scripts/apcc_seasonal.py \
+            --product "$APCC_PRODUCT" \
+            --init "$APCC_INIT" \
+            --target-window "$TARGET_WINDOW" \
+            --dataset "$APCC_DATASET" \
+            --lead-month "$APCC_LEAD_MONTH" \
+            --resolution "$APCC_RESOLUTION" \
+            --cache-dir .cache/apcc \
+            --output-dir public/seasonal/apcc \
+            --manifest public/seasonal/apcc_manifest.json \
+            --previous-manifest .cache/apcc/previous_manifest.json \
+            --retain-cycles 4
+
+      - name: Package APCC Pages payload
+        if: success()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -d public/seasonal/apcc
+          test -f public/seasonal/apcc_manifest.json
+          rm -rf pages-payload
+          mkdir -p pages-payload/apcc
+          cp -R public/seasonal/apcc/. pages-payload/apcc/
+          cp public/seasonal/apcc_manifest.json pages-payload/apcc_manifest.json
+
+      - name: Upload APCC Pages payload
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: apcc-pages-${{ github.run_id }}
+          path: pages-payload
+          if-no-files-found: error
+          retention-days: 14

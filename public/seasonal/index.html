@@ -136,12 +136,14 @@
       cansips: { label: 'CanSIPS v3', kind: 'seasonal', manifest: assetPath('seasonal/cansips_manifest.json'), direct: assetPath('seasonal/cansips/'), source: 'ECCC MSC Datamart' },
       c3s: { label: 'C3S multi-system', kind: 'seasonal', manifest: assetPath('seasonal/c3s_manifest.json'), direct: assetPath('seasonal/c3s/'), source: 'Copernicus C3S seasonal forecasts' },
       jma: { label: 'JMA', kind: 'seasonal', manifest: assetPath('seasonal/jma_manifest.json'), direct: assetPath('seasonal/jma/'), source: 'JMA/MRI-CPS4 via Copernicus C3S' },
+      apcc: { label: 'APCC MME', kind: 'seasonal', manifest: assetPath('seasonal/apcc_manifest.json'), direct: assetPath('seasonal/apcc/'), source: 'APCC multi-model ensemble via CLIK' },
+      geos_s2s3: { label: 'NASA GEOS-S2S-3', kind: 'seasonal', manifest: assetPath('seasonal/geos_s2s3_manifest.json'), direct: assetPath('seasonal/geos_s2s3/'), source: 'NASA GEOS-S2S-3 official charts' },
       nmme: { label: 'NOAA NMME', kind: 'seasonal', manifest: assetPath('seasonal/nmme_manifest.json'), direct: assetPath('seasonal/nmme/'), source: 'NOAA CPC NMME' },
     };
     const modelStates = Object.fromEntries(Object.keys(MODEL_CONFIG).map(key => [key, { manifest: null, runs: [], error: null }]));
     const selection = { view: 'single', model: 'cfsv2', product: '', run: '', target: '', compareTarget: '', compareBaseline: '', ratio: '10' };
     const COMPARE_PRODUCT = '500mb_height_anomaly';
-    const COMPARE_MODELS = ['cfsv2', 'seas5', 'cansips', 'c3s', 'jma'];
+    const COMPARE_MODELS = ['cfsv2', 'seas5', 'cansips', 'c3s', 'jma', 'apcc'];
     const COMPARE_BASELINES = [
       { value: 'native', label: 'Native model reference' },
       { value: 'common_1991_2020', label: 'Common 1991â€“2020 reference' },
@@ -163,290 +165,28 @@
     const monthCodeLabel = code => /^\d{6}$/.test(String(code || '')) ? monthLabel(`${String(code).slice(0,4)}-${String(code).slice(4,6)}-01T00:00:00Z`) : String(code || 'â€”');
     function periodLabel(value) {
       const text = String(value || '');
-      const match = /^(\d{4})(\d{2})-(\d{4})(\d{2})$/.exec(text);
-      if (!match) return monthCodeLabel(text);
-      const months = [Number(match[2]), Number(match[4])];
-      const season = months[0] === 12 && months[1] === 2 ? `DJF ${match[3]}` : months[0] === 3 && months[1] === 5 ? `MAM ${match[3]}` : months[0] === 6 && months[1] === 8 ? `JJA ${match[3]}` : months[0] === 9 && months[1] === 11 ? `SON ${match[3]}` : `${monthCodeLabel(match[1] + match[2])}â€“${monthCodeLabel(match[3] + match[4])}`;
-      return season;
-    }
-    function populate(select, values, chosen) {
-      select.replaceChildren();
-      values.forEach(item => { const option = document.createElement('option'); option.value = String(item.value); option.textContent = item.label; select.appendChild(option); });
-      select.disabled = values.length === 0;
-      if (values.some(item => String(item.value) === String(chosen))) select.value = String(chosen);
-    }
-    function compareRuns(modelKey) {
-      return (modelStates[modelKey]?.runs || [])
-        .filter(run => String(run.product || '') === COMPARE_PRODUCT)
-        .sort((left, right) => {
-          const leftBlend = modelKey === 'c3s' && String(left.component || '') === 'multisystem' ? 1 : 0;
-          const rightBlend = modelKey === 'c3s' && String(right.component || '') === 'multisystem' ? 1 : 0;
-          return rightBlend - leftBlend || String(right.init_utc || '').localeCompare(String(left.init_utc || ''));
-        });
-    }
-    function compareTargetAsset(target, baseline) {
-      if (!target || target.status === 'failed') return null;
-      if (baseline === 'native') return target.image ? { image: target.image, baseline: target.baseline || null } : null;
-      const comparison = target.comparison?.[baseline];
-      return comparison?.image ? comparison : null;
-    }
-    function compareTarget(run, targetKey, baseline = 'native') {
-      return (Array.isArray(run?.targets) ? run.targets : []).find(target => String(target.target_month || '') === String(targetKey || '') && compareTargetAsset(target, baseline)) || null;
-    }
-    function compareTargetKeys(modelKey) {
-      const keys = new Set();
-      compareRuns(modelKey).forEach(run => (Array.isArray(run.targets) ? run.targets : []).forEach(target => {
-        if (compareTargetAsset(target, 'native') && target.target_month) keys.add(String(target.target_month));
-      }));
-      return keys;
-    }
-    function comparePeriodSort(left, right) {
-      const startMonth = value => Number(String(value || '').slice(0, 6)) || Number.MAX_SAFE_INTEGER;
-      const startDifference = startMonth(left) - startMonth(right);
-      if (startDifference) return startDifference;
-      const leftIsRange = String(left).includes('-') ? 1 : 0;
-      const rightIsRange = String(right).includes('-') ? 1 : 0;
-      return leftIsRange - rightIsRange || String(left).localeCompare(String(right));
-    }
-    function comparePeriodOptions() {
-      const availableSets = COMPARE_MODELS.map(compareTargetKeys).filter(set => set.size);
-      if (!availableSets.length) return [];
-      const common = [...availableSets[0]].filter(key => availableSets.every(set => set.has(key)));
-      const keys = common.length ? common : [...new Set(availableSets.reduce((all, set) => [...all, ...set], []))];
-      return keys.sort(comparePeriodSort).map(value => ({ value, label: periodLabel(value) }));
-    }
-    function compareRunForTarget(modelKey, targetKey, baseline = 'native') {
-      return compareRuns(modelKey).find(run => compareTarget(run, targetKey, baseline)) || null;
-    }
-    function manifestProducts(model) {
-      const keys = new Set();
-      modelStates[selection.model].runs.forEach(run => {
-        if (model.kind === 'weathernext') {
-          (Array.isArray(run.products) ? run.products : Object.keys(run.product_hours || {})).forEach(key => keys.add(String(key)));
-        } else if (run.product) keys.add(String(run.product));
-      });
-      const retired = selection.model === 'nmme' ? new Set(['model_spread']) : new Set();
-      return [...keys].filter(key => !retired.has(key));
-    }
-    function productLabel(model, key) {
-      const configured = modelStates[selection.model].manifest?.product_labels?.[key];
-      return configured || PRODUCT_LABELS[key] || pretty(key) || 'Seasonal guidance';
-    }
-    function supportsProduct(model, run, product) {
-      if (model.kind === 'weathernext') return (Array.isArray(run.products) && run.products.includes(product)) || Boolean(run.product_hours?.[product]);
-      return String(run.product || '') === String(product);
-    }
-    function runLabel(model, run) {
-      if (model.kind === 'weathernext') return `${run.label || run.run_date || run.id || 'Published run'} Â· ${run.status || 'available'}`;
-      return `Init ${initLabel(run.init_utc)} Â· ${run.status || 'available'}`;
-    }
-    function selectedRun(model) {
-      const available = modelStates[selection.model].runs.filter(run => supportsProduct(model, run, selection.product));
-      return available.find(run => String(run.id) === String(selection.run)) || available[0] || null;
-    }
-    function targetItems(model, run) {
-      if (!run) return [];
-      if (model.kind === 'weathernext') {
-        const hours = numberList(run.product_hours?.[selection.product] || run.hours, 0);
-        return hours.map(hour => ({ key: `hour:${hour}`, value: hour, label: `Hour ${String(hour).padStart(3, '0')}` }));
-      }
-      return (Array.isArray(run.targets) ? run.targets : []).map((target, index) => ({ key: String(target.id || index), value: target, label: periodLabel(target.target_month || target.valid_start_utc || `Target ${index + 1}`) }));
-    }
-    function isSnowProduct(model, product) {
-      return model.kind === 'weathernext' && ((modelStates[selection.model].manifest?.snow_products || []).includes(product) || product.includes('snow'));
-    }
-    function frameName(run, hour, ratio) {
-      const product = selection.product;
-      const hourText = String(hour).padStart(3, '0');
-      return isSnowProduct(MODEL_CONFIG[selection.model], product) ? `${product}_r${String(ratio || 10).padStart(2, '0')}_${hourText}.jpg` : `${product}_${hourText}.jpg`;
-    }
-    function imagePath(model, run, target) {
-      if (!run || !target) return '';
-      if (model.kind === 'weathernext') return assetPath(`runs/${run.id}/${frameName(run, target.value, selection.ratio)}`);
-      return target.value?.image ? assetPath(target.value.image) : '';
-    }
-    function targetText(model, target) {
-      if (!target) return 'â€”';
-      if (model.kind === 'weathernext') return `Hour ${String(target.value).padStart(3, '0')}`;
-      return target.label;
-    }
-    function ensembleText(model, run, target) {
-      if (!run) return 'â€”';
-      if (model.kind === 'weathernext') return run.ensemble_mode === 'member' ? `Member ${run.ensemble_member || 'â€”'}` : pretty(run.ensemble_mode || 'ensemble');
-      const source = target?.value || {};
-      const members = source.ensemble_members || run.ensemble_members;
-      if (run.ensemble_scope === 'rolling_initial_conditions') return `${source.ensemble_members || members || 0}/${source.ensemble_expected_members || 40} cycles`;
-      return members ? `${members} members` : pretty(run.ensemble_scope || 'ensemble');
-    }
-    function leadText(model, target) {
-      if (!target) return 'â€”';
-      if (model.kind === 'weathernext') return `Hour ${String(target.value).padStart(3, '0')}`;
-      const lead = target.value?.lead_month;
-      return lead === undefined || lead === null ? 'â€”' : `Month ${lead}`;
-    }
-    function fieldText(target) {
-      const value = target?.value;
-      if (!value) return 'â€”';
-      return value.units ? `${value.field || 'Field'} (${value.units})` : (value.field || 'â€”');
-    }
-    function setMessage(message) { el('map-wrap').replaceChildren(Object.assign(document.createElement('div'), { className: 'empty', textContent: message })); }
-    function renderModelOptions() {
-      populate(el('model-select'), Object.entries(MODEL_CONFIG).map(([key, config]) => { const state = modelStates[key]; const suffix = state.error ? ' Â· unavailable' : state.manifest ? '' : ' Â· loading'; return { value: key, label: config.label + suffix }; }), selection.model);
-    }
-    function renderUnavailable(model) {
-      el('product-select').replaceChildren(); el('product-select').disabled = true;
-      el('run-select').replaceChildren(); el('run-select').disabled = true;
-      el('target-controls').replaceChildren();
-      el('ratio-control')?.remove();
-      setMessage(modelStates[selection.model].error || 'No published manifest is available for this model yet.');
-      ['fact-model','fact-target','fact-lead','fact-ensemble','fact-field','fact-status'].forEach(id => el(id).textContent = id === 'fact-model' ? model.label : 'â€”');
-      el('scope').textContent = 'The model workflow has not published a readable manifest for this dashboard.';
-      el('source-detail').textContent = `Source: ${model.source}`;
-      el('source-link').href = model.direct;
-      el('direct-link').href = model.direct;
-      el('warning').style.display = 'none';
-    }
-    function compareEmpty(message) {
-      const empty = document.createElement('div'); empty.className = 'empty'; empty.textContent = message; return empty;
-    }
-    function compareBaselineLabel(value) {
-      return COMPARE_BASELINES.find(item => item.value === value)?.label || 'Model reference';
-    }
-    function renderCompareCard(modelKey, targetKey) {
-      const model = MODEL_CONFIG[modelKey];
-      const state = modelStates[modelKey];
-      const card = document.createElement('article'); card.className = 'card compare-card';
-      const header = document.createElement('div'); header.className = 'compare-card-head';
-      const title = document.createElement('h2'); title.textContent = model.label; header.appendChild(title);
-      const direct = document.createElement('a'); direct.href = model.direct; direct.textContent = 'Direct page'; header.appendChild(direct);
-      card.appendChild(header);
-      const imageWrap = document.createElement('div'); imageWrap.className = 'compare-image-wrap';
-      const baseline = selection.compareBaseline || 'native';
-      const run = compareRunForTarget(modelKey, targetKey, baseline);
-      const target = run ? compareTarget(run, targetKey, baseline) : null;
-      const asset = target ? compareTargetAsset(target, baseline) : null;
-      if (!state.manifest) {
-        imageWrap.appendChild(compareEmpty(state.error || 'Manifest unavailable.'));
-      } else if (!run || !target || !asset) {
-        const reference = baseline === 'native' ? '500-mb map' : 'common 1991â€“2020 comparison map';
-        imageWrap.appendChild(compareEmpty(targetKey ? `No ${reference} published for ${periodLabel(targetKey)}.` : `No ${reference} is available.`));
-      } else {
-        const image = document.createElement('img');
-        image.src = assetPath(asset.image);
-        image.alt = `${model.label} 500-mb height anomaly ${periodLabel(target.target_month)} Â· ${compareBaselineLabel(baseline)}`;
-        image.loading = 'lazy';
-        image.addEventListener('error', () => imageWrap.replaceChildren(compareEmpty('The manifest target exists, but its image is not in the published Pages tree.')));
-        imageWrap.appendChild(image);
-      }
-      card.appendChild(imageWrap);
-      const metadata = document.createElement('p'); metadata.className = 'compare-meta';
-      metadata.textContent = target && asset && run
-        ? `Valid: ${periodLabel(target.target_month)} Â· Init: ${initLabel(run.init_utc)} Â· ${compareBaselineLabel(baseline)} Â· ${asset.status || target.status || run.status || 'available'}`
-        : (state.manifest ? 'No matching published target for this period.' : `Unavailable: ${state.error || 'manifest not published'}`);
-      card.appendChild(metadata);
-      return card;
-    }
-    function renderCompare() {
-      const options = comparePeriodOptions();
-      const select = el('compare-target-select');
-      const baselineSelect = el('compare-baseline-select');
-      const grid = el('compare-grid');
-      if (!options.length) {
-        select.replaceChildren(Object.assign(document.createElement('option'), { textContent: 'No matching 500-mb targets' }));
-        select.disabled = true;
-        baselineSelect.replaceChildren(Object.assign(document.createElement('option'), { textContent: 'No reference available' }));
-        baselineSelect.disabled = true;
-        selection.compareTarget = '';
-        selection.compareBaseline = '';
-        el('compare-summary').textContent = '500-mb height anomaly Â· no matching target has been published across the model manifests';
-        grid.replaceChildren(...COMPARE_MODELS.map(modelKey => renderCompareCard(modelKey, '')));
-        el('footer-copy').textContent = '500-mb height anomaly comparison Â· CFSv2 Â· ECMWF SEAS5 Â· CanSIPS v3 Â· C3S multi-system Â· JMA';
-        return;
-      }
-      const preferred = options.find(item => /^\d{6}-\d{6}$/.test(String(item.value))) || options[options.length - 1];
-      if (!options.some(item => String(item.value) === String(selection.compareTarget))) selection.compareTarget = preferred.value;
-      populate(select, options, selection.compareTarget);
-      selection.compareTarget = select.value || preferred.value;
-      if (!selection.compareBaseline) selection.compareBaseline = 'native';
-      populate(baselineSelect, COMPARE_BASELINES, selection.compareBaseline);
-      selection.compareBaseline = baselineSelect.value || 'native';
-      const availableCount = COMPARE_MODELS.filter(modelKey => Boolean(compareRunForTarget(modelKey, selection.compareTarget, selection.compareBaseline))).length;
-      el('compare-summary').textContent = `${periodLabel(selection.compareTarget)} Â· ${compareBaselineLabel(selection.compareBaseline)} Â· ${availableCount}/${COMPARE_MODELS.length} model maps available`;
-      grid.replaceChildren(...COMPARE_MODELS.map(modelKey => renderCompareCard(modelKey, selection.compareTarget)));
-      el('footer-copy').textContent = `500-mb height anomaly comparison Â· ${compareBaselineLabel(selection.compareBaseline)} Â· CFSv2 Â· ECMWF SEAS5 Â· CanSIPS v3 Â· C3S multi-system Â· JMA`;
-    }
-    function renderControls(model, run, targets) {
-      const controls = el('target-controls'); controls.replaceChildren();
-      targets.forEach((target, index) => { const button = document.createElement('button'); button.type = 'button'; button.textContent = target.label; button.classList.toggle('active', String(target.key) === String(selection.target)); button.addEventListener('click', () => { selection.target = target.key; renderAll(); }); controls.appendChild(button); });
-      if (isSnowProduct(model, selection.product)) {
-        const wrapper = document.createElement('label'); wrapper.className = 'ratio-control'; wrapper.id = 'ratio-control'; wrapper.innerHTML = '<span class="control-label">Snow ratio</span><select id="ratio-select"></select>';
-        controls.appendChild(wrapper);
-        const ratios = numberList(run?.product_snow_ratios?.[selection.product] || run?.snow_ratios, 10, 20); const ratioSelect = wrapper.querySelector('select');
-        populate(ratioSelect, (ratios.length ? ratios : [10]).map(value => ({ value, label: `${value}:1` })), selection.ratio);
-        selection.ratio = ratioSelect.value || '10'; ratioSelect.addEventListener('change', () => { selection.ratio = ratioSelect.value; renderAll(); });
-      }
-    }
-    function renderAll() {
-      renderModelOptions();
-      const model = MODEL_CONFIG[selection.model]; const modelState = modelStates[selection.model];
-      if (!modelState.manifest) { renderUnavailable(model); return; }
-      const products = manifestProducts(model); selection.product = products.includes(selection.product) ? selection.product : (products[0] || '');
-      populate(el('product-select'), products.map(value => ({ value, label: productLabel(model, value) })), selection.product);
-      const runs = modelState.runs.filter(run => supportsProduct(model, run, selection.product));
-      selection.run = runs.some(run => String(run.id) === String(selection.run)) ? selection.run : String(runs[0]?.id || '');
-      populate(el('run-select'), runs.map(run => ({ value: run.id, label: runLabel(model, run) })), selection.run);
-      const run = selectedRun(model); const targets = targetItems(model, run);
-      const preferredTarget = targets.find(target => model.kind === 'seasonal' && /^\d{6}-\d{6}$/.test(String(target.value?.target_month || ''))) || targets[0];
-      selection.target = targets.some(target => String(target.key) === String(selection.target)) ? selection.target : String(preferredTarget?.key || '');
-      renderControls(model, run, targets);
-      const target = targets.find(item => String(item.key) === String(selection.target)) || targets[0];
-      if (!run || !target) { setMessage('No rendered target is available for the selected parameter.'); return; }
-      const targetValue = target.value;
-      const label = productLabel(model, selection.product);
-      el('fact-model').textContent = model.label; el('fact-target').textContent = model.kind === 'weathernext' ? targetText(model, target) : periodLabel(targetValue.target_month || targetValue.valid_start_utc);
-      el('fact-lead').textContent = leadText(model, target); el('fact-ensemble').textContent = ensembleText(model, run, target); el('fact-field').textContent = fieldText(target); el('fact-status').textContent = targetValue?.status || run.status || 'available';
-      if (model.kind === 'weathernext') {
-        el('scope').textContent = `${run.source_label || run.source || model.source} Â· Updated ${initLabel(run.updated_utc)}. ${run.successful_exports || 0} successful exports.`;
-      } else {
-        const baseline = run.climatology?.source || targetValue?.baseline?.source || 'model calibration baseline';
-        el('scope').textContent = `${run.aggregation || 'Seasonal ensemble mean'} from ${initLabel(run.init_utc)}. Baseline: ${baseline}.`;
-      }
-      el('source-detail').textContent = `Source: ${run.source || run.source_label || model.source}`;
-      el('source-link').href = run.source_url || model.direct; el('direct-link').href = model.direct;
-      const image = imagePath(model, run, target); setMessage('');
-      el('map-wrap').replaceChildren();
-      if (image) { const imageElement = document.createElement('img'); imageElement.src = image; imageElement.alt = `${model.label} ${label} ${targetText(model, target)}`; imageElement.loading = 'eager'; imageElement.addEventListener('error', () => { setMessage('The manifest is available, but this image is not present in the published Pages tree.'); }); el('map-wrap').appendChild(imageElement); } else setMessage('No rendered image is available for this target.');
-      const warning = el('warning');
-      if (targetValue?.status === 'failed') { warning.style.display = 'block'; warning.textContent = targetValue.error || 'This target failed; retained history remains selectable.'; }
-      else if (targetValue?.status === 'partial' || run.status === 'partial') { warning.style.display = 'block'; warning.textContent = 'This run is partial; retained history remains selectable.'; }
-      else if (run.source_warning) { warning.style.display = 'block'; warning.textContent = run.source_warning; }
-      else warning.style.display = 'none';
-      el('footer-copy').textContent = `${model.source} Â· ${modelState.manifest.generated_utc ? `Manifest generated ${initLabel(modelState.manifest.generated_utc)}` : 'Published manifest loaded'} Â· Direct model pages remain available.`;
-    }
-    function renderCurrentView() { if (selection.view === 'compare') renderCompare(); else renderAll(); }
-    function setView(view) {
-      selection.view = view === 'compare' ? 'compare' : 'single';
-      const isCompare = selection.view === 'compare';
-      el('single-tab').classList.toggle('active', !isCompare); el('single-tab').setAttribute('aria-selected', String(!isCompare));
-      el('compare-tab').classList.toggle('active', isCompare); el('compare-tab').setAttribute('aria-selected', String(isCompare));
-      el('single-toolbar').hidden = isCompare; el('single-view').hidden = isCompare; el('compare-view').hidden = !isCompare;
-      renderCurrentView();
-    }
-    el('model-select').addEventListener('change', event => { selection.model = event.target.value; selection.product = ''; selection.run = ''; selection.target = ''; renderAll(); });
-    el('product-select').addEventListener('change', event => { selection.product = event.target.value; selection.run = ''; selection.target = ''; renderAll(); });
-    el('run-select').addEventListener('change', event => { selection.run = event.target.value; selection.target = ''; renderAll(); });
-    el('single-tab').addEventListener('click', () => setView('single'));
-    el('compare-tab').addEventListener('click', () => setView('compare'));
-    el('compare-target-select').addEventListener('change', event => { selection.compareTarget = event.target.value; renderCompare(); });
-    el('compare-baseline-select').addEventListener('change', event => { selection.compareBaseline = event.target.value; renderCompare(); });
-    renderModelOptions();
-    Promise.all(Object.entries(MODEL_CONFIG).map(async ([key, config]) => {
-      try { const response = await fetch(config.manifest); if (!response.ok) throw new Error(`Manifest returned ${response.status}`); const manifest = await response.json(); modelStates[key].manifest = manifest; modelStates[key].runs = Array.isArray(manifest.runs) ? manifest.runs.filter(run => run && run.id) : []; }
-      catch (error) { modelStates[key].error = error.message; }
-    })).then(() => {
-      if (!modelStates[selection.model].manifest) selection.model = Object.keys(MODEL_CONFIG).find(key => modelStates[key].manifest) || selection.model;
-      renderCurrentView();
-    });
-  </script>
-</body>
-</html>
+      const match = /^(\d{4})(\d{Û8¶‰žËkºwµçQ¥Ñ¥½¹Ìœ¤É•ÑÕÉ¸€‘íÍ½ÕÉ”¹•¹Í•µ‰±•}µ•µ‰•ÉÌñðµ•µ‰•ÉÌñð€Áô¼‘íÍ½ÕÉ”¹•¹Í•µ‰±•}•áÁ•Ñ•‘}µ•µ‰•ÉÌñð€ÐÁôå±•Í€ì4(€€€€€É•ÑÕÉ¸µ•µ‰•ÉÌ€ü€‘íµ•µ‰•ÉÍôµ•µ‰•ÉÍ€€èÁÉ•ÑÑä¡ÉÕ¸¹•¹Í•µ‰±•}Í½Á”ñð€•¹Í•µ‰±”œ¤ì4(€€€ô4(€€€™Õ¹Ñ¥½¸±•…‘Q•áÐ¡µ½‘•°°Ñ…É•Ð¤ì4(€€€€€¥˜€ …Ñ…É•Ð¤É•ÑÕÉ¸€ŸŠPœì4(€€€€€¥˜€¡µ½‘•°¹­¥¹€ôôô€Ý•…Ñ¡•É¹•áÐœ¤É•ÑÕÉ¸!½ÕÈ€‘íMÑÉ¥¹œ¡Ñ…É•Ð¹Ù…±Õ”¤¹Á…‘MÑ…ÉÐ Ì°€œÀœ¥õ€ì4(€€€€€½¹ÍÐ±•…€ôÑ…É•Ð¹Ù…±Õ”ü¹±•…‘}µ½¹Ñ ì4(€€€€€É•ÑÕÉ¸±•…€ôôôÕ¹‘•™¥¹•ñð±•…€ôôô¹Õ±°€ü€ŸŠPœ€è5½¹Ñ €‘í±•…‘õ€ì4(€€€ô4(€€€™Õ¹Ñ¥½¸™¥•±‘Q•áÐ¡Ñ…É•Ð¤ì4(€€€€€½¹ÍÐÙ…±Õ”€ôÑ…É•Ðü¹Ù…±Õ”ì4(€€€€€¥˜€ …Ù…±Õ”¤É•ÑÕÉ¸€ŸŠPœì4(€€€€€É•ÑÕÉ¸Ù…±Õ”¹Õ¹¥ÑÌ€ü€‘íÙ…±Õ”¹™¥•±ñð€¥•±ô€ ‘íÙ…±Õ”¹Õ¹¥ÑÍô¥€€è€¡Ù…±Õ”¹™¥•±ñð€ŸŠPœ¤ì4(€€€ô4(€€€™Õ¹Ñ¥½¸Í•Ñ5•ÍÍ…”¡µ•ÍÍ…”¤ì•° µ…ÀµÝÉ…Àœ¤¹É•Á±…•¡¥±‘É•¸¡=‰©•Ð¹…ÍÍ¥¸¡‘½Õµ•¹Ð¹É•…Ñ•±•µ•¹Ð ‘¥Øœ¤°ì±…ÍÍ9…µ”è€•µÁÑäœ°Ñ•áÑ½¹Ñ•¹Ðèµ•ÍÍ…”ô¤¤ìô4(€€€™Õ¹Ñ¥½¸É•¹‘•É5½‘•±=ÁÑ¥½¹Ì ¤ì4(€€€€€Á½ÁÕ±…Ñ”¡•° µ½‘•°µÍ•±•Ðœ¤°=‰©•Ð¹•¹ÑÉ¥•Ì¡5=1}=9%¤¹µ…À ¡m­•ä°½¹™¥t¤€ôøì½¹ÍÐÍÑ…Ñ”€ôµ½‘•±MÑ…Ñ•Ím­•åtì½¹ÍÐÍÕ™™¥à€ôÍÑ…Ñ”¹•ÉÉ½È€ü€œƒ
+ÜÕ¹…Ù…¥±…‰±”œ€èÍÑ…Ñ”¹µ…¹¥™•ÍÐ€ü€œœ€è€œƒ
+Ü±½…‘¥¹œœìÉ•ÑÕÉ¸ìÙ…±Õ”è­•ä°±…‰•°è½¹™¥œ¹±…‰•°€¬ÍÕ™™¥àôìô¤°Í•±•Ñ¥½¸¹µ½‘•°¤ì4(€€€ô4(€€€™Õ¹Ñ¥½¸É•¹‘•ÉU¹…Ù…¥±…‰±”¡µ½‘•°¤ì(€€€€€•° ÁÉ½‘ÕÐµÍ•±•Ðœ¤¹É•Á±…•¡¥±‘É•¸ ¤ì•° ÁÉ½‘ÕÐµÍ•±•Ðœ¤¹‘¥Í…‰±•€ôÑÉÕ”ì(€€€€€•° ÉÕ¸µÍ•±•Ðœ¤¹É•Á±…•¡¥±‘É•¸ ¤ì•° ÉÕ¸µÍ•±•Ðœ¤¹‘¥Í…‰±•€ôÑÉÕ”ì(€€€€€•° Ñ…É•Ðµ½¹ÑÉ½±Ìœ¤¹É•Á±…•¡¥±‘É•¸ ¤ì4(€€€€€•° É…Ñ¥¼µ½¹ÑÉ½°œ¤ü¹É•µ½Ù” ¤ì4(€€€€€Í•Ñ5•ÍÍ…”¡µ½‘•±MÑ…Ñ•ÍmÍ•±•Ñ¥½¸¹µ½‘•±t¹•ÉÉ½Èñð€9¼ÁÕ‰±¥Í¡•µ…¹¥™•ÍÐ¥Ì…Ù…¥±…‰±”™½ÈÑ¡¥Ìµ½‘•°å•Ð¸œ¤ì4(€€€€€l™…Ðµµ½‘•°œ°™…ÐµÑ…É•Ðœ°™…Ðµ±•…œ°™…Ðµ•¹Í•µ‰±”œ°™…Ðµ™¥•±œ°™…ÐµÍÑ…ÑÕÌt¹™½É… ¡¥€ôø•°¡¥¤¹Ñ•áÑ½¹Ñ•¹Ð€ô¥€ôôô€™…Ðµµ½‘•°œ€üµ½‘•°¹±…‰•°€è€ŸŠPœ¤ì4(€€€€€•° Í½Á”œ¤¹Ñ•áÑ½¹Ñ•¹Ð€ô€Q¡”µ½‘•°Ý½É­™±½Ü¡…Ì¹½ÐÁÕ‰±¥Í¡•„É•…‘…‰±”µ…¹¥™•ÍÐ™½ÈÑ¡¥Ì‘…Í¡‰½…É¸œì4(€€€€€•° Í½ÕÉ”µ‘•Ñ…¥°œ¤¹Ñ•áÑ½¹Ñ•¹Ð€ôM½ÕÉ”è€‘íµ½‘•°¹Í½ÕÉ•õ€ì4(€€€€€•° Í½ÕÉ”µ±¥¹¬œ¤¹¡É•˜€ôµ½‘•°¹‘¥É•Ðì4(€€€€€•° ‘¥É•Ðµ±¥¹¬œ¤¹¡É•˜€ôµ½‘•°¹‘¥É•Ðì(€€€€€•° Ý…É¹¥¹œœ¤¹ÍÑå±”¹‘¥ÍÁ±…ä€ô€¹½¹”œì(€€€ô(€€€™Õ¹Ñ¥½¸½µÁ…É•µÁÑä¡µ•ÍÍ…”¤ì(€€€€€½¹ÍÐ•µÁÑä€ô‘½Õµ•¹Ð¹É•…Ñ•±•µ•¹Ð ‘¥Øœ¤ì•µÁÑä¹±…ÍÍ9…µ”€ô€•µÁÑäœì•µÁÑä¹Ñ•áÑ½¹Ñ•¹Ð€ôµ•ÍÍ…”ìÉ•ÑÕÉ¸•µÁÑäì(€€€ô(€€€™Õ¹Ñ¥½¸½µÁ…É•	…Í•±¥¹•1…‰•°¡Ù…±Õ”¤ì(€€€€€É•ÑÕÉ¸=5AI}	M1%9L¹™¥¹¡¥Ñ•´€ôø¥Ñ•´¹Ù…±Õ”€ôôôÙ…±Õ”¤ü¹±…‰•°ñð€5½‘•°É•™•É•¹”œì(€€€ô(€€€™Õ¹Ñ¥½¸É•¹‘•É½µÁ…É•…É¡µ½‘•±-•ä°Ñ…É•Ñ-•ä¤ì(€€€€€½¹ÍÐµ½‘•°€ô5=1}=9%mµ½‘•±-•åtì(€€€€€½¹ÍÐÍÑ…Ñ”€ôµ½‘•±MÑ…Ñ•Ímµ½‘•±-•åtì(€€€€€½¹ÍÐ…É€ô‘½Õµ•¹Ð¹É•…Ñ•±•µ•¹Ð …ÉÑ¥±”œ¤ì…É¹±…ÍÍ9…µ”€ô€…É½µÁ…É”µ…Éœì(€€€€€½¹ÍÐ¡•…‘•È€ô‘½Õµ•¹Ð¹É•…Ñ•±•µ•¹Ð ‘¥Øœ¤ì¡•…‘•È¹±…ÍÍ9…µ”€ô€½µÁ…É”µ…Éµ¡•…œì(€€€€€½¹ÍÐÑ¥Ñ±”€ô‘½Õµ•¹Ð¹É•…Ñ•±•µ•¹Ð  Èœ¤ìÑ¥Ñ±”¹Ñ•áÑ½¹Ñ•¹Ð€ôµ½‘•°¹±…‰•°ì¡•…‘•È¹…ÁÁ•¹‘¡¥±¡Ñ¥Ñ±”¤ì(€€€€€½¹ÍÐ‘¥É•Ð€ô‘½Õµ•¹Ð¹É•…Ñ•±•µ•¹Ð „œ¤ì‘¥É•Ð¹¡É•˜€ôµ½‘•°¹‘¥É•Ðì‘¥É•Ð¹Ñ•áÑ½¹Ñ•¹Ð€ô€¥É•ÐÁ…”œì¡•…‘•È¹…ÁÁ•¹‘¡¥±¡‘¥É•Ð¤ì(€€€€€…É¹…ÁÁ•¹‘¡¥±¡¡•…‘•È¤ì(€€€€€½¹ÍÐ¥µ…•]É…À€ô‘½Õµ•¹Ð¹É•…Ñ•±•µ•¹Ð ‘¥Øœ¤ì¥µ…•]É…À¹±…ÍÍ9…µ”€ô€½µÁ…É”µ¥µ…”µÝÉ…Àœì(€€€€€½¹ÍÐ‰…Í•±¥¹”€ôÍ•±•Ñ¥½¸¹½µÁ…É•	…Í•±¥¹”ñð€¹…Ñ¥Ù”œì(€€€€€½¹ÍÐÉÕ¸€ô½µÁ…É•IÕ¹½ÉQ…É•Ð¡µ½‘•±-•ä°Ñ…É•Ñ-•ä°‰…Í•±¥¹”¤ì(€€€€€½¹ÍÐÑ…É•Ð€ôÉÕ¸€ü½µÁ…É•Q…É•Ð¡ÉÕ¸°Ñ…É•Ñ-•ä°‰…Í•±¥¹”¤€è¹Õ±°ì(€€€€€½¹ÍÐ…ÍÍ•Ð€ôÑ…É•Ð€ü½µÁ…É•Q…É•ÑÍÍ•Ð¡Ñ…É•Ð°‰…Í•±¥¹”¤€è¹Õ±°ì(€€€€€¥˜€ …ÍÑ…Ñ”¹µ…¹¥™•ÍÐ¤ì(€€€€€€€¥µ…•]É…À¹…ÁÁ•¹‘¡¥±¡½µÁ…É•µÁÑä¡ÍÑ…Ñ”¹•ÉÉ½Èñð€5…¹¥™•ÍÐÕ¹…Ù…¥±…‰±”¸œ¤¤ì(€€€€€ô•±Í”¥˜€ …ÉÕ¸ñð€…Ñ…É•Ðñð€……ÍÍ•Ð¤ì(€€€€€€€½¹ÍÐÉ•™•É•¹”€ô‰…Í•±¥¹”€ôôô€¹…Ñ¥Ù”œ€ü€œÔÀÀµµˆµ…Àœ€è€½µµ½¸€ÄääÇŠLÈÀÈÀ½µÁ…É¥Í½¸µ…Àœì(€€€€€€€¥µ…•]É…À¹…ÁÁ•¹‘¡¥±¡½µÁ…É•µÁÑä¡Ñ…É•Ñ-•ä€ü9¼€‘íÉ•™•É•¹•ôÁÕ‰±¥Í¡•™½È€‘íÁ•É¥½‘1…‰•°¡Ñ…É•Ñ-•ä¥ô¹€€è9¼€‘íÉ•™•É•¹•ô¥Ì…Ù…¥±…‰±”¹€¤¤ì(€€€€€ô•±Í”ì(€€€€€€€½¹ÍÐ¥µ…”€ô‘½Õµ•¹Ð¹É•…Ñ•±•µ•¹Ð ¥µœœ¤ì(€€€€€€€¥µ…”¹ÍÉŒ€ô…ÍÍ•ÑA…Ñ ¡…ÍÍ•Ð¹¥µ…”¤ì(€€€€€€€¥µ…”¹…±Ð€ô€‘íµ½‘•°¹±…‰•±ô€ÔÀÀµµˆ¡•¥¡Ð…¹½µ…±ä€‘íÁ•É¥½‘1…‰•°¡Ñ…É•Ð¹Ñ…É•Ñ}µ½¹Ñ ¥ôƒ
+Ü€‘í½µÁ…É•	…Í•±¥¹•1…‰•°¡‰…Í•±¥¹”¥õ€ì(€€€€€€€¥µ…”¹±½…‘¥¹œ€ô€±…éäœì(€€€€€€€¥µ…”¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È •ÉÉ½Èœ°€ ¤€ôø¥µ…•]É…À¹É•Á±…•¡¥±‘É•¸¡½µÁ…É•µÁÑä Q¡”µ…¹¥™•ÍÐÑ…É•Ð•á¥ÍÑÌ°‰ÕÐ¥ÑÌ¥µ…”¥Ì¹½Ð¥¸Ñ¡”ÁÕ‰±¥Í¡•A…•ÌÑÉ•”¸œ¤¤¤ì(€€€€€€€¥µ…•]É…À¹…ÁÁ•¹‘¡¥±¡¥µ…”¤ì(€€€€€ô(€€€€€…É¹…ÁÁ•¹‘¡¥±¡¥µ…•]É…À¤ì(€€€€€½¹ÍÐµ•Ñ…‘…Ñ„€ô‘½Õµ•¹Ð¹É•…Ñ•±•µ•¹Ð Àœ¤ìµ•Ñ…‘…Ñ„¹±…ÍÍ9…µ”€ô€½µÁ…É”µµ•Ñ„œì(€€€€€µ•Ñ…‘…Ñ„¹Ñ•áÑ½¹Ñ•¹Ð€ôÑ…É•Ð€˜˜…ÍÍ•Ð€˜˜ÉÕ¸(€€€€€€€€üY…±¥è€‘íÁ•É¥½‘1…‰•°¡Ñ…É•Ð¹Ñ…É•Ñ}µ½¹Ñ ¥ôƒ
+Ü%¹¥Ðè€‘í¥¹¥Ñ1…‰•°¡ÉÕ¸¹¥¹¥Ñ}ÕÑŒ¥ôƒ
+Ü€‘í½µÁ…É•	…Í•±¥¹•1…‰•°¡‰…Í•±¥¹”¥ôƒ
+Ü€‘í…ÍÍ•Ð¹ÍÑ…ÑÕÌñðÑ…É•Ð¹ÍÑ…ÑÕÌñðÉÕ¸¹ÍÑ…ÑÕÌñð€…Ù…¥±…‰±”õ€(€€€€€€€€è€¡ÍÑ…Ñ”¹µ…¹¥™•ÍÐ€ü€9¼µ…Ñ¡¥¹œÁÕ‰±¥Í¡•Ñ…É•Ð™½ÈÑ¡¥ÌÁ•É¥½¸œ€èU¹…Ù…¥±…‰±”è€‘íÍÑ…Ñ”¹•ÉÉ½Èñð€µ…¹¥™•ÍÐ¹½ÐÁÕ‰±¥Í¡•õ€¤ì(€€€€€…É¹…ÁÁ•¹‘¡¥±¡µ•Ñ…‘…Ñ„¤ì(€€€€€É•ÑÕÉ¸…Éì(€€€ô(€€€™Õ¹Ñ¥½¸É•¹‘•É½µÁ…É” ¤ì(€€€€€½¹ÍÐ½ÁÑ¥½¹Ì€ô½µÁ…É•A•É¥½‘=ÁÑ¥½¹Ì ¤ì(€€€€€½¹ÍÐÍ•±•Ð€ô•° ½µÁ…É”µÑ…É•ÐµÍ•±•Ðœ¤ì(€€€€€½¹ÍÐ‰…Í•±¥¹•M•±•Ð€ô•° ½µÁ…É”µ‰…Í•±¥¹”µÍ•±•Ðœ¤ì(€€€€€½¹ÍÐÉ¥€ô•° ½µÁ…É”µÉ¥œ¤ì(€€€€€¥˜€ …½ÁÑ¥½¹Ì¹±•¹Ñ ¤ì(€€€€€€€Í•±•Ð¹É•Á±…•¡¥±‘É•¸¡=‰©•Ð¹…ÍÍ¥¸¡‘½Õµ•¹Ð¹É•…Ñ•±•µ•¹Ð ½ÁÑ¥½¸œ¤°ìÑ•áÑ½¹Ñ•¹Ðè€9¼µ…Ñ¡¥¹œ€ÔÀÀµµˆÑ…É•ÑÌœô¤¤ì(€€€€€€€Í•±•Ð¹‘¥Í…‰±•€ôÑÉÕ”ì(€€€€€€€‰…Í•±¥¹•M•±•Ð¹É•Á±…•¡¥±‘É•¸¡=‰©•Ð¹…ÍÍ¥¸¡‘½Õµ•¹Ð¹É•…Ñ•±•µ•¹Ð ½ÁÑ¥½¸œ¤°ìÑ•áÑ½¹Ñ•¹Ðè€9¼É•™•É•¹”…Ù…¥±…‰±”œô¤¤ì(€€€€€€€‰…Í•±¥¹•M•±•Ð¹‘¥Í…‰±•€ôÑÉÕ”ì(€€€€€€€Í•±•Ñ¥½¸¹½µÁ…É•Q…É•Ð€ô€œœì(€€€€€€€Í•±•Ñ¥½¸¹½µÁ…É•	…Í•±¥¹”€ô€œœì(€€€€€€€•° ½µÁ…É”µÍÕµµ…Éäœ¤¹Ñ•áÑ½¹Ñ•¹Ð€ô€œÔÀÀµµˆ¡•¥¡Ð…¹½µ…±äƒ
+Ü¹¼µ…Ñ¡¥¹œÑ…É•Ð¡…Ì‰••¸ÁÕ‰±¥Í¡•…É½ÍÌÑ¡”µ½‘•°µ…¹¥™•ÍÑÌœì(€€€€€€€É¥¹É•Á±…•¡¥±‘É•¸ ¸¸¹=5AI}5=1L¹µ…À¡µ½‘•±-•ä€ôøÉ•¹‘•É½µÁ…É•…É¡µ½‘•±-•ä°€œœ¤¤¤ì(€€€€€€€•° ™½½Ñ•Èµ½Áäœ¤¹Ñ•áÑ½¹Ñ•¹Ð€ô€œÔÀÀµµˆ¡•¥¡Ð…¹½µ…±ä½µÁ…É¥Í½¸ƒ
+ÜMØÈƒ
+Ü5]MLÔƒ
+Ü…¹M%ALØÌƒ
+ÜÍLµÕ±Ñ¤µÍåÍÑ•´ƒ
+Ü)5ƒ
+ÜA55œì(€€€€€€€É•ÑÕÉ¸ì(€€€€€ô(€€€€€½¹ÍÐÁÉ•™•ÉÉ•€ô½ÁÑ¥½¹Ì¹™¥¹¡¥Ñ•´€ôø€½yq‘ìÙôµq‘ìÙô¼¹Ñ•ÍÐ¡MÑÉ¥¹œ¡¥Ñ•´¹Ù…±Õ”¤¤¤ñð½ÁÑ¥½¹Ím½ÁÑ¥½¹Ì¹±•¹Ñ €´€Åtì(€€€€€¥˜€ …½ÁÑ¥½¹Ì¹Í½µ”¡¥Ñ•´€ôøMÑÉ¥¹œ¡¥Ñ•´¹Ù…±Õ”¤€ôôôMÑÉ¥¹œ¡Í•±•Ñ¥½¸¹½µÁ…É•Q…É•Ð¤¤¤Í•±•Ñ¥½¸¹½µÁ…É•Q…É•Ð€ôÁÉ•™•ÉÉ•¹Ù…±Õ”ì(€€€€€Á½ÁÕ±…Ñ”¡Í•±•Ð°½ÁÑ¥½¹Ì°Í•±•Ñ¥½¸¹½µÁ…É•Q…É•Ð¤ì(€€€€€Í•±•Ñ¥½¸¹½µÁ…É•Q…É•Ð€ôÍ•±•Ð¹Ù…±Õ”ñðÁÉ•™•ÉÉ•¹Ù…±Õ”ì(€€€€€¥˜€ …Í•±•Ñ¥½¸¹½µÁ…É•	…Í•±¥¹”¤Í•±•Ñ¥½¸¹½µÁ…É•	…Í•±¥¹”€ô€¹…Ñ¥Ù”œì(€€€€€Á½ÁÕ±…Ñ”¡‰…Í•±¥¹•M•±•Ð°=5AI}	M1%9L°Í•±•Ñ¥½¸¹½µÁ…É•	…Í•±¥¹”¤ì(€€€€€Í•±•Ñ¥½¸¹½µÁ…É•	…Í•±¥¹”€ô‰…Í•±¥¹•M•±•Ð¹Ù…±Õ”ñð€¹…Ñ¥Ù”œì(€€€€€½¹ÍÐ…Ù…¥±…‰±•½Õ¹Ð€ô=5AI}5=1L¹™¥±Ñ•È¡µ½‘•±-•ä€ôø	½½±•…¸¡½µÁ…É•IÕ¹½ÉQ…É•Ð¡µ½‘•±-•ä°Í•±•Ñ¥½¸¹½µÁ…É•Q…É•Ð°Í•±•Ñ¥½¸¹½µÁ…É•	…Í•±¥¹”¤¤¤¹±•¹Ñ ì(€€€€€•° ½µÁ…É”µÍÕµµ…Éäœ¤¹Ñ•áÑ½¹Ñ•¹Ð€ô€‘íÁ•É¥½‘1…‰•°¡Í•±•Ñ¥½¸¹½µÁ…É•Q…É•Ð¥ôƒ
+Ü€‘í½µÁ…É•	…Í•±¥¹•1…‰•°¡Í•±•Ñ¥½¸¹½µÁ…É•	…Í•±¥¹”¥ôƒ
+Ü€‘í…Ù…¥±…‰±•½Õ¹Ñô¼‘í=5AI}5=1L¹±•¹Ñ¡ôµ½‘•°µ…ÁÌ…Ù…¥±…‰±•€ì(€€€€€É¥¹É•Á±…•¡¥±‘É•¸ ¸¸¹=5AI}5=1L¹µ…À¡µ½‘•±-•ä€ôøÉ•¹‘•É½µÁ…É•…É¡µ½‘•±-•ä°Í•±•Ñ¥½¸¹½µÁ…É•Q…É•Ð¤¤¤ì(€€€€€•° ™½½Ñ•Èµ½Áäœ¤¹Ñ•áÑ½¹Ñ•¹Ð€ô€ÔÀÀµµˆ¡•¥¡Ð…¹½µ…±ä½µÁ…É¥Í½¸ƒ
+Ü€‘í½µÁ…É•	…Í•±¥¹•1…‰•°¡Í•±•Ñ¥½¸¹½µÁ…É•	…Í•±¥¹”¥ôƒ
+ÜMØÈƒ
+Ü5]MLÔƒ
+Ü…¹M%ALØÌƒ
+Ü)5ƒ
+ÜA55€ì(€€€ô(€€€™Õ¹Ñ¥½¸É•¹‘•É½¹ÑÉ½±Ì¡µ½‘•°°ÉÕ¸°Ñ…É•ÑÌ¤ì(€€€€€½¹ÍÐ½¹ÑÉ½±Ì€ô•° Ñ…É•Ðµ½¹ÑÉ½±Ìœ¤ì½¹ÑÉ½±Ì¹É•Á±…•¡¥±‘É•¸ ¤ì4(€€€€€Ñ…É•ÑÌ¹™½É…  ¡Ñ…É•Ð°¥¹‘•à¤€ôøì½¹ÍÐ‰ÕÑÑ½¸€ô‘½Õµ•¹Ð¹É•…Ñ•±•µ•¹Ð ‰ÕÑÑ½¸œ¤ì‰ÕÑÑ½¸¹ÑåÁ”€ô€‰ÕÑÑ½¸œì‰ÕÑÑ½¸¹Ñ•áÑ½¹Ñ•¹Ð€ôÑ…É•Ð¹±…‰•°ì‰ÕÑÑ½¸¹±…ÍÍ1¥ÍÐ¹Ñ½±” …Ñ¥Ù”œ°MÑÉ¥¹œ¡Ñ…É•Ð¹­•ä¤€ôôôMÑÉ¥¹œ¡Í•±•Ñ¥½¸¹Ñ…É•Ð¤¤ì‰ÕÑÑ½¸¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ±¥¬œ°€ ¤€ôøìÍ•±•Ñ¥½¸¹Ñ…É•Ð€ôÑ…É•Ð¹­•äìÉ•¹‘•É±° ¤ìô¤ì½¹ÑÉ½±Ì¹…ÁÁ•¹‘¡¥±¡‰ÕÑÑ½¸¤ìô¤ì4(€€€€€¥˜€¡¥ÍM¹½ÝAÉ½‘ÕÐ¡µ½‘•°°Í•±•Ñ¥½¸¹ÁÉ½‘ÕÐ¤¤ì4(€€€€€€€½¹ÍÐÝÉ…ÁÁ•È€ô‘½Õµ•¹Ð¹É•…Ñ•±•µ•¹Ð ±…‰•°œ¤ìÝÉ…ÁÁ•È¹±…ÍÍ9…µ”€ô€É…Ñ¥¼µ½¹ÑÉ½°œìÝÉ…ÁÁ•È¹¥€ô€É…Ñ¥¼µ½¹ÑÉ½°œìÝÉ…ÁÁ•È¹¥¹¹•É!Q50€ô€œñÍÁ…¸±…ÍÌô‰½¹ÑÉ½°µ±…‰•°ˆùM¹½ÜÉ…Ñ¥¼ð½ÍÁ…¸øñÍ•±•Ð¥ô‰É…Ñ¥¼µÍ•±•Ðˆøð½Í•±•Ðøœì4(€€€€€€€½¹ÑÉ½±Ì¹…ÁÁ•¹‘¡¥±¡ÝÉ…ÁÁ•È¤ì4(€€€€€€€½¹ÍÐÉ…Ñ¥½Ì€ô¹Õµ‰•É1¥ÍÐ¡ÉÕ¸ü¹ÁÉ½‘ÕÑ}Í¹½Ý}É…Ñ¥½Ìü¹mÍ•±•Ñ¥½¸¹ÁÉ½‘ÕÑtñðÉÕ¸ü¹Í¹½Ý}É…Ñ¥½Ì°€ÄÀ°€ÈÀ¤ì½¹ÍÐÉ…Ñ¥½M•±•Ð€ôÝÉ…ÁÁ•È¹ÅÕ•ÉåM•±•Ñ½È Í•±•Ðœ¤ì4(€€€€€€€Á½ÁÕ±…Ñ”¡É…Ñ¥½M•±•Ð°€¡É…Ñ¥½Ì¹±•¹Ñ €üÉ…Ñ¥½Ì€èlÄÁt¤¹µ…À¡Ù…±Õ”€ôø€¡ìÙ…±Õ”°±…‰•°è€‘íÙ…±Õ•ôèÅ€ô¤¤°Í•±•Ñ¥½¸¹É…Ñ¥¼¤ì4(€€€€€€€Í•±•Ñ¥½¸¹É…Ñ¥¼€ôÉ…Ñ¥½M•±•Ð¹Ù…±Õ”ñð€œÄÀœìÉ…Ñ¥½M•±•Ð¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ¡…¹”œ°€ ¤€ôøìÍ•±•Ñ¥½¸¹É…Ñ¥¼€ôÉ…Ñ¥½M•±•Ð¹Ù…±Õ”ìÉ•¹‘•É±° ¤ìô¤ì4(€€€€€ô4(€€€ô4(€€€™Õ¹Ñ¥½¸É•¹‘•É±° ¤ì4(€€€€€É•¹‘•É5½‘•±=ÁÑ¥½¹Ì ¤ì4(€€€€€½¹ÍÐµ½‘•°€ô5=1}=9%mÍ•±•Ñ¥½¸¹µ½‘•±tì½¹ÍÐµ½‘•±MÑ…Ñ”€ôµ½‘•±MÑ…Ñ•ÍmÍ•±•Ñ¥½¸¹µ½‘•±tì4(€€€€€¥˜€ …µ½‘•±MÑ…Ñ”¹µ…¹¥™•ÍÐ¤ìÉ•¹‘•ÉU¹…Ù…¥±…‰±”¡µ½‘•°¤ìÉ•ÑÕÉ¸ìô4(€€€€€½¹ÍÐÁÉ½‘ÕÑÌ€ôµ…¹¥™•ÍÑAÉ½‘ÕÑÌ¡µ½‘•°¤ìÍ•±•Ñ¥½¸¹ÁÉ½‘ÕÐ€ôÁÉ½‘ÕÑÌ¹¥¹±Õ‘•Ì¡Í•±•Ñ¥½¸¹ÁÉ½‘ÕÐ¤€üÍ•±•Ñ¥½¸¹ÁÉ½‘ÕÐ€è€¡ÁÉ½‘ÕÑÍlÁtñð€œœ¤ì4(€€€€€Á½ÁÕ±…Ñ”¡•° ÁÉ½‘ÕÐµÍ•±•Ðœ¤°ÁÉ½‘ÕÑÌ¹µ…À¡Ù…±Õ”€ôø€¡ìÙ…±Õ”°±…‰•°èÁÉ½‘ÕÑ1…‰•°¡µ½‘•°°Ù…±Õ”¤ô¤¤°Í•±•Ñ¥½¸¹ÁÉ½‘ÕÐ¤ì4(€€€€€½¹ÍÐÉÕ¹Ì€ôµ½‘•±MÑ…Ñ”¹ÉÕ¹Ì¹™¥±Ñ•È¡ÉÕ¸€ôøÍÕÁÁ½ÉÑÍAÉ½‘ÕÐ¡µ½‘•°°ÉÕ¸°Í•±•Ñ¥½¸¹ÁÉ½‘ÕÐ¤¤ì4(€€€€€Í•±•Ñ¥½¸¹ÉÕ¸€ôÉÕ¹Ì¹Í½µ”¡ÉÕ¸€ôøMÑÉ¥¹œ¡ÉÕ¸¹¥¤€ôôôMÑÉ¥¹œ¡Í•±•Ñ¥½¸¹ÉÕ¸¤¤€üÍ•±•Ñ¥½¸¹ÉÕ¸€èMÑÉ¥¹œ¡ÉÕ¹ÍlÁtü¹¥ñð€œœ¤ì4(€€€€€Á½ÁÕ±…Ñ”¡•° ÉÕ¸µÍ•±•Ðœ¤°ÉÕ¹Ì¹µ…À¡ÉÕ¸€ôø€¡ìÙ…±Õ”èÉÕ¸¹¥°±…‰•°èÉÕ¹1…‰•°¡µ½‘•°°ÉÕ¸¤ô¤¤°Í•±•Ñ¥½¸¹ÉÕ¸¤ì4(€€€€€½¹ÍÐÉÕ¸€ôÍ•±•Ñ•‘IÕ¸¡µ½‘•°¤ì½¹ÍÐÑ…É•ÑÌ€ôÑ…É•Ñ%Ñ•µÌ¡µ½‘•°°ÉÕ¸¤ì4(€€€€€½¹ÍÐÁÉ•™•ÉÉ•‘Q…É•Ð€ôÑ…É•ÑÌ¹™¥¹¡Ñ…É•Ð€ôøµ½‘•°¹­¥¹€ôôô€Í•…Í½¹…°œ€˜˜€½yq‘ìÙôµq‘ìÙô¼¹Ñ•ÍÐ¡MÑÉ¥¹œ¡Ñ…É•Ð¹Ù…±Õ”ü¹Ñ…É•Ñ}µ½¹Ñ ñð€œœ¤¤¤ñðÑ…É•ÑÍlÁtì4(€€€€€Í•±•Ñ¥½¸¹Ñ…É•Ð€ôÑ…É•ÑÌ¹Í½µ”¡Ñ…É•Ð€ôøMÑÉ¥¹œ¡Ñ…É•Ð¹­•ä¤€ôôôMÑÉ¥¹œ¡Í•±•Ñ¥½¸¹Ñ…É•Ð¤¤€üÍ•±•Ñ¥½¸¹Ñ…É•Ð€èMÑÉ¥¹œ¡ÁÉ•™•ÉÉ•‘Q…É•Ðü¹­•äñð€œœ¤ì4(€€€€€É•¹‘•É½¹ÑÉ½±Ì¡µ½‘•°°ÉÕ¸°Ñ…É•ÑÌ¤ì4(€€€€€½¹ÍÐÑ…É•Ð€ôÑ…É•ÑÌ¹™¥¹¡¥Ñ•´€ôøMÑÉ¥¹œ¡¥Ñ•´¹­•ä¤€ôôôMÑÉ¥¹œ¡Í•±•Ñ¥½¸¹Ñ…É•Ð¤¤ñðÑ…É•ÑÍlÁtì4(€€€€€¥˜€ …ÉÕ¸ñð€…Ñ…É•Ð¤ìÍ•Ñ5•ÍÍ…” 9¼É•¹‘•É•Ñ…É•Ð¥Ì…Ù…¥±…‰±”™½ÈÑ¡”Í•±•Ñ•Á…É…µ•Ñ•È¸œ¤ìÉ•ÑÕÉ¸ìô4(€€€€€½¹ÍÐÑ…É•ÑY…±Õ”€ôÑ…É•Ð¹Ù…±Õ”ì4(€€€€€½¹ÍÐ±…‰•°€ôÁÉ½‘ÕÑ1…‰•°¡µ½‘•°°Í•±•Ñ¥½¸¹ÁÉ½‘ÕÐ¤ì4(€€€€€•° ™…Ðµµ½‘•°œ¤¹Ñ•áÑ½¹Ñ•¹Ð€ôµ½‘•°¹±…‰•°ì•° ™…ÐµÑ…É•Ðœ¤¹Ñ•áÑ½¹Ñ•¹Ð€ôµ½‘•°¹­¥¹€ôôô€Ý•…Ñ¡•É¹•áÐœ€üÑ…É•ÑQ•áÐ¡µ½‘•°°Ñ…É•Ð¤€èÁ•É¥½‘1…‰•°¡Ñ…É•ÑY…±Õ”¹Ñ…É•Ñ}µ½¹Ñ ñðÑ…É•ÑY…±Õ”¹Ù…±¥‘}ÍÑ…ÉÑ}ÕÑŒ¤ì4(€€€€€•° ™…Ðµ±•…œ¤¹Ñ•áÑ½¹Ñ•¹Ð€ô±•…‘Q•áÐ¡µ½‘•°°Ñ…É•Ð¤ì•° ™…Ðµ•¹Í•µ‰±”œ¤¹Ñ•áÑ½¹Ñ•¹Ð€ô•¹Í•µ‰±•Q•áÐ¡µ½‘•°°ÉÕ¸°Ñ…É•Ð¤ì•° ™…Ðµ™¥•±œ¤¹Ñ•áÑ½¹Ñ•¹Ð€ô™¥•±‘Q•áÐ¡Ñ…É•Ð¤ì•° ™…ÐµÍÑ…ÑÕÌœ¤¹Ñ•áÑ½¹Ñ•¹Ð€ôÑ…É•ÑY…±Õ”ü¹ÍÑ…ÑÕÌñðÉÕ¸¹ÍÑ…ÑÕÌñð€…Ù…¥±…‰±”œì4(€€€€€¥˜€¡µ½‘•°¹­¥¹€ôôô€Ý•…Ñ¡•É¹•áÐœ¤ì4(€€€€€€€•° Í½Á”œ¤¹Ñ•áÑ½¹Ñ•¹Ð€ô€‘íÉÕ¸¹Í½ÕÉ•}±…‰•°ñðÉÕ¸¹Í½ÕÉ”ñðµ½‘•°¹Í½ÕÉ•ôƒ
+ÜUÁ‘…Ñ•€‘í¥¹¥Ñ1…‰•°¡ÉÕ¸¹ÕÁ‘…Ñ•‘}ÕÑŒ¥ô¸€‘íÉÕ¸¹ÍÕ•ÍÍ™Õ±}•áÁ½ÉÑÌñð€ÁôÍÕ•ÍÍ™Õ°•áÁ½ÉÑÌ¹€ì4(€€€€€ô•±Í”ì4(€€€€€€€½¹ÍÐ‰…Í•±¥¹”€ôÉÕ¸¹±¥µ…Ñ½±½äü¹Í½ÕÉ”ñðÑ…É•ÑY…±Õ”ü¹‰…Í•±¥¹”ü¹Í½ÕÉ”ñð€µ½‘•°…±¥‰É…Ñ¥½¸‰…Í•±¥¹”œì4(€€€€€€€•° Í½Á”œ¤¹Ñ•áÑ½¹Ñ•¹Ð€ô€‘íÉÕ¸¹…É•…Ñ¥½¸ñð€M•…Í½¹…°•¹Í•µ‰±”µ•…¸ô™É½´€‘í¥¹¥Ñ1…‰•°¡ÉÕ¸¹¥¹¥Ñ}ÕÑŒ¥ô¸	…Í•±¥¹”è€‘í‰…Í•±¥¹•ô¹€ì4(€€€€€ô4(€€€€€•° Í½ÕÉ”µ‘•Ñ…¥°œ¤¹Ñ•áÑ½¹Ñ•¹Ð€ôM½ÕÉ”è€‘íÉÕ¸¹Í½ÕÉ”ñðÉÕ¸¹Í½ÕÉ•}±…‰•°ñðµ½‘•°¹Í½ÕÉ•õ€ì4(€€€€€•° Í½ÕÉ”µ±¥¹¬œ¤¹¡É•˜€ôÉÕ¸¹Í½ÕÉ•}ÕÉ°ñðµ½‘•°¹‘¥É•Ðì•° ‘¥É•Ðµ±¥¹¬œ¤¹¡É•˜€ôµ½‘•°¹‘¥É•Ðì4(€€€€€½¹ÍÐ¥µ…”€ô¥µ…•A…Ñ ¡µ½‘•°°ÉÕ¸°Ñ…É•Ð¤ìÍ•Ñ5•ÍÍ…” œœ¤ì4(€€€€€•° µ…ÀµÝÉ…Àœ¤¹É•Á±…•¡¥±‘É•¸ ¤ì4(€€€€€¥˜€¡¥µ…”¤ì½¹ÍÐ¥µ…•±•µ•¹Ð€ô‘½Õµ•¹Ð¹É•…Ñ•±•µ•¹Ð ¥µœœ¤ì¥µ…•±•µ•¹Ð¹ÍÉŒ€ô¥µ…”ì¥µ…•±•µ•¹Ð¹…±Ð€ô€‘íµ½‘•°¹±…‰•±ô€‘í±…‰•±ô€‘íÑ…É•ÑQ•áÐ¡µ½‘•°°Ñ…É•Ð¥õ€ì¥µ…•±•µ•¹Ð¹±½…‘¥¹œ€ô€•…•Èœì¥µ…•±•µ•¹Ð¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È •ÉÉ½Èœ°€ ¤€ôøìÍ•Ñ5•ÍÍ…” Q¡”µ…¹¥™•ÍÐ¥Ì…Ù…¥±…‰±”°‰ÕÐÑ¡¥Ì¥µ…”¥Ì¹½ÐÁÉ•Í•¹Ð¥¸Ñ¡”ÁÕ‰±¥Í¡•A…•ÌÑÉ•”¸œ¤ìô¤ì•° µ…ÀµÝÉ…Àœ¤¹…ÁÁ•¹‘¡¥±¡¥µ…•±•µ•¹Ð¤ìô•±Í”Í•Ñ5•ÍÍ…” 9¼É•¹‘•É•¥µ…”¥Ì…Ù…¥±…‰±”™½ÈÑ¡¥ÌÑ…É•Ð¸œ¤ì4(€€€€€½¹ÍÐÝ…É¹¥¹œ€ô•° Ý…É¹¥¹œœ¤ì4(€€€€€¥˜€¡Ñ…É•ÑY…±Õ”ü¹ÍÑ…ÑÕÌ€ôôô€™…¥±•œ¤ìÝ…É¹¥¹œ¹ÍÑå±”¹‘¥ÍÁ±…ä€ô€‰±½¬œìÝ…É¹¥¹œ¹Ñ•áÑ½¹Ñ•¹Ð€ôÑ…É•ÑY…±Õ”¹•ÉÉ½Èñð€Q¡¥ÌÑ…É•Ð™…¥±•ìÉ•Ñ…¥¹•¡¥ÍÑ½ÉäÉ•µ…¥¹ÌÍ•±•Ñ…‰±”¸œìô4(€€€€€•±Í”¥˜€¡Ñ…É•ÑY…±Õ”ü¹ÍÑ…ÑÕÌ€ôôô€Á…ÉÑ¥…°œñðÉÕ¸¹ÍÑ…ÑÕÌ€ôôô€Á…ÉÑ¥…°œ¤ìÝ…É¹¥¹œ¹ÍÑå±”¹‘¥ÍÁ±…ä€ô€‰±½¬œìÝ…É¹¥¹œ¹Ñ•áÑ½¹Ñ•¹Ð€ô€Q¡¥ÌÉÕ¸¥ÌÁ…ÉÑ¥…°ìÉ•Ñ…¥¹•¡¥ÍÑ½ÉäÉ•µ…¥¹ÌÍ•±•Ñ…‰±”¸œìô4(€€€€€•±Í”¥˜€¡ÉÕ¸¹Í½ÕÉ•}Ý…É¹¥¹œ¤ìÝ…É¹¥¹œ¹ÍÑå±”¹‘¥ÍÁ±…ä€ô€‰±½¬œìÝ…É¹¥¹œ¹Ñ•áÑ½¹Ñ•¹Ð€ôÉÕ¸¹Í½ÕÉ•}Ý…É¹¥¹œìô(€€€€€•±Í”Ý…É¹¥¹œ¹ÍÑå±”¹‘¥ÍÁ±…ä€ô€¹½¹”œì(€€€€€•° ™½½Ñ•Èµ½Áäœ¤¹Ñ•áÑ½¹Ñ•¹Ð€ô€‘íµ½‘•°¹Í½ÕÉ•ôƒ
+Ü€‘íµ½‘•±MÑ…Ñ”¹µ…¹¥™•ÍÐ¹•¹•É…Ñ•‘}ÕÑŒ€ü5…¹¥™•ÍÐ•¹•É…Ñ•€‘í¥¹¥Ñ1…‰•°¡µ½‘•±MÑ…Ñ”¹µ…¹¥™•ÍÐ¹•¹•É…Ñ•‘}ÕÑŒ¥õ€€è€AÕ‰±¥Í¡•µ…¹¥™•ÍÐ±½…‘•ôƒ
+Ü¥É•Ðµ½‘•°Á…•ÌÉ•µ…¥¸…Ù…¥±…‰±”¹€ì(€€€ô(€€€™Õ¹Ñ¥½¸É•¹‘•ÉÕÉÉ•¹ÑY¥•Ü ¤ì¥˜€¡Í•±•Ñ¥½¸¹Ù¥•Ü€ôôô€½µÁ…É”œ¤É•¹‘•É½µÁ…É” ¤ì•±Í”É•¹‘•É±° ¤ìô(€€€™Õ¹Ñ¥½¸Í•ÑY¥•Ü¡Ù¥•Ü¤ì(€€€€€Í•±•Ñ¥½¸¹Ù¥•Ü€ôÙ¥•Ü€ôôô€½µÁ…É”œ€ü€½µÁ…É”œ€è€Í¥¹±”œì(€€€€€½¹ÍÐ¥Í½µÁ…É”€ôÍ•±•Ñ¥½¸¹Ù¥•Ü€ôôô€½µÁ…É”œì(€€€€€•° Í¥¹±”µÑ…ˆœ¤¹±…ÍÍ1¥ÍÐ¹Ñ½±” …Ñ¥Ù”œ°€…¥Í½µÁ…É”¤ì•° Í¥¹±”µÑ…ˆœ¤¹Í•ÑÑÑÉ¥‰ÕÑ” …É¥„µÍ•±•Ñ•œ°MÑÉ¥¹œ …¥Í½µÁ…É”¤¤ì(€€€€€•° ½µÁ…É”µÑ…ˆœ¤¹±…ÍÍ1¥ÍÐ¹Ñ½±” …Ñ¥Ù”œ°¥Í½µÁ…É”¤ì•° ½µÁ…É”µÑ…ˆœ¤¹Í•ÑÑÑÉ¥‰ÕÑ” …É¥„µÍ•±•Ñ•œ°MÑÉ¥¹œ¡¥Í½µÁ…É”¤¤ì(€€€€€•° Í¥¹±”µÑ½½±‰…Èœ¤¹¡¥‘‘•¸€ô¥Í½µÁ…É”ì•° Í¥¹±”µÙ¥•Üœ¤¹¡¥‘‘•¸€ô¥Í½µÁ…É”ì•° ½µÁ…É”µÙ¥•Üœ¤¹¡¥‘‘•¸€ô€…¥Í½µÁ…É”ì(€€€€€É•¹‘•ÉÕÉÉ•¹ÑY¥•Ü ¤ì(€€€ô(€€€•° µ½‘•°µÍ•±•Ðœ¤¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ¡…¹”œ°•Ù•¹Ð€ôøìÍ•±•Ñ¥½¸¹µ½‘•°€ô•Ù•¹Ð¹Ñ…É•Ð¹Ù…±Õ”ìÍ•±•Ñ¥½¸¹ÁÉ½‘ÕÐ€ô€œœìÍ•±•Ñ¥½¸¹ÉÕ¸€ô€œœìÍ•±•Ñ¥½¸¹Ñ…É•Ð€ô€œœìÉ•¹‘•É±° ¤ìô¤ì(€€€•° ÁÉ½‘ÕÐµÍ•±•Ðœ¤¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ¡…¹”œ°•Ù•¹Ð€ôøìÍ•±•Ñ¥½¸¹ÁÉ½‘ÕÐ€ô•Ù•¹Ð¹Ñ…É•Ð¹Ù…±Õ”ìÍ•±•Ñ¥½¸¹ÉÕ¸€ô€œœìÍ•±•Ñ¥½¸¹Ñ…É•Ð€ô€œœìÉ•¹‘•É±° ¤ìô¤ì(€€€•° ÉÕ¸µÍ•±•Ðœ¤¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ¡…¹”œ°•Ù•¹Ð€ôøìÍ•±•Ñ¥½¸¹ÉÕ¸€ô•Ù•¹Ð¹Ñ…É•Ð¹Ù…±Õ”ìÍ•±•Ñ¥½¸¹Ñ…É•Ð€ô€œœìÉ•¹‘•É±° ¤ìô¤ì(€€€•° Í¥¹±”µÑ…ˆœ¤¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ±¥¬œ°€ ¤€ôøÍ•ÑY¥•Ü Í¥¹±”œ¤¤ì(€€€•° ½µÁ…É”µÑ…ˆœ¤¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ±¥¬œ°€ ¤€ôøÍ•ÑY¥•Ü ½µÁ…É”œ¤¤ì(€€€•° ½µÁ…É”µÑ…É•ÐµÍ•±•Ðœ¤¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ¡…¹”œ°•Ù•¹Ð€ôøìÍ•±•Ñ¥½¸¹½µÁ…É•Q…É•Ð€ô•Ù•¹Ð¹Ñ…É•Ð¹Ù…±Õ”ìÉ•¹‘•É½µÁ…É” ¤ìô¤ì(€€€•° ½µÁ…É”µ‰…Í•±¥¹”µÍ•±•Ðœ¤¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ¡…¹”œ°•Ù•¹Ð€ôøìÍ•±•Ñ¥½¸¹½µÁ…É•	…Í•±¥¹”€ô•Ù•¹Ð¹Ñ…É•Ð¹Ù…±Õ”ìÉ•¹‘•É½µÁ…É” ¤ìô¤ì(€€€É•¹‘•É5½‘•±=ÁÑ¥½¹Ì ¤ì(€€€AÉ½µ¥Í”¹…±°¡=‰©•Ð¹•¹ÑÉ¥•Ì¡5=1}=9%¤¹µ…À¡…Íå¹Œ€¡m­•ä°½¹™¥t¤€ôøì4(€€€€€ÑÉäì½¹ÍÐÉ•ÍÁ½¹Í”€ô…Ý…¥Ð™•Ñ ¡½¹™¥œ¹µ…¹¥™•ÍÐ¤ì¥˜€ …É•ÍÁ½¹Í”¹½¬¤Ñ¡É½Ü¹•ÜÉÉ½È¡5…¹¥™•ÍÐÉ•ÑÕÉ¹•€‘íÉ•ÍÁ½¹Í”¹ÍÑ…ÑÕÍõ€¤ì½¹ÍÐµ…¹¥™•ÍÐ€ô…Ý…¥ÐÉ•ÍÁ½¹Í”¹©Í½¸ ¤ìµ½‘•±MÑ…Ñ•Ím­•åt¹µ…¹¥™•ÍÐ€ôµ…¹¥™•ÍÐìµ½‘•±MÑ…Ñ•Ím­•åt¹ÉÕ¹Ì€ôÉÉ…ä¹¥ÍÉÉ…ä¡µ…¹¥™•ÍÐ¹ÉÕ¹Ì¤€üµ…¹¥™•ÍÐ¹ÉÕ¹Ì¹™¥±Ñ•È¡ÉÕ¸€ôøÉÕ¸€˜˜ÉÕ¸¹¥¤€èmtìô4(€€€€€…Ñ €¡•ÉÉ½È¤ìµ½‘•±MÑ…Ñ•Ím­•åt¹•ÉÉ½È€ô•ÉÉ½È¹µ•ÍÍ…”ìô4(€€€ô¤¤¹Ñ¡•¸  ¤€ôøì(€€€€€¥˜€ …µ½‘•±MÑ…Ñ•ÍmÍ•±•Ñ¥½¸¹µ½‘•±t¹µ…¹¥™•ÍÐ¤Í•±•Ñ¥½¸¹µ½‘•°€ô=‰©•Ð¹­•åÌ¡5=1}=9%¤¹™¥¹¡­•ä€ôøµ½‘•±MÑ…Ñ•Ím­•åt¹µ…¹¥™•ÍÐ¤ñðÍ•±•Ñ¥½¸¹µ½‘•°ì(€€€€€É•¹‘•ÉÕÉÉ•¹ÑY¥•Ü ¤ì(€€€ô¤ì(€€ð½ÍÉ¥ÁÐø4(ð½‰½‘äø4(ð½¡Ñµ°ø4
