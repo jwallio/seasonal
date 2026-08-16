@@ -1,0 +1,273 @@
+{
+  "schema_version": 1,
+  "kind": "apcc_seasonal_manifest",
+  "generated_utc": "2026-08-16T21:43:55Z",
+  "source": "APCC multi-model ensemble via CLIK",
+  "source_url": "https://apcc21.org/clik/processing/prediction",
+  "source_urls": [
+    "https://apcc21.org/clik/processing/prediction",
+    "https://apcc21.org/clik/dataset/mme/3-MON?lang=en",
+    "https://apcc21.org/clik/clikapi?lang=en"
+  ],
+  "acknowledgement": "APCC MME data collected and reproduced by APCC based on hindcast/forecast data produced by APCC MME Producing Centres.",
+  "product_labels": {
+    "500mb_height_anomaly": "500-mb Height Anomaly",
+    "850mb_temperature_anomaly": "850-mb Temperature Anomaly",
+    "2m_temperature_anomaly": "2-m Temperature Anomaly",
+    "precipitation_anomaly": "Precipitation Anomaly",
+    "sea_surface_temperature_anomaly": "Sea-Surface Temperature Anomaly",
+    "mslp_anomaly": "MSLP Anomaly"
+  },
+  "retention": {
+    "max_cycles": 4,
+    "history_cycles": 3
+  },
+  "runs": [
+    {
+      "id": "apcc-202608-sea_surface_temperature_anomaly",
+      "init_utc": "2026-08-01T00:00:00Z",
+      "product": "sea_surface_temperature_anomaly",
+      "status": "rendered",
+      "source": "APCC multi-model ensemble via CLIK",
+      "source_url": "https://apcc21.org/clik/processing/prediction",
+      "dataset": "MME_3MONTH",
+      "lead_month": "3-MON",
+      "resolution": "1.0",
+      "method": "SCM",
+      "targets": [
+        {
+          "id": "apcc-202608-ssta-202612-202702",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": "3-MON",
+          "target_month": "202612-202702",
+          "period_label": "DJF 2027",
+          "aggregation": "native APCC seasonal mean",
+          "field": "sst_anomaly",
+          "units": "\u00b0C",
+          "raw_field": "sea-surface temperature anomaly",
+          "raw_units": "K",
+          "statistic": "APCC multi-model ensemble mean",
+          "ensemble_scope": "APCC MME seasonal product",
+          "source_urls": [
+            "https://apcc21.org/clik/dataset/mme/3-MON?lang=en",
+            "https://apcc21.org/clik/clikapi?lang=en"
+          ],
+          "status": "rendered",
+          "image": "public/seasonal/apcc/202608/apcc_ssta_202612-202702.jpg",
+          "source_file": ".cache/apcc/extracted/mme_3month_3-mon_202608_prec_slp_sst_t2m_t850_z500/FORECAST_SCM_AUG_ASO_2026_sst.nc",
+          "baseline": {
+            "status": "native_source_anomaly",
+            "label": "Native APCC MME anomaly"
+          }
+        }
+      ],
+      "output_dir": "public/seasonal/apcc"
+    },
+    {
+      "id": "apcc-202608-precipitation_anomaly",
+      "init_utc": "2026-08-01T00:00:00Z",
+      "product": "precipitation_anomaly",
+      "status": "rendered",
+      "source": "APCC multi-model ensemble via CLIK",
+      "source_url": "https://apcc21.org/clik/processing/prediction",
+      "dataset": "MME_3MONTH",
+      "lead_month": "3-MON",
+      "resolution": "1.0",
+      "method": "SCM",
+      "targets": [
+        {
+          "id": "apcc-202608-preca-202612-202702",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": "3-MON",
+          "target_month": "202612-202702",
+          "period_label": "DJF 2027",
+          "aggregation": "native APCC seasonal mean",
+          "field": "precipitation_anomaly",
+          "units": "mm",
+          "raw_field": "precipitation anomaly",
+          "raw_units": "native APCC units",
+          "statistic": "APCC multi-model ensemble mean",
+          "ensemble_scope": "APCC MME seasonal product",
+          "source_urls": [
+            "https://apcc21.org/clik/dataset/mme/3-MON?lang=en",
+            "https://apcc21.org/clik/clikapi?lang=en"
+          ],
+          "status": "rendered",
+          "image": "public/seasonal/apcc/202608/apcc_preca_202612-202702.jpg",
+          "source_file": ".cache/apcc/extracted/mme_3month_3-mon_202608_prec_slp_sst_t2m_t850_z500/FORECAST_SCM_AUG_ASO_2026_prec.nc",
+          "baseline": {
+            "status": "native_source_anomaly",
+            "label": "Native APCC MME anomaly"
+          }
+        }
+      ],
+      "output_dir": "public/seasonal/apcc"
+    },
+    {
+      "id": "apcc-202608-mslp_anomaly",
+      "init_utc": "2026-08-01T00:00:00Z",
+      "product": "mslp_anomaly",
+      "status": "rendered",
+      "source": "APCC multi-model ensemble via CLIK",
+      "source_url": "https://apcc21.org/clik/processing/prediction",
+      "dataset": "MME_3MONTH",
+      "lead_month": "3-MON",
+      "resolution": "1.0",
+      "method": "SCM",
+      "targets": [
+        {
+          "id": "apcc-202608-slpa-202612-202702",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": "3-MON",
+          "target_month": "202612-202702",
+          "period_label": "DJF 2027",
+          "aggregation": "native APCC seasonal mean",
+          "field": "mslp_anomaly",
+          "units": "hPa",
+          "raw_field": "mean sea-level pressure anomaly",
+          "raw_units": "Pa",
+          "statistic": "APCC multi-model ensemble mean",
+          "ensemble_scope": "APCC MME seasonal product",
+          "source_urls": [
+            "https://apcc21.org/clik/dataset/mme/3-MON?lang=en",
+            "https://apcc21.org/clik/clikapi?lang=en"
+          ],
+          "status": "rendered",
+          "image": "public/seasonal/apcc/202608/apcc_slpa_202612-202702.jpg",
+          "source_file": ".cache/apcc/extracted/mme_3month_3-mon_202608_prec_slp_sst_t2m_t850_z500/FORECAST_SCM_AUG_ASO_2026_slp.nc",
+          "baseline": {
+            "status": "native_source_anomaly",
+            "label": "Native APCC MME anomaly"
+          }
+        }
+      ],
+      "output_dir": "public/seasonal/apcc"
+    },
+    {
+      "id": "apcc-202608-850mb_temperature_anomaly",
+      "init_utc": "2026-08-01T00:00:00Z",
+      "product": "850mb_temperature_anomaly",
+      "status": "rendered",
+      "source": "APCC multi-model ensemble via CLIK",
+      "source_url": "https://apcc21.org/clik/processing/prediction",
+      "dataset": "MME_3MONTH",
+      "lead_month": "3-MON",
+      "resolution": "1.0",
+      "method": "SCM",
+      "targets": [
+        {
+          "id": "apcc-202608-t850a-202612-202702",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": "3-MON",
+          "target_month": "202612-202702",
+          "period_label": "DJF 2027",
+          "aggregation": "native APCC seasonal mean",
+          "field": "t850_anomaly",
+          "units": "\u00b0C",
+          "raw_field": "850-mb temperature anomaly",
+          "raw_units": "K",
+          "statistic": "APCC multi-model ensemble mean",
+          "ensemble_scope": "APCC MME seasonal product",
+          "source_urls": [
+            "https://apcc21.org/clik/dataset/mme/3-MON?lang=en",
+            "https://apcc21.org/clik/clikapi?lang=en"
+          ],
+          "status": "rendered",
+          "image": "public/seasonal/apcc/202608/apcc_t850a_202612-202702.jpg",
+          "source_file": ".cache/apcc/extracted/mme_3month_3-mon_202608_prec_slp_sst_t2m_t850_z500/FORECAST_SCM_AUG_ASO_2026_t850.nc",
+          "baseline": {
+            "status": "native_source_anomaly",
+            "label": "Native APCC MME anomaly"
+          }
+        }
+      ],
+      "output_dir": "public/seasonal/apcc"
+    },
+    {
+      "id": "apcc-202608-500mb_height_anomaly",
+      "init_utc": "2026-08-01T00:00:00Z",
+      "product": "500mb_height_anomaly",
+      "status": "rendered",
+      "source": "APCC multi-model ensemble via CLIK",
+      "source_url": "https://apcc21.org/clik/processing/prediction",
+      "dataset": "MME_3MONTH",
+      "lead_month": "3-MON",
+      "resolution": "1.0",
+      "method": "SCM",
+      "targets": [
+        {
+          "id": "apcc-202608-z500a-202612-202702",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": "3-MON",
+          "target_month": "202612-202702",
+          "period_label": "DJF 2027",
+          "aggregation": "native APCC seasonal mean",
+          "field": "z500_anomaly",
+          "units": "m",
+          "raw_field": "geopotential height anomaly",
+          "raw_units": "native APCC units",
+          "statistic": "APCC multi-model ensemble mean",
+          "ensemble_scope": "APCC MME seasonal product",
+          "source_urls": [
+            "https://apcc21.org/clik/dataset/mme/3-MON?lang=en",
+            "https://apcc21.org/clik/clikapi?lang=en"
+          ],
+          "status": "rendered",
+          "image": "public/seasonal/apcc/202608/apcc_z500a_202612-202702.jpg",
+          "source_file": ".cache/apcc/extracted/mme_3month_3-mon_202608_prec_slp_sst_t2m_t850_z500/FORECAST_SCM_AUG_ASO_2026_z500.nc",
+          "baseline": {
+            "status": "native_source_anomaly",
+            "label": "Native APCC MME anomaly"
+          }
+        }
+      ],
+      "output_dir": "public/seasonal/apcc"
+    },
+    {
+      "id": "apcc-202608-2m_temperature_anomaly",
+      "init_utc": "2026-08-01T00:00:00Z",
+      "product": "2m_temperature_anomaly",
+      "status": "rendered",
+      "source": "APCC multi-model ensemble via CLIK",
+      "source_url": "https://apcc21.org/clik/processing/prediction",
+      "dataset": "MME_3MONTH",
+      "lead_month": "3-MON",
+      "resolution": "1.0",
+      "method": "SCM",
+      "targets": [
+        {
+          "id": "apcc-202608-t2ma-202612-202702",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": "3-MON",
+          "target_month": "202612-202702",
+          "period_label": "DJF 2027",
+          "aggregation": "native APCC seasonal mean",
+          "field": "t2m_anomaly",
+          "units": "\u00b0C",
+          "raw_field": "2-m temperature anomaly",
+          "raw_units": "K",
+          "statistic": "APCC multi-model ensemble mean",
+          "ensemble_scope": "APCC MME seasonal product",
+          "source_urls": [
+            "https://apcc21.org/clik/dataset/mme/3-MON?lang=en",
+            "https://apcc21.org/clik/clikapi?lang=en"
+          ],
+          "status": "rendered",
+          "image": "public/seasonal/apcc/202608/apcc_t2ma_202612-202702.jpg",
+          "source_file": ".cache/apcc/extracted/mme_3month_3-mon_202608_prec_slp_sst_t2m_t850_z500/FORECAST_SCM_AUG_ASO_2026_t2m.nc",
+          "baseline": {
+            "status": "native_source_anomaly",
+            "label": "Native APCC MME anomaly"
+          }
+        }
+      ],
+      "output_dir": "public/seasonal/apcc"
+    }
+  ]
+}
