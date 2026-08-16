@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "kind": "nmme_seasonal_manifest",
-  "generated_utc": "2026-08-16T02:17:06Z",
+  "generated_utc": "2026-08-16T12:32:49Z",
   "source": "NOAA CPC NMME",
   "source_url": "https://www.cpc.ncep.noaa.gov/products/NMME/data.html",
   "source_urls": [
@@ -15,7 +15,6 @@
     "probability_above_normal": "Above Normal Probability",
     "probability_near_normal": "Near Normal Probability",
     "probability_below_normal": "Below Normal Probability",
-    "model_spread": "NMME Model Spread",
     "multi_model_consensus": "NMME Multi-Model Consensus"
   },
   "retention": {
@@ -23,96 +22,6 @@
     "history_cycles": 3
   },
   "runs": [
-    {
-      "id": "nmme-spread-2026080800-model_spread-2m_temperature_anomaly",
-      "model": "NOAA NMME",
-      "component": "SPREAD",
-      "components": [
-        "CanESM5",
-        "CFSv2",
-        "GEM5.2_NEMO",
-        "NASA_GEOS5v2",
-        "NCAR_CCSM4",
-        "NCAR_CESM1"
-      ],
-      "product": "model_spread",
-      "base_product": "2m_temperature_anomaly",
-      "source": "NOAA CPC NMME",
-      "source_url": "https://www.cpc.ncep.noaa.gov/products/NMME/data.html",
-      "source_urls": [
-        "https://www.cpc.ncep.noaa.gov/products/NMME/data.html",
-        "https://www.ncei.noaa.gov/products/weather-climate-models/north-american-multi-model"
-      ],
-      "archive_root": "https://ftp.cpc.ncep.noaa.gov/NMME/realtime_anom/ENSMEAN/",
-      "init_utc": "2026-08-08T00:00:00Z",
-      "statistic": "component standard deviation",
-      "ensemble_scope": "NMME component models",
-      "field": "tmp2m_anomaly_spread",
-      "units": "\u00b0C",
-      "raw_field": "NMME component standard deviation",
-      "raw_units": "\u00b0C",
-      "conversion": "standard deviation across available NMME component means",
-      "probability_period": null,
-      "baseline": {
-        "status": "official_nmme_anomaly_or_probability"
-      },
-      "targets": [
-        {
-          "id": "nmme-spread-2026080800-model_spread-2m_temperature_anomaly-lead04",
-          "target_month": "202611",
-          "valid_start_utc": "2026-11-01T00:00:00Z",
-          "valid_end_utc": "2026-12-01T00:00:00Z",
-          "lead_month": 4,
-          "field": "tmp2m_anomaly_spread",
-          "units": "\u00b0C",
-          "status": "rendered",
-          "source_file": "component files: CanESM5, CFSv2, GEM5.2_NEMO, NASA_GEOS5v2, NCAR_CCSM4, NCAR_CESM1",
-          "image": "public/seasonal/nmme/20260808/nmme_spread_2m_temperature_anomaly_model_spread_202611.jpg"
-        },
-        {
-          "id": "nmme-spread-2026080800-model_spread-2m_temperature_anomaly-lead05",
-          "target_month": "202612",
-          "valid_start_utc": "2026-12-01T00:00:00Z",
-          "valid_end_utc": "2027-01-01T00:00:00Z",
-          "lead_month": 5,
-          "field": "tmp2m_anomaly_spread",
-          "units": "\u00b0C",
-          "status": "rendered",
-          "source_file": "component files: CanESM5, CFSv2, GEM5.2_NEMO, NASA_GEOS5v2, NCAR_CCSM4, NCAR_CESM1",
-          "image": "public/seasonal/nmme/20260808/nmme_spread_2m_temperature_anomaly_model_spread_202612.jpg"
-        },
-        {
-          "id": "nmme-spread-2026080800-model_spread-2m_temperature_anomaly-lead06",
-          "target_month": "202701",
-          "valid_start_utc": "2027-01-01T00:00:00Z",
-          "valid_end_utc": "2027-02-01T00:00:00Z",
-          "lead_month": 6,
-          "field": "tmp2m_anomaly_spread",
-          "units": "\u00b0C",
-          "status": "rendered",
-          "source_file": "component files: CanESM5, CFSv2, GEM5.2_NEMO, NASA_GEOS5v2, NCAR_CCSM4, NCAR_CESM1",
-          "image": "public/seasonal/nmme/20260808/nmme_spread_2m_temperature_anomaly_model_spread_202701.jpg"
-        },
-        {
-          "id": "nmme-spread-2026080800-model_spread-2m_temperature_anomaly-202611-202701",
-          "target_month": "202611-202701",
-          "valid_start_utc": "2026-11-01T00:00:00Z",
-          "valid_end_utc": "2027-02-01T00:00:00Z",
-          "lead_month": "4\u20136",
-          "monthly_leads": [
-            4,
-            5,
-            6
-          ],
-          "field": "tmp2m_anomaly_spread",
-          "units": "\u00b0C",
-          "status": "rendered",
-          "image": "public/seasonal/nmme/20260808/nmme_spread_2m_temperature_anomaly_model_spread_202611-202701.jpg"
-        }
-      ],
-      "status": "rendered",
-      "output_dir": "public/seasonal/nmme"
-    },
     {
       "id": "nmme-probability-2026080800-probability_near_normal-2m_temperature_anomaly",
       "model": "NOAA NMME",
@@ -148,16 +57,16 @@
       },
       "targets": [
         {
-          "id": "nmme-probability-2026080800-probability_near_normal-2m_temperature_anomaly-lead05",
-          "target_month": "202612-202702",
-          "valid_start_utc": "2026-12-01T00:00:00Z",
-          "valid_end_utc": "2027-03-01T00:00:00Z",
-          "lead_month": 5,
+          "id": "nmme-probability-2026080800-probability_near_normal-2m_temperature_anomaly-lead04",
+          "target_month": "202611-202701",
+          "valid_start_utc": "2026-11-01T00:00:00Z",
+          "valid_end_utc": "2027-02-01T00:00:00Z",
+          "lead_month": 4,
           "field": "probability_near_normal",
           "units": "%",
           "status": "rendered",
           "source_file": "https://ftp.cpc.ncep.noaa.gov/NMME/prob/netcdf/tmp2m.202608.prob.seas.nc",
-          "image": "public/seasonal/nmme/20260808/nmme_probability_2m_temperature_anomaly_probability_near_normal_202612-202702.jpg"
+          "image": "public/seasonal/nmme/20260808/nmme_probability_2m_temperature_anomaly_probability_near_normal_202611-202701.jpg"
         }
       ],
       "status": "rendered",
@@ -198,16 +107,16 @@
       },
       "targets": [
         {
-          "id": "nmme-probability-2026080800-probability_below_normal-2m_temperature_anomaly-lead05",
-          "target_month": "202612-202702",
-          "valid_start_utc": "2026-12-01T00:00:00Z",
-          "valid_end_utc": "2027-03-01T00:00:00Z",
-          "lead_month": 5,
+          "id": "nmme-probability-2026080800-probability_below_normal-2m_temperature_anomaly-lead04",
+          "target_month": "202611-202701",
+          "valid_start_utc": "2026-11-01T00:00:00Z",
+          "valid_end_utc": "2027-02-01T00:00:00Z",
+          "lead_month": 4,
           "field": "probability_below_normal",
           "units": "%",
           "status": "rendered",
           "source_file": "https://ftp.cpc.ncep.noaa.gov/NMME/prob/netcdf/tmp2m.202608.prob.seas.nc",
-          "image": "public/seasonal/nmme/20260808/nmme_probability_2m_temperature_anomaly_probability_below_normal_202612-202702.jpg"
+          "image": "public/seasonal/nmme/20260808/nmme_probability_2m_temperature_anomaly_probability_below_normal_202611-202701.jpg"
         }
       ],
       "status": "rendered",
@@ -248,16 +157,16 @@
       },
       "targets": [
         {
-          "id": "nmme-probability-2026080800-probability_above_normal-2m_temperature_anomaly-lead05",
-          "target_month": "202612-202702",
-          "valid_start_utc": "2026-12-01T00:00:00Z",
-          "valid_end_utc": "2027-03-01T00:00:00Z",
-          "lead_month": 5,
+          "id": "nmme-probability-2026080800-probability_above_normal-2m_temperature_anomaly-lead04",
+          "target_month": "202611-202701",
+          "valid_start_utc": "2026-11-01T00:00:00Z",
+          "valid_end_utc": "2027-02-01T00:00:00Z",
+          "lead_month": 4,
           "field": "probability_above_normal",
           "units": "%",
           "status": "rendered",
           "source_file": "https://ftp.cpc.ncep.noaa.gov/NMME/prob/netcdf/tmp2m.202608.prob.seas.nc",
-          "image": "public/seasonal/nmme/20260808/nmme_probability_2m_temperature_anomaly_probability_above_normal_202612-202702.jpg"
+          "image": "public/seasonal/nmme/20260808/nmme_probability_2m_temperature_anomaly_probability_above_normal_202611-202701.jpg"
         }
       ],
       "status": "rendered",
@@ -293,6 +202,18 @@
       },
       "targets": [
         {
+          "id": "nmme-ncar_cesm1-2026080800-2m_temperature_anomaly-2m_temperature_anomaly-lead04",
+          "target_month": "202611",
+          "valid_start_utc": "2026-11-01T00:00:00Z",
+          "valid_end_utc": "2026-12-01T00:00:00Z",
+          "lead_month": 4,
+          "field": "tmp2m_anomaly",
+          "units": "\u00b0C",
+          "status": "rendered",
+          "source_file": null,
+          "image": "public/seasonal/nmme/20260808/nmme_ncar_cesm1_2m_temperature_anomaly_2m_temperature_anomaly_202611.jpg"
+        },
+        {
           "id": "nmme-ncar_cesm1-2026080800-2m_temperature_anomaly-2m_temperature_anomaly-lead05",
           "target_month": "202612",
           "valid_start_utc": "2026-12-01T00:00:00Z",
@@ -317,32 +238,20 @@
           "image": "public/seasonal/nmme/20260808/nmme_ncar_cesm1_2m_temperature_anomaly_2m_temperature_anomaly_202701.jpg"
         },
         {
-          "id": "nmme-ncar_cesm1-2026080800-2m_temperature_anomaly-2m_temperature_anomaly-lead07",
-          "target_month": "202702",
-          "valid_start_utc": "2027-02-01T00:00:00Z",
-          "valid_end_utc": "2027-03-01T00:00:00Z",
-          "lead_month": 7,
-          "field": "tmp2m_anomaly",
-          "units": "\u00b0C",
-          "status": "rendered",
-          "source_file": null,
-          "image": "public/seasonal/nmme/20260808/nmme_ncar_cesm1_2m_temperature_anomaly_2m_temperature_anomaly_202702.jpg"
-        },
-        {
-          "id": "nmme-ncar_cesm1-2026080800-2m_temperature_anomaly-2m_temperature_anomaly-202612-202702",
-          "target_month": "202612-202702",
-          "valid_start_utc": "2026-12-01T00:00:00Z",
-          "valid_end_utc": "2027-03-01T00:00:00Z",
-          "lead_month": "5\u20137",
+          "id": "nmme-ncar_cesm1-2026080800-2m_temperature_anomaly-2m_temperature_anomaly-202611-202701",
+          "target_month": "202611-202701",
+          "valid_start_utc": "2026-11-01T00:00:00Z",
+          "valid_end_utc": "2027-02-01T00:00:00Z",
+          "lead_month": "4\u20136",
           "monthly_leads": [
+            4,
             5,
-            6,
-            7
+            6
           ],
           "field": "tmp2m_anomaly",
           "units": "\u00b0C",
           "status": "rendered",
-          "image": "public/seasonal/nmme/20260808/nmme_ncar_cesm1_2m_temperature_anomaly_2m_temperature_anomaly_202612-202702.jpg"
+          "image": "public/seasonal/nmme/20260808/nmme_ncar_cesm1_2m_temperature_anomaly_2m_temperature_anomaly_202611-202701.jpg"
         }
       ],
       "status": "rendered",
@@ -378,6 +287,18 @@
       },
       "targets": [
         {
+          "id": "nmme-ncar_ccsm4-2026080800-2m_temperature_anomaly-2m_temperature_anomaly-lead04",
+          "target_month": "202611",
+          "valid_start_utc": "2026-11-01T00:00:00Z",
+          "valid_end_utc": "2026-12-01T00:00:00Z",
+          "lead_month": 4,
+          "field": "tmp2m_anomaly",
+          "units": "\u00b0C",
+          "status": "rendered",
+          "source_file": null,
+          "image": "public/seasonal/nmme/20260808/nmme_ncar_ccsm4_2m_temperature_anomaly_2m_temperature_anomaly_202611.jpg"
+        },
+        {
           "id": "nmme-ncar_ccsm4-2026080800-2m_temperature_anomaly-2m_temperature_anomaly-lead05",
           "target_month": "202612",
           "valid_start_utc": "2026-12-01T00:00:00Z",
@@ -402,32 +323,20 @@
           "image": "public/seasonal/nmme/20260808/nmme_ncar_ccsm4_2m_temperature_anomaly_2m_temperature_anomaly_202701.jpg"
         },
         {
-          "id": "nmme-ncar_ccsm4-2026080800-2m_temperature_anomaly-2m_temperature_anomaly-lead07",
-          "target_month": "202702",
-          "valid_start_utc": "2027-02-01T00:00:00Z",
-          "valid_end_utc": "2027-03-01T00:00:00Z",
-          "lead_month": 7,
-          "field": "tmp2m_anomaly",
-          "units": "\u00b0C",
-          "status": "rendered",
-          "source_file": null,
-          "image": "public/seasonal/nmme/20260808/nmme_ncar_ccsm4_2m_temperature_anomaly_2m_temperature_anomaly_202702.jpg"
-        },
-        {
-          "id": "nmme-ncar_ccsm4-2026080800-2m_temperature_anomaly-2m_temperature_anomaly-202612-202702",
-          "target_month": "202612-202702",
-          "valid_start_utc": "2026-12-01T00:00:00Z",
-          "valid_end_utc": "2027-03-01T00:00:00Z",
-          "lead_month": "5\u20137",
+          "id": "nmme-ncar_ccsm4-2026080800-2m_temperature_anomaly-2m_temperature_anomaly-202611-202701",
+          "target_month": "202611-202701",
+          "valid_start_utc": "2026-11-01T00:00:00Z",
+          "valid_end_utc": "2027-02-01T00:00:00Z",
+          "lead_month": "4\u20136",
           "monthly_leads": [
+            4,
             5,
-            6,
-            7
+            6
           ],
           "field": "tmp2m_anomaly",
           "units": "\u00b0C",
           "status": "rendered",
-          "image": "public/seasonal/nmme/20260808/nmme_ncar_ccsm4_2m_temperature_anomaly_2m_temperature_anomaly_202612-202702.jpg"
+          "image": "public/seasonal/nmme/20260808/nmme_ncar_ccsm4_2m_temperature_anomaly_2m_temperature_anomaly_202611-202701.jpg"
         }
       ],
       "status": "rendered",
@@ -463,6 +372,18 @@
       },
       "targets": [
         {
+          "id": "nmme-nasa_geos5v2-2026080800-2m_temperature_anomaly-2m_temperature_anomaly-lead04",
+          "target_month": "202611",
+          "valid_start_utc": "2026-11-01T00:00:00Z",
+          "valid_end_utc": "2026-12-01T00:00:00Z",
+          "lead_month": 4,
+          "field": "tmp2m_anomaly",
+          "units": "\u00b0C",
+          "status": "rendered",
+          "source_file": null,
+          "image": "public/seasonal/nmme/20260808/nmme_nasa_geos5v2_2m_temperature_anomaly_2m_temperature_anomaly_202611.jpg"
+        },
+        {
           "id": "nmme-nasa_geos5v2-2026080800-2m_temperature_anomaly-2m_temperature_anomaly-lead05",
           "target_month": "202612",
           "valid_start_utc": "2026-12-01T00:00:00Z",
@@ -487,32 +408,20 @@
           "image": "public/seasonal/nmme/20260808/nmme_nasa_geos5v2_2m_temperature_anomaly_2m_temperature_anomaly_202701.jpg"
         },
         {
-          "id": "nmme-nasa_geos5v2-2026080800-2m_temperature_anomaly-2m_temperature_anomaly-lead07",
-          "target_month": "202702",
-          "valid_start_utc": "2027-02-01T00:00:00Z",
-          "valid_end_utc": "2027-03-01T00:00:00Z",
-          "lead_month": 7,
-          "field": "tmp2m_anomaly",
-          "units": "\u00b0C",
-          "status": "rendered",
-          "source_file": null,
-          "image": "public/seasonal/nmme/20260808/nmme_nasa_geos5v2_2m_temperature_anomaly_2m_temperature_anomaly_202702.jpg"
-        },
-        {
-          "id": "nmme-nasa_geos5v2-2026080800-2m_temperature_anomaly-2m_temperature_anomaly-202612-202702",
-          "target_month": "202612-202702",
-          "valid_start_utc": "2026-12-01T00:00:00Z",
-          "valid_end_utc": "2027-03-01T00:00:00Z",
-          "lead_month": "5\u20137",
+          "id": "nmme-nasa_geos5v2-2026080800-2m_temperature_anomaly-2m_temperature_anomaly-202611-202701",
+          "target_month": "202611-202701",
+          "valid_start_utc": "2026-11-01T00:00:00Z",
+          "valid_end_utc": "2027-02-01T00:00:00Z",
+          "lead_month": "4\u20136",
           "monthly_leads": [
+            4,
             5,
-            6,
-            7
+            6
           ],
           "field": "tmp2m_anomaly",
           "units": "\u00b0C",
           "status": "rendered",
-          "image": "public/seasonal/nmme/20260808/nmme_nasa_geos5v2_2m_temperature_anomaly_2m_temperature_anomaly_202612-202702.jpg"
+          "image": "public/seasonal/nmme/20260808/nmme_nasa_geos5v2_2m_temperature_anomaly_2m_temperature_anomaly_202611-202701.jpg"
         }
       ],
       "status": "rendered",
@@ -548,6 +457,18 @@
       },
       "targets": [
         {
+          "id": "nmme-gem5_2_nemo-2026080800-2m_temperature_anomaly-2m_temperature_anomaly-lead04",
+          "target_month": "202611",
+          "valid_start_utc": "2026-11-01T00:00:00Z",
+          "valid_end_utc": "2026-12-01T00:00:00Z",
+          "lead_month": 4,
+          "field": "tmp2m_anomaly",
+          "units": "\u00b0C",
+          "status": "rendered",
+          "source_file": null,
+          "image": "public/seasonal/nmme/20260808/nmme_gem5.2_nemo_2m_temperature_anomaly_2m_temperature_anomaly_202611.jpg"
+        },
+        {
           "id": "nmme-gem5_2_nemo-2026080800-2m_temperature_anomaly-2m_temperature_anomaly-lead05",
           "target_month": "202612",
           "valid_start_utc": "2026-12-01T00:00:00Z",
@@ -572,32 +493,20 @@
           "image": "public/seasonal/nmme/20260808/nmme_gem5.2_nemo_2m_temperature_anomaly_2m_temperature_anomaly_202701.jpg"
         },
         {
-          "id": "nmme-gem5_2_nemo-2026080800-2m_temperature_anomaly-2m_temperature_anomaly-lead07",
-          "target_month": "202702",
-          "valid_start_utc": "2027-02-01T00:00:00Z",
-          "valid_end_utc": "2027-03-01T00:00:00Z",
-          "lead_month": 7,
-          "field": "tmp2m_anomaly",
-          "units": "\u00b0C",
-          "status": "rendered",
-          "source_file": null,
-          "image": "public/seasonal/nmme/20260808/nmme_gem5.2_nemo_2m_temperature_anomaly_2m_temperature_anomaly_202702.jpg"
-        },
-        {
-          "id": "nmme-gem5_2_nemo-2026080800-2m_temperature_anomaly-2m_temperature_anomaly-202612-202702",
-          "target_month": "202612-202702",
-          "valid_start_utc": "2026-12-01T00:00:00Z",
-          "valid_end_utc": "2027-03-01T00:00:00Z",
-          "lead_month": "5\u20137",
+          "id": "nmme-gem5_2_nemo-2026080800-2m_temperature_anomaly-2m_temperature_anomaly-202611-202701",
+          "target_month": "202611-202701",
+          "valid_start_utc": "2026-11-01T00:00:00Z",
+          "valid_end_utc": "2027-02-01T00:00:00Z",
+          "lead_month": "4\u20136",
           "monthly_leads": [
+            4,
             5,
-            6,
-            7
+            6
           ],
           "field": "tmp2m_anomaly",
           "units": "\u00b0C",
           "status": "rendered",
-          "image": "public/seasonal/nmme/20260808/nmme_gem5.2_nemo_2m_temperature_anomaly_2m_temperature_anomaly_202612-202702.jpg"
+          "image": "public/seasonal/nmme/20260808/nmme_gem5.2_nemo_2m_temperature_anomaly_2m_temperature_anomaly_202611-202701.jpg"
         }
       ],
       "status": "rendered",
@@ -638,6 +547,18 @@
       },
       "targets": [
         {
+          "id": "nmme-ensmean-2026080800-2m_temperature_anomaly-2m_temperature_anomaly-lead04",
+          "target_month": "202611",
+          "valid_start_utc": "2026-11-01T00:00:00Z",
+          "valid_end_utc": "2026-12-01T00:00:00Z",
+          "lead_month": 4,
+          "field": "tmp2m_anomaly",
+          "units": "\u00b0C",
+          "status": "rendered",
+          "source_file": "https://ftp.cpc.ncep.noaa.gov/NMME/realtime_anom/ENSMEAN/2026080800/NMME.tmp2m.202608.ENSMEAN.anom.nc",
+          "image": "public/seasonal/nmme/20260808/nmme_ensmean_2m_temperature_anomaly_2m_temperature_anomaly_202611.jpg"
+        },
+        {
           "id": "nmme-ensmean-2026080800-2m_temperature_anomaly-2m_temperature_anomaly-lead05",
           "target_month": "202612",
           "valid_start_utc": "2026-12-01T00:00:00Z",
@@ -662,32 +583,20 @@
           "image": "public/seasonal/nmme/20260808/nmme_ensmean_2m_temperature_anomaly_2m_temperature_anomaly_202701.jpg"
         },
         {
-          "id": "nmme-ensmean-2026080800-2m_temperature_anomaly-2m_temperature_anomaly-lead07",
-          "target_month": "202702",
-          "valid_start_utc": "2027-02-01T00:00:00Z",
-          "valid_end_utc": "2027-03-01T00:00:00Z",
-          "lead_month": 7,
-          "field": "tmp2m_anomaly",
-          "units": "\u00b0C",
-          "status": "rendered",
-          "source_file": "https://ftp.cpc.ncep.noaa.gov/NMME/realtime_anom/ENSMEAN/2026080800/NMME.tmp2m.202608.ENSMEAN.anom.nc",
-          "image": "public/seasonal/nmme/20260808/nmme_ensmean_2m_temperature_anomaly_2m_temperature_anomaly_202702.jpg"
-        },
-        {
-          "id": "nmme-ensmean-2026080800-2m_temperature_anomaly-2m_temperature_anomaly-202612-202702",
-          "target_month": "202612-202702",
-          "valid_start_utc": "2026-12-01T00:00:00Z",
-          "valid_end_utc": "2027-03-01T00:00:00Z",
-          "lead_month": "5\u20137",
+          "id": "nmme-ensmean-2026080800-2m_temperature_anomaly-2m_temperature_anomaly-202611-202701",
+          "target_month": "202611-202701",
+          "valid_start_utc": "2026-11-01T00:00:00Z",
+          "valid_end_utc": "2027-02-01T00:00:00Z",
+          "lead_month": "4\u20136",
           "monthly_leads": [
+            4,
             5,
-            6,
-            7
+            6
           ],
           "field": "tmp2m_anomaly",
           "units": "\u00b0C",
           "status": "rendered",
-          "image": "public/seasonal/nmme/20260808/nmme_ensmean_2m_temperature_anomaly_2m_temperature_anomaly_202612-202702.jpg"
+          "image": "public/seasonal/nmme/20260808/nmme_ensmean_2m_temperature_anomaly_2m_temperature_anomaly_202611-202701.jpg"
         }
       ],
       "status": "rendered",
@@ -728,6 +637,18 @@
       },
       "targets": [
         {
+          "id": "nmme-consensus-2026080800-multi_model_consensus-2m_temperature_anomaly-lead04",
+          "target_month": "202611",
+          "valid_start_utc": "2026-11-01T00:00:00Z",
+          "valid_end_utc": "2026-12-01T00:00:00Z",
+          "lead_month": 4,
+          "field": "tmp2m_anomaly_consensus",
+          "units": "\u00b0C",
+          "status": "rendered",
+          "source_file": "component files: CanESM5, CFSv2, GEM5.2_NEMO, NASA_GEOS5v2, NCAR_CCSM4, NCAR_CESM1",
+          "image": "public/seasonal/nmme/20260808/nmme_consensus_2m_temperature_anomaly_multi_model_consensus_202611.jpg"
+        },
+        {
           "id": "nmme-consensus-2026080800-multi_model_consensus-2m_temperature_anomaly-lead05",
           "target_month": "202612",
           "valid_start_utc": "2026-12-01T00:00:00Z",
@@ -752,32 +673,20 @@
           "image": "public/seasonal/nmme/20260808/nmme_consensus_2m_temperature_anomaly_multi_model_consensus_202701.jpg"
         },
         {
-          "id": "nmme-consensus-2026080800-multi_model_consensus-2m_temperature_anomaly-lead07",
-          "target_month": "202702",
-          "valid_start_utc": "2027-02-01T00:00:00Z",
-          "valid_end_utc": "2027-03-01T00:00:00Z",
-          "lead_month": 7,
-          "field": "tmp2m_anomaly_consensus",
-          "units": "\u00b0C",
-          "status": "rendered",
-          "source_file": "component files: CanESM5, CFSv2, GEM5.2_NEMO, NASA_GEOS5v2, NCAR_CCSM4, NCAR_CESM1",
-          "image": "public/seasonal/nmme/20260808/nmme_consensus_2m_temperature_anomaly_multi_model_consensus_202702.jpg"
-        },
-        {
-          "id": "nmme-consensus-2026080800-multi_model_consensus-2m_temperature_anomaly-202612-202702",
-          "target_month": "202612-202702",
-          "valid_start_utc": "2026-12-01T00:00:00Z",
-          "valid_end_utc": "2027-03-01T00:00:00Z",
-          "lead_month": "5\u20137",
+          "id": "nmme-consensus-2026080800-multi_model_consensus-2m_temperature_anomaly-202611-202701",
+          "target_month": "202611-202701",
+          "valid_start_utc": "2026-11-01T00:00:00Z",
+          "valid_end_utc": "2027-02-01T00:00:00Z",
+          "lead_month": "4\u20136",
           "monthly_leads": [
+            4,
             5,
-            6,
-            7
+            6
           ],
           "field": "tmp2m_anomaly_consensus",
           "units": "\u00b0C",
           "status": "rendered",
-          "image": "public/seasonal/nmme/20260808/nmme_consensus_2m_temperature_anomaly_multi_model_consensus_202612-202702.jpg"
+          "image": "public/seasonal/nmme/20260808/nmme_consensus_2m_temperature_anomaly_multi_model_consensus_202611-202701.jpg"
         }
       ],
       "status": "rendered",
@@ -813,6 +722,18 @@
       },
       "targets": [
         {
+          "id": "nmme-cfsv2-2026080800-2m_temperature_anomaly-2m_temperature_anomaly-lead04",
+          "target_month": "202611",
+          "valid_start_utc": "2026-11-01T00:00:00Z",
+          "valid_end_utc": "2026-12-01T00:00:00Z",
+          "lead_month": 4,
+          "field": "tmp2m_anomaly",
+          "units": "\u00b0C",
+          "status": "rendered",
+          "source_file": null,
+          "image": "public/seasonal/nmme/20260808/nmme_cfsv2_2m_temperature_anomaly_2m_temperature_anomaly_202611.jpg"
+        },
+        {
           "id": "nmme-cfsv2-2026080800-2m_temperature_anomaly-2m_temperature_anomaly-lead05",
           "target_month": "202612",
           "valid_start_utc": "2026-12-01T00:00:00Z",
@@ -837,32 +758,20 @@
           "image": "public/seasonal/nmme/20260808/nmme_cfsv2_2m_temperature_anomaly_2m_temperature_anomaly_202701.jpg"
         },
         {
-          "id": "nmme-cfsv2-2026080800-2m_temperature_anomaly-2m_temperature_anomaly-lead07",
-          "target_month": "202702",
-          "valid_start_utc": "2027-02-01T00:00:00Z",
-          "valid_end_utc": "2027-03-01T00:00:00Z",
-          "lead_month": 7,
-          "field": "tmp2m_anomaly",
-          "units": "\u00b0C",
-          "status": "rendered",
-          "source_file": null,
-          "image": "public/seasonal/nmme/20260808/nmme_cfsv2_2m_temperature_anomaly_2m_temperature_anomaly_202702.jpg"
-        },
-        {
-          "id": "nmme-cfsv2-2026080800-2m_temperature_anomaly-2m_temperature_anomaly-202612-202702",
-          "target_month": "202612-202702",
-          "valid_start_utc": "2026-12-01T00:00:00Z",
-          "valid_end_utc": "2027-03-01T00:00:00Z",
-          "lead_month": "5\u20137",
+          "id": "nmme-cfsv2-2026080800-2m_temperature_anomaly-2m_temperature_anomaly-202611-202701",
+          "target_month": "202611-202701",
+          "valid_start_utc": "2026-11-01T00:00:00Z",
+          "valid_end_utc": "2027-02-01T00:00:00Z",
+          "lead_month": "4\u20136",
           "monthly_leads": [
+            4,
             5,
-            6,
-            7
+            6
           ],
           "field": "tmp2m_anomaly",
           "units": "\u00b0C",
           "status": "rendered",
-          "image": "public/seasonal/nmme/20260808/nmme_cfsv2_2m_temperature_anomaly_2m_temperature_anomaly_202612-202702.jpg"
+          "image": "public/seasonal/nmme/20260808/nmme_cfsv2_2m_temperature_anomaly_2m_temperature_anomaly_202611-202701.jpg"
         }
       ],
       "status": "rendered",
@@ -898,6 +807,18 @@
       },
       "targets": [
         {
+          "id": "nmme-canesm5-2026080800-2m_temperature_anomaly-2m_temperature_anomaly-lead04",
+          "target_month": "202611",
+          "valid_start_utc": "2026-11-01T00:00:00Z",
+          "valid_end_utc": "2026-12-01T00:00:00Z",
+          "lead_month": 4,
+          "field": "tmp2m_anomaly",
+          "units": "\u00b0C",
+          "status": "rendered",
+          "source_file": null,
+          "image": "public/seasonal/nmme/20260808/nmme_canesm5_2m_temperature_anomaly_2m_temperature_anomaly_202611.jpg"
+        },
+        {
           "id": "nmme-canesm5-2026080800-2m_temperature_anomaly-2m_temperature_anomaly-lead05",
           "target_month": "202612",
           "valid_start_utc": "2026-12-01T00:00:00Z",
@@ -922,32 +843,20 @@
           "image": "public/seasonal/nmme/20260808/nmme_canesm5_2m_temperature_anomaly_2m_temperature_anomaly_202701.jpg"
         },
         {
-          "id": "nmme-canesm5-2026080800-2m_temperature_anomaly-2m_temperature_anomaly-lead07",
-          "target_month": "202702",
-          "valid_start_utc": "2027-02-01T00:00:00Z",
-          "valid_end_utc": "2027-03-01T00:00:00Z",
-          "lead_month": 7,
-          "field": "tmp2m_anomaly",
-          "units": "\u00b0C",
-          "status": "rendered",
-          "source_file": null,
-          "image": "public/seasonal/nmme/20260808/nmme_canesm5_2m_temperature_anomaly_2m_temperature_anomaly_202702.jpg"
-        },
-        {
-          "id": "nmme-canesm5-2026080800-2m_temperature_anomaly-2m_temperature_anomaly-202612-202702",
-          "target_month": "202612-202702",
-          "valid_start_utc": "2026-12-01T00:00:00Z",
-          "valid_end_utc": "2027-03-01T00:00:00Z",
-          "lead_month": "5\u20137",
+          "id": "nmme-canesm5-2026080800-2m_temperature_anomaly-2m_temperature_anomaly-202611-202701",
+          "target_month": "202611-202701",
+          "valid_start_utc": "2026-11-01T00:00:00Z",
+          "valid_end_utc": "2027-02-01T00:00:00Z",
+          "lead_month": "4\u20136",
           "monthly_leads": [
+            4,
             5,
-            6,
-            7
+            6
           ],
           "field": "tmp2m_anomaly",
           "units": "\u00b0C",
           "status": "rendered",
-          "image": "public/seasonal/nmme/20260808/nmme_canesm5_2m_temperature_anomaly_2m_temperature_anomaly_202612-202702.jpg"
+          "image": "public/seasonal/nmme/20260808/nmme_canesm5_2m_temperature_anomaly_2m_temperature_anomaly_202611-202701.jpg"
         }
       ],
       "status": "rendered",
