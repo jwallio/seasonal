@@ -53,7 +53,6 @@ model's native anomaly; its Reference selector can optionally show a common
 
 The automatic release-aligned schedule for all seasonal workflows is documented
 in [`docs/SEASONAL_SCHEDULES.md`](/d:/weather-projects/wn2/docs/SEASONAL_SCHEDULES.md).
-
 ## Repo Layout
 
 - [`main.py`](/d:/weather-projects/wn2/main.py): main render pipeline
