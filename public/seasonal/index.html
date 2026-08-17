@@ -240,11 +240,19 @@
     }
     function runLabel(model, run) {
       if (model.kind === 'weathernext') return `${run.label || run.run_date || run.id || 'Published run'} · ${run.status || 'available'}`;
-      return `Init ${initLabel(run.init_utc)} · ${run.status || 'available'}`;
+      const modelName = run.model || run.component_label || model.label;
+      return `${modelName} · Init ${initLabel(run.init_utc)} · ${run.status || 'available'}`;
+    }
+    function isFailedRun(run) {
+      return String(run?.status || '').toLowerCase() === 'failed';
+    }
+    function preferredRun(runs) {
+      const usable = runs.filter(run => !isFailedRun(run));
+      return usable.find(run => String(run.component || '') === 'multisystem') || usable[0] || runs[0] || null;
     }
     function selectedRun(model) {
       const available = modelStates[selection.model].runs.filter(run => supportsProduct(model, run, selection.product));
-      return available.find(run => String(run.id) === String(selection.run)) || available[0] || null;
+      return available.find(run => String(run.id) === String(selection.run)) || preferredRun(available);
     }
     function targetItems(model, run) {
       if (!run) return [];
@@ -395,7 +403,8 @@
       const products = manifestProducts(model); selection.product = products.includes(selection.product) ? selection.product : (products[0] || '');
       populate(el('product-select'), products.map(value => ({ value, label: productLabel(model, value) })), selection.product);
       const runs = modelState.runs.filter(run => supportsProduct(model, run, selection.product));
-      selection.run = runs.some(run => String(run.id) === String(selection.run)) ? selection.run : String(runs[0]?.id || '');
+      const defaultRun = preferredRun(runs);
+      selection.run = runs.some(run => String(run.id) === String(selection.run)) ? selection.run : String(defaultRun?.id || '');
       populate(el('run-select'), runs.map(run => ({ value: run.id, label: runLabel(model, run) })), selection.run);
       const run = selectedRun(model); const targets = targetItems(model, run);
       const preferredTarget = targets.find(target => model.kind === 'seasonal' && /^\d{6}-\d{6}$/.test(String(target.value?.target_month || ''))) || targets[0];
