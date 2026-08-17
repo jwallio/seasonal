@@ -50,6 +50,10 @@ def main() -> int:
         "target_month",
         "source_url",
         "preferredTarget",
+        "run.model || run.component_label || model.label",
+        "function isFailedRun(run)",
+        "function preferredRun(runs)",
+        "usable.find(run => String(run.component || '') === 'multisystem')",
         "probability_above_normal",
         "multi_model_consensus",
     ):
