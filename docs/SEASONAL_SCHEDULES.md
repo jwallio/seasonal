@@ -16,6 +16,7 @@ provider is late or a historical cycle needs to be regenerated.
 | JMA / MRI-CPS4 | JMA is a non-ECMWF C3S component | 10th of each month at 15:30 |
 | APCC MME | APCC seasonal MME around the middle of the month | 16th of each month at 16:30 |
 | NASA GEOS-S2S-3 | Public seasonal chart inventory during the first week | 6th of each month at 16:30 |
+| Deduplicated super ensemble | After C3S, NMME, and component source windows | 16th of each month at 18:30 |
 
 The central `publish-pages.yml` workflow already serializes Pages updates with
 `cancel-in-progress: false`, so simultaneous model releases do not overwrite

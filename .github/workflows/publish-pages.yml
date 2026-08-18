@@ -13,6 +13,7 @@ on:
       - APCC MME Seasonal Graphics
       - NASA GEOS-S2S-3 Seasonal Graphics
       - NOAA NMME Seasonal Graphics
+      - Deduplicated Seasonal Super Ensemble
     types:
       - completed
   workflow_dispatch:
@@ -32,6 +33,7 @@ on:
           - APCC MME Seasonal Graphics
           - NASA GEOS-S2S-3 Seasonal Graphics
           - NOAA NMME Seasonal Graphics
+          - Deduplicated Seasonal Super Ensemble
       source_run_id:
         description: "GitHub Actions run ID containing the uploaded Pages artifact"
         required: true
@@ -72,6 +74,7 @@ jobs:
             public/seasonal/apcc/index.html
             public/seasonal/geos_s2s3/index.html
             public/seasonal/nmme/index.html
+            public/seasonal/superensemble/index.html
           sparse-checkout-cone-mode: false
 
       - name: Download WN2 payload
@@ -164,6 +167,16 @@ jobs:
           repository: ${{ github.repository }}
           run-id: ${{ env.SOURCE_RUN_ID }}
 
+      - name: Download super-ensemble payload
+        if: ${{ env.SOURCE_WORKFLOW == 'Deduplicated Seasonal Super Ensemble' }}
+        uses: actions/download-artifact@v4
+        with:
+          name: superensemble-pages-${{ env.SOURCE_RUN_ID }}
+          path: incoming/superensemble
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: ${{ env.SOURCE_RUN_ID }}
+
       - name: Merge payload into the Pages tree
         shell: bash
         run: |
@@ -174,12 +187,13 @@ jobs:
           test -f dashboard-source/public/seasonal/index.html
           mkdir -p site/seasonal
           cp dashboard-source/public/seasonal/index.html site/seasonal/index.html
-          mkdir -p site/seasonal/c3s site/seasonal/jma site/seasonal/apcc site/seasonal/geos_s2s3 site/seasonal/nmme
+          mkdir -p site/seasonal/c3s site/seasonal/jma site/seasonal/apcc site/seasonal/geos_s2s3 site/seasonal/nmme site/seasonal/superensemble
           cp dashboard-source/public/seasonal/c3s/index.html site/seasonal/c3s/index.html
           cp dashboard-source/public/seasonal/jma/index.html site/seasonal/jma/index.html
           cp dashboard-source/public/seasonal/apcc/index.html site/seasonal/apcc/index.html
           cp dashboard-source/public/seasonal/geos_s2s3/index.html site/seasonal/geos_s2s3/index.html
           cp dashboard-source/public/seasonal/nmme/index.html site/seasonal/nmme/index.html
+          cp dashboard-source/public/seasonal/superensemble/index.html site/seasonal/superensemble/index.html
 
           case "$SOURCE_WORKFLOW" in
             "WeatherNext Runner"|"WeatherNext Runner Custom")
@@ -300,6 +314,18 @@ jobs:
               mkdir -p site/seasonal/nmme
               cp -R "$payload_root/nmme/." site/seasonal/nmme/
               cp "$payload_root/nmme_manifest.json" site/seasonal/nmme_manifest.json
+              ;;
+            "Deduplicated Seasonal Super Ensemble")
+              payload_root=incoming/superensemble
+              if [ -d "$payload_root/pages-payload" ]; then
+                payload_root="$payload_root/pages-payload"
+              elif [ -d "$payload_root/.pages-payload" ]; then
+                payload_root="$payload_root/.pages-payload"
+              fi
+              test -f "$payload_root/superensemble_manifest.json"
+              mkdir -p site/seasonal/superensemble
+              cp -R "$payload_root/superensemble/." site/seasonal/superensemble/
+              cp "$payload_root/superensemble_manifest.json" site/seasonal/superensemble_manifest.json
               ;;
             *)
               echo "Unsupported workflow_run source: $SOURCE_WORKFLOW" >&2
