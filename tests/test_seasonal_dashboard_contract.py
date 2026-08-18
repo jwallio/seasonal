@@ -60,8 +60,22 @@ def main() -> int:
         "usable.find(run => String(run.component || '') === 'multisystem')",
         "probability_above_normal",
         "multi_model_consensus",
+        "const DEFAULT_PRODUCT_PRIORITY = [",
+        "const DEFAULT_PERIOD_PRIORITY = ['djf', 'december'];",
+        "function defaultTargetPeriod(target)",
+        "function defaultSelectionForModel(model, products)",
+        "function genericSelectionForModel(model, products)",
+        "preferredTargetKey",
     ):
         check(term in page, f"unified dashboard missing term: {term}")
+
+    priority_terms = (
+        "defaultTargetPeriod(target)",
+        "defaultSelectionForModel(model, products)",
+        "genericSelectionForModel(model, products)",
+    )
+    priority_positions = [page.index(term) for term in priority_terms]
+    check(priority_positions == sorted(priority_positions), "default seasonal fallback helpers should be defined in execution order")
 
     check("WN2 /" not in page, "unified dashboard should use a generic dashboard title")
     check("WeatherNext 2" not in page, "seasonal dashboard should not present WeatherNext 2 as a seasonal model")
