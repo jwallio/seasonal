@@ -105,6 +105,16 @@ jobs:
             cansips-${{ runner.os }}-
             superensemble-cansips-${{ runner.os }}-
 
+      - name: Restore rolling CFSv2 state
+        uses: actions/cache@v4
+        with:
+          path: .cache/cfsv2
+          key: superensemble-cfsv2-${{ runner.os }}-${{ env.SUPER_PRODUCT }}-${{ github.run_id }}-v1
+          restore-keys: |
+            superensemble-cfsv2-${{ runner.os }}-${{ env.SUPER_PRODUCT }}-
+            cfsv2-rolling-
+            superensemble-cfsv2-${{ runner.os }}-
+
       - name: Restore unique NMME component cache
         uses: actions/cache@v4
         with:
@@ -156,6 +166,11 @@ jobs:
             --minimum-members "$MINIMUM_MEMBERS" \
             --c3s-cache-dir .cache/c3s \
             --cansips-cache-dir .cache/cansips \
+            --cfsv2-cache-dir .cache/cfsv2 \
+            --cfsv2-rolling-state-dir .cache/cfsv2/rolling \
+            --cfsv2-anchor-init latest \
+            --cfsv2-rolling-days 10 \
+            --cfsv2-rolling-member 1 \
             --nmme-cache-dir .cache/nmme \
             --border-cache-dir .cache/superensemble \
             --output-dir public/seasonal/superensemble \
