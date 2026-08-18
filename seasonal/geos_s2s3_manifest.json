@@ -1,78 +1,944 @@
 {
   "schema_version": 1,
   "kind": "geos_s2s3_seasonal_manifest",
-  "generated_utc": "2026-08-16T20:19:46Z",
-  "source": "NASA GEOS-S2S-3 official seasonal charts",
-  "source_url": "https://gmao.gsfc.nasa.gov/seasonal-forecasts/seasonal-decadal-analysis-prediction-v3/",
+  "generated_utc": "2026-08-18T21:45:54Z",
+  "source": "NASA GEOS-S2S-3 NCCS numerical forecast archive",
+  "source_url": "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/",
   "source_urls": [
-    "https://gmao.gsfc.nasa.gov/seasonal-forecasts/seasonal-decadal-analysis-prediction-v3/",
-    "https://gmao.gsfc.nasa.gov/seasonal-forecasts/seasonal-decadal-analysis-prediction-v3/forecast-data_atmospheric-anomalies/",
-    "https://gmao.gsfc.nasa.gov/lookup_images/"
+    "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/",
+    "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/NRT/APCN/",
+    "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/Drift/for_APCN/",
+    "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/GEOS-S2S-3-primer.pdf",
+    "https://github.com/GEOS-ESM/GEOS-S2S-3/blob/main/src/Applications/GEOSgcm_App/HISTORY.AOGCM-S2Sv3.rc.tmpl"
   ],
-  "rendering": "official NASA pre-rendered chart; not a common 500-mb field renderer",
+  "rendering": "numeric NASA NetCDF ensemble mean minus lead-matched provider drift climatology",
   "comparison_products": [],
   "product_labels": {
+    "500mb_height_anomaly": "500-mb Height Anomaly",
+    "850mb_temperature_anomaly": "850-mb Temperature Anomaly",
     "2m_temperature_anomaly": "2-m Temperature Anomaly",
-    "precipitation_anomaly": "Precipitation Anomaly"
+    "precipitation_anomaly": "CONUS Precipitation Anomaly",
+    "mslp_anomaly": "MSLP Anomaly",
+    "sea_surface_temperature_anomaly": "Sea-Surface Temperature Anomaly"
   },
   "retention": {
     "max_cycles": 4,
     "history_cycles": 3
   },
+  "source_quality": {
+    "z500": "strict 500-hPa coordinate validation; current 200-hPa APCN extraction is rejected",
+    "sst": "NASA TS field with Natural Earth land cells masked before rendering or blending"
+  },
   "runs": [
+    {
+      "id": "geos-s2s3-202608-sea_surface_temperature_anomaly",
+      "init_utc": "2026-08-01T00:00:00Z",
+      "model": "NASA GEOS-S2S-3",
+      "product": "sea_surface_temperature_anomaly",
+      "status": "rendered",
+      "source": "NASA GEOS-S2S-3 NCCS numerical forecast archive",
+      "source_url": "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/",
+      "aggregation": "lag/burst ensemble mean minus lead-matched provider drift climatology",
+      "output_dir": "public/seasonal/geos_s2s3",
+      "targets": [
+        {
+          "id": "geos-s2s3-202608-sea_surface_temperature_anomaly-202612",
+          "label": "December 2026",
+          "target_month": "202612",
+          "period_label": "December 2026",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-01-01T00:00:00Z",
+          "lead_month": 4,
+          "field": "sea_surface_temperature_anomaly",
+          "units": "\u00b0C",
+          "statistic": "NASA GEOS-S2S-3 lag/burst ensemble mean anomaly",
+          "ensemble_members": 10,
+          "ensemble_expected_members": 10,
+          "ensemble_scope": "long-range selected members",
+          "initialization_start_utc": "2026-07-05T00:00:00Z",
+          "initialization_end_utc": "2026-07-31T00:00:00Z",
+          "source_archive_url": "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/NRT/APCN/202608/202608_sst.tar.xz",
+          "source_files": [
+            "202608.sst.20260705ens2.9mo.nc4",
+            "202608.sst.20260710ens2.9mo.nc4",
+            "202608.sst.20260710ens4.9mo.nc4",
+            "202608.sst.20260715ens1.9mo.nc4",
+            "202608.sst.20260720ens3.9mo.nc4",
+            "202608.sst.20260720ens5.9mo.nc4",
+            "202608.sst.20260730ens1.9mo.nc4",
+            "202608.sst.20260730ens13.9mo.nc4",
+            "202608.sst.20260730ens14.9mo.nc4",
+            "202608.sst.20260730ens15.9mo.nc4"
+          ],
+          "baseline": {
+            "status": "native_provider_drift",
+            "source": "NASA GEOS-S2S-3 provider drift climatology (2001\u20132021)",
+            "years": "2001-2021",
+            "method": "lead- and initialization-month-matched NASA hindcast ensemble mean",
+            "source_urls": [
+              "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/Drift/for_APCN/aug.APCN.monthly.drift.12.nc4"
+            ]
+          },
+          "status": "rendered",
+          "image": "public/seasonal/geos_s2s3/202608/geos_s2s3_ssta_202612.jpg"
+        },
+        {
+          "id": "geos-s2s3-202608-sea_surface_temperature_anomaly-202701",
+          "label": "January 2027",
+          "target_month": "202701",
+          "period_label": "January 2027",
+          "valid_start_utc": "2027-01-01T00:00:00Z",
+          "valid_end_utc": "2027-02-01T00:00:00Z",
+          "lead_month": 5,
+          "field": "sea_surface_temperature_anomaly",
+          "units": "\u00b0C",
+          "statistic": "NASA GEOS-S2S-3 lag/burst ensemble mean anomaly",
+          "ensemble_members": 10,
+          "ensemble_expected_members": 10,
+          "ensemble_scope": "long-range selected members",
+          "initialization_start_utc": "2026-07-05T00:00:00Z",
+          "initialization_end_utc": "2026-07-31T00:00:00Z",
+          "source_archive_url": "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/NRT/APCN/202608/202608_sst.tar.xz",
+          "source_files": [
+            "202608.sst.20260705ens2.9mo.nc4",
+            "202608.sst.20260710ens2.9mo.nc4",
+            "202608.sst.20260710ens4.9mo.nc4",
+            "202608.sst.20260715ens1.9mo.nc4",
+            "202608.sst.20260720ens3.9mo.nc4",
+            "202608.sst.20260720ens5.9mo.nc4",
+            "202608.sst.20260730ens1.9mo.nc4",
+            "202608.sst.20260730ens13.9mo.nc4",
+            "202608.sst.20260730ens14.9mo.nc4",
+            "202608.sst.20260730ens15.9mo.nc4"
+          ],
+          "baseline": {
+            "status": "native_provider_drift",
+            "source": "NASA GEOS-S2S-3 provider drift climatology (2001\u20132021)",
+            "years": "2001-2021",
+            "method": "lead- and initialization-month-matched NASA hindcast ensemble mean",
+            "source_urls": [
+              "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/Drift/for_APCN/aug.APCN.monthly.drift.01.nc4"
+            ]
+          },
+          "status": "rendered",
+          "image": "public/seasonal/geos_s2s3/202608/geos_s2s3_ssta_202701.jpg"
+        },
+        {
+          "id": "geos-s2s3-202608-sea_surface_temperature_anomaly-202702",
+          "label": "February 2027",
+          "target_month": "202702",
+          "period_label": "February 2027",
+          "valid_start_utc": "2027-02-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": 6,
+          "field": "sea_surface_temperature_anomaly",
+          "units": "\u00b0C",
+          "statistic": "NASA GEOS-S2S-3 lag/burst ensemble mean anomaly",
+          "ensemble_members": 10,
+          "ensemble_expected_members": 10,
+          "ensemble_scope": "long-range selected members",
+          "initialization_start_utc": "2026-07-05T00:00:00Z",
+          "initialization_end_utc": "2026-07-31T00:00:00Z",
+          "source_archive_url": "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/NRT/APCN/202608/202608_sst.tar.xz",
+          "source_files": [
+            "202608.sst.20260705ens2.9mo.nc4",
+            "202608.sst.20260710ens2.9mo.nc4",
+            "202608.sst.20260710ens4.9mo.nc4",
+            "202608.sst.20260715ens1.9mo.nc4",
+            "202608.sst.20260720ens3.9mo.nc4",
+            "202608.sst.20260720ens5.9mo.nc4",
+            "202608.sst.20260730ens1.9mo.nc4",
+            "202608.sst.20260730ens13.9mo.nc4",
+            "202608.sst.20260730ens14.9mo.nc4",
+            "202608.sst.20260730ens15.9mo.nc4"
+          ],
+          "baseline": {
+            "status": "native_provider_drift",
+            "source": "NASA GEOS-S2S-3 provider drift climatology (2001\u20132021)",
+            "years": "2001-2021",
+            "method": "lead- and initialization-month-matched NASA hindcast ensemble mean",
+            "source_urls": [
+              "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/Drift/for_APCN/aug.APCN.monthly.drift.02.nc4"
+            ]
+          },
+          "status": "rendered",
+          "image": "public/seasonal/geos_s2s3/202608/geos_s2s3_ssta_202702.jpg"
+        },
+        {
+          "id": "geos-s2s3-202608-sea_surface_temperature_anomaly-202612-202702",
+          "label": "DJF 2027",
+          "target_month": "202612-202702",
+          "period_label": "DJF 2027",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": "4-6",
+          "field": "sea_surface_temperature_anomaly",
+          "units": "\u00b0C",
+          "statistic": "NASA GEOS-S2S-3 lag/burst ensemble mean anomaly",
+          "ensemble_members": 10,
+          "ensemble_expected_members": 10,
+          "ensemble_scope": "long-range selected members",
+          "initialization_start_utc": "2026-07-05T00:00:00Z",
+          "initialization_end_utc": "2026-07-31T00:00:00Z",
+          "source_archive_url": "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/NRT/APCN/202608/202608_sst.tar.xz",
+          "source_files": [
+            "202608.sst.20260705ens2.9mo.nc4",
+            "202608.sst.20260710ens2.9mo.nc4",
+            "202608.sst.20260710ens4.9mo.nc4",
+            "202608.sst.20260715ens1.9mo.nc4",
+            "202608.sst.20260720ens3.9mo.nc4",
+            "202608.sst.20260720ens5.9mo.nc4",
+            "202608.sst.20260730ens1.9mo.nc4",
+            "202608.sst.20260730ens13.9mo.nc4",
+            "202608.sst.20260730ens14.9mo.nc4",
+            "202608.sst.20260730ens15.9mo.nc4"
+          ],
+          "baseline": {
+            "status": "native_provider_drift",
+            "source": "NASA GEOS-S2S-3 provider drift climatology (2001\u20132021)",
+            "years": "2001-2021",
+            "method": "lead- and initialization-month-matched NASA hindcast ensemble mean",
+            "source_urls": [
+              "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/Drift/for_APCN/aug.APCN.monthly.drift.12.nc4",
+              "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/Drift/for_APCN/aug.APCN.monthly.drift.01.nc4",
+              "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/Drift/for_APCN/aug.APCN.monthly.drift.02.nc4"
+            ]
+          },
+          "status": "rendered",
+          "image": "public/seasonal/geos_s2s3/202608/geos_s2s3_ssta_202612-202702.jpg"
+        }
+      ],
+      "initialization_start_utc": "2026-07-05T00:00:00Z",
+      "initialization_end_utc": "2026-07-31T00:00:00Z",
+      "ensemble_scope": "NASA 40-member lag/burst near term; 10 selected long-range members"
+    },
     {
       "id": "geos-s2s3-202608-precipitation_anomaly",
       "init_utc": "2026-08-01T00:00:00Z",
+      "model": "NASA GEOS-S2S-3",
       "product": "precipitation_anomaly",
       "status": "rendered",
-      "source": "NASA GEOS-S2S-3 official seasonal charts",
-      "source_url": "https://gmao.gsfc.nasa.gov/seasonal-forecasts/seasonal-decadal-analysis-prediction-v3/",
+      "source": "NASA GEOS-S2S-3 NCCS numerical forecast archive",
+      "source_url": "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/",
+      "aggregation": "lag/burst ensemble mean minus lead-matched provider drift climatology",
+      "output_dir": "public/seasonal/geos_s2s3",
       "targets": [
         {
-          "id": "geos-s2s3-202608-precip",
-          "label": "North America seasonal panel (Aug 2026\u2013Apr 2027)",
-          "valid_start_utc": "2026-08-01T00:00:00Z",
-          "valid_end_utc": "2027-05-01T00:00:00Z",
-          "lead_month": "seasonal panel",
-          "target_month": "202608-202704",
-          "period_label": "Aug 2026\u2013Apr 2027",
-          "field": "precipitation anomaly",
-          "units": "mm",
-          "statistic": "NASA GEOS-S2S-3 ensemble mean",
-          "ensemble_scope": "NASA GEOS-S2S-3 official panel",
+          "id": "geos-s2s3-202608-precipitation_anomaly-202612",
+          "label": "December 2026",
+          "target_month": "202612",
+          "period_label": "December 2026",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-01-01T00:00:00Z",
+          "lead_month": 4,
+          "field": "precipitation_anomaly",
+          "units": "in",
+          "statistic": "NASA GEOS-S2S-3 lag/burst ensemble mean anomaly",
+          "ensemble_members": 10,
+          "ensemble_expected_members": 10,
+          "ensemble_scope": "long-range selected members",
+          "initialization_start_utc": "2026-07-05T00:00:00Z",
+          "initialization_end_utc": "2026-07-31T00:00:00Z",
+          "source_archive_url": "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/NRT/APCN/202608/202608_precip.tar.xz",
+          "source_files": [
+            "202608.precip.20260705ens2.9mo.nc4",
+            "202608.precip.20260710ens2.9mo.nc4",
+            "202608.precip.20260710ens4.9mo.nc4",
+            "202608.precip.20260715ens1.9mo.nc4",
+            "202608.precip.20260720ens3.9mo.nc4",
+            "202608.precip.20260720ens5.9mo.nc4",
+            "202608.precip.20260730ens1.9mo.nc4",
+            "202608.precip.20260730ens13.9mo.nc4",
+            "202608.precip.20260730ens14.9mo.nc4",
+            "202608.precip.20260730ens15.9mo.nc4"
+          ],
+          "baseline": {
+            "status": "native_provider_drift",
+            "source": "NASA GEOS-S2S-3 provider drift climatology (2001\u20132021)",
+            "years": "2001-2021",
+            "method": "lead- and initialization-month-matched NASA hindcast ensemble mean",
+            "source_urls": [
+              "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/Drift/for_APCN/aug.APCN.monthly.drift.12.nc4"
+            ]
+          },
           "status": "rendered",
-          "image": "public/seasonal/geos_s2s3/202608/geos_s2s3_precip_202608.png",
-          "source_url": "https://gmao.gsfc.nasa.gov/media/climate_forecasts/geos5/s2s_3/plots/2026/aug/anom_atm/S2S_aug_mean_202608_Precip_anom_fcst_NA.png"
+          "image": "public/seasonal/geos_s2s3/202608/geos_s2s3_prcpa_202612.jpg"
+        },
+        {
+          "id": "geos-s2s3-202608-precipitation_anomaly-202701",
+          "label": "January 2027",
+          "target_month": "202701",
+          "period_label": "January 2027",
+          "valid_start_utc": "2027-01-01T00:00:00Z",
+          "valid_end_utc": "2027-02-01T00:00:00Z",
+          "lead_month": 5,
+          "field": "precipitation_anomaly",
+          "units": "in",
+          "statistic": "NASA GEOS-S2S-3 lag/burst ensemble mean anomaly",
+          "ensemble_members": 10,
+          "ensemble_expected_members": 10,
+          "ensemble_scope": "long-range selected members",
+          "initialization_start_utc": "2026-07-05T00:00:00Z",
+          "initialization_end_utc": "2026-07-31T00:00:00Z",
+          "source_archive_url": "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/NRT/APCN/202608/202608_precip.tar.xz",
+          "source_files": [
+            "202608.precip.20260705ens2.9mo.nc4",
+            "202608.precip.20260710ens2.9mo.nc4",
+            "202608.precip.20260710ens4.9mo.nc4",
+            "202608.precip.20260715ens1.9mo.nc4",
+            "202608.precip.20260720ens3.9mo.nc4",
+            "202608.precip.20260720ens5.9mo.nc4",
+            "202608.precip.20260730ens1.9mo.nc4",
+            "202608.precip.20260730ens13.9mo.nc4",
+            "202608.precip.20260730ens14.9mo.nc4",
+            "202608.precip.20260730ens15.9mo.nc4"
+          ],
+          "baseline": {
+            "status": "native_provider_drift",
+            "source": "NASA GEOS-S2S-3 provider drift climatology (2001\u20132021)",
+            "years": "2001-2021",
+            "method": "lead- and initialization-month-matched NASA hindcast ensemble mean",
+            "source_urls": [
+              "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/Drift/for_APCN/aug.APCN.monthly.drift.01.nc4"
+            ]
+          },
+          "status": "rendered",
+          "image": "public/seasonal/geos_s2s3/202608/geos_s2s3_prcpa_202701.jpg"
+        },
+        {
+          "id": "geos-s2s3-202608-precipitation_anomaly-202702",
+          "label": "February 2027",
+          "target_month": "202702",
+          "period_label": "February 2027",
+          "valid_start_utc": "2027-02-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": 6,
+          "field": "precipitation_anomaly",
+          "units": "in",
+          "statistic": "NASA GEOS-S2S-3 lag/burst ensemble mean anomaly",
+          "ensemble_members": 10,
+          "ensemble_expected_members": 10,
+          "ensemble_scope": "long-range selected members",
+          "initialization_start_utc": "2026-07-05T00:00:00Z",
+          "initialization_end_utc": "2026-07-31T00:00:00Z",
+          "source_archive_url": "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/NRT/APCN/202608/202608_precip.tar.xz",
+          "source_files": [
+            "202608.precip.20260705ens2.9mo.nc4",
+            "202608.precip.20260710ens2.9mo.nc4",
+            "202608.precip.20260710ens4.9mo.nc4",
+            "202608.precip.20260715ens1.9mo.nc4",
+            "202608.precip.20260720ens3.9mo.nc4",
+            "202608.precip.20260720ens5.9mo.nc4",
+            "202608.precip.20260730ens1.9mo.nc4",
+            "202608.precip.20260730ens13.9mo.nc4",
+            "202608.precip.20260730ens14.9mo.nc4",
+            "202608.precip.20260730ens15.9mo.nc4"
+          ],
+          "baseline": {
+            "status": "native_provider_drift",
+            "source": "NASA GEOS-S2S-3 provider drift climatology (2001\u20132021)",
+            "years": "2001-2021",
+            "method": "lead- and initialization-month-matched NASA hindcast ensemble mean",
+            "source_urls": [
+              "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/Drift/for_APCN/aug.APCN.monthly.drift.02.nc4"
+            ]
+          },
+          "status": "rendered",
+          "image": "public/seasonal/geos_s2s3/202608/geos_s2s3_prcpa_202702.jpg"
+        },
+        {
+          "id": "geos-s2s3-202608-precipitation_anomaly-202612-202702",
+          "label": "DJF 2027",
+          "target_month": "202612-202702",
+          "period_label": "DJF 2027",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": "4-6",
+          "field": "precipitation_anomaly",
+          "units": "in",
+          "statistic": "NASA GEOS-S2S-3 lag/burst ensemble mean anomaly",
+          "ensemble_members": 10,
+          "ensemble_expected_members": 10,
+          "ensemble_scope": "long-range selected members",
+          "initialization_start_utc": "2026-07-05T00:00:00Z",
+          "initialization_end_utc": "2026-07-31T00:00:00Z",
+          "source_archive_url": "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/NRT/APCN/202608/202608_precip.tar.xz",
+          "source_files": [
+            "202608.precip.20260705ens2.9mo.nc4",
+            "202608.precip.20260710ens2.9mo.nc4",
+            "202608.precip.20260710ens4.9mo.nc4",
+            "202608.precip.20260715ens1.9mo.nc4",
+            "202608.precip.20260720ens3.9mo.nc4",
+            "202608.precip.20260720ens5.9mo.nc4",
+            "202608.precip.20260730ens1.9mo.nc4",
+            "202608.precip.20260730ens13.9mo.nc4",
+            "202608.precip.20260730ens14.9mo.nc4",
+            "202608.precip.20260730ens15.9mo.nc4"
+          ],
+          "baseline": {
+            "status": "native_provider_drift",
+            "source": "NASA GEOS-S2S-3 provider drift climatology (2001\u20132021)",
+            "years": "2001-2021",
+            "method": "lead- and initialization-month-matched NASA hindcast ensemble mean",
+            "source_urls": [
+              "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/Drift/for_APCN/aug.APCN.monthly.drift.12.nc4",
+              "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/Drift/for_APCN/aug.APCN.monthly.drift.01.nc4",
+              "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/Drift/for_APCN/aug.APCN.monthly.drift.02.nc4"
+            ]
+          },
+          "status": "rendered",
+          "image": "public/seasonal/geos_s2s3/202608/geos_s2s3_prcpa_202612-202702.jpg"
         }
       ],
-      "output_dir": "public/seasonal/geos_s2s3"
+      "initialization_start_utc": "2026-07-05T00:00:00Z",
+      "initialization_end_utc": "2026-07-31T00:00:00Z",
+      "ensemble_scope": "NASA 40-member lag/burst near term; 10 selected long-range members"
+    },
+    {
+      "id": "geos-s2s3-202608-mslp_anomaly",
+      "init_utc": "2026-08-01T00:00:00Z",
+      "model": "NASA GEOS-S2S-3",
+      "product": "mslp_anomaly",
+      "status": "rendered",
+      "source": "NASA GEOS-S2S-3 NCCS numerical forecast archive",
+      "source_url": "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/",
+      "aggregation": "lag/burst ensemble mean minus lead-matched provider drift climatology",
+      "output_dir": "public/seasonal/geos_s2s3",
+      "targets": [
+        {
+          "id": "geos-s2s3-202608-mslp_anomaly-202612",
+          "label": "December 2026",
+          "target_month": "202612",
+          "period_label": "December 2026",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-01-01T00:00:00Z",
+          "lead_month": 4,
+          "field": "mslp_anomaly",
+          "units": "hPa",
+          "statistic": "NASA GEOS-S2S-3 lag/burst ensemble mean anomaly",
+          "ensemble_members": 10,
+          "ensemble_expected_members": 10,
+          "ensemble_scope": "long-range selected members",
+          "initialization_start_utc": "2026-07-05T00:00:00Z",
+          "initialization_end_utc": "2026-07-31T00:00:00Z",
+          "source_archive_url": "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/NRT/APCN/202608/202608_slp.tar.xz",
+          "source_files": [
+            "202608.slp.20260705ens2.9mo.nc4",
+            "202608.slp.20260710ens2.9mo.nc4",
+            "202608.slp.20260710ens4.9mo.nc4",
+            "202608.slp.20260715ens1.9mo.nc4",
+            "202608.slp.20260720ens3.9mo.nc4",
+            "202608.slp.20260720ens5.9mo.nc4",
+            "202608.slp.20260730ens1.9mo.nc4",
+            "202608.slp.20260730ens13.9mo.nc4",
+            "202608.slp.20260730ens14.9mo.nc4",
+            "202608.slp.20260730ens15.9mo.nc4"
+          ],
+          "baseline": {
+            "status": "native_provider_drift",
+            "source": "NASA GEOS-S2S-3 provider drift climatology (2001\u20132021)",
+            "years": "2001-2021",
+            "method": "lead- and initialization-month-matched NASA hindcast ensemble mean",
+            "source_urls": [
+              "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/Drift/for_APCN/aug.APCN.monthly.drift.12.nc4"
+            ]
+          },
+          "status": "rendered",
+          "image": "public/seasonal/geos_s2s3/202608/geos_s2s3_mslpa_202612.jpg"
+        },
+        {
+          "id": "geos-s2s3-202608-mslp_anomaly-202701",
+          "label": "January 2027",
+          "target_month": "202701",
+          "period_label": "January 2027",
+          "valid_start_utc": "2027-01-01T00:00:00Z",
+          "valid_end_utc": "2027-02-01T00:00:00Z",
+          "lead_month": 5,
+          "field": "mslp_anomaly",
+          "units": "hPa",
+          "statistic": "NASA GEOS-S2S-3 lag/burst ensemble mean anomaly",
+          "ensemble_members": 10,
+          "ensemble_expected_members": 10,
+          "ensemble_scope": "long-range selected members",
+          "initialization_start_utc": "2026-07-05T00:00:00Z",
+          "initialization_end_utc": "2026-07-31T00:00:00Z",
+          "source_archive_url": "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/NRT/APCN/202608/202608_slp.tar.xz",
+          "source_files": [
+            "202608.slp.20260705ens2.9mo.nc4",
+            "202608.slp.20260710ens2.9mo.nc4",
+            "202608.slp.20260710ens4.9mo.nc4",
+            "202608.slp.20260715ens1.9mo.nc4",
+            "202608.slp.20260720ens3.9mo.nc4",
+            "202608.slp.20260720ens5.9mo.nc4",
+            "202608.slp.20260730ens1.9mo.nc4",
+            "202608.slp.20260730ens13.9mo.nc4",
+            "202608.slp.20260730ens14.9mo.nc4",
+            "202608.slp.20260730ens15.9mo.nc4"
+          ],
+          "baseline": {
+            "status": "native_provider_drift",
+            "source": "NASA GEOS-S2S-3 provider drift climatology (2001\u20132021)",
+            "years": "2001-2021",
+            "method": "lead- and initialization-month-matched NASA hindcast ensemble mean",
+            "source_urls": [
+              "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/Drift/for_APCN/aug.APCN.monthly.drift.01.nc4"
+            ]
+          },
+          "status": "rendered",
+          "image": "public/seasonal/geos_s2s3/202608/geos_s2s3_mslpa_202701.jpg"
+        },
+        {
+          "id": "geos-s2s3-202608-mslp_anomaly-202702",
+          "label": "February 2027",
+          "target_month": "202702",
+          "period_label": "February 2027",
+          "valid_start_utc": "2027-02-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": 6,
+          "field": "mslp_anomaly",
+          "units": "hPa",
+          "statistic": "NASA GEOS-S2S-3 lag/burst ensemble mean anomaly",
+          "ensemble_members": 10,
+          "ensemble_expected_members": 10,
+          "ensemble_scope": "long-range selected members",
+          "initialization_start_utc": "2026-07-05T00:00:00Z",
+          "initialization_end_utc": "2026-07-31T00:00:00Z",
+          "source_archive_url": "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/NRT/APCN/202608/202608_slp.tar.xz",
+          "source_files": [
+            "202608.slp.20260705ens2.9mo.nc4",
+            "202608.slp.20260710ens2.9mo.nc4",
+            "202608.slp.20260710ens4.9mo.nc4",
+            "202608.slp.20260715ens1.9mo.nc4",
+            "202608.slp.20260720ens3.9mo.nc4",
+            "202608.slp.20260720ens5.9mo.nc4",
+            "202608.slp.20260730ens1.9mo.nc4",
+            "202608.slp.20260730ens13.9mo.nc4",
+            "202608.slp.20260730ens14.9mo.nc4",
+            "202608.slp.20260730ens15.9mo.nc4"
+          ],
+          "baseline": {
+            "status": "native_provider_drift",
+            "source": "NASA GEOS-S2S-3 provider drift climatology (2001\u20132021)",
+            "years": "2001-2021",
+            "method": "lead- and initialization-month-matched NASA hindcast ensemble mean",
+            "source_urls": [
+              "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/Drift/for_APCN/aug.APCN.monthly.drift.02.nc4"
+            ]
+          },
+          "status": "rendered",
+          "image": "public/seasonal/geos_s2s3/202608/geos_s2s3_mslpa_202702.jpg"
+        },
+        {
+          "id": "geos-s2s3-202608-mslp_anomaly-202612-202702",
+          "label": "DJF 2027",
+          "target_month": "202612-202702",
+          "period_label": "DJF 2027",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": "4-6",
+          "field": "mslp_anomaly",
+          "units": "hPa",
+          "statistic": "NASA GEOS-S2S-3 lag/burst ensemble mean anomaly",
+          "ensemble_members": 10,
+          "ensemble_expected_members": 10,
+          "ensemble_scope": "long-range selected members",
+          "initialization_start_utc": "2026-07-05T00:00:00Z",
+          "initialization_end_utc": "2026-07-31T00:00:00Z",
+          "source_archive_url": "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/NRT/APCN/202608/202608_slp.tar.xz",
+          "source_files": [
+            "202608.slp.20260705ens2.9mo.nc4",
+            "202608.slp.20260710ens2.9mo.nc4",
+            "202608.slp.20260710ens4.9mo.nc4",
+            "202608.slp.20260715ens1.9mo.nc4",
+            "202608.slp.20260720ens3.9mo.nc4",
+            "202608.slp.20260720ens5.9mo.nc4",
+            "202608.slp.20260730ens1.9mo.nc4",
+            "202608.slp.20260730ens13.9mo.nc4",
+            "202608.slp.20260730ens14.9mo.nc4",
+            "202608.slp.20260730ens15.9mo.nc4"
+          ],
+          "baseline": {
+            "status": "native_provider_drift",
+            "source": "NASA GEOS-S2S-3 provider drift climatology (2001\u20132021)",
+            "years": "2001-2021",
+            "method": "lead- and initialization-month-matched NASA hindcast ensemble mean",
+            "source_urls": [
+              "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/Drift/for_APCN/aug.APCN.monthly.drift.12.nc4",
+              "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/Drift/for_APCN/aug.APCN.monthly.drift.01.nc4",
+              "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/Drift/for_APCN/aug.APCN.monthly.drift.02.nc4"
+            ]
+          },
+          "status": "rendered",
+          "image": "public/seasonal/geos_s2s3/202608/geos_s2s3_mslpa_202612-202702.jpg"
+        }
+      ],
+      "initialization_start_utc": "2026-07-05T00:00:00Z",
+      "initialization_end_utc": "2026-07-31T00:00:00Z",
+      "ensemble_scope": "NASA 40-member lag/burst near term; 10 selected long-range members"
+    },
+    {
+      "id": "geos-s2s3-202608-850mb_temperature_anomaly",
+      "init_utc": "2026-08-01T00:00:00Z",
+      "model": "NASA GEOS-S2S-3",
+      "product": "850mb_temperature_anomaly",
+      "status": "rendered",
+      "source": "NASA GEOS-S2S-3 NCCS numerical forecast archive",
+      "source_url": "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/",
+      "aggregation": "lag/burst ensemble mean minus lead-matched provider drift climatology",
+      "output_dir": "public/seasonal/geos_s2s3",
+      "targets": [
+        {
+          "id": "geos-s2s3-202608-850mb_temperature_anomaly-202612",
+          "label": "December 2026",
+          "target_month": "202612",
+          "period_label": "December 2026",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-01-01T00:00:00Z",
+          "lead_month": 4,
+          "field": "temperature_850mb_anomaly",
+          "units": "\u00b0C",
+          "statistic": "NASA GEOS-S2S-3 lag/burst ensemble mean anomaly",
+          "ensemble_members": 10,
+          "ensemble_expected_members": 10,
+          "ensemble_scope": "long-range selected members",
+          "initialization_start_utc": "2026-07-05T00:00:00Z",
+          "initialization_end_utc": "2026-07-31T00:00:00Z",
+          "source_archive_url": "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/NRT/APCN/202608/202608_t850.tar.xz",
+          "source_files": [
+            "202608.t850.20260705ens2.9mo.nc4",
+            "202608.t850.20260710ens2.9mo.nc4",
+            "202608.t850.20260710ens4.9mo.nc4",
+            "202608.t850.20260715ens1.9mo.nc4",
+            "202608.t850.20260720ens3.9mo.nc4",
+            "202608.t850.20260720ens5.9mo.nc4",
+            "202608.t850.20260730ens1.9mo.nc4",
+            "202608.t850.20260730ens13.9mo.nc4",
+            "202608.t850.20260730ens14.9mo.nc4",
+            "202608.t850.20260730ens15.9mo.nc4"
+          ],
+          "baseline": {
+            "status": "native_provider_drift",
+            "source": "NASA GEOS-S2S-3 provider drift climatology (2001\u20132021)",
+            "years": "2001-2021",
+            "method": "lead- and initialization-month-matched NASA hindcast ensemble mean",
+            "source_urls": [
+              "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/Drift/for_APCN/aug.APCN.monthly.drift.12.nc4"
+            ]
+          },
+          "status": "rendered",
+          "image": "public/seasonal/geos_s2s3/202608/geos_s2s3_t850a_202612.jpg"
+        },
+        {
+          "id": "geos-s2s3-202608-850mb_temperature_anomaly-202701",
+          "label": "January 2027",
+          "target_month": "202701",
+          "period_label": "January 2027",
+          "valid_start_utc": "2027-01-01T00:00:00Z",
+          "valid_end_utc": "2027-02-01T00:00:00Z",
+          "lead_month": 5,
+          "field": "temperature_850mb_anomaly",
+          "units": "\u00b0C",
+          "statistic": "NASA GEOS-S2S-3 lag/burst ensemble mean anomaly",
+          "ensemble_members": 10,
+          "ensemble_expected_members": 10,
+          "ensemble_scope": "long-range selected members",
+          "initialization_start_utc": "2026-07-05T00:00:00Z",
+          "initialization_end_utc": "2026-07-31T00:00:00Z",
+          "source_archive_url": "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/NRT/APCN/202608/202608_t850.tar.xz",
+          "source_files": [
+            "202608.t850.20260705ens2.9mo.nc4",
+            "202608.t850.20260710ens2.9mo.nc4",
+            "202608.t850.20260710ens4.9mo.nc4",
+            "202608.t850.20260715ens1.9mo.nc4",
+            "202608.t850.20260720ens3.9mo.nc4",
+            "202608.t850.20260720ens5.9mo.nc4",
+            "202608.t850.20260730ens1.9mo.nc4",
+            "202608.t850.20260730ens13.9mo.nc4",
+            "202608.t850.20260730ens14.9mo.nc4",
+            "202608.t850.20260730ens15.9mo.nc4"
+          ],
+          "baseline": {
+            "status": "native_provider_drift",
+            "source": "NASA GEOS-S2S-3 provider drift climatology (2001\u20132021)",
+            "years": "2001-2021",
+            "method": "lead- and initialization-month-matched NASA hindcast ensemble mean",
+            "source_urls": [
+              "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/Drift/for_APCN/aug.APCN.monthly.drift.01.nc4"
+            ]
+          },
+          "status": "rendered",
+          "image": "public/seasonal/geos_s2s3/202608/geos_s2s3_t850a_202701.jpg"
+        },
+        {
+          "id": "geos-s2s3-202608-850mb_temperature_anomaly-202702",
+          "label": "February 2027",
+          "target_month": "202702",
+          "period_label": "February 2027",
+          "valid_start_utc": "2027-02-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": 6,
+          "field": "temperature_850mb_anomaly",
+          "units": "\u00b0C",
+          "statistic": "NASA GEOS-S2S-3 lag/burst ensemble mean anomaly",
+          "ensemble_members": 10,
+          "ensemble_expected_members": 10,
+          "ensemble_scope": "long-range selected members",
+          "initialization_start_utc": "2026-07-05T00:00:00Z",
+          "initialization_end_utc": "2026-07-31T00:00:00Z",
+          "source_archive_url": "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/NRT/APCN/202608/202608_t850.tar.xz",
+          "source_files": [
+            "202608.t850.20260705ens2.9mo.nc4",
+            "202608.t850.20260710ens2.9mo.nc4",
+            "202608.t850.20260710ens4.9mo.nc4",
+            "202608.t850.20260715ens1.9mo.nc4",
+            "202608.t850.20260720ens3.9mo.nc4",
+            "202608.t850.20260720ens5.9mo.nc4",
+            "202608.t850.20260730ens1.9mo.nc4",
+            "202608.t850.20260730ens13.9mo.nc4",
+            "202608.t850.20260730ens14.9mo.nc4",
+            "202608.t850.20260730ens15.9mo.nc4"
+          ],
+          "baseline": {
+            "status": "native_provider_drift",
+            "source": "NASA GEOS-S2S-3 provider drift climatology (2001\u20132021)",
+            "years": "2001-2021",
+            "method": "lead- and initialization-month-matched NASA hindcast ensemble mean",
+            "source_urls": [
+              "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/Drift/for_APCN/aug.APCN.monthly.drift.02.nc4"
+            ]
+          },
+          "status": "rendered",
+          "image": "public/seasonal/geos_s2s3/202608/geos_s2s3_t850a_202702.jpg"
+        },
+        {
+          "id": "geos-s2s3-202608-850mb_temperature_anomaly-202612-202702",
+          "label": "DJF 2027",
+          "target_month": "202612-202702",
+          "period_label": "DJF 2027",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": "4-6",
+          "field": "temperature_850mb_anomaly",
+          "units": "\u00b0C",
+          "statistic": "NASA GEOS-S2S-3 lag/burst ensemble mean anomaly",
+          "ensemble_members": 10,
+          "ensemble_expected_members": 10,
+          "ensemble_scope": "long-range selected members",
+          "initialization_start_utc": "2026-07-05T00:00:00Z",
+          "initialization_end_utc": "2026-07-31T00:00:00Z",
+          "source_archive_url": "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/NRT/APCN/202608/202608_t850.tar.xz",
+          "source_files": [
+            "202608.t850.20260705ens2.9mo.nc4",
+            "202608.t850.20260710ens2.9mo.nc4",
+            "202608.t850.20260710ens4.9mo.nc4",
+            "202608.t850.20260715ens1.9mo.nc4",
+            "202608.t850.20260720ens3.9mo.nc4",
+            "202608.t850.20260720ens5.9mo.nc4",
+            "202608.t850.20260730ens1.9mo.nc4",
+            "202608.t850.20260730ens13.9mo.nc4",
+            "202608.t850.20260730ens14.9mo.nc4",
+            "202608.t850.20260730ens15.9mo.nc4"
+          ],
+          "baseline": {
+            "status": "native_provider_drift",
+            "source": "NASA GEOS-S2S-3 provider drift climatology (2001\u20132021)",
+            "years": "2001-2021",
+            "method": "lead- and initialization-month-matched NASA hindcast ensemble mean",
+            "source_urls": [
+              "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/Drift/for_APCN/aug.APCN.monthly.drift.12.nc4",
+              "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/Drift/for_APCN/aug.APCN.monthly.drift.01.nc4",
+              "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/Drift/for_APCN/aug.APCN.monthly.drift.02.nc4"
+            ]
+          },
+          "status": "rendered",
+          "image": "public/seasonal/geos_s2s3/202608/geos_s2s3_t850a_202612-202702.jpg"
+        }
+      ],
+      "initialization_start_utc": "2026-07-05T00:00:00Z",
+      "initialization_end_utc": "2026-07-31T00:00:00Z",
+      "ensemble_scope": "NASA 40-member lag/burst near term; 10 selected long-range members"
     },
     {
       "id": "geos-s2s3-202608-2m_temperature_anomaly",
       "init_utc": "2026-08-01T00:00:00Z",
+      "model": "NASA GEOS-S2S-3",
       "product": "2m_temperature_anomaly",
       "status": "rendered",
-      "source": "NASA GEOS-S2S-3 official seasonal charts",
-      "source_url": "https://gmao.gsfc.nasa.gov/seasonal-forecasts/seasonal-decadal-analysis-prediction-v3/",
+      "source": "NASA GEOS-S2S-3 NCCS numerical forecast archive",
+      "source_url": "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/",
+      "aggregation": "lag/burst ensemble mean minus lead-matched provider drift climatology",
+      "output_dir": "public/seasonal/geos_s2s3",
       "targets": [
         {
-          "id": "geos-s2s3-202608-t2m",
-          "label": "North America seasonal panel (Aug 2026\u2013Apr 2027)",
-          "valid_start_utc": "2026-08-01T00:00:00Z",
-          "valid_end_utc": "2027-05-01T00:00:00Z",
-          "lead_month": "seasonal panel",
-          "target_month": "202608-202704",
-          "period_label": "Aug 2026\u2013Apr 2027",
-          "field": "2-m temperature anomaly",
+          "id": "geos-s2s3-202608-2m_temperature_anomaly-202612",
+          "label": "December 2026",
+          "target_month": "202612",
+          "period_label": "December 2026",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-01-01T00:00:00Z",
+          "lead_month": 4,
+          "field": "temperature_2m_anomaly",
           "units": "\u00b0C",
-          "statistic": "NASA GEOS-S2S-3 ensemble mean",
-          "ensemble_scope": "NASA GEOS-S2S-3 official panel",
+          "statistic": "NASA GEOS-S2S-3 lag/burst ensemble mean anomaly",
+          "ensemble_members": 10,
+          "ensemble_expected_members": 10,
+          "ensemble_scope": "long-range selected members",
+          "initialization_start_utc": "2026-07-05T00:00:00Z",
+          "initialization_end_utc": "2026-07-31T00:00:00Z",
+          "source_archive_url": "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/NRT/APCN/202608/202608_at.tar.xz",
+          "source_files": [
+            "202608.at.20260705ens2.9mo.nc4",
+            "202608.at.20260710ens2.9mo.nc4",
+            "202608.at.20260710ens4.9mo.nc4",
+            "202608.at.20260715ens1.9mo.nc4",
+            "202608.at.20260720ens3.9mo.nc4",
+            "202608.at.20260720ens5.9mo.nc4",
+            "202608.at.20260730ens1.9mo.nc4",
+            "202608.at.20260730ens13.9mo.nc4",
+            "202608.at.20260730ens14.9mo.nc4",
+            "202608.at.20260730ens15.9mo.nc4"
+          ],
+          "baseline": {
+            "status": "native_provider_drift",
+            "source": "NASA GEOS-S2S-3 provider drift climatology (2001\u20132021)",
+            "years": "2001-2021",
+            "method": "lead- and initialization-month-matched NASA hindcast ensemble mean",
+            "source_urls": [
+              "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/Drift/for_APCN/aug.APCN.monthly.drift.12.nc4"
+            ]
+          },
           "status": "rendered",
-          "image": "public/seasonal/geos_s2s3/202608/geos_s2s3_t2m_202608.png",
-          "source_url": "https://gmao.gsfc.nasa.gov/media/climate_forecasts/geos5/s2s_3/plots/2026/aug/anom_atm/S2S_aug_mean_202608_T2M_anom_fcst_NA.png"
+          "image": "public/seasonal/geos_s2s3/202608/geos_s2s3_t2ma_202612.jpg"
+        },
+        {
+          "id": "geos-s2s3-202608-2m_temperature_anomaly-202701",
+          "label": "January 2027",
+          "target_month": "202701",
+          "period_label": "January 2027",
+          "valid_start_utc": "2027-01-01T00:00:00Z",
+          "valid_end_utc": "2027-02-01T00:00:00Z",
+          "lead_month": 5,
+          "field": "temperature_2m_anomaly",
+          "units": "\u00b0C",
+          "statistic": "NASA GEOS-S2S-3 lag/burst ensemble mean anomaly",
+          "ensemble_members": 10,
+          "ensemble_expected_members": 10,
+          "ensemble_scope": "long-range selected members",
+          "initialization_start_utc": "2026-07-05T00:00:00Z",
+          "initialization_end_utc": "2026-07-31T00:00:00Z",
+          "source_archive_url": "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/NRT/APCN/202608/202608_at.tar.xz",
+          "source_files": [
+            "202608.at.20260705ens2.9mo.nc4",
+            "202608.at.20260710ens2.9mo.nc4",
+            "202608.at.20260710ens4.9mo.nc4",
+            "202608.at.20260715ens1.9mo.nc4",
+            "202608.at.20260720ens3.9mo.nc4",
+            "202608.at.20260720ens5.9mo.nc4",
+            "202608.at.20260730ens1.9mo.nc4",
+            "202608.at.20260730ens13.9mo.nc4",
+            "202608.at.20260730ens14.9mo.nc4",
+            "202608.at.20260730ens15.9mo.nc4"
+          ],
+          "baseline": {
+            "status": "native_provider_drift",
+            "source": "NASA GEOS-S2S-3 provider drift climatology (2001\u20132021)",
+            "years": "2001-2021",
+            "method": "lead- and initialization-month-matched NASA hindcast ensemble mean",
+            "source_urls": [
+              "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/Drift/for_APCN/aug.APCN.monthly.drift.01.nc4"
+            ]
+          },
+          "status": "rendered",
+          "image": "public/seasonal/geos_s2s3/202608/geos_s2s3_t2ma_202701.jpg"
+        },
+        {
+          "id": "geos-s2s3-202608-2m_temperature_anomaly-202702",
+          "label": "February 2027",
+          "target_month": "202702",
+          "period_label": "February 2027",
+          "valid_start_utc": "2027-02-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": 6,
+          "field": "temperature_2m_anomaly",
+          "units": "\u00b0C",
+          "statistic": "NASA GEOS-S2S-3 lag/burst ensemble mean anomaly",
+          "ensemble_members": 10,
+          "ensemble_expected_members": 10,
+          "ensemble_scope": "long-range selected members",
+          "initialization_start_utc": "2026-07-05T00:00:00Z",
+          "initialization_end_utc": "2026-07-31T00:00:00Z",
+          "source_archive_url": "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/NRT/APCN/202608/202608_at.tar.xz",
+          "source_files": [
+            "202608.at.20260705ens2.9mo.nc4",
+            "202608.at.20260710ens2.9mo.nc4",
+            "202608.at.20260710ens4.9mo.nc4",
+            "202608.at.20260715ens1.9mo.nc4",
+            "202608.at.20260720ens3.9mo.nc4",
+            "202608.at.20260720ens5.9mo.nc4",
+            "202608.at.20260730ens1.9mo.nc4",
+            "202608.at.20260730ens13.9mo.nc4",
+            "202608.at.20260730ens14.9mo.nc4",
+            "202608.at.20260730ens15.9mo.nc4"
+          ],
+          "baseline": {
+            "status": "native_provider_drift",
+            "source": "NASA GEOS-S2S-3 provider drift climatology (2001\u20132021)",
+            "years": "2001-2021",
+            "method": "lead- and initialization-month-matched NASA hindcast ensemble mean",
+            "source_urls": [
+              "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/Drift/for_APCN/aug.APCN.monthly.drift.02.nc4"
+            ]
+          },
+          "status": "rendered",
+          "image": "public/seasonal/geos_s2s3/202608/geos_s2s3_t2ma_202702.jpg"
+        },
+        {
+          "id": "geos-s2s3-202608-2m_temperature_anomaly-202612-202702",
+          "label": "DJF 2027",
+          "target_month": "202612-202702",
+          "period_label": "DJF 2027",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": "4-6",
+          "field": "temperature_2m_anomaly",
+          "units": "\u00b0C",
+          "statistic": "NASA GEOS-S2S-3 lag/burst ensemble mean anomaly",
+          "ensemble_members": 10,
+          "ensemble_expected_members": 10,
+          "ensemble_scope": "long-range selected members",
+          "initialization_start_utc": "2026-07-05T00:00:00Z",
+          "initialization_end_utc": "2026-07-31T00:00:00Z",
+          "source_archive_url": "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/NRT/APCN/202608/202608_at.tar.xz",
+          "source_files": [
+            "202608.at.20260705ens2.9mo.nc4",
+            "202608.at.20260710ens2.9mo.nc4",
+            "202608.at.20260710ens4.9mo.nc4",
+            "202608.at.20260715ens1.9mo.nc4",
+            "202608.at.20260720ens3.9mo.nc4",
+            "202608.at.20260720ens5.9mo.nc4",
+            "202608.at.20260730ens1.9mo.nc4",
+            "202608.at.20260730ens13.9mo.nc4",
+            "202608.at.20260730ens14.9mo.nc4",
+            "202608.at.20260730ens15.9mo.nc4"
+          ],
+          "baseline": {
+            "status": "native_provider_drift",
+            "source": "NASA GEOS-S2S-3 provider drift climatology (2001\u20132021)",
+            "years": "2001-2021",
+            "method": "lead- and initialization-month-matched NASA hindcast ensemble mean",
+            "source_urls": [
+              "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/Drift/for_APCN/aug.APCN.monthly.drift.12.nc4",
+              "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/Drift/for_APCN/aug.APCN.monthly.drift.01.nc4",
+              "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/Drift/for_APCN/aug.APCN.monthly.drift.02.nc4"
+            ]
+          },
+          "status": "rendered",
+          "image": "public/seasonal/geos_s2s3/202608/geos_s2s3_t2ma_202612-202702.jpg"
         }
       ],
-      "output_dir": "public/seasonal/geos_s2s3"
+      "initialization_start_utc": "2026-07-05T00:00:00Z",
+      "initialization_end_utc": "2026-07-31T00:00:00Z",
+      "ensemble_scope": "NASA 40-member lag/burst near term; 10 selected long-range members"
     }
   ]
 }
