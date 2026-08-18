@@ -12,8 +12,9 @@ WeatherNext `forecast_hour` schema.
 For each requested lead month, the adapter:
 
 1. Builds the official NOMADS monthly URL for the selected product and target
-   month. Height products use `pgbf`; precipitation and snow-water-equivalent
-   products use the matching `flxf` monthly file.
+   month. Height and mean-sea-level pressure products use `pgbf`; 2-m
+   temperature, precipitation, and snow-water-equivalent products use the
+   matching `flxf` monthly file.
 2. Caches the raw GRIB2 file and runs a product-specific `wgrib2` field filter.
 3. Validates the decoded global grid and averages the selected
    `monthly_grib_01` through `monthly_grib_04` member streams.
@@ -27,8 +28,17 @@ The supported production products are:
 | Product | Source field | Display units | Seasonal reduction |
 | --- | --- | --- | --- |
 | `500mb_height_anomaly` | `HGT:500 mb` from `pgbf` | m | 3-month mean |
+| `2m_temperature_anomaly` | `TMP:2 m above ground` from `flxf` | °C | 3-month mean |
+| `mslp_anomaly` | `PRES:mean sea level` from `pgbf` | hPa | 3-month mean |
 | `precipitation_anomaly` | `PRATE:surface` from `flxf` | in | 3-month total |
 | `snow_water_equivalent_anomaly` | `WEASD:surface` from `flxf` | in | 3-month mean |
+
+The 2-m temperature anomaly is a forecast-minus-reforecast difference; the
+Kelvin offset cancels, so it is displayed in °C. MSLP is decoded from the
+official `PRES:mean sea level` field and converted from Pa to hPa before the
+forecast-minus-reforecast difference is calculated. Both products use the
+official NCEI CFS reforecast calibration climatology. Temperature uses a ±8 °C
+scale and MSLP uses a ±20 hPa scale.
 
 For precipitation, the source rate (`kg m-2 s-1`) is multiplied by the actual
 number of seconds in each target calendar month. Since `1 kg m-2 = 1 mm` of
@@ -120,13 +130,17 @@ decoded-grid format or a GRIB2 file containing the selected source field. For
 `z500_YYYYMM.grib2`. For precipitation, use `prate_YYYYMM.csv` or the
 corresponding GRIB2 name; CSV precipitation baselines must already be monthly
 totals in inches. For snow-water equivalent, use `weasd_YYYYMM.csv` or the
-corresponding GRIB2 name; CSV SWE baselines must already be in inches.
+corresponding GRIB2 name; CSV SWE baselines must already be in inches. For
+2-m temperature, use `tmp2m_YYYYMM.csv` or the corresponding GRIB2 name; CSV
+temperature baselines must use the decoded Kelvin units. For MSLP, use
+`mslp_YYYYMM.csv` or the corresponding GRIB2 name; CSV pressure baselines must
+already be in hPa, while GRIB2 pressure is converted from Pa automatically.
 
 The `--ncei-calibration` option downloads the matching official NCEI CFS
 reforecast calibration file for the initialization month/day/cycle and lead.
-Height uses the pressure-level `pgbf` calibration; precipitation and
-snow-water equivalent use the official `flxf` flux calibration. Both published
-calibrations cover
+Height and MSLP use the pressure-level `pgbf` calibration; 2-m temperature,
+precipitation, and snow-water equivalent use the official `flxf` flux
+calibration. Both published calibrations cover
 `1982-2010` and are recorded in the manifest; this is separate from the
 current CPC display convention of `1991-2020` for the public monthly/seasonal
 anomaly pages.
@@ -154,8 +168,10 @@ and `Pillow`; `wgrib2` must be installed separately. The adapter honors
 
 The GitHub Actions workflow includes a **CFSv2 product** dropdown. The current
 adapter supports `500mb_height_anomaly` (the production output, selected by
-default), `precipitation_anomaly`, `snow_water_equivalent_anomaly`, and
-`500mb_height_absolute` (a clearly labelled decoder/source smoke output).
+default), `2m_temperature_anomaly`, `mslp_anomaly`, `precipitation_anomaly`,
+`snow_water_equivalent_anomaly`, and `500mb_height_absolute` (a clearly
+labelled decoder/source smoke output). The viewer's product selector displays
+each product when its run is present in the retained manifest.
 The workflow passes `--previous-manifest` and `--retain-runs 4` so the live
 viewer can show the current run and three historical runs.
 
@@ -199,6 +215,32 @@ as the height maps:
 ```powershell
 .\scripts\render_cfsv2.ps1 `
   -Product "precipitation_anomaly" `
+  -Init "2026081000" `
+  -LeadMonths "4,5,6" `
+  -SeasonalWindow "4,5,6" `
+  -RollingDays 10 `
+  -RollingMember 1 `
+  -UseNceiCalibration
+```
+
+Generate 2-m temperature anomalies:
+
+```powershell
+.\scripts\render_cfsv2.ps1 `
+  -Product "2m_temperature_anomaly" `
+  -Init "2026081000" `
+  -LeadMonths "4,5,6" `
+  -SeasonalWindow "4,5,6" `
+  -RollingDays 10 `
+  -RollingMember 1 `
+  -UseNceiCalibration
+```
+
+Generate mean-sea-level pressure anomalies:
+
+```powershell
+.\scripts\render_cfsv2.ps1 `
+  -Product "mslp_anomaly" `
   -Init "2026081000" `
   -LeadMonths "4,5,6" `
   -SeasonalWindow "4,5,6" `
@@ -260,9 +302,9 @@ Each target entry uses these fields:
 | `init_utc` | Forecast initialization time |
 | `valid_start_utc` / `valid_end_utc` | Calendar month represented |
 | `lead_month` / `target_month` | CFSv2 lead and `YYYYMM` target |
-| `aggregation` | Monthly forecast average, monthly precipitation total, monthly SWE mean, or 3-month seasonal total/mean |
-| `field` | `z500_anomaly`, `z500`, `precipitation_anomaly`, or `snow_water_equivalent_anomaly` |
-| `units` | m for height; in for precipitation and snow-water equivalent |
+| `aggregation` | Monthly forecast average, monthly 2-m temperature/sea-level pressure mean, monthly precipitation total, monthly SWE mean, or 3-month seasonal total/mean |
+| `field` | `z500_anomaly`, `z500`, `t2m_anomaly`, `mslp_anomaly`, `precipitation_anomaly`, or `snow_water_equivalent_anomaly` |
+| `units` | m for height; °C for 2-m temperature; hPa for MSLP; in for precipitation and snow-water equivalent |
 | `raw_field` / `raw_units` | Source GRIB field and units before any conversion |
 | `conversion` | Product-specific unit conversion, including calendar-month PRATE totals |
 | `baseline` | Baseline file, label, and years when applicable |

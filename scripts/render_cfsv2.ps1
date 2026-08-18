@@ -1,5 +1,5 @@
 param(
-    [ValidateSet("500mb_height_anomaly", "500mb_height_absolute", "precipitation_anomaly", "snow_water_equivalent_anomaly")]
+    [ValidateSet("500mb_height_anomaly", "500mb_height_absolute", "2m_temperature_anomaly", "mslp_anomaly", "precipitation_anomaly", "snow_water_equivalent_anomaly")]
     [string]$Product = "500mb_height_anomaly",
     [string]$Init = "latest",
     [string]$LeadMonths = "1,2,3",

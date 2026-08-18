@@ -116,6 +116,27 @@ SWE_ANOMALY_PALETTE = [
     "#1d496f",
     "#143b5f",
 ]
+TEMPERATURE_ANOMALY_TICKS = list(range(-8, 9))
+TEMPERATURE_ANOMALY_PALETTE = [
+    "#24527a",
+    "#306b90",
+    "#3d83a6",
+    "#4891b0",
+    "#539cb8",
+    "#70b2c6",
+    "#95c4d3",
+    "#e1e4e7",
+    "#f2cecd",
+    "#eaaaa8",
+    "#e28c8b",
+    "#db797b",
+    "#d3686c",
+    "#ca5861",
+    "#a1384a",
+    "#84283f",
+]
+MSLP_ANOMALY_TICKS = list(range(-20, 21, 2))
+MSLP_ANOMALY_PALETTE = ANOMALY_PALETTE
 # A social-sized North America view: retain Alaska and all of Greenland while
 # keeping the lower field in the subtropics. Border drawing applies a separate
 # 14°N cutoff so South America does not appear in the frame.
@@ -139,6 +160,8 @@ DEFAULT_BORDER_URLS = (
 
 PRODUCT_HEIGHT_ANOMALY = "500mb_height_anomaly"
 PRODUCT_HEIGHT_ABSOLUTE = "500mb_height_absolute"
+PRODUCT_2M_TEMPERATURE_ANOMALY = "2m_temperature_anomaly"
+PRODUCT_MSLP_ANOMALY = "mslp_anomaly"
 PRODUCT_PRECIPITATION_ANOMALY = "precipitation_anomaly"
 PRODUCT_SWE_ANOMALY = "snow_water_equivalent_anomaly"
 
@@ -192,6 +215,67 @@ PRODUCT_SPECS = {
         "seasonal_aggregation": "seasonal mean",
         "seasonal_units": "m",
         "monthly_aggregation": "monthly forecast average",
+    },
+    PRODUCT_2M_TEMPERATURE_ANOMALY: {
+        "name": PRODUCT_2M_TEMPERATURE_ANOMALY,
+        "source_kind": "flxf",
+        "match": ":TMP:2 m above ground:",
+        "raw_field": "TMP:2 m above ground",
+        "raw_units": "K",
+        "field": "t2m_anomaly",
+        "units": "°C",
+        "grid_shape": (FLUX_GRID_LON_COUNT, FLUX_GRID_LAT_COUNT),
+        "cache_tag": "tmp2m",
+        "state_tag": "tmp2m",
+        "id_token": "t2ma",
+        "file_token": "t2ma",
+        "title": "CFSv2 2-m Temperature Anomaly (°C)",
+        "absolute_title": "CFSv2 2-m Temperature (°C)",
+        "region": DEFAULT_REGION,
+        "height_contours": False,
+        "baseline_root": NCEI_FLUX_CALIBRATION_ROOT,
+        "baseline_label": NCEI_FLUX_CALIBRATION_LABEL,
+        "seasonal_reducer": "mean",
+        "seasonal_aggregation": "seasonal mean",
+        "seasonal_units": "°C",
+        "monthly_aggregation": "monthly mean 2-m temperature",
+        "anomaly_min": -8.0,
+        "anomaly_max": 8.0,
+        "anomaly_ticks": TEMPERATURE_ANOMALY_TICKS,
+        "anomaly_palette": TEMPERATURE_ANOMALY_PALETTE,
+        "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in °C",
+        "header_detail": "{source_label}  •  {baseline_label}  •  2-m temperature anomaly (°C)",
+    },
+    PRODUCT_MSLP_ANOMALY: {
+        "name": PRODUCT_MSLP_ANOMALY,
+        "source_kind": "pgbf",
+        "match": ":PRES:mean sea level:",
+        "raw_field": "PRES:mean sea level",
+        "raw_units": "Pa",
+        "field": "mslp_anomaly",
+        "units": "hPa",
+        "grid_shape": (GRID_LON_COUNT, GRID_LAT_COUNT),
+        "cache_tag": "mslp",
+        "state_tag": "mslp",
+        "id_token": "mslpa",
+        "file_token": "mslpa",
+        "title": "CFSv2 Mean Sea-Level Pressure Anomaly (hPa)",
+        "absolute_title": "CFSv2 Mean Sea-Level Pressure (hPa)",
+        "region": DEFAULT_REGION,
+        "height_contours": False,
+        "baseline_root": NCEI_CALIBRATION_ROOT,
+        "baseline_label": NCEI_CALIBRATION_LABEL,
+        "seasonal_reducer": "mean",
+        "seasonal_aggregation": "seasonal mean",
+        "seasonal_units": "hPa",
+        "monthly_aggregation": "monthly mean sea-level pressure",
+        "conversion_kind": "pascals_to_hectopascals",
+        "conversion": "PRES divided by 100 to convert Pa to hPa before calculating the anomaly",
+        "anomaly_min": -20.0,
+        "anomaly_max": 20.0,
+        "anomaly_ticks": MSLP_ANOMALY_TICKS,
+        "anomaly_palette": MSLP_ANOMALY_PALETTE,
+        "header_detail": "{source_label}  •  {baseline_label}  •  Mean sea-level pressure anomaly (hPa)",
     },
     PRODUCT_PRECIPITATION_ANOMALY: {
         "name": PRODUCT_PRECIPITATION_ANOMALY,
@@ -706,6 +790,8 @@ def prepare_product_grid(grid: Grid, product_spec: dict, target: str) -> Grid:
         return monthly_precipitation_total_inches(grid, target)
     if conversion_kind == "snow_water_equivalent_inches":
         return snow_water_equivalent_inches(grid)
+    if conversion_kind == "pascals_to_hectopascals":
+        return transform_grid(grid, lambda value: value / 100.0)
     return grid
 
 
@@ -855,7 +941,7 @@ def decode_target_ensemble(
                     raise CFSv2Error(
                         f"rolling CFSv2 cycle {cycle} is unavailable and has no retained grid; "
                         "the NOMADS archive rotates after seven days, so run the scheduled job "
-                        "daily or use --allow-partial-rolling"
+                        "twice daily or use --allow-partial-rolling"
                     ) from exc
             source_file["status"] = "available"
             source_files.append(source_file)
@@ -946,6 +1032,10 @@ def baseline_for_target(args: argparse.Namespace, target: str, repo_root: Path) 
             if product_name.startswith("precipitation")
             else "weasd"
             if product_name == PRODUCT_SWE_ANOMALY
+            else "tmp2m"
+            if product_name == PRODUCT_2M_TEMPERATURE_ANOMALY
+            else "mslp"
+            if product_name == PRODUCT_MSLP_ANOMALY
             else "z500"
         )
         candidates = (
