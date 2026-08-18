@@ -47,7 +47,8 @@ def main() -> int:
     surface_keys = [member.key for member in surface_members]
     t850_keys = [member.key for member in t850_members]
     check(len(height_keys) == 9 and len(height_keys) == len(set(height_keys)), "height roster must contain nine unique source families")
-    check(len(surface_keys) == 12 and len(surface_keys) == len(set(surface_keys)), "surface roster must add only three unique NMME components")
+    check(len(surface_keys) == 12 and len(surface_keys) == len(set(surface_keys)), "surface roster must add GEOS and only two unique NMME components")
+    check(len(t850_keys) == 10 and len(t850_keys) == len(set(t850_keys)), "850-mb roster must add the standalone GEOS family")
     check("c3s_eccc_system5" not in height_keys, "C3S ECCC must not duplicate CanSIPS")
     check("c3s_jma_system4" in height_keys, "JMA should be represented once through C3S")
     check("eccc_cansips_v3" in height_keys, "CanSIPS should represent the ECCC family once")
@@ -55,7 +56,10 @@ def main() -> int:
     check("c3s_ncep_system2" not in height_keys, "C3S NCEP must not duplicate standalone rolling CFSv2")
     check(module.CFSV2_MEMBER_KEY in surface_keys and "c3s_ncep_system2" not in surface_keys, "surface roster should contain one rolling CFSv2 family vote")
     check("c3s_ncep_system2" in t850_keys and module.CFSV2_MEMBER_KEY not in t850_keys, "unsupported standalone parameters should retain one C3S NCEP family vote")
-    check(set(surface_keys) - set(height_keys) == {"nmme_nasa_geos5v2", "nmme_ncar_ccsm4", "nmme_ncar_cesm1"}, "only unique NMME systems may extend supported surface products")
+    check(module.GEOS_MEMBER_KEY not in height_keys, "GEOS must stay out of 500-mb height until its source passes the pressure check")
+    check(module.GEOS_MEMBER_KEY in surface_keys and module.GEOS_MEMBER_KEY in t850_keys, "validated products should include one standalone GEOS family vote")
+    check("nmme_nasa_geos5v2" not in surface_keys, "the older NMME NASA copy must not double-count GEOS")
+    check(set(surface_keys) - set(height_keys) == {module.GEOS_MEMBER_KEY, "nmme_ncar_ccsm4", "nmme_ncar_cesm1"}, "surface extensions must be GEOS plus the two unique NCAR NMME systems")
     check(abs(sum(item["weight"] for item in module.weights_for(height_keys, {member.key: member for member in height_members})) - 1.0) < 1e-8, "equal weights should sum to one")
     check(module.resolve_cfsv2_anchor("2026081818", "2026080100") == "2026081818", "CFSv2 anchor should align within the shared initialization month")
     try:
@@ -66,11 +70,14 @@ def main() -> int:
         raise AssertionError("CFSv2 anchor must not silently drift into another initialization month")
     height_exclusions = module.membership_ledger("500mb_height_anomaly")["excluded"]
     check(any(item["package"] == "C3S NCEP System 2" and item["represented_by"] == module.CFSV2_MEMBER_KEY for item in height_exclusions), "height ledger must document the C3S NCEP substitution")
+    check(any(item["package"] == "NASA GEOS-S2S-3 APCN z500 archive" and item["represented_by"] is None for item in height_exclusions), "height ledger must document the rejected NASA pressure level")
+    surface_exclusions = module.membership_ledger("2m_temperature_anomaly")["excluded"]
+    check(any(item["package"] == "NMME NASA_GEOS5v2" and item["represented_by"] == module.GEOS_MEMBER_KEY for item in surface_exclusions), "surface ledger must document the NASA deduplication")
     check(module.c3s.target_month("2026080100", 4) == "202612", "lead 4 should align to December")
     check(module.nmme.target_month("2026080800", 5) == "202612", "NMME lead alignment should match December")
-    for term in ("intersection of canonical members", "APCC MME", "C3S multi-system mean", "NMME CFSv2", "native_model_baselines"):
+    for term in ("intersection of canonical members", "APCC MME", "C3S multi-system mean", "NMME CFSv2", "native_model_baselines", "NASA GEOS-S2S-3"):
         check(term in adapter_text, f"adapter is missing deduplication term: {term}")
-    for term in ("name: Deduplicated Seasonal Super Ensemble", "CDS_API_KEY", "Restore rolling CFSv2 state", "cfsv2-rolling-", "superensemble-pages-", "30 18 16 * *"):
+    for term in ("name: Deduplicated Seasonal Super Ensemble", "CDS_API_KEY", "Restore rolling CFSv2 state", "Restore NASA GEOS-S2S-3 numerical cache", "--geos-cache-dir", "cfsv2-rolling-", "superensemble-pages-", "30 18 16 * *"):
         check(term in workflow, f"workflow is missing term: {term}")
     for term in ("Deduplicated Seasonal Super Ensemble", "superensemble_manifest.json", "incoming/superensemble"):
         check(term in pages, f"Pages publisher is missing term: {term}")
@@ -118,6 +125,39 @@ def main() -> int:
             for name, value in originals.items():
                 setattr(module.cfsv2, name, value)
 
+    original_geos_loader = module.geos.load_anomaly_bundle
+    try:
+        module.geos.load_anomaly_bundle = lambda **kwargs: {
+            4: SimpleNamespace(
+                anomaly=module.Grid([0.0], [0.0], [[2.5]]),
+                archive_url="https://example.test/geos.tar.xz",
+                source_files=("member.nc4",),
+                members=("member-1", "member-2"),
+                init_dates=("20260730",),
+                drift_years=(2001, 2021),
+                drift_url="https://example.test/geos-drift.nc4",
+            )
+        }
+        grids = {4: {}}
+        provenance = {4: {}}
+        errors = {4: {}}
+        module.load_geos_member(
+            args=SimpleNamespace(request_delay=0.0),
+            product="2m_temperature_anomaly",
+            init="2026080100",
+            leads=[4],
+            cache_dir=ROOT,
+            border_paths=[],
+            member_grids=grids,
+            provenance=provenance,
+            errors=errors,
+        )
+        check(grids[4][module.GEOS_MEMBER_KEY].values == [[2.5]], "GEOS anomaly should enter the canonical member grid")
+        check(provenance[4][module.GEOS_MEMBER_KEY]["internal_members"] == 2, "GEOS provenance should retain its member count")
+        check(not errors[4], "mock GEOS load should not record an error")
+    finally:
+        module.geos.load_anomaly_bundle = original_geos_loader
+
     with tempfile.TemporaryDirectory() as temporary:
         output = Path(temporary) / "manifest.json"
         previous = Path(temporary) / "previous.json"
@@ -133,3 +173,4 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+

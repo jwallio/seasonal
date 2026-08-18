@@ -14,12 +14,25 @@ on:
         type: choice
         options:
           - all
+          - 850mb_temperature_anomaly
           - 2m_temperature_anomaly
           - precipitation_anomaly
+          - mslp_anomaly
+          - sea_surface_temperature_anomaly
       init:
         description: "NASA release month as YYYYMM or latest"
         required: false
         default: "latest"
+        type: string
+      lead_months:
+        description: "Target offsets from the NASA release month"
+        required: false
+        default: "4,5,6"
+        type: string
+      seasonal_window:
+        description: "Consecutive offsets for the seasonal aggregate"
+        required: false
+        default: "4,5,6"
         type: string
 
 permissions:
@@ -28,10 +41,12 @@ permissions:
 jobs:
   render:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 180
     env:
       GEOS_PRODUCT: ${{ inputs.product || 'all' }}
       GEOS_INIT: ${{ inputs.init || 'latest' }}
+      LEAD_MONTHS: ${{ inputs.lead_months || '4,5,6' }}
+      SEASONAL_WINDOW: ${{ inputs.seasonal_window || '4,5,6' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -43,8 +58,17 @@ jobs:
           cache: pip
           cache-dependency-path: requirements.txt
 
-      - name: Install NASA download dependency
-        run: python -m pip install --upgrade requests
+      - name: Install NASA numerical-render dependencies
+        run: python -m pip install --upgrade xarray netCDF4 matplotlib Pillow requests numpy
+
+      - name: Restore NASA numerical archive cache
+        uses: actions/cache@v4
+        with:
+          path: .cache/geos-s2s3
+          key: geos-s2s3-${{ runner.os }}-${{ env.GEOS_PRODUCT }}-${{ env.GEOS_INIT }}-${{ github.run_id }}-v2
+          restore-keys: |
+            geos-s2s3-${{ runner.os }}-${{ env.GEOS_PRODUCT }}-${{ env.GEOS_INIT }}-
+            geos-s2s3-${{ runner.os }}-
 
       - name: Restore published NASA run history
         shell: bash
@@ -59,11 +83,15 @@ jobs:
             echo "No prior NASA GEOS-S2S-3 manifest was available."
           fi
 
-      - name: Download NASA GEOS-S2S-3 charts
+      - name: Render NASA GEOS-S2S-3 numerical anomalies
         run: |
           python scripts/geos_s2s3_seasonal.py \
             --product "$GEOS_PRODUCT" \
             --init "$GEOS_INIT" \
+            --lead-months "$LEAD_MONTHS" \
+            --seasonal-window "$SEASONAL_WINDOW" \
+            --cache-dir .cache/geos-s2s3 \
+            --border-cache-dir .cache/geos-s2s3 \
             --output-dir public/seasonal/geos_s2s3 \
             --manifest public/seasonal/geos_s2s3_manifest.json \
             --previous-manifest .cache/geos-s2s3/previous_manifest.json \
@@ -89,3 +117,4 @@ jobs:
           path: pages-payload
           if-no-files-found: error
           retention-days: 14
+

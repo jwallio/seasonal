@@ -16,8 +16,10 @@ weight after that source has formed its own ensemble mean. The current core is:
   precipitation, and MSLP;
 - one ECCC CanSIPS v3 family mean, representing its GEM5.2-NEMO and CanESM5
   members once;
-- for 2-m temperature and precipitation only, the three unique NMME component
-  fields: NASA GEOS5v2, NCAR CCSM4, and NCAR CESM1.
+- one NASA GEOS-S2S-3 lag/burst family mean for its validated temperature,
+  precipitation, MSLP, and SST products;
+- for 2-m temperature and precipitation only, the two remaining unique NMME
+  component fields: NCAR CCSM4 and NCAR CESM1.
 
 For products supported by the standalone CFSv2 adapter, C3S NCEP System 2 and
 NMME CFSv2 are excluded so the rolling blend receives the family's only vote.
@@ -25,11 +27,13 @@ For 850-mb temperature and SST, the current standalone adapter has no numeric
 product, so C3S NCEP remains the single CFSv2-family source. Standalone SEAS5
 and JMA are excluded because those systems are supplied by C3S. C3S ECCC and
 the ECCC components in NMME are excluded because CanSIPS represents that
-family. C3S, NMME, and APCC aggregate means are not nested into the result.
+family. The NMME NASA_GEOS5v2 copy is excluded because the standalone
+GEOS-S2S-3 numerical adapter supplies the NASA-family vote. C3S, NMME, and APCC aggregate means are not nested into the result.
 APCC is recorded as unavailable for numerical inclusion because the current
 package exposes an overlapping aggregate rather than separable component
-grids. The GEOS-S2S-3 package is recorded but excluded because the current
-adapter has pre-rendered charts, not numeric fields.
+grids. GEOS-S2S-3 remains excluded from 500-mb height because NASA's current
+long-range archive named `z500` declares 200 hPa and fails the adapter's
+strict pressure-level check.
 
 The complete included, missing, and excluded membership is written into
 `superensemble_manifest.json` for every product and target.
@@ -41,6 +45,9 @@ as a native-model-baseline anomaly blend, not as a common-climatology product.
 The rolling CFSv2 contribution uses its official NCEI CFS reforecast
 calibration climatology and records its anchor cycle, available/expected cycle
 count, source files, and calibration URL in the manifest.
+The GEOS-S2S-3 contribution uses NASA's lead- and initialization-month-matched
+provider drift climatology and records its lagged initialization dates,
+available members, archive, and drift source.
 For a multi-month map, a source must be available in every constituent month.
 This intersection rule prevents its weight from silently changing inside DJF.
 
@@ -63,3 +70,4 @@ python scripts/superensemble_seasonal.py --synthetic-preview --init 202608 --pro
 
 Synthetic previews are visibly labelled and must not be published as forecast
 guidance.
+
