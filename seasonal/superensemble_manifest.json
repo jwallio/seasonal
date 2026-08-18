@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "kind": "deduplicated_seasonal_superensemble_manifest",
-  "generated_utc": "2026-08-18T12:28:38Z",
+  "generated_utc": "2026-08-18T12:43:58Z",
   "source": "wall.cloud deduplicated seasonal super ensemble",
   "source_url": "https://climate.copernicus.eu/seasonal-forecasts",
   "source_urls": [
@@ -112,10 +112,10 @@
             "notes": "Official C3S postprocessed ensemble-mean anomaly"
           },
           {
-            "key": "c3s_ukmo_system604",
-            "label": "UK Met Office / System 604",
+            "key": "c3s_ukmo_system610",
+            "label": "UK Met Office / System 610",
             "source_package": "Copernicus C3S",
-            "system": "ukmo/604",
+            "system": "ukmo/610",
             "internal_members": 62,
             "notes": "Official C3S postprocessed ensemble-mean anomaly"
           },
@@ -242,9 +242,10 @@
           "units": "m",
           "statistic": "equal_weight_deduplicated_family_mean",
           "expected_member_count": 9,
-          "member_count": 8,
+          "member_count": 9,
           "included_members": [
             "c3s_ecmwf_system51",
+            "c3s_ukmo_system610",
             "c3s_meteo_france_system9",
             "c3s_dwd_system22",
             "c3s_cmcc_system4",
@@ -253,49 +254,52 @@
             "c3s_bom_system2",
             "eccc_cansips_v3"
           ],
-          "missing_members": [
-            "c3s_ukmo_system604"
-          ],
+          "missing_members": [],
           "member_weights": [
             {
               "key": "c3s_ecmwf_system51",
               "label": "ECMWF / System 51",
-              "weight": 0.125
+              "weight": 0.1111111111
+            },
+            {
+              "key": "c3s_ukmo_system610",
+              "label": "UK Met Office / System 610",
+              "weight": 0.1111111111
             },
             {
               "key": "c3s_meteo_france_system9",
               "label": "M\u00e9t\u00e9o-France / System 9",
-              "weight": 0.125
+              "weight": 0.1111111111
             },
             {
               "key": "c3s_dwd_system22",
               "label": "DWD / System 22",
-              "weight": 0.125
+              "weight": 0.1111111111
             },
             {
               "key": "c3s_cmcc_system4",
               "label": "CMCC / System 4",
-              "weight": 0.125
+              "weight": 0.1111111111
             },
             {
               "key": "c3s_ncep_system2",
               "label": "NCEP / System 2",
-              "weight": 0.125
+              "weight": 0.1111111111
             },
             {
               "key": "c3s_jma_system4",
               "label": "JMA / System 4",
-              "weight": 0.125
+              "weight": 0.1111111111
             },
             {
               "key": "c3s_bom_system2",
               "label": "BOM / System 2",
-              "weight": 0.125
+              "weight": 0.1111111111
             },
             {
               "key": "eccc_cansips_v3",
               "label": "ECCC CanSIPS v3 family",
-              "weight": 0.125
+              "weight": 0.1111111111
             }
           ],
           "member_sources": [
@@ -307,6 +311,15 @@
               "source_file": ".cache/c3s/cds/ecmwf_51_seasonal_postprocessed_pressure_levels_geopotential_anomaly_202608_anom_l04/field.grib",
               "baseline": "official C3S native postprocessed anomaly",
               "height_source_file": ".cache/c3s/cds/ecmwf_51_seasonal_monthly_pressure_levels_geopotential_202608_raw_l04/field.grib"
+            },
+            {
+              "key": "c3s_ukmo_system610",
+              "source_package": "Copernicus C3S",
+              "originating_centre": "ukmo",
+              "system": "610",
+              "source_file": ".cache/c3s/cds/ukmo_610_seasonal_postprocessed_pressure_levels_geopotential_anomaly_202608_anom_l04/field.grib",
+              "baseline": "official C3S native postprocessed anomaly",
+              "height_source_file": ".cache/c3s/cds/ukmo_610_seasonal_monthly_pressure_levels_geopotential_202608_raw_l04/field.grib"
             },
             {
               "key": "c3s_meteo_france_system9",
@@ -385,16 +398,14 @@
               ]
             }
           ],
-          "member_errors": {
-            "c3s_ukmo_system604": "C3S request failed for ukmo/604 geopotential_anomaly lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/processes/seasonal-postprocessed-pressure-levels/execution\ninvalid request\nRequest has not produced a valid combination of values, please check your selection.\n{'area': ['90.0', '-170.0', '15.0', '0.0'], 'data_format': ['grib'], 'leadtime_month': ['4'], 'month': ['08'], 'originating_centre': ['ukmo'], 'pressure_level': ['500'], 'product_type': ['ensemble_mean'], 'system': ['604'], 'variable': ['geopotential_anomaly'], 'year': ['2026']}"
-          },
-          "ensemble_scope": "8/9 canonical forecast families",
+          "member_errors": {},
+          "ensemble_scope": "9/9 canonical forecast families",
           "baseline": {
             "status": "native_model_baselines",
             "method": "equal mean of source-native anomaly fields; no common climatology imposed"
           },
-          "status": "partial",
-          "height_member_count": 8,
+          "status": "rendered",
+          "height_member_count": 9,
           "image": "public/seasonal/superensemble/20260801/superensemble_z500_202612.jpg"
         },
         {
@@ -407,9 +418,10 @@
           "units": "m",
           "statistic": "equal_weight_deduplicated_family_mean",
           "expected_member_count": 9,
-          "member_count": 8,
+          "member_count": 9,
           "included_members": [
             "c3s_ecmwf_system51",
+            "c3s_ukmo_system610",
             "c3s_meteo_france_system9",
             "c3s_dwd_system22",
             "c3s_cmcc_system4",
@@ -418,49 +430,52 @@
             "c3s_bom_system2",
             "eccc_cansips_v3"
           ],
-          "missing_members": [
-            "c3s_ukmo_system604"
-          ],
+          "missing_members": [],
           "member_weights": [
             {
               "key": "c3s_ecmwf_system51",
               "label": "ECMWF / System 51",
-              "weight": 0.125
+              "weight": 0.1111111111
+            },
+            {
+              "key": "c3s_ukmo_system610",
+              "label": "UK Met Office / System 610",
+              "weight": 0.1111111111
             },
             {
               "key": "c3s_meteo_france_system9",
               "label": "M\u00e9t\u00e9o-France / System 9",
-              "weight": 0.125
+              "weight": 0.1111111111
             },
             {
               "key": "c3s_dwd_system22",
               "label": "DWD / System 22",
-              "weight": 0.125
+              "weight": 0.1111111111
             },
             {
               "key": "c3s_cmcc_system4",
               "label": "CMCC / System 4",
-              "weight": 0.125
+              "weight": 0.1111111111
             },
             {
               "key": "c3s_ncep_system2",
               "label": "NCEP / System 2",
-              "weight": 0.125
+              "weight": 0.1111111111
             },
             {
               "key": "c3s_jma_system4",
               "label": "JMA / System 4",
-              "weight": 0.125
+              "weight": 0.1111111111
             },
             {
               "key": "c3s_bom_system2",
               "label": "BOM / System 2",
-              "weight": 0.125
+              "weight": 0.1111111111
             },
             {
               "key": "eccc_cansips_v3",
               "label": "ECCC CanSIPS v3 family",
-              "weight": 0.125
+              "weight": 0.1111111111
             }
           ],
           "member_sources": [
@@ -472,6 +487,15 @@
               "source_file": ".cache/c3s/cds/ecmwf_51_seasonal_postprocessed_pressure_levels_geopotential_anomaly_202608_anom_l05/field.grib",
               "baseline": "official C3S native postprocessed anomaly",
               "height_source_file": ".cache/c3s/cds/ecmwf_51_seasonal_monthly_pressure_levels_geopotential_202608_raw_l05/field.grib"
+            },
+            {
+              "key": "c3s_ukmo_system610",
+              "source_package": "Copernicus C3S",
+              "originating_centre": "ukmo",
+              "system": "610",
+              "source_file": ".cache/c3s/cds/ukmo_610_seasonal_postprocessed_pressure_levels_geopotential_anomaly_202608_anom_l05/field.grib",
+              "baseline": "official C3S native postprocessed anomaly",
+              "height_source_file": ".cache/c3s/cds/ukmo_610_seasonal_monthly_pressure_levels_geopotential_202608_raw_l05/field.grib"
             },
             {
               "key": "c3s_meteo_france_system9",
@@ -550,16 +574,14 @@
               ]
             }
           ],
-          "member_errors": {
-            "c3s_ukmo_system604": "C3S request failed for ukmo/604 geopotential_anomaly lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/processes/seasonal-postprocessed-pressure-levels/execution\ninvalid request\nRequest has not produced a valid combination of values, please check your selection.\n{'area': ['90.0', '-170.0', '15.0', '0.0'], 'data_format': ['grib'], 'leadtime_month': ['5'], 'month': ['08'], 'originating_centre': ['ukmo'], 'pressure_level': ['500'], 'product_type': ['ensemble_mean'], 'system': ['604'], 'variable': ['geopotential_anomaly'], 'year': ['2026']}"
-          },
-          "ensemble_scope": "8/9 canonical forecast families",
+          "member_errors": {},
+          "ensemble_scope": "9/9 canonical forecast families",
           "baseline": {
             "status": "native_model_baselines",
             "method": "equal mean of source-native anomaly fields; no common climatology imposed"
           },
-          "status": "partial",
-          "height_member_count": 8,
+          "status": "rendered",
+          "height_member_count": 9,
           "image": "public/seasonal/superensemble/20260801/superensemble_z500_202701.jpg"
         },
         {
@@ -572,9 +594,10 @@
           "units": "m",
           "statistic": "equal_weight_deduplicated_family_mean",
           "expected_member_count": 9,
-          "member_count": 8,
+          "member_count": 9,
           "included_members": [
             "c3s_ecmwf_system51",
+            "c3s_ukmo_system610",
             "c3s_meteo_france_system9",
             "c3s_dwd_system22",
             "c3s_cmcc_system4",
@@ -583,49 +606,52 @@
             "c3s_bom_system2",
             "eccc_cansips_v3"
           ],
-          "missing_members": [
-            "c3s_ukmo_system604"
-          ],
+          "missing_members": [],
           "member_weights": [
             {
               "key": "c3s_ecmwf_system51",
               "label": "ECMWF / System 51",
-              "weight": 0.125
+              "weight": 0.1111111111
+            },
+            {
+              "key": "c3s_ukmo_system610",
+              "label": "UK Met Office / System 610",
+              "weight": 0.1111111111
             },
             {
               "key": "c3s_meteo_france_system9",
               "label": "M\u00e9t\u00e9o-France / System 9",
-              "weight": 0.125
+              "weight": 0.1111111111
             },
             {
               "key": "c3s_dwd_system22",
               "label": "DWD / System 22",
-              "weight": 0.125
+              "weight": 0.1111111111
             },
             {
               "key": "c3s_cmcc_system4",
               "label": "CMCC / System 4",
-              "weight": 0.125
+              "weight": 0.1111111111
             },
             {
               "key": "c3s_ncep_system2",
               "label": "NCEP / System 2",
-              "weight": 0.125
+              "weight": 0.1111111111
             },
             {
               "key": "c3s_jma_system4",
               "label": "JMA / System 4",
-              "weight": 0.125
+              "weight": 0.1111111111
             },
             {
               "key": "c3s_bom_system2",
               "label": "BOM / System 2",
-              "weight": 0.125
+              "weight": 0.1111111111
             },
             {
               "key": "eccc_cansips_v3",
               "label": "ECCC CanSIPS v3 family",
-              "weight": 0.125
+              "weight": 0.1111111111
             }
           ],
           "member_sources": [
@@ -637,6 +663,15 @@
               "source_file": ".cache/c3s/cds/ecmwf_51_seasonal_postprocessed_pressure_levels_geopotential_anomaly_202608_anom_l06/field.grib",
               "baseline": "official C3S native postprocessed anomaly",
               "height_source_file": ".cache/c3s/cds/ecmwf_51_seasonal_monthly_pressure_levels_geopotential_202608_raw_l06/field.grib"
+            },
+            {
+              "key": "c3s_ukmo_system610",
+              "source_package": "Copernicus C3S",
+              "originating_centre": "ukmo",
+              "system": "610",
+              "source_file": ".cache/c3s/cds/ukmo_610_seasonal_postprocessed_pressure_levels_geopotential_anomaly_202608_anom_l06/field.grib",
+              "baseline": "official C3S native postprocessed anomaly",
+              "height_source_file": ".cache/c3s/cds/ukmo_610_seasonal_monthly_pressure_levels_geopotential_202608_raw_l06/field.grib"
             },
             {
               "key": "c3s_meteo_france_system9",
@@ -715,16 +750,14 @@
               ]
             }
           ],
-          "member_errors": {
-            "c3s_ukmo_system604": "C3S request failed for ukmo/604 geopotential_anomaly lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/processes/seasonal-postprocessed-pressure-levels/execution\ninvalid request\nRequest has not produced a valid combination of values, please check your selection.\n{'area': ['90.0', '-170.0', '15.0', '0.0'], 'data_format': ['grib'], 'leadtime_month': ['6'], 'month': ['08'], 'originating_centre': ['ukmo'], 'pressure_level': ['500'], 'product_type': ['ensemble_mean'], 'system': ['604'], 'variable': ['geopotential_anomaly'], 'year': ['2026']}"
-          },
-          "ensemble_scope": "8/9 canonical forecast families",
+          "member_errors": {},
+          "ensemble_scope": "9/9 canonical forecast families",
           "baseline": {
             "status": "native_model_baselines",
             "method": "equal mean of source-native anomaly fields; no common climatology imposed"
           },
-          "status": "partial",
-          "height_member_count": 8,
+          "status": "rendered",
+          "height_member_count": 9,
           "image": "public/seasonal/superensemble/20260801/superensemble_z500_202702.jpg"
         },
         {
@@ -737,9 +770,10 @@
           "units": "m",
           "statistic": "equal_weight_deduplicated_family_mean",
           "expected_member_count": 9,
-          "member_count": 8,
+          "member_count": 9,
           "included_members": [
             "c3s_ecmwf_system51",
+            "c3s_ukmo_system610",
             "c3s_meteo_france_system9",
             "c3s_dwd_system22",
             "c3s_cmcc_system4",
@@ -748,49 +782,52 @@
             "c3s_bom_system2",
             "eccc_cansips_v3"
           ],
-          "missing_members": [
-            "c3s_ukmo_system604"
-          ],
+          "missing_members": [],
           "member_weights": [
             {
               "key": "c3s_ecmwf_system51",
               "label": "ECMWF / System 51",
-              "weight": 0.125
+              "weight": 0.1111111111
+            },
+            {
+              "key": "c3s_ukmo_system610",
+              "label": "UK Met Office / System 610",
+              "weight": 0.1111111111
             },
             {
               "key": "c3s_meteo_france_system9",
               "label": "M\u00e9t\u00e9o-France / System 9",
-              "weight": 0.125
+              "weight": 0.1111111111
             },
             {
               "key": "c3s_dwd_system22",
               "label": "DWD / System 22",
-              "weight": 0.125
+              "weight": 0.1111111111
             },
             {
               "key": "c3s_cmcc_system4",
               "label": "CMCC / System 4",
-              "weight": 0.125
+              "weight": 0.1111111111
             },
             {
               "key": "c3s_ncep_system2",
               "label": "NCEP / System 2",
-              "weight": 0.125
+              "weight": 0.1111111111
             },
             {
               "key": "c3s_jma_system4",
               "label": "JMA / System 4",
-              "weight": 0.125
+              "weight": 0.1111111111
             },
             {
               "key": "c3s_bom_system2",
               "label": "BOM / System 2",
-              "weight": 0.125
+              "weight": 0.1111111111
             },
             {
               "key": "eccc_cansips_v3",
               "label": "ECCC CanSIPS v3 family",
-              "weight": 0.125
+              "weight": 0.1111111111
             }
           ],
           "member_sources": [
@@ -828,6 +865,43 @@
                   "source_file": ".cache/c3s/cds/ecmwf_51_seasonal_postprocessed_pressure_levels_geopotential_anomaly_202608_anom_l06/field.grib",
                   "baseline": "official C3S native postprocessed anomaly",
                   "height_source_file": ".cache/c3s/cds/ecmwf_51_seasonal_monthly_pressure_levels_geopotential_202608_raw_l06/field.grib"
+                }
+              ]
+            },
+            {
+              "key": "c3s_ukmo_system610",
+              "member": {
+                "key": "c3s_ukmo_system610",
+                "label": "UK Met Office / System 610",
+                "source_package": "Copernicus C3S",
+                "system": "ukmo/610",
+                "internal_members": 62,
+                "notes": "Official C3S postprocessed ensemble-mean anomaly"
+              },
+              "monthly_sources": [
+                {
+                  "source_package": "Copernicus C3S",
+                  "originating_centre": "ukmo",
+                  "system": "610",
+                  "source_file": ".cache/c3s/cds/ukmo_610_seasonal_postprocessed_pressure_levels_geopotential_anomaly_202608_anom_l04/field.grib",
+                  "baseline": "official C3S native postprocessed anomaly",
+                  "height_source_file": ".cache/c3s/cds/ukmo_610_seasonal_monthly_pressure_levels_geopotential_202608_raw_l04/field.grib"
+                },
+                {
+                  "source_package": "Copernicus C3S",
+                  "originating_centre": "ukmo",
+                  "system": "610",
+                  "source_file": ".cache/c3s/cds/ukmo_610_seasonal_postprocessed_pressure_levels_geopotential_anomaly_202608_anom_l05/field.grib",
+                  "baseline": "official C3S native postprocessed anomaly",
+                  "height_source_file": ".cache/c3s/cds/ukmo_610_seasonal_monthly_pressure_levels_geopotential_202608_raw_l05/field.grib"
+                },
+                {
+                  "source_package": "Copernicus C3S",
+                  "originating_centre": "ukmo",
+                  "system": "610",
+                  "source_file": ".cache/c3s/cds/ukmo_610_seasonal_postprocessed_pressure_levels_geopotential_anomaly_202608_anom_l06/field.grib",
+                  "baseline": "official C3S native postprocessed anomaly",
+                  "height_source_file": ".cache/c3s/cds/ukmo_610_seasonal_monthly_pressure_levels_geopotential_202608_raw_l06/field.grib"
                 }
               ]
             },
@@ -1130,29 +1204,25 @@
               ]
             }
           ],
-          "member_errors": {
-            "lead4_c3s_ukmo_system604": "C3S request failed for ukmo/604 geopotential_anomaly lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/processes/seasonal-postprocessed-pressure-levels/execution\ninvalid request\nRequest has not produced a valid combination of values, please check your selection.\n{'area': ['90.0', '-170.0', '15.0', '0.0'], 'data_format': ['grib'], 'leadtime_month': ['4'], 'month': ['08'], 'originating_centre': ['ukmo'], 'pressure_level': ['500'], 'product_type': ['ensemble_mean'], 'system': ['604'], 'variable': ['geopotential_anomaly'], 'year': ['2026']}",
-            "lead5_c3s_ukmo_system604": "C3S request failed for ukmo/604 geopotential_anomaly lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/processes/seasonal-postprocessed-pressure-levels/execution\ninvalid request\nRequest has not produced a valid combination of values, please check your selection.\n{'area': ['90.0', '-170.0', '15.0', '0.0'], 'data_format': ['grib'], 'leadtime_month': ['5'], 'month': ['08'], 'originating_centre': ['ukmo'], 'pressure_level': ['500'], 'product_type': ['ensemble_mean'], 'system': ['604'], 'variable': ['geopotential_anomaly'], 'year': ['2026']}",
-            "lead6_c3s_ukmo_system604": "C3S request failed for ukmo/604 geopotential_anomaly lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/processes/seasonal-postprocessed-pressure-levels/execution\ninvalid request\nRequest has not produced a valid combination of values, please check your selection.\n{'area': ['90.0', '-170.0', '15.0', '0.0'], 'data_format': ['grib'], 'leadtime_month': ['6'], 'month': ['08'], 'originating_centre': ['ukmo'], 'pressure_level': ['500'], 'product_type': ['ensemble_mean'], 'system': ['604'], 'variable': ['geopotential_anomaly'], 'year': ['2026']}"
-          },
-          "ensemble_scope": "8/9 canonical forecast families",
+          "member_errors": {},
+          "ensemble_scope": "9/9 canonical forecast families",
           "baseline": {
             "status": "native_model_baselines",
             "method": "equal mean of source-native anomaly fields; no common climatology imposed"
           },
-          "status": "partial",
+          "status": "rendered",
           "monthly_leads": [
             4,
             5,
             6
           ],
           "composition_rule": "intersection of canonical members available for every month",
-          "height_member_count": 8,
+          "height_member_count": 9,
           "image": "public/seasonal/superensemble/20260801/superensemble_z500_202612-202702.jpg"
         }
       ],
-      "status": "partial",
-      "generated_utc": "2026-08-18T12:28:33Z",
+      "status": "rendered",
+      "generated_utc": "2026-08-18T12:43:53Z",
       "output_dir": "public/seasonal/superensemble"
     }
   ]
