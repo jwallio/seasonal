@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "kind": "deduplicated_seasonal_superensemble_manifest",
-  "generated_utc": "2026-08-18T17:32:40Z",
+  "generated_utc": "2026-08-18T22:13:40Z",
   "source": "wall.cloud deduplicated seasonal super ensemble",
   "source_url": "https://climate.copernicus.eu/seasonal-forecasts",
   "source_urls": [
@@ -9,6 +9,8 @@
     "https://eccc-msc.github.io/open-data/msc-data/nwp_cansips/readme_cansips-datamart_en/",
     "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/",
     "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs_refor_calclim_mm_9m_pgbf/",
+    "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/NRT/APCN/",
+    "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/Drift/for_APCN/",
     "https://www.cpc.ncep.noaa.gov/products/NMME/data.html"
   ],
   "product_labels": {
@@ -54,7 +56,7 @@
         {
           "package": "NMME ensemble/consensus products",
           "reason": "aggregate containing already represented systems",
-          "represented_by": "three unique NMME component fields where supported"
+          "represented_by": "two unique NCAR NMME component fields where supported"
         },
         {
           "package": "APCC MME",
@@ -62,9 +64,9 @@
           "represented_by": null
         },
         {
-          "package": "NASA GEOS-S2S-3 chart package",
-          "reason": "image-only package; no numeric grid is available to this renderer",
-          "represented_by": "NMME NASA_GEOS5v2 only for supported surface products"
+          "package": "NASA GEOS-S2S-3 APCN z500 archive",
+          "reason": "current long-range files declare 200 hPa and fail the strict 500-hPa safety check",
+          "represented_by": null
         },
         {
           "package": "C3S NCEP System 2",
@@ -106,17 +108,12 @@
         {
           "package": "NMME ensemble/consensus products",
           "reason": "aggregate containing already represented systems",
-          "represented_by": "three unique NMME component fields where supported"
+          "represented_by": "two unique NCAR NMME component fields where supported"
         },
         {
           "package": "APCC MME",
           "reason": "opaque overlapping aggregate; current package does not expose separable component grids",
           "represented_by": null
-        },
-        {
-          "package": "NASA GEOS-S2S-3 chart package",
-          "reason": "image-only package; no numeric grid is available to this renderer",
-          "represented_by": "NMME NASA_GEOS5v2 only for supported surface products"
         },
         {
           "package": "CFSv2 standalone",
@@ -158,7 +155,7 @@
         {
           "package": "NMME ensemble/consensus products",
           "reason": "aggregate containing already represented systems",
-          "represented_by": "three unique NMME component fields where supported"
+          "represented_by": "two unique NCAR NMME component fields where supported"
         },
         {
           "package": "APCC MME",
@@ -166,9 +163,9 @@
           "represented_by": null
         },
         {
-          "package": "NASA GEOS-S2S-3 chart package",
-          "reason": "image-only package; no numeric grid is available to this renderer",
-          "represented_by": "NMME NASA_GEOS5v2 only for supported surface products"
+          "package": "NMME NASA_GEOS5v2",
+          "reason": "duplicate NASA GEOS forecast family",
+          "represented_by": "nasa_geos_s2s3"
         },
         {
           "package": "C3S NCEP System 2",
@@ -210,7 +207,7 @@
         {
           "package": "NMME ensemble/consensus products",
           "reason": "aggregate containing already represented systems",
-          "represented_by": "three unique NMME component fields where supported"
+          "represented_by": "two unique NCAR NMME component fields where supported"
         },
         {
           "package": "APCC MME",
@@ -218,9 +215,9 @@
           "represented_by": null
         },
         {
-          "package": "NASA GEOS-S2S-3 chart package",
-          "reason": "image-only package; no numeric grid is available to this renderer",
-          "represented_by": "NMME NASA_GEOS5v2 only for supported surface products"
+          "package": "NMME NASA_GEOS5v2",
+          "reason": "duplicate NASA GEOS forecast family",
+          "represented_by": "nasa_geos_s2s3"
         },
         {
           "package": "C3S NCEP System 2",
@@ -262,17 +259,12 @@
         {
           "package": "NMME ensemble/consensus products",
           "reason": "aggregate containing already represented systems",
-          "represented_by": "three unique NMME component fields where supported"
+          "represented_by": "two unique NCAR NMME component fields where supported"
         },
         {
           "package": "APCC MME",
           "reason": "opaque overlapping aggregate; current package does not expose separable component grids",
           "represented_by": null
-        },
-        {
-          "package": "NASA GEOS-S2S-3 chart package",
-          "reason": "image-only package; no numeric grid is available to this renderer",
-          "represented_by": "NMME NASA_GEOS5v2 only for supported surface products"
         },
         {
           "package": "CFSv2 standalone",
@@ -314,17 +306,12 @@
         {
           "package": "NMME ensemble/consensus products",
           "reason": "aggregate containing already represented systems",
-          "represented_by": "three unique NMME component fields where supported"
+          "represented_by": "two unique NCAR NMME component fields where supported"
         },
         {
           "package": "APCC MME",
           "reason": "opaque overlapping aggregate; current package does not expose separable component grids",
           "represented_by": null
-        },
-        {
-          "package": "NASA GEOS-S2S-3 chart package",
-          "reason": "image-only package; no numeric grid is available to this renderer",
-          "represented_by": "NMME NASA_GEOS5v2 only for supported surface products"
         },
         {
           "package": "C3S NCEP System 2",
@@ -5707,6 +5694,2831 @@
       ],
       "status": "rendered",
       "generated_utc": "2026-08-18T17:32:35Z",
+      "output_dir": "public/seasonal/superensemble"
+    },
+    {
+      "id": "superensemble-2026080100-2m_temperature_anomaly",
+      "model": "Seasonal Super Ensemble",
+      "source": "wall.cloud deduplicated seasonal super ensemble",
+      "source_url": "https://climate.copernicus.eu/seasonal-forecasts",
+      "source_urls": [
+        "https://climate.copernicus.eu/seasonal-forecasts",
+        "https://eccc-msc.github.io/open-data/msc-data/nwp_cansips/readme_cansips-datamart_en/",
+        "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/",
+        "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs_refor_calclim_mm_9m_pgbf/",
+        "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/NRT/APCN/",
+        "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/Drift/for_APCN/",
+        "https://www.cpc.ncep.noaa.gov/products/NMME/data.html"
+      ],
+      "product": "2m_temperature_anomaly",
+      "init_utc": "2026-08-01T00:00:00Z",
+      "field": "t2m_anomaly",
+      "units": "\u00b0C",
+      "statistic": "equal_weight_deduplicated_family_mean",
+      "aggregation": "monthly or seasonal mean of canonical non-overlapping forecast-family anomalies",
+      "ensemble_scope": "up to 12 canonical forecast families",
+      "membership_policy": {
+        "product": "2m_temperature_anomaly",
+        "weighting_unit": "canonical non-overlapping forecast-family source",
+        "weighting": "equal weight after each source has formed its own ensemble mean",
+        "native_baselines": true,
+        "included": [
+          {
+            "key": "c3s_ecmwf_system51",
+            "label": "ECMWF / System 51",
+            "source_package": "Copernicus C3S",
+            "system": "ecmwf/51",
+            "internal_members": 51,
+            "notes": "Official C3S postprocessed ensemble-mean anomaly"
+          },
+          {
+            "key": "c3s_ukmo_system610",
+            "label": "UK Met Office / System 610",
+            "source_package": "Copernicus C3S",
+            "system": "ukmo/610",
+            "internal_members": 62,
+            "notes": "Official C3S postprocessed ensemble-mean anomaly"
+          },
+          {
+            "key": "c3s_meteo_france_system9",
+            "label": "M\u00e9t\u00e9o-France / System 9",
+            "source_package": "Copernicus C3S",
+            "system": "meteo_france/9",
+            "internal_members": 51,
+            "notes": "Official C3S postprocessed ensemble-mean anomaly"
+          },
+          {
+            "key": "c3s_dwd_system22",
+            "label": "DWD / System 22",
+            "source_package": "Copernicus C3S",
+            "system": "dwd/22",
+            "internal_members": 50,
+            "notes": "Official C3S postprocessed ensemble-mean anomaly"
+          },
+          {
+            "key": "c3s_cmcc_system4",
+            "label": "CMCC / System 4",
+            "source_package": "Copernicus C3S",
+            "system": "cmcc/4",
+            "internal_members": 50,
+            "notes": "Official C3S postprocessed ensemble-mean anomaly"
+          },
+          {
+            "key": "c3s_jma_system4",
+            "label": "JMA / System 4",
+            "source_package": "Copernicus C3S",
+            "system": "jma/4",
+            "internal_members": 55,
+            "notes": "Official C3S postprocessed ensemble-mean anomaly"
+          },
+          {
+            "key": "c3s_bom_system2",
+            "label": "BOM / System 2",
+            "source_package": "Copernicus C3S",
+            "system": "bom/2",
+            "internal_members": 33,
+            "notes": "Official C3S postprocessed ensemble-mean anomaly"
+          },
+          {
+            "key": "noaa_cfsv2_rolling40",
+            "label": "NOAA CFSv2 40-cycle rolling blend",
+            "source_package": "NOAA CFSv2 NOMADS",
+            "system": "10-day lagged initial-condition blend",
+            "internal_members": 40,
+            "notes": "One CFSv2-family vote; C3S NCEP and NMME CFSv2 copies are excluded"
+          },
+          {
+            "key": "eccc_cansips_v3",
+            "label": "ECCC CanSIPS v3 family",
+            "source_package": "ECCC CanSIPS v3",
+            "system": "20 GEM5.2-NEMO + 20 CanESM5 members",
+            "internal_members": 40,
+            "notes": "One ECCC family vote; C3S ECCC and NMME ECCC copies are excluded"
+          },
+          {
+            "key": "nasa_geos_s2s3",
+            "label": "NASA GEOS-S2S-3",
+            "source_package": "NASA GEOS-S2S-3 NCCS numerical archive",
+            "system": "GEOS-S2S-3 APCN lag/burst ensemble",
+            "internal_members": null,
+            "notes": "One NASA-family vote; the NMME NASA_GEOS5v2 copy is excluded"
+          },
+          {
+            "key": "nmme_ncar_ccsm4",
+            "label": "NMME NCAR_CCSM4",
+            "source_package": "NOAA CPC NMME component archive",
+            "system": "NCAR_CCSM4",
+            "internal_members": null,
+            "notes": "Unique NMME component not otherwise represented in C3S/CanSIPS"
+          },
+          {
+            "key": "nmme_ncar_cesm1",
+            "label": "NMME NCAR_CESM1",
+            "source_package": "NOAA CPC NMME component archive",
+            "system": "NCAR_CESM1",
+            "internal_members": null,
+            "notes": "Unique NMME component not otherwise represented in C3S/CanSIPS"
+          }
+        ],
+        "expected_count": 12,
+        "excluded": [
+          {
+            "package": "ECMWF SEAS5 standalone",
+            "reason": "duplicate",
+            "represented_by": "c3s_ecmwf_system51"
+          },
+          {
+            "package": "JMA standalone",
+            "reason": "duplicate",
+            "represented_by": "c3s_jma_system4"
+          },
+          {
+            "package": "C3S ECCC System 5",
+            "reason": "duplicate within the fuller ECCC family",
+            "represented_by": "eccc_cansips_v3"
+          },
+          {
+            "package": "C3S multi-system mean",
+            "reason": "aggregate of individually included C3S systems",
+            "represented_by": "C3S component fields"
+          },
+          {
+            "package": "NMME GEM5.2_NEMO and CanESM5",
+            "reason": "duplicate ECCC systems",
+            "represented_by": "eccc_cansips_v3"
+          },
+          {
+            "package": "NMME ensemble/consensus products",
+            "reason": "aggregate containing already represented systems",
+            "represented_by": "two unique NCAR NMME component fields where supported"
+          },
+          {
+            "package": "APCC MME",
+            "reason": "opaque overlapping aggregate; current package does not expose separable component grids",
+            "represented_by": null
+          },
+          {
+            "package": "NMME NASA_GEOS5v2",
+            "reason": "duplicate NASA GEOS forecast family",
+            "represented_by": "nasa_geos_s2s3"
+          },
+          {
+            "package": "C3S NCEP System 2",
+            "reason": "duplicate CFSv2 family",
+            "represented_by": "noaa_cfsv2_rolling40"
+          },
+          {
+            "package": "NMME CFSv2",
+            "reason": "duplicate CFSv2 family",
+            "represented_by": "noaa_cfsv2_rolling40"
+          }
+        ]
+      },
+      "synthetic_preview": false,
+      "targets": [
+        {
+          "id": "superensemble-2026080100-2m_temperature_anomaly-202612",
+          "target_month": "202612",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-01-01T00:00:00Z",
+          "lead_month": 4,
+          "field": "t2m_anomaly",
+          "units": "\u00b0C",
+          "statistic": "equal_weight_deduplicated_family_mean",
+          "expected_member_count": 12,
+          "member_count": 12,
+          "included_members": [
+            "c3s_ecmwf_system51",
+            "c3s_ukmo_system610",
+            "c3s_meteo_france_system9",
+            "c3s_dwd_system22",
+            "c3s_cmcc_system4",
+            "c3s_jma_system4",
+            "c3s_bom_system2",
+            "noaa_cfsv2_rolling40",
+            "eccc_cansips_v3",
+            "nasa_geos_s2s3",
+            "nmme_ncar_ccsm4",
+            "nmme_ncar_cesm1"
+          ],
+          "missing_members": [],
+          "member_weights": [
+            {
+              "key": "c3s_ecmwf_system51",
+              "label": "ECMWF / System 51",
+              "weight": 0.0833333333
+            },
+            {
+              "key": "c3s_ukmo_system610",
+              "label": "UK Met Office / System 610",
+              "weight": 0.0833333333
+            },
+            {
+              "key": "c3s_meteo_france_system9",
+              "label": "M\u00e9t\u00e9o-France / System 9",
+              "weight": 0.0833333333
+            },
+            {
+              "key": "c3s_dwd_system22",
+              "label": "DWD / System 22",
+              "weight": 0.0833333333
+            },
+            {
+              "key": "c3s_cmcc_system4",
+              "label": "CMCC / System 4",
+              "weight": 0.0833333333
+            },
+            {
+              "key": "c3s_jma_system4",
+              "label": "JMA / System 4",
+              "weight": 0.0833333333
+            },
+            {
+              "key": "c3s_bom_system2",
+              "label": "BOM / System 2",
+              "weight": 0.0833333333
+            },
+            {
+              "key": "noaa_cfsv2_rolling40",
+              "label": "NOAA CFSv2 40-cycle rolling blend",
+              "weight": 0.0833333333
+            },
+            {
+              "key": "eccc_cansips_v3",
+              "label": "ECCC CanSIPS v3 family",
+              "weight": 0.0833333333
+            },
+            {
+              "key": "nasa_geos_s2s3",
+              "label": "NASA GEOS-S2S-3",
+              "weight": 0.0833333333
+            },
+            {
+              "key": "nmme_ncar_ccsm4",
+              "label": "NMME NCAR_CCSM4",
+              "weight": 0.0833333333
+            },
+            {
+              "key": "nmme_ncar_cesm1",
+              "label": "NMME NCAR_CESM1",
+              "weight": 0.0833333333
+            }
+          ],
+          "member_sources": [
+            {
+              "key": "c3s_ecmwf_system51",
+              "source_package": "Copernicus C3S",
+              "originating_centre": "ecmwf",
+              "system": "51",
+              "source_file": ".cache/c3s/cds/ecmwf_51_seasonal_postprocessed_single_levels_2m_temperature_anomaly_202608_anom_l04/field.grib",
+              "baseline": "official C3S native postprocessed anomaly"
+            },
+            {
+              "key": "c3s_ukmo_system610",
+              "source_package": "Copernicus C3S",
+              "originating_centre": "ukmo",
+              "system": "610",
+              "source_file": ".cache/c3s/cds/ukmo_610_seasonal_postprocessed_single_levels_2m_temperature_anomaly_202608_anom_l04/field.grib",
+              "baseline": "official C3S native postprocessed anomaly"
+            },
+            {
+              "key": "c3s_meteo_france_system9",
+              "source_package": "Copernicus C3S",
+              "originating_centre": "meteo_france",
+              "system": "9",
+              "source_file": ".cache/c3s/cds/meteo_france_9_seasonal_postprocessed_single_levels_2m_temperature_anomaly_202608_anom_l04/field.grib",
+              "baseline": "official C3S native postprocessed anomaly"
+            },
+            {
+              "key": "c3s_dwd_system22",
+              "source_package": "Copernicus C3S",
+              "originating_centre": "dwd",
+              "system": "22",
+              "source_file": ".cache/c3s/cds/dwd_22_seasonal_postprocessed_single_levels_2m_temperature_anomaly_202608_anom_l04/field.grib",
+              "baseline": "official C3S native postprocessed anomaly"
+            },
+            {
+              "key": "c3s_cmcc_system4",
+              "source_package": "Copernicus C3S",
+              "originating_centre": "cmcc",
+              "system": "4",
+              "source_file": ".cache/c3s/cds/cmcc_4_seasonal_postprocessed_single_levels_2m_temperature_anomaly_202608_anom_l04/field.grib",
+              "baseline": "official C3S native postprocessed anomaly"
+            },
+            {
+              "key": "c3s_jma_system4",
+              "source_package": "Copernicus C3S",
+              "originating_centre": "jma",
+              "system": "4",
+              "source_file": ".cache/c3s/cds/jma_4_seasonal_postprocessed_single_levels_2m_temperature_anomaly_202608_anom_l04/field.grib",
+              "baseline": "official C3S native postprocessed anomaly"
+            },
+            {
+              "key": "c3s_bom_system2",
+              "source_package": "Copernicus C3S",
+              "originating_centre": "bom",
+              "system": "2",
+              "source_file": ".cache/c3s/cds/bom_2_seasonal_postprocessed_single_levels_2m_temperature_anomaly_202608_anom_l04/field.grib",
+              "baseline": "official C3S native postprocessed anomaly"
+            },
+            {
+              "key": "noaa_cfsv2_rolling40",
+              "source_package": "NOAA CFSv2 NOMADS",
+              "anchor_initialization": "2026081818",
+              "anchor_initialization_utc": "2026-08-18T18:00:00Z",
+              "rolling_window": {
+                "days": 10,
+                "cycle_interval_hours": 6,
+                "expected_cycles": 40,
+                "available_cycles": 31,
+                "member_stream": 1,
+                "complete": false,
+                "label": "31/40-cycle rolling mean"
+              },
+              "source_files": [
+                {
+                  "initialization": "2026080900",
+                  "initialization_utc": "2026-08-09T00:00:00Z",
+                  "lead_month": 4,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260809/00/monthly_grib_01/flxf.01.2026080900.202612.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026080900/member_01/flxf.01.2026080900.202612.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202612/tmp2m.2026080900.m01.csv.gz",
+                  "status": "missing",
+                  "error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260809/00/monthly_grib_01/flxf.01.2026080900.202612.avrg.grib.grb2"
+                },
+                {
+                  "initialization": "2026080906",
+                  "initialization_utc": "2026-08-09T06:00:00Z",
+                  "lead_month": 4,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260809/06/monthly_grib_01/flxf.01.2026080906.202612.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026080906/member_01/flxf.01.2026080906.202612.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202612/tmp2m.2026080906.m01.csv.gz",
+                  "status": "missing",
+                  "error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260809/06/monthly_grib_01/flxf.01.2026080906.202612.avrg.grib.grb2"
+                },
+                {
+                  "initialization": "2026080912",
+                  "initialization_utc": "2026-08-09T12:00:00Z",
+                  "lead_month": 4,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260809/12/monthly_grib_01/flxf.01.2026080912.202612.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026080912/member_01/flxf.01.2026080912.202612.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202612/tmp2m.2026080912.m01.csv.gz",
+                  "status": "missing",
+                  "error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260809/12/monthly_grib_01/flxf.01.2026080912.202612.avrg.grib.grb2"
+                },
+                {
+                  "initialization": "2026080918",
+                  "initialization_utc": "2026-08-09T18:00:00Z",
+                  "lead_month": 4,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260809/18/monthly_grib_01/flxf.01.2026080918.202612.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026080918/member_01/flxf.01.2026080918.202612.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202612/tmp2m.2026080918.m01.csv.gz",
+                  "status": "missing",
+                  "error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260809/18/monthly_grib_01/flxf.01.2026080918.202612.avrg.grib.grb2"
+                },
+                {
+                  "initialization": "2026081000",
+                  "initialization_utc": "2026-08-10T00:00:00Z",
+                  "lead_month": 4,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260810/00/monthly_grib_01/flxf.01.2026081000.202612.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026081000/member_01/flxf.01.2026081000.202612.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202612/tmp2m.2026081000.m01.csv.gz",
+                  "status": "missing",
+                  "error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260810/00/monthly_grib_01/flxf.01.2026081000.202612.avrg.grib.grb2"
+                },
+                {
+                  "initialization": "2026081006",
+                  "initialization_utc": "2026-08-10T06:00:00Z",
+                  "lead_month": 4,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260810/06/monthly_grib_01/flxf.01.2026081006.202612.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026081006/member_01/flxf.01.2026081006.202612.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202612/tmp2m.2026081006.m01.csv.gz",
+                  "status": "missing",
+                  "error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260810/06/monthly_grib_01/flxf.01.2026081006.202612.avrg.grib.grb2"
+                },
+                {
+                  "initialization": "2026081012",
+                  "initialization_utc": "2026-08-10T12:00:00Z",
+                  "lead_month": 4,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260810/12/monthly_grib_01/flxf.01.2026081012.202612.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026081012/member_01/flxf.01.2026081012.202612.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202612/tmp2m.2026081012.m01.csv.gz",
+                  "status": "missing",
+                  "error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260810/12/monthly_grib_01/flxf.01.2026081012.202612.avrg.grib.grb2"
+                },
+                {
+                  "initialization": "2026081018",
+                  "initialization_utc": "2026-08-10T18:00:00Z",
+                  "lead_month": 4,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260810/18/monthly_grib_01/flxf.01.2026081018.202612.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026081018/member_01/flxf.01.2026081018.202612.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202612/tmp2m.2026081018.m01.csv.gz",
+                  "status": "missing",
+                  "error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260810/18/monthly_grib_01/flxf.01.2026081018.202612.avrg.grib.grb2"
+                },
+                {
+                  "initialization": "2026081100",
+                  "initialization_utc": "2026-08-11T00:00:00Z",
+                  "lead_month": 4,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260811/00/monthly_grib_01/flxf.01.2026081100.202612.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026081100/member_01/flxf.01.2026081100.202612.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202612/tmp2m.2026081100.m01.csv.gz",
+                  "storage": "retained_decoded_grid",
+                  "downloaded": false,
+                  "download_error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260811/00/monthly_grib_01/flxf.01.2026081100.202612.avrg.grib.grb2",
+                  "product": "2m_temperature_anomaly",
+                  "source_kind": "FLXF",
+                  "decoded_field": "TMP:2 m above ground",
+                  "raw_units": "K",
+                  "units": "\u00b0C",
+                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                  "status": "available"
+                },
+                {
+                  "initialization": "2026081106",
+                  "initialization_utc": "2026-08-11T06:00:00Z",
+                  "lead_month": 4,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260811/06/monthly_grib_01/flxf.01.2026081106.202612.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026081106/member_01/flxf.01.2026081106.202612.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202612/tmp2m.2026081106.m01.csv.gz",
+                  "storage": "retained_decoded_grid",
+                  "downloaded": false,
+                  "download_error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260811/06/monthly_grib_01/flxf.01.2026081106.202612.avrg.grib.grb2",
+                  "product": "2m_temperature_anomaly",
+                  "source_kind": "FLXF",
+                  "decoded_field": "TMP:2 m above ground",
+                  "raw_units": "K",
+                  "units": "\u00b0C",
+                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                  "status": "available"
+                },
+                {
+                  "initialization": "2026081112",
+                  "initialization_utc": "2026-08-11T12:00:00Z",
+                  "lead_month": 4,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260811/12/monthly_grib_01/flxf.01.2026081112.202612.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026081112/member_01/flxf.01.2026081112.202612.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202612/tmp2m.2026081112.m01.csv.gz",
+                  "storage": "retained_decoded_grid",
+                  "downloaded": false,
+                  "download_error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260811/12/monthly_grib_01/flxf.01.2026081112.202612.avrg.grib.grb2",
+                  "product": "2m_temperature_anomaly",
+                  "source_kind": "FLXF",
+                  "decoded_field": "TMP:2 m above ground",
+                  "raw_units": "K",
+                  "units": "\u00b0C",
+                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                  "status": "available"
+                },
+                {
+                  "initialization": "2026081118",
+                  "initialization_utc": "2026-08-11T18:00:00Z",
+                  "lead_month": 4,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260811/18/monthly_grib_01/flxf.01.2026081118.202612.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026081118/member_01/flxf.01.2026081118.202612.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202612/tmp2m.2026081118.m01.csv.gz",
+                  "storage": "retained_decoded_grid",
+                  "downloaded": false,
+                  "download_error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260811/18/monthly_grib_01/flxf.01.2026081118.202612.avrg.grib.grb2",
+                  "product": "2m_temperature_anomaly",
+                  "source_kind": "FLXF",
+                  "decoded_field": "TMP:2 m above ground",
+                  "raw_units": "K",
+                  "units": "\u00b0C",
+                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                  "status": "available"
+                },
+                {
+                  "initialization": "2026081200",
+                  "initialization_utc": "2026-08-12T00:00:00Z",
+                  "lead_month": 4,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260812/00/monthly_grib_01/flxf.01.2026081200.202612.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026081200/member_01/flxf.01.2026081200.202612.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202612/tmp2m.2026081200.m01.csv.gz",
+                  "storage": "nomads_grib2",
+                  "downloaded": true,
+                  "product": "2m_temperature_anomaly",
+                  "source_kind": "FLXF",
+                  "decoded_field": "TMP:2 m above ground",
+                  "raw_units": "K",
+                  "units": "\u00b0C",
+                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                  "status": "available"
+                },
+                {
+                  "initialization": "2026081206",
+                  "initialization_utc": "2026-08-12T06:00:00Z",
+                  "lead_month": 4,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260812/06/monthly_grib_01/flxf.01.2026081206.202612.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026081206/member_01/flxf.01.2026081206.202612.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202612/tmp2m.2026081206.m01.csv.gz",
+                  "storage": "nomads_grib2",
+                  "downloaded": true,
+                  "product": "2m_temperature_anomaly",
+                  "source_kind": "FLXF",
+                  "decoded_field": "TMP:2 m above ground",
+                  "raw_units": "K",
+                  "units": "\u00b0C",
+                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                  "status": "available"
+                },
+                {
+                  "initialization": "2026081212",
+                  "initialization_utc": "2026-08-12T12:00:00Z",
+                  "lead_month": 4,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260812/12/monthly_grib_01/flxf.01.2026081212.202612.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026081212/member_01/flxf.01.2026081212.202612.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202612/tmp2m.2026081212.m01.csv.gz",
+                  "storage": "nomads_grib2",
+                  "downloaded": true,
+                  "product": "2m_temperature_anomaly",
+                  "source_kind": "FLXF",
+                  "decoded_field": "TMP:2 m above ground",
+                  "raw_units": "K",
+                  "units": "\u00b0C",
+                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                  "status": "available"
+                },
+                {
+                  "initialization": "2026081218",
+                  "initialization_utc": "2026-08-12T18:00:00Z",
+                  "lead_month": 4,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260812/18/monthly_grib_01/flxf.01.2026081218.202612.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026081218/member_01/flxf.01.2026081218.202612.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202612/tmp2m.2026081218.m01.csv.gz",
+                  "storage": "nomads_grib2",
+                  "downloaded": true,
+                  "product": "2m_temperature_anomaly",
+                  "source_kind": "FLXF",
+                  "decoded_field": "TMP:2 m above ground",
+                  "raw_units": "K",
+                  "units": "\u00b0C",
+                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                  "status": "available"
+                },
+                {
+                  "initialization": "2026081300",
+                  "initialization_utc": "2026-08-13T00:00:00Z",
+                  "lead_month": 4,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260813/00/monthly_grib_01/flxf.01.2026081300.202612.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026081300/member_01/flxf.01.2026081300.202612.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202612/tmp2m.2026081300.m01.csv.gz",
+                  "storage": "nomads_grib2",
+                  "downloaded": true,
+                  "product": "2m_temperature_anomaly",
+                  "source_kind": "FLXF",
+                  "decoded_field": "TMP:2 m above ground",
+                  "raw_units": "K",
+                  "units": "\u00b0C",
+                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                  "status": "available"
+                },
+                {
+                  "initialization": "2026081306",
+                  "initialization_utc": "2026-08-13T06:00:00Z",
+                  "lead_month": 4,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260813/06/monthly_grib_01/flxf.01.2026081306.202612.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026081306/member_01/flxf.01.2026081306.202612.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202612/tmp2m.2026081306.m01.csv.gz",
+                  "storage": "nomads_grib2",
+                  "downloaded": true,
+                  "product": "2m_temperature_anomaly",
+                  "source_kind": "FLXF",
+                  "decoded_field": "TMP:2 m above ground",
+                  "raw_units": "K",
+                  "units": "\u00b0C",
+                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                  "status": "available"
+                },
+                {
+                  "initialization": "2026081312",
+                  "initialization_utc": "2026-08-13T12:00:00Z",
+                  "lead_month": 4,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260813/12/monthly_grib_01/flxf.01.2026081312.202612.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026081312/member_01/flxf.01.2026081312.202612.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202612/tmp2m.2026081312.m01.csv.gz",
+                  "storage": "nomads_grib2",
+                  "downloaded": true,
+                  "product": "2m_temperature_anomaly",
+                  "source_kind": "FLXF",
+                  "decoded_field": "TMP:2 m above ground",
+                  "raw_units": "K",
+                  "units": "\u00b0C",
+                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                  "status": "available"
+                },
+                {
+                  "initialization": "2026081318",
+                  "initialization_utc": "2026-08-13T18:00:00Z",
+                  "lead_month": 4,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260813/18/monthly_grib_01/flxf.01.2026081318.202612.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026081318/member_01/flxf.01.2026081318.202612.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202612/tmp2m.2026081318.m01.csv.gz",
+                  "storage": "nomads_grib2",
+                  "downloaded": true,
+                  "product": "2m_temperature_anomaly",
+                  "source_kind": "FLXF",
+                  "decoded_field": "TMP:2 m above ground",
+                  "raw_units": "K",
+                  "units": "\u00b0C",
+                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                  "status": "available"
+                },
+                {
+                  "initialization": "2026081400",
+                  "initialization_utc": "2026-08-14T00:00:00Z",
+                  "lead_month": 4,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260814/00/monthly_grib_01/flxf.01.2026081400.202612.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026081400/member_01/flxf.01.2026081400.202612.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202612/tmp2m.2026081400.m01.csv.gz",
+                  "storage": "nomads_grib2",
+                  "downloaded": true,
+                  "product": "2m_temperature_anomaly",
+                  "source_kind": "FLXF",
+                  "decoded_field": "TMP:2 m above ground",
+                  "raw_units": "K",
+                  "units": "\u00b0C",
+                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                  "status": "available"
+                },
+                {
+                  "initialization": "2026081406",
+                  "initialization_utc": "2026-08-14T06:00:00Z",
+                  "lead_month": 4,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260814/06/monthly_grib_01/flxf.01.2026081406.202612.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026081406/member_01/flxf.01.2026081406.202612.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202612/tmp2m.2026081406.m01.csv.gz",
+                  "storage": "nomads_grib2",
+                  "downloaded": true,
+                  "product": "2m_temperature_anomaly",
+                  "source_kind": "FLXF",
+                  "decoded_field": "TMP:2 m above ground",
+                  "raw_units": "K",
+                  "units": "\u00b0C",
+                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                  "status": "available"
+                },
+                {
+                  "initialization": "2026081412",
+                  "initialization_utc": "2026-08-14T12:00:00Z",
+                  "lead_month": 4,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260814/12/monthly_grib_01/flxf.01.2026081412.202612.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026081412/member_01/flxf.01.2026081412.202612.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202612/tmp2m.2026081412.m01.csv.gz",
+                  "storage": "nomads_grib2",
+                  "downloaded": true,
+                  "product": "2m_temperature_anomaly",
+                  "source_kind": "FLXF",
+                  "decoded_field": "TMP:2 m above ground",
+                  "raw_units": "K",
+                  "units": "\u00b0C",
+                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                  "status": "available"
+                },
+                {
+                  "initialization": "2026081418",
+                  "initialization_utc": "2026-08-14T18:00:00Z",
+                  "lead_month": 4,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260814/18/monthly_grib_01/flxf.01.2026081418.202612.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026081418/member_01/flxf.01.2026081418.202612.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202612/tmp2m.2026081418.m01.csv.gz",
+                  "storage": "nomads_grib2",
+                  "downloaded": true,
+                  "product": "2m_temperature_anomaly",
+                  "source_kind": "FLXF",
+                  "decoded_field": "TMP:2 m above ground",
+                  "raw_units": "K",
+                  "units": "\u00b0C",
+                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                  "status": "available"
+                },
+                {
+                  "initialization": "2026081500",
+                  "initialization_utc": "2026-08-15T00:00:00Z",
+                  "lead_month": 4,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260815/00/monthly_grib_01/flxf.01.2026081500.202612.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026081500/member_01/flxf.01.2026081500.202612.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202612/tmp2m.2026081500.m01.csv.gz",
+                  "storage": "nomads_grib2",
+                  "downloaded": true,
+                  "product": "2m_temperature_anomaly",
+                  "source_kind": "FLXF",
+                  "decoded_field": "TMP:2 m above ground",
+                  "raw_units": "K",
+                  "units": "\u00b0C",
+                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                  "status": "available"
+                },
+                {
+                  "initialization": "2026081506",
+                  "initialization_utc": "2026-08-15T06:00:00Z",
+                  "lead_month": 4,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260815/06/monthly_grib_01/flxf.01.2026081506.202612.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026081506/member_01/flxf.01.2026081506.202612.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202612/tmp2m.2026081506.m01.csv.gz",
+                  "storage": "nomads_grib2",
+                  "downloaded": true,
+                  "product": "2m_temperature_anomaly",
+                  "source_kind": "FLXF",
+                  "decoded_field": "TMP:2 m above ground",
+                  "raw_units": "K",
+                  "units": "\u00b0C",
+                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                  "status": "available"
+                },
+                {
+                  "initialization": "2026081512",
+                  "initialization_utc": "2026-08-15T12:00:00Z",
+                  "lead_month": 4,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260815/12/monthly_grib_01/flxf.01.2026081512.202612.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026081512/member_01/flxf.01.2026081512.202612.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202612/tmp2m.2026081512.m01.csv.gz",
+                  "storage": "nomads_grib2",
+                  "downloaded": true,
+                  "product": "2m_temperature_anomaly",
+                  "source_kind": "FLXF",
+                  "decoded_field": "TMP:2 m above ground",
+                  "raw_units": "K",
+                  "units": "\u00b0C",
+                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                  "status": "available"
+                },
+                {
+                  "initialization": "2026081518",
+                  "initialization_utc": "2026-08-15T18:00:00Z",
+                  "lead_month": 4,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260815/18/monthly_grib_01/flxf.01.2026081518.202612.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026081518/member_01/flxf.01.2026081518.202612.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202612/tmp2m.2026081518.m01.csv.gz",
+                  "storage": "nomads_grib2",
+                  "downloaded": true,
+                  "product": "2m_temperature_anomaly",
+                  "source_kind": "FLXF",
+                  "decoded_field": "TMP:2 m above ground",
+                  "raw_units": "K",
+                  "units": "\u00b0C",
+                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                  "status": "available"
+                },
+                {
+                  "initialization": "2026081600",
+                  "initialization_utc": "2026-08-16T00:00:00Z",
+                  "lead_month": 4,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260816/00/monthly_grib_01/flxf.01.2026081600.202612.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026081600/member_01/flxf.01.2026081600.202612.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202612/tmp2m.2026081600.m01.csv.gz",
+                  "storage": "nomads_grib2",
+                  "downloaded": true,
+                  "product": "2m_temperature_anomaly",
+                  "source_kind": "FLXF",
+                  "decoded_field": "TMP:2 m above ground",
+                  "raw_units": "K",
+                  "units": "\u00b0C",
+                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                  "status": "available"
+                },
+                {
+                  "initialization": "2026081606",
+                  "initialization_utc": "2026-08-16T06:00:00Z",
+                  "lead_month": 4,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260816/06/monthly_grib_01/flxf.01.2026081606.202612.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026081606/member_01/flxf.01.2026081606.202612.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202612/tmp2m.2026081606.m01.csv.gz",
+                  "storage": "nomads_grib2",
+                  "downloaded": true,
+                  "product": "2m_temperature_anomaly",
+                  "source_kind": "FLXF",
+                  "decoded_field": "TMP:2 m above ground",
+                  "raw_units": "K",
+                  "units": "\u00b0C",
+                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                  "status": "available"
+                },
+                {
+                  "initialization": "2026081612",
+                  "initialization_utc": "2026-08-16T12:00:00Z",
+                  "lead_month": 4,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260816/12/monthly_grib_01/flxf.01.2026081612.202612.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026081612/member_01/flxf.01.2026081612.202612.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202612/tmp2m.2026081612.m01.csv.gz",
+                  "storage": "nomads_grib2",
+                  "downloaded": true,
+                  "product": "2m_temperature_anomaly",
+                  "source_kind": "FLXF",
+                  "decoded_field": "TMP:2 m above ground",
+                  "raw_units": "K",
+                  "units": "\u00b0C",
+                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                  "status": "available"
+                },
+                {
+                  "initialization": "2026081618",
+                  "initialization_utc": "2026-08-16T18:00:00Z",
+                  "lead_month": 4,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260816/18/monthly_grib_01/flxf.01.2026081618.202612.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026081618/member_01/flxf.01.2026081618.202612.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202612/tmp2m.2026081618.m01.csv.gz",
+                  "storage": "nomads_grib2",
+                  "downloaded": true,
+                  "product": "2m_temperature_anomaly",
+                  "source_kind": "FLXF",
+                  "decoded_field": "TMP:2 m above ground",
+                  "raw_units": "K",
+                  "units": "\u00b0C",
+                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                  "status": "available"
+                },
+                {
+                  "initialization": "2026081700",
+                  "initialization_utc": "2026-08-17T00:00:00Z",
+                  "lead_month": 4,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260817/00/monthly_grib_01/flxf.01.2026081700.202612.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026081700/member_01/flxf.01.2026081700.202612.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202612/tmp2m.2026081700.m01.csv.gz",
+                  "storage": "nomads_grib2",
+                  "downloaded": true,
+                  "product": "2m_temperature_anomaly",
+                  "source_kind": "FLXF",
+                  "decoded_field": "TMP:2 m above ground",
+                  "raw_units": "K",
+                  "units": "\u00b0C",
+                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                  "status": "available"
+                },
+                {
+                  "initialization": "2026081706",
+                  "initialization_utc": "2026-08-17T06:00:00Z",
+                  "lead_month": 4,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260817/06/monthly_grib_01/flxf.01.2026081706.202612.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026081706/member_01/flxf.01.2026081706.202612.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202612/tmp2m.2026081706.m01.csv.gz",
+                  "storage": "nomads_grib2",
+                  "downloaded": true,
+                  "product": "2m_temperature_anomaly",
+                  "source_kind": "FLXF",
+                  "decoded_field": "TMP:2 m above ground",
+                  "raw_units": "K",
+                  "units": "\u00b0C",
+                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                  "status": "available"
+                },
+                {
+                  "initialization": "2026081712",
+                  "initialization_utc": "2026-08-17T12:00:00Z",
+                  "lead_month": 4,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260817/12/monthly_grib_01/flxf.01.2026081712.202612.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026081712/member_01/flxf.01.2026081712.202612.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202612/tmp2m.2026081712.m01.csv.gz",
+                  "storage": "nomads_grib2",
+                  "downloaded": true,
+                  "product": "2m_temperature_anomaly",
+                  "source_kind": "FLXF",
+                  "decoded_field": "TMP:2 m above ground",
+                  "raw_units": "K",
+                  "units": "\u00b0C",
+                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                  "status": "available"
+                },
+                {
+                  "initialization": "2026081718",
+                  "initialization_utc": "2026-08-17T18:00:00Z",
+                  "lead_month": 4,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260817/18/monthly_grib_01/flxf.01.2026081718.202612.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026081718/member_01/flxf.01.2026081718.202612.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202612/tmp2m.2026081718.m01.csv.gz",
+                  "storage": "nomads_grib2",
+                  "downloaded": true,
+                  "product": "2m_temperature_anomaly",
+                  "source_kind": "FLXF",
+                  "decoded_field": "TMP:2 m above ground",
+                  "raw_units": "K",
+                  "units": "\u00b0C",
+                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                  "status": "available"
+                },
+                {
+                  "initialization": "2026081800",
+                  "initialization_utc": "2026-08-18T00:00:00Z",
+                  "lead_month": 4,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260818/00/monthly_grib_01/flxf.01.2026081800.202612.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026081800/member_01/flxf.01.2026081800.202612.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202612/tmp2m.2026081800.m01.csv.gz",
+                  "storage": "nomads_grib2",
+                  "downloaded": true,
+                  "product": "2m_temperature_anomaly",
+                  "source_kind": "FLXF",
+                  "decoded_field": "TMP:2 m above ground",
+                  "raw_units": "K",
+                  "units": "\u00b0C",
+                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                  "status": "available"
+                },
+                {
+                  "initialization": "2026081806",
+                  "initialization_utc": "2026-08-18T06:00:00Z",
+                  "lead_month": 4,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260818/06/monthly_grib_01/flxf.01.2026081806.202612.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026081806/member_01/flxf.01.2026081806.202612.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202612/tmp2m.2026081806.m01.csv.gz",
+                  "storage": "nomads_grib2",
+                  "downloaded": true,
+                  "product": "2m_temperature_anomaly",
+                  "source_kind": "FLXF",
+                  "decoded_field": "TMP:2 m above ground",
+                  "raw_units": "K",
+                  "units": "\u00b0C",
+                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                  "status": "available"
+                },
+                {
+                  "initialization": "2026081812",
+                  "initialization_utc": "2026-08-18T12:00:00Z",
+                  "lead_month": 4,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260818/12/monthly_grib_01/flxf.01.2026081812.202612.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026081812/member_01/flxf.01.2026081812.202612.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202612/tmp2m.2026081812.m01.csv.gz",
+                  "storage": "nomads_grib2",
+                  "downloaded": true,
+                  "product": "2m_temperature_anomaly",
+                  "source_kind": "FLXF",
+                  "decoded_field": "TMP:2 m above ground",
+                  "raw_units": "K",
+                  "units": "\u00b0C",
+                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                  "status": "available"
+                },
+                {
+                  "initialization": "2026081818",
+                  "initialization_utc": "2026-08-18T18:00:00Z",
+                  "lead_month": 4,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260818/18/monthly_grib_01/flxf.01.2026081818.202612.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026081818/member_01/flxf.01.2026081818.202612.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202612/tmp2m.2026081818.m01.csv.gz",
+                  "status": "missing",
+                  "error": "403 Client Error: Forbidden for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260818/18/monthly_grib_01/flxf.01.2026081818.202612.avrg.grib.grb2"
+                }
+              ],
+              "baseline": {
+                "source": "NCEI CFS reforecast flux calibration climatology; 1982-2010",
+                "years": "1982-2010",
+                "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/08/flxf.08.18.18.l04.fclm.1982.2010.grb2",
+                "file": ".cache/cfsv2/calibration/flxf/2026081818/flxf.08.18.18.l04.fclm.1982.2010.grb2",
+                "downloaded": true,
+                "rolling_policy": "anchor_initialization"
+              }
+            },
+            {
+              "key": "eccc_cansips_v3",
+              "source_package": "ECCC CanSIPS v3",
+              "source_file": {
+                "initialization": "2026080100",
+                "lead_month": 4,
+                "product": "2m_temperature_anomaly",
+                "source_field": "AirTemp at 2 m",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/2026/08/202608_MSC_CanSIPS_AirTemp_AGL-2m_LatLon1.0_P04M.grib2",
+                "cache_file": ".cache/cansips/means/forecast/202608/t2m_lead04.csv.gz",
+                "storage": "retained_ensemble_mean_grid",
+                "downloaded": false,
+                "ensemble_members": 40
+              },
+              "hindcast_file_count": 30,
+              "baseline": "CanSIPS v3 hindcast climatology 1991-2020",
+              "internal_members": 40,
+              "internal_groups": [
+                "GEM5.2-NEMO",
+                "CanESM5"
+              ]
+            },
+            {
+              "key": "nasa_geos_s2s3",
+              "source_package": "NASA GEOS-S2S-3 NCCS numerical archive",
+              "release_month": "202608",
+              "source_archive_url": "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/NRT/APCN/202608/202608_at.tar.xz",
+              "source_files": [
+                "202608.at.20260705ens2.9mo.nc4",
+                "202608.at.20260710ens2.9mo.nc4",
+                "202608.at.20260710ens4.9mo.nc4",
+                "202608.at.20260715ens1.9mo.nc4",
+                "202608.at.20260720ens3.9mo.nc4",
+                "202608.at.20260720ens5.9mo.nc4",
+                "202608.at.20260730ens13.9mo.nc4",
+                "202608.at.20260730ens14.9mo.nc4",
+                "202608.at.20260730ens15.9mo.nc4",
+                "202608.at.20260730ens1.9mo.nc4"
+              ],
+              "internal_members": 10,
+              "initialization_dates": [
+                "20260705",
+                "20260710",
+                "20260715",
+                "20260720",
+                "20260730"
+              ],
+              "baseline": {
+                "source": "NASA GEOS-S2S-3 provider drift climatology",
+                "years": "2001-2021",
+                "url": "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/Drift/for_APCN/aug.APCN.monthly.drift.12.nc4",
+                "method": "lead- and initialization-month-matched NASA hindcast ensemble mean"
+              }
+            },
+            {
+              "key": "nmme_ncar_ccsm4",
+              "source_package": "NOAA CPC NMME component archive",
+              "component": "NCAR_CCSM4",
+              "source_url": "https://ftp.cpc.ncep.noaa.gov/NMME/realtime_anom/ENSMEAN/2026080800/NCAR_CCSM4.tmp2m.202608.ENSMEAN.anom.nc",
+              "baseline": "CPC NMME native component anomaly",
+              "source_lead_month": 5
+            },
+            {
+              "key": "nmme_ncar_cesm1",
+              "source_package": "NOAA CPC NMME component archive",
+              "component": "NCAR_CESM1",
+              "source_url": "https://ftp.cpc.ncep.noaa.gov/NMME/realtime_anom/ENSMEAN/2026080800/NCAR_CESM1.tmp2m.202608.ENSMEAN.anom.nc",
+              "baseline": "CPC NMME native component anomaly",
+              "source_lead_month": 5
+            }
+          ],
+          "member_errors": {},
+          "ensemble_scope": "12/12 canonical forecast families",
+          "baseline": {
+            "status": "native_model_baselines",
+            "method": "equal mean of source-native anomaly fields; no common climatology imposed"
+          },
+          "status": "rendered",
+          "height_member_count": 0,
+          "image": "public/seasonal/superensemble/20260801/superensemble_t2m_202612.jpg"
+        },
+        {
+          "id": "superensemble-2026080100-2m_temperature_anomaly-202701",
+          "target_month": "202701",
+          "valid_start_utc": "2027-01-01T00:00:00Z",
+          "valid_end_utc": "2027-02-01T00:00:00Z",
+          "lead_month": 5,
+          "field": "t2m_anomaly",
+          "units": "\u00b0C",
+          "statistic": "equal_weight_deduplicated_family_mean",
+          "expected_member_count": 12,
+          "member_count": 12,
+          "included_members": [
+            "c3s_ecmwf_system51",
+            "c3s_ukmo_system610",
+            "c3s_meteo_france_system9",
+            "c3s_dwd_system22",
+            "c3s_cmcc_system4",
+            "c3s_jma_system4",
+            "c3s_bom_system2",
+            "noaa_cfsv2_rolling40",
+            "eccc_cansips_v3",
+            "nasa_geos_s2s3",
+            "nmme_ncar_ccsm4",
+            "nmme_ncar_cesm1"
+          ],
+          "missing_members": [],
+          "member_weights": [
+            {
+              "key": "c3s_ecmwf_system51",
+              "label": "ECMWF / System 51",
+              "weight": 0.0833333333
+            },
+            {
+              "key": "c3s_ukmo_system610",
+              "label": "UK Met Office / System 610",
+              "weight": 0.0833333333
+            },
+            {
+              "key": "c3s_meteo_france_system9",
+              "label": "M\u00e9t\u00e9o-France / System 9",
+              "weight": 0.0833333333
+            },
+            {
+              "key": "c3s_dwd_system22",
+              "label": "DWD / System 22",
+              "weight": 0.0833333333
+            },
+            {
+              "key": "c3s_cmcc_system4",
+              "label": "CMCC / System 4",
+              "weight": 0.0833333333
+            },
+            {
+              "key": "c3s_jma_system4",
+              "label": "JMA / System 4",
+              "weight": 0.0833333333
+            },
+            {
+              "key": "c3s_bom_system2",
+              "label": "BOM / System 2",
+              "weight": 0.0833333333
+            },
+            {
+              "key": "noaa_cfsv2_rolling40",
+              "label": "NOAA CFSv2 40-cycle rolling blend",
+              "weight": 0.0833333333
+            },
+            {
+              "key": "eccc_cansips_v3",
+              "label": "ECCC CanSIPS v3 family",
+              "weight": 0.0833333333
+            },
+            {
+              "key": "nasa_geos_s2s3",
+              "label": "NASA GEOS-S2S-3",
+              "weight": 0.0833333333
+            },
+            {
+              "key": "nmme_ncar_ccsm4",
+              "label": "NMME NCAR_CCSM4",
+              "weight": 0.0833333333
+            },
+            {
+              "key": "nmme_ncar_cesm1",
+              "label": "NMME NCAR_CESM1",
+              "weight": 0.0833333333
+            }
+          ],
+          "member_sources": [
+            {
+              "key": "c3s_ecmwf_system51",
+              "source_package": "Copernicus C3S",
+              "originating_centre": "ecmwf",
+              "system": "51",
+              "source_file": ".cache/c3s/cds/ecmwf_51_seasonal_postprocessed_single_levels_2m_temperature_anomaly_202608_anom_l05/field.grib",
+              "baseline": "official C3S native postprocessed anomaly"
+            },
+            {
+              "key": "c3s_ukmo_system610",
+              "source_package": "Copernicus C3S",
+              "originating_centre": "ukmo",
+              "system": "610",
+              "source_file": ".cache/c3s/cds/ukmo_610_seasonal_postprocessed_single_levels_2m_temperature_anomaly_202608_anom_l05/field.grib",
+              "baseline": "official C3S native postprocessed anomaly"
+            },
+            {
+              "key": "c3s_meteo_france_system9",
+              "source_package": "Copernicus C3S",
+              "originating_centre": "meteo_france",
+              "system": "9",
+              "source_file": ".cache/c3s/cds/meteo_france_9_seasonal_postprocessed_single_levels_2m_temperature_anomaly_202608_anom_l05/field.grib",
+              "baseline": "official C3S native postprocessed anomaly"
+            },
+            {
+              "key": "c3s_dwd_system22",
+              "source_package": "Copernicus C3S",
+              "originating_centre": "dwd",
+              "system": "22",
+              "source_file": ".cache/c3s/cds/dwd_22_seasonal_postprocessed_single_levels_2m_temperature_anomaly_202608_anom_l05/field.grib",
+              "baseline": "official C3S native postprocessed anomaly"
+            },
+            {
+              "key": "c3s_cmcc_system4",
+              "source_package": "Copernicus C3S",
+              "originating_centre": "cmcc",
+              "system": "4",
+              "source_file": ".cache/c3s/cds/cmcc_4_seasonal_postprocessed_single_levels_2m_temperature_anomaly_202608_anom_l05/field.grib",
+              "baseline": "official C3S native postprocessed anomaly"
+            },
+            {
+              "key": "c3s_jma_system4",
+              "source_package": "Copernicus C3S",
+              "originating_centre": "jma",
+              "system": "4",
+              "source_file": ".cache/c3s/cds/jma_4_seasonal_postprocessed_single_levels_2m_temperature_anomaly_202608_anom_l05/field.grib",
+              "baseline": "official C3S native postprocessed anomaly"
+            },
+            {
+              "key": "c3s_bom_system2",
+              "source_package": "Copernicus C3S",
+              "originating_centre": "bom",
+              "system": "2",
+              "source_file": ".cache/c3s/cds/bom_2_seasonal_postprocessed_single_levels_2m_temperature_anomaly_202608_anom_l05/field.grib",
+              "baseline": "official C3S native postprocessed anomaly"
+            },
+            {
+              "key": "noaa_cfsv2_rolling40",
+              "source_package": "NOAA CFSv2 NOMADS",
+              "anchor_initialization": "2026081818",
+              "anchor_initialization_utc": "2026-08-18T18:00:00Z",
+              "rolling_window": {
+                "days": 10,
+                "cycle_interval_hours": 6,
+                "expected_cycles": 40,
+                "available_cycles": 31,
+                "member_stream": 1,
+                "complete": false,
+                "label": "31/40-cycle rolling mean"
+              },
+              "source_files": [
+                {
+                  "initialization": "2026080900",
+                  "initialization_utc": "2026-08-09T00:00:00Z",
+                  "lead_month": 5,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260809/00/monthly_grib_01/flxf.01.2026080900.202701.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026080900/member_01/flxf.01.2026080900.202701.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202701/tmp2m.2026080900.m01.csv.gz",
+                  "status": "missing",
+                  "error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260809/00/monthly_grib_01/flxf.01.2026080900.202701.avrg.grib.grb2"
+                },
+                {
+                  "initialization": "2026080906",
+                  "initialization_utc": "2026-08-09T06:00:00Z",
+                  "lead_month": 5,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260809/06/monthly_grib_01/flxf.01.2026080906.202701.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026080906/member_01/flxf.01.2026080906.202701.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202701/tmp2m.2026080906.m01.csv.gz",
+                  "status": "missing",
+                  "error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260809/06/monthly_grib_01/flxf.01.2026080906.202701.avrg.grib.grb2"
+                },
+                {
+                  "initialization": "2026080912",
+                  "initialization_utc": "2026-08-09T12:00:00Z",
+                  "lead_month": 5,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260809/12/monthly_grib_01/flxf.01.2026080912.202701.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026080912/member_01/flxf.01.2026080912.202701.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202701/tmp2m.2026080912.m01.csv.gz",
+                  "status": "missing",
+                  "error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260809/12/monthly_grib_01/flxf.01.2026080912.202701.avrg.grib.grb2"
+                },
+                {
+                  "initialization": "2026080918",
+                  "initialization_utc": "2026-08-09T18:00:00Z",
+                  "lead_month": 5,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260809/18/monthly_grib_01/flxf.01.2026080918.202701.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026080918/member_01/flxf.01.2026080918.202701.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202701/tmp2m.2026080918.m01.csv.gz",
+                  "status": "missing",
+                  "error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260809/18/monthly_grib_01/flxf.01.2026080918.202701.avrg.grib.grb2"
+                },
+                {
+                  "initialization": "2026081000",
+                  "initialization_utc": "2026-08-10T00:00:00Z",
+                  "lead_month": 5,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260810/00/monthly_grib_01/flxf.01.2026081000.202701.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026081000/member_01/flxf.01.2026081000.202701.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202701/tmp2m.2026081000.m01.csv.gz",
+                  "status": "missing",
+                  "error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260810/00/monthly_grib_01/flxf.01.2026081000.202701.avrg.grib.grb2"
+                },
+                {
+                  "initialization": "2026081006",
+                  "initialization_utc": "2026-08-10T06:00:00Z",
+                  "lead_month": 5,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260810/06/monthly_grib_01/flxf.01.2026081006.202701.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026081006/member_01/flxf.01.2026081006.202701.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202701/tmp2m.2026081006.m01.csv.gz",
+                  "status": "missing",
+                  "error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260810/06/monthly_grib_01/flxf.01.2026081006.202701.avrg.grib.grb2"
+                },
+                {
+                  "initialization": "2026081012",
+                  "initialization_utc": "2026-08-10T12:00:00Z",
+                  "lead_month": 5,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260810/12/monthly_grib_01/flxf.01.2026081012.202701.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026081012/member_01/flxf.01.2026081012.202701.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202701/tmp2m.2026081012.m01.csv.gz",
+                  "status": "missing",
+                  "error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260810/12/monthly_grib_01/flxf.01.2026081012.202701.avrg.grib.grb2"
+                },
+                {
+                  "initialization": "2026081018",
+                  "initialization_utc": "2026-08-10T18:00:00Z",
+                  "lead_month": 5,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260810/18/monthly_grib_01/flxf.01.2026081018.202701.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026081018/member_01/flxf.01.2026081018.202701.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202701/tmp2m.2026081018.m01.csv.gz",
+                  "status": "missing",
+                  "error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260810/18/monthly_grib_01/flxf.01.2026081018.202701.avrg.grib.grb2"
+                },
+                {
+                  "initialization": "2026081100",
+                  "initialization_utc": "2026-08-11T00:00:00Z",
+                  "lead_month": 5,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260811/00/monthly_grib_01/flxf.01.2026081100.202701.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026081100/member_01/flxf.01.2026081100.202701.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202701/tmp2m.2026081100.m01.csv.gz",
+                  "storage": "retained_decoded_grid",
+                  "downloaded": false,
+                  "download_error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260811/00/monthly_grib_01/flxf.01.2026081100.202701.avrg.grib.grb2",
+                  "product": "2m_temperature_anomaly",
+                  "source_kind": "FLXF",
+                  "decoded_field": "TMP:2 m above ground",
+                  "raw_units": "K",
+                  "units": "\u00b0C",
+                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                  "status": "available"
+                },
+                {
+                  "initialization": "2026081106",
+                  "initialization_utc": "2026-08-11T06:00:00Z",
+                  "lead_month": 5,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260811/06/monthly_grib_01/flxf.01.2026081106.202701.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026081106/member_01/flxf.01.2026081106.202701.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202701/tmp2m.2026081106.m01.csv.gz",
+                  "storage": "retained_decoded_grid",
+                  "downloaded": false,
+                  "download_error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260811/06/monthly_grib_01/flxf.01.2026081106.202701.avrg.grib.grb2",
+                  "product": "2m_temperature_anomaly",
+                  "source_kind": "FLXF",
+                  "decoded_field": "TMP:2 m above ground",
+                  "raw_units": "K",
+                  "units": "\u00b0C",
+                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                  "status": "available"
+                },
+                {
+                  "initialization": "2026081112",
+                  "initialization_utc": "2026-08-11T12:00:00Z",
+                  "lead_month": 5,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260811/12/monthly_grib_01/flxf.01.2026081112.202701.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026081112/member_01/flxf.01.2026081112.202701.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202701/tmp2m.2026081112.m01.csv.gz",
+                  "storage": "retained_decoded_grid",
+                  "downloaded": false,
+                  "download_error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260811/12/monthly_grib_01/flxf.01.2026081112.202701.avrg.grib.grb2",
+                  "product": "2m_temperature_anomaly",
+                  "source_kind": "FLXF",
+                  "decoded_field": "TMP:2 m above ground",
+                  "raw_units": "K",
+                  "units": "\u00b0C",
+                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                  "status": "available"
+                },
+                {
+                  "initialization": "2026081118",
+                  "initialization_utc": "2026-08-11T18:00:00Z",
+                  "lead_month": 5,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260811/18/monthly_grib_01/flxf.01.2026081118.202701.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026081118/member_01/flxf.01.2026081118.202701.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202701/tmp2m.2026081118.m01.csv.gz",
+                  "storage": "retained_decoded_grid",
+                  "downloaded": false,
+                  "download_error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260811/18/monthly_grib_01/flxf.01.2026081118.202701.avrg.grib.grb2",
+                  "product": "2m_temperature_anomaly",
+                  "source_kind": "FLXF",
+                  "decoded_field": "TMP:2 m above ground",
+                  "raw_units": "K",
+                  "units": "\u00b0C",
+                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                  "status": "available"
+                },
+                {
+                  "initialization": "2026081200",
+                  "initialization_utc": "2026-08-12T00:00:00Z",
+                  "lead_month": 5,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260812/00/monthly_grib_01/flxf.01.2026081200.202701.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026081200/member_01/flxf.01.2026081200.202701.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202701/tmp2m.2026081200.m01.csv.gz",
+                  "storage": "nomads_grib2",
+                  "downloaded": true,
+                  "product": "2m_temperature_anomaly",
+                  "source_kind": "FLXF",
+                  "decoded_field": "TMP:2 m above ground",
+                  "raw_units": "K",
+                  "units": "\u00b0C",
+                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                  "status": "available"
+                },
+                {
+                  "initialization": "2026081206",
+                  "initialization_utc": "2026-08-12T06:00:00Z",
+                  "lead_month": 5,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260812/06/monthly_grib_01/flxf.01.2026081206.202701.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026081206/member_01/flxf.01.2026081206.202701.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202701/tmp2m.2026081206.m01.csv.gz",
+                  "storage": "nomads_grib2",
+                  "downloaded": true,
+                  "product": "2m_temperature_anomaly",
+                  "source_kind": "FLXF",
+                  "decoded_field": "TMP:2 m above ground",
+                  "raw_units": "K",
+                  "units": "\u00b0C",
+                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                  "status": "available"
+                },
+                {
+                  "initialization": "2026081212",
+                  "initialization_utc": "2026-08-12T12:00:00Z",
+                  "lead_month": 5,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260812/12/monthly_grib_01/flxf.01.2026081212.202701.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026081212/member_01/flxf.01.2026081212.202701.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202701/tmp2m.2026081212.m01.csv.gz",
+                  "storage": "nomads_grib2",
+                  "downloaded": true,
+                  "product": "2m_temperature_anomaly",
+                  "source_kind": "FLXF",
+                  "decoded_field": "TMP:2 m above ground",
+                  "raw_units": "K",
+                  "units": "\u00b0C",
+                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                  "status": "available"
+                },
+                {
+                  "initialization": "2026081218",
+                  "initialization_utc": "2026-08-12T18:00:00Z",
+                  "lead_month": 5,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260812/18/monthly_grib_01/flxf.01.2026081218.202701.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026081218/member_01/flxf.01.2026081218.202701.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202701/tmp2m.2026081218.m01.csv.gz",
+                  "storage": "nomads_grib2",
+                  "downloaded": true,
+                  "product": "2m_temperature_anomaly",
+                  "source_kind": "FLXF",
+                  "decoded_field": "TMP:2 m above ground",
+                  "raw_units": "K",
+                  "units": "\u00b0C",
+                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                  "status": "available"
+                },
+                {
+                  "initialization": "2026081300",
+                  "initialization_utc": "2026-08-13T00:00:00Z",
+                  "lead_month": 5,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260813/00/monthly_grib_01/flxf.01.2026081300.202701.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026081300/member_01/flxf.01.2026081300.202701.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202701/tmp2m.2026081300.m01.csv.gz",
+                  "storage": "nomads_grib2",
+                  "downloaded": true,
+                  "product": "2m_temperature_anomaly",
+                  "source_kind": "FLXF",
+                  "decoded_field": "TMP:2 m above ground",
+                  "raw_units": "K",
+                  "units": "\u00b0C",
+                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                  "status": "available"
+                },
+                {
+                  "initialization": "2026081306",
+                  "initialization_utc": "2026-08-13T06:00:00Z",
+                  "lead_month": 5,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260813/06/monthly_grib_01/flxf.01.2026081306.202701.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026081306/member_01/flxf.01.2026081306.202701.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202701/tmp2m.2026081306.m01.csv.gz",
+                  "storage": "nomads_grib2",
+                  "downloaded": true,
+                  "product": "2m_temperature_anomaly",
+                  "source_kind": "FLXF",
+                  "decoded_field": "TMP:2 m above ground",
+                  "raw_units": "K",
+                  "units": "\u00b0C",
+                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                  "status": "available"
+                },
+                {
+                  "initialization": "2026081312",
+                  "initialization_utc": "2026-08-13T12:00:00Z",
+                  "lead_month": 5,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260813/12/monthly_grib_01/flxf.01.2026081312.202701.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026081312/member_01/flxf.01.2026081312.202701.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202701/tmp2m.2026081312.m01.csv.gz",
+                  "storage": "nomads_grib2",
+                  "downloaded": true,
+                  "product": "2m_temperature_anomaly",
+                  "source_kind": "FLXF",
+                  "decoded_field": "TMP:2 m above ground",
+                  "raw_units": "K",
+                  "units": "\u00b0C",
+                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                  "status": "available"
+                },
+                {
+                  "initialization": "2026081318",
+                  "initialization_utc": "2026-08-13T18:00:00Z",
+                  "lead_month": 5,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260813/18/monthly_grib_01/flxf.01.2026081318.202701.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026081318/member_01/flxf.01.2026081318.202701.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202701/tmp2m.2026081318.m01.csv.gz",
+                  "storage": "nomads_grib2",
+                  "downloaded": true,
+                  "product": "2m_temperature_anomaly",
+                  "source_kind": "FLXF",
+                  "decoded_field": "TMP:2 m above ground",
+                  "raw_units": "K",
+                  "units": "\u00b0C",
+                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                  "status": "available"
+                },
+                {
+                  "initialization": "2026081400",
+                  "initialization_utc": "2026-08-14T00:00:00Z",
+                  "lead_month": 5,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260814/00/monthly_grib_01/flxf.01.2026081400.202701.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026081400/member_01/flxf.01.2026081400.202701.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202701/tmp2m.2026081400.m01.csv.gz",
+                  "storage": "nomads_grib2",
+                  "downloaded": true,
+                  "product": "2m_temperature_anomaly",
+                  "source_kind": "FLXF",
+                  "decoded_field": "TMP:2 m above ground",
+                  "raw_units": "K",
+                  "units": "\u00b0C",
+                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                  "status": "available"
+                },
+                {
+                  "initialization": "2026081406",
+                  "initialization_utc": "2026-08-14T06:00:00Z",
+                  "lead_month": 5,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260814/06/monthly_grib_01/flxf.01.2026081406.202701.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026081406/member_01/flxf.01.2026081406.202701.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202701/tmp2m.2026081406.m01.csv.gz",
+                  "storage": "nomads_grib2",
+                  "downloaded": true,
+                  "product": "2m_temperature_anomaly",
+                  "source_kind": "FLXF",
+                  "decoded_field": "TMP:2 m above ground",
+                  "raw_units": "K",
+                  "units": "\u00b0C",
+                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                  "status": "available"
+                },
+                {
+                  "initialization": "2026081412",
+                  "initialization_utc": "2026-08-14T12:00:00Z",
+                  "lead_month": 5,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260814/12/monthly_grib_01/flxf.01.2026081412.202701.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026081412/member_01/flxf.01.2026081412.202701.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202701/tmp2m.2026081412.m01.csv.gz",
+                  "storage": "nomads_grib2",
+                  "downloaded": true,
+                  "product": "2m_temperature_anomaly",
+                  "source_kind": "FLXF",
+                  "decoded_field": "TMP:2 m above ground",
+                  "raw_units": "K",
+                  "units": "\u00b0C",
+                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                  "status": "available"
+                },
+                {
+                  "initialization": "2026081418",
+                  "initialization_utc": "2026-08-14T18:00:00Z",
+                  "lead_month": 5,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260814/18/monthly_grib_01/flxf.01.2026081418.202701.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026081418/member_01/flxf.01.2026081418.202701.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202701/tmp2m.2026081418.m01.csv.gz",
+                  "storage": "nomads_grib2",
+                  "downloaded": true,
+                  "product": "2m_temperature_anomaly",
+                  "source_kind": "FLXF",
+                  "decoded_field": "TMP:2 m above ground",
+                  "raw_units": "K",
+                  "units": "\u00b0C",
+                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                  "status": "available"
+                },
+                {
+                  "initialization": "2026081500",
+                  "initialization_utc": "2026-08-15T00:00:00Z",
+                  "lead_month": 5,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260815/00/monthly_grib_01/flxf.01.2026081500.202701.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026081500/member_01/flxf.01.2026081500.202701.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202701/tmp2m.2026081500.m01.csv.gz",
+                  "storage": "nomads_grib2",
+                  "downloaded": true,
+                  "product": "2m_temperature_anomaly",
+                  "source_kind": "FLXF",
+                  "decoded_field": "TMP:2 m above ground",
+                  "raw_units": "K",
+                  "units": "\u00b0C",
+                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                  "status": "available"
+                },
+                {
+                  "initialization": "2026081506",
+                  "initialization_utc": "2026-08-15T06:00:00Z",
+                  "lead_month": 5,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260815/06/monthly_grib_01/flxf.01.2026081506.202701.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026081506/member_01/flxf.01.2026081506.202701.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202701/tmp2m.2026081506.m01.csv.gz",
+                  "storage": "nomads_grib2",
+                  "downloaded": true,
+                  "product": "2m_temperature_anomaly",
+                  "source_kind": "FLXF",
+                  "decoded_field": "TMP:2 m above ground",
+                  "raw_units": "K",
+                  "units": "\u00b0C",
+                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                  "status": "available"
+                },
+                {
+                  "initialization": "2026081512",
+                  "initialization_utc": "2026-08-15T12:00:00Z",
+                  "lead_month": 5,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260815/12/monthly_grib_01/flxf.01.2026081512.202701.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026081512/member_01/flxf.01.2026081512.202701.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202701/tmp2m.2026081512.m01.csv.gz",
+                  "storage": "nomads_grib2",
+                  "downloaded": true,
+                  "product": "2m_temperature_anomaly",
+                  "source_kind": "FLXF",
+                  "decoded_field": "TMP:2 m above ground",
+                  "raw_units": "K",
+                  "units": "\u00b0C",
+                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                  "status": "available"
+                },
+                {
+                  "initialization": "2026081518",
+                  "initialization_utc": "2026-08-15T18:00:00Z",
+                  "lead_month": 5,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260815/18/monthly_grib_01/flxf.01.2026081518.202701.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026081518/member_01/flxf.01.2026081518.202701.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202701/tmp2m.2026081518.m01.csv.gz",
+                  "storage": "nomads_grib2",
+                  "downloaded": true,
+                  "product": "2m_temperature_anomaly",
+                  "source_kind": "FLXF",
+                  "decoded_field": "TMP:2 m above ground",
+                  "raw_units": "K",
+                  "units": "\u00b0C",
+                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                  "status": "available"
+                },
+                {
+                  "initialization": "2026081600",
+                  "initialization_utc": "2026-08-16T00:00:00Z",
+                  "lead_month": 5,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260816/00/monthly_grib_01/flxf.01.2026081600.202701.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026081600/member_01/flxf.01.2026081600.202701.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202701/tmp2m.2026081600.m01.csv.gz",
+                  "storage": "nomads_grib2",
+                  "downloaded": true,
+                  "product": "2m_temperature_anomaly",
+                  "source_kind": "FLXF",
+                  "decoded_field": "TMP:2 m above ground",
+                  "raw_units": "K",
+                  "units": "\u00b0C",
+                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                  "status": "available"
+                },
+                {
+                  "initialization": "2026081606",
+                  "initialization_utc": "2026-08-16T06:00:00Z",
+                  "lead_month": 5,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260816/06/monthly_grib_01/flxf.01.2026081606.202701.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026081606/member_01/flxf.01.2026081606.202701.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202701/tmp2m.2026081606.m01.csv.gz",
+                  "storage": "nomads_grib2",
+                  "downloaded": true,
+                  "product": "2m_temperature_anomaly",
+                  "source_kind": "FLXF",
+                  "decoded_field": "TMP:2 m above ground",
+                  "raw_units": "K",
+                  "units": "\u00b0C",
+                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                  "status": "available"
+                },
+                {
+                  "initialization": "2026081612",
+                  "initialization_utc": "2026-08-16T12:00:00Z",
+                  "lead_month": 5,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260816/12/monthly_grib_01/flxf.01.2026081612.202701.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026081612/member_01/flxf.01.2026081612.202701.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202701/tmp2m.2026081612.m01.csv.gz",
+                  "storage": "nomads_grib2",
+                  "downloaded": true,
+                  "product": "2m_temperature_anomaly",
+                  "source_kind": "FLXF",
+                  "decoded_field": "TMP:2 m above ground",
+                  "raw_units": "K",
+                  "units": "\u00b0C",
+                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                  "status": "available"
+                },
+                {
+                  "initialization": "2026081618",
+                  "initialization_utc": "2026-08-16T18:00:00Z",
+                  "lead_month": 5,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260816/18/monthly_grib_01/flxf.01.2026081618.202701.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026081618/member_01/flxf.01.2026081618.202701.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202701/tmp2m.2026081618.m01.csv.gz",
+                  "storage": "nomads_grib2",
+                  "downloaded": true,
+                  "product": "2m_temperature_anomaly",
+                  "source_kind": "FLXF",
+                  "decoded_field": "TMP:2 m above ground",
+                  "raw_units": "K",
+                  "units": "\u00b0C",
+                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                  "status": "available"
+                },
+                {
+                  "initialization": "2026081700",
+                  "initialization_utc": "2026-08-17T00:00:00Z",
+                  "lead_month": 5,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260817/00/monthly_grib_01/flxf.01.2026081700.202701.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026081700/member_01/flxf.01.2026081700.202701.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202701/tmp2m.2026081700.m01.csv.gz",
+                  "storage": "nomads_grib2",
+                  "downloaded": true,
+                  "product": "2m_temperature_anomaly",
+                  "source_kind": "FLXF",
+                  "decoded_field": "TMP:2 m above ground",
+                  "raw_units": "K",
+                  "units": "\u00b0C",
+                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                  "status": "available"
+                },
+                {
+                  "initialization": "2026081706",
+                  "initialization_utc": "2026-08-17T06:00:00Z",
+                  "lead_month": 5,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260817/06/monthly_grib_01/flxf.01.2026081706.202701.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026081706/member_01/flxf.01.2026081706.202701.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202701/tmp2m.2026081706.m01.csv.gz",
+                  "storage": "nomads_grib2",
+                  "downloaded": true,
+                  "product": "2m_temperature_anomaly",
+                  "source_kind": "FLXF",
+                  "decoded_field": "TMP:2 m above ground",
+                  "raw_units": "K",
+                  "units": "\u00b0C",
+                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                  "status": "available"
+                },
+                {
+                  "initialization": "2026081712",
+                  "initialization_utc": "2026-08-17T12:00:00Z",
+                  "lead_month": 5,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260817/12/monthly_grib_01/flxf.01.2026081712.202701.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026081712/member_01/flxf.01.2026081712.202701.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202701/tmp2m.2026081712.m01.csv.gz",
+                  "storage": "nomads_grib2",
+                  "downloaded": true,
+                  "product": "2m_temperature_anomaly",
+                  "source_kind": "FLXF",
+                  "decoded_field": "TMP:2 m above ground",
+                  "raw_units": "K",
+                  "units": "\u00b0C",
+                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                  "status": "available"
+                },
+                {
+                  "initialization": "2026081718",
+                  "initialization_utc": "2026-08-17T18:00:00Z",
+                  "lead_month": 5,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260817/18/monthly_grib_01/flxf.01.2026081718.202701.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026081718/member_01/flxf.01.2026081718.202701.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202701/tmp2m.2026081718.m01.csv.gz",
+                  "storage": "nomads_grib2",
+                  "downloaded": true,
+                  "product": "2m_temperature_anomaly",
+                  "source_kind": "FLXF",
+                  "decoded_field": "TMP:2 m above ground",
+                  "raw_units": "K",
+                  "units": "\u00b0C",
+                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                  "status": "available"
+                },
+                {
+                  "initialization": "2026081800",
+                  "initialization_utc": "2026-08-18T00:00:00Z",
+                  "lead_month": 5,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260818/00/monthly_grib_01/flxf.01.2026081800.202701.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026081800/member_01/flxf.01.2026081800.202701.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202701/tmp2m.2026081800.m01.csv.gz",
+                  "storage": "nomads_grib2",
+                  "downloaded": true,
+                  "product": "2m_temperature_anomaly",
+                  "source_kind": "FLXF",
+                  "decoded_field": "TMP:2 m above ground",
+                  "raw_units": "K",
+                  "units": "\u00b0C",
+                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                  "status": "available"
+                },
+                {
+                  "initialization": "2026081806",
+                  "initialization_utc": "2026-08-18T06:00:00Z",
+                  "lead_month": 5,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260818/06/monthly_grib_01/flxf.01.2026081806.202701.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026081806/member_01/flxf.01.2026081806.202701.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202701/tmp2m.2026081806.m01.csv.gz",
+                  "storage": "nomads_grib2",
+                  "downloaded": true,
+                  "product": "2m_temperature_anomaly",
+                  "source_kind": "FLXF",
+                  "decoded_field": "TMP:2 m above ground",
+                  "raw_units": "K",
+                  "units": "\u00b0C",
+                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                  "status": "available"
+                },
+                {
+                  "initialization": "2026081812",
+                  "initialization_utc": "2026-08-18T12:00:00Z",
+                  "lead_month": 5,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260818/12/monthly_grib_01/flxf.01.2026081812.202701.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026081812/member_01/flxf.01.2026081812.202701.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202701/tmp2m.2026081812.m01.csv.gz",
+                  "storage": "nomads_grib2",
+                  "downloaded": true,
+                  "product": "2m_temperature_anomaly",
+                  "source_kind": "FLXF",
+                  "decoded_field": "TMP:2 m above ground",
+                  "raw_units": "K",
+                  "units": "\u00b0C",
+                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                  "status": "available"
+                },
+                {
+                  "initialization": "2026081818",
+                  "initialization_utc": "2026-08-18T18:00:00Z",
+                  "lead_month": 5,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260818/18/monthly_grib_01/flxf.01.2026081818.202701.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026081818/member_01/flxf.01.2026081818.202701.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202701/tmp2m.2026081818.m01.csv.gz",
+                  "status": "missing",
+                  "error": "403 Client Error: Forbidden for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260818/18/monthly_grib_01/flxf.01.2026081818.202701.avrg.grib.grb2"
+                }
+              ],
+              "baseline": {
+                "source": "NCEI CFS reforecast flux calibration climatology; 1982-2010",
+                "years": "1982-2010",
+                "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/08/flxf.08.18.18.l05.fclm.1982.2010.grb2",
+                "file": ".cache/cfsv2/calibration/flxf/2026081818/flxf.08.18.18.l05.fclm.1982.2010.grb2",
+                "downloaded": true,
+                "rolling_policy": "anchor_initialization"
+              }
+            },
+            {
+              "key": "eccc_cansips_v3",
+              "source_package": "ECCC CanSIPS v3",
+              "source_file": {
+                "initialization": "2026080100",
+                "lead_month": 5,
+                "product": "2m_temperature_anomaly",
+                "source_field": "AirTemp at 2 m",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/2026/08/202608_MSC_CanSIPS_AirTemp_AGL-2m_LatLon1.0_P05M.grib2",
+                "cache_file": ".cache/cansips/means/forecast/202608/t2m_lead05.csv.gz",
+                "storage": "retained_ensemble_mean_grid",
+                "downloaded": false,
+                "ensemble_members": 40
+              },
+              "hindcast_file_count": 30,
+              "baseline": "CanSIPS v3 hindcast climatology 1991-2020",
+              "internal_members": 40,
+              "internal_groups": [
+                "GEM5.2-NEMO",
+                "CanESM5"
+              ]
+            },
+            {
+              "key": "nasa_geos_s2s3",
+              "source_package": "NASA GEOS-S2S-3 NCCS numerical archive",
+              "release_month": "202608",
+              "source_archive_url": "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/NRT/APCN/202608/202608_at.tar.xz",
+              "source_files": [
+                "202608.at.20260705ens2.9mo.nc4",
+                "202608.at.20260710ens2.9mo.nc4",
+                "202608.at.20260710ens4.9mo.nc4",
+                "202608.at.20260715ens1.9mo.nc4",
+                "202608.at.20260720ens3.9mo.nc4",
+                "202608.at.20260720ens5.9mo.nc4",
+                "202608.at.20260730ens13.9mo.nc4",
+                "202608.at.20260730ens14.9mo.nc4",
+                "202608.at.20260730ens15.9mo.nc4",
+                "202608.at.20260730ens1.9mo.nc4"
+              ],
+              "internal_members": 10,
+              "initialization_dates": [
+                "20260705",
+                "20260710",
+                "20260715",
+                "20260720",
+                "20260730"
+              ],
+              "baseline": {
+                "source": "NASA GEOS-S2S-3 provider drift climatology",
+                "years": "2001-2021",
+                "url": "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/Drift/for_APCN/aug.APCN.monthly.drift.01.nc4",
+                "method": "lead- and initialization-month-matched NASA hindcast ensemble mean"
+              }
+            },
+            {
+              "key": "nmme_ncar_ccsm4",
+              "source_package": "NOAA CPC NMME component archive",
+              "component": "NCAR_CCSM4",
+              "source_url": "https://ftp.cpc.ncep.noaa.gov/NMME/realtime_anom/ENSMEAN/2026080800/NCAR_CCSM4.tmp2m.202608.ENSMEAN.anom.nc",
+              "baseline": "CPC NMME native component anomaly",
+              "source_lead_month": 6
+            },
+            {
+              "key": "nmme_ncar_cesm1",
+              "source_package": "NOAA CPC NMME component archive",
+              "component": "NCAR_CESM1",
+              "source_url": "https://ftp.cpc.ncep.noaa.gov/NMME/realtime_anom/ENSMEAN/2026080800/NCAR_CESM1.tmp2m.202608.ENSMEAN.anom.nc",
+              "baseline": "CPC NMME native component anomaly",
+              "source_lead_month": 6
+            }
+          ],
+          "member_errors": {},
+          "ensemble_scope": "12/12 canonical forecast families",
+          "baseline": {
+            "status": "native_model_baselines",
+            "method": "equal mean of source-native anomaly fields; no common climatology imposed"
+          },
+          "status": "rendered",
+          "height_member_count": 0,
+          "image": "public/seasonal/superensemble/20260801/superensemble_t2m_202701.jpg"
+        },
+        {
+          "id": "superensemble-2026080100-2m_temperature_anomaly-202702",
+          "target_month": "202702",
+          "valid_start_utc": "2027-02-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": 6,
+          "field": "t2m_anomaly",
+          "units": "\u00b0C",
+          "statistic": "equal_weight_deduplicated_family_mean",
+          "expected_member_count": 12,
+          "member_count": 11,
+          "included_members": [
+            "c3s_ecmwf_system51",
+            "c3s_ukmo_system610",
+            "c3s_meteo_france_system9",
+            "c3s_dwd_system22",
+            "c3s_cmcc_system4",
+            "c3s_jma_system4",
+            "c3s_bom_system2",
+            "eccc_cansips_v3",
+            "nasa_geos_s2s3",
+            "nmme_ncar_ccsm4",
+            "nmme_ncar_cesm1"
+          ],
+          "missing_members": [
+            "noaa_cfsv2_rolling40"
+          ],
+          "member_weights": [
+            {
+              "key": "c3s_ecmwf_system51",
+              "label": "ECMWF / System 51",
+              "weight": 0.0909090909
+            },
+            {
+              "key": "c3s_ukmo_system610",
+              "label": "UK Met Office / System 610",
+              "weight": 0.0909090909
+            },
+            {
+              "key": "c3s_meteo_france_system9",
+              "label": "M\u00e9t\u00e9o-France / System 9",
+              "weight": 0.0909090909
+            },
+            {
+              "key": "c3s_dwd_system22",
+              "label": "DWD / System 22",
+              "weight": 0.0909090909
+            },
+            {
+              "key": "c3s_cmcc_system4",
+              "label": "CMCC / System 4",
+              "weight": 0.0909090909
+            },
+            {
+              "key": "c3s_jma_system4",
+              "label": "JMA / System 4",
+              "weight": 0.0909090909
+            },
+            {
+              "key": "c3s_bom_system2",
+              "label": "BOM / System 2",
+              "weight": 0.0909090909
+            },
+            {
+              "key": "eccc_cansips_v3",
+              "label": "ECCC CanSIPS v3 family",
+              "weight": 0.0909090909
+            },
+            {
+              "key": "nasa_geos_s2s3",
+              "label": "NASA GEOS-S2S-3",
+              "weight": 0.0909090909
+            },
+            {
+              "key": "nmme_ncar_ccsm4",
+              "label": "NMME NCAR_CCSM4",
+              "weight": 0.0909090909
+            },
+            {
+              "key": "nmme_ncar_cesm1",
+              "label": "NMME NCAR_CESM1",
+              "weight": 0.0909090909
+            }
+          ],
+          "member_sources": [
+            {
+              "key": "c3s_ecmwf_system51",
+              "source_package": "Copernicus C3S",
+              "originating_centre": "ecmwf",
+              "system": "51",
+              "source_file": ".cache/c3s/cds/ecmwf_51_seasonal_postprocessed_single_levels_2m_temperature_anomaly_202608_anom_l06/field.grib",
+              "baseline": "official C3S native postprocessed anomaly"
+            },
+            {
+              "key": "c3s_ukmo_system610",
+              "source_package": "Copernicus C3S",
+              "originating_centre": "ukmo",
+              "system": "610",
+              "source_file": ".cache/c3s/cds/ukmo_610_seasonal_postprocessed_single_levels_2m_temperature_anomaly_202608_anom_l06/field.grib",
+              "baseline": "official C3S native postprocessed anomaly"
+            },
+            {
+              "key": "c3s_meteo_france_system9",
+              "source_package": "Copernicus C3S",
+              "originating_centre": "meteo_france",
+              "system": "9",
+              "source_file": ".cache/c3s/cds/meteo_france_9_seasonal_postprocessed_single_levels_2m_temperature_anomaly_202608_anom_l06/field.grib",
+              "baseline": "official C3S native postprocessed anomaly"
+            },
+            {
+              "key": "c3s_dwd_system22",
+              "source_package": "Copernicus C3S",
+              "originating_centre": "dwd",
+              "system": "22",
+              "source_file": ".cache/c3s/cds/dwd_22_seasonal_postprocessed_single_levels_2m_temperature_anomaly_202608_anom_l06/field.grib",
+              "baseline": "official C3S native postprocessed anomaly"
+            },
+            {
+              "key": "c3s_cmcc_system4",
+              "source_package": "Copernicus C3S",
+              "originating_centre": "cmcc",
+              "system": "4",
+              "source_file": ".cache/c3s/cds/cmcc_4_seasonal_postprocessed_single_levels_2m_temperature_anomaly_202608_anom_l06/field.grib",
+              "baseline": "official C3S native postprocessed anomaly"
+            },
+            {
+              "key": "c3s_jma_system4",
+              "source_package": "Copernicus C3S",
+              "originating_centre": "jma",
+              "system": "4",
+              "source_file": ".cache/c3s/cds/jma_4_seasonal_postprocessed_single_levels_2m_temperature_anomaly_202608_anom_l06/field.grib",
+              "baseline": "official C3S native postprocessed anomaly"
+            },
+            {
+              "key": "c3s_bom_system2",
+              "source_package": "Copernicus C3S",
+              "originating_centre": "bom",
+              "system": "2",
+              "source_file": ".cache/c3s/cds/bom_2_seasonal_postprocessed_single_levels_2m_temperature_anomaly_202608_anom_l06/field.grib",
+              "baseline": "official C3S native postprocessed anomaly"
+            },
+            {
+              "key": "eccc_cansips_v3",
+              "source_package": "ECCC CanSIPS v3",
+              "source_file": {
+                "initialization": "2026080100",
+                "lead_month": 6,
+                "product": "2m_temperature_anomaly",
+                "source_field": "AirTemp at 2 m",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/2026/08/202608_MSC_CanSIPS_AirTemp_AGL-2m_LatLon1.0_P06M.grib2",
+                "cache_file": ".cache/cansips/means/forecast/202608/t2m_lead06.csv.gz",
+                "storage": "retained_ensemble_mean_grid",
+                "downloaded": false,
+                "ensemble_members": 40
+              },
+              "hindcast_file_count": 30,
+              "baseline": "CanSIPS v3 hindcast climatology 1991-2020",
+              "internal_members": 40,
+              "internal_groups": [
+                "GEM5.2-NEMO",
+                "CanESM5"
+              ]
+            },
+            {
+              "key": "nasa_geos_s2s3",
+              "source_package": "NASA GEOS-S2S-3 NCCS numerical archive",
+              "release_month": "202608",
+              "source_archive_url": "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/NRT/APCN/202608/202608_at.tar.xz",
+              "source_files": [
+                "202608.at.20260705ens2.9mo.nc4",
+                "202608.at.20260710ens2.9mo.nc4",
+                "202608.at.20260710ens4.9mo.nc4",
+                "202608.at.20260715ens1.9mo.nc4",
+                "202608.at.20260720ens3.9mo.nc4",
+                "202608.at.20260720ens5.9mo.nc4",
+                "202608.at.20260730ens13.9mo.nc4",
+                "202608.at.20260730ens14.9mo.nc4",
+                "202608.at.20260730ens15.9mo.nc4",
+                "202608.at.20260730ens1.9mo.nc4"
+              ],
+              "internal_members": 10,
+              "initialization_dates": [
+                "20260705",
+                "20260710",
+                "20260715",
+                "20260720",
+                "20260730"
+              ],
+              "baseline": {
+                "source": "NASA GEOS-S2S-3 provider drift climatology",
+                "years": "2001-2021",
+                "url": "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/Drift/for_APCN/aug.APCN.monthly.drift.02.nc4",
+                "method": "lead- and initialization-month-matched NASA hindcast ensemble mean"
+              }
+            },
+            {
+              "key": "nmme_ncar_ccsm4",
+              "source_package": "NOAA CPC NMME component archive",
+              "component": "NCAR_CCSM4",
+              "source_url": "https://ftp.cpc.ncep.noaa.gov/NMME/realtime_anom/ENSMEAN/2026080800/NCAR_CCSM4.tmp2m.202608.ENSMEAN.anom.nc",
+              "baseline": "CPC NMME native component anomaly",
+              "source_lead_month": 7
+            },
+            {
+              "key": "nmme_ncar_cesm1",
+              "source_package": "NOAA CPC NMME component archive",
+              "component": "NCAR_CESM1",
+              "source_url": "https://ftp.cpc.ncep.noaa.gov/NMME/realtime_anom/ENSMEAN/2026080800/NCAR_CESM1.tmp2m.202608.ENSMEAN.anom.nc",
+              "baseline": "CPC NMME native component anomaly",
+              "source_lead_month": 7
+            }
+          ],
+          "member_errors": {
+            "noaa_cfsv2_rolling40": "502 Server Error: Proxy Error for url: https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/08/flxf.08.18.18.l06.fclm.1982.2010.grb2"
+          },
+          "ensemble_scope": "11/12 canonical forecast families",
+          "baseline": {
+            "status": "native_model_baselines",
+            "method": "equal mean of source-native anomaly fields; no common climatology imposed"
+          },
+          "status": "partial",
+          "height_member_count": 0,
+          "image": "public/seasonal/superensemble/20260801/superensemble_t2m_202702.jpg"
+        },
+        {
+          "id": "superensemble-2026080100-2m_temperature_anomaly-202612-202702",
+          "target_month": "202612-202702",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": "4\u20136",
+          "field": "t2m_anomaly",
+          "units": "\u00b0C",
+          "statistic": "equal_weight_deduplicated_family_mean",
+          "expected_member_count": 12,
+          "member_count": 11,
+          "included_members": [
+            "c3s_ecmwf_system51",
+            "c3s_ukmo_system610",
+            "c3s_meteo_france_system9",
+            "c3s_dwd_system22",
+            "c3s_cmcc_system4",
+            "c3s_jma_system4",
+            "c3s_bom_system2",
+            "eccc_cansips_v3",
+            "nasa_geos_s2s3",
+            "nmme_ncar_ccsm4",
+            "nmme_ncar_cesm1"
+          ],
+          "missing_members": [
+            "noaa_cfsv2_rolling40"
+          ],
+          "member_weights": [
+            {
+              "key": "c3s_ecmwf_system51",
+              "label": "ECMWF / System 51",
+              "weight": 0.0909090909
+            },
+            {
+              "key": "c3s_ukmo_system610",
+              "label": "UK Met Office / System 610",
+              "weight": 0.0909090909
+            },
+            {
+              "key": "c3s_meteo_france_system9",
+              "label": "M\u00e9t\u00e9o-France / System 9",
+              "weight": 0.0909090909
+            },
+            {
+              "key": "c3s_dwd_system22",
+              "label": "DWD / System 22",
+              "weight": 0.0909090909
+            },
+            {
+              "key": "c3s_cmcc_system4",
+              "label": "CMCC / System 4",
+              "weight": 0.0909090909
+            },
+            {
+              "key": "c3s_jma_system4",
+              "label": "JMA / System 4",
+              "weight": 0.0909090909
+            },
+            {
+              "key": "c3s_bom_system2",
+              "label": "BOM / System 2",
+              "weight": 0.0909090909
+            },
+            {
+              "key": "eccc_cansips_v3",
+              "label": "ECCC CanSIPS v3 family",
+              "weight": 0.0909090909
+            },
+            {
+              "key": "nasa_geos_s2s3",
+              "label": "NASA GEOS-S2S-3",
+              "weight": 0.0909090909
+            },
+            {
+              "key": "nmme_ncar_ccsm4",
+              "label": "NMME NCAR_CCSM4",
+              "weight": 0.0909090909
+            },
+            {
+              "key": "nmme_ncar_cesm1",
+              "label": "NMME NCAR_CESM1",
+              "weight": 0.0909090909
+            }
+          ],
+          "member_sources": [
+            {
+              "key": "c3s_ecmwf_system51",
+              "member": {
+                "key": "c3s_ecmwf_system51",
+                "label": "ECMWF / System 51",
+                "source_package": "Copernicus C3S",
+                "system": "ecmwf/51",
+                "internal_members": 51,
+                "notes": "Official C3S postprocessed ensemble-mean anomaly"
+              },
+              "monthly_sources": [
+                {
+                  "source_package": "Copernicus C3S",
+                  "originating_centre": "ecmwf",
+                  "system": "51",
+                  "source_file": ".cache/c3s/cds/ecmwf_51_seasonal_postprocessed_single_levels_2m_temperature_anomaly_202608_anom_l04/field.grib",
+                  "baseline": "official C3S native postprocessed anomaly"
+                },
+                {
+                  "source_package": "Copernicus C3S",
+                  "originating_centre": "ecmwf",
+                  "system": "51",
+                  "source_file": ".cache/c3s/cds/ecmwf_51_seasonal_postprocessed_single_levels_2m_temperature_anomaly_202608_anom_l05/field.grib",
+                  "baseline": "official C3S native postprocessed anomaly"
+                },
+                {
+                  "source_package": "Copernicus C3S",
+                  "originating_centre": "ecmwf",
+                  "system": "51",
+                  "source_file": ".cache/c3s/cds/ecmwf_51_seasonal_postprocessed_single_levels_2m_temperature_anomaly_202608_anom_l06/field.grib",
+                  "baseline": "official C3S native postprocessed anomaly"
+                }
+              ]
+            },
+            {
+              "key": "c3s_ukmo_system610",
+              "member": {
+                "key": "c3s_ukmo_system610",
+                "label": "UK Met Office / System 610",
+                "source_package": "Copernicus C3S",
+                "system": "ukmo/610",
+                "internal_members": 62,
+                "notes": "Official C3S postprocessed ensemble-mean anomaly"
+              },
+              "monthly_sources": [
+                {
+                  "source_package": "Copernicus C3S",
+                  "originating_centre": "ukmo",
+                  "system": "610",
+                  "source_file": ".cache/c3s/cds/ukmo_610_seasonal_postprocessed_single_levels_2m_temperature_anomaly_202608_anom_l04/field.grib",
+                  "baseline": "official C3S native postprocessed anomaly"
+                },
+                {
+                  "source_package": "Copernicus C3S",
+                  "originating_centre": "ukmo",
+                  "system": "610",
+                  "source_file": ".cache/c3s/cds/ukmo_610_seasonal_postprocessed_single_levels_2m_temperature_anomaly_202608_anom_l05/field.grib",
+                  "baseline": "official C3S native postprocessed anomaly"
+                },
+                {
+                  "source_package": "Copernicus C3S",
+                  "originating_centre": "ukmo",
+                  "system": "610",
+                  "source_file": ".cache/c3s/cds/ukmo_610_seasonal_postprocessed_single_levels_2m_temperature_anomaly_202608_anom_l06/field.grib",
+                  "baseline": "official C3S native postprocessed anomaly"
+                }
+              ]
+            },
+            {
+              "key": "c3s_meteo_france_system9",
+              "member": {
+                "key": "c3s_meteo_france_system9",
+                "label": "M\u00e9t\u00e9o-France / System 9",
+                "source_package": "Copernicus C3S",
+                "system": "meteo_france/9",
+                "internal_members": 51,
+                "notes": "Official C3S postprocessed ensemble-mean anomaly"
+              },
+              "monthly_sources": [
+                {
+                  "source_package": "Copernicus C3S",
+                  "originating_centre": "meteo_france",
+                  "system": "9",
+                  "source_file": ".cache/c3s/cds/meteo_france_9_seasonal_postprocessed_single_levels_2m_temperature_anomaly_202608_anom_l04/field.grib",
+                  "baseline": "official C3S native postprocessed anomaly"
+                },
+                {
+                  "source_package": "Copernicus C3S",
+                  "originating_centre": "meteo_france",
+                  "system": "9",
+                  "source_file": ".cache/c3s/cds/meteo_france_9_seasonal_postprocessed_single_levels_2m_temperature_anomaly_202608_anom_l05/field.grib",
+                  "baseline": "official C3S native postprocessed anomaly"
+                },
+                {
+                  "source_package": "Copernicus C3S",
+                  "originating_centre": "meteo_france",
+                  "system": "9",
+                  "source_file": ".cache/c3s/cds/meteo_france_9_seasonal_postprocessed_single_levels_2m_temperature_anomaly_202608_anom_l06/field.grib",
+                  "baseline": "official C3S native postprocessed anomaly"
+                }
+              ]
+            },
+            {
+              "key": "c3s_dwd_system22",
+              "member": {
+                "key": "c3s_dwd_system22",
+                "label": "DWD / System 22",
+                "source_package": "Copernicus C3S",
+                "system": "dwd/22",
+                "internal_members": 50,
+                "notes": "Official C3S postprocessed ensemble-mean anomaly"
+              },
+              "monthly_sources": [
+                {
+                  "source_package": "Copernicus C3S",
+                  "originating_centre": "dwd",
+                  "system": "22",
+                  "source_file": ".cache/c3s/cds/dwd_22_seasonal_postprocessed_single_levels_2m_temperature_anomaly_202608_anom_l04/field.grib",
+                  "baseline": "official C3S native postprocessed anomaly"
+                },
+                {
+                  "source_package": "Copernicus C3S",
+                  "originating_centre": "dwd",
+                  "system": "22",
+                  "source_file": ".cache/c3s/cds/dwd_22_seasonal_postprocessed_single_levels_2m_temperature_anomaly_202608_anom_l05/field.grib",
+                  "baseline": "official C3S native postprocessed anomaly"
+                },
+                {
+                  "source_package": "Copernicus C3S",
+                  "originating_centre": "dwd",
+                  "system": "22",
+                  "source_file": ".cache/c3s/cds/dwd_22_seasonal_postprocessed_single_levels_2m_temperature_anomaly_202608_anom_l06/field.grib",
+                  "baseline": "official C3S native postprocessed anomaly"
+                }
+              ]
+            },
+            {
+              "key": "c3s_cmcc_system4",
+              "member": {
+                "key": "c3s_cmcc_system4",
+                "label": "CMCC / System 4",
+                "source_package": "Copernicus C3S",
+                "system": "cmcc/4",
+                "internal_members": 50,
+                "notes": "Official C3S postprocessed ensemble-mean anomaly"
+              },
+              "monthly_sources": [
+                {
+                  "source_package": "Copernicus C3S",
+                  "originating_centre": "cmcc",
+                  "system": "4",
+                  "source_file": ".cache/c3s/cds/cmcc_4_seasonal_postprocessed_single_levels_2m_temperature_anomaly_202608_anom_l04/field.grib",
+                  "baseline": "official C3S native postprocessed anomaly"
+                },
+                {
+                  "source_package": "Copernicus C3S",
+                  "originating_centre": "cmcc",
+                  "system": "4",
+                  "source_file": ".cache/c3s/cds/cmcc_4_seasonal_postprocessed_single_levels_2m_temperature_anomaly_202608_anom_l05/field.grib",
+                  "baseline": "official C3S native postprocessed anomaly"
+                },
+                {
+                  "source_package": "Copernicus C3S",
+                  "originating_centre": "cmcc",
+                  "system": "4",
+                  "source_file": ".cache/c3s/cds/cmcc_4_seasonal_postprocessed_single_levels_2m_temperature_anomaly_202608_anom_l06/field.grib",
+                  "baseline": "official C3S native postprocessed anomaly"
+                }
+              ]
+            },
+            {
+              "key": "c3s_jma_system4",
+              "member": {
+                "key": "c3s_jma_system4",
+                "label": "JMA / System 4",
+                "source_package": "Copernicus C3S",
+                "system": "jma/4",
+                "internal_members": 55,
+                "notes": "Official C3S postprocessed ensemble-mean anomaly"
+              },
+              "monthly_sources": [
+                {
+                  "source_package": "Copernicus C3S",
+                  "originating_centre": "jma",
+                  "system": "4",
+                  "source_file": ".cache/c3s/cds/jma_4_seasonal_postprocessed_single_levels_2m_temperature_anomaly_202608_anom_l04/field.grib",
+                  "baseline": "official C3S native postprocessed anomaly"
+                },
+                {
+                  "source_package": "Copernicus C3S",
+                  "originating_centre": "jma",
+                  "system": "4",
+                  "source_file": ".cache/c3s/cds/jma_4_seasonal_postprocessed_single_levels_2m_temperature_anomaly_202608_anom_l05/field.grib",
+                  "baseline": "official C3S native postprocessed anomaly"
+                },
+                {
+                  "source_package": "Copernicus C3S",
+                  "originating_centre": "jma",
+                  "system": "4",
+                  "source_file": ".cache/c3s/cds/jma_4_seasonal_postprocessed_single_levels_2m_temperature_anomaly_202608_anom_l06/field.grib",
+                  "baseline": "official C3S native postprocessed anomaly"
+                }
+              ]
+            },
+            {
+              "key": "c3s_bom_system2",
+              "member": {
+                "key": "c3s_bom_system2",
+                "label": "BOM / System 2",
+                "source_package": "Copernicus C3S",
+                "system": "bom/2",
+                "internal_members": 33,
+                "notes": "Official C3S postprocessed ensemble-mean anomaly"
+              },
+              "monthly_sources": [
+                {
+                  "source_package": "Copernicus C3S",
+                  "originating_centre": "bom",
+                  "system": "2",
+                  "source_file": ".cache/c3s/cds/bom_2_seasonal_postprocessed_single_levels_2m_temperature_anomaly_202608_anom_l04/field.grib",
+                  "baseline": "official C3S native postprocessed anomaly"
+                },
+                {
+                  "source_package": "Copernicus C3S",
+                  "originating_centre": "bom",
+                  "system": "2",
+                  "source_file": ".cache/c3s/cds/bom_2_seasonal_postprocessed_single_levels_2m_temperature_anomaly_202608_anom_l05/field.grib",
+                  "baseline": "official C3S native postprocessed anomaly"
+                },
+                {
+                  "source_package": "Copernicus C3S",
+                  "originating_centre": "bom",
+                  "system": "2",
+                  "source_file": ".cache/c3s/cds/bom_2_seasonal_postprocessed_single_levels_2m_temperature_anomaly_202608_anom_l06/field.grib",
+                  "baseline": "official C3S native postprocessed anomaly"
+                }
+              ]
+            },
+            {
+              "key": "eccc_cansips_v3",
+              "member": {
+                "key": "eccc_cansips_v3",
+                "label": "ECCC CanSIPS v3 family",
+                "source_package": "ECCC CanSIPS v3",
+                "system": "20 GEM5.2-NEMO + 20 CanESM5 members",
+                "internal_members": 40,
+                "notes": "One ECCC family vote; C3S ECCC and NMME ECCC copies are excluded"
+              },
+              "monthly_sources": [
+                {
+                  "source_package": "ECCC CanSIPS v3",
+                  "source_file": {
+                    "initialization": "2026080100",
+                    "lead_month": 4,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/2026/08/202608_MSC_CanSIPS_AirTemp_AGL-2m_LatLon1.0_P04M.grib2",
+                    "cache_file": ".cache/cansips/means/forecast/202608/t2m_lead04.csv.gz",
+                    "storage": "retained_ensemble_mean_grid",
+                    "downloaded": false,
+                    "ensemble_members": 40
+                  },
+                  "hindcast_file_count": 30,
+                  "baseline": "CanSIPS v3 hindcast climatology 1991-2020",
+                  "internal_members": 40,
+                  "internal_groups": [
+                    "GEM5.2-NEMO",
+                    "CanESM5"
+                  ]
+                },
+                {
+                  "source_package": "ECCC CanSIPS v3",
+                  "source_file": {
+                    "initialization": "2026080100",
+                    "lead_month": 5,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/2026/08/202608_MSC_CanSIPS_AirTemp_AGL-2m_LatLon1.0_P05M.grib2",
+                    "cache_file": ".cache/cansips/means/forecast/202608/t2m_lead05.csv.gz",
+                    "storage": "retained_ensemble_mean_grid",
+                    "downloaded": false,
+                    "ensemble_members": 40
+                  },
+                  "hindcast_file_count": 30,
+                  "baseline": "CanSIPS v3 hindcast climatology 1991-2020",
+                  "internal_members": 40,
+                  "internal_groups": [
+                    "GEM5.2-NEMO",
+                    "CanESM5"
+                  ]
+                },
+                {
+                  "source_package": "ECCC CanSIPS v3",
+                  "source_file": {
+                    "initialization": "2026080100",
+                    "lead_month": 6,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/2026/08/202608_MSC_CanSIPS_AirTemp_AGL-2m_LatLon1.0_P06M.grib2",
+                    "cache_file": ".cache/cansips/means/forecast/202608/t2m_lead06.csv.gz",
+                    "storage": "retained_ensemble_mean_grid",
+                    "downloaded": false,
+                    "ensemble_members": 40
+                  },
+                  "hindcast_file_count": 30,
+                  "baseline": "CanSIPS v3 hindcast climatology 1991-2020",
+                  "internal_members": 40,
+                  "internal_groups": [
+                    "GEM5.2-NEMO",
+                    "CanESM5"
+                  ]
+                }
+              ]
+            },
+            {
+              "key": "nasa_geos_s2s3",
+              "member": {
+                "key": "nasa_geos_s2s3",
+                "label": "NASA GEOS-S2S-3",
+                "source_package": "NASA GEOS-S2S-3 NCCS numerical archive",
+                "system": "GEOS-S2S-3 APCN lag/burst ensemble",
+                "internal_members": null,
+                "notes": "One NASA-family vote; the NMME NASA_GEOS5v2 copy is excluded"
+              },
+              "monthly_sources": [
+                {
+                  "source_package": "NASA GEOS-S2S-3 NCCS numerical archive",
+                  "release_month": "202608",
+                  "source_archive_url": "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/NRT/APCN/202608/202608_at.tar.xz",
+                  "source_files": [
+                    "202608.at.20260705ens2.9mo.nc4",
+                    "202608.at.20260710ens2.9mo.nc4",
+                    "202608.at.20260710ens4.9mo.nc4",
+                    "202608.at.20260715ens1.9mo.nc4",
+                    "202608.at.20260720ens3.9mo.nc4",
+                    "202608.at.20260720ens5.9mo.nc4",
+                    "202608.at.20260730ens13.9mo.nc4",
+                    "202608.at.20260730ens14.9mo.nc4",
+                    "202608.at.20260730ens15.9mo.nc4",
+                    "202608.at.20260730ens1.9mo.nc4"
+                  ],
+                  "internal_members": 10,
+                  "initialization_dates": [
+                    "20260705",
+                    "20260710",
+                    "20260715",
+                    "20260720",
+                    "20260730"
+                  ],
+                  "baseline": {
+                    "source": "NASA GEOS-S2S-3 provider drift climatology",
+                    "years": "2001-2021",
+                    "url": "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/Drift/for_APCN/aug.APCN.monthly.drift.12.nc4",
+                    "method": "lead- and initialization-month-matched NASA hindcast ensemble mean"
+                  }
+                },
+                {
+                  "source_package": "NASA GEOS-S2S-3 NCCS numerical archive",
+                  "release_month": "202608",
+                  "source_archive_url": "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/NRT/APCN/202608/202608_at.tar.xz",
+                  "source_files": [
+                    "202608.at.20260705ens2.9mo.nc4",
+                    "202608.at.20260710ens2.9mo.nc4",
+                    "202608.at.20260710ens4.9mo.nc4",
+                    "202608.at.20260715ens1.9mo.nc4",
+                    "202608.at.20260720ens3.9mo.nc4",
+                    "202608.at.20260720ens5.9mo.nc4",
+                    "202608.at.20260730ens13.9mo.nc4",
+                    "202608.at.20260730ens14.9mo.nc4",
+                    "202608.at.20260730ens15.9mo.nc4",
+                    "202608.at.20260730ens1.9mo.nc4"
+                  ],
+                  "internal_members": 10,
+                  "initialization_dates": [
+                    "20260705",
+                    "20260710",
+                    "20260715",
+                    "20260720",
+                    "20260730"
+                  ],
+                  "baseline": {
+                    "source": "NASA GEOS-S2S-3 provider drift climatology",
+                    "years": "2001-2021",
+                    "url": "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/Drift/for_APCN/aug.APCN.monthly.drift.01.nc4",
+                    "method": "lead- and initialization-month-matched NASA hindcast ensemble mean"
+                  }
+                },
+                {
+                  "source_package": "NASA GEOS-S2S-3 NCCS numerical archive",
+                  "release_month": "202608",
+                  "source_archive_url": "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/NRT/APCN/202608/202608_at.tar.xz",
+                  "source_files": [
+                    "202608.at.20260705ens2.9mo.nc4",
+                    "202608.at.20260710ens2.9mo.nc4",
+                    "202608.at.20260710ens4.9mo.nc4",
+                    "202608.at.20260715ens1.9mo.nc4",
+                    "202608.at.20260720ens3.9mo.nc4",
+                    "202608.at.20260720ens5.9mo.nc4",
+                    "202608.at.20260730ens13.9mo.nc4",
+                    "202608.at.20260730ens14.9mo.nc4",
+                    "202608.at.20260730ens15.9mo.nc4",
+                    "202608.at.20260730ens1.9mo.nc4"
+                  ],
+                  "internal_members": 10,
+                  "initialization_dates": [
+                    "20260705",
+                    "20260710",
+                    "20260715",
+                    "20260720",
+                    "20260730"
+                  ],
+                  "baseline": {
+                    "source": "NASA GEOS-S2S-3 provider drift climatology",
+                    "years": "2001-2021",
+                    "url": "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/Drift/for_APCN/aug.APCN.monthly.drift.02.nc4",
+                    "method": "lead- and initialization-month-matched NASA hindcast ensemble mean"
+                  }
+                }
+              ]
+            },
+            {
+              "key": "nmme_ncar_ccsm4",
+              "member": {
+                "key": "nmme_ncar_ccsm4",
+                "label": "NMME NCAR_CCSM4",
+                "source_package": "NOAA CPC NMME component archive",
+                "system": "NCAR_CCSM4",
+                "internal_members": null,
+                "notes": "Unique NMME component not otherwise represented in C3S/CanSIPS"
+              },
+              "monthly_sources": [
+                {
+                  "source_package": "NOAA CPC NMME component archive",
+                  "component": "NCAR_CCSM4",
+                  "source_url": "https://ftp.cpc.ncep.noaa.gov/NMME/realtime_anom/ENSMEAN/2026080800/NCAR_CCSM4.tmp2m.202608.ENSMEAN.anom.nc",
+                  "baseline": "CPC NMME native component anomaly",
+                  "source_lead_month": 5
+                },
+                {
+                  "source_package": "NOAA CPC NMME component archive",
+                  "component": "NCAR_CCSM4",
+                  "source_url": "https://ftp.cpc.ncep.noaa.gov/NMME/realtime_anom/ENSMEAN/2026080800/NCAR_CCSM4.tmp2m.202608.ENSMEAN.anom.nc",
+                  "baseline": "CPC NMME native component anomaly",
+                  "source_lead_month": 6
+                },
+                {
+                  "source_package": "NOAA CPC NMME component archive",
+                  "component": "NCAR_CCSM4",
+                  "source_url": "https://ftp.cpc.ncep.noaa.gov/NMME/realtime_anom/ENSMEAN/2026080800/NCAR_CCSM4.tmp2m.202608.ENSMEAN.anom.nc",
+                  "baseline": "CPC NMME native component anomaly",
+                  "source_lead_month": 7
+                }
+              ]
+            },
+            {
+              "key": "nmme_ncar_cesm1",
+              "member": {
+                "key": "nmme_ncar_cesm1",
+                "label": "NMME NCAR_CESM1",
+                "source_package": "NOAA CPC NMME component archive",
+                "system": "NCAR_CESM1",
+                "internal_members": null,
+                "notes": "Unique NMME component not otherwise represented in C3S/CanSIPS"
+              },
+              "monthly_sources": [
+                {
+                  "source_package": "NOAA CPC NMME component archive",
+                  "component": "NCAR_CESM1",
+                  "source_url": "https://ftp.cpc.ncep.noaa.gov/NMME/realtime_anom/ENSMEAN/2026080800/NCAR_CESM1.tmp2m.202608.ENSMEAN.anom.nc",
+                  "baseline": "CPC NMME native component anomaly",
+                  "source_lead_month": 5
+                },
+                {
+                  "source_package": "NOAA CPC NMME component archive",
+                  "component": "NCAR_CESM1",
+                  "source_url": "https://ftp.cpc.ncep.noaa.gov/NMME/realtime_anom/ENSMEAN/2026080800/NCAR_CESM1.tmp2m.202608.ENSMEAN.anom.nc",
+                  "baseline": "CPC NMME native component anomaly",
+                  "source_lead_month": 6
+                },
+                {
+                  "source_package": "NOAA CPC NMME component archive",
+                  "component": "NCAR_CESM1",
+                  "source_url": "https://ftp.cpc.ncep.noaa.gov/NMME/realtime_anom/ENSMEAN/2026080800/NCAR_CESM1.tmp2m.202608.ENSMEAN.anom.nc",
+                  "baseline": "CPC NMME native component anomaly",
+                  "source_lead_month": 7
+                }
+              ]
+            }
+          ],
+          "member_errors": {
+            "lead6_noaa_cfsv2_rolling40": "502 Server Error: Proxy Error for url: https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/08/flxf.08.18.18.l06.fclm.1982.2010.grb2"
+          },
+          "ensemble_scope": "11/12 canonical forecast families",
+          "baseline": {
+            "status": "native_model_baselines",
+            "method": "equal mean of source-native anomaly fields; no common climatology imposed"
+          },
+          "status": "partial",
+          "monthly_leads": [
+            4,
+            5,
+            6
+          ],
+          "composition_rule": "intersection of canonical members available for every month",
+          "height_member_count": 0,
+          "image": "public/seasonal/superensemble/20260801/superensemble_t2m_202612-202702.jpg"
+        }
+      ],
+      "status": "partial",
+      "generated_utc": "2026-08-18T22:13:35Z",
       "output_dir": "public/seasonal/superensemble"
     }
   ]
