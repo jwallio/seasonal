@@ -51,6 +51,8 @@ def main() -> int:
     check("height_grid=height" in adapter, "C3S renderer should pass decoded absolute heights to the map renderer")
     module = load_adapter()
     check(set(module.CENTRES) == {"ecmwf", "ukmo", "meteo_france", "dwd", "cmcc", "ncep", "jma", "eccc", "bom"}, "C3S centre catalog is incomplete")
+    check(module.CENTRES["ukmo"]["system"] == "610", "C3S UKMO must use operational GloSea6-GC5.1 system 610")
+    check(module.CENTRES["ukmo"]["model_version"] == "GloSea6-GC5.1", "C3S UKMO model version metadata is stale")
     check(module.target_month("2026080100", 4) == "202612", "C3S lead conversion should produce December")
     check(module.period_label("202612", "202702") == "DJF 2027", "C3S DJF period label should use the ending year")
     check(len(module.PRODUCT_SPECS["500mb_height_anomaly"]["anomaly_ticks"]) == len(module.PRODUCT_SPECS["500mb_height_anomaly"]["anomaly_palette"]) + 1, "C3S 500-mb color bounds must align with swatches")
