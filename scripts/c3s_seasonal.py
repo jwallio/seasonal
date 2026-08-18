@@ -50,7 +50,12 @@ M_TO_INCH = 1000.0 / 25.4
 
 CENTRES: dict[str, dict[str, Any]] = {
     "ecmwf": {"label": "ECMWF", "system": "51", "members": 51},
-    "ukmo": {"label": "UK Met Office", "system": "604", "members": 62},
+    "ukmo": {
+        "label": "UK Met Office",
+        "system": "610",
+        "members": 62,
+        "model_version": "GloSea6-GC5.1",
+    },
     "meteo_france": {"label": "Météo-France", "system": "9", "members": 51},
     "dwd": {"label": "DWD", "system": "22", "members": 50},
     "cmcc": {"label": "CMCC", "system": "4", "members": 50},

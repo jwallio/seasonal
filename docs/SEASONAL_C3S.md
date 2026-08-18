@@ -9,6 +9,9 @@ Supported centre IDs are `ecmwf`, `ukmo`, `meteo_france`, `dwd`, `cmcc`,
 defaults and can be overridden with `--systems centre=system,...` when the CDS
 catalogue rolls to a new system.
 
+The operational UK Met Office entry uses GloSea6-GC5.1 (`system=610`) for
+nominal start dates from April 2026 onward.
+
 The source fields are native C3S bias-adjusted anomalies. They are not
 subtracted from the CFSv2 or CanSIPS climatologies. The multi-system product
 is explicitly marked in the manifest with its available component list.
