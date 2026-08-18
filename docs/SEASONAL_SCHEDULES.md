@@ -8,7 +8,7 @@ provider is late or a historical cycle needs to be regenerated.
 
 | Workflow | Provider release window | Automatic run (UTC) |
 | --- | --- | --- |
-| CFSv2 | New model cycles every 6 hours | Daily at 22:35, after the 18Z cycle |
+| CFSv2 | New model cycles every 6 hours | Twice daily at 10:35 and 22:35, after the 06Z and 18Z cycles |
 | CanSIPS v3 | ECCC monthly refresh on the 1st | 2nd of each month at 16:30 |
 | NOAA NMME | CPC public products update on the 9th | 9th of each month at 15:30 |
 | ECMWF SEAS5 | ECMWF 7-month forecast on the 5th at 12:00 | 5th of each month at 15:30 |

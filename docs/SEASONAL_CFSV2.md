@@ -71,7 +71,7 @@ initial-condition period, while remaining explicit that this is a model-based
 product and not CPC's official outlook.
 
 The NOMADS real-time archive rotates after seven days. Each rolling run writes
-the decoded product grids to `--rolling-state-dir` so a scheduled daily job can
+the decoded product grids to `--rolling-state-dir` so the scheduled job can
 carry the older members forward. A full 40-member product therefore requires
 the state cache to be retained between runs; `--allow-partial-rolling` is
 available only for clearly marked incomplete smoke products.

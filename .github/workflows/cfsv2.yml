@@ -2,9 +2,9 @@ name: CFSv2 Rolling Seasonal Graphics
 
 on:
   schedule:
-    # CFSv2 runs every six hours; use the 18Z cycle for the daily rolling
-    # blend and allow NOMADS time to publish the monthly means.
-    - cron: "35 22 * * *"
+    # CFSv2 runs every six hours; use the 06Z and 18Z cycles for the twice-daily
+    # rolling blend and allow NOMADS time to publish the monthly means.
+    - cron: "35 10,22 * * *"
   workflow_dispatch:
     inputs:
       product:
