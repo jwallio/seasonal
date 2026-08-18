@@ -41,4 +41,3 @@ Official references:
 - [NASA GEOS-S2S-3 primer](https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/GEOS-S2S-3-primer.pdf)
 - [NASA APCN near-real-time archives](https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/NRT/APCN/)
 - [NASA APCN drift climatologies](https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/Drift/for_APCN/)
-

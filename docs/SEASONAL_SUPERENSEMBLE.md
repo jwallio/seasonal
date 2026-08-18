@@ -70,4 +70,3 @@ python scripts/superensemble_seasonal.py --synthetic-preview --init 202608 --pro
 
 Synthetic previews are visibly labelled and must not be published as forecast
 guidance.
-

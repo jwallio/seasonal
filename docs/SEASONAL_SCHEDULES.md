@@ -32,4 +32,3 @@ load; the dates above are release-aligned targets, not provider SLAs.
 - [NOAA NOMADS](https://nomads.ncep.noaa.gov/)
 - [APCC CLIK API](https://apcc21.org/clik/clikapi?lang=en)
 - [NASA GEOS-S2S-3 numerical forecast archive](https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/NRT/APCN/)
-
