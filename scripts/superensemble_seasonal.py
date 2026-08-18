@@ -23,6 +23,7 @@ from urllib.parse import urljoin
 
 import c3s_seasonal as c3s
 import cansips_seasonal as cansips
+import cfsv2_seasonal as cfsv2
 import nmme_seasonal as nmme
 from cfsv2_seasonal import (
     Grid,
@@ -39,6 +40,8 @@ from cfsv2_seasonal import (
 SOURCE_URLS = [
     c3s.SOURCE_URL,
     cansips.CANSIPS_README_URL,
+    cfsv2.NOMADS_ROOT,
+    cfsv2.NCEI_CALIBRATION_ROOT,
     nmme.SOURCE_URL,
 ]
 
@@ -56,6 +59,15 @@ C3S_CANONICAL_CENTRES = (
 )
 NMME_UNIQUE_COMPONENTS = ("NASA_GEOS5v2", "NCAR_CCSM4", "NCAR_CESM1")
 NMME_PRODUCTS = frozenset({"2m_temperature_anomaly", "precipitation_anomaly"})
+CFSV2_STANDALONE_PRODUCTS = frozenset(
+    {
+        "500mb_height_anomaly",
+        "2m_temperature_anomaly",
+        "precipitation_anomaly",
+        "mslp_anomaly",
+    }
+)
+CFSV2_MEMBER_KEY = "noaa_cfsv2_rolling40"
 PRODUCTS = tuple(c3s.PRODUCT_SPECS)
 
 PRODUCT_LABELS = {
@@ -76,16 +88,11 @@ PRODUCT_TITLES = {
     "mslp_anomaly": "Super Ensemble Mean Sea-Level Pressure Anomaly (hPa)",
 }
 
-CANONICAL_EXCLUSIONS: list[dict[str, Any]] = [
+COMMON_EXCLUSIONS: list[dict[str, Any]] = [
     {
         "package": "ECMWF SEAS5 standalone",
         "reason": "duplicate",
         "represented_by": "c3s_ecmwf_system51",
-    },
-    {
-        "package": "CFSv2 standalone",
-        "reason": "duplicate",
-        "represented_by": "c3s_ncep_system2",
     },
     {
         "package": "JMA standalone",
@@ -101,11 +108,6 @@ CANONICAL_EXCLUSIONS: list[dict[str, Any]] = [
         "package": "C3S multi-system mean",
         "reason": "aggregate of individually included C3S systems",
         "represented_by": "C3S component fields",
-    },
-    {
-        "package": "NMME CFSv2",
-        "reason": "duplicate",
-        "represented_by": "c3s_ncep_system2",
     },
     {
         "package": "NMME GEM5.2_NEMO and CanESM5",
@@ -128,6 +130,41 @@ CANONICAL_EXCLUSIONS: list[dict[str, Any]] = [
         "represented_by": "NMME NASA_GEOS5v2 only for supported surface products",
     },
 ]
+
+
+def canonical_exclusions(product: str) -> list[dict[str, Any]]:
+    exclusions = [dict(item) for item in COMMON_EXCLUSIONS]
+    if product in CFSV2_STANDALONE_PRODUCTS:
+        exclusions.extend(
+            [
+                {
+                    "package": "C3S NCEP System 2",
+                    "reason": "duplicate CFSv2 family",
+                    "represented_by": CFSV2_MEMBER_KEY,
+                },
+                {
+                    "package": "NMME CFSv2",
+                    "reason": "duplicate CFSv2 family",
+                    "represented_by": CFSV2_MEMBER_KEY,
+                },
+            ]
+        )
+    else:
+        exclusions.extend(
+            [
+                {
+                    "package": "CFSv2 standalone",
+                    "reason": "standalone rolling adapter does not currently expose this parameter",
+                    "represented_by": "c3s_ncep_system2",
+                },
+                {
+                    "package": "NMME CFSv2",
+                    "reason": "duplicate CFSv2 family",
+                    "represented_by": "c3s_ncep_system2",
+                },
+            ]
+        )
+    return exclusions
 
 
 class SuperEnsembleError(RuntimeError):
@@ -173,6 +210,12 @@ def selected_products(value: str) -> list[str]:
     return list(dict.fromkeys(names))
 
 
+def c3s_centres_for(product: str) -> tuple[str, ...]:
+    if product in CFSV2_STANDALONE_PRODUCTS:
+        return tuple(centre for centre in C3S_CANONICAL_CENTRES if centre != "ncep")
+    return C3S_CANONICAL_CENTRES
+
+
 def canonical_members(product: str) -> list[MemberDefinition]:
     members = [
         MemberDefinition(
@@ -183,8 +226,19 @@ def canonical_members(product: str) -> list[MemberDefinition]:
             internal_members=int(c3s.CENTRES[centre]["members"]),
             notes="Official C3S postprocessed ensemble-mean anomaly",
         )
-        for centre in C3S_CANONICAL_CENTRES
+        for centre in c3s_centres_for(product)
     ]
+    if product in CFSV2_STANDALONE_PRODUCTS:
+        members.append(
+            MemberDefinition(
+                key=CFSV2_MEMBER_KEY,
+                label="NOAA CFSv2 40-cycle rolling blend",
+                source_package="NOAA CFSv2 NOMADS",
+                system="10-day lagged initial-condition blend",
+                internal_members=40,
+                notes="One CFSv2-family vote; C3S NCEP and NMME CFSv2 copies are excluded",
+            )
+        )
     members.append(
         MemberDefinition(
             key="eccc_cansips_v3",
@@ -221,7 +275,7 @@ def membership_ledger(product: str) -> dict[str, Any]:
         "native_baselines": True,
         "included": [member.manifest() for member in included],
         "expected_count": len(included),
-        "excluded": CANONICAL_EXCLUSIONS,
+        "excluded": canonical_exclusions(product),
     }
 
 
@@ -283,7 +337,7 @@ def load_c3s_members(
     decode_only: bool,
 ) -> None:
     spec = c3s.PRODUCT_SPECS[product]
-    for centre in C3S_CANONICAL_CENTRES:
+    for centre in c3s_centres_for(product):
         system = systems.get(centre, str(c3s.CENTRES[centre]["system"]))
         key = f"c3s_{centre}_system{c3s.CENTRES[centre]['system']}"
         archive = c3s.CDSArchive(cache_dir, centre, system)
@@ -311,6 +365,114 @@ def load_c3s_members(
                 except Exception as exc:
                     provenance[lead][key]["height_error"] = str(exc)
                     print(f"super ensemble C3S {centre} height lead {lead} unavailable: {exc}", file=sys.stderr)
+
+
+def resolve_cfsv2_anchor(value: str, shared_init: str) -> str:
+    anchor = cfsv2.discover_latest_init() if value == "latest" else cfsv2.parse_init(value)
+    if anchor[:6] != shared_init[:6]:
+        raise SuperEnsembleError(
+            f"rolling CFSv2 anchor {anchor} does not match the shared initialization month {shared_init[:6]}"
+        )
+    return anchor
+
+
+def load_cfsv2_member(
+    *,
+    args: argparse.Namespace,
+    product: str,
+    init: str,
+    leads: list[int],
+    cache_dir: Path,
+    state_dir: Path,
+    root: Path,
+    wgrib2: str,
+    member_grids: dict[int, dict[str, Grid]],
+    height_grids: dict[int, dict[str, Grid]],
+    provenance: dict[int, dict[str, dict[str, Any]]],
+    errors: dict[int, dict[str, str]],
+) -> None:
+    if product not in CFSV2_STANDALONE_PRODUCTS:
+        return
+    key = CFSV2_MEMBER_KEY
+    try:
+        anchor = resolve_cfsv2_anchor(args.cfsv2_anchor_init, init)
+    except Exception as exc:
+        for lead in leads:
+            errors[lead][key] = str(exc)
+        print(f"super ensemble rolling CFSv2 unavailable: {exc}", file=sys.stderr)
+        return
+
+    product_spec = cfsv2.get_product_spec(product)
+    rolling_inits = cfsv2.rolling_cycle_inits(anchor, args.cfsv2_rolling_days * 4)
+    decoder_args = argparse.Namespace(
+        rolling_member=args.cfsv2_rolling_member,
+        request_delay=args.request_delay,
+        force_decode=args.force_decode,
+        allow_partial_rolling=True,
+    )
+    last_request = 0.0
+    for lead in leads:
+        target = c3s.target_month(init, lead)
+        try:
+            anchor_lead = cfsv2.lead_for_target(anchor, target)
+            forecast, source_files, available, expected, label, last_request = cfsv2.decode_target_ensemble(
+                decoder_args,
+                anchor,
+                target,
+                [args.cfsv2_rolling_member],
+                rolling_inits,
+                cache_dir,
+                state_dir,
+                wgrib2,
+                root,
+                last_request,
+                product_spec,
+            )
+            baseline_url = cfsv2.ncei_calibration_url(anchor, anchor_lead, product_spec["source_kind"])
+            baseline_path = cfsv2.cached_calibration_path(
+                cache_dir,
+                anchor,
+                anchor_lead,
+                product_spec["source_kind"],
+            )
+            baseline_downloaded, last_request = cfsv2.download_file(
+                baseline_url,
+                baseline_path,
+                max(0.0, args.request_delay),
+                last_request,
+            )
+            baseline = cfsv2.load_baseline(baseline_path, wgrib2, product_spec, target)
+            member_grids[lead][key] = subtract_grids(forecast, baseline)
+            if product_spec["height_contours"] and not args.decode_only:
+                height_grids[lead][key] = forecast
+            provenance[lead][key] = {
+                "source_package": "NOAA CFSv2 NOMADS",
+                "anchor_initialization": anchor,
+                "anchor_initialization_utc": cfsv2.iso_utc(
+                    dt.datetime.strptime(anchor, "%Y%m%d%H").replace(tzinfo=dt.timezone.utc)
+                ),
+                "rolling_window": {
+                    "days": args.cfsv2_rolling_days,
+                    "cycle_interval_hours": 6,
+                    "expected_cycles": expected,
+                    "available_cycles": available,
+                    "member_stream": args.cfsv2_rolling_member,
+                    "complete": available == expected,
+                    "label": label,
+                },
+                "source_files": source_files,
+                "baseline": {
+                    "source": product_spec["baseline_label"],
+                    "years": cfsv2.NCEI_CALIBRATION_YEARS,
+                    "url": baseline_url,
+                    "file": relative_path(baseline_path, root),
+                    "downloaded": baseline_downloaded,
+                    "rolling_policy": "anchor_initialization",
+                },
+            }
+        except Exception as exc:
+            errors[lead][key] = str(exc)
+            print(f"super ensemble rolling CFSv2 lead {lead} unavailable: {exc}", file=sys.stderr)
 
 
 def load_cansips_member(
@@ -744,7 +906,9 @@ def write_manifest(
             "weighting": "equal weight",
             "seasonal_membership": "intersection across all constituent months",
             "native_baselines": True,
-            "excluded_packages": CANONICAL_EXCLUSIONS,
+            "excluded_packages_by_product": {
+                product: canonical_exclusions(product) for product in PRODUCTS
+            },
         },
         "retention": {"max_cycles": retain_cycles, "history_cycles": max(0, retain_cycles - 1)},
         "runs": [run for run in ordered if str(run.get("init_utc", "")) in keep],
@@ -767,6 +931,11 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--minimum-members", type=int, default=6)
     parser.add_argument("--c3s-cache-dir", default=".cache/c3s")
     parser.add_argument("--cansips-cache-dir", default=".cache/cansips")
+    parser.add_argument("--cfsv2-cache-dir", default=".cache/cfsv2")
+    parser.add_argument("--cfsv2-rolling-state-dir", default=".cache/cfsv2/rolling")
+    parser.add_argument("--cfsv2-anchor-init", default="latest", help="rolling CFSv2 anchor cycle or latest")
+    parser.add_argument("--cfsv2-rolling-days", type=int, default=10)
+    parser.add_argument("--cfsv2-rolling-member", type=int, default=1)
     parser.add_argument("--nmme-cache-dir", default=".cache/nmme")
     parser.add_argument("--border-cache-dir", default=".cache/superensemble")
     parser.add_argument("--output-dir", default="public/seasonal/superensemble")
@@ -795,6 +964,10 @@ def run(args: argparse.Namespace) -> int:
         leads = sorted(set(leads).union(seasonal))
     if args.minimum_members < 2:
         raise SuperEnsembleError("--minimum-members must be at least 2")
+    if not 1 <= args.cfsv2_rolling_days <= 30:
+        raise SuperEnsembleError("--cfsv2-rolling-days must be between 1 and 30")
+    if not 1 <= args.cfsv2_rolling_member <= 4:
+        raise SuperEnsembleError("--cfsv2-rolling-member must be between 1 and 4")
     if args.climo_start < cansips.CANSIPS_HINDCAST_START or args.climo_end > cansips.CANSIPS_HINDCAST_END or args.climo_start > args.climo_end:
         raise SuperEnsembleError(
             f"CanSIPS climatology years must stay inside {cansips.CANSIPS_HINDCAST_START}-{cansips.CANSIPS_HINDCAST_END}"
@@ -802,6 +975,8 @@ def run(args: argparse.Namespace) -> int:
 
     c3s_cache = resolve_path(args.c3s_cache_dir, root)
     cansips_cache = resolve_path(args.cansips_cache_dir, root)
+    cfsv2_cache = resolve_path(args.cfsv2_cache_dir, root)
+    cfsv2_state = resolve_path(args.cfsv2_rolling_state_dir, root)
     nmme_cache = resolve_path(args.nmme_cache_dir, root)
     border_cache = resolve_path(args.border_cache_dir, root)
     output_dir = resolve_path(args.output_dir, root)
@@ -834,6 +1009,20 @@ def run(args: argparse.Namespace) -> int:
                 provenance=provenance,
                 errors=errors,
                 decode_only=args.decode_only,
+            )
+            load_cfsv2_member(
+                args=args,
+                product=product,
+                init=init,
+                leads=leads,
+                cache_dir=cfsv2_cache,
+                state_dir=cfsv2_state,
+                root=root,
+                wgrib2=wgrib2,
+                member_grids=member_grids,
+                height_grids=height_grids,
+                provenance=provenance,
+                errors=errors,
             )
             load_cansips_member(
                 args=args,
