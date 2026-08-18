@@ -61,6 +61,19 @@ def main() -> int:
         "NCEI_FLUX_CALIBRATION_ROOT",
         "flux-1982-2010",
         "z500_anomaly",
+        "PRODUCT_2M_TEMPERATURE_ANOMALY",
+        "2m_temperature_anomaly",
+        "TMP:2 m above ground",
+        "tmp2m",
+        "TEMPERATURE_ANOMALY_PALETTE",
+        "Kelvin offset cancels in forecast-minus-calibration anomalies",
+        "PRODUCT_MSLP_ANOMALY",
+        "mslp_anomaly",
+        "PRES:mean sea level",
+        "mslp",
+        "pascals_to_hectopascals",
+        "MSLP_ANOMALY_PALETTE",
+        "Mean sea-level pressure anomaly (hPa)",
         "PRODUCT_PRECIPITATION_ANOMALY",
         "precipitation_anomaly",
         "FLXF",
@@ -128,6 +141,8 @@ def main() -> int:
     check("ANOMALY_MIN_M = -200.0" in adapter, "anomaly lower scale bound should be -200 m")
     check("ANOMALY_MAX_M = 200.0" in adapter, "anomaly upper scale bound should be +200 m")
     check("PRECIP_ANOMALY_TICKS = list(range(-8, 9))" in adapter, "precipitation scale should label every inch from -8 to +8")
+    check("TEMPERATURE_ANOMALY_TICKS = list(range(-8, 9))" in adapter, "2-m temperature scale should label every degree from -8 to +8")
+    check("MSLP_ANOMALY_TICKS = list(range(-20, 21, 2))" in adapter, "MSLP scale should label every 2 hPa from -20 to +20")
     check("ANOMALY_TICKS = list(range(-200, 201, 20))" in adapter, "anomaly scale should label every 20 m from -200 to +200")
     check("bounds = np.asarray(colorbar_ticks, dtype=float)" in adapter, "anomaly bounds should be anchored to labelled ticks")
     check('colorbar_options["boundaries"] = bounds' in adapter, "colorbar should use the labelled anomaly bounds")
@@ -159,10 +174,22 @@ def main() -> int:
     check("preferredTargetIndex" in page, "CFSv2 viewer should default to the seasonal aggregate when one is present")
     check('id="product-select"' in page, "Pages viewer missing parameter selector")
     check('id="run-select"' in page, "Pages viewer missing run-history selector")
+    check("'2m_temperature_anomaly': '2-m Temperature Anomaly'" in page, "Pages viewer missing 2-m temperature label")
+    check("'mslp_anomaly': 'Mean Sea-Level Pressure Anomaly'" in page, "Pages viewer missing MSLP label")
     check("Retaining ${history} prior run" in page, "Pages viewer should report retained run history")
     adapter_module = load_adapter()
     check(len(adapter_module.ANOMALY_PALETTE) == len(adapter_module.ANOMALY_TICKS) - 1, "height anomaly colors should align with labelled transitions")
+    check(len(adapter_module.TEMPERATURE_ANOMALY_PALETTE) == len(adapter_module.TEMPERATURE_ANOMALY_TICKS) - 1, "2-m temperature colors should align with labelled transitions")
+    check(len(adapter_module.MSLP_ANOMALY_PALETTE) == len(adapter_module.MSLP_ANOMALY_TICKS) - 1, "MSLP colors should align with labelled transitions")
     check(len(adapter_module.SWE_ANOMALY_PALETTE) == len(adapter_module.SWE_ANOMALY_TICKS) - 1, "SWE colors should align with labelled transitions")
+    t2m_spec = adapter_module.PRODUCT_SPECS[adapter_module.PRODUCT_2M_TEMPERATURE_ANOMALY]
+    mslp_spec = adapter_module.PRODUCT_SPECS[adapter_module.PRODUCT_MSLP_ANOMALY]
+    check(t2m_spec["source_kind"] == "flxf" and t2m_spec["grid_shape"] == (384, 190), "2-m temperature should use the FLXF flux grid")
+    check(mslp_spec["source_kind"] == "pgbf" and mslp_spec["grid_shape"] == (360, 181), "MSLP should use the PGBF pressure grid")
+    converted_mslp = adapter_module.prepare_product_grid(
+        adapter_module.Grid([0.0], [0.0], [[101325.0]]), mslp_spec, "202608"
+    )
+    check(converted_mslp.values == [[1013.25]], "PRES should convert from Pa to hPa")
     converted = adapter_module.snow_water_equivalent_inches(
         adapter_module.Grid([0.0], [0.0], [[25.4]])
     )
@@ -207,6 +234,8 @@ def main() -> int:
         "product:",
         "500mb_height_anomaly",
         "500mb_height_absolute",
+        "2m_temperature_anomaly",
+        "mslp_anomaly",
         "precipitation_anomaly",
         "snow_water_equivalent_anomaly",
         "CFSV2_PRODUCT",
