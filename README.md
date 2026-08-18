@@ -39,7 +39,7 @@ The ECMWF SEAS5 seasonal adapter is documented in [`docs/SEASONAL_SEAS5.md`](/d:
 
 The CanSIPS v3 seasonal adapter is documented in [`docs/SEASONAL_CANSIPS.md`](/d:/weather-projects/wn2/docs/SEASONAL_CANSIPS.md). It reads the official ECCC MSC Datamart 40-member GRIB2 files, computes matching 1991-2020 hindcast anomalies for 500-mb height, 850-mb and 2-metre temperature, precipitation, MSLP, sea-surface temperature, and sea-surface height, and publishes DJF-default North American maps under `public/seasonal/cansips/`. The scheduled [`cansips.yml`](/d:/weather-projects/wn2/.github/workflows/cansips.yml) workflow requires no model secret, caches decoded ensemble means, and retains the current run plus three prior runs independently for each parameter.
 The APCC MME seasonal adapter is documented in [`docs/SEASONAL_APCC.md`](/d:/weather-projects/wn2/docs/SEASONAL_APCC.md). It uses the official APCC CLIK API for native APCC multi-model seasonal anomaly fields, including 500-mb height, temperature, precipitation, SST, and MSLP. The scheduled [`apcc.yml`](/d:/weather-projects/wn2/.github/workflows/apcc.yml) workflow requires the `APCC_API_KEY` repository secret and retains four release cycles.
-The NASA GEOS-S2S-3 adapter is documented in [`docs/SEASONAL_GEOS_S2S3.md`](/d:/weather-projects/wn2/docs/SEASONAL_GEOS_S2S3.md). It retains NASA's official North America 2-m temperature and precipitation seasonal panels from the public lookup service. The scheduled [`geos-s2s3.yml`](/d:/weather-projects/wn2/.github/workflows/geos-s2s3.yml) workflow requires no secret; NASA's public interface currently does not expose a 500-mb field.
+The NASA GEOS-S2S-3 adapter is documented in [`docs/SEASONAL_GEOS_S2S3.md`](/d:/weather-projects/wn2/docs/SEASONAL_GEOS_S2S3.md). It reads NASA's public NCCS numerical lag/burst archives and matching provider drift climatologies for 850-mb and 2-m temperature, precipitation, MSLP, and SST anomalies. The scheduled [`geos-s2s3.yml`](/d:/weather-projects/wn2/.github/workflows/geos-s2s3.yml) workflow requires no secret. Its strict level guard rejects the current long-range archive named `z500` because the files declare 200 hPa, not 500 hPa.
 
 The unified [Seasonal Model Dashboard](/d:/weather-projects/wn2/public/seasonal/index.html) is published at
 [`/seasonal/`](https://jwallio.github.io/wn2/seasonal/). It provides one model,
@@ -73,7 +73,7 @@ in [`docs/SEASONAL_SCHEDULES.md`](/d:/weather-projects/wn2/docs/SEASONAL_SCHEDUL
 - [`.github/workflows/jma.yml`](/d:/weather-projects/wn2-seasonal-dashboard/.github/workflows/jma.yml): monthly JMA/MRI-CPS4 component workflow
 - [`scripts/apcc_seasonal.py`](/d:/weather-projects/wn2/scripts/apcc_seasonal.py): APCC CLIK MME seasonal adapter
 - [`.github/workflows/apcc.yml`](/d:/weather-projects/wn2/.github/workflows/apcc.yml): monthly APCC MME workflow
-- [`scripts/geos_s2s3_seasonal.py`](/d:/weather-projects/wn2/scripts/geos_s2s3_seasonal.py): NASA GEOS-S2S-3 official chart adapter
+- [`scripts/geos_s2s3_seasonal.py`](/d:/weather-projects/wn2/scripts/geos_s2s3_seasonal.py): NASA GEOS-S2S-3 numerical ensemble/drift adapter
 - [`.github/workflows/geos-s2s3.yml`](/d:/weather-projects/wn2/.github/workflows/geos-s2s3.yml): monthly NASA GEOS-S2S-3 workflow
 - [`scripts/superensemble_seasonal.py`](/d:/weather-projects/wn2/scripts/superensemble_seasonal.py): equal-weight deduplicated seasonal forecast-family blend
 - [`.github/workflows/superensemble.yml`](/d:/weather-projects/wn2/.github/workflows/superensemble.yml): monthly super-ensemble workflow

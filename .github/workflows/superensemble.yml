@@ -125,6 +125,17 @@ jobs:
             nmme-${{ runner.os }}-
             superensemble-nmme-${{ runner.os }}-
 
+      - name: Restore NASA GEOS-S2S-3 numerical cache
+        uses: actions/cache@v4
+        with:
+          path: .cache/geos-s2s3
+          key: superensemble-geos-${{ runner.os }}-${{ env.SUPER_PRODUCT }}-${{ env.SUPER_INIT }}-${{ github.run_id }}-v2
+          restore-keys: |
+            superensemble-geos-${{ runner.os }}-${{ env.SUPER_PRODUCT }}-${{ env.SUPER_INIT }}-
+            geos-s2s3-${{ runner.os }}-${{ env.SUPER_PRODUCT }}-${{ env.SUPER_INIT }}-
+            geos-s2s3-${{ runner.os }}-
+            superensemble-geos-${{ runner.os }}-
+
       - name: Restore published super-ensemble history
         shell: bash
         run: |
@@ -172,6 +183,7 @@ jobs:
             --cfsv2-rolling-days 10 \
             --cfsv2-rolling-member 1 \
             --nmme-cache-dir .cache/nmme \
+            --geos-cache-dir .cache/geos-s2s3 \
             --border-cache-dir .cache/superensemble \
             --output-dir public/seasonal/superensemble \
             --manifest public/seasonal/superensemble_manifest.json \

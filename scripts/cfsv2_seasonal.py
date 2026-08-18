@@ -1172,6 +1172,7 @@ def render_map(
     height_grid: Grid | None = None,
     region: tuple[float, float, float, float] = DEFAULT_REGION,
     product_spec: dict | None = None,
+    initialization_label: str = "",
 ) -> None:
     try:
         import matplotlib
@@ -1556,10 +1557,11 @@ def render_map(
     available_title_width = max(1.0, valid_box.x0 - title_box.x0 - 16.0)
     if title_box.width > available_title_width:
         title_text.set_fontsize(max(12.5, 15.5 * available_title_width / title_box.width))
+    init_text = initialization_label or f"Init {init_date:%d %b %Y %HZ}"
     figure.text(
         0.035,
         0.925,
-        f"Init {init_date:%d %b %Y %HZ}  •  Lead {lead}  •  {mean_label}",
+        f"{init_text}  •  Lead {lead}  •  {mean_label}",
         ha="left",
         va="center",
         fontsize=10.5,

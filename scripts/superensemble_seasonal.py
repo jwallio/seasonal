@@ -24,6 +24,7 @@ from urllib.parse import urljoin
 import c3s_seasonal as c3s
 import cansips_seasonal as cansips
 import cfsv2_seasonal as cfsv2
+import geos_s2s3_seasonal as geos
 import nmme_seasonal as nmme
 from cfsv2_seasonal import (
     Grid,
@@ -42,6 +43,8 @@ SOURCE_URLS = [
     cansips.CANSIPS_README_URL,
     cfsv2.NOMADS_ROOT,
     cfsv2.NCEI_CALIBRATION_ROOT,
+    geos.NASA_NRT_ROOT,
+    geos.NASA_DRIFT_ROOT,
     nmme.SOURCE_URL,
 ]
 
@@ -57,7 +60,7 @@ C3S_CANONICAL_CENTRES = (
     "jma",
     "bom",
 )
-NMME_UNIQUE_COMPONENTS = ("NASA_GEOS5v2", "NCAR_CCSM4", "NCAR_CESM1")
+NMME_UNIQUE_COMPONENTS = ("NCAR_CCSM4", "NCAR_CESM1")
 NMME_PRODUCTS = frozenset({"2m_temperature_anomaly", "precipitation_anomaly"})
 CFSV2_STANDALONE_PRODUCTS = frozenset(
     {
@@ -68,6 +71,7 @@ CFSV2_STANDALONE_PRODUCTS = frozenset(
     }
 )
 CFSV2_MEMBER_KEY = "noaa_cfsv2_rolling40"
+GEOS_MEMBER_KEY = "nasa_geos_s2s3"
 PRODUCTS = tuple(c3s.PRODUCT_SPECS)
 
 PRODUCT_LABELS = {
@@ -117,23 +121,34 @@ COMMON_EXCLUSIONS: list[dict[str, Any]] = [
     {
         "package": "NMME ensemble/consensus products",
         "reason": "aggregate containing already represented systems",
-        "represented_by": "three unique NMME component fields where supported",
+        "represented_by": "two unique NCAR NMME component fields where supported",
     },
     {
         "package": "APCC MME",
         "reason": "opaque overlapping aggregate; current package does not expose separable component grids",
         "represented_by": None,
     },
-    {
-        "package": "NASA GEOS-S2S-3 chart package",
-        "reason": "image-only package; no numeric grid is available to this renderer",
-        "represented_by": "NMME NASA_GEOS5v2 only for supported surface products",
-    },
 ]
 
 
 def canonical_exclusions(product: str) -> list[dict[str, Any]]:
     exclusions = [dict(item) for item in COMMON_EXCLUSIONS]
+    if product in NMME_PRODUCTS:
+        exclusions.append(
+            {
+                "package": "NMME NASA_GEOS5v2",
+                "reason": "duplicate NASA GEOS forecast family",
+                "represented_by": GEOS_MEMBER_KEY,
+            }
+        )
+    if product == "500mb_height_anomaly":
+        exclusions.append(
+            {
+                "package": "NASA GEOS-S2S-3 APCN z500 archive",
+                "reason": "current long-range files declare 200 hPa and fail the strict 500-hPa safety check",
+                "represented_by": None,
+            }
+        )
     if product in CFSV2_STANDALONE_PRODUCTS:
         exclusions.extend(
             [
@@ -249,6 +264,16 @@ def canonical_members(product: str) -> list[MemberDefinition]:
             notes="One ECCC family vote; C3S ECCC and NMME ECCC copies are excluded",
         )
     )
+    if product in geos.SUPERENSEMBLE_PRODUCTS:
+        members.append(
+            MemberDefinition(
+                key=GEOS_MEMBER_KEY,
+                label="NASA GEOS-S2S-3",
+                source_package="NASA GEOS-S2S-3 NCCS numerical archive",
+                system="GEOS-S2S-3 APCN lag/burst ensemble",
+                notes="One NASA-family vote; the NMME NASA_GEOS5v2 copy is excluded",
+            )
+        )
     if product in NMME_PRODUCTS:
         members.extend(
             MemberDefinition(
@@ -585,6 +610,57 @@ def load_nmme_members(
             except Exception as exc:
                 errors[lead][key] = str(exc)
                 print(f"super ensemble NMME {component} lead {lead} unavailable: {exc}", file=sys.stderr)
+
+
+def load_geos_member(
+    *,
+    args: argparse.Namespace,
+    product: str,
+    init: str,
+    leads: list[int],
+    cache_dir: Path,
+    border_paths: list[Path],
+    member_grids: dict[int, dict[str, Grid]],
+    provenance: dict[int, dict[str, dict[str, Any]]],
+    errors: dict[int, dict[str, str]],
+) -> None:
+    if product not in geos.SUPERENSEMBLE_PRODUCTS:
+        return
+    try:
+        bundle = geos.load_anomaly_bundle(
+            product=product,
+            init=init[:6],
+            leads=leads,
+            cache_dir=cache_dir,
+            border_paths=border_paths,
+            request_delay=args.request_delay,
+        )
+    except Exception as exc:
+        for lead in leads:
+            errors[lead][GEOS_MEMBER_KEY] = str(exc)
+        print(f"super ensemble NASA GEOS-S2S-3 unavailable: {exc}", file=sys.stderr)
+        return
+
+    for lead in leads:
+        month = bundle[lead]
+        member_grids[lead][GEOS_MEMBER_KEY] = month.anomaly
+        provenance[lead][GEOS_MEMBER_KEY] = {
+            "source_package": "NASA GEOS-S2S-3 NCCS numerical archive",
+            "release_month": init[:6],
+            "source_archive_url": month.archive_url,
+            "source_files": list(month.source_files),
+            "internal_members": len(month.members),
+            "initialization_dates": list(month.init_dates),
+            "baseline": {
+                "source": geos.DRIFT_LABEL,
+                "years": (
+                    f"{min(month.drift_years)}-{max(month.drift_years)}"
+                    if month.drift_years else "provider supplied"
+                ),
+                "url": month.drift_url,
+                "method": "lead- and initialization-month-matched NASA hindcast ensemble mean",
+            },
+        }
 
 
 def synthetic_members(
@@ -937,6 +1013,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--cfsv2-rolling-days", type=int, default=10)
     parser.add_argument("--cfsv2-rolling-member", type=int, default=1)
     parser.add_argument("--nmme-cache-dir", default=".cache/nmme")
+    parser.add_argument("--geos-cache-dir", default=".cache/geos-s2s3")
     parser.add_argument("--border-cache-dir", default=".cache/superensemble")
     parser.add_argument("--output-dir", default="public/seasonal/superensemble")
     parser.add_argument("--manifest", default="public/seasonal/superensemble_manifest.json")
@@ -978,11 +1055,13 @@ def run(args: argparse.Namespace) -> int:
     cfsv2_cache = resolve_path(args.cfsv2_cache_dir, root)
     cfsv2_state = resolve_path(args.cfsv2_rolling_state_dir, root)
     nmme_cache = resolve_path(args.nmme_cache_dir, root)
+    geos_cache = resolve_path(args.geos_cache_dir, root)
     border_cache = resolve_path(args.border_cache_dir, root)
     output_dir = resolve_path(args.output_dir, root)
     manifest = resolve_path(args.manifest, root)
     previous = resolve_path(args.previous_manifest, root) if args.previous_manifest else None
-    borders = [] if args.decode_only else ensure_border_files(args, border_cache, root)
+    needs_borders = not args.decode_only or "sea_surface_temperature_anomaly" in products
+    borders = ensure_border_files(args, border_cache, root) if needs_borders else []
     systems = c3s.parse_system_overrides(args.systems)
     wgrib2 = "" if args.synthetic_preview else cansips.find_wgrib2(args.wgrib2)
 
@@ -1037,6 +1116,17 @@ def run(args: argparse.Namespace) -> int:
                 provenance=provenance,
                 errors=errors,
             )
+            load_geos_member(
+                args=args,
+                product=product,
+                init=init,
+                leads=leads,
+                cache_dir=geos_cache,
+                border_paths=borders,
+                member_grids=member_grids,
+                provenance=provenance,
+                errors=errors,
+            )
             load_nmme_members(
                 product=product,
                 init=init,
@@ -1072,7 +1162,7 @@ def run(args: argparse.Namespace) -> int:
 def main() -> int:
     try:
         return run(build_parser().parse_args())
-    except (SuperEnsembleError, c3s.C3SError, cansips.CanSIPSError, nmme.NMMEError) as exc:
+    except (SuperEnsembleError, c3s.C3SError, cansips.CanSIPSError, geos.GEOSS2S3Error, nmme.NMMEError) as exc:
         print(f"SUPER ENSEMBLE ERROR: {exc}", file=sys.stderr)
         return 2
 
