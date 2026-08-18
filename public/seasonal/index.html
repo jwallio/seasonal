@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Seasonal Model Dashboard</title>
-  <meta name="description" content="Operational seasonal model dashboard for CFSv2, ECMWF SEAS5, CanSIPS v3, C3S, and NOAA NMME guidance.">
+  <meta name="description" content="Operational seasonal model dashboard with a deduplicated super ensemble and individual-model guidance.">
   <style>
     :root { color-scheme: dark; --ink:#f3f7f9; --muted:#a9bac3; --panel:#10232d; --line:#2b4855; --teal:#59d4c0; --coral:#ff927c; --blue:#75b8e8; }
     * { box-sizing:border-box; }
@@ -131,6 +131,7 @@
     const assetPath = value => `${root}/${String(value || '').replace(/^\/+/, '').replace(/^public\//, '')}`;
     const el = id => document.getElementById(id);
     const MODEL_CONFIG = {
+      superensemble: { label: 'Super Ensemble', kind: 'seasonal', manifest: assetPath('seasonal/superensemble_manifest.json'), direct: assetPath('seasonal/superensemble/'), source: 'Deduplicated C3S, CanSIPS, and unique NMME forecast families' },
       cfsv2: { label: 'CFSv2', kind: 'seasonal', manifest: assetPath('seasonal/cfsv2_manifest.json'), direct: assetPath('seasonal/cfsv2/'), source: 'NOAA CFSv2 NOMADS' },
       seas5: { label: 'ECMWF SEAS5', kind: 'seasonal', manifest: assetPath('seasonal/seas5_manifest.json'), direct: assetPath('seasonal/seas5/'), source: 'ECMWF SEAS5 / Copernicus CDS' },
       cansips: { label: 'CanSIPS v3', kind: 'seasonal', manifest: assetPath('seasonal/cansips_manifest.json'), direct: assetPath('seasonal/cansips/'), source: 'ECCC MSC Datamart' },
@@ -201,7 +202,7 @@
       return { product, run: String(run?.id || ''), target: String(targets[0]?.key || '') };
     }
     const COMPARE_PRODUCT = '500mb_height_anomaly';
-    const COMPARE_MODELS = ['cfsv2', 'seas5', 'cansips', 'c3s', 'jma', 'apcc'];
+    const COMPARE_MODELS = ['superensemble', 'cfsv2', 'seas5', 'cansips', 'c3s', 'jma', 'apcc'];
     const COMPARE_BASELINES = [
       { value: 'native', label: 'Native model reference' },
       { value: 'common_1991_2020', label: 'Common 1991–2020 reference' },
@@ -344,7 +345,7 @@
       const source = target?.value || {};
       const members = source.ensemble_members || run.ensemble_members;
       if (run.ensemble_scope === 'rolling_initial_conditions') return `${source.ensemble_members || members || 0}/${source.ensemble_expected_members || 40} cycles`;
-      return members ? `${members} members` : pretty(run.ensemble_scope || 'ensemble');
+      return members ? `${members} members` : pretty(source.ensemble_scope || run.ensemble_scope || 'ensemble');
     }
     function leadText(model, target) {
       if (!target) return '—';
@@ -428,7 +429,7 @@
         selection.compareBaseline = '';
         el('compare-summary').textContent = '500-mb height anomaly · no matching target has been published across the model manifests';
         grid.replaceChildren(...COMPARE_MODELS.map(modelKey => renderCompareCard(modelKey, '')));
-        el('footer-copy').textContent = '500-mb height anomaly comparison · CFSv2 · ECMWF SEAS5 · CanSIPS v3 · JMA · APCC MME';
+        el('footer-copy').textContent = '500-mb height anomaly comparison · Super Ensemble · CFSv2 · ECMWF SEAS5 · CanSIPS v3 · C3S · JMA · APCC MME';
         return;
       }
       const preferred = options.find(item => /^\d{6}-\d{6}$/.test(String(item.value))) || options[options.length - 1];
@@ -441,7 +442,7 @@
       const availableCount = COMPARE_MODELS.filter(modelKey => Boolean(compareRunForTarget(modelKey, selection.compareTarget, selection.compareBaseline))).length;
       el('compare-summary').textContent = `${periodLabel(selection.compareTarget)} · ${compareBaselineLabel(selection.compareBaseline)} · ${availableCount}/${COMPARE_MODELS.length} model maps available`;
       grid.replaceChildren(...COMPARE_MODELS.map(modelKey => renderCompareCard(modelKey, selection.compareTarget)));
-      el('footer-copy').textContent = `500-mb height anomaly comparison · ${compareBaselineLabel(selection.compareBaseline)} · CFSv2 · ECMWF SEAS5 · CanSIPS v3 · JMA · APCC MME`;
+      el('footer-copy').textContent = `500-mb height anomaly comparison · ${compareBaselineLabel(selection.compareBaseline)} · Super Ensemble · CFSv2 · ECMWF SEAS5 · CanSIPS v3 · C3S · JMA · APCC MME`;
     }
     function renderControls(model, run, targets) {
       const controls = el('target-controls'); controls.replaceChildren();

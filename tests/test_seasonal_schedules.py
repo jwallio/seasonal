@@ -14,6 +14,7 @@ EXPECTED = {
     ".github/workflows/seas5.yml": "30 15 5 * *",
     ".github/workflows/c3s.yml": "30 15 10 * *",
     ".github/workflows/jma.yml": "30 15 10 * *",
+    ".github/workflows/superensemble.yml": "30 18 16 * *",
 }
 
 
@@ -31,7 +32,7 @@ def main() -> int:
         check(expected_cron in crons, f"{relative_path} is missing {expected_cron}")
 
     doc = (ROOT / "docs/SEASONAL_SCHEDULES.md").read_text(encoding="utf-8")
-    for term in ("UTC", "ECMWF SEAS5", "C3S multi-system", "JMA / MRI-CPS4", "cancel-in-progress: false"):
+    for term in ("UTC", "ECMWF SEAS5", "C3S multi-system", "JMA / MRI-CPS4", "Deduplicated super ensemble", "cancel-in-progress: false"):
         check(term in doc, f"schedule documentation missing {term}")
 
     print("SEASONAL SCHEDULE CONTRACT OK: release-aligned UTC workflows and documentation")

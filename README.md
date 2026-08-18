@@ -75,7 +75,9 @@ in [`docs/SEASONAL_SCHEDULES.md`](/d:/weather-projects/wn2/docs/SEASONAL_SCHEDUL
 - [`.github/workflows/apcc.yml`](/d:/weather-projects/wn2/.github/workflows/apcc.yml): monthly APCC MME workflow
 - [`scripts/geos_s2s3_seasonal.py`](/d:/weather-projects/wn2/scripts/geos_s2s3_seasonal.py): NASA GEOS-S2S-3 official chart adapter
 - [`.github/workflows/geos-s2s3.yml`](/d:/weather-projects/wn2/.github/workflows/geos-s2s3.yml): monthly NASA GEOS-S2S-3 workflow
-- [`.github/workflows/publish-pages.yml`](/d:/weather-projects/wn2/.github/workflows/publish-pages.yml): single serialized WN2/CFSv2/SEAS5/CanSIPS/C3S/JMA/APCC/NASA Pages publisher
+- [`scripts/superensemble_seasonal.py`](/d:/weather-projects/wn2/scripts/superensemble_seasonal.py): equal-weight deduplicated seasonal forecast-family blend
+- [`.github/workflows/superensemble.yml`](/d:/weather-projects/wn2/.github/workflows/superensemble.yml): monthly super-ensemble workflow
+- [`.github/workflows/publish-pages.yml`](/d:/weather-projects/wn2/.github/workflows/publish-pages.yml): single serialized seasonal Pages publisher
 - [`docs/SEASONAL_SCHEDULES.md`](/d:/weather-projects/wn2/docs/SEASONAL_SCHEDULES.md): provider release windows and UTC automation schedule
 - [`public/seasonal/index.html`](/d:/weather-projects/wn2/public/seasonal/index.html): unified seasonal model dashboard shell
 - [`scripts/clean.ps1`](/d:/weather-projects/wn2/scripts/clean.ps1): remove root `.tmp_*` files and `*.log`
@@ -351,6 +353,6 @@ The GitHub Actions workflows require:
 - `main` is the source/default branch
 - `gh-pages` is the published static site branch
 
-The renderer workflows upload scoped payloads. The single `publish-pages.yml` workflow serializes successful WN2, CFSv2, SEAS5, CanSIPS, C3S, JMA, and NMME completions, merges each payload into the existing `gh-pages` tree, and publishes the complete site so one product cannot remove another product's assets.
+The renderer workflows upload scoped payloads. The single `publish-pages.yml` workflow serializes successful model and super-ensemble completions, merges each payload into the existing `gh-pages` tree, and publishes the complete site so one product cannot remove another product's assets.
 
-Seasonal additions are documented in [`docs/SEASONAL_C3S.md`](/d:/weather-projects/wn2-seasonal-dashboard/docs/SEASONAL_C3S.md), [`docs/SEASONAL_JMA.md`](/d:/weather-projects/wn2-seasonal-dashboard/docs/SEASONAL_JMA.md), and [`docs/SEASONAL_NMME.md`](/d:/weather-projects/wn2-seasonal-dashboard/docs/SEASONAL_NMME.md). The unified viewer includes native-model comparison maps, C3S component/multi-system entries, JMA/MRI-CPS4, and NMME anomaly, probability, and consensus products.
+Seasonal additions are documented in [`docs/SEASONAL_C3S.md`](/d:/weather-projects/wn2-seasonal-dashboard/docs/SEASONAL_C3S.md), [`docs/SEASONAL_JMA.md`](/d:/weather-projects/wn2-seasonal-dashboard/docs/SEASONAL_JMA.md), [`docs/SEASONAL_NMME.md`](/d:/weather-projects/wn2-seasonal-dashboard/docs/SEASONAL_NMME.md), and [`docs/SEASONAL_SUPERENSEMBLE.md`](/d:/weather-projects/wn2/docs/SEASONAL_SUPERENSEMBLE.md). The unified viewer includes native-model comparison maps and a transparent deduplicated super ensemble.
