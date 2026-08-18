@@ -142,6 +142,64 @@
     };
     const modelStates = Object.fromEntries(Object.keys(MODEL_CONFIG).map(key => [key, { manifest: null, runs: [], error: null }]));
     const selection = { view: 'single', model: 'cfsv2', product: '', run: '', target: '', compareTarget: '', compareBaseline: '', ratio: '10' };
+    const DEFAULT_PRODUCT_PRIORITY = [
+      '500mb_height_anomaly',
+      '2m_temperature_anomaly',
+      'surface_temperature_anomaly',
+      'temperature_anomaly',
+    ];
+    const DEFAULT_PERIOD_PRIORITY = ['djf', 'december'];
+    function defaultTargetPeriod(target) {
+      const targetMonth = String(target?.target_month || '');
+      if (/^\d{6}-\d{6}$/.test(targetMonth) && targetMonth.slice(4, 6) === '12' && targetMonth.slice(-2) === '02') return 'djf';
+      if (/^\d{6}$/.test(targetMonth) && targetMonth.slice(4, 6) === '12') return 'december';
+      return '';
+    }
+    function defaultTargetKey(target, index) { return String(target?.id || index); }
+    function defaultTargetForPeriod(run, period) {
+      return (Array.isArray(run?.targets) ? run.targets : []).find((target) => {
+        const status = String(target?.status || '').toLowerCase();
+        return !['failed', 'error'].includes(status) && Boolean(target?.image) && defaultTargetPeriod(target) === period;
+      }) || null;
+    }
+    function orderedDefaultRuns(runs) {
+      const remaining = [...runs];
+      const ordered = [];
+      while (remaining.length) {
+        const candidate = preferredRun(remaining);
+        if (!candidate) break;
+        ordered.push(candidate);
+        const index = remaining.indexOf(candidate);
+        if (index < 0) break;
+        remaining.splice(index, 1);
+      }
+      return ordered;
+    }
+    function defaultSelectionForModel(model, products) {
+      if (model.kind !== 'seasonal') return null;
+      const runs = modelStates[selection.model].runs || [];
+      for (const product of DEFAULT_PRODUCT_PRIORITY) {
+        if (!products.includes(product)) continue;
+        const candidates = runs.filter(run => supportsProduct(model, run, product) && !isFailedRun(run));
+        for (const period of DEFAULT_PERIOD_PRIORITY) {
+          for (const run of orderedDefaultRuns(candidates)) {
+            const target = defaultTargetForPeriod(run, period);
+            if (target) {
+              const targetIndex = (Array.isArray(run.targets) ? run.targets : []).indexOf(target);
+              return { product, run: String(run.id), target: defaultTargetKey(target, targetIndex), period };
+            }
+          }
+        }
+      }
+      return null;
+    }
+    function genericSelectionForModel(model, products) {
+      const product = DEFAULT_PRODUCT_PRIORITY.find(value => products.includes(value)) || products[0] || '';
+      const runs = modelStates[selection.model].runs.filter(run => supportsProduct(model, run, product));
+      const run = preferredRun(runs);
+      const targets = targetItems(model, run);
+      return { product, run: String(run?.id || ''), target: String(targets[0]?.key || '') };
+    }
     const COMPARE_PRODUCT = '500mb_height_anomaly';
     const COMPARE_MODELS = ['cfsv2', 'seas5', 'cansips', 'c3s', 'jma', 'apcc'];
     const COMPARE_BASELINES = [
@@ -400,15 +458,24 @@
       renderModelOptions();
       const model = MODEL_CONFIG[selection.model]; const modelState = modelStates[selection.model];
       if (!modelState.manifest) { renderUnavailable(model); return; }
-      const products = manifestProducts(model); selection.product = products.includes(selection.product) ? selection.product : (products[0] || '');
+      const products = manifestProducts(model);
+      const productWasSelected = products.includes(selection.product);
+      const preferred = productWasSelected ? null : (defaultSelectionForModel(model, products) || genericSelectionForModel(model, products));
+      selection.product = productWasSelected ? selection.product : (preferred?.product || products[0] || '');
       populate(el('product-select'), products.map(value => ({ value, label: productLabel(model, value) })), selection.product);
       const runs = modelState.runs.filter(run => supportsProduct(model, run, selection.product));
       const defaultRun = preferredRun(runs);
-      selection.run = runs.some(run => String(run.id) === String(selection.run)) ? selection.run : String(defaultRun?.id || '');
+      const preferredRunId = preferred?.product === selection.product ? String(preferred.run || '') : '';
+      if (!runs.some(run => String(run.id) === String(selection.run))) {
+        selection.run = runs.some(run => String(run.id) === preferredRunId) ? preferredRunId : String(defaultRun?.id || '');
+      }
       populate(el('run-select'), runs.map(run => ({ value: run.id, label: runLabel(model, run) })), selection.run);
       const run = selectedRun(model); const targets = targetItems(model, run);
       const preferredTarget = targets.find(target => model.kind === 'seasonal' && /^\d{6}-\d{6}$/.test(String(target.value?.target_month || ''))) || targets[0];
-      selection.target = targets.some(target => String(target.key) === String(selection.target)) ? selection.target : String(preferredTarget?.key || '');
+      const preferredTargetKey = preferred?.product === selection.product && String(preferred?.run || '') === String(selection.run) ? String(preferred.target || '') : '';
+      if (!targets.some(target => String(target.key) === String(selection.target))) {
+        selection.target = targets.some(target => String(target.key) === preferredTargetKey) ? preferredTargetKey : String(preferredTarget?.key || '');
+      }
       renderControls(model, run, targets);
       const target = targets.find(item => String(item.key) === String(selection.target)) || targets[0];
       if (!run || !target) { setMessage('No rendered target is available for the selected parameter.'); return; }
