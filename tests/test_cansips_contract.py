@@ -94,6 +94,11 @@ def main() -> int:
     check(height_spec["anomaly_ticks"] == list(range(-100, 101, 10)), "CanSIPS 500-mb should use 10-metre labelled bounds")
     check(len(module.ANOMALY_PALETTE) == len(module.ANOMALY_TICKS) - 1, "CanSIPS height anomaly colors must align with labelled bounds")
     check(len(module.SSH_ANOMALY_PALETTE) == len(module.SSH_ANOMALY_TICKS) - 1, "CanSIPS sea-surface height colors must align with labelled bounds")
+    check((module.PRODUCT_SPECS[module.PRODUCT_MSLP_ANOMALY]["anomaly_min"], module.PRODUCT_SPECS[module.PRODUCT_MSLP_ANOMALY]["anomaly_max"]) == (-10.0, 10.0), "CanSIPS MSLP should use the readable shared ±10 hPa range")
+    check((module.PRODUCT_SPECS[module.PRODUCT_SST_ANOMALY]["anomaly_min"], module.PRODUCT_SPECS[module.PRODUCT_SST_ANOMALY]["anomaly_max"]) == (-3.0, 3.0), "CanSIPS SST should use a seasonal-scale ±3°C range")
+    for ocean_product in (module.PRODUCT_SST_ANOMALY, module.PRODUCT_SEA_SURFACE_HEIGHT_ANOMALY):
+        check(module.PRODUCT_SPECS[ocean_product]["map_domain"] == "ocean", f"CanSIPS {ocean_product} must mask land")
+        check(len(module.PRODUCT_SPECS[ocean_product]["anomaly_ticks"]) == len(module.PRODUCT_SPECS[ocean_product]["anomaly_palette"]) + 1, f"CanSIPS {ocean_product} bounds must align with colors")
     with tempfile.TemporaryDirectory() as temporary:
         output = Path(temporary) / "manifest.json"
         previous = Path(temporary) / "previous.json"

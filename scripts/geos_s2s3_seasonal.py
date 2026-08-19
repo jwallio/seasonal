@@ -71,6 +71,10 @@ TEMPERATURE_ANOMALY_PALETTE = [
     "#95c4d3", "#e1e4e7", "#f2cecd", "#eaaaa8", "#e28c8b", "#db797b",
     "#d3686c", "#ca5861", "#a1384a", "#84283f",
 ]
+SST_ANOMALY_TICKS = list(range(-3, 4))
+SST_ANOMALY_PALETTE = [
+    "#28567f", "#5b9fba", "#b4d6dc", "#ffffff", "#efb6b5", "#b84c5a",
+]
 
 PRODUCT_Z500_ANOMALY = "500mb_height_anomaly"
 PRODUCT_T850_ANOMALY = "850mb_temperature_anomaly"
@@ -201,9 +205,9 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "seasonal_reducer": "mean",
         "conversion_kind": "pascals_to_hectopascals",
         "conversion": "Sea-level pressure divided by 100 after anomaly calculation",
-        "anomaly_min": -20.0,
-        "anomaly_max": 20.0,
-        "anomaly_ticks": MSLP_ANOMALY_TICKS,
+        "anomaly_min": -10.0,
+        "anomaly_max": 10.0,
+        "anomaly_ticks": list(range(-10, 11)),
         "anomaly_palette": MSLP_ANOMALY_PALETTE,
         "source_label": "NASA GEOS-S2S-3 / NCCS",
         "header_detail": "{source_label}  •  {baseline_label}  •  Mean sea-level pressure anomaly (hPa)",
@@ -226,10 +230,11 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "height_contours": False,
         "region": DEFAULT_REGION,
         "seasonal_reducer": "mean",
-        "anomaly_min": -8.0,
-        "anomaly_max": 8.0,
-        "anomaly_ticks": TEMPERATURE_ANOMALY_TICKS,
-        "anomaly_palette": TEMPERATURE_ANOMALY_PALETTE,
+        "anomaly_min": -3.0,
+        "anomaly_max": 3.0,
+        "anomaly_ticks": SST_ANOMALY_TICKS,
+        "anomaly_palette": SST_ANOMALY_PALETTE,
+        "map_domain": "ocean",
         "source_label": "NASA GEOS-S2S-3 / NCCS",
         "header_detail": "{source_label}  •  {baseline_label}  •  Sea-surface temperature anomaly (°C)",
         "mask_land": True,

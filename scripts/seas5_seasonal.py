@@ -92,6 +92,7 @@ TEMP_PALETTE = [
     "#b84857",
     "#943643",
 ]
+SST_PALETTE = ["#28567f", "#5b9fba", "#b4d6dc", "#ffffff", "#efb6b5", "#b84c5a"]
 MSLP_PALETTE = [
     "#315f85",
     "#4e83a3",
@@ -285,7 +286,8 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "anomaly_min": -3.0,
         "anomaly_max": 3.0,
         "anomaly_ticks": [-3, -2, -1, 0, 1, 2, 3],
-        "anomaly_palette": TEMP_PALETTE,
+        "anomaly_palette": SST_PALETTE,
+        "map_domain": "ocean",
         "conversion": "Kelvin-to-Celsius offset cancels in anomaly differences",
         "header_detail": "{source_label}  •  {baseline_label}  •  Sea-surface temperature anomaly (°C)",
         "cds_dataset": CDS_SINGLE_ANOMALY_DATASET,
@@ -305,10 +307,10 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "region": DEFAULT_REGION,
         "monthly_reducer": "mean",
         "seasonal_reducer": "mean",
-        "anomaly_min": -20.0,
-        "anomaly_max": 20.0,
-        "anomaly_ticks": [-20, -15, -10, -5, 0, 5, 10, 15, 20],
-        "anomaly_palette": MSLP_PALETTE,
+        "anomaly_min": -10.0,
+        "anomaly_max": 10.0,
+        "anomaly_ticks": list(range(-10, 11)),
+        "anomaly_palette": ANOMALY_PALETTE,
         "conversion": "Pa divided by 100 to convert mean sea-level pressure to hPa",
         "header_detail": "{source_label}  •  {baseline_label}  •  Mean sea-level pressure anomaly (hPa)",
         "cds_dataset": CDS_SINGLE_ANOMALY_DATASET,

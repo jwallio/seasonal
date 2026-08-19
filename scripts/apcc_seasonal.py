@@ -40,6 +40,7 @@ APCC_DATASET_URLS = {
 APCC_API_DOCS_URL = "https://apcc21.org/clik/clikapi?lang=en"
 APCC_REQUEST_URL = "https://www.apcc21.org/clikapi/request/apccdata"
 APCC_STATUS_URL = "https://www.apcc21.org/clikapi/request/status"
+APCC_RELEASE_DAY = 15
 APCC_ACKNOWLEDGEMENT = (
     "APCC MME data collected and reproduced by APCC based on hindcast/forecast "
     "data produced by APCC MME Producing Centres."
@@ -121,6 +122,7 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "absolute_title": "APCC MME Sea-Surface Temperature (°C)", "height_contours": False,
         "region": DEFAULT_REGION, "anomaly_min": -4.0, "anomaly_max": 4.0,
         "anomaly_ticks": APCC_SST_TICKS, "anomaly_palette": APCC_SST_PALETTE,
+        "map_domain": "ocean",
         "header_detail": "{source_label}  •  {baseline_label}  •  Native APCC seasonal MME anomaly",
         "id_token": "ssta",
     },
@@ -160,17 +162,30 @@ def iso_utc(value: dt.datetime) -> str:
     return value.astimezone(dt.timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
 
 
+def latest_target_month(now: dt.datetime | None = None) -> str:
+    """Return the first valid month from the newest nominal APCC issue.
+
+    APCC indexes MME downloads by the first forecast target month, not by the
+    issue month.  The target month advances after the mid-month release, so an
+    August issue is requested as September and carries SON/DJF products.
+    """
+
+    current = now or dt.datetime.now(dt.timezone.utc)
+    offset = 1 if current.day >= APCC_RELEASE_DAY else 0
+    year, month = month_after(current.year, current.month, offset)
+    return f"{year:04d}{month:02d}"
+
+
 def parse_init(value: str) -> str:
     if value == "latest":
-        now = dt.datetime.now(dt.timezone.utc)
-        return f"{now.year:04d}{now.month:02d}"
+        return latest_target_month()
     if re.fullmatch(r"\d{6}", value):
         try:
             dt.datetime.strptime(value, "%Y%m")
         except ValueError as exc:
             raise APCCError(f"invalid APCC initialization month: {value}") from exc
         return value
-    raise APCCError("--init must be latest or YYYYMM")
+    raise APCCError("--init must be latest or the APCC first target month as YYYYMM")
 
 
 def month_after(year: int, month: int, offset: int) -> tuple[int, int]:
@@ -208,20 +223,15 @@ def period_from_season(season_code: str, season_year: int) -> dict[str, Any]:
 
 def target_window(init: str, offsets: str) -> tuple[str, str, str]:
     values = [int(item.strip()) for item in offsets.split(",") if item.strip()]
-    if not values or values != list(range(min(values), max(values) + 1)):
-        raise APCCError("--target-window must contain consecutive lead offsets")
+    if len(values) != 3 or values != list(range(min(values), max(values) + 1)):
+        raise APCCError("--target-window must contain three consecutive lead offsets")
     date = dt.datetime.strptime(init, "%Y%m")
     first = month_after(date.year, date.month, min(values))
     last = month_after(date.year, date.month, max(values))
     first_code = f"{first[0]:04d}{first[1]:02d}"
     last_code = f"{last[0]:04d}{last[1]:02d}"
-    season = {(12, 2): "DJF", (3, 5): "MAM", (6, 8): "JJA", (9, 11): "SON"}.get((first[1], last[1]))
-    if season and ((first[1] == 12 and last[0] == first[0] + 1) or last[0] == first[0]):
-        label = f"{season} {last[0]}"
-    else:
-        first_date = dt.date(first[0], first[1], 1)
-        last_date = dt.date(last[0], last[1], 1)
-        label = f"{first_date:%b %Y}–{last_date:%b %Y}"
+    season = next(code for code, month in SEASON_START_MONTH.items() if month == first[1])
+    label = f"{season} {last[0]}"
     return f"{first_code}-{last_code}", label, first_code
 
 
@@ -259,6 +269,21 @@ def source_period_from_metadata(
         "forecast_info": forecast_info,
         "fallback": True,
     }
+
+
+def source_issue_datetime(attrs: dict[str, Any], request_target_month: str) -> dt.datetime:
+    """Read the provider issue date, with a conservative mid-month fallback."""
+
+    issued = str(attrs.get("Issued_Date", "")).strip()
+    for date_format in ("%d %b %Y", "%d %B %Y", "%Y-%m-%d"):
+        try:
+            parsed = dt.datetime.strptime(issued, date_format)
+            return parsed.replace(tzinfo=dt.timezone.utc)
+        except ValueError:
+            continue
+    target = dt.datetime.strptime(request_target_month, "%Y%m")
+    issue_year, issue_month = month_after(target.year, target.month, -1)
+    return dt.datetime(issue_year, issue_month, APCC_RELEASE_DAY, tzinfo=dt.timezone.utc)
 
 
 def _request_details(args: argparse.Namespace, init: str, variables: list[str]) -> dict[str, Any]:
@@ -494,8 +519,14 @@ def find_product_file(files: Iterable[Path], product: dict[str, Any], season_cod
     matching = [path for path in candidates if token in path.name.lower()]
     if not matching:
         matching = candidates
-    seasonal = [path for path in matching if season_code and season_code.lower() in str(path).lower()]
-    return sorted(seasonal or matching)[0]
+    if season_code:
+        seasonal = [path for path in matching if season_code.lower() in str(path).lower()]
+        if not seasonal:
+            raise APCCError(
+                f"APCC result ZIP contained no {season_code.upper()} file for {product['api_variable']}"
+            )
+        return sorted(seasonal)[0]
+    return sorted(matching)[0]
 
 
 def write_manifest(
@@ -551,10 +582,10 @@ def write_manifest(
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--product", choices=("all", *PRODUCT_SPECS), default="all")
-    parser.add_argument("--init", default="latest", help="APCC initialization as YYYYMM or latest")
-    parser.add_argument("--target-window", default="0,1,2", help="fallback offsets; APCC NetCDF season metadata is authoritative")
-    parser.add_argument("--dataset", default="MME_3MONTH", choices=("MME_3MONTH", "MME_6MONTH"))
-    parser.add_argument("--lead-month", default="3-MON", choices=("3-MON", "6-MON"))
+    parser.add_argument("--init", default="latest", help="APCC first target month as YYYYMM or latest")
+    parser.add_argument("--target-window", default="", help="three-month offsets from the first target month; defaults to the far window for the selected horizon")
+    parser.add_argument("--dataset", default="MME_6MONTH", choices=("MME_3MONTH", "MME_6MONTH"))
+    parser.add_argument("--lead-month", default=None, choices=("3-MON", "6-MON"))
     parser.add_argument("--resolution", default="2.5", choices=("1.0", "2.5"))
     parser.add_argument("--method", default="SCM", choices=("SCM", "GAUS"))
     parser.add_argument("--request-url", default=APCC_REQUEST_URL)
@@ -574,6 +605,12 @@ def build_parser() -> argparse.ArgumentParser:
 
 def run(args: argparse.Namespace) -> int:
     repo_root = Path(__file__).resolve().parents[1]
+    expected_horizon = "3-MON" if args.dataset == "MME_3MONTH" else "6-MON"
+    if args.lead_month and args.lead_month != expected_horizon:
+        raise APCCError(f"{args.dataset} must use the {expected_horizon} forecast horizon")
+    args.lead_month = expected_horizon
+    if not args.target_window:
+        args.target_window = "0,1,2" if args.dataset == "MME_3MONTH" else "3,4,5"
     init = parse_init(args.init)
     requested_target_code, requested_period, requested_first_target = target_window(init, args.target_window)
     selected = list(PRODUCT_SPECS) if args.product == "all" else [args.product]
@@ -610,17 +647,37 @@ def run(args: argparse.Namespace) -> int:
         "fallback": True,
     }
     if files:
-        reference_path = find_product_file(files, PRODUCT_SPECS[selected[0]], "")
+        requested_season_code = requested_period.split()[0].upper()
+        if requested_season_code not in SEASON_START_MONTH:
+            raise APCCError(
+                "--target-window must resolve to a named three-month season for APCC seasonal data"
+            )
+        reference_path = find_product_file(
+            files,
+            PRODUCT_SPECS[selected[0]],
+            requested_season_code,
+        )
         reference_metadata = read_netcdf_metadata(reference_path, PRODUCT_SPECS[selected[0]])
         native_period = source_period_from_metadata(
             reference_metadata["global_attrs"], init, source_path=reference_path
         )
+        if native_period["target_code"] != requested_target_code:
+            raise APCCError(
+                "APCC source season does not match the requested target window "
+                f"({native_period['target_code']} != {requested_target_code})"
+            )
     target_code = native_period["target_code"]
     period = native_period["period_label"]
     first_target = native_period["first_target"]
     entries: list[dict[str, Any]] = []
     successes = 0
-    init_utc = f"{init[:4]}-{init[4:]}-01T00:00:00Z"
+    issue_datetime = source_issue_datetime(
+        reference_metadata["global_attrs"] if files else {},
+        init,
+    )
+    init_utc = iso_utc(issue_datetime)
+    renderer_init = issue_datetime.strftime("%Y%m%d%H")
+    issue_label = f"Issued {issue_datetime:%d %b %Y}"
     valid_start = native_period["valid_start_utc"]
     valid_end = native_period["valid_end_utc"]
     source_season_code = str(native_period.get("season_code", ""))
@@ -642,6 +699,7 @@ def run(args: argparse.Namespace) -> int:
             "ensemble_scope": "APCC MME seasonal product",
             "source_urls": [dataset_url(args.dataset), APCC_API_DOCS_URL],
             "source_period": native_period,
+            "source_issue_utc": init_utc,
             "status": "planned",
         }
         run_entry: dict[str, Any] = {
@@ -653,6 +711,8 @@ def run(args: argparse.Namespace) -> int:
             "source_url": APCC_SOURCE_URL,
             "dataset": args.dataset,
             "lead_month": args.lead_month,
+            "forecast_horizon": args.lead_month,
+            "request_target_month": init,
             "resolution": args.resolution,
             "method": args.method,
             "requested_target_window": args.target_window,
@@ -671,7 +731,7 @@ def run(args: argparse.Namespace) -> int:
             output = output_dir / init / f"apcc_{product['id_token']}_{target_code}.jpg"
             render_map(
                 grid,
-                f"{init}0100",
+                renderer_init,
                 first_target,
                 args.lead_month,
                 [],
@@ -681,10 +741,12 @@ def run(args: argparse.Namespace) -> int:
                 border_paths=borders,
                 period_label=period,
                 ensemble_label="APCC multi-model ensemble mean",
+                initialization_label=issue_label,
                 product_spec={
                     **product,
                     "name": product_name,
                     "source_label": "APCC MME / CLIK",
+                    "lead_label": f"{args.lead_month} horizon",
                 },
             )
             target_entry["image"] = relative_path(output, repo_root)

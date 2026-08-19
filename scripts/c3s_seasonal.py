@@ -69,9 +69,7 @@ TEMP_PALETTE = [
     "#28567f", "#397ba2", "#5b9fba", "#82bdca", "#b4d6dc", "#e7eeee",
     "#ffffff", "#f8dedd", "#efb6b5", "#e38e8e", "#d36c73", "#b84c5a",
 ]
-MSLP_PALETTE = [
-    "#315f85", "#4e83a3", "#72a6bb", "#d9e5e6", "#ffffff", "#dfa69f", "#ac4f55", "#672b3a",
-]
+MSLP_PALETTE = ANOMALY_PALETTE
 SST_PALETTE = ["#28567f", "#5b9fba", "#b4d6dc", "#ffffff", "#efb6b5", "#b84c5a"]
 PRECIP_PALETTE = [
     "#7f3b08", "#914b0d", "#a6611a", "#bd7a2d", "#d0a052", "#dfbd7d",
@@ -122,14 +120,15 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "seasonal_units": "°C", "height_contours": False, "region": DEFAULT_REGION,
         "monthly_reducer": "mean", "seasonal_reducer": "mean", "anomaly_min": -3.0,
         "anomaly_max": 3.0, "anomaly_ticks": list(range(-3, 4)), "anomaly_palette": SST_PALETTE,
+        "map_domain": "ocean",
         "cds_dataset": SINGLE_DATASET, "cds_variable": "sea_surface_temperature_anomaly",
     },
     "mslp_anomaly": {
         "name": "mslp_anomaly", "variable": "slp", "field": "mslp_anomaly",
         "raw_field": "mean sea-level pressure anomaly", "raw_units": "Pa", "units": "hPa",
         "seasonal_units": "hPa", "height_contours": False, "region": DEFAULT_REGION,
-        "monthly_reducer": "mean", "seasonal_reducer": "mean", "anomaly_min": -20.0,
-        "anomaly_max": 20.0, "anomaly_ticks": list(range(-20, 21, 5)), "anomaly_palette": MSLP_PALETTE,
+        "monthly_reducer": "mean", "seasonal_reducer": "mean", "anomaly_min": -10.0,
+        "anomaly_max": 10.0, "anomaly_ticks": list(range(-10, 11)), "anomaly_palette": MSLP_PALETTE,
         "cds_dataset": SINGLE_DATASET, "cds_variable": "mean_sea_level_pressure_anomaly",
     },
 }

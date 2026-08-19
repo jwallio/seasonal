@@ -44,7 +44,22 @@ HEIGHT_PALETTE = [
     "#eaaaa8", "#e28c8b", "#db797b", "#d3686c", "#ca5861", "#bf4856",
     "#a1384a", "#84283f",
 ]
-PROB_PALETTE = ["#173f68", "#2b6590", "#4d8fb0", "#83b8c9", "#c9dfe5", "#fffdf8", "#f5c8c2", "#dd8f89", "#c6545c", "#8e263d"]
+PROBABILITY_TICKS = list(range(0, 101, 10))
+PROBABILITY_PALETTES = {
+    "probability_above_normal": [
+        "#f4f4f2", "#eeeeeb", "#e4e2df", "#f9e4e1", "#f3c8c4",
+        "#eaa6a3", "#df8182", "#cf5c66", "#b83f53", "#8e263d",
+    ],
+    "probability_near_normal": [
+        "#f4f4f2", "#eeeeeb", "#e4e2df", "#e7f2e3", "#d1e8c9",
+        "#afd7a6", "#82c184", "#55aa68", "#2d8b50", "#11643a",
+    ],
+    "probability_below_normal": [
+        "#f4f4f2", "#eeeeeb", "#e4e2df", "#e0edf0", "#c7dfe5",
+        "#9fc8d5", "#75adc2", "#4c8dae", "#2d6994", "#173f68",
+    ],
+}
+PROBABILITY_VARIABLES = ("prob_above", "prob_norm", "prob_below")
 
 BASE_PRODUCTS: dict[str, dict[str, Any]] = {
     "2m_temperature_anomaly": {
@@ -127,7 +142,10 @@ def month_after(year: int, month: int, offset: int) -> tuple[int, int]:
 
 def target_month(init: str, lead: int) -> str:
     date = dt.datetime.strptime(init, "%Y%m%d%H")
-    year, month = month_after(date.year, date.month, lead - 1)
+    # Public site leads follow the shared seasonal convention: lead 1 is one
+    # month after initialization. CPC's NetCDF target index 0 is the init
+    # month, so the decoder selects source index ``lead`` below.
+    year, month = month_after(date.year, date.month, lead)
     return f"{year:04d}{month:02d}"
 
 
@@ -181,6 +199,42 @@ def normalize_longitudes(values: np.ndarray) -> np.ndarray:
     return ((values + 180.0) % 360.0) - 180.0
 
 
+def probability_triplet_check(grids: dict[str, Grid], tolerance: float = 0.05) -> dict[str, float | int]:
+    """Validate CPC tercile probabilities before any category is published."""
+
+    if set(grids) != set(PROBABILITY_VARIABLES):
+        raise NMMEError("NMME probability validation requires above, near, and below fields")
+    reference = grids[PROBABILITY_VARIABLES[0]]
+    arrays: list[np.ndarray] = []
+    masks: list[np.ndarray] = []
+    for variable in PROBABILITY_VARIABLES:
+        grid = grids[variable]
+        reference.assert_compatible(grid, f"NMME {variable} probability")
+        values = np.asarray(grid.values, dtype=float)
+        arrays.append(values)
+        masks.append(np.isfinite(values))
+    if not all(np.array_equal(masks[0], mask) for mask in masks[1:]):
+        raise NMMEError("NMME probability categories have inconsistent missing-value masks")
+    valid = masks[0]
+    if not np.any(valid):
+        raise NMMEError("NMME probability categories contain no finite values")
+    stacked = np.stack(arrays)
+    if float(np.nanmin(stacked)) < -tolerance or float(np.nanmax(stacked)) > 100.0 + tolerance:
+        raise NMMEError("NMME probability category falls outside 0–100 percent")
+    sums = np.sum(stacked, axis=0)[valid]
+    maximum_error = float(np.max(np.abs(sums - 100.0)))
+    if maximum_error > tolerance:
+        raise NMMEError(
+            f"NMME above/near/below probabilities do not sum to 100% (maximum error {maximum_error:.3f})"
+        )
+    return {
+        "finite_points": int(sums.size),
+        "minimum_sum_percent": round(float(np.min(sums)), 4),
+        "maximum_sum_percent": round(float(np.max(sums)), 4),
+        "maximum_sum_error_percent": round(maximum_error, 6),
+    }
+
+
 def decode_netcdf(path: Path, variable: str, lead: int, product: dict[str, Any], *, probability: bool, probability_period: str) -> Grid:
     try:
         import xarray as xr
@@ -194,7 +248,14 @@ def decode_netcdf(path: Path, variable: str, lead: int, product: dict[str, Any],
         data = dataset[variable]
         target_dimension = next((name for name in ("target", "lead", "time") if name in data.dims), None)
         if target_dimension:
-            index = max(0, lead - 1)
+            index = lead
+            if target_dimension in data.coords and "initial_time" in dataset:
+                targets = np.asarray(data[target_dimension].values, dtype=float).reshape(-1)
+                initial = np.asarray(dataset["initial_time"].values, dtype=float).reshape(-1)
+                if initial.size:
+                    matches = np.flatnonzero(np.isclose(targets, initial[0] + lead))
+                    if matches.size:
+                        index = int(matches[0])
             if index >= data.sizes[target_dimension]:
                 raise NMMEError(f"{path.name} has no target index for lead {lead}")
             data = data.isel({target_dimension: index})
@@ -253,14 +314,24 @@ def spec_for(product_name: str, base_name: str) -> dict[str, Any]:
         }
         return spec
     if product_name.startswith("probability_"):
-        label = {"probability_above_normal": "Above Normal Probability", "probability_near_normal": "Near Normal Probability", "probability_below_normal": "Below Normal Probability"}[product_name]
+        label = {
+            "probability_above_normal": "Above-Normal Probability",
+            "probability_near_normal": "Near-Normal Probability",
+            "probability_below_normal": "Below-Normal Probability",
+        }[product_name]
+        subject = {
+            "2m_temperature_anomaly": "2-m Temperature",
+            "precipitation_anomaly": "CONUS Precipitation",
+            "200mb_height_anomaly": "200-mb Geopotential Height",
+        }[base_name]
         return {
             "name": product_name, "variable": "probability", "field": product_name,
-            "raw_field": f"{base['title']} {label.lower()}", "raw_units": "%", "units": "%", "seasonal_units": "%",
-            "title": f"NMME {base['title'].replace(' Anomaly', '')} · {label}", "absolute_title": f"NMME {label}", "height_contours": False,
+            "raw_field": f"{subject} {label.lower()}", "raw_units": "fraction", "units": "%", "seasonal_units": "%",
+            "title": f"NMME {subject} · {label} (%)", "absolute_title": f"NMME {subject} · {label} (%)", "height_contours": False,
             "region": base.get("region", DEFAULT_REGION), "anomaly_min": 0.0, "anomaly_max": 100.0,
-            "anomaly_ticks": list(range(0, 101, 10)), "anomaly_palette": PROB_PALETTE, "anomaly_tick_format": "plain",
-            "conversion": "official CPC NMME probability field", "header_detail": "{source_label}  •  Official CPC NMME probability product",
+            "anomaly_ticks": PROBABILITY_TICKS, "anomaly_palette": PROBABILITY_PALETTES[product_name], "anomaly_tick_format": "plain",
+            "conversion": "official CPC NMME probability fraction converted to percent; category triplet validated to sum to 100%",
+            "header_detail": "{source_label}  •  Official CPC NMME probability product  •  Category triplet validated to 100%",
         }
     if product_name == "multi_model_consensus":
         return {
@@ -293,6 +364,7 @@ def render_run(
     *, product_name: str, base_name: str, init: str, component: str, components: list[str], product: dict[str, Any],
     grid_by_lead: dict[int, Grid], output_dir: Path, borders: list[Path], leads: list[int], seasonal_leads: list[int],
     probability_period: str, source_files: dict[int, str], decode_only: bool,
+    probability_checks: dict[int, dict[str, float | int]] | None = None,
 ) -> tuple[dict[str, Any], int]:
     root = Path(__file__).resolve().parents[1]
     entry = make_run_entry(product_name, base_name, init, component, components, product, probability_period)
@@ -310,6 +382,8 @@ def render_run(
             "lead_month": lead, "field": product["field"], "units": product["units"], "status": "planned",
             "source_file": source_files.get(lead),
         }
+        if probability and probability_checks and lead in probability_checks:
+            target_entry["probability_integrity"] = probability_checks[lead]
         try:
             if decode_only:
                 target_entry["status"] = "decoded"
@@ -445,6 +519,7 @@ def run(args: argparse.Namespace) -> int:
     borders = [] if args.decode_only else ensure_border_files(args, cache_dir, root)
     cache: dict[tuple[str, str, str, int, str, str], Grid] = {}
     source_files: dict[tuple[str, str, str, int, str, str], str] = {}
+    probability_checks: dict[tuple[str, int, str], dict[str, float | int]] = {}
     entries: list[dict[str, Any]] = []
     failures = 0
 
@@ -458,6 +533,25 @@ def run(args: argparse.Namespace) -> int:
             filename = f"{base['file_var']}.{init[:6]}.prob.{args.probability_period}.nc"
             url = urljoin(PROB_ROOT, filename)
             path = cache_dir / "prob" / filename
+            download(url, path)
+            bundle: dict[str, Grid] = {}
+            for probability_variable in PROBABILITY_VARIABLES:
+                probability_key = (
+                    source, base_name, kind, lead, args.probability_period, probability_variable
+                )
+                if probability_key not in cache:
+                    cache[probability_key] = decode_netcdf(
+                        path,
+                        probability_variable,
+                        lead,
+                        base,
+                        probability=True,
+                        probability_period=args.probability_period,
+                    )
+                    source_files[probability_key] = url
+                bundle[probability_variable] = cache[probability_key]
+            probability_checks[(base_name, lead, args.probability_period)] = probability_triplet_check(bundle)
+            return cache[key]
         else:
             filename = f"{source}.{base['file_var']}.{init[:6]}.ENSMEAN.anom.nc"
             url = urljoin(f"{REALTIME_ROOT}{init}/", filename)
@@ -503,7 +597,18 @@ def run(args: argparse.Namespace) -> int:
                 print(f"NMME {product_name} lead {lead} unavailable: {exc}", file=sys.stderr)
         if grid_by_lead:
             component = "ENSMEAN" if product_name in BASE_PRODUCTS else ("PROBABILITY" if product_name.startswith("probability_") else "CONSENSUS")
-            entry, count = render_run(product_name=product_name, base_name=base_name, init=init, component=component, components=components, product=spec, grid_by_lead=grid_by_lead, output_dir=output_dir, borders=borders, leads=leads, seasonal_leads=seasonal, probability_period=args.probability_period, source_files=files_by_lead, decode_only=args.decode_only)
+            entry, count = render_run(
+                product_name=product_name, base_name=base_name, init=init, component=component,
+                components=components, product=spec, grid_by_lead=grid_by_lead,
+                output_dir=output_dir, borders=borders, leads=leads,
+                seasonal_leads=seasonal, probability_period=args.probability_period,
+                source_files=files_by_lead, decode_only=args.decode_only,
+                probability_checks={
+                    lead: probability_checks[(base_name, lead, args.probability_period)]
+                    for lead in grid_by_lead
+                    if (base_name, lead, args.probability_period) in probability_checks
+                },
+            )
             entries.append(entry)
             failures += count
         if not args.no_components and product_name in BASE_PRODUCTS:

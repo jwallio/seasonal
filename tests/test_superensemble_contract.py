@@ -44,6 +44,9 @@ def main() -> int:
     height_spec = module.product_spec("500mb_height_anomaly", synthetic=True)
     check((height_spec["anomaly_min"], height_spec["anomaly_max"]) == (-100.0, 100.0), "super-ensemble 500-mb maps should use the shared ±100 m range")
     check(height_spec["anomaly_ticks"] == list(range(-100, 101, 10)), "super-ensemble 500-mb maps should use 10-metre labelled bounds")
+    check(module.product_spec("sea_surface_temperature_anomaly")["map_domain"] == "ocean", "super-ensemble SST must mask land")
+    mslp_spec = module.product_spec("mslp_anomaly")
+    check((mslp_spec["anomaly_min"], mslp_spec["anomaly_max"]) == (-10.0, 10.0), "super-ensemble MSLP should use ±10 hPa")
     height_members = module.canonical_members("500mb_height_anomaly")
     surface_members = module.canonical_members("2m_temperature_anomaly")
     t850_members = module.canonical_members("850mb_temperature_anomaly")
@@ -94,7 +97,7 @@ def main() -> int:
     surface_exclusions = module.membership_ledger("2m_temperature_anomaly")["excluded"]
     check(any(item["package"] == "NMME NASA_GEOS5v2" and item["represented_by"] == module.GEOS_MEMBER_KEY for item in surface_exclusions), "surface ledger must document the NASA deduplication")
     check(module.c3s.target_month("2026080100", 4) == "202612", "lead 4 should align to December")
-    check(module.nmme.target_month("2026080800", 5) == "202612", "NMME lead alignment should match December")
+    check(module.nmme.target_month("2026080800", 4) == "202612", "NMME lead alignment should match December")
     for term in ("intersection of canonical members", "APCC MME", "C3S multi-system mean", "NMME CFSv2", "native_model_baselines", "NASA GEOS-S2S-3"):
         check(term in adapter_text, f"adapter is missing deduplication term: {term}")
     for term in ("name: Deduplicated Seasonal Super Ensemble", "CDS_API_KEY", "Restore rolling CFSv2 state", "Restore NASA GEOS-S2S-3 numerical cache", "--geos-cache-dir", "cfsv2-rolling-", "superensemble-pages-", "30 18 16 * *"):

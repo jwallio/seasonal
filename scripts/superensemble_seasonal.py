@@ -628,10 +628,9 @@ def load_nmme_members(
         url = urljoin(f"{nmme.REALTIME_ROOT}{nmme_init}/", filename)
         path = cache_dir / "realtime" / nmme_init / filename
         for lead in leads:
-            # C3S lead 4 is the fourth month after initialization.  CPC NMME
-            # lead 5 indexes that same calendar month because lead 1 is the
-            # initialization month.
-            nmme_lead = lead + 1
+            # The NMME adapter exposes the site's shared lead convention and
+            # translates it to CPC's zero-based target coordinate internally.
+            nmme_lead = lead
             target = c3s.target_month(init, lead)
             try:
                 if nmme.target_month(nmme_init, nmme_lead) != target:
