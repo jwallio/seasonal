@@ -48,15 +48,21 @@ def main() -> int:
         'id="product-select"',
         'id="run-select"',
         'id="compare-tab"',
+        'id="compare-product-select"',
         'id="compare-target-select"',
         'id="compare-baseline-select"',
         'id="compare-grid"',
-        "COMPARE_PRODUCT = '500mb_height_anomaly'",
+        "const DEFAULT_COMPARE_PRODUCT = '500mb_height_anomaly';",
+        "const COMPARE_PRODUCTS = [",
+        "function compareProductAliases(productKey)",
+        "function compareProductOptions()",
+        "function comparePeriodOptions(productKey",
+        "function compareBaselineOptions(productKey",
         "const COMPARE_MIN_VALID_MONTH = 202612;",
         "function compareTargetMeetsValidCutoff(target)",
         "common_1991_2020",
         "function renderCompare()",
-        "if (!selection.compareBaseline) selection.compareBaseline = 'native';",
+        "selection.compareProduct = event.target.value",
         "product_hours",
         "target_month",
         "source_url",
@@ -93,6 +99,24 @@ def main() -> int:
     compare_keys_block = page[page.index("function compareTargetKeys"):page.index("function comparePeriodSort")]
     check("compareTargetMeetsValidCutoff(target)" in compare_target_block, "compare cards must reject targets before the valid-period cutoff")
     check("compareTargetMeetsValidCutoff(target)" in compare_keys_block, "compare dropdown must reject targets before the valid-period cutoff")
+
+    for product in (
+        "500mb_height_anomaly",
+        "850mb_temperature_anomaly",
+        "2m_temperature_anomaly",
+        "precipitation_anomaly",
+        "mslp_anomaly",
+        "sea_surface_temperature_anomaly",
+    ):
+        check(product in page, f"compare parameter menu is missing {product}")
+    check("'sea_surface_temperature_anomaly', 'sst_anomaly'" in page, "compare SST must normalize the two published manifest product names")
+    check("'geos_s2s3', 'nmme'" in page, "parameter comparison must include GEOS and NMME when they publish the selected field")
+    compare_period_block = page[page.index("function comparePeriodOptions"):page.index("function compareBaselineOptions")]
+    check("const keys = new Set();" in compare_period_block, "compare periods must collect a union of published months")
+    check("COMPARE_MODELS.forEach" in compare_period_block and "keys.add(key)" in compare_period_block, "compare periods must include months published by any compared model")
+    check("availableSets.every" not in compare_period_block, "individual compare months must not be hidden by an all-model intersection")
+    compare_baseline_block = page[page.index("function compareBaselineOptions"):page.index("function compareRunForTarget")]
+    check("productKey === DEFAULT_COMPARE_PRODUCT" in compare_baseline_block, "common-reference comparison must remain limited to 500-mb height")
 
     check("WN2 /" not in page, "unified dashboard should use a generic dashboard title")
     check("WeatherNext 2" not in page, "seasonal dashboard should not present WeatherNext 2 as a seasonal model")

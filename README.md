@@ -55,12 +55,16 @@ v3, CMA CPSv3, APCC MME, and NASA GEOS-S2S-3. WeatherNext 2 remains published by
 but is intentionally not listed as a seasonal model. The model-specific pages remain available at
 `/seasonal/cfsv2/`, `/seasonal/seas5/`, and `/seasonal/cansips/` when focused
 provenance review is needed. The dashboard's Compare tab places the latest
-matching 500-mb height-anomaly map from each seasonal model side by side and
-uses one shared monthly or seasonal-period selector. It defaults to each
-model's native anomaly; its Reference selector can optionally show a common
-1991-2020 reference based on the CanSIPS v3 hindcast mean. Compare periods
-start with December 2026; earlier valid periods remain available only in the
-model-specific and Single Model views.
+matching map from each seasonal model side by side. Its Parameter selector
+covers 500-mb height, 850-mb and 2-m temperature, precipitation, MSLP, and SST
+anomalies. The shared valid-period selector uses the union of published model
+targets, so December 2026, January 2027, February 2027, and DJF remain visible
+even when a seasonal-only model lacks an individual month; unsupported cards
+are labelled unavailable instead of being substituted. Comparison defaults to
+each model's native anomaly. For 500-mb height only, the Reference selector can
+optionally show a common 1991-2020 reference based on the CanSIPS v3 hindcast
+mean. Compare periods start with December 2026; earlier valid periods remain
+available only in the model-specific and Single Model views.
 
 The automatic release-aligned schedule for all seasonal workflows is documented
 in [`docs/SEASONAL_SCHEDULES.md`](/d:/weather-projects/wn2/docs/SEASONAL_SCHEDULES.md).
