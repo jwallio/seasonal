@@ -131,10 +131,11 @@
     const assetPath = value => `${root}/${String(value || '').replace(/^\/+/, '').replace(/^public\//, '')}`;
     const el = id => document.getElementById(id);
     const MODEL_CONFIG = {
-      superensemble: { label: 'Super Ensemble', kind: 'seasonal', manifest: assetPath('seasonal/superensemble_manifest.json'), direct: assetPath('seasonal/superensemble/'), source: 'Deduplicated C3S, CanSIPS, and unique NMME forecast families' },
+      superensemble: { label: 'Super Ensemble', kind: 'seasonal', manifest: assetPath('seasonal/superensemble_manifest.json'), direct: assetPath('seasonal/superensemble/'), source: 'Deduplicated seasonal forecast families, including target-aligned CMA CPSv3' },
       cfsv2: { label: 'CFSv2', kind: 'seasonal', manifest: assetPath('seasonal/cfsv2_manifest.json'), direct: assetPath('seasonal/cfsv2/'), source: 'NOAA CFSv2 NOMADS' },
       seas5: { label: 'ECMWF SEAS5', kind: 'seasonal', manifest: assetPath('seasonal/seas5_manifest.json'), direct: assetPath('seasonal/seas5/'), source: 'ECMWF SEAS5 / Copernicus CDS' },
       cansips: { label: 'CanSIPS v3', kind: 'seasonal', manifest: assetPath('seasonal/cansips_manifest.json'), direct: assetPath('seasonal/cansips/'), source: 'ECCC MSC Datamart' },
+      cma_cpsv3: { label: 'CMA CPSv3', kind: 'seasonal', manifest: assetPath('seasonal/cma_cpsv3_manifest.json'), direct: assetPath('seasonal/cma_cpsv3/'), source: 'WMO LC-SPMME / GPC Beijing' },
       c3s: { label: 'C3S multi-system', kind: 'seasonal', manifest: assetPath('seasonal/c3s_manifest.json'), direct: assetPath('seasonal/c3s/'), source: 'Copernicus C3S seasonal forecasts' },
       jma: { label: 'JMA', kind: 'seasonal', manifest: assetPath('seasonal/jma_manifest.json'), direct: assetPath('seasonal/jma/'), source: 'JMA/MRI-CPS4 via Copernicus C3S' },
       apcc: { label: 'APCC MME', kind: 'seasonal', manifest: assetPath('seasonal/apcc_manifest.json'), direct: assetPath('seasonal/apcc/'), source: 'APCC multi-model ensemble via CLIK' },
@@ -203,7 +204,7 @@
     }
     const COMPARE_PRODUCT = '500mb_height_anomaly';
     const COMPARE_MIN_VALID_MONTH = 202612;
-    const COMPARE_MODELS = ['superensemble', 'cfsv2', 'seas5', 'cansips', 'c3s', 'jma', 'apcc'];
+    const COMPARE_MODELS = ['superensemble', 'cfsv2', 'seas5', 'cansips', 'cma_cpsv3', 'c3s', 'jma', 'apcc'];
     const COMPARE_BASELINES = [
       { value: 'native', label: 'Native model reference' },
       { value: 'common_1991_2020', label: 'Common 1991–2020 reference' },
