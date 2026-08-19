@@ -54,7 +54,8 @@ example, an August 2026 initialization uses leads 4, 5, and 6 for December
 `DJF 2027`.
 
 The maps use the shared operational 1080x1080 North American renderer. The
-500-mb product uses the blue-neutral-red scale from -200 to +200 metres;
+500-mb product uses the blue-neutral-red scale from -100 to +100 metres with
+10-metre intervals;
 temperature and sea-surface temperature products use a compact ±8 °C scale,
 MSLP uses ±20 hPa, precipitation uses the operational brown/green ±8-inch
 scale, and SSH uses a ±0.50-metre scale with two-decimal labels.

@@ -40,6 +40,9 @@ def main() -> int:
     pages = PAGES.read_text(encoding="utf-8")
     module = load_adapter()
 
+    height_spec = module.product_spec("500mb_height_anomaly", synthetic=True)
+    check((height_spec["anomaly_min"], height_spec["anomaly_max"]) == (-100.0, 100.0), "super-ensemble 500-mb maps should use the shared ±100 m range")
+    check(height_spec["anomaly_ticks"] == list(range(-100, 101, 10)), "super-ensemble 500-mb maps should use 10-metre labelled bounds")
     height_members = module.canonical_members("500mb_height_anomaly")
     surface_members = module.canonical_members("2m_temperature_anomaly")
     t850_members = module.canonical_members("850mb_temperature_anomaly")

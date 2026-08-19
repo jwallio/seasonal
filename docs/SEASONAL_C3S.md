@@ -15,6 +15,8 @@ nominal start dates from April 2026 onward.
 The source fields are native C3S bias-adjusted anomalies. They are not
 subtracted from the CFSv2 or CanSIPS climatologies. The multi-system product
 is explicitly marked in the manifest with its available component list.
+All component maps, including JMA/MRI-CPS4, and the C3S multi-system mean use
+the shared seasonal 500-mb scale of -100 to +100 m with 10 m intervals.
 
 The GitHub workflow is `.github/workflows/c3s.yml`. It requires the existing
 `CDS_API_KEY` repository secret and publishes `c3s_manifest.json` plus images

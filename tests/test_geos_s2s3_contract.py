@@ -43,6 +43,9 @@ def main() -> int:
     check(module.EXPECTED_TOTAL_MEMBERS == 40, "NASA package must require all 40 member files")
     check(module.EXPECTED_LONG_RANGE_MEMBERS == 10, "NASA long range must require ten selected members")
     check(module.PRODUCT_Z500_ANOMALY not in module.DEFAULT_PRODUCTS, "unverified z500 must not run by default")
+    height_spec = module.PRODUCT_SPECS[module.PRODUCT_Z500_ANOMALY]
+    check((height_spec["anomaly_min"], height_spec["anomaly_max"]) == (-100.0, 100.0), "a future validated GEOS 500-mb map should use the shared ±100 m range")
+    check(height_spec["anomaly_ticks"] == list(range(-100, 101, 10)), "a future validated GEOS 500-mb map should use 10-metre labelled bounds")
     check(module.SUPERENSEMBLE_PRODUCTS == frozenset(module.DEFAULT_PRODUCTS), "only validated NASA products may enter the blend")
     for product in (
         module.PRODUCT_T850_ANOMALY,

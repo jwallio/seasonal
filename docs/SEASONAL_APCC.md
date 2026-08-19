@@ -20,8 +20,8 @@ multiplies it by the number of days in the returned three-month season and
 labels the map in seasonal accumulation `mm`. The manifest records the native
 units, conversion, source season, grid resolution, and rendered data range.
 
-The six products use native parameter scales rather than the common ±200 m
-500-mb scale: height ±100 m, temperature ±3°C, precipitation ±200 mm, SST
+The six products use parameter-appropriate scales. The 500-mb height product
+matches the common seasonal ±100 m scale; temperature uses ±3°C, precipitation ±200 mm, SST
 ±4°C, and MSLP ±6 hPa. APCC's z500 archive contains anomalies only, so no
 absolute-height contour overlay is fabricated.
 

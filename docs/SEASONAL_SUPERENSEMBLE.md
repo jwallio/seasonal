@@ -42,6 +42,8 @@ The complete included, missing, and excluded membership is written into
 
 The blend uses each source's native anomaly baseline. It is therefore labelled
 as a native-model-baseline anomaly blend, not as a common-climatology product.
+The blended 500-mb map uses the same -100 to +100 m scale and 10 m intervals
+as its verified component maps.
 The rolling CFSv2 contribution uses its official NCEI CFS reforecast
 calibration climatology and records its anchor cycle, available/expected cycle
 count, source files, and calibration URL in the manifest.

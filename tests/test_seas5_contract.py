@@ -110,8 +110,10 @@ def main() -> int:
     check('href="../">Seasonal dashboard</a>' in page, "SEAS5 direct viewer should link to the unified seasonal dashboard")
     check("preferredTargetIndex" in page, "SEAS5 viewer should default to the seasonal aggregate when one is present")
     module = load_adapter()
-    check(module.PRODUCT_SPECS[module.Z500_ANOMALY]["anomaly_palette"] == module.ANOMALY_PALETTE, "SEAS5 500-mb should use the shared 500-mb anomaly palette")
-    check(module.PRODUCT_SPECS[module.Z500_ANOMALY]["anomaly_ticks"] == module.ANOMALY_TICKS, "SEAS5 500-mb should use the shared 20-metre labelled bounds")
+    height_spec = module.PRODUCT_SPECS[module.Z500_ANOMALY]
+    check(height_spec["anomaly_palette"] == module.ANOMALY_PALETTE, "SEAS5 500-mb should use the shared 500-mb anomaly palette")
+    check((height_spec["anomaly_min"], height_spec["anomaly_max"]) == (-100.0, 100.0), "SEAS5 500-mb should use the shared ±100 m range")
+    check(height_spec["anomaly_ticks"] == list(range(-100, 101, 10)), "SEAS5 500-mb should use 10-metre labelled bounds")
     check(module.PRODUCT_SPECS[module.PRECIP_ANOMALY]["anomaly_palette"] == module.SEAS5_PRECIP_ANOMALY_PALETTE, "SEAS5 precipitation should use its darker negative palette")
     check(module.SEAS5_PRECIP_ANOMALY_PALETTE[7] == "#dfbd91", "SEAS5 weak negative precipitation colors should be muted")
     check(module.SEAS5_PRECIP_ANOMALY_PALETTE[8] == "#dcebd7", "SEAS5 0-to-1 precipitation anomaly should use a visible pale-sage transition")
