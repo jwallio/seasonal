@@ -59,6 +59,10 @@ def main() -> int:
     check((height_spec["anomaly_min"], height_spec["anomaly_max"]) == (-100.0, 100.0), "C3S and JMA 500-mb maps should use the shared ±100 m range")
     check(height_spec["anomaly_ticks"] == list(range(-100, 101, 10)), "C3S and JMA 500-mb maps should use 10-metre labelled bounds")
     check(len(height_spec["anomaly_ticks"]) == len(height_spec["anomaly_palette"]) + 1, "C3S 500-mb color bounds must align with swatches")
+    mslp_spec = module.PRODUCT_SPECS["mslp_anomaly"]
+    check((mslp_spec["anomaly_min"], mslp_spec["anomaly_max"]) == (-10.0, 10.0), "C3S and super-ensemble MSLP should use ±10 hPa")
+    check(len(mslp_spec["anomaly_ticks"]) == len(mslp_spec["anomaly_palette"]) + 1, "C3S MSLP bounds must align with swatches")
+    check(module.PRODUCT_SPECS["sea_surface_temperature_anomaly"]["map_domain"] == "ocean", "C3S SST must mask land")
     with tempfile.TemporaryDirectory() as temporary:
         output = Path(temporary) / "manifest.json"
         previous = Path(temporary) / "previous.json"

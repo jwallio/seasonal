@@ -115,6 +115,12 @@ def main() -> int:
     check((height_spec["anomaly_min"], height_spec["anomaly_max"]) == (-100.0, 100.0), "SEAS5 500-mb should use the shared ±100 m range")
     check(height_spec["anomaly_ticks"] == list(range(-100, 101, 10)), "SEAS5 500-mb should use 10-metre labelled bounds")
     check(module.PRODUCT_SPECS[module.PRECIP_ANOMALY]["anomaly_palette"] == module.SEAS5_PRECIP_ANOMALY_PALETTE, "SEAS5 precipitation should use its darker negative palette")
+    sst_spec = module.PRODUCT_SPECS[module.SST_ANOMALY]
+    check(sst_spec["map_domain"] == "ocean", "SEAS5 SST must mask land")
+    check(len(sst_spec["anomaly_ticks"]) == len(sst_spec["anomaly_palette"]) + 1, "SEAS5 SST bounds must align with swatches")
+    mslp_spec = module.PRODUCT_SPECS[module.MSLP_ANOMALY]
+    check((mslp_spec["anomaly_min"], mslp_spec["anomaly_max"]) == (-10.0, 10.0), "SEAS5 MSLP should use ±10 hPa")
+    check(len(mslp_spec["anomaly_ticks"]) == len(mslp_spec["anomaly_palette"]) + 1, "SEAS5 MSLP bounds must align with swatches")
     check(module.SEAS5_PRECIP_ANOMALY_PALETTE[7] == "#dfbd91", "SEAS5 weak negative precipitation colors should be muted")
     check(module.SEAS5_PRECIP_ANOMALY_PALETTE[8] == "#dcebd7", "SEAS5 0-to-1 precipitation anomaly should use a visible pale-sage transition")
     check(module.SEAS5_PRECIP_ANOMALY_PALETTE[9] == "#c8e4bf", "SEAS5 positive precipitation anomaly should retain a smooth first positive bin")

@@ -2,8 +2,9 @@ name: APCC MME Seasonal Graphics
 
 on:
   schedule:
-    # APCC disseminates its rolling MME guidance around the middle of each month.
-    - cron: "30 16 16 * *"
+    # APCC updates around mid-month; allow several days for the new target
+    # month and its far 6-month seasonal window to reach CLIK.
+    - cron: "30 16 20 * *"
   workflow_dispatch:
     inputs:
       product:
@@ -20,19 +21,19 @@ on:
           - sea_surface_temperature_anomaly
           - mslp_anomaly
       init:
-        description: "APCC initialization as YYYYMM or latest"
+        description: "APCC first target month as YYYYMM or latest"
         required: false
         default: "latest"
         type: string
       target_window:
-        description: "Fallback offsets; APCC NetCDF season metadata is authoritative"
+        description: "Three-month offsets from the first target month"
         required: false
-        default: "0,1,2"
+        default: "3,4,5"
         type: string
       dataset:
         description: "APCC dataset horizon"
         required: false
-        default: "MME_3MONTH"
+        default: "MME_6MONTH"
         type: choice
         options:
           - MME_3MONTH
@@ -56,9 +57,8 @@ jobs:
     env:
       APCC_PRODUCT: ${{ inputs.product || 'all' }}
       APCC_INIT: ${{ inputs.init || 'latest' }}
-      TARGET_WINDOW: ${{ inputs.target_window || '0,1,2' }}
-      APCC_DATASET: ${{ inputs.dataset || 'MME_3MONTH' }}
-      APCC_LEAD_MONTH: ${{ inputs.dataset == 'MME_6MONTH' && '6-MON' || '3-MON' }}
+      TARGET_WINDOW: ${{ inputs.target_window || '3,4,5' }}
+      APCC_DATASET: ${{ inputs.dataset || 'MME_6MONTH' }}
       APCC_RESOLUTION: ${{ inputs.resolution || '2.5' }}
     steps:
       - name: Checkout
@@ -116,7 +116,6 @@ jobs:
             --init "$APCC_INIT" \
             --target-window "$TARGET_WINDOW" \
             --dataset "$APCC_DATASET" \
-            --lead-month "$APCC_LEAD_MONTH" \
             --resolution "$APCC_RESOLUTION" \
             --cache-dir .cache/apcc \
             --output-dir public/seasonal/apcc \

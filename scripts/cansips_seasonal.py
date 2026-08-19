@@ -56,14 +56,17 @@ CANSIPS_DOWNLOAD_ATTEMPTS = 4
 CANSIPS_DOWNLOAD_TIMEOUT = (60, 600)
 CANSIPS_REQUEST_DELAY = 1.0
 
-TEMPERATURE_ANOMALY_TICKS = list(range(-8, 9))
+TEMPERATURE_ANOMALY_TICKS = [value / 2.0 for value in range(-8, 9)]
 TEMPERATURE_ANOMALY_PALETTE = [
     "#24527a", "#306b90", "#3d83a6", "#4891b0", "#539cb8", "#70b2c6",
     "#95c4d3", "#e1e4e7", "#f2cecd", "#eaaaa8", "#e28c8b", "#db797b",
     "#d3686c", "#ca5861", "#a1384a", "#84283f",
 ]
-MSLP_ANOMALY_TICKS = list(range(-20, 21, 2))
-SST_ANOMALY_TICKS = list(range(-8, 9))
+MSLP_ANOMALY_TICKS = list(range(-10, 11))
+SST_ANOMALY_TICKS = list(range(-3, 4))
+SST_ANOMALY_PALETTE = [
+    "#28567f", "#5b9fba", "#b4d6dc", "#ffffff", "#efb6b5", "#b84c5a",
+]
 SSH_ANOMALY_TICKS = [round(-0.50 + index * 0.10, 2) for index in range(11)]
 SSH_ANOMALY_PALETTE = [
     "#24527a", "#3d83a6", "#539cb8", "#70b2c6", "#95c4d3",
@@ -120,8 +123,8 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "region": CANSIPS_DEFAULT_REGION,
         "monthly_reducer": "mean",
         "seasonal_reducer": "mean",
-        "anomaly_min": -8.0,
-        "anomaly_max": 8.0,
+        "anomaly_min": -4.0,
+        "anomaly_max": 4.0,
         "anomaly_ticks": TEMPERATURE_ANOMALY_TICKS,
         "anomaly_palette": TEMPERATURE_ANOMALY_PALETTE,
         "source_label": "ECCC MSC CanSIPS v3 / Datamart",
@@ -144,8 +147,8 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "region": CANSIPS_DEFAULT_REGION,
         "monthly_reducer": "mean",
         "seasonal_reducer": "mean",
-        "anomaly_min": -8.0,
-        "anomaly_max": 8.0,
+        "anomaly_min": -4.0,
+        "anomaly_max": 4.0,
         "anomaly_ticks": TEMPERATURE_ANOMALY_TICKS,
         "anomaly_palette": TEMPERATURE_ANOMALY_PALETTE,
         "source_label": "ECCC MSC CanSIPS v3 / Datamart",
@@ -194,8 +197,8 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "region": CANSIPS_DEFAULT_REGION,
         "monthly_reducer": "mean",
         "seasonal_reducer": "mean",
-        "anomaly_min": -20.0,
-        "anomaly_max": 20.0,
+        "anomaly_min": -10.0,
+        "anomaly_max": 10.0,
         "anomaly_ticks": MSLP_ANOMALY_TICKS,
         "anomaly_palette": ANOMALY_PALETTE,
         "conversion_kind": "pascals_to_hectopascals",
@@ -220,10 +223,11 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "region": CANSIPS_DEFAULT_REGION,
         "monthly_reducer": "mean",
         "seasonal_reducer": "mean",
-        "anomaly_min": -8.0,
-        "anomaly_max": 8.0,
+        "anomaly_min": -3.0,
+        "anomaly_max": 3.0,
         "anomaly_ticks": SST_ANOMALY_TICKS,
-        "anomaly_palette": TEMPERATURE_ANOMALY_PALETTE,
+        "anomaly_palette": SST_ANOMALY_PALETTE,
+        "map_domain": "ocean",
         "source_label": "ECCC MSC CanSIPS v3 / Datamart",
         "header_detail": "{source_label}  •  {baseline_label}  •  Sea-surface temperature anomaly (°C)",
     },
@@ -249,6 +253,7 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "anomaly_ticks": SSH_ANOMALY_TICKS,
         "anomaly_tick_decimals": 2,
         "anomaly_palette": SSH_ANOMALY_PALETTE,
+        "map_domain": "ocean",
         "source_label": "ECCC MSC CanSIPS v3 / Datamart",
         "header_detail": "{source_label}  •  {baseline_label}  •  Sea-surface height anomaly (m)",
     },

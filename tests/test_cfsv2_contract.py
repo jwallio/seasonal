@@ -168,6 +168,8 @@ def main() -> int:
     check('"#ffffff"' in swe_palette, "SWE zero anomaly color should be white")
     check(swe_palette.count('"#ffffff"') >= 2, "SWE -1 to 0 inch interval should also be white")
     check("land_mask_from_borders" in adapter, "SWE renderer should mask ocean cells using the land geometry")
+    check('map_domain not in {"land", "ocean"}' in adapter, "shared renderer should validate domain-specific products")
+    check("requires the countries land mask" in adapter, "domain-specific products should fail closed without a land mask")
     check('axes.set_facecolor("#ffffff" if product_spec["name"] == PRODUCT_SWE_ANOMALY' in adapter, "SWE ocean background should be white")
     check("x_min -= projected_x_shift" in adapter and "x_max -= projected_x_shift" in adapter, "projected map window should shift west to move the CONUS right")
     check("figsize=(9.0, 9.0)" in adapter, "seasonal graphic should use the 1080x1080 social canvas")
@@ -199,11 +201,13 @@ def main() -> int:
     mslp_spec = adapter_module.PRODUCT_SPECS[adapter_module.PRODUCT_MSLP_ANOMALY]
     precip_spec = adapter_module.PRODUCT_SPECS[adapter_module.PRODUCT_PRECIPITATION_ANOMALY]
     height_spec = adapter_module.PRODUCT_SPECS[adapter_module.PRODUCT_HEIGHT_ANOMALY]
+    swe_spec = adapter_module.PRODUCT_SPECS[adapter_module.PRODUCT_SWE_ANOMALY]
     check(adapter_module.anomaly_style(height_spec)[:2] == (-100.0, 100.0), "height anomaly style should use the tighter ±100 m range")
     check(adapter_module.anomaly_style(t2m_spec)[:2] == (-4.0, 4.0), "temperature anomaly style should use the tighter ±4 °C range")
     check(adapter_module.anomaly_style(mslp_spec)[:2] == (-10.0, 10.0), "MSLP anomaly style should use the tighter ±10 hPa range")
     check(adapter_module.anomaly_style(precip_spec, seasonal=False)[:2] == (-4.0, 4.0), "monthly precipitation should use the tighter ±4-inch range")
     check(adapter_module.anomaly_style(precip_spec, seasonal=True)[:2] == (-8.0, 8.0), "seasonal precipitation should retain the ±8-inch total range")
+    check(swe_spec["map_domain"] == "land", "SWE must retain a land-only render domain")
     check(adapter_module.manifest_product_key({"field": "z500_anomaly"}) == adapter_module.PRODUCT_HEIGHT_ANOMALY, "legacy manifests should map height fields to the current product key")
     check(t2m_spec["source_kind"] == "flxf" and t2m_spec["grid_shape"] == (384, 190), "2-m temperature should use the FLXF flux grid")
     check(mslp_spec["source_kind"] == "pgbf" and mslp_spec["grid_shape"] == (360, 181), "MSLP should use the PGBF pressure grid")

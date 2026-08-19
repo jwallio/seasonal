@@ -348,6 +348,7 @@ PRODUCT_SPECS = {
         "monthly_aggregation": "monthly snow-water-equivalent average",
         "conversion_kind": "snow_water_equivalent_inches",
         "conversion": "WEASD divided by 25.4 to convert kg m-2/mm of liquid water equivalent to inches",
+        "map_domain": "land",
     },
 }
 
@@ -1410,13 +1411,23 @@ def render_map(
         axes.plot(line_x, line_y, color="#70808a", linewidth=0.35, alpha=0.34, linestyle=(0, (1, 3)), zorder=1)
 
     masked = np.ma.masked_invalid(data)
-    if product_spec["name"] == PRODUCT_SWE_ANOMALY:
+    map_domain = product_spec.get("map_domain")
+    if map_domain:
+        if map_domain not in {"land", "ocean"}:
+            raise CFSv2Error(f"unsupported map domain {map_domain!r}")
         land_mask = land_mask_from_borders(border_paths, canvas_lons, canvas_lats)
-        if land_mask is not None and np.any(land_mask):
-            # SWE is not applicable over open water. Mask it before contouring
-            # so ocean cells reveal the intentional white map background rather
-            # than a near-zero negative anomaly swatch.
-            masked = np.ma.masked_where(~land_mask, masked)
+        if land_mask is None or not np.any(land_mask):
+            raise CFSv2Error(
+                f"{product_spec['name']} requires the countries land mask to render its {map_domain}-only domain"
+            )
+        # Domain-specific products must not display model fill or extrapolated
+        # values where the parameter is undefined.  In particular, several
+        # seasonal archives encode SST and sea-surface height at every grid
+        # point even though their land values are not geophysical ocean data.
+        masked = np.ma.masked_where(
+            ~land_mask if map_domain == "land" else land_mask,
+            masked,
+        )
     if anomaly:
         anomaly_min, anomaly_max, colorbar_ticks, palette = anomaly_style(
             product_spec,
@@ -1600,10 +1611,11 @@ def render_map(
     if title_box.width > available_title_width:
         title_text.set_fontsize(max(12.5, 15.5 * available_title_width / title_box.width))
     init_text = initialization_label or f"Init {init_date:%d %b %Y %HZ}"
+    lead_label = str(product_spec.get("lead_label", f"Lead {lead}"))
     figure.text(
         0.035,
         0.925,
-        f"{init_text}  •  Lead {lead}  •  {mean_label}",
+        f"{init_text}  •  {lead_label}  •  {mean_label}",
         ha="left",
         va="center",
         fontsize=10.5,

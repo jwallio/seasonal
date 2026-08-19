@@ -42,15 +42,35 @@ def main() -> int:
     ):
         check(term in adapter or term in workflow or term in pages, f"missing NMME term: {term}")
     module = load_adapter()
-    check(module.target_month("2026080800", 1) == "202608", "NMME lead 1 should represent the initialization month in the CPC file")
-    check(module.target_month("2026080800", 6) == "202701", "NMME lead conversion should cross the year boundary")
+    check(module.target_month("2026080800", 1) == "202609", "NMME public lead 1 should be one month after initialization")
+    check(module.target_month("2026080800", 4) == "202612", "NMME public lead 4 should align with the shared December target")
+    check(module.target_month("2026080800", 6) == "202702", "NMME lead conversion should cross the year boundary")
     for product in ("probability_above_normal", "probability_near_normal", "probability_below_normal", "multi_model_consensus"):
         base = module.spec_for(product, "2m_temperature_anomaly")
         check(len(base["anomaly_ticks"]) == len(base["anomaly_palette"]) + 1, f"NMME {product} color bounds must align with swatches")
+    above = module.spec_for("probability_above_normal", "2m_temperature_anomaly")
+    near = module.spec_for("probability_near_normal", "2m_temperature_anomaly")
+    below = module.spec_for("probability_below_normal", "2m_temperature_anomaly")
+    check("(°C)" not in above["title"] and above["title"].endswith("(%)"), "NMME probability title must use percent rather than temperature units")
+    check(len({tuple(above["anomaly_palette"]), tuple(near["anomaly_palette"]), tuple(below["anomaly_palette"])}) == 3, "NMME probability categories need distinct semantic palettes")
+    triplet = {
+        "prob_above": module.Grid([0.0, 1.0], [0.0], [[20.0, 60.0]]),
+        "prob_norm": module.Grid([0.0, 1.0], [0.0], [[30.0, 25.0]]),
+        "prob_below": module.Grid([0.0, 1.0], [0.0], [[50.0, 15.0]]),
+    }
+    integrity = module.probability_triplet_check(triplet)
+    check(integrity["maximum_sum_error_percent"] == 0.0, "valid NMME category probabilities should pass the sum check")
+    triplet["prob_below"] = module.Grid([0.0, 1.0], [0.0], [[40.0, 15.0]])
+    try:
+        module.probability_triplet_check(triplet)
+    except module.NMMEError:
+        pass
+    else:
+        raise AssertionError("NMME probability triplets that do not sum to 100 must fail closed")
     check("model_spread" in module.RETIRED_PRODUCTS, "retired NMME spread product must be purged from retained manifests")
     check("model_spread" not in workflow, "NMME workflow must not schedule or expose model spread")
     check("model_spread" not in pages, "Pages workflow must not expose model spread")
-    print("NMME CONTRACT OK: official anomaly/probability feeds, consensus, retired spread purge, workflow, and viewer paths")
+    print("NMME CONTRACT OK: aligned public leads, validated category triplets, semantic palettes, official feeds, and workflow")
     return 0
 
 

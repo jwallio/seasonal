@@ -47,6 +47,11 @@ def main() -> int:
     check((height_spec["anomaly_min"], height_spec["anomaly_max"]) == (-100.0, 100.0), "a future validated GEOS 500-mb map should use the shared ±100 m range")
     check(height_spec["anomaly_ticks"] == list(range(-100, 101, 10)), "a future validated GEOS 500-mb map should use 10-metre labelled bounds")
     check(module.SUPERENSEMBLE_PRODUCTS == frozenset(module.DEFAULT_PRODUCTS), "only validated NASA products may enter the blend")
+    mslp_spec = module.PRODUCT_SPECS[module.PRODUCT_MSLP_ANOMALY]
+    check((mslp_spec["anomaly_min"], mslp_spec["anomaly_max"]) == (-10.0, 10.0), "NASA MSLP should use ±10 hPa")
+    sst_spec = module.PRODUCT_SPECS[module.PRODUCT_SST_ANOMALY]
+    check((sst_spec["anomaly_min"], sst_spec["anomaly_max"]) == (-3.0, 3.0), "NASA SST should use ±3°C")
+    check(sst_spec["map_domain"] == "ocean", "NASA SST must retain an ocean-only render mask")
     for product in (
         module.PRODUCT_T850_ANOMALY,
         module.PRODUCT_T2M_ANOMALY,

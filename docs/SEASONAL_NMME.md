@@ -18,6 +18,17 @@ bundle uses 2-m temperature for the probability and consensus products.
 Change `base_product` to precipitation or 200-mb height for those derived
 products.
 
+Public lead numbers follow the same convention as the other seasonal suites:
+lead 4 from an August initialization is December. The decoder maps that to the
+CPC NetCDF target coordinate, whose index 0 is the initialization month. Thus
+the default 4–6 seasonal window is DJF rather than November–January.
+
+The above-, near-, and below-normal fields are decoded as a triplet and are
+published only after their finite masks match, every value lies in 0–100%, and
+their pointwise sum is 100% within tolerance. Each category uses its own
+sequential color family (red, green, or blue), and probability titles/legends
+are labelled in percent rather than temperature units.
+
 Official sources:
 
 - [NOAA CPC NMME data](https://www.cpc.ncep.noaa.gov/products/NMME/data.html)
