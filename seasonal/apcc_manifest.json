@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
   "kind": "apcc_seasonal_manifest",
-  "generated_utc": "2026-08-16T23:28:26Z",
+  "generated_utc": "2026-08-19T17:18:06Z",
   "source": "APCC multi-model ensemble via CLIK",
   "source_url": "https://apcc21.org/clik/processing/prediction",
   "source_urls": [
     "https://apcc21.org/clik/processing/prediction",
-    "https://apcc21.org/clik/dataset/mme/3-MON?lang=en",
+    "https://apcc21.org/clik/dataset/mme/6-MON?lang=en",
     "https://apcc21.org/clik/clikapi?lang=en"
   ],
   "acknowledgement": "APCC MME data collected and reproduced by APCC based on hindcast/forecast data produced by APCC MME Producing Centres.",
@@ -23,6 +23,475 @@
     "history_cycles": 3
   },
   "runs": [
+    {
+      "id": "apcc-202609-sea_surface_temperature_anomaly",
+      "init_utc": "2026-08-18T00:00:00Z",
+      "product": "sea_surface_temperature_anomaly",
+      "status": "rendered",
+      "source": "APCC multi-model ensemble via CLIK",
+      "source_url": "https://apcc21.org/clik/processing/prediction",
+      "dataset": "MME_6MONTH",
+      "lead_month": "6-MON",
+      "forecast_horizon": "6-MON",
+      "request_target_month": "202609",
+      "resolution": "2.5",
+      "method": "SCM",
+      "requested_target_window": "3,4,5",
+      "native_period": {
+        "season_code": "DJF",
+        "season_year": 2026,
+        "period_label": "DJF 2027",
+        "target_code": "202612-202702",
+        "first_target": "202612",
+        "valid_start_utc": "2026-12-01T00:00:00Z",
+        "valid_end_utc": "2027-03-01T00:00:00Z",
+        "days": 90,
+        "forecast_info": "Seasonal Mean Forecast for DJF (2026SONDJF)"
+      },
+      "targets": [
+        {
+          "id": "apcc-202609-ssta-202612-202702",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": "6-MON",
+          "target_month": "202612-202702",
+          "period_label": "DJF 2027",
+          "aggregation": "native APCC seasonal mean",
+          "field": "sst_anomaly",
+          "units": "\u00b0C",
+          "raw_field": "sea-surface temperature anomaly",
+          "raw_units": "deg K",
+          "statistic": "APCC multi-model ensemble mean",
+          "ensemble_scope": "APCC MME seasonal product",
+          "source_urls": [
+            "https://apcc21.org/clik/dataset/mme/6-MON?lang=en",
+            "https://apcc21.org/clik/clikapi?lang=en"
+          ],
+          "source_period": {
+            "season_code": "DJF",
+            "season_year": 2026,
+            "period_label": "DJF 2027",
+            "target_code": "202612-202702",
+            "first_target": "202612",
+            "valid_start_utc": "2026-12-01T00:00:00Z",
+            "valid_end_utc": "2027-03-01T00:00:00Z",
+            "days": 90,
+            "forecast_info": "Seasonal Mean Forecast for DJF (2026SONDJF)"
+          },
+          "source_issue_utc": "2026-08-18T00:00:00Z",
+          "status": "rendered",
+          "image": "public/seasonal/apcc/202609/apcc_ssta_202612-202702.jpg",
+          "source_file": ".cache/apcc/extracted/mme_6month_6-mon_202609_prec_slp_sst_t2m_t850_z500/FORECAST_SCM_SEP_DJF_2026_sst.nc",
+          "data_range": {
+            "min": -2.9489,
+            "max": 5.4683,
+            "p05": -0.2532,
+            "p95": 2.1836,
+            "finite_points": 7053
+          },
+          "native_grid": {
+            "longitude_degrees": 2.5,
+            "latitude_degrees": 2.5
+          },
+          "baseline": {
+            "status": "native_source_anomaly",
+            "label": "Native APCC MME anomaly"
+          }
+        }
+      ],
+      "output_dir": "public/seasonal/apcc"
+    },
+    {
+      "id": "apcc-202609-precipitation_anomaly",
+      "init_utc": "2026-08-18T00:00:00Z",
+      "product": "precipitation_anomaly",
+      "status": "rendered",
+      "source": "APCC multi-model ensemble via CLIK",
+      "source_url": "https://apcc21.org/clik/processing/prediction",
+      "dataset": "MME_6MONTH",
+      "lead_month": "6-MON",
+      "forecast_horizon": "6-MON",
+      "request_target_month": "202609",
+      "resolution": "2.5",
+      "method": "SCM",
+      "requested_target_window": "3,4,5",
+      "native_period": {
+        "season_code": "DJF",
+        "season_year": 2026,
+        "period_label": "DJF 2027",
+        "target_code": "202612-202702",
+        "first_target": "202612",
+        "valid_start_utc": "2026-12-01T00:00:00Z",
+        "valid_end_utc": "2027-03-01T00:00:00Z",
+        "days": 90,
+        "forecast_info": "Seasonal Mean Forecast for DJF (2026SONDJF)"
+      },
+      "targets": [
+        {
+          "id": "apcc-202609-preca-202612-202702",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": "6-MON",
+          "target_month": "202612-202702",
+          "period_label": "DJF 2027",
+          "aggregation": "seasonal accumulation from native APCC seasonal mean",
+          "field": "precipitation_anomaly",
+          "units": "mm",
+          "raw_field": "precipitation anomaly",
+          "raw_units": "mm/day",
+          "statistic": "APCC multi-model ensemble mean",
+          "ensemble_scope": "APCC MME seasonal product",
+          "source_urls": [
+            "https://apcc21.org/clik/dataset/mme/6-MON?lang=en",
+            "https://apcc21.org/clik/clikapi?lang=en"
+          ],
+          "source_period": {
+            "season_code": "DJF",
+            "season_year": 2026,
+            "period_label": "DJF 2027",
+            "target_code": "202612-202702",
+            "first_target": "202612",
+            "valid_start_utc": "2026-12-01T00:00:00Z",
+            "valid_end_utc": "2027-03-01T00:00:00Z",
+            "days": 90,
+            "forecast_info": "Seasonal Mean Forecast for DJF (2026SONDJF)"
+          },
+          "source_issue_utc": "2026-08-18T00:00:00Z",
+          "status": "rendered",
+          "image": "public/seasonal/apcc/202609/apcc_preca_202612-202702.jpg",
+          "source_file": ".cache/apcc/extracted/mme_6month_6-mon_202609_prec_slp_sst_t2m_t850_z500/FORECAST_SCM_SEP_DJF_2026_prec.nc",
+          "data_range": {
+            "min": -641.0214,
+            "max": 1113.0227,
+            "p05": -139.3099,
+            "p95": 102.1893,
+            "finite_points": 10512
+          },
+          "native_grid": {
+            "longitude_degrees": 2.5,
+            "latitude_degrees": 2.5
+          },
+          "baseline": {
+            "status": "native_source_anomaly",
+            "label": "Native APCC MME anomaly"
+          },
+          "conversion": "seasonal mean mm/day \u00d7 valid-season days = seasonal accumulation mm"
+        }
+      ],
+      "output_dir": "public/seasonal/apcc"
+    },
+    {
+      "id": "apcc-202609-mslp_anomaly",
+      "init_utc": "2026-08-18T00:00:00Z",
+      "product": "mslp_anomaly",
+      "status": "rendered",
+      "source": "APCC multi-model ensemble via CLIK",
+      "source_url": "https://apcc21.org/clik/processing/prediction",
+      "dataset": "MME_6MONTH",
+      "lead_month": "6-MON",
+      "forecast_horizon": "6-MON",
+      "request_target_month": "202609",
+      "resolution": "2.5",
+      "method": "SCM",
+      "requested_target_window": "3,4,5",
+      "native_period": {
+        "season_code": "DJF",
+        "season_year": 2026,
+        "period_label": "DJF 2027",
+        "target_code": "202612-202702",
+        "first_target": "202612",
+        "valid_start_utc": "2026-12-01T00:00:00Z",
+        "valid_end_utc": "2027-03-01T00:00:00Z",
+        "days": 90,
+        "forecast_info": "Seasonal Mean Forecast for DJF (2026SONDJF)"
+      },
+      "targets": [
+        {
+          "id": "apcc-202609-slpa-202612-202702",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": "6-MON",
+          "target_month": "202612-202702",
+          "period_label": "DJF 2027",
+          "aggregation": "native APCC seasonal mean",
+          "field": "mslp_anomaly",
+          "units": "hPa",
+          "raw_field": "mean sea-level pressure anomaly",
+          "raw_units": "mb",
+          "statistic": "APCC multi-model ensemble mean",
+          "ensemble_scope": "APCC MME seasonal product",
+          "source_urls": [
+            "https://apcc21.org/clik/dataset/mme/6-MON?lang=en",
+            "https://apcc21.org/clik/clikapi?lang=en"
+          ],
+          "source_period": {
+            "season_code": "DJF",
+            "season_year": 2026,
+            "period_label": "DJF 2027",
+            "target_code": "202612-202702",
+            "first_target": "202612",
+            "valid_start_utc": "2026-12-01T00:00:00Z",
+            "valid_end_utc": "2027-03-01T00:00:00Z",
+            "days": 90,
+            "forecast_info": "Seasonal Mean Forecast for DJF (2026SONDJF)"
+          },
+          "source_issue_utc": "2026-08-18T00:00:00Z",
+          "status": "rendered",
+          "image": "public/seasonal/apcc/202609/apcc_slpa_202612-202702.jpg",
+          "source_file": ".cache/apcc/extracted/mme_6month_6-mon_202609_prec_slp_sst_t2m_t850_z500/FORECAST_SCM_SEP_DJF_2026_slp.nc",
+          "data_range": {
+            "min": -7.3951,
+            "max": 4.2052,
+            "p05": -2.482,
+            "p95": 2.213,
+            "finite_points": 10512
+          },
+          "native_grid": {
+            "longitude_degrees": 2.5,
+            "latitude_degrees": 2.5
+          },
+          "baseline": {
+            "status": "native_source_anomaly",
+            "label": "Native APCC MME anomaly"
+          }
+        }
+      ],
+      "output_dir": "public/seasonal/apcc"
+    },
+    {
+      "id": "apcc-202609-850mb_temperature_anomaly",
+      "init_utc": "2026-08-18T00:00:00Z",
+      "product": "850mb_temperature_anomaly",
+      "status": "rendered",
+      "source": "APCC multi-model ensemble via CLIK",
+      "source_url": "https://apcc21.org/clik/processing/prediction",
+      "dataset": "MME_6MONTH",
+      "lead_month": "6-MON",
+      "forecast_horizon": "6-MON",
+      "request_target_month": "202609",
+      "resolution": "2.5",
+      "method": "SCM",
+      "requested_target_window": "3,4,5",
+      "native_period": {
+        "season_code": "DJF",
+        "season_year": 2026,
+        "period_label": "DJF 2027",
+        "target_code": "202612-202702",
+        "first_target": "202612",
+        "valid_start_utc": "2026-12-01T00:00:00Z",
+        "valid_end_utc": "2027-03-01T00:00:00Z",
+        "days": 90,
+        "forecast_info": "Seasonal Mean Forecast for DJF (2026SONDJF)"
+      },
+      "targets": [
+        {
+          "id": "apcc-202609-t850a-202612-202702",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": "6-MON",
+          "target_month": "202612-202702",
+          "period_label": "DJF 2027",
+          "aggregation": "native APCC seasonal mean",
+          "field": "t850_anomaly",
+          "units": "\u00b0C",
+          "raw_field": "850-mb temperature anomaly",
+          "raw_units": "deg K",
+          "statistic": "APCC multi-model ensemble mean",
+          "ensemble_scope": "APCC MME seasonal product",
+          "source_urls": [
+            "https://apcc21.org/clik/dataset/mme/6-MON?lang=en",
+            "https://apcc21.org/clik/clikapi?lang=en"
+          ],
+          "source_period": {
+            "season_code": "DJF",
+            "season_year": 2026,
+            "period_label": "DJF 2027",
+            "target_code": "202612-202702",
+            "first_target": "202612",
+            "valid_start_utc": "2026-12-01T00:00:00Z",
+            "valid_end_utc": "2027-03-01T00:00:00Z",
+            "days": 90,
+            "forecast_info": "Seasonal Mean Forecast for DJF (2026SONDJF)"
+          },
+          "source_issue_utc": "2026-08-18T00:00:00Z",
+          "status": "rendered",
+          "image": "public/seasonal/apcc/202609/apcc_t850a_202612-202702.jpg",
+          "source_file": ".cache/apcc/extracted/mme_6month_6-mon_202609_prec_slp_sst_t2m_t850_z500/FORECAST_SCM_SEP_DJF_2026_t850.nc",
+          "data_range": {
+            "min": -1.44,
+            "max": 4.0864,
+            "p05": -0.0979,
+            "p95": 2.3947,
+            "finite_points": 10512
+          },
+          "native_grid": {
+            "longitude_degrees": 2.5,
+            "latitude_degrees": 2.5
+          },
+          "baseline": {
+            "status": "native_source_anomaly",
+            "label": "Native APCC MME anomaly"
+          }
+        }
+      ],
+      "output_dir": "public/seasonal/apcc"
+    },
+    {
+      "id": "apcc-202609-500mb_height_anomaly",
+      "init_utc": "2026-08-18T00:00:00Z",
+      "product": "500mb_height_anomaly",
+      "status": "rendered",
+      "source": "APCC multi-model ensemble via CLIK",
+      "source_url": "https://apcc21.org/clik/processing/prediction",
+      "dataset": "MME_6MONTH",
+      "lead_month": "6-MON",
+      "forecast_horizon": "6-MON",
+      "request_target_month": "202609",
+      "resolution": "2.5",
+      "method": "SCM",
+      "requested_target_window": "3,4,5",
+      "native_period": {
+        "season_code": "DJF",
+        "season_year": 2026,
+        "period_label": "DJF 2027",
+        "target_code": "202612-202702",
+        "first_target": "202612",
+        "valid_start_utc": "2026-12-01T00:00:00Z",
+        "valid_end_utc": "2027-03-01T00:00:00Z",
+        "days": 90,
+        "forecast_info": "Seasonal Mean Forecast for DJF (2026SONDJF)"
+      },
+      "targets": [
+        {
+          "id": "apcc-202609-z500a-202612-202702",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": "6-MON",
+          "target_month": "202612-202702",
+          "period_label": "DJF 2027",
+          "aggregation": "native APCC seasonal mean",
+          "field": "z500_anomaly",
+          "units": "m",
+          "raw_field": "geopotential height anomaly",
+          "raw_units": "m",
+          "statistic": "APCC multi-model ensemble mean",
+          "ensemble_scope": "APCC MME seasonal product",
+          "source_urls": [
+            "https://apcc21.org/clik/dataset/mme/6-MON?lang=en",
+            "https://apcc21.org/clik/clikapi?lang=en"
+          ],
+          "source_period": {
+            "season_code": "DJF",
+            "season_year": 2026,
+            "period_label": "DJF 2027",
+            "target_code": "202612-202702",
+            "first_target": "202612",
+            "valid_start_utc": "2026-12-01T00:00:00Z",
+            "valid_end_utc": "2027-03-01T00:00:00Z",
+            "days": 90,
+            "forecast_info": "Seasonal Mean Forecast for DJF (2026SONDJF)"
+          },
+          "source_issue_utc": "2026-08-18T00:00:00Z",
+          "status": "rendered",
+          "image": "public/seasonal/apcc/202609/apcc_z500a_202612-202702.jpg",
+          "source_file": ".cache/apcc/extracted/mme_6month_6-mon_202609_prec_slp_sst_t2m_t850_z500/FORECAST_SCM_SEP_DJF_2026_z500.nc",
+          "data_range": {
+            "min": -69.9607,
+            "max": 82.7584,
+            "p05": -14.5309,
+            "p95": 50.7009,
+            "finite_points": 10512
+          },
+          "native_grid": {
+            "longitude_degrees": 2.5,
+            "latitude_degrees": 2.5
+          },
+          "baseline": {
+            "status": "native_source_anomaly",
+            "label": "Native APCC MME anomaly"
+          }
+        }
+      ],
+      "output_dir": "public/seasonal/apcc"
+    },
+    {
+      "id": "apcc-202609-2m_temperature_anomaly",
+      "init_utc": "2026-08-18T00:00:00Z",
+      "product": "2m_temperature_anomaly",
+      "status": "rendered",
+      "source": "APCC multi-model ensemble via CLIK",
+      "source_url": "https://apcc21.org/clik/processing/prediction",
+      "dataset": "MME_6MONTH",
+      "lead_month": "6-MON",
+      "forecast_horizon": "6-MON",
+      "request_target_month": "202609",
+      "resolution": "2.5",
+      "method": "SCM",
+      "requested_target_window": "3,4,5",
+      "native_period": {
+        "season_code": "DJF",
+        "season_year": 2026,
+        "period_label": "DJF 2027",
+        "target_code": "202612-202702",
+        "first_target": "202612",
+        "valid_start_utc": "2026-12-01T00:00:00Z",
+        "valid_end_utc": "2027-03-01T00:00:00Z",
+        "days": 90,
+        "forecast_info": "Seasonal Mean Forecast for DJF (2026SONDJF)"
+      },
+      "targets": [
+        {
+          "id": "apcc-202609-t2ma-202612-202702",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": "6-MON",
+          "target_month": "202612-202702",
+          "period_label": "DJF 2027",
+          "aggregation": "native APCC seasonal mean",
+          "field": "t2m_anomaly",
+          "units": "\u00b0C",
+          "raw_field": "2-m temperature anomaly",
+          "raw_units": "deg K",
+          "statistic": "APCC multi-model ensemble mean",
+          "ensemble_scope": "APCC MME seasonal product",
+          "source_urls": [
+            "https://apcc21.org/clik/dataset/mme/6-MON?lang=en",
+            "https://apcc21.org/clik/clikapi?lang=en"
+          ],
+          "source_period": {
+            "season_code": "DJF",
+            "season_year": 2026,
+            "period_label": "DJF 2027",
+            "target_code": "202612-202702",
+            "first_target": "202612",
+            "valid_start_utc": "2026-12-01T00:00:00Z",
+            "valid_end_utc": "2027-03-01T00:00:00Z",
+            "days": 90,
+            "forecast_info": "Seasonal Mean Forecast for DJF (2026SONDJF)"
+          },
+          "source_issue_utc": "2026-08-18T00:00:00Z",
+          "status": "rendered",
+          "image": "public/seasonal/apcc/202609/apcc_t2ma_202612-202702.jpg",
+          "source_file": ".cache/apcc/extracted/mme_6month_6-mon_202609_prec_slp_sst_t2m_t850_z500/FORECAST_SCM_SEP_DJF_2026_t2m.nc",
+          "data_range": {
+            "min": -1.4305,
+            "max": 4.7981,
+            "p05": -0.0233,
+            "p95": 2.7589,
+            "finite_points": 10512
+          },
+          "native_grid": {
+            "longitude_degrees": 2.5,
+            "latitude_degrees": 2.5
+          },
+          "baseline": {
+            "status": "native_source_anomaly",
+            "label": "Native APCC MME anomaly"
+          }
+        }
+      ],
+      "output_dir": "public/seasonal/apcc"
+    },
     {
       "id": "apcc-202608-sea_surface_temperature_anomaly",
       "init_utc": "2026-08-01T00:00:00Z",
