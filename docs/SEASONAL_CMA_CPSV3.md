@@ -12,9 +12,12 @@ variables, units, grid, and hindcast-year attributes in the manifest. It does
 not use the obsolete BCC-CGCM1/BCC-CPSv2 download archive.
 
 The WMO server currently omits its RapidSSL intermediate certificate during
-the TLS handshake. The adapter supplies the official DigiCert intermediate,
-pins its published SHA-256 fingerprint, and keeps hostname and certificate
-validation enabled. It never uses an insecure `verify=False` fallback.
+the TLS handshake. The adapter keeps the platform trusted-root store, adds the
+official DigiCert intermediate for chain building, pins its published SHA-256
+fingerprint, and keeps hostname and certificate validation enabled. Transient
+WMO connection and server errors are retried with backoff, and download
+requests preserve the same origin/referrer context as the official form. It
+never uses an insecure `verify=False` fallback.
 
 ## Available forecast horizon
 

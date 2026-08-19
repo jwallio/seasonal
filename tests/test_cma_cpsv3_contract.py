@@ -55,9 +55,25 @@ def main() -> int:
     check(module.WMOLC_INTERMEDIATE_CA.exists(), "the WMO TLS intermediate is missing")
     certificate = module.ssl.PEM_cert_to_DER_cert(module.WMOLC_INTERMEDIATE_CA.read_text(encoding="ascii"))
     check(module.hashlib.sha256(certificate).hexdigest() == module.WMOLC_INTERMEDIATE_CA_SHA256, "the WMO TLS intermediate fingerprint changed")
+    tls_context = module.wmolc_ssl_context()
+    check(tls_context.verify_mode == module.ssl.CERT_REQUIRED, "WMO TLS must require a valid certificate")
+    check(tls_context.check_hostname, "WMO TLS must verify the server hostname")
+    trusted_fingerprints = {
+        module.hashlib.sha256(item).hexdigest()
+        for item in tls_context.get_ca_certs(binary_form=True)
+    }
+    check(module.WMOLC_INTERMEDIATE_CA_SHA256 in trusted_fingerprints, "the WMO TLS context did not load the pinned intermediate")
+    check(len(trusted_fingerprints) > 1, "the WMO TLS context must retain the platform root store")
+    source_session = module.requests_session()
+    source_adapter = source_session.get_adapter(f"{module.WMOLC_ROOT}/")
+    check(source_adapter.max_retries.total == 4, "WMO TLS requests must retry transient connection failures")
+    check("POST" in source_adapter.max_retries.allowed_methods, "idempotent WMO listing/download POST requests must be retryable")
     check(module.bundle_name("202608") == "beijing_202608_202609_202611.nc", "WMO Beijing bundle name is misaligned")
     check(module.issue_directory("202608") == "/forecast/Beijing/2026/08", "WMO Beijing issue directory is incorrect")
     check(module.parse_init("2026080100") == "202608", "full issue initialization should normalize to YYYYMM")
+    run_source = ADAPTER.read_text(encoding="utf-8")
+    check('source_token = ""' in run_source, "explicit WMO issue runs must discover their download token")
+    check('source_token = "local source file"' in run_source, "local source-file runs must retain their provenance label")
     check(module.parse_leads("1,2,3", "test") == [1, 2, 3], "supported WMO leads should parse in order")
     try:
         module.parse_leads("4", "test")
@@ -125,7 +141,8 @@ def main() -> int:
     for term in (
         "WMO LC-SPMME", "GPC Beijing", "directDownload", "forecast_time0", "hindcast_start_year",
         "kg m-2 s-1", "xarray", "netCDF4", "--previous-manifest", "--retain-cycles",
-        "RapidSSLTLSRSACAG1.crt.pem", "WMOLC_INTERMEDIATE_CA_SHA256",
+        "RapidSSLTLSRSACAG1.crt.pem", "WMOLC_INTERMEDIATE_CA_SHA256", "ssl.create_default_context",
+        '"Origin": WMOLC_ROOT', '"Referer": WMOLC_DIRECT_URL',
     ):
         check(term in adapter_text or term in workflow or term in documentation, f"missing CMA source contract term: {term}")
     check("verify=False" not in adapter_text, "the CMA adapter must never disable TLS verification")
