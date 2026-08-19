@@ -72,6 +72,7 @@ CFSV2_STANDALONE_PRODUCTS = frozenset(
 )
 CFSV2_MEMBER_KEY = "noaa_cfsv2_rolling40"
 GEOS_MEMBER_KEY = "nasa_geos_s2s3"
+MEMBER_FOOTER_MAX_CHARS = 142
 PRODUCTS = tuple(c3s.PRODUCT_SPECS)
 
 PRODUCT_LABELS = {
@@ -192,6 +193,7 @@ class MemberDefinition:
     label: str
     source_package: str
     system: str
+    footer_label: str = ""
     internal_members: int | None = None
     notes: str = ""
 
@@ -238,6 +240,7 @@ def canonical_members(product: str) -> list[MemberDefinition]:
             label=f"{c3s.CENTRES[centre]['label']} / System {c3s.CENTRES[centre]['system']}",
             source_package="Copernicus C3S",
             system=f"{centre}/{c3s.CENTRES[centre]['system']}",
+            footer_label=f"{c3s.CENTRES[centre]['label']} S{c3s.CENTRES[centre]['system']}",
             internal_members=int(c3s.CENTRES[centre]["members"]),
             notes="Official C3S postprocessed ensemble-mean anomaly",
         )
@@ -250,6 +253,7 @@ def canonical_members(product: str) -> list[MemberDefinition]:
                 label="NOAA CFSv2 40-cycle rolling blend",
                 source_package="NOAA CFSv2 NOMADS",
                 system="10-day lagged initial-condition blend",
+                footer_label="NOAA CFSv2 rolling blend",
                 internal_members=40,
                 notes="One CFSv2-family vote; C3S NCEP and NMME CFSv2 copies are excluded",
             )
@@ -260,6 +264,7 @@ def canonical_members(product: str) -> list[MemberDefinition]:
             label="ECCC CanSIPS v3 family",
             source_package="ECCC CanSIPS v3",
             system="20 GEM5.2-NEMO + 20 CanESM5 members",
+            footer_label="ECCC CanSIPS v3",
             internal_members=cansips.CANSIPS_ENSEMBLE_MEMBERS,
             notes="One ECCC family vote; C3S ECCC and NMME ECCC copies are excluded",
         )
@@ -271,6 +276,7 @@ def canonical_members(product: str) -> list[MemberDefinition]:
                 label="NASA GEOS-S2S-3",
                 source_package="NASA GEOS-S2S-3 NCCS numerical archive",
                 system="GEOS-S2S-3 APCN lag/burst ensemble",
+                footer_label="NASA GEOS-S2S-3",
                 notes="One NASA-family vote; the NMME NASA_GEOS5v2 copy is excluded",
             )
         )
@@ -281,6 +287,7 @@ def canonical_members(product: str) -> list[MemberDefinition]:
                 label=f"NMME {component}",
                 source_package="NOAA CPC NMME component archive",
                 system=component,
+                footer_label=f"NMME {component.replace('_', ' ')}",
                 notes="Unique NMME component not otherwise represented in C3S/CanSIPS",
             )
             for component in NMME_UNIQUE_COMPONENTS
@@ -345,6 +352,44 @@ def weights_for(keys: list[str], definitions: dict[str, MemberDefinition]) -> li
         }
         for key in keys
     ]
+
+
+def included_models_footer(
+    keys: list[str],
+    definitions: dict[str, MemberDefinition],
+) -> str:
+    """Return a compact footer naming the families that contributed to a map."""
+
+    if not keys:
+        return ""
+    labels = [definitions[key].footer_label or definitions[key].label for key in keys]
+    prefix = "Included models: "
+    separator = "  •  "
+    single_line = prefix + separator.join(labels)
+    if len(single_line) <= MEMBER_FOOTER_MAX_CHARS:
+        return single_line
+
+    balanced_splits: list[tuple[int, int, str, str]] = []
+    for split in range(1, len(labels)):
+        first = prefix + separator.join(labels[:split])
+        second = separator.join(labels[split:])
+        if len(first) <= MEMBER_FOOTER_MAX_CHARS and len(second) <= MEMBER_FOOTER_MAX_CHARS:
+            balanced_splits.append((abs(len(first) - len(second)), max(len(first), len(second)), first, second))
+    if balanced_splits:
+        _, _, first, second = min(balanced_splits)
+        return f"{first}\n{second}"
+
+    lines: list[str] = []
+    current = prefix
+    for label in labels:
+        joining_text = "" if current.endswith(": ") else separator
+        if not current.endswith(": ") and len(current) + len(joining_text) + len(label) > MEMBER_FOOTER_MAX_CHARS:
+            lines.append(current)
+            current = label
+        else:
+            current += joining_text + label
+    lines.append(current)
+    return "\n".join(lines)
 
 
 def load_c3s_members(
@@ -829,6 +874,7 @@ def render_product_run(
                     ensemble_label=f"{len(keys)}-family deduplicated mean",
                     height_grid=height,
                     product_spec=render_spec,
+                    footer_text=included_models_footer(keys, definitions),
                 )
                 entry["image"] = relative_path(output, root)
             entry["status"] = "partial" if len(keys) < len(expected) else ("decoded" if args.decode_only else "rendered")
@@ -922,6 +968,7 @@ def render_product_run(
                         ensemble_label=f"{len(keys)}-family deduplicated mean",
                         height_grid=height,
                         product_spec=render_spec,
+                        footer_text=included_models_footer(keys, definitions),
                     )
                     entry["image"] = relative_path(output, root)
                 entry["status"] = "partial" if len(keys) < len(expected) else ("decoded" if args.decode_only else "rendered")

@@ -36,7 +36,10 @@ long-range archive named `z500` declares 200 hPa and fails the adapter's
 strict pressure-level check.
 
 The complete included, missing, and excluded membership is written into
-`superensemble_manifest.json` for every product and target.
+`superensemble_manifest.json` for every product and target. Each rendered map
+also names the families that actually contributed in a footer; a partial map's
+footer therefore omits any unavailable family rather than showing the full
+expected roster.
 
 ## Baselines and seasonal windows
 

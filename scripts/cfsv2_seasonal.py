@@ -1229,6 +1229,7 @@ def render_map(
     region: tuple[float, float, float, float] = DEFAULT_REGION,
     product_spec: dict | None = None,
     initialization_label: str = "",
+    footer_text: str = "",
 ) -> None:
     try:
         import matplotlib
@@ -1388,8 +1389,9 @@ def render_map(
     # Match a 1080x1080 social-media footprint. Size the map box from the
     # projected bounds so the LCC geometry remains undistorted at square size.
     figure = plt.figure(figsize=(9.0, 9.0), facecolor="#f7f9fb")
-    map_left = 0.035
-    map_width = 0.93
+    has_footer = bool(footer_text.strip())
+    map_left = 0.05 if has_footer else 0.035
+    map_width = 0.90 if has_footer else 0.93
     map_height = map_width * (y_max - y_min) / (x_max - x_min)
     map_top = 0.88
     map_bottom = map_top - map_height
@@ -1641,7 +1643,9 @@ def render_map(
     )
     colorbar_height = 0.032
     colorbar_gap = 0.025
-    colorbar_bottom = max(0.055, map_bottom - colorbar_gap - colorbar_height)
+    footer_line_count = footer_text.count("\n") + 1 if has_footer else 0
+    colorbar_floor = 0.055 + 0.012 * footer_line_count
+    colorbar_bottom = max(colorbar_floor, map_bottom - colorbar_gap - colorbar_height)
     colorbar_axes = figure.add_axes([map_left, colorbar_bottom, map_width, colorbar_height])
     colorbar_options = {"ticks": colorbar_ticks}
     if anomaly:
@@ -1688,6 +1692,18 @@ def render_map(
     )
     colorbar.outline.set_edgecolor("#52636c")
     colorbar.outline.set_linewidth(0.65)
+    if has_footer:
+        figure.text(
+            0.5,
+            0.012,
+            footer_text,
+            ha="center",
+            va="bottom",
+            multialignment="center",
+            linespacing=1.18,
+            fontsize=6.3,
+            color="#52616b",
+        )
     output_path.parent.mkdir(parents=True, exist_ok=True)
     figure.savefig(output_path, dpi=120, facecolor=figure.get_facecolor())
     plt.close(figure)
