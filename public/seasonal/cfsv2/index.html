@@ -110,6 +110,11 @@
       if (/^\d{6}$/.test(value || '')) return dateLabel(`${value.slice(0,4)}-${value.slice(4,6)}-01T00:00:00Z`);
       return value || 'Selected target';
     }
+    function isFailedRun(run) {
+      if (String(run?.status || '').toLowerCase() === 'failed') return true;
+      const runTargets = Array.isArray(run?.targets) ? run.targets : [];
+      return runTargets.length > 0 && runTargets.every(target => String(target?.status || '').toLowerCase() === 'failed' && !target?.image);
+    }
     function productText(key) { return PRODUCT_LABELS[key] || String(key).replace(/_/g, ' '); }
     function populateSelect(select, options, selectedValue) {
       select.replaceChildren();
@@ -132,8 +137,10 @@
       const product = el('product-select').value;
       const available = runs.filter(run => productKey(run) === product);
       const current = requestedRunKey || (selectedRun ? runKey(selectedRun) : '');
+      const latestUsable = available.find(run => !isFailedRun(run)) || available[0];
+      const selectedKey = available.some(run => runKey(run) === current) ? current : runKey(latestUsable);
       const select = el('run-select');
-      populateSelect(select, available.map(run => ({value:runKey(run),label:`Init ${initLabel(run.init_utc)} · ${run.status || 'unknown'}`})), available.some(run => runKey(run) === current) ? current : runKey(available[0]));
+      populateSelect(select, available.map(run => ({value:runKey(run),label:`Init ${initLabel(run.init_utc)} · ${run.status || 'unknown'}`})), selectedKey);
       selectedRun = available.find(run => runKey(run) === select.value) || available[0] || null;
       targets = selectedRun?.targets || [];
       el('controls').replaceChildren(...targets.map((target,index) => {
@@ -173,8 +180,8 @@
       if (!runs.length) throw new Error('No CFSv2 run is present yet.');
       renderProductSelector();
       renderRunSelector();
-      const history = manifest.retention?.history_runs ?? Math.max(0, runs.length - 1);
-      el('footer').textContent = `Source: ${manifest.source || 'NOAA CFSv2 NOMADS'} · Generated ${manifest.generated_utc || '—'} · Retaining ${history} prior run${history === 1 ? '' : 's'}`;
+      const history = manifest.retention?.history_runs_per_product ?? manifest.retention?.history_runs ?? Math.max(0, runs.length - 1);
+      el('footer').textContent = `Source: ${manifest.source || 'NOAA CFSv2 NOMADS'} · Generated ${manifest.generated_utc || '—'} · Retaining ${history} prior run${history === 1 ? '' : 's'} per parameter`;
       pick(preferredTargetIndex());
     }).catch(error => { el('map-title').textContent='CFSv2 manifest unavailable'; el('run-status').textContent='waiting'; el('map-wrap').innerHTML=`<div class="empty">${error.message}<br><br>The scheduled workflow will populate this page after its next successful run.</div>`; el('footer').textContent='Source: NOAA CFSv2 NOMADS · Waiting for the first published manifest.'; });
   </script>
