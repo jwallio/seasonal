@@ -1,0 +1,128 @@
+name: CMA CPSv3 Seasonal Graphics
+
+on:
+  schedule:
+    # WMO GPC contributions are normally exchanged from the 15th through the
+    # 20th. Run after that window so the current Beijing package is complete.
+    - cron: "30 18 21 * *"
+  workflow_dispatch:
+    inputs:
+      product:
+        description: "CMA CPSv3 product bundle to generate"
+        required: false
+        default: "all"
+        type: choice
+        options:
+          - all
+          - 500mb_height_anomaly
+          - 850mb_temperature_anomaly
+          - 2m_temperature_anomaly
+          - precipitation_anomaly
+          - sea_surface_temperature_anomaly
+          - mslp_anomaly
+      init:
+        description: "WMO GPC Beijing issue month as YYYYMM, or latest"
+        required: false
+        default: "latest"
+        type: string
+      lead_months:
+        description: "WMO redistributed forecast months (1-3 only)"
+        required: false
+        default: "1,2,3"
+        type: string
+      seasonal_window:
+        description: "Consecutive WMO forecast months for the seasonal aggregate"
+        required: false
+        default: "1,2,3"
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: seasonal-cma-cpsv3-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      CMA_PRODUCT: ${{ inputs.product || 'all' }}
+      CMA_INIT: ${{ inputs.init || 'latest' }}
+      LEAD_MONTHS: ${{ inputs.lead_months || '1,2,3' }}
+      SEASONAL_WINDOW: ${{ inputs.seasonal_window || '1,2,3' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Install CMA CPSv3 rendering dependencies
+        run: python -m pip install --upgrade xarray netCDF4 matplotlib Pillow requests numpy
+
+      - name: Restore CMA CPSv3 source cache
+        uses: actions/cache@v4
+        with:
+          path: .cache/cma-cpsv3
+          key: cma-cpsv3-${{ runner.os }}-${{ env.CMA_INIT }}-${{ github.run_id }}-v1
+          restore-keys: |
+            cma-cpsv3-${{ runner.os }}-${{ env.CMA_INIT }}-
+            cma-cpsv3-${{ runner.os }}-
+
+      - name: Restore published CMA CPSv3 run history
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .cache/cma-cpsv3
+          published_manifest=".cache/cma-cpsv3/previous_manifest.json"
+          temporary_manifest="${published_manifest}.tmp"
+          pages_url="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/seasonal/cma_cpsv3_manifest.json"
+          if curl -fsSL --retry 2 --connect-timeout 10 "$pages_url" -o "$temporary_manifest"; then
+            mv "$temporary_manifest" "$published_manifest"
+            echo "Restored prior CMA CPSv3 manifest for current-plus-three cycle retention."
+          else
+            rm -f "$temporary_manifest" "$published_manifest"
+            echo "No prior published CMA CPSv3 manifest was available; starting a new history."
+          fi
+
+      - name: Render CMA CPSv3 products
+        run: |
+          python scripts/cma_cpsv3_seasonal.py \
+            --product "$CMA_PRODUCT" \
+            --init "$CMA_INIT" \
+            --lead-months "$LEAD_MONTHS" \
+            --seasonal-window "$SEASONAL_WINDOW" \
+            --cache-dir .cache/cma-cpsv3 \
+            --output-dir public/seasonal/cma_cpsv3 \
+            --manifest public/seasonal/cma_cpsv3_manifest.json \
+            --previous-manifest .cache/cma-cpsv3/previous_manifest.json \
+            --retain-cycles 4 \
+            --request-delay 0.5
+
+      - name: Package CMA CPSv3 Pages payload
+        if: success()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -d public/seasonal/cma_cpsv3
+          test -f public/seasonal/cma_cpsv3/index.html
+          test -f public/seasonal/cma_cpsv3_manifest.json
+          rm -rf pages-payload
+          mkdir -p pages-payload/cma_cpsv3
+          cp -R public/seasonal/cma_cpsv3/. pages-payload/cma_cpsv3/
+          cp public/seasonal/cma_cpsv3_manifest.json pages-payload/cma_cpsv3_manifest.json
+
+      - name: Upload CMA CPSv3 Pages payload
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cma-cpsv3-pages-${{ github.run_id }}
+          path: pages-payload
+          if-no-files-found: error
+          retention-days: 14

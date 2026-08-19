@@ -23,6 +23,7 @@ from urllib.parse import urljoin
 
 import c3s_seasonal as c3s
 import cansips_seasonal as cansips
+import cma_cpsv3_seasonal as cma
 import cfsv2_seasonal as cfsv2
 import geos_s2s3_seasonal as geos
 import nmme_seasonal as nmme
@@ -41,6 +42,8 @@ from cfsv2_seasonal import (
 SOURCE_URLS = [
     c3s.SOURCE_URL,
     cansips.CANSIPS_README_URL,
+    cma.WMOLC_BEIJING_INFO_URL,
+    cma.WMOLC_DIRECT_URL,
     cfsv2.NOMADS_ROOT,
     cfsv2.NCEI_CALIBRATION_ROOT,
     geos.NASA_NRT_ROOT,
@@ -72,6 +75,7 @@ CFSV2_STANDALONE_PRODUCTS = frozenset(
 )
 CFSV2_MEMBER_KEY = "noaa_cfsv2_rolling40"
 GEOS_MEMBER_KEY = "nasa_geos_s2s3"
+CMA_MEMBER_KEY = "cma_cpsv3"
 MEMBER_FOOTER_MAX_CHARS = 142
 PRODUCTS = tuple(c3s.PRODUCT_SPECS)
 
@@ -233,7 +237,7 @@ def c3s_centres_for(product: str) -> tuple[str, ...]:
     return C3S_CANONICAL_CENTRES
 
 
-def canonical_members(product: str) -> list[MemberDefinition]:
+def canonical_members(product: str, *, include_cma: bool = False) -> list[MemberDefinition]:
     members = [
         MemberDefinition(
             key=f"c3s_{centre}_system{c3s.CENTRES[centre]['system']}",
@@ -256,6 +260,18 @@ def canonical_members(product: str) -> list[MemberDefinition]:
                 footer_label="NOAA CFSv2 rolling blend",
                 internal_members=40,
                 notes="One CFSv2-family vote; C3S NCEP and NMME CFSv2 copies are excluded",
+            )
+        )
+    if include_cma:
+        members.append(
+            MemberDefinition(
+                key=CMA_MEMBER_KEY,
+                label="CMA CPSv3",
+                source_package="WMO LC-SPMME / GPC Beijing",
+                system="CMA CPSv3 21-member coupled seasonal system",
+                footer_label="CMA CPSv3",
+                internal_members=cma.CMA_ENSEMBLE_MEMBERS,
+                notes="Target-aligned WMO GPC Beijing anomaly; available only for redistributed forecast months 1-3",
             )
         )
     members.append(
@@ -298,8 +314,8 @@ def canonical_members(product: str) -> list[MemberDefinition]:
     return members
 
 
-def membership_ledger(product: str) -> dict[str, Any]:
-    included = canonical_members(product)
+def membership_ledger(product: str, *, include_cma: bool = False) -> dict[str, Any]:
+    included = canonical_members(product, include_cma=include_cma)
     return {
         "product": product,
         "weighting_unit": "canonical non-overlapping forecast-family source",
@@ -608,6 +624,44 @@ def load_cansips_member(
             print(f"super ensemble CanSIPS lead {lead} unavailable: {exc}", file=sys.stderr)
 
 
+def load_cma_member(
+    *,
+    product: str,
+    init: str,
+    leads: list[int],
+    cache_dir: Path,
+    root: Path,
+    member_grids: dict[int, dict[str, Grid]],
+    provenance: dict[int, dict[str, dict[str, Any]]],
+    errors: dict[int, dict[str, str]],
+) -> None:
+    if not leads or any(lead not in cma.SUPPORTED_LEADS for lead in leads):
+        return
+    try:
+        source_path, source_token = cma.download_bundle(cache_dir, init[:6])
+        grids, attrs, variable_attrs = cma.decode_product_bundle(source_path, product, init[:6], leads)
+    except Exception as exc:
+        for lead in leads:
+            errors[lead][CMA_MEMBER_KEY] = str(exc)
+        print(f"super ensemble CMA CPSv3 unavailable: {exc}", file=sys.stderr)
+        return
+    for lead in leads:
+        member_grids[lead][CMA_MEMBER_KEY] = grids[lead]
+        provenance[lead][CMA_MEMBER_KEY] = {
+            "source_package": "WMO LC-SPMME / GPC Beijing",
+            "archive_file": cma.bundle_name(init[:6]),
+            "archive_token": source_token,
+            "source_file": relative_path(source_path, root),
+            "source_variable": cma.PRODUCT_SPECS[product]["source_variable"],
+            "source_declared_units": variable_attrs.get("units", ""),
+            "internal_members": cma.CMA_ENSEMBLE_MEMBERS,
+            "baseline": {
+                "status": "provider_anomaly",
+                "label": cma.baseline_label(attrs),
+            },
+        }
+
+
 def load_nmme_members(
     *,
     product: str,
@@ -806,8 +860,8 @@ def render_product_run(
     height_grids: dict[int, dict[str, Grid]],
     provenance: dict[int, dict[str, dict[str, Any]]],
     errors: dict[int, dict[str, str]],
+    expected: list[MemberDefinition],
 ) -> tuple[dict[str, Any], int]:
-    expected = canonical_members(product)
     definitions = {member.key: member for member in expected}
     ordered_keys = [member.key for member in expected]
     run_id = f"superensemble-{init}-{product}"
@@ -824,7 +878,10 @@ def render_product_run(
         "statistic": "equal_weight_deduplicated_family_mean",
         "aggregation": "monthly or seasonal mean of canonical non-overlapping forecast-family anomalies",
         "ensemble_scope": f"up to {len(expected)} canonical forecast families",
-        "membership_policy": membership_ledger(product),
+        "membership_policy": membership_ledger(
+            product,
+            include_cma=CMA_MEMBER_KEY in definitions,
+        ),
         "synthetic_preview": bool(args.synthetic_preview),
         "targets": [],
         "status": "planned",
@@ -1028,6 +1085,13 @@ def write_manifest(
             "weighting": "equal weight",
             "seasonal_membership": "intersection across all constituent months",
             "native_baselines": True,
+            "conditional_packages": [
+                {
+                    "key": CMA_MEMBER_KEY,
+                    "label": "CMA CPSv3",
+                    "condition": "included only when every requested lead is within WMO forecast months 1-3",
+                }
+            ],
             "excluded_packages_by_product": {
                 product: canonical_exclusions(product) for product in PRODUCTS
             },
@@ -1053,6 +1117,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--minimum-members", type=int, default=6)
     parser.add_argument("--c3s-cache-dir", default=".cache/c3s")
     parser.add_argument("--cansips-cache-dir", default=".cache/cansips")
+    parser.add_argument("--cma-cache-dir", default=".cache/cma-cpsv3")
     parser.add_argument("--cfsv2-cache-dir", default=".cache/cfsv2")
     parser.add_argument("--cfsv2-rolling-state-dir", default=".cache/cfsv2/rolling")
     parser.add_argument("--cfsv2-anchor-init", default="latest", help="rolling CFSv2 anchor cycle or latest")
@@ -1098,6 +1163,7 @@ def run(args: argparse.Namespace) -> int:
 
     c3s_cache = resolve_path(args.c3s_cache_dir, root)
     cansips_cache = resolve_path(args.cansips_cache_dir, root)
+    cma_cache = resolve_path(args.cma_cache_dir, root)
     cfsv2_cache = resolve_path(args.cfsv2_cache_dir, root)
     cfsv2_state = resolve_path(args.cfsv2_rolling_state_dir, root)
     nmme_cache = resolve_path(args.nmme_cache_dir, root)
@@ -1114,7 +1180,8 @@ def run(args: argparse.Namespace) -> int:
     entries: list[dict[str, Any]] = []
     total_failures = 0
     for product in products:
-        expected = canonical_members(product)
+        include_cma = bool(leads) and all(lead in cma.SUPPORTED_LEADS for lead in leads)
+        expected = canonical_members(product, include_cma=include_cma)
         errors = {lead: {} for lead in leads}
         if args.synthetic_preview:
             member_grids, height_grids, provenance = synthetic_members(product, leads, expected)
@@ -1162,6 +1229,17 @@ def run(args: argparse.Namespace) -> int:
                 provenance=provenance,
                 errors=errors,
             )
+            if include_cma:
+                load_cma_member(
+                    product=product,
+                    init=init,
+                    leads=leads,
+                    cache_dir=cma_cache,
+                    root=root,
+                    member_grids=member_grids,
+                    provenance=provenance,
+                    errors=errors,
+                )
             load_geos_member(
                 args=args,
                 product=product,
@@ -1195,6 +1273,7 @@ def run(args: argparse.Namespace) -> int:
             height_grids=height_grids,
             provenance=provenance,
             errors=errors,
+            expected=expected,
         )
         entries.append(entry)
         total_failures += failures
@@ -1208,7 +1287,7 @@ def run(args: argparse.Namespace) -> int:
 def main() -> int:
     try:
         return run(build_parser().parse_args())
-    except (SuperEnsembleError, c3s.C3SError, cansips.CanSIPSError, geos.GEOSS2S3Error, nmme.NMMEError) as exc:
+    except (SuperEnsembleError, c3s.C3SError, cansips.CanSIPSError, cma.CMACPSv3Error, geos.GEOSS2S3Error, nmme.NMMEError) as exc:
         print(f"SUPER ENSEMBLE ERROR: {exc}", file=sys.stderr)
         return 2
 

@@ -105,6 +105,17 @@ jobs:
             cansips-${{ runner.os }}-
             superensemble-cansips-${{ runner.os }}-
 
+      - name: Restore CMA CPSv3 source cache
+        uses: actions/cache@v4
+        with:
+          path: .cache/cma-cpsv3
+          key: superensemble-cma-cpsv3-${{ runner.os }}-${{ env.SUPER_INIT }}-${{ github.run_id }}-v1
+          restore-keys: |
+            superensemble-cma-cpsv3-${{ runner.os }}-${{ env.SUPER_INIT }}-
+            cma-cpsv3-${{ runner.os }}-${{ env.SUPER_INIT }}-
+            cma-cpsv3-${{ runner.os }}-
+            superensemble-cma-cpsv3-${{ runner.os }}-
+
       - name: Restore rolling CFSv2 state
         uses: actions/cache@v4
         with:
@@ -177,6 +188,7 @@ jobs:
             --minimum-members "$MINIMUM_MEMBERS" \
             --c3s-cache-dir .cache/c3s \
             --cansips-cache-dir .cache/cansips \
+            --cma-cache-dir .cache/cma-cpsv3 \
             --cfsv2-cache-dir .cache/cfsv2 \
             --cfsv2-rolling-state-dir .cache/cfsv2/rolling \
             --cfsv2-anchor-init latest \

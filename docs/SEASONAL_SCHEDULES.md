@@ -10,6 +10,7 @@ provider is late or a historical cycle needs to be regenerated.
 | --- | --- | --- |
 | CFSv2 | New model cycles every 6 hours | Twice daily at 10:35 and 22:35, after the 06Z and 18Z cycles |
 | CanSIPS v3 | ECCC monthly refresh on the 1st | 2nd of each month at 16:30 |
+| CMA CPSv3 | WMO GPC Beijing exchange window on the 15th-20th | 21st of each month at 18:30 |
 | NOAA NMME | CPC public products update on the 9th | 9th of each month at 15:30 |
 | ECMWF SEAS5 | ECMWF 7-month forecast on the 5th at 12:00 | 5th of each month at 15:30 |
 | C3S multi-system | Non-ECMWF systems on the 10th at 12:00 | 10th of each month at 15:30 |
@@ -28,6 +29,8 @@ load; the dates above are release-aligned targets, not provider SLAs.
 - [ECMWF dissemination schedule](https://confluence.ecmwf.int/pages/viewpage.action?pageId=685248329)
 - [C3S announcements and publication timing](https://confluence.ecmwf.int/spaces/CKB/pages/135565670/Announcements)
 - [ECCC CanSIPS global forecast service](https://eccc-scenarios.collab.science.gc.ca/?page=cansips-global)
+- [WMO GPC Beijing system configuration](https://www.wmolc.org/contents2/index/Beijing)
+- [WMO seasonal direct data exchange](https://www.wmolc.org/seasonDownload/direct)
 - [NOAA CPC NMME User's Guide](https://www.cpc.ncep.noaa.gov/products/NMME/users_guide.html)
 - [NOAA NOMADS](https://nomads.ncep.noaa.gov/)
 - [APCC CLIK API](https://apcc21.org/clik/clikapi?lang=en)

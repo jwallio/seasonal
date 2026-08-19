@@ -8,6 +8,7 @@ on:
       - CFSv2 Rolling Seasonal Graphics
       - ECMWF SEAS5 Seasonal Graphics
       - CanSIPS v3 Seasonal Graphics
+      - CMA CPSv3 Seasonal Graphics
       - C3S Multi-System Seasonal Graphics
       - JMA Seasonal Graphics
       - APCC MME Seasonal Graphics
@@ -28,6 +29,7 @@ on:
           - CFSv2 Rolling Seasonal Graphics
           - ECMWF SEAS5 Seasonal Graphics
           - CanSIPS v3 Seasonal Graphics
+          - CMA CPSv3 Seasonal Graphics
           - C3S Multi-System Seasonal Graphics
           - JMA Seasonal Graphics
           - APCC MME Seasonal Graphics
@@ -70,6 +72,7 @@ jobs:
           sparse-checkout: |
             public/seasonal/index.html
             public/seasonal/c3s/index.html
+            public/seasonal/cma_cpsv3/index.html
             public/seasonal/jma/index.html
             public/seasonal/apcc/index.html
             public/seasonal/geos_s2s3/index.html
@@ -123,6 +126,16 @@ jobs:
         with:
           name: c3s-pages-${{ env.SOURCE_RUN_ID }}
           path: incoming/c3s
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: ${{ env.SOURCE_RUN_ID }}
+
+      - name: Download CMA CPSv3 payload
+        if: ${{ env.SOURCE_WORKFLOW == 'CMA CPSv3 Seasonal Graphics' }}
+        uses: actions/download-artifact@v4
+        with:
+          name: cma-cpsv3-pages-${{ env.SOURCE_RUN_ID }}
+          path: incoming/cma_cpsv3
           github-token: ${{ secrets.GITHUB_TOKEN }}
           repository: ${{ github.repository }}
           run-id: ${{ env.SOURCE_RUN_ID }}
@@ -187,8 +200,9 @@ jobs:
           test -f dashboard-source/public/seasonal/index.html
           mkdir -p site/seasonal
           cp dashboard-source/public/seasonal/index.html site/seasonal/index.html
-          mkdir -p site/seasonal/c3s site/seasonal/jma site/seasonal/apcc site/seasonal/geos_s2s3 site/seasonal/nmme site/seasonal/superensemble
+          mkdir -p site/seasonal/c3s site/seasonal/cma_cpsv3 site/seasonal/jma site/seasonal/apcc site/seasonal/geos_s2s3 site/seasonal/nmme site/seasonal/superensemble
           cp dashboard-source/public/seasonal/c3s/index.html site/seasonal/c3s/index.html
+          cp dashboard-source/public/seasonal/cma_cpsv3/index.html site/seasonal/cma_cpsv3/index.html
           cp dashboard-source/public/seasonal/jma/index.html site/seasonal/jma/index.html
           cp dashboard-source/public/seasonal/apcc/index.html site/seasonal/apcc/index.html
           cp dashboard-source/public/seasonal/geos_s2s3/index.html site/seasonal/geos_s2s3/index.html
@@ -263,6 +277,18 @@ jobs:
               mkdir -p site/seasonal/c3s
               cp -R "$payload_root/c3s/." site/seasonal/c3s/
               cp "$payload_root/c3s_manifest.json" site/seasonal/c3s_manifest.json
+              ;;
+            "CMA CPSv3 Seasonal Graphics")
+              payload_root=incoming/cma_cpsv3
+              if [ -d "$payload_root/pages-payload" ]; then
+                payload_root="$payload_root/pages-payload"
+              elif [ -d "$payload_root/.pages-payload" ]; then
+                payload_root="$payload_root/.pages-payload"
+              fi
+              test -f "$payload_root/cma_cpsv3_manifest.json"
+              mkdir -p site/seasonal/cma_cpsv3
+              cp -R "$payload_root/cma_cpsv3/." site/seasonal/cma_cpsv3/
+              cp "$payload_root/cma_cpsv3_manifest.json" site/seasonal/cma_cpsv3_manifest.json
               ;;
             "JMA Seasonal Graphics")
               payload_root=incoming/jma

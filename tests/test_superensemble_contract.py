@@ -50,12 +50,19 @@ def main() -> int:
     height_members = module.canonical_members("500mb_height_anomaly")
     surface_members = module.canonical_members("2m_temperature_anomaly")
     t850_members = module.canonical_members("850mb_temperature_anomaly")
+    near_height_members = module.canonical_members("500mb_height_anomaly", include_cma=True)
+    near_surface_members = module.canonical_members("2m_temperature_anomaly", include_cma=True)
     height_keys = [member.key for member in height_members]
     surface_keys = [member.key for member in surface_members]
     t850_keys = [member.key for member in t850_members]
+    near_height_keys = [member.key for member in near_height_members]
+    near_surface_keys = [member.key for member in near_surface_members]
     check(len(height_keys) == 9 and len(height_keys) == len(set(height_keys)), "height roster must contain nine unique source families")
     check(len(surface_keys) == 12 and len(surface_keys) == len(set(surface_keys)), "surface roster must add GEOS and only two unique NMME components")
     check(len(t850_keys) == 10 and len(t850_keys) == len(set(t850_keys)), "850-mb roster must add the standalone GEOS family")
+    check(set(near_height_keys) - set(height_keys) == {module.CMA_MEMBER_KEY}, "near-term height roster should add CMA exactly once")
+    check(set(near_surface_keys) - set(surface_keys) == {module.CMA_MEMBER_KEY}, "near-term surface roster should add CMA exactly once")
+    check(len(near_surface_keys) == len(set(near_surface_keys)), "near-term surface roster must remain deduplicated")
     check("c3s_eccc_system5" not in height_keys, "C3S ECCC must not duplicate CanSIPS")
     check("c3s_jma_system4" in height_keys, "JMA should be represented once through C3S")
     check("eccc_cansips_v3" in height_keys, "CanSIPS should represent the ECCC family once")
@@ -79,6 +86,10 @@ def main() -> int:
     check(all((member.footer_label or member.label) in surface_footer for member in surface_members), "image footer should name every included surface family")
     check(len(surface_footer.splitlines()) == 2, "longest model roster should fit the reserved two-line footer")
     check(all(len(line) <= module.MEMBER_FOOTER_MAX_CHARS for line in surface_footer.splitlines()), "longest footer lines should stay inside the layout budget")
+    near_surface_footer = module.included_models_footer(near_surface_keys, {member.key: member for member in near_surface_members})
+    check("CMA CPSv3" in near_surface_footer, "near-term super-ensemble footer should name CMA CPSv3")
+    check(len(near_surface_footer.splitlines()) == 2, "CMA-expanded roster should fit the reserved two-line footer")
+    check(all(len(line) <= module.MEMBER_FOOTER_MAX_CHARS for line in near_surface_footer.splitlines()), "CMA-expanded footer lines should stay inside the layout budget")
     check(height_footer_labels[-1] not in module.included_models_footer(height_keys[:-1], height_definitions), "partial-map footer should omit an unavailable family")
     footer_parameter = inspect.signature(module.render_map).parameters.get("footer_text")
     check(footer_parameter is not None and footer_parameter.default == "", "shared renderer should expose an optional footer without changing other model maps")
@@ -100,7 +111,7 @@ def main() -> int:
     check(module.nmme.target_month("2026080800", 4) == "202612", "NMME lead alignment should match December")
     for term in ("intersection of canonical members", "APCC MME", "C3S multi-system mean", "NMME CFSv2", "native_model_baselines", "NASA GEOS-S2S-3"):
         check(term in adapter_text, f"adapter is missing deduplication term: {term}")
-    for term in ("name: Deduplicated Seasonal Super Ensemble", "CDS_API_KEY", "Restore rolling CFSv2 state", "Restore NASA GEOS-S2S-3 numerical cache", "--geos-cache-dir", "cfsv2-rolling-", "superensemble-pages-", "30 18 16 * *"):
+    for term in ("name: Deduplicated Seasonal Super Ensemble", "CDS_API_KEY", "Restore rolling CFSv2 state", "Restore CMA CPSv3 source cache", "--cma-cache-dir", "Restore NASA GEOS-S2S-3 numerical cache", "--geos-cache-dir", "cfsv2-rolling-", "superensemble-pages-", "30 18 16 * *"):
         check(term in workflow, f"workflow is missing term: {term}")
     for term in ("Deduplicated Seasonal Super Ensemble", "superensemble_manifest.json", "incoming/superensemble"):
         check(term in pages, f"Pages publisher is missing term: {term}")
@@ -180,6 +191,31 @@ def main() -> int:
         check(not errors[4], "mock GEOS load should not record an error")
     finally:
         module.geos.load_anomaly_bundle = original_geos_loader
+
+    original_cma_download = module.cma.download_bundle
+    original_cma_decode = module.cma.decode_product_bundle
+    try:
+        module.cma.download_bundle = lambda *args, **kwargs: (ROOT / "mock-cma.nc", "mock-token")
+        module.cma.decode_product_bundle = lambda *args, **kwargs: (
+            {1: module.Grid([0.0], [0.0], [[1.5]])},
+            {"hindcast_start_year": "2001", "hindcast_end_year": "2024"},
+            {"units": "K"},
+        )
+        grids = {1: {}}
+        provenance = {1: {}}
+        errors = {1: {}}
+        module.load_cma_member(
+            product="2m_temperature_anomaly", init="2026080100", leads=[1],
+            cache_dir=ROOT, root=ROOT, member_grids=grids,
+            provenance=provenance, errors=errors,
+        )
+        check(grids[1][module.CMA_MEMBER_KEY].values == [[1.5]], "CMA anomaly should enter the canonical member grid")
+        check(provenance[1][module.CMA_MEMBER_KEY]["internal_members"] == 21, "CMA provenance should retain its member count")
+        check(provenance[1][module.CMA_MEMBER_KEY]["baseline"]["label"] == "CMA CPSv3 2001-2024 hindcast climatology", "CMA provenance should retain provider hindcast years")
+        check(not errors[1], "mock CMA load should not record an error")
+    finally:
+        module.cma.download_bundle = original_cma_download
+        module.cma.decode_product_bundle = original_cma_decode
 
     with tempfile.TemporaryDirectory() as temporary:
         output = Path(temporary) / "manifest.json"

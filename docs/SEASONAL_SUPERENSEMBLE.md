@@ -16,6 +16,8 @@ weight after that source has formed its own ensemble mean. The current core is:
   precipitation, and MSLP;
 - one ECCC CanSIPS v3 family mean, representing its GEM5.2-NEMO and CanESM5
   members once;
+- one 21-member CMA CPSv3 family mean from the WMO GPC Beijing package when
+  every requested target is within redistributed forecast months 1-3;
 - one NASA GEOS-S2S-3 lag/burst family mean for its validated temperature,
   precipitation, MSLP, and SST products;
 - for 2-m temperature and precipitation only, the two remaining unique NMME
@@ -34,6 +36,13 @@ package exposes an overlapping aggregate rather than separable component
 grids. GEOS-S2S-3 remains excluded from 500-mb height because NASA's current
 long-range archive named `z500` declares 200 hPa and fails the adapter's
 strict pressure-level check.
+
+CMA CPSv3 is target-aligned rather than assumed to be available at every
+horizon. The source system runs seven months, but WMO redistributes only
+forecast months 1-3. A request containing any later lead therefore uses the
+existing canonical roster and records no CMA vote; a request wholly inside
+leads 1-3 includes CMA once. The package never extrapolates CMA or mixes a
+changing CMA membership inside one seasonal mean.
 
 The complete included, missing, and excluded membership is written into
 `superensemble_manifest.json` for every product and target. Each rendered map

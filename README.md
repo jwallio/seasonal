@@ -38,19 +38,20 @@ The standalone CFSv2 seasonal adapter is documented in [`docs/SEASONAL_CFSV2.md`
 The ECMWF SEAS5 seasonal adapter is documented in [`docs/SEASONAL_SEAS5.md`](/d:/weather-projects/wn2/docs/SEASONAL_SEAS5.md). It reads current ECMWF/System 51 monthly anomaly fields from the official Copernicus CDS API and publishes parameter-selectable seasonal maps under `public/seasonal/seas5/`. The scheduled [`seas5.yml`](/d:/weather-projects/wn2/.github/workflows/seas5.yml) workflow requires the `CDS_API_KEY` repository secret, uploads a SEAS5 Pages payload, and keeps SEAS5 provenance separate from CFSv2 while retaining the current run plus three prior runs.
 
 The CanSIPS v3 seasonal adapter is documented in [`docs/SEASONAL_CANSIPS.md`](/d:/weather-projects/wn2/docs/SEASONAL_CANSIPS.md). It reads the official ECCC MSC Datamart 40-member GRIB2 files, computes matching 1991-2020 hindcast anomalies for 500-mb height, 850-mb and 2-metre temperature, precipitation, MSLP, sea-surface temperature, and sea-surface height, and publishes DJF-default North American maps under `public/seasonal/cansips/`. The scheduled [`cansips.yml`](/d:/weather-projects/wn2/.github/workflows/cansips.yml) workflow requires no model secret, caches decoded ensemble means, and retains the current run plus three prior runs independently for each parameter.
+The CMA CPSv3 seasonal adapter is documented in [`docs/SEASONAL_CMA_CPSV3.md`](/d:/weather-projects/wn2/docs/SEASONAL_CMA_CPSV3.md). It decodes the official WMO GPC Beijing anomaly bundle for the 21-member CMA system and publishes 500-mb height, 850-mb and 2-m temperature, precipitation, SST, and MSLP maps for the three forecast months redistributed by WMO. The scheduled [`cma-cpsv3.yml`](/d:/weather-projects/wn2/.github/workflows/cma-cpsv3.yml) workflow requires no model secret and retains four issue cycles.
 The APCC MME seasonal adapter is documented in [`docs/SEASONAL_APCC.md`](/d:/weather-projects/wn2/docs/SEASONAL_APCC.md). It uses the official APCC CLIK API for native APCC multi-model seasonal anomaly fields, including 500-mb height, temperature, precipitation, SST, and MSLP. The scheduled [`apcc.yml`](/d:/weather-projects/wn2/.github/workflows/apcc.yml) workflow requires the `APCC_API_KEY` repository secret and retains four release cycles.
 The NASA GEOS-S2S-3 adapter is documented in [`docs/SEASONAL_GEOS_S2S3.md`](/d:/weather-projects/wn2/docs/SEASONAL_GEOS_S2S3.md). It reads NASA's public NCCS numerical lag/burst archives and matching provider drift climatologies for 850-mb and 2-m temperature, precipitation, MSLP, and SST anomalies. The scheduled [`geos-s2s3.yml`](/d:/weather-projects/wn2/.github/workflows/geos-s2s3.yml) workflow requires no secret. Its strict level guard rejects the current long-range archive named `z500` because the files declare 200 hPa, not 500 hPa.
 
 Every verified seasonal 500-mb height-anomaly map uses the same fixed -100 to
 +100 m scale with 10 m intervals. This applies to CFSv2, SEAS5, CanSIPS,
-C3S and its JMA component, APCC, and the deduplicated super ensemble. NMME's
+CMA CPSv3, C3S and its JMA component, APCC, and the deduplicated super ensemble. NMME's
 separately labelled 200-mb product retains its own scale, and GEOS remains
 excluded until its source passes the 500-hPa pressure check.
 
 The unified [Seasonal Model Dashboard](/d:/weather-projects/wn2/public/seasonal/index.html) is published at
 [`/seasonal/`](https://jwallio.github.io/wn2/seasonal/). It provides one model,
-parameter, run, and target control surface for CFSv2, ECMWF SEAS5, and CanSIPS
-v3, APCC MME, and NASA GEOS-S2S-3. WeatherNext 2 remains published by its own workflow at the repository root,
+parameter, run, and target control surface for CFSv2, ECMWF SEAS5, CanSIPS
+v3, CMA CPSv3, APCC MME, and NASA GEOS-S2S-3. WeatherNext 2 remains published by its own workflow at the repository root,
 but is intentionally not listed as a seasonal model. The model-specific pages remain available at
 `/seasonal/cfsv2/`, `/seasonal/seas5/`, and `/seasonal/cansips/` when focused
 provenance review is needed. The dashboard's Compare tab places the latest
@@ -77,6 +78,8 @@ in [`docs/SEASONAL_SCHEDULES.md`](/d:/weather-projects/wn2/docs/SEASONAL_SCHEDUL
 - [`.github/workflows/seas5.yml`](/d:/weather-projects/wn2/.github/workflows/seas5.yml): monthly SEAS5 workflow
 - [`scripts/cansips_seasonal.py`](/d:/weather-projects/wn2/scripts/cansips_seasonal.py): ECCC MSC Datamart/CanSIPS v3 GRIB adapter
 - [`.github/workflows/cansips.yml`](/d:/weather-projects/wn2/.github/workflows/cansips.yml): monthly CanSIPS v3 workflow
+- [`scripts/cma_cpsv3_seasonal.py`](/d:/weather-projects/wn2/scripts/cma_cpsv3_seasonal.py): WMO GPC Beijing/CMA CPSv3 NetCDF adapter
+- [`.github/workflows/cma-cpsv3.yml`](/d:/weather-projects/wn2/.github/workflows/cma-cpsv3.yml): monthly CMA CPSv3 workflow
 - [`scripts/c3s_seasonal.py`](/d:/weather-projects/wn2-seasonal-dashboard/scripts/c3s_seasonal.py): Copernicus C3S multi-system and component adapter, including JMA/MRI-CPS4
 - [`.github/workflows/jma.yml`](/d:/weather-projects/wn2-seasonal-dashboard/.github/workflows/jma.yml): monthly JMA/MRI-CPS4 component workflow
 - [`scripts/apcc_seasonal.py`](/d:/weather-projects/wn2/scripts/apcc_seasonal.py): APCC CLIK MME seasonal adapter
@@ -93,6 +96,7 @@ in [`docs/SEASONAL_SCHEDULES.md`](/d:/weather-projects/wn2/docs/SEASONAL_SCHEDUL
 - [`tests/test_pipeline_contract.py`](/d:/weather-projects/wn2/tests/test_pipeline_contract.py): static pipeline contract check
 - [`tests/test_cfsv2_contract.py`](/d:/weather-projects/wn2/tests/test_cfsv2_contract.py): static CFSv2 adapter contract check
 - [`tests/test_seas5_contract.py`](/d:/weather-projects/wn2/tests/test_seas5_contract.py): static SEAS5 adapter contract check
+- [`tests/test_cma_cpsv3_contract.py`](/d:/weather-projects/wn2/tests/test_cma_cpsv3_contract.py): CMA CPSv3 source, product, and publishing contract check
 - [`public/index.html`](/d:/weather-projects/wn2/public/index.html): generated static viewer
 - [`public/runs_manifest.json`](/d:/weather-projects/wn2/public/runs_manifest.json): viewer manifest
 
@@ -363,4 +367,4 @@ The GitHub Actions workflows require:
 
 The renderer workflows upload scoped payloads. The single `publish-pages.yml` workflow serializes successful model and super-ensemble completions, merges each payload into the existing `gh-pages` tree, and publishes the complete site so one product cannot remove another product's assets.
 
-Seasonal additions are documented in [`docs/SEASONAL_C3S.md`](/d:/weather-projects/wn2-seasonal-dashboard/docs/SEASONAL_C3S.md), [`docs/SEASONAL_JMA.md`](/d:/weather-projects/wn2-seasonal-dashboard/docs/SEASONAL_JMA.md), [`docs/SEASONAL_NMME.md`](/d:/weather-projects/wn2-seasonal-dashboard/docs/SEASONAL_NMME.md), and [`docs/SEASONAL_SUPERENSEMBLE.md`](/d:/weather-projects/wn2/docs/SEASONAL_SUPERENSEMBLE.md). The unified viewer includes native-model comparison maps and a transparent deduplicated super ensemble. For supported products, that package uses the standalone 10-day rolling CFSv2 blend as the single CFSv2-family vote and excludes the duplicate C3S/NMME copies.
+Seasonal additions are documented in [`docs/SEASONAL_CMA_CPSV3.md`](/d:/weather-projects/wn2/docs/SEASONAL_CMA_CPSV3.md), [`docs/SEASONAL_C3S.md`](/d:/weather-projects/wn2-seasonal-dashboard/docs/SEASONAL_C3S.md), [`docs/SEASONAL_JMA.md`](/d:/weather-projects/wn2-seasonal-dashboard/docs/SEASONAL_JMA.md), [`docs/SEASONAL_NMME.md`](/d:/weather-projects/wn2-seasonal-dashboard/docs/SEASONAL_NMME.md), and [`docs/SEASONAL_SUPERENSEMBLE.md`](/d:/weather-projects/wn2/docs/SEASONAL_SUPERENSEMBLE.md). The unified viewer includes native-model comparison maps and a transparent deduplicated super ensemble. For supported products, that package uses the standalone 10-day rolling CFSv2 blend as the single CFSv2-family vote, includes CMA only for WMO-available forecast months 1-3, and excludes duplicate C3S/NMME copies.
