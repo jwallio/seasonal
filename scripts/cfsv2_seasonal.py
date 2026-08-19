@@ -53,6 +53,12 @@ ANOMALY_MIN_M = -200.0
 ANOMALY_MAX_M = 200.0
 PRECIP_ANOMALY_MIN_IN = -8.0
 PRECIP_ANOMALY_MAX_IN = 8.0
+CFSV2_HEIGHT_ANOMALY_MIN_M = -100.0
+CFSV2_HEIGHT_ANOMALY_MAX_M = 100.0
+PRECIP_MONTHLY_ANOMALY_MIN_IN = -4.0
+PRECIP_MONTHLY_ANOMALY_MAX_IN = 4.0
+PRECIP_SEASONAL_ANOMALY_MIN_IN = -8.0
+PRECIP_SEASONAL_ANOMALY_MAX_IN = 8.0
 SWE_ANOMALY_MIN_IN = -8.0
 SWE_ANOMALY_MAX_IN = 8.0
 ANOMALY_PALETTE = [
@@ -79,6 +85,9 @@ ANOMALY_PALETTE = [
 ]
 ANOMALY_TICKS = list(range(-200, 201, 20))
 PRECIP_ANOMALY_TICKS = list(range(-8, 9))
+CFSV2_HEIGHT_ANOMALY_TICKS = list(range(-100, 101, 10))
+PRECIP_MONTHLY_ANOMALY_TICKS = [value / 2.0 for value in range(-8, 9)]
+PRECIP_SEASONAL_ANOMALY_TICKS = list(range(-8, 9))
 PRECIP_ANOMALY_PALETTE = [
     "#7f3b08",
     "#914b0d",
@@ -117,6 +126,7 @@ SWE_ANOMALY_PALETTE = [
     "#143b5f",
 ]
 TEMPERATURE_ANOMALY_TICKS = list(range(-8, 9))
+CFSV2_TEMPERATURE_ANOMALY_TICKS = [value / 2.0 for value in range(-8, 9)]
 TEMPERATURE_ANOMALY_PALETTE = [
     "#24527a",
     "#306b90",
@@ -136,6 +146,7 @@ TEMPERATURE_ANOMALY_PALETTE = [
     "#84283f",
 ]
 MSLP_ANOMALY_TICKS = list(range(-20, 21, 2))
+CFSV2_MSLP_ANOMALY_TICKS = list(range(-10, 11))
 MSLP_ANOMALY_PALETTE = ANOMALY_PALETTE
 # A social-sized North America view: retain Alaska and all of Greenland while
 # keeping the lower field in the subtropics. Border drawing applies a separate
@@ -192,6 +203,10 @@ PRODUCT_SPECS = {
         "seasonal_aggregation": "seasonal mean",
         "seasonal_units": "m",
         "monthly_aggregation": "monthly forecast average",
+        "anomaly_min": CFSV2_HEIGHT_ANOMALY_MIN_M,
+        "anomaly_max": CFSV2_HEIGHT_ANOMALY_MAX_M,
+        "anomaly_ticks": CFSV2_HEIGHT_ANOMALY_TICKS,
+        "anomaly_palette": ANOMALY_PALETTE,
     },
     PRODUCT_HEIGHT_ABSOLUTE: {
         "name": PRODUCT_HEIGHT_ABSOLUTE,
@@ -239,9 +254,9 @@ PRODUCT_SPECS = {
         "seasonal_aggregation": "seasonal mean",
         "seasonal_units": "°C",
         "monthly_aggregation": "monthly mean 2-m temperature",
-        "anomaly_min": -8.0,
-        "anomaly_max": 8.0,
-        "anomaly_ticks": TEMPERATURE_ANOMALY_TICKS,
+        "anomaly_min": -4.0,
+        "anomaly_max": 4.0,
+        "anomaly_ticks": CFSV2_TEMPERATURE_ANOMALY_TICKS,
         "anomaly_palette": TEMPERATURE_ANOMALY_PALETTE,
         "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in °C",
         "header_detail": "{source_label}  •  {baseline_label}  •  2-m temperature anomaly (°C)",
@@ -271,9 +286,9 @@ PRODUCT_SPECS = {
         "monthly_aggregation": "monthly mean sea-level pressure",
         "conversion_kind": "pascals_to_hectopascals",
         "conversion": "PRES divided by 100 to convert Pa to hPa before calculating the anomaly",
-        "anomaly_min": -20.0,
-        "anomaly_max": 20.0,
-        "anomaly_ticks": MSLP_ANOMALY_TICKS,
+        "anomaly_min": -10.0,
+        "anomaly_max": 10.0,
+        "anomaly_ticks": CFSV2_MSLP_ANOMALY_TICKS,
         "anomaly_palette": MSLP_ANOMALY_PALETTE,
         "header_detail": "{source_label}  •  {baseline_label}  •  Mean sea-level pressure anomaly (hPa)",
     },
@@ -367,6 +382,43 @@ def selected_product(args: argparse.Namespace) -> tuple[str, dict, bool]:
         product = PRODUCT_HEIGHT_ABSOLUTE
     spec = get_product_spec(product)
     return product, spec, product == PRODUCT_HEIGHT_ABSOLUTE
+
+
+def anomaly_style(
+    product_spec: dict,
+    seasonal: bool = False,
+) -> tuple[float, float, Sequence[float], Sequence[str]]:
+    """Return the fixed comparable scale for one anomaly product and period."""
+
+    if "anomaly_min" in product_spec:
+        return (
+            float(product_spec["anomaly_min"]),
+            float(product_spec["anomaly_max"]),
+            product_spec.get("anomaly_ticks", []),
+            product_spec.get("anomaly_palette", ANOMALY_PALETTE),
+        )
+    if product_spec["name"] == PRODUCT_PRECIPITATION_ANOMALY:
+        if seasonal:
+            return (
+                PRECIP_SEASONAL_ANOMALY_MIN_IN,
+                PRECIP_SEASONAL_ANOMALY_MAX_IN,
+                PRECIP_SEASONAL_ANOMALY_TICKS,
+                PRECIP_ANOMALY_PALETTE,
+            )
+        return (
+            PRECIP_MONTHLY_ANOMALY_MIN_IN,
+            PRECIP_MONTHLY_ANOMALY_MAX_IN,
+            PRECIP_MONTHLY_ANOMALY_TICKS,
+            PRECIP_ANOMALY_PALETTE,
+        )
+    if product_spec["name"] == PRODUCT_SWE_ANOMALY:
+        return (
+            SWE_ANOMALY_MIN_IN,
+            SWE_ANOMALY_MAX_IN,
+            SWE_ANOMALY_TICKS,
+            SWE_ANOMALY_PALETTE,
+        )
+    return ANOMALY_MIN_M, ANOMALY_MAX_M, ANOMALY_TICKS, ANOMALY_PALETTE
 
 
 def iso_utc(value: dt.datetime) -> str:
@@ -1168,6 +1220,7 @@ def render_map(
     baseline_label: str,
     border_paths: Sequence[Path],
     period_label: str = "",
+    seasonal: bool = False,
     ensemble_label: str = "",
     height_grid: Grid | None = None,
     region: tuple[float, float, float, float] = DEFAULT_REGION,
@@ -1360,26 +1413,10 @@ def render_map(
             # than a near-zero negative anomaly swatch.
             masked = np.ma.masked_where(~land_mask, masked)
     if anomaly:
-        if "anomaly_min" in product_spec:
-            anomaly_min = float(product_spec["anomaly_min"])
-            anomaly_max = float(product_spec["anomaly_max"])
-            colorbar_ticks = product_spec.get("anomaly_ticks", [])
-            palette = product_spec.get("anomaly_palette", ANOMALY_PALETTE)
-        elif product_spec["name"] == PRODUCT_PRECIPITATION_ANOMALY:
-            anomaly_min = PRECIP_ANOMALY_MIN_IN
-            anomaly_max = PRECIP_ANOMALY_MAX_IN
-            colorbar_ticks = PRECIP_ANOMALY_TICKS
-            palette = PRECIP_ANOMALY_PALETTE
-        elif product_spec["name"] == PRODUCT_SWE_ANOMALY:
-            anomaly_min = SWE_ANOMALY_MIN_IN
-            anomaly_max = SWE_ANOMALY_MAX_IN
-            colorbar_ticks = SWE_ANOMALY_TICKS
-            palette = SWE_ANOMALY_PALETTE
-        else:
-            anomaly_min = ANOMALY_MIN_M
-            anomaly_max = ANOMALY_MAX_M
-            colorbar_ticks = ANOMALY_TICKS
-            palette = ANOMALY_PALETTE
+        anomaly_min, anomaly_max, colorbar_ticks, palette = anomaly_style(
+            product_spec,
+            seasonal=seasonal,
+        )
         # Use one color interval for every labelled tick-to-tick range. This
         # keeps the labels and tick marks on the actual color transitions
         # instead of drifting into the middle of adjacent swatches.
@@ -1617,7 +1654,10 @@ def render_map(
     )
     colorbar.set_ticks(colorbar_ticks)
     if anomaly:
-        tick_decimals = int(product_spec.get("anomaly_tick_decimals", 0))
+        automatic_tick_decimals = (
+            1 if any(not float(tick).is_integer() for tick in colorbar_ticks) else 0
+        )
+        tick_decimals = int(product_spec.get("anomaly_tick_decimals", automatic_tick_decimals))
         tick_format = product_spec.get("anomaly_tick_format", "signed")
 
         def format_anomaly_tick(value: float) -> str:
@@ -1657,6 +1697,22 @@ def relative_path(path: Path, repo_root: Path) -> str:
         return path.resolve().as_posix()
 
 
+def manifest_product_key(run: dict) -> str:
+    """Return a stable product key, including for manifests predating ``product``."""
+
+    product = run.get("product")
+    if product:
+        return str(product)
+    return {
+        "z500_anomaly": PRODUCT_HEIGHT_ANOMALY,
+        "z500": PRODUCT_HEIGHT_ABSOLUTE,
+        "t2m_anomaly": PRODUCT_2M_TEMPERATURE_ANOMALY,
+        "mslp_anomaly": PRODUCT_MSLP_ANOMALY,
+        "precipitation_anomaly": PRODUCT_PRECIPITATION_ANOMALY,
+        "snow_water_equivalent_anomaly": PRODUCT_SWE_ANOMALY,
+    }.get(str(run.get("field", "")), PRODUCT_HEIGHT_ANOMALY)
+
+
 def write_manifest(
     path: Path,
     repo_root: Path,
@@ -1673,14 +1729,21 @@ def write_manifest(
         "source": "NOAA CFSv2 NOMADS",
         "source_url": NOMADS_ROOT,
         "retention": {
+            "scope": "per_product",
             "max_runs": retain_runs,
             "history_runs": max(0, retain_runs - 1),
+            "max_runs_per_product": retain_runs,
+            "history_runs_per_product": max(0, retain_runs - 1),
         },
         "runs": [],
     }
-    existing_paths = [path]
+    existing_paths = []
     if previous_manifest and previous_manifest.resolve() != path.resolve():
         existing_paths.append(previous_manifest)
+    # A manifest already assembled during this process is newer than the
+    # published fallback. Load it last so sequential product renders retain
+    # earlier products from the same workflow invocation.
+    existing_paths.append(path)
     for existing_path in existing_paths:
         if not existing_path.exists():
             continue
@@ -1697,8 +1760,8 @@ def write_manifest(
         if isinstance(run, dict) and run.get("id"):
             unique_runs[run["id"]] = run
     unique_runs[run_entry["id"]] = run_entry
-    payload["runs"] = list(unique_runs.values())
-    payload["runs"].sort(
+    sorted_runs = list(unique_runs.values())
+    sorted_runs.sort(
         key=lambda item: (
             str(item.get("init_utc", "")),
             str(item.get("generated_utc", "")),
@@ -1706,7 +1769,14 @@ def write_manifest(
         ),
         reverse=True,
     )
-    payload["runs"] = payload["runs"][:retain_runs]
+    retained_counts: dict[str, int] = {}
+    payload["runs"] = []
+    for retained_run in sorted_runs:
+        product_key = manifest_product_key(retained_run)
+        if retained_counts.get(product_key, 0) >= retain_runs:
+            continue
+        payload["runs"].append(retained_run)
+        retained_counts[product_key] = retained_counts.get(product_key, 0) + 1
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_name(path.name + ".tmp")
     temporary.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
@@ -1733,7 +1803,12 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--output-dir", default="public/seasonal/cfsv2", help="rendered image directory")
     parser.add_argument("--manifest", default="public/seasonal/cfsv2_manifest.json", help="seasonal manifest path")
     parser.add_argument("--previous-manifest", type=Path, help="previous published manifest used to retain older runs")
-    parser.add_argument("--retain-runs", type=int, default=4, help="number of current and historical runs to retain in the manifest")
+    parser.add_argument(
+        "--retain-runs",
+        type=int,
+        default=4,
+        help="number of current and historical runs to retain per product in the manifest",
+    )
     parser.add_argument("--baseline-file", type=Path, help="one CFSv2/reforecast baseline CSV or GRIB2 grid")
     parser.add_argument("--baseline-dir", type=Path, help="directory containing a baseline grid for each YYYYMM target")
     parser.add_argument("--ncei-calibration", action="store_true", help="fetch the matching official NCEI CFS reforecast calibration baseline (1982-2010)")
@@ -2152,6 +2227,7 @@ def run(args: argparse.Namespace) -> int:
                 baseline_label=baseline_label,
                 border_paths=border_paths,
                 period_label=period_label,
+                seasonal=True,
                 ensemble_label=(
                     f"{seasonal_entry['ensemble_members']}/{ensemble_expected}-cycle rolling mean"
                     if rolling_mode
@@ -2204,6 +2280,7 @@ def run(args: argparse.Namespace) -> int:
                         baseline_label=COMMON_REFERENCE_LABEL,
                         border_paths=border_paths,
                         period_label=period_label,
+                        seasonal=True,
                         ensemble_label=(
                             f"{seasonal_entry['ensemble_members']}/{ensemble_expected}-cycle rolling mean"
                             if rolling_mode

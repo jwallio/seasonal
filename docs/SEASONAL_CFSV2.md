@@ -37,18 +37,21 @@ The 2-m temperature anomaly is a forecast-minus-reforecast difference; the
 Kelvin offset cancels, so it is displayed in °C. MSLP is decoded from the
 official `PRES:mean sea level` field and converted from Pa to hPa before the
 forecast-minus-reforecast difference is calculated. Both products use the
-official NCEI CFS reforecast calibration climatology. Temperature uses a ±8 °C
-scale and MSLP uses a ±20 hPa scale.
+official NCEI CFS reforecast calibration climatology. Fixed scales keep runs
+directly comparable while resolving the relatively small rolling-mean signal:
+500-mb height uses ±100 m with 10 m intervals, temperature uses ±4 °C with
+0.5 °C intervals, and MSLP uses ±10 hPa with 1 hPa intervals. Values outside
+the displayed range use the saturated end color.
 
 For precipitation, the source rate (`kg m-2 s-1`) is multiplied by the actual
 number of seconds in each target calendar month. Since `1 kg m-2 = 1 mm` of
 water, the result is converted from millimetres to inches. Individual maps and
 seasonal totals are therefore shown in inches. Precipitation graphics use a
 CONUS-only projection with brown negative anomalies and green positive
-anomalies; the scale runs from -8 to +8 inches with a labeled tick at every
-inch. The precipitation FLXF files use the native 384×190 Gaussian grid; the
-renderer interpolates that grid directly so the entire CONUS projection is
-filled.
+anomalies. Monthly maps use ±4 inches with 0.5-inch intervals; three-month
+seasonal totals retain the wider ±8-inch scale with 1-inch intervals. The
+precipitation FLXF files use the native 384×190 Gaussian grid; the renderer
+interpolates that grid directly so the entire CONUS projection is filled.
 
 Snow-water-equivalent (`WEASD`) is a snowpack state, not a snowfall rate or
 accumulation. The source is reported in `kg m-2`, equivalent to millimetres of
@@ -110,8 +113,10 @@ per-target status (`planned`, `decoded`, `rendered`, `partial`, or `failed`).
 That keeps a failed or stale seasonal run visible instead of silently
 presenting an incomplete forecast as current.
 
-The scheduled workflow downloads the previously published manifest before each
-render and retains the current run plus three prior runs. It uploads a scoped
+The twice-daily scheduled workflow downloads the previously published manifest
+before each render, refreshes the height, 2-m temperature, MSLP, and
+precipitation anomaly suite, and retains the current run plus three prior runs
+for each parameter. It uploads a scoped
 Pages payload; `.github/workflows/publish-pages.yml` serializes that payload
 with WN2 and SEAS5 output before the single Pages publish. The static CFSv2
 viewer exposes those retained runs through Parameter and Run history selectors;
@@ -173,7 +178,8 @@ default), `2m_temperature_anomaly`, `mslp_anomaly`, `precipitation_anomaly`,
 labelled decoder/source smoke output). The viewer's product selector displays
 each product when its run is present in the retained manifest.
 The workflow passes `--previous-manifest` and `--retain-runs 4` so the live
-viewer can show the current run and three historical runs.
+viewer can show the current run and three historical runs independently for
+each parameter.
 
 Decode one target without requiring a baseline or rendering dependencies:
 
@@ -316,8 +322,11 @@ Each target entry uses these fields:
 | `status` | Decode/render outcome |
 | `image` | Relative rendered image path when successful |
 
-The top-level manifest also includes `retention.max_runs` and
-`retention.history_runs`; the production workflow sets these to `4` and `3`.
+The top-level manifest sets `retention.scope` to `per_product` and includes
+`retention.max_runs_per_product` and `retention.history_runs_per_product`; the
+production workflow sets these to `4` and `3`. The legacy `max_runs` and
+`history_runs` aliases remain for viewer compatibility and have the same
+per-product meaning.
 
 ## Source notes
 

@@ -63,7 +63,7 @@ in [`docs/SEASONAL_SCHEDULES.md`](/d:/weather-projects/wn2/docs/SEASONAL_SCHEDUL
 - [`scripts/run_custom.ps1`](/d:/weather-projects/wn2/scripts/run_custom.ps1): local custom render helper
 - [`scripts/render_and_test.ps1`](/d:/weather-projects/wn2/scripts/render_and_test.ps1): local render plus smoke test
 - [`scripts/render_cfsv2.ps1`](/d:/weather-projects/wn2/scripts/render_cfsv2.ps1): CFSv2 monthly/seasonal 500-mb adapter helper
-- [`.github/workflows/cfsv2.yml`](/d:/weather-projects/wn2/.github/workflows/cfsv2.yml): daily rolling CFSv2 workflow
+- [`.github/workflows/cfsv2.yml`](/d:/weather-projects/wn2/.github/workflows/cfsv2.yml): twice-daily rolling CFSv2 anomaly-suite workflow
 - [`scripts/render_seas5.ps1`](/d:/weather-projects/wn2/scripts/render_seas5.ps1): ECMWF SEAS5 seasonal adapter helper
 - [`scripts/seas5_seasonal.py`](/d:/weather-projects/wn2/scripts/seas5_seasonal.py): Copernicus CDS/SEAS5 GRIB adapter
 - [`.github/workflows/seas5.yml`](/d:/weather-projects/wn2/.github/workflows/seas5.yml): monthly SEAS5 workflow

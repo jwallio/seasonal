@@ -44,6 +44,7 @@ jobs:
     timeout-minutes: 240
     env:
       CFSV2_PRODUCT: ${{ inputs.product || '500mb_height_anomaly' }}
+      SCHEDULED_CFSV2_PRODUCTS: 500mb_height_anomaly,2m_temperature_anomaly,mslp_anomaly,precipitation_anomaly
       LEAD_MONTHS: ${{ inputs.lead_months || '4,5,6' }}
       SEASONAL_WINDOW: ${{ inputs.seasonal_window || '4,5,6' }}
       ROLLING_DAYS: ${{ inputs.rolling_days || '10' }}
@@ -79,7 +80,7 @@ jobs:
           pages_url="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/seasonal/cfsv2_manifest.json"
           if curl -fsSL --retry 2 --connect-timeout 10 "$pages_url" -o "$temporary_manifest"; then
             mv "$temporary_manifest" "$published_manifest"
-            echo "Restored prior CFSv2 manifest for current-plus-three run retention."
+            echo "Restored prior CFSv2 manifest for current-plus-three retention per parameter."
           else
             rm -f "$temporary_manifest" "$published_manifest"
             echo "No prior published CFSv2 manifest was available; starting a new history."
@@ -105,34 +106,44 @@ jobs:
           echo "CFSV2_WGRIB2=$wgrib2_bin" >> "$GITHUB_ENV"
 
       - name: Render rolling CFSv2 products
+        shell: bash
         run: |
-          args=(
-            scripts/cfsv2_seasonal.py
-            --init latest
-            --lead-months "$LEAD_MONTHS"
-            --seasonal-window "$SEASONAL_WINDOW"
-            --members 1
-            --rolling-days "$ROLLING_DAYS"
-            --rolling-member 1
-            --rolling-state-dir .cache/cfsv2/rolling
-            --allow-partial-rolling
-            --cache-dir .cache/cfsv2
-            --output-dir public/seasonal/cfsv2
-            --manifest public/seasonal/cfsv2_manifest.json
-            --previous-manifest .cache/cfsv2/previous_manifest.json
-            --retain-runs 4
-            --common-reference-dir .cache/cfsv2/common-reference
-            --common-reference-url "https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/seasonal/common_reference/1991-2020/"
-            --request-delay 2
-          )
-          if [[ "$CFSV2_PRODUCT" == "500mb_height_absolute" ]]; then
-            args+=(--product "$CFSV2_PRODUCT" --absolute)
-          elif [[ "$CFSV2_PRODUCT" == "precipitation_anomaly" ]]; then
-            args+=(--product "$CFSV2_PRODUCT" --ncei-calibration)
+          set -euo pipefail
+          if [[ "${{ github.event_name }}" == "schedule" ]]; then
+            IFS=',' read -r -a products <<< "$SCHEDULED_CFSV2_PRODUCTS"
           else
-            args+=(--product "$CFSV2_PRODUCT" --ncei-calibration)
+            products=("$CFSV2_PRODUCT")
           fi
-          python "${args[@]}"
+          anchor_init="$(python -c "import sys; sys.path.insert(0, 'scripts'); from cfsv2_seasonal import discover_latest_init; print(discover_latest_init())")"
+          echo "Using CFSv2 anchor initialization $anchor_init for ${#products[@]} product(s)."
+          for product in "${products[@]}"; do
+            echo "Rendering CFSv2 product: $product"
+            args=(
+              scripts/cfsv2_seasonal.py
+              --init "$anchor_init"
+              --lead-months "$LEAD_MONTHS"
+              --seasonal-window "$SEASONAL_WINDOW"
+              --members 1
+              --rolling-days "$ROLLING_DAYS"
+              --rolling-member 1
+              --rolling-state-dir .cache/cfsv2/rolling
+              --allow-partial-rolling
+              --cache-dir .cache/cfsv2
+              --output-dir public/seasonal/cfsv2
+              --manifest public/seasonal/cfsv2_manifest.json
+              --previous-manifest .cache/cfsv2/previous_manifest.json
+              --retain-runs 4
+              --common-reference-dir .cache/cfsv2/common-reference
+              --common-reference-url "https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/seasonal/common_reference/1991-2020/"
+              --request-delay 2
+            )
+            if [[ "$product" == "500mb_height_absolute" ]]; then
+              args+=(--product "$product" --absolute)
+            else
+              args+=(--product "$product" --ncei-calibration)
+            fi
+            python "${args[@]}"
+          done
 
       - name: Package CFSv2 Pages payload
         if: success()
