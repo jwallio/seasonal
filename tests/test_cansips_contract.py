@@ -89,6 +89,9 @@ def main() -> int:
     check(module.file_name("2026080100", 4, False, module.PRODUCT_SPECS[module.PRODUCT_2M_TEMPERATURE_ANOMALY]).endswith("AirTemp_AGL-2m_LatLon1.0_P04M.grib2"), "2-m temperature filename is incorrect")
     check(module.file_name("2026080100", 4, False, module.PRODUCT_SPECS[module.PRODUCT_SEA_SURFACE_HEIGHT_ANOMALY]).endswith("SeaSfcHeight-Geoid_LatLon1.0_P04M.grib2"), "sea-surface height filename is incorrect")
     check([product["name"] for product in module.selected_products(module.PRODUCT_ALL)] == list(module.PRODUCT_SPECS), "all-product selection should include every CanSIPS scalar product")
+    height_spec = module.PRODUCT_SPECS[module.PRODUCT_Z500_ANOMALY]
+    check((height_spec["anomaly_min"], height_spec["anomaly_max"]) == (-100.0, 100.0), "CanSIPS 500-mb should use the shared ±100 m range")
+    check(height_spec["anomaly_ticks"] == list(range(-100, 101, 10)), "CanSIPS 500-mb should use 10-metre labelled bounds")
     check(len(module.ANOMALY_PALETTE) == len(module.ANOMALY_TICKS) - 1, "CanSIPS height anomaly colors must align with labelled bounds")
     check(len(module.SSH_ANOMALY_PALETTE) == len(module.SSH_ANOMALY_TICKS) - 1, "CanSIPS sea-surface height colors must align with labelled bounds")
     with tempfile.TemporaryDirectory() as temporary:

@@ -49,8 +49,11 @@ GRID_LON_COUNT = 360
 GRID_LAT_COUNT = 181
 FLUX_GRID_LON_COUNT = 384
 FLUX_GRID_LAT_COUNT = 190
-ANOMALY_MIN_M = -200.0
-ANOMALY_MAX_M = 200.0
+# Shared fixed scale for every true seasonal 500-mb height-anomaly map.
+# Keeping one range across providers makes side-by-side comparisons honest and
+# gives the relatively small seasonal signal enough contrast to be readable.
+ANOMALY_MIN_M = -100.0
+ANOMALY_MAX_M = 100.0
 PRECIP_ANOMALY_MIN_IN = -8.0
 PRECIP_ANOMALY_MAX_IN = 8.0
 CFSV2_HEIGHT_ANOMALY_MIN_M = -100.0
@@ -83,7 +86,7 @@ ANOMALY_PALETTE = [
     "#a1384a",
     "#84283f",
 ]
-ANOMALY_TICKS = list(range(-200, 201, 20))
+ANOMALY_TICKS = list(range(-100, 101, 10))
 PRECIP_ANOMALY_TICKS = list(range(-8, 9))
 CFSV2_HEIGHT_ANOMALY_TICKS = list(range(-100, 101, 10))
 PRECIP_MONTHLY_ANOMALY_TICKS = [value / 2.0 for value in range(-8, 9)]

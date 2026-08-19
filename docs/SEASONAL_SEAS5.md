@@ -49,6 +49,10 @@ climatology. Geopotential is divided by standard gravity (`9.80665 m s⁻²`);
 precipitation and snowfall anomaly rates are multiplied by the actual seconds
 in the target month and converted from metres to inches.
 
+The 500-mb anomaly fill uses the shared seasonal -100 to +100 m range with
+10 m intervals, matching the other verified 500-mb model maps and preserving
+more contrast for the relatively small seasonal signal.
+
 For the unified dashboard's Compare tab, the 500-mb product also supports a
 shared reference mode. The workflow reads the CanSIPS v3 1991-2020 hindcast
 mean grid published under `seasonal/common_reference/1991-2020/`, regrids it

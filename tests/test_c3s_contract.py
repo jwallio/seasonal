@@ -55,7 +55,10 @@ def main() -> int:
     check(module.CENTRES["ukmo"]["model_version"] == "GloSea6-GC5.1", "C3S UKMO model version metadata is stale")
     check(module.target_month("2026080100", 4) == "202612", "C3S lead conversion should produce December")
     check(module.period_label("202612", "202702") == "DJF 2027", "C3S DJF period label should use the ending year")
-    check(len(module.PRODUCT_SPECS["500mb_height_anomaly"]["anomaly_ticks"]) == len(module.PRODUCT_SPECS["500mb_height_anomaly"]["anomaly_palette"]) + 1, "C3S 500-mb color bounds must align with swatches")
+    height_spec = module.PRODUCT_SPECS["500mb_height_anomaly"]
+    check((height_spec["anomaly_min"], height_spec["anomaly_max"]) == (-100.0, 100.0), "C3S and JMA 500-mb maps should use the shared ±100 m range")
+    check(height_spec["anomaly_ticks"] == list(range(-100, 101, 10)), "C3S and JMA 500-mb maps should use 10-metre labelled bounds")
+    check(len(height_spec["anomaly_ticks"]) == len(height_spec["anomaly_palette"]) + 1, "C3S 500-mb color bounds must align with swatches")
     with tempfile.TemporaryDirectory() as temporary:
         output = Path(temporary) / "manifest.json"
         previous = Path(temporary) / "previous.json"

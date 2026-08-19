@@ -25,6 +25,8 @@ publish them as 500-mb data. A 500-mb product can be enabled only after the
 source passes the explicit 500-hPa coordinate check. Until then NASA
 GEOS-S2S-3 is intentionally absent from the dashboard's
 500-mb comparison tab.
+If a future source passes that guard, its 500-mb anomaly map is configured to
+use the shared seasonal -100 to +100 m scale with 10 m intervals.
 
 The workflow runs during the first week of each month, caches the public
 NetCDF archives, and retains four release cycles in the manifest. No repository
