@@ -202,6 +202,7 @@
       return { product, run: String(run?.id || ''), target: String(targets[0]?.key || '') };
     }
     const COMPARE_PRODUCT = '500mb_height_anomaly';
+    const COMPARE_MIN_VALID_MONTH = 202612;
     const COMPARE_MODELS = ['superensemble', 'cfsv2', 'seas5', 'cansips', 'c3s', 'jma', 'apcc'];
     const COMPARE_BASELINES = [
       { value: 'native', label: 'Native model reference' },
@@ -251,13 +252,17 @@
       const comparison = target.comparison?.[baseline];
       return comparison?.image ? comparison : null;
     }
+    function compareTargetMeetsValidCutoff(target) {
+      const match = /^(\d{6})(?:-\d{6})?$/.exec(String(target?.target_month || ''));
+      return Boolean(match) && Number(match[1]) >= COMPARE_MIN_VALID_MONTH;
+    }
     function compareTarget(run, targetKey, baseline = 'native') {
-      return (Array.isArray(run?.targets) ? run.targets : []).find(target => String(target.target_month || '') === String(targetKey || '') && compareTargetAsset(target, baseline)) || null;
+      return (Array.isArray(run?.targets) ? run.targets : []).find(target => compareTargetMeetsValidCutoff(target) && String(target.target_month || '') === String(targetKey || '') && compareTargetAsset(target, baseline)) || null;
     }
     function compareTargetKeys(modelKey) {
       const keys = new Set();
       compareRuns(modelKey).forEach(run => (Array.isArray(run.targets) ? run.targets : []).forEach(target => {
-        if (compareTargetAsset(target, 'native') && target.target_month) keys.add(String(target.target_month));
+        if (compareTargetMeetsValidCutoff(target) && compareTargetAsset(target, 'native')) keys.add(String(target.target_month));
       }));
       return keys;
     }
