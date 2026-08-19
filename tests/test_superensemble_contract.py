@@ -2,6 +2,7 @@
 """Static and unit contracts for the deduplicated seasonal super ensemble."""
 
 import importlib.util
+import inspect
 import json
 from pathlib import Path
 import sys
@@ -63,6 +64,22 @@ def main() -> int:
     check(module.GEOS_MEMBER_KEY in surface_keys and module.GEOS_MEMBER_KEY in t850_keys, "validated products should include one standalone GEOS family vote")
     check("nmme_nasa_geos5v2" not in surface_keys, "the older NMME NASA copy must not double-count GEOS")
     check(set(surface_keys) - set(height_keys) == {module.GEOS_MEMBER_KEY, "nmme_ncar_ccsm4", "nmme_ncar_cesm1"}, "surface extensions must be GEOS plus the two unique NCAR NMME systems")
+    height_definitions = {member.key: member for member in height_members}
+    height_footer = module.included_models_footer(height_keys, height_definitions)
+    height_footer_labels = [member.footer_label or member.label for member in height_members]
+    check(height_footer.startswith("Included models: "), "image footer should identify its model roster")
+    check(all(label in height_footer for label in height_footer_labels), "image footer should name every included height family")
+    check(len(height_footer.splitlines()) == 2, "full height roster should fit the reserved two-line footer")
+    check(all(len(line) <= module.MEMBER_FOOTER_MAX_CHARS for line in height_footer.splitlines()), "image footer lines should stay inside the layout budget")
+    surface_definitions = {member.key: member for member in surface_members}
+    surface_footer = module.included_models_footer(surface_keys, surface_definitions)
+    check(all((member.footer_label or member.label) in surface_footer for member in surface_members), "image footer should name every included surface family")
+    check(len(surface_footer.splitlines()) == 2, "longest model roster should fit the reserved two-line footer")
+    check(all(len(line) <= module.MEMBER_FOOTER_MAX_CHARS for line in surface_footer.splitlines()), "longest footer lines should stay inside the layout budget")
+    check(height_footer_labels[-1] not in module.included_models_footer(height_keys[:-1], height_definitions), "partial-map footer should omit an unavailable family")
+    footer_parameter = inspect.signature(module.render_map).parameters.get("footer_text")
+    check(footer_parameter is not None and footer_parameter.default == "", "shared renderer should expose an optional footer without changing other model maps")
+    check(adapter_text.count("footer_text=included_models_footer(keys, definitions)") == 2, "monthly and seasonal super-ensemble maps should both receive the included-model footer")
     check(abs(sum(item["weight"] for item in module.weights_for(height_keys, {member.key: member for member in height_members})) - 1.0) < 1e-8, "equal weights should sum to one")
     check(module.resolve_cfsv2_anchor("2026081818", "2026080100") == "2026081818", "CFSv2 anchor should align within the shared initialization month")
     try:
