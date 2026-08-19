@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Static contract checks for the unified seasonal model dashboard."""
 
+import re
 from pathlib import Path
 
 
@@ -49,6 +50,8 @@ def main() -> int:
         'id="compare-baseline-select"',
         'id="compare-grid"',
         "COMPARE_PRODUCT = '500mb_height_anomaly'",
+        "const COMPARE_MIN_VALID_MONTH = 202612;",
+        "function compareTargetMeetsValidCutoff(target)",
         "common_1991_2020",
         "function renderCompare()",
         "if (!selection.compareBaseline) selection.compareBaseline = 'native';",
@@ -78,6 +81,16 @@ def main() -> int:
     )
     priority_positions = [page.index(term) for term in priority_terms]
     check(priority_positions == sorted(priority_positions), "default seasonal fallback helpers should be defined in execution order")
+
+    cutoff_match = re.search(r"const COMPARE_MIN_VALID_MONTH = (\d+);", page)
+    check(cutoff_match is not None, "compare valid-period cutoff is missing")
+    check(int(cutoff_match.group(1)) == 202612, "compare valid-period cutoff must keep December 2026 and later")
+    check("/^(\\d{6})(?:-\\d{6})?$/" in page, "compare cutoff must recognize monthly and seasonal target keys")
+    check("Number(match[1]) >= COMPARE_MIN_VALID_MONTH" in page, "compare cutoff must use the target period's starting month")
+    compare_target_block = page[page.index("function compareTarget(run"):page.index("function compareTargetKeys")]
+    compare_keys_block = page[page.index("function compareTargetKeys"):page.index("function comparePeriodSort")]
+    check("compareTargetMeetsValidCutoff(target)" in compare_target_block, "compare cards must reject targets before the valid-period cutoff")
+    check("compareTargetMeetsValidCutoff(target)" in compare_keys_block, "compare dropdown must reject targets before the valid-period cutoff")
 
     check("WN2 /" not in page, "unified dashboard should use a generic dashboard title")
     check("WeatherNext 2" not in page, "seasonal dashboard should not present WeatherNext 2 as a seasonal model")

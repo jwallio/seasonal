@@ -57,7 +57,9 @@ provenance review is needed. The dashboard's Compare tab places the latest
 matching 500-mb height-anomaly map from each seasonal model side by side and
 uses one shared monthly or seasonal-period selector. It defaults to each
 model's native anomaly; its Reference selector can optionally show a common
-1991-2020 reference based on the CanSIPS v3 hindcast mean.
+1991-2020 reference based on the CanSIPS v3 hindcast mean. Compare periods
+start with December 2026; earlier valid periods remain available only in the
+model-specific and Single Model views.
 
 The automatic release-aligned schedule for all seasonal workflows is documented
 in [`docs/SEASONAL_SCHEDULES.md`](/d:/weather-projects/wn2/docs/SEASONAL_SCHEDULES.md).
