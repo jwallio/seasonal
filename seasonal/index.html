@@ -50,7 +50,7 @@
     .copy p:last-child { margin-bottom:0; }
     .links { display:flex; flex-wrap:wrap; gap:12px; padding:0 20px 20px; font-size:13px; }
     .compare-toolbar { display:flex; align-items:end; flex-wrap:wrap; gap:14px; padding:14px 16px; margin-bottom:18px; }
-    .compare-toolbar .selector { width:min(320px,100%); }
+    .compare-toolbar .selector { width:min(280px,100%); }
     .compare-summary { margin:0 0 2px auto; color:var(--muted); font-size:12px; }
     .compare-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:14px; }
     .compare-card { min-width:0; }
@@ -117,9 +117,10 @@
 
     <section class="compare-view" id="compare-view" hidden>
       <div class="compare-toolbar card">
+        <div class="selector"><label for="compare-product-select">Parameter</label><select id="compare-product-select" disabled><option>Loading…</option></select></div>
         <div class="selector"><label for="compare-target-select">Valid period</label><select id="compare-target-select" disabled><option>Loading…</option></select></div>
         <div class="selector"><label for="compare-baseline-select">Reference</label><select id="compare-baseline-select" disabled><option>Loading…</option></select></div>
-        <p class="compare-summary" id="compare-summary">500-mb height anomaly · matching published target across models</p>
+        <p class="compare-summary" id="compare-summary">Seasonal anomaly · matching published target across models</p>
       </div>
       <div class="compare-grid" id="compare-grid"></div>
     </section>
@@ -143,7 +144,7 @@
       nmme: { label: 'NOAA NMME', kind: 'seasonal', manifest: assetPath('seasonal/nmme_manifest.json'), direct: assetPath('seasonal/nmme/'), source: 'NOAA CPC NMME' },
     };
     const modelStates = Object.fromEntries(Object.keys(MODEL_CONFIG).map(key => [key, { manifest: null, runs: [], error: null }]));
-    const selection = { view: 'single', model: 'cfsv2', product: '', run: '', target: '', compareTarget: '', compareBaseline: '', ratio: '10' };
+    const selection = { view: 'single', model: 'cfsv2', product: '', run: '', target: '', compareProduct: '500mb_height_anomaly', compareTarget: '', compareBaseline: '', ratio: '10' };
     const DEFAULT_PRODUCT_PRIORITY = [
       '500mb_height_anomaly',
       '2m_temperature_anomaly',
@@ -202,9 +203,17 @@
       const targets = targetItems(model, run);
       return { product, run: String(run?.id || ''), target: String(targets[0]?.key || '') };
     }
-    const COMPARE_PRODUCT = '500mb_height_anomaly';
+    const DEFAULT_COMPARE_PRODUCT = '500mb_height_anomaly';
     const COMPARE_MIN_VALID_MONTH = 202612;
-    const COMPARE_MODELS = ['superensemble', 'cfsv2', 'seas5', 'cansips', 'cma_cpsv3', 'c3s', 'jma', 'apcc'];
+    const COMPARE_MODELS = ['superensemble', 'cfsv2', 'seas5', 'cansips', 'cma_cpsv3', 'c3s', 'jma', 'apcc', 'geos_s2s3', 'nmme'];
+    const COMPARE_PRODUCTS = [
+      { value: '500mb_height_anomaly', label: '500-mb Height Anomaly', aliases: ['500mb_height_anomaly'] },
+      { value: '850mb_temperature_anomaly', label: '850-mb Temperature Anomaly', aliases: ['850mb_temperature_anomaly'] },
+      { value: '2m_temperature_anomaly', label: '2-m Temperature Anomaly', aliases: ['2m_temperature_anomaly', 'surface_temperature_anomaly', 'temperature_anomaly'] },
+      { value: 'precipitation_anomaly', label: 'Precipitation Anomaly', aliases: ['precipitation_anomaly'] },
+      { value: 'mslp_anomaly', label: 'MSLP Anomaly', aliases: ['mslp_anomaly'] },
+      { value: 'sea_surface_temperature_anomaly', label: 'Sea-Surface Temperature Anomaly', aliases: ['sea_surface_temperature_anomaly', 'sst_anomaly'] },
+    ];
     const COMPARE_BASELINES = [
       { value: 'native', label: 'Native model reference' },
       { value: 'common_1991_2020', label: 'Common 1991–2020 reference' },
@@ -238,9 +247,19 @@
       select.disabled = values.length === 0;
       if (values.some(item => String(item.value) === String(chosen))) select.value = String(chosen);
     }
-    function compareRuns(modelKey) {
+    function compareProductConfig(productKey) {
+      return COMPARE_PRODUCTS.find(item => item.value === productKey) || COMPARE_PRODUCTS[0];
+    }
+    function compareProductAliases(productKey) {
+      return new Set(compareProductConfig(productKey)?.aliases || [productKey]);
+    }
+    function compareProductLabel(productKey) {
+      return compareProductConfig(productKey)?.label || PRODUCT_LABELS[productKey] || pretty(productKey);
+    }
+    function compareRuns(modelKey, productKey = selection.compareProduct || DEFAULT_COMPARE_PRODUCT) {
+      const aliases = compareProductAliases(productKey);
       return (modelStates[modelKey]?.runs || [])
-        .filter(run => String(run.product || '') === COMPARE_PRODUCT)
+        .filter(run => aliases.has(String(run.product || '')))
         .sort((left, right) => {
           const leftBlend = modelKey === 'c3s' && String(left.component || '') === 'multisystem' ? 1 : 0;
           const rightBlend = modelKey === 'c3s' && String(right.component || '') === 'multisystem' ? 1 : 0;
@@ -260,9 +279,9 @@
     function compareTarget(run, targetKey, baseline = 'native') {
       return (Array.isArray(run?.targets) ? run.targets : []).find(target => compareTargetMeetsValidCutoff(target) && String(target.target_month || '') === String(targetKey || '') && compareTargetAsset(target, baseline)) || null;
     }
-    function compareTargetKeys(modelKey) {
+    function compareTargetKeys(modelKey, productKey = selection.compareProduct || DEFAULT_COMPARE_PRODUCT) {
       const keys = new Set();
-      compareRuns(modelKey).forEach(run => (Array.isArray(run.targets) ? run.targets : []).forEach(target => {
+      compareRuns(modelKey, productKey).forEach(run => (Array.isArray(run.targets) ? run.targets : []).forEach(target => {
         if (compareTargetMeetsValidCutoff(target) && compareTargetAsset(target, 'native')) keys.add(String(target.target_month));
       }));
       return keys;
@@ -273,17 +292,23 @@
       if (startDifference) return startDifference;
       const leftIsRange = String(left).includes('-') ? 1 : 0;
       const rightIsRange = String(right).includes('-') ? 1 : 0;
-      return leftIsRange - rightIsRange || String(left).localeCompare(String(right));
+      return rightIsRange - leftIsRange || String(left).localeCompare(String(right));
     }
-    function comparePeriodOptions() {
-      const availableSets = COMPARE_MODELS.map(compareTargetKeys).filter(set => set.size);
-      if (!availableSets.length) return [];
-      const common = [...availableSets[0]].filter(key => availableSets.every(set => set.has(key)));
-      const keys = common.length ? common : [...new Set(availableSets.reduce((all, set) => [...all, ...set], []))];
-      return keys.sort(comparePeriodSort).map(value => ({ value, label: periodLabel(value) }));
+    function compareProductOptions() {
+      return COMPARE_PRODUCTS
+        .filter(product => COMPARE_MODELS.some(modelKey => compareTargetKeys(modelKey, product.value).size))
+        .map(product => ({ value: product.value, label: product.label }));
     }
-    function compareRunForTarget(modelKey, targetKey, baseline = 'native') {
-      return compareRuns(modelKey).find(run => compareTarget(run, targetKey, baseline)) || null;
+    function comparePeriodOptions(productKey = selection.compareProduct || DEFAULT_COMPARE_PRODUCT) {
+      const keys = new Set();
+      COMPARE_MODELS.forEach(modelKey => compareTargetKeys(modelKey, productKey).forEach(key => keys.add(key)));
+      return [...keys].sort(comparePeriodSort).map(value => ({ value, label: periodLabel(value) }));
+    }
+    function compareBaselineOptions(productKey = selection.compareProduct || DEFAULT_COMPARE_PRODUCT) {
+      return productKey === DEFAULT_COMPARE_PRODUCT ? COMPARE_BASELINES : COMPARE_BASELINES.filter(item => item.value === 'native');
+    }
+    function compareRunForTarget(modelKey, targetKey, baseline = 'native', productKey = selection.compareProduct || DEFAULT_COMPARE_PRODUCT) {
+      return compareRuns(modelKey, productKey).find(run => compareTarget(run, targetKey, baseline)) || null;
     }
     function manifestProducts(model) {
       const keys = new Set();
@@ -387,9 +412,14 @@
     function compareBaselineLabel(value) {
       return COMPARE_BASELINES.find(item => item.value === value)?.label || 'Model reference';
     }
+    function compareModelListLabel() {
+      return COMPARE_MODELS.map(modelKey => MODEL_CONFIG[modelKey].label).join(' · ');
+    }
     function renderCompareCard(modelKey, targetKey) {
       const model = MODEL_CONFIG[modelKey];
       const state = modelStates[modelKey];
+      const productKey = selection.compareProduct || DEFAULT_COMPARE_PRODUCT;
+      const product = compareProductLabel(productKey);
       const card = document.createElement('article'); card.className = 'card compare-card';
       const header = document.createElement('div'); header.className = 'compare-card-head';
       const title = document.createElement('h2'); title.textContent = model.label; header.appendChild(title);
@@ -397,18 +427,18 @@
       card.appendChild(header);
       const imageWrap = document.createElement('div'); imageWrap.className = 'compare-image-wrap';
       const baseline = selection.compareBaseline || 'native';
-      const run = compareRunForTarget(modelKey, targetKey, baseline);
+      const run = compareRunForTarget(modelKey, targetKey, baseline, productKey);
       const target = run ? compareTarget(run, targetKey, baseline) : null;
       const asset = target ? compareTargetAsset(target, baseline) : null;
       if (!state.manifest) {
         imageWrap.appendChild(compareEmpty(state.error || 'Manifest unavailable.'));
       } else if (!run || !target || !asset) {
-        const reference = baseline === 'native' ? '500-mb map' : 'common 1991–2020 comparison map';
+        const reference = baseline === 'native' ? product : `${product} with a common 1991–2020 reference`;
         imageWrap.appendChild(compareEmpty(targetKey ? `No ${reference} published for ${periodLabel(targetKey)}.` : `No ${reference} is available.`));
       } else {
         const image = document.createElement('img');
         image.src = assetPath(asset.image);
-        image.alt = `${model.label} 500-mb height anomaly ${periodLabel(target.target_month)} · ${compareBaselineLabel(baseline)}`;
+        image.alt = `${model.label} ${product} ${periodLabel(target.target_month)} · ${compareBaselineLabel(baseline)}`;
         image.loading = 'lazy';
         image.addEventListener('error', () => imageWrap.replaceChildren(compareEmpty('The manifest target exists, but its image is not in the published Pages tree.')));
         imageWrap.appendChild(image);
@@ -417,38 +447,60 @@
       const metadata = document.createElement('p'); metadata.className = 'compare-meta';
       metadata.textContent = target && asset && run
         ? `Valid: ${periodLabel(target.target_month)} · Init: ${initLabel(run.init_utc)} · ${compareBaselineLabel(baseline)} · ${asset.status || target.status || run.status || 'available'}`
-        : (state.manifest ? 'No matching published target for this period.' : `Unavailable: ${state.error || 'manifest not published'}`);
+        : (state.manifest ? `No matching ${product} target for this period.` : `Unavailable: ${state.error || 'manifest not published'}`);
       card.appendChild(metadata);
       return card;
     }
     function renderCompare() {
-      const options = comparePeriodOptions();
+      const productSelect = el('compare-product-select');
       const select = el('compare-target-select');
       const baselineSelect = el('compare-baseline-select');
       const grid = el('compare-grid');
-      if (!options.length) {
-        select.replaceChildren(Object.assign(document.createElement('option'), { textContent: 'No matching 500-mb targets' }));
+      const productOptions = compareProductOptions();
+      if (!productOptions.length) {
+        productSelect.replaceChildren(Object.assign(document.createElement('option'), { textContent: 'No comparable parameters' }));
+        productSelect.disabled = true;
+        select.replaceChildren(Object.assign(document.createElement('option'), { textContent: 'No matching targets' }));
         select.disabled = true;
         baselineSelect.replaceChildren(Object.assign(document.createElement('option'), { textContent: 'No reference available' }));
         baselineSelect.disabled = true;
+        selection.compareProduct = '';
         selection.compareTarget = '';
         selection.compareBaseline = '';
-        el('compare-summary').textContent = '500-mb height anomaly · no matching target has been published across the model manifests';
+        el('compare-summary').textContent = 'No comparable anomaly products have been published across the model manifests';
         grid.replaceChildren(...COMPARE_MODELS.map(modelKey => renderCompareCard(modelKey, '')));
-        el('footer-copy').textContent = '500-mb height anomaly comparison · Super Ensemble · CFSv2 · ECMWF SEAS5 · CanSIPS v3 · C3S · JMA · APCC MME';
+        el('footer-copy').textContent = `Seasonal model comparison · ${compareModelListLabel()}`;
+        return;
+      }
+      if (!productOptions.some(item => item.value === selection.compareProduct)) {
+        selection.compareProduct = productOptions.find(item => item.value === DEFAULT_COMPARE_PRODUCT)?.value || productOptions[0].value;
+      }
+      populate(productSelect, productOptions, selection.compareProduct);
+      selection.compareProduct = productSelect.value || productOptions[0].value;
+      const product = compareProductLabel(selection.compareProduct);
+      const options = comparePeriodOptions(selection.compareProduct);
+      const baselineOptions = compareBaselineOptions(selection.compareProduct);
+      if (!baselineOptions.some(item => item.value === selection.compareBaseline)) selection.compareBaseline = 'native';
+      populate(baselineSelect, baselineOptions, selection.compareBaseline);
+      selection.compareBaseline = baselineSelect.value || 'native';
+      baselineSelect.disabled = baselineOptions.length <= 1;
+      if (!options.length) {
+        select.replaceChildren(Object.assign(document.createElement('option'), { textContent: 'No matching targets' }));
+        select.disabled = true;
+        selection.compareTarget = '';
+        el('compare-summary').textContent = `${product} · no matching target has been published across the model manifests`;
+        grid.replaceChildren(...COMPARE_MODELS.map(modelKey => renderCompareCard(modelKey, '')));
+        el('footer-copy').textContent = `${product} comparison · ${compareModelListLabel()}`;
         return;
       }
       const preferred = options.find(item => /^\d{6}-\d{6}$/.test(String(item.value))) || options[options.length - 1];
       if (!options.some(item => String(item.value) === String(selection.compareTarget))) selection.compareTarget = preferred.value;
       populate(select, options, selection.compareTarget);
       selection.compareTarget = select.value || preferred.value;
-      if (!selection.compareBaseline) selection.compareBaseline = 'native';
-      populate(baselineSelect, COMPARE_BASELINES, selection.compareBaseline);
-      selection.compareBaseline = baselineSelect.value || 'native';
-      const availableCount = COMPARE_MODELS.filter(modelKey => Boolean(compareRunForTarget(modelKey, selection.compareTarget, selection.compareBaseline))).length;
-      el('compare-summary').textContent = `${periodLabel(selection.compareTarget)} · ${compareBaselineLabel(selection.compareBaseline)} · ${availableCount}/${COMPARE_MODELS.length} model maps available`;
+      const availableCount = COMPARE_MODELS.filter(modelKey => Boolean(compareRunForTarget(modelKey, selection.compareTarget, selection.compareBaseline, selection.compareProduct))).length;
+      el('compare-summary').textContent = `${product} · ${periodLabel(selection.compareTarget)} · ${compareBaselineLabel(selection.compareBaseline)} · ${availableCount}/${COMPARE_MODELS.length} model maps available`;
       grid.replaceChildren(...COMPARE_MODELS.map(modelKey => renderCompareCard(modelKey, selection.compareTarget)));
-      el('footer-copy').textContent = `500-mb height anomaly comparison · ${compareBaselineLabel(selection.compareBaseline)} · Super Ensemble · CFSv2 · ECMWF SEAS5 · CanSIPS v3 · C3S · JMA · APCC MME`;
+      el('footer-copy').textContent = `${product} comparison · ${compareBaselineLabel(selection.compareBaseline)} · ${compareModelListLabel()}`;
     }
     function renderControls(model, run, targets) {
       const controls = el('target-controls'); controls.replaceChildren();
@@ -522,6 +574,7 @@
     el('run-select').addEventListener('change', event => { selection.run = event.target.value; selection.target = ''; renderAll(); });
     el('single-tab').addEventListener('click', () => setView('single'));
     el('compare-tab').addEventListener('click', () => setView('compare'));
+    el('compare-product-select').addEventListener('change', event => { selection.compareProduct = event.target.value; selection.compareTarget = ''; selection.compareBaseline = 'native'; renderCompare(); });
     el('compare-target-select').addEventListener('change', event => { selection.compareTarget = event.target.value; renderCompare(); });
     el('compare-baseline-select').addEventListener('change', event => { selection.compareBaseline = event.target.value; renderCompare(); });
     renderModelOptions();
