@@ -86,7 +86,8 @@ Render a different parameter:
 
 Use `-DecodeOnly` to validate CDS retrieval and GRIB decoding without building
 images. Use `-NoBorders` for a source-only smoke test. The workflow and local
-wrapper retain the current run plus three prior runs in the manifest.
+wrapper retain the current run plus three prior runs per parameter in the
+manifest.
 
 ## Workflow and viewer
 

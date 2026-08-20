@@ -685,7 +685,13 @@ def write_manifest(
         "source_url": run_entry.get("source_url", SOURCE_URL),
         "source_urls": run_entry.get("source_urls", [SOURCE_URL]),
         "archive_root": CDS_API_ROOT,
-        "retention": {"max_runs": retain_runs, "history_runs": max(0, retain_runs - 1)},
+        "retention": {
+            "scope": "per_product",
+            "max_runs": retain_runs,
+            "history_runs": max(0, retain_runs - 1),
+            "max_runs_per_product": retain_runs,
+            "history_runs_per_product": max(0, retain_runs - 1),
+        },
         "runs": [],
     }
     existing_paths = [path]
@@ -705,11 +711,29 @@ def write_manifest(
         if isinstance(run, dict) and run.get("id"):
             unique_runs[str(run["id"])] = run
     unique_runs[str(run_entry["id"])] = run_entry
+    grouped: dict[str, list[dict[str, Any]]] = {}
+    for entry in unique_runs.values():
+        grouped.setdefault(str(entry.get("product") or entry.get("field") or "unknown"), []).append(entry)
+    retained: list[dict[str, Any]] = []
+    for entries in grouped.values():
+        retained.extend(sorted(
+            entries,
+            key=lambda item: (
+                str(item.get("init_utc", "")),
+                str(item.get("generated_utc", "")),
+                str(item.get("id", "")),
+            ),
+            reverse=True,
+        )[:retain_runs])
     payload["runs"] = sorted(
-        unique_runs.values(),
-        key=lambda item: (str(item.get("init_utc", "")), str(item.get("generated_utc", "")), str(item.get("id", ""))),
+        retained,
+        key=lambda item: (
+            str(item.get("init_utc", "")),
+            str(item.get("generated_utc", "")),
+            str(item.get("id", "")),
+        ),
         reverse=True,
-    )[:retain_runs]
+    )
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_name(path.name + ".tmp")
     temporary.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
@@ -727,7 +751,12 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--output-dir", default="public/seasonal/seas5")
     parser.add_argument("--manifest", default="public/seasonal/seas5_manifest.json")
     parser.add_argument("--previous-manifest", type=Path)
-    parser.add_argument("--retain-runs", type=int, default=4)
+    parser.add_argument(
+        "--retain-runs",
+        type=int,
+        default=4,
+        help="number of current and historical runs to retain per product in the manifest",
+    )
     parser.add_argument("--common-reference-dir", type=Path, help="cached CanSIPS 1991-2020 reference grids for the comparison view")
     parser.add_argument("--common-reference-url", default="", help="base URL for published CanSIPS 1991-2020 reference grids")
     parser.add_argument("--common-reference-request-delay", type=float, default=0.5, help="seconds between common-reference downloads")
