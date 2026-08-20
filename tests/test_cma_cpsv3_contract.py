@@ -95,6 +95,11 @@ def main() -> int:
     check((height["anomaly_min"], height["anomaly_max"]) == (-100.0, 100.0), "CMA 500-mb height must use the shared ±100 m scale")
     check(height["anomaly_ticks"] == list(range(-100, 101, 10)), "CMA 500-mb height must use 10-m bounds")
     check(height["height_contours"] is False, "CMA anomalies must not fabricate absolute-height contours")
+    for product in ("850mb_temperature_anomaly", "2m_temperature_anomaly"):
+        temperature_spec = module.PRODUCT_SPECS[product]
+        check((temperature_spec["anomaly_min"], temperature_spec["anomaly_max"]) == (-7.0, 7.0), f"CMA {product} should inherit the shared ±7 °C range")
+        check(temperature_spec["anomaly_ticks"] == list(range(-7, 8)), f"CMA {product} should inherit 1 °C labelled bounds")
+        check(len(temperature_spec["anomaly_ticks"]) == len(temperature_spec["anomaly_palette"]) + 1, f"CMA {product} bounds must align with colors")
     check(module.PRODUCT_SPECS["sea_surface_temperature_anomaly"]["map_domain"] == "ocean", "CMA SST must remain ocean-only")
     mslp = module.PRODUCT_SPECS["mslp_anomaly"]
     check((mslp["anomaly_min"], mslp["anomaly_max"]) == (-10.0, 10.0), "CMA MSLP must use the shared ±10 hPa scale")

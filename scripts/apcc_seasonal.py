@@ -26,6 +26,10 @@ from cfsv2_seasonal import (
     ANOMALY_PALETTE,
     DEFAULT_REGION,
     Grid,
+    TEMPERATURE_ANOMALY_MAX_C,
+    TEMPERATURE_ANOMALY_MIN_C,
+    TEMPERATURE_ANOMALY_PALETTE,
+    TEMPERATURE_ANOMALY_TICKS,
     ensure_border_files,
     relative_path,
     render_map,
@@ -47,11 +51,6 @@ APCC_ACKNOWLEDGEMENT = (
 )
 
 APCC_Z500_TICKS = list(range(-100, 101, 10))
-APCC_TEMP_TICKS = [value / 2 for value in range(-6, 7)]
-APCC_TEMP_PALETTE = [
-    "#28567f", "#397ba2", "#5b9fba", "#82bdca", "#b4d6dc", "#e7eeee",
-    "#ffffff", "#f8dedd", "#efb6b5", "#e38e8e", "#d36c73", "#b84c5a",
-]
 APCC_PRECIP_TICKS = list(range(-200, 201, 25))
 APCC_PRECIP_PALETTE = [
     "#7f3b08", "#914b0d", "#a6611a", "#bd7a2d", "#d0a052", "#dfbd7d",
@@ -90,9 +89,8 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "api_variable": "t850", "field": "t850_anomaly", "raw_field": "850-mb temperature anomaly",
         "raw_units": "K", "units": "Â°C", "title": "APCC MME 850-mb Temperature Anomaly (Â°C)",
         "absolute_title": "APCC MME 850-mb Temperature (Â°C)", "height_contours": False,
-        "region": DEFAULT_REGION, "anomaly_min": -3.0, "anomaly_max": 3.0,
-        "anomaly_ticks": APCC_TEMP_TICKS, "anomaly_palette": APCC_TEMP_PALETTE,
-        "anomaly_tick_decimals": 1,
+        "region": DEFAULT_REGION, "anomaly_min": TEMPERATURE_ANOMALY_MIN_C, "anomaly_max": TEMPERATURE_ANOMALY_MAX_C,
+        "anomaly_ticks": TEMPERATURE_ANOMALY_TICKS, "anomaly_palette": TEMPERATURE_ANOMALY_PALETTE,
         "header_detail": "{source_label}  â€¢  {baseline_label}  â€¢  Native APCC seasonal MME anomaly",
         "id_token": "t850a",
     },
@@ -100,9 +98,8 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "api_variable": "t2m", "field": "t2m_anomaly", "raw_field": "2-m temperature anomaly",
         "raw_units": "K", "units": "Â°C", "title": "APCC MME 2-m Temperature Anomaly (Â°C)",
         "absolute_title": "APCC MME 2-m Temperature (Â°C)", "height_contours": False,
-        "region": DEFAULT_REGION, "anomaly_min": -3.0, "anomaly_max": 3.0,
-        "anomaly_ticks": APCC_TEMP_TICKS, "anomaly_palette": APCC_TEMP_PALETTE,
-        "anomaly_tick_decimals": 1,
+        "region": DEFAULT_REGION, "anomaly_min": TEMPERATURE_ANOMALY_MIN_C, "anomaly_max": TEMPERATURE_ANOMALY_MAX_C,
+        "anomaly_ticks": TEMPERATURE_ANOMALY_TICKS, "anomaly_palette": TEMPERATURE_ANOMALY_PALETTE,
         "header_detail": "{source_label}  â€¢  {baseline_label}  â€¢  Native APCC seasonal MME anomaly",
         "id_token": "t2ma",
     },
@@ -349,437 +346,4 @@ def request_archive(details: dict[str, Any], output: Path, args: argparse.Namesp
         data = status_reply.get("data") or {}
         status = str(data.get("status", ""))
         download_url = data.get("download_url", download_url)
-        print(f"APCC job {job_id}: {status}")
-    if not download_url:
-        raise APCCError(f"APCC job {job_id} completed without a download URL")
-    temporary = output.with_name(output.name + ".tmp")
-    try:
-        with requests.get(download_url, stream=True, timeout=(30, 180)) as download:
-            download.raise_for_status()
-            with temporary.open("wb") as handle:
-                for chunk in download.iter_content(chunk_size=1024 * 1024):
-                    if chunk:
-                        handle.write(chunk)
-        temporary.replace(output)
-    except Exception as exc:
-        temporary.unlink(missing_ok=True)
-        raise APCCError(f"APCC result download failed: {exc}") from exc
-    return output
-
-
-def safe_extract(archive: Path, destination: Path) -> list[Path]:
-    destination.mkdir(parents=True, exist_ok=True)
-    extracted: list[Path] = []
-    with zipfile.ZipFile(archive) as bundle:
-        root = destination.resolve()
-        for member in bundle.infolist():
-            target = (destination / member.filename).resolve()
-            if root not in target.parents and target != root:
-                raise APCCError(f"refusing unsafe APCC archive member: {member.filename}")
-            if member.is_dir():
-                target.mkdir(parents=True, exist_ok=True)
-                continue
-            target.parent.mkdir(parents=True, exist_ok=True)
-            with bundle.open(member) as source, target.open("wb") as output:
-                output.write(source.read())
-            extracted.append(target)
-    return extracted
-
-
-def _coordinate_name(data: Any, tokens: tuple[str, ...]) -> str:
-    names = list(data.coords) + list(data.dims)
-    for name in names:
-        lower = str(name).lower()
-        if any(token in lower for token in tokens):
-            return str(name)
-    raise APCCError(f"APCC NetCDF field has no coordinate matching {tokens}")
-
-
-def _select_data_variable(dataset: Any, product: dict[str, Any]) -> Any:
-    candidates = list(dataset.data_vars)
-    token = product["api_variable"].lower()
-    exact = [name for name in candidates if str(name).lower() == token]
-    data = dataset[exact[0] if exact else candidates[0]] if candidates else None
-    if data is None:
-        raise APCCError("APCC NetCDF contains no data variable")
-    return data
-
-
-def read_netcdf_metadata(path: Path, product: dict[str, Any]) -> dict[str, Any]:
-    try:
-        import xarray as xr
-    except ImportError as exc:  # pragma: no cover - workflow installs xarray/netCDF4
-        raise APCCError("APCC NetCDF decoding requires xarray") from exc
-    try:
-        dataset = xr.open_dataset(path)
-    except Exception as exc:
-        raise APCCError(f"could not open APCC NetCDF {path.name}: {exc}") from exc
-    try:
-        data = _select_data_variable(dataset, product)
-        return {
-            "global_attrs": dict(dataset.attrs),
-            "data_attrs": dict(data.attrs),
-            "data_variable": str(data.name),
-        }
-    finally:
-        dataset.close()
-
-
-def _source_units(attrs: dict[str, Any]) -> str:
-    return str(attrs.get("units") or attrs.get("original_units") or "native APCC units")
-
-
-def _convert_values(
-    values: np.ndarray,
-    product: dict[str, Any],
-    attrs: dict[str, Any],
-    precip_days: int = 1,
-) -> np.ndarray:
-    units = _source_units(attrs).lower().replace("^", "")
-    if product["api_variable"] == "z500" and ("m2 s-2" in units or "m^2 s-2" in units or "m2/s2" in units):
-        return values / 9.80665
-    if product["api_variable"] == "slp" and ("pa" in units and "hpa" not in units):
-        return values / 100.0
-    if product["api_variable"] == "prec":
-        if units in {"m", "meter", "metre"} or "m water" in units:
-            values = values * 1000.0
-        elif "mm/day" in units or "mm day" in units:
-            values = values * max(1, precip_days)
-    return values
-
-
-def grid_from_netcdf(path: Path, product: dict[str, Any], precip_days: int = 1) -> Grid:
-    try:
-        import xarray as xr
-    except ImportError as exc:  # pragma: no cover - workflow installs xarray/netCDF4
-        raise APCCError("APCC NetCDF decoding requires xarray") from exc
-    try:
-        dataset = xr.open_dataset(path)
-    except Exception as exc:
-        raise APCCError(f"could not open APCC NetCDF {path.name}: {exc}") from exc
-    try:
-        data = _select_data_variable(dataset, product)
-        data = data.squeeze(drop=True)
-        lat_name = _coordinate_name(data, ("latitude", "lat"))
-        lon_name = _coordinate_name(data, ("longitude", "lon"))
-        for dimension in list(data.dims):
-            if dimension not in {lat_name, lon_name}:
-                data = data.mean(dim=dimension, skipna=True)
-        data = data.transpose(lat_name, lon_name)
-        lats = np.asarray(data[lat_name].values, dtype=float)
-        lons = np.asarray(data[lon_name].values, dtype=float)
-        values = _convert_values(
-            np.asarray(data.values, dtype=float), product, dict(data.attrs), precip_days=precip_days
-        )
-    finally:
-        dataset.close()
-    if values.ndim != 2:
-        raise APCCError(f"APCC NetCDF {path.name} did not reduce to a 2-D field")
-    normalized_lons = ((lons + 180.0) % 360.0) - 180.0
-    lon_order = np.argsort(normalized_lons)
-    lat_order = np.argsort(lats)
-    ordered = values[np.ix_(lat_order, lon_order)]
-    if not np.isfinite(ordered).any():
-        raise APCCError(f"APCC NetCDF {path.name} contains no finite values")
-    return Grid(
-        lons=[float(value) for value in normalized_lons[lon_order]],
-        lats=[float(value) for value in lats[lat_order]],
-        values=ordered.tolist(),
-    )
-
-
-def grid_stats(grid: Grid) -> dict[str, float]:
-    values = np.asarray(grid.values, dtype=float)
-    finite = values[np.isfinite(values)]
-    if finite.size == 0:
-        raise APCCError("decoded APCC grid contains no finite values")
-    return {
-        "min": round(float(np.min(finite)), 4),
-        "max": round(float(np.max(finite)), 4),
-        "p05": round(float(np.percentile(finite, 5)), 4),
-        "p95": round(float(np.percentile(finite, 95)), 4),
-        "finite_points": int(finite.size),
-    }
-
-
-def grid_resolution(grid: Grid) -> dict[str, float]:
-    lon_step = np.diff(np.asarray(grid.lons, dtype=float))
-    lat_step = np.diff(np.asarray(grid.lats, dtype=float))
-    return {
-        "longitude_degrees": round(float(np.median(np.abs(lon_step))), 4) if lon_step.size else 0.0,
-        "latitude_degrees": round(float(np.median(np.abs(lat_step))), 4) if lat_step.size else 0.0,
-    }
-
-
-def find_product_file(files: Iterable[Path], product: dict[str, Any], season_code: str) -> Path:
-    candidates = [path for path in files if path.suffix.lower() in {".nc", ".nc4", ".netcdf"}]
-    if not candidates:
-        raise APCCError("APCC result ZIP contained no NetCDF files")
-    token = product["api_variable"].lower()
-    matching = [path for path in candidates if token in path.name.lower()]
-    if not matching:
-        matching = candidates
-    if season_code:
-        seasonal = [path for path in matching if season_code.lower() in str(path).lower()]
-        if not seasonal:
-            raise APCCError(
-                f"APCC result ZIP contained no {season_code.upper()} file for {product['api_variable']}"
-            )
-        return sorted(seasonal)[0]
-    return sorted(matching)[0]
-
-
-def write_manifest(
-    path: Path,
-    entries: Iterable[dict[str, Any]],
-    previous: Path | None,
-    retain_cycles: int,
-    dataset: str = "MME_3MONTH",
-) -> None:
-    all_entries: list[dict[str, Any]] = []
-    for existing_path in (previous, path):
-        if not existing_path or not existing_path.exists():
-            continue
-        try:
-            payload = json.loads(existing_path.read_text(encoding="utf-8"))
-            all_entries.extend(run for run in payload.get("runs", []) if isinstance(run, dict))
-        except (OSError, ValueError) as exc:
-            raise APCCError(f"could not read previous APCC manifest {existing_path}: {exc}") from exc
-    all_entries.extend(entries)
-    unique = {str(run.get("id")): run for run in all_entries if run.get("id")}
-    ordered = sorted(unique.values(), key=lambda item: (str(item.get("init_utc", "")), str(item.get("id", ""))), reverse=True)
-    cycles: list[str] = []
-    for run in ordered:
-        cycle = str(run.get("init_utc", ""))
-        if cycle not in cycles:
-            cycles.append(cycle)
-    keep = set(cycles[:max(1, retain_cycles)])
-    payload = {
-        "schema_version": 1,
-        "kind": "apcc_seasonal_manifest",
-        "generated_utc": iso_utc(dt.datetime.now(dt.timezone.utc)),
-        "source": "APCC multi-model ensemble via CLIK",
-        "source_url": APCC_SOURCE_URL,
-        "source_urls": [APCC_SOURCE_URL, dataset_url(dataset), APCC_API_DOCS_URL],
-        "acknowledgement": APCC_ACKNOWLEDGEMENT,
-        "product_labels": {
-            "500mb_height_anomaly": "500-mb Height Anomaly",
-            "850mb_temperature_anomaly": "850-mb Temperature Anomaly",
-            "2m_temperature_anomaly": "2-m Temperature Anomaly",
-            "precipitation_anomaly": "Precipitation Anomaly",
-            "sea_surface_temperature_anomaly": "Sea-Surface Temperature Anomaly",
-            "mslp_anomaly": "MSLP Anomaly",
-        },
-        "retention": {"max_cycles": max(1, retain_cycles), "history_cycles": max(0, retain_cycles - 1)},
-        "runs": [run for run in ordered if str(run.get("init_utc", "")) in keep],
-    }
-    path.parent.mkdir(parents=True, exist_ok=True)
-    temporary = path.with_name(path.name + ".tmp")
-    temporary.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
-    temporary.replace(path)
-
-
-def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--product", choices=("all", *PRODUCT_SPECS), default="all")
-    parser.add_argument("--init", default="latest", help="APCC first target month as YYYYMM or latest")
-    parser.add_argument("--target-window", default="", help="three-month offsets from the first target month; defaults to the far window for the selected horizon")
-    parser.add_argument("--dataset", default="MME_6MONTH", choices=("MME_3MONTH", "MME_6MONTH"))
-    parser.add_argument("--lead-month", default=None, choices=("3-MON", "6-MON"))
-    parser.add_argument("--resolution", default="2.5", choices=("1.0", "2.5"))
-    parser.add_argument("--method", default="SCM", choices=("SCM", "GAUS"))
-    parser.add_argument("--request-url", default=APCC_REQUEST_URL)
-    parser.add_argument("--status-url", default=APCC_STATUS_URL)
-    parser.add_argument("--timeout-minutes", type=int, default=45)
-    parser.add_argument("--poll-seconds", type=float, default=10.0)
-    parser.add_argument("--cache-dir", default=".cache/apcc")
-    parser.add_argument("--output-dir", default="public/seasonal/apcc")
-    parser.add_argument("--manifest", default="public/seasonal/apcc_manifest.json")
-    parser.add_argument("--previous-manifest", type=Path)
-    parser.add_argument("--retain-cycles", type=int, default=4)
-    parser.add_argument("--border-geojson", action="append", type=Path)
-    parser.add_argument("--no-borders", action="store_true")
-    parser.add_argument("--decode-only", action="store_true")
-    return parser
-
-
-def run(args: argparse.Namespace) -> int:
-    repo_root = Path(__file__).resolve().parents[1]
-    expected_horizon = "3-MON" if args.dataset == "MME_3MONTH" else "6-MON"
-    if args.lead_month and args.lead_month != expected_horizon:
-        raise APCCError(f"{args.dataset} must use the {expected_horizon} forecast horizon")
-    args.lead_month = expected_horizon
-    if not args.target_window:
-        args.target_window = "0,1,2" if args.dataset == "MME_3MONTH" else "3,4,5"
-    init = parse_init(args.init)
-    requested_target_code, requested_period, requested_first_target = target_window(init, args.target_window)
-    selected = list(PRODUCT_SPECS) if args.product == "all" else [args.product]
-    cache_dir = Path(args.cache_dir) if Path(args.cache_dir).is_absolute() else repo_root / args.cache_dir
-    output_dir = Path(args.output_dir) if Path(args.output_dir).is_absolute() else repo_root / args.output_dir
-    manifest_path = Path(args.manifest) if Path(args.manifest).is_absolute() else repo_root / args.manifest
-    previous = args.previous_manifest if not args.previous_manifest or args.previous_manifest.is_absolute() else repo_root / args.previous_manifest
-    borders = ensure_border_files(args, cache_dir, repo_root)
-    variables = sorted({PRODUCT_SPECS[product]["api_variable"] for product in selected})
-    archive = cache_dir / "archives" / f"{args.dataset.lower()}_{args.lead_month.lower()}_{init}_{'_'.join(variables)}.zip"
-    files: list[Path] = []
-    if not args.decode_only:
-        request_archive(_request_details(args, init, variables), archive, args)
-        files = safe_extract(archive, cache_dir / "extracted" / archive.stem)
-    requested_first_year, requested_first_month = int(requested_first_target[:4]), int(requested_first_target[4:])
-    requested_last_year, requested_last_month = month_after(requested_first_year, requested_first_month, 2)
-    requested_end_year, requested_end_month = month_after(requested_last_year, requested_last_month, 1)
-    native_period = {
-        "season_code": requested_period.split()[0],
-        "period_label": requested_period,
-        "target_code": requested_target_code,
-        "first_target": requested_first_target,
-        "valid_start_utc": f"{requested_target_code[:4]}-{requested_target_code[4:6]}-01T00:00:00Z",
-        "valid_end_utc": f"{requested_end_year:04d}-{requested_end_month:02d}-01T00:00:00Z",
-        "days": sum(
-            calendar.monthrange(year, month)[1]
-            for year, month in (
-                (requested_first_year, requested_first_month),
-                month_after(requested_first_year, requested_first_month, 1),
-                (requested_last_year, requested_last_month),
-            )
-        ),
-        "forecast_info": "",
-        "fallback": True,
-    }
-    if files:
-        requested_season_code = requested_period.split()[0].upper()
-        if requested_season_code not in SEASON_START_MONTH:
-            raise APCCError(
-                "--target-window must resolve to a named three-month season for APCC seasonal data"
-            )
-        reference_path = find_product_file(
-            files,
-            PRODUCT_SPECS[selected[0]],
-            requested_season_code,
-        )
-        reference_metadata = read_netcdf_metadata(reference_path, PRODUCT_SPECS[selected[0]])
-        native_period = source_period_from_metadata(
-            reference_metadata["global_attrs"], init, source_path=reference_path
-        )
-        if native_period["target_code"] != requested_target_code:
-            raise APCCError(
-                "APCC source season does not match the requested target window "
-                f"({native_period['target_code']} != {requested_target_code})"
-            )
-    target_code = native_period["target_code"]
-    period = native_period["period_label"]
-    first_target = native_period["first_target"]
-    entries: list[dict[str, Any]] = []
-    successes = 0
-    issue_datetime = source_issue_datetime(
-        reference_metadata["global_attrs"] if files else {},
-        init,
-    )
-    init_utc = iso_utc(issue_datetime)
-    renderer_init = issue_datetime.strftime("%Y%m%d%H")
-    issue_label = f"Issued {issue_datetime:%d %b %Y}"
-    valid_start = native_period["valid_start_utc"]
-    valid_end = native_period["valid_end_utc"]
-    source_season_code = str(native_period.get("season_code", ""))
-    for product_name in selected:
-        product = PRODUCT_SPECS[product_name]
-        target_entry: dict[str, Any] = {
-            "id": f"apcc-{init}-{product['id_token']}-{target_code}",
-            "valid_start_utc": valid_start,
-            "valid_end_utc": valid_end,
-            "lead_month": args.lead_month,
-            "target_month": target_code,
-            "period_label": period,
-            "aggregation": "native APCC seasonal mean",
-            "field": product["field"],
-            "units": product["units"],
-            "raw_field": product["raw_field"],
-            "raw_units": product["raw_units"],
-            "statistic": "APCC multi-model ensemble mean",
-            "ensemble_scope": "APCC MME seasonal product",
-            "source_urls": [dataset_url(args.dataset), APCC_API_DOCS_URL],
-            "source_period": native_period,
-            "source_issue_utc": init_utc,
-            "status": "planned",
-        }
-        run_entry: dict[str, Any] = {
-            "id": f"apcc-{init}-{product_name}",
-            "init_utc": init_utc,
-            "product": product_name,
-            "status": "planned",
-            "source": "APCC multi-model ensemble via CLIK",
-            "source_url": APCC_SOURCE_URL,
-            "dataset": args.dataset,
-            "lead_month": args.lead_month,
-            "forecast_horizon": args.lead_month,
-            "request_target_month": init,
-            "resolution": args.resolution,
-            "method": args.method,
-            "requested_target_window": args.target_window,
-            "native_period": native_period,
-            "targets": [target_entry],
-            "output_dir": relative_path(output_dir, repo_root),
-        }
-        try:
-            if args.decode_only:
-                raise APCCError("--decode-only requires a cached APCC archive; provide the adapter cache first")
-            source_path = find_product_file(files, product, source_season_code)
-            metadata = read_netcdf_metadata(source_path, product)
-            source_units = _source_units(metadata["data_attrs"])
-            grid = grid_from_netcdf(source_path, product, precip_days=int(native_period["days"]))
-            stats = grid_stats(grid)
-            output = output_dir / init / f"apcc_{product['id_token']}_{target_code}.jpg"
-            render_map(
-                grid,
-                renderer_init,
-                first_target,
-                args.lead_month,
-                [],
-                output,
-                anomaly=True,
-                baseline_label="Native APCC MME anomaly",
-                border_paths=borders,
-                period_label=period,
-                ensemble_label="APCC multi-model ensemble mean",
-                initialization_label=issue_label,
-                product_spec={
-                    **product,
-                    "name": product_name,
-                    "source_label": "APCC MME / CLIK",
-                    "lead_label": f"{args.lead_month} horizon",
-                },
-            )
-            target_entry["image"] = relative_path(output, repo_root)
-            target_entry["source_file"] = relative_path(source_path, repo_root)
-            target_entry["raw_units"] = source_units
-            target_entry["data_range"] = stats
-            target_entry["native_grid"] = grid_resolution(grid)
-            target_entry["baseline"] = {"status": "native_source_anomaly", "label": "Native APCC MME anomaly"}
-            if product_name == "precipitation_anomaly":
-                target_entry["conversion"] = product["precipitation_conversion"]
-                target_entry["aggregation"] = "seasonal accumulation from native APCC seasonal mean"
-            target_entry["status"] = "rendered"
-            run_entry["status"] = "rendered"
-            successes += 1
-            print(f"rendered APCC {product_name}: {output}")
-        except Exception as exc:
-            target_entry["status"] = "failed"
-            target_entry["error"] = str(exc)
-            run_entry["status"] = "failed"
-            print(f"APCC {product_name} failed: {exc}")
-        entries.append(run_entry)
-    write_manifest(manifest_path, entries, previous, args.retain_cycles, args.dataset)
-    print(f"wrote APCC manifest: {manifest_path} ({len(entries)} product run(s))")
-    return 0 if successes else 2
-
-
-def main() -> int:
-    try:
-        return run(build_parser().parse_args())
-    except APCCError as exc:
-        print(f"APCC ERROR: {exc}")
-        return 2
-
-
-if __name__ == "__main__":
-    raise SystemExit(main())
+        print(f"APCC job {job_id}: {stat×½ô¶‰žËkºwµçd€”€ÌØÀ¸À¤€´€ÄàÀ¸À(€€€±½¹}½É‘•È€ô¹À¹…ÉÍ½ÉÐ¡¹½Éµ…±¥é•‘}±½¹Ì¤(€€€±…Ñ}½É‘•È€ô¹À¹…ÉÍ½ÉÐ¡±…ÑÌ¤(€€€½É‘•É•€ôÙ…±Õ•Ím¹À¹¥á|¡±…Ñ}½É‘•È°±½¹}½É‘•È¥t(€€€¥˜¹½Ð¹À¹¥Í™¥¹¥Ñ”¡½É‘•É•¤¹…¹ä ¤è(€€€€€€€É…¥Í”AÉÉ½È¡˜‰A9•ÑíÁ…Ñ ¹¹…µ•ô½¹Ñ…¥¹Ì¹¼™¥¹¥Ñ”Ù…±Õ•Ìˆ¤(€€€É•ÑÕÉ¸É¥ (€€€€€€€±½¹Ìõm™±½…Ð¡Ù…±Õ”¤™½ÈÙ…±Õ”¥¸¹½Éµ…±¥é•‘}±½¹Ím±½¹}½É‘•Éut°(€€€€€€€±…ÑÌõm™±½…Ð¡Ù…±Õ”¤™½ÈÙ…±Õ”¥¸±…ÑÍm±…Ñ}½É‘•Éut°(€€€€€€€Ù…±Õ•Ìõ½É‘•É•¹Ñ½±¥ÍÐ ¤°(€€€€¤(()‘•˜É¥‘}ÍÑ…ÑÌ¡É¥èÉ¥¤€´ø‘¥ÑmÍÑÈ°™±½…Ñtè(€€€Ù…±Õ•Ì€ô¹À¹…Í…ÉÉ…ä¡É¥¹Ù…±Õ•Ì°‘ÑåÁ”õ™±½…Ð¤(€€€™¥¹¥Ñ”€ôÙ…±Õ•Ím¹À¹¥Í™¥¹¥Ñ”¡Ù…±Õ•Ì¥t(€€€¥˜™¥¹¥Ñ”¹Í¥é”€ôô€Àè(€€€€€€€É…¥Í”AÉÉ½È ‰‘•½‘•AÉ¥½¹Ñ…¥¹Ì¹¼™¥¹¥Ñ”Ù…±Õ•Ìˆ¤(€€€É•ÑÕÉ¸ì(€€€€€€€€‰µ¥¸ˆèÉ½Õ¹¡™±½…Ð¡¹À¹µ¥¸¡™¥¹¥Ñ”¤¤°€Ð¤°(€€€€€€€€‰µ…àˆèÉ½Õ¹¡™±½…Ð¡¹À¹µ…à¡™¥¹¥Ñ”¤¤°€Ð¤°(€€€€€€€€‰ÀÀÔˆèÉ½Õ¹¡™±½…Ð¡¹À¹Á•É•¹Ñ¥±”¡™¥¹¥Ñ”°€Ô¤¤°€Ð¤°(€€€€€€€€‰ÀäÔˆèÉ½Õ¹¡™±½…Ð¡¹À¹Á•É•¹Ñ¥±”¡™¥¹¥Ñ”°€äÔ¤¤°€Ð¤°(€€€€€€€€‰™¥¹¥Ñ•}Á½¥¹ÑÌˆè¥¹Ð¡™¥¹¥Ñ”¹Í¥é”¤°(€€€ô(()‘•˜É¥‘}É•Í½±ÕÑ¥½¸¡É¥èÉ¥¤€´ø‘¥ÑmÍÑÈ°™±½…Ñtè(€€€±½¹}ÍÑ•À€ô¹À¹‘¥™˜¡¹À¹…Í…ÉÉ…ä¡É¥¹±½¹Ì°‘ÑåÁ”õ™±½…Ð¤¤(€€€±…Ñ}ÍÑ•À€ô¹À¹‘¥™˜¡¹À¹…Í…ÉÉ…ä¡É¥¹±…ÑÌ°‘ÑåÁ”õ™±½…Ð¤¤(€€€É•ÑÕÉ¸ì(€€€€€€€€‰±½¹¥ÑÕ‘•}‘•É••ÌˆèÉ½Õ¹¡™±½…Ð¡¹À¹µ•‘¥…¸¡¹À¹…‰Ì¡±½¹}ÍÑ•À¤¤¤°€Ð¤¥˜±½¹}ÍÑ•À¹Í¥é”•±Í”€À¸À°(€€€€€€€€‰±…Ñ¥ÑÕ‘•}‘•É••ÌˆèÉ½Õ¹¡™±½…Ð¡¹À¹µ•‘¥…¸¡¹À¹…‰Ì¡±…Ñ}ÍÑ•À¤¤¤°€Ð¤¥˜±…Ñ}ÍÑ•À¹Í¥é”•±Í”€À¸À°(€€€ô(()‘•˜™¥¹‘}ÁÉ½‘ÕÑ}™¥±”¡™¥±•Ìè%Ñ•É…‰±•mA…Ñ¡t°ÁÉ½‘ÕÐè‘¥ÑmÍÑÈ°¹åt°Í•…Í½¹}½‘”èÍÑÈ¤€´øA…Ñ è(€€€…¹‘¥‘…Ñ•Ì€ômÁ…Ñ ™½ÈÁ…Ñ ¥¸™¥±•Ì¥˜Á…Ñ ¹ÍÕ™™¥à¹±½Ý•È ¤¥¸ìˆ¹¹Œˆ°€ˆ¹¹ŒÐˆ°€ˆ¹¹•Ñ‘˜‰õt(€€€¥˜¹½Ð…¹‘¥‘…Ñ•Ìè(€€€€€€€É…¥Í”AÉÉ½È ‰AÉ•ÍÕ±Ði%@½¹Ñ…¥¹•¹¼9•Ñ™¥±•Ìˆ¤(€€€Ñ½­•¸€ôÁÉ½‘ÕÑl‰…Á¥}Ù…É¥…‰±”‰t¹±½Ý•È ¤(€€€µ…Ñ¡¥¹œ€ômÁ…Ñ ™½ÈÁ…Ñ ¥¸…¹‘¥‘…Ñ•Ì¥˜Ñ½­•¸¥¸Á…Ñ ¹¹…µ”¹±½Ý•È ¥t(€€€¥˜¹½Ðµ…Ñ¡¥¹œè(€€€€€€€µ…Ñ¡¥¹œ€ô…¹‘¥‘…Ñ•Ì(€€€¥˜Í•…Í½¹}½‘”è(€€€€€€€Í•…Í½¹…°€ômÁ…Ñ ™½ÈÁ…Ñ ¥¸µ…Ñ¡¥¹œ¥˜Í•…Í½¹}½‘”¹±½Ý•È ¤¥¸ÍÑÈ¡Á…Ñ ¤¹±½Ý•È ¥t(€€€€€€€¥˜¹½ÐÍ•…Í½¹…°è(€€€€€€€€€€€É…¥Í”AÉÉ½È (€€€€€€€€€€€€€€€˜‰AÉ•ÍÕ±Ði%@½¹Ñ…¥¹•¹¼íÍ•…Í½¹}½‘”¹ÕÁÁ•È ¥ô™¥±”™½ÈíÁÉ½‘ÕÑl…Á¥}Ù…É¥…‰±”uôˆ(€€€€€€€€€€€€¤(€€€€€€€É•ÑÕÉ¸Í½ÉÑ•¡Í•…Í½¹…°¥lÁt(€€€É•ÑÕÉ¸Í½ÉÑ•¡µ…Ñ¡¥¹œ¥lÁt(()‘•˜ÝÉ¥Ñ•}µ…¹¥™•ÍÐ (€€€Á…Ñ èA…Ñ °(€€€•¹ÑÉ¥•Ìè%Ñ•É…‰±•m‘¥ÑmÍÑÈ°¹åut°(€€€ÁÉ•Ù¥½ÕÌèA…Ñ ð9½¹”°(€€€É•Ñ…¥¹}å±•Ìè¥¹Ð°(€€€‘…Ñ…Í•ÐèÍÑÈ€ô€‰55|Í5=9Q ˆ°(¤€´ø9½¹”è(€€€…±±}•¹ÑÉ¥•Ìè±¥ÍÑm‘¥ÑmÍÑÈ°¹åut€ômt(€€€™½È•á¥ÍÑ¥¹}Á…Ñ ¥¸€¡ÁÉ•Ù¥½ÕÌ°Á…Ñ ¤è(€€€€€€€¥˜¹½Ð•á¥ÍÑ¥¹}Á…Ñ ½È¹½Ð•á¥ÍÑ¥¹}Á…Ñ ¹•á¥ÍÑÌ ¤è(€€€€€€€€€€€½¹Ñ¥¹Õ”(€€€€€€€ÑÉäè(€€€€€€€€€€€Á…å±½…€ô©Í½¸¹±½…‘Ì¡•á¥ÍÑ¥¹}Á…Ñ ¹É•…‘}Ñ•áÐ¡•¹½‘¥¹œô‰ÕÑ˜´àˆ¤¤(€€€€€€€€€€€…±±}•¹ÑÉ¥•Ì¹•áÑ•¹¡ÉÕ¸™½ÈÉÕ¸¥¸Á…å±½…¹•Ð ‰ÉÕ¹Ìˆ°mt¤¥˜¥Í¥¹ÍÑ…¹”¡ÉÕ¸°‘¥Ð¤¤(€€€€€€€•á•ÁÐ€¡=MÉÉ½È°Y…±Õ•ÉÉ½È¤…Ì•áŒè(€€€€€€€€€€€É…¥Í”AÉÉ½È¡˜‰½Õ±¹½ÐÉ•…ÁÉ•Ù¥½ÕÌAµ…¹¥™•ÍÐí•á¥ÍÑ¥¹}Á…Ñ¡ôèí•áôˆ¤™É½´•áŒ(€€€…±±}•¹ÑÉ¥•Ì¹•áÑ•¹¡•¹ÑÉ¥•Ì¤(€€€Õ¹¥ÅÕ”€ôíÍÑÈ¡ÉÕ¸¹•Ð ‰¥ˆ¤¤èÉÕ¸™½ÈÉÕ¸¥¸…±±}•¹ÑÉ¥•Ì¥˜ÉÕ¸¹•Ð ‰¥ˆ¥ô(€€€½É‘•É•€ôÍ½ÉÑ•¡Õ¹¥ÅÕ”¹Ù…±Õ•Ì ¤°­•äõ±…µ‰‘„¥Ñ•´è€¡ÍÑÈ¡¥Ñ•´¹•Ð ‰¥¹¥Ñ}ÕÑŒˆ°€ˆˆ¤¤°ÍÑÈ¡¥Ñ•´¹•Ð ‰¥ˆ°€ˆˆ¤¤¤°É•Ù•ÉÍ”õQÉÕ”¤(€€€å±•Ìè±¥ÍÑmÍÑÉt€ômt(€€€™½ÈÉÕ¸¥¸½É‘•É•è(€€€€€€€å±”€ôÍÑÈ¡ÉÕ¸¹•Ð ‰¥¹¥Ñ}ÕÑŒˆ°€ˆˆ¤¤(€€€€€€€¥˜å±”¹½Ð¥¸å±•Ìè(€€€€€€€€€€€å±•Ì¹…ÁÁ•¹¡å±”¤(€€€­••À€ôÍ•Ð¡å±•Íléµ…à Ä°É•Ñ…¥¹}å±•Ì¥t¤(€€€Á…å±½…€ôì(€€€€€€€€‰Í¡•µ…}Ù•ÉÍ¥½¸ˆè€Ä°(€€€€€€€€‰­¥¹ˆè€‰…Á}Í•…Í½¹…±}µ…¹¥™•ÍÐˆ°(€€€€€€€€‰•¹•É…Ñ•‘}ÕÑŒˆè¥Í½}ÕÑŒ¡‘Ð¹‘…Ñ•Ñ¥µ”¹¹½Ü¡‘Ð¹Ñ¥µ•é½¹”¹ÕÑŒ¤¤°(€€€€€€€€‰Í½ÕÉ”ˆè€‰AµÕ±Ñ¤µµ½‘•°•¹Í•µ‰±”Ù¥„1%,ˆ°(€€€€€€€€‰Í½ÕÉ•}ÕÉ°ˆèA}M=UI}UI0°(€€€€€€€€‰Í½ÕÉ•}ÕÉ±ÌˆèmA}M=UI}UI0°‘…Ñ…Í•Ñ}ÕÉ°¡‘…Ñ…Í•Ð¤°A}A%}=M}UI1t°(€€€€€€€€‰…­¹½Ý±•‘•µ•¹ÐˆèA}-9=]159P°(€€€€€€€€‰ÁÉ½‘ÕÑ}±…‰•±Ìˆèì(€€€€€€€€€€€€ˆÔÀÁµ‰}¡•¥¡Ñ}…¹½µ…±äˆè€ˆÔÀÀµµˆ!•¥¡Ð¹½µ…±äˆ°(€€€€€€€€€€€€ˆàÔÁµ‰}Ñ•µÁ•É…ÑÕÉ•}…¹½µ…±äˆè€ˆàÔÀµµˆQ•µÁ•É…ÑÕÉ”¹½µ…±äˆ°(€€€€€€€€€€€€ˆÉµ}Ñ•µÁ•É…ÑÕÉ•}…¹½µ…±äˆè€ˆÈµ´Q•µÁ•É…ÑÕÉ”¹½µ…±äˆ°(€€€€€€€€€€€€‰ÁÉ•¥Á¥Ñ…Ñ¥½¹}…¹½µ…±äˆè€‰AÉ•¥Á¥Ñ…Ñ¥½¸¹½µ…±äˆ°(€€€€€€€€€€€€‰Í•…}ÍÕÉ™…•}Ñ•µÁ•É…ÑÕÉ•}…¹½µ…±äˆè€‰M•„µMÕÉ™…”Q•µÁ•É…ÑÕÉ”¹½µ…±äˆ°(€€€€€€€€€€€€‰µÍ±Á}…¹½µ…±äˆè€‰5M1@¹½µ…±äˆ°(€€€€€€€ô°(€€€€€€€€‰É•Ñ•¹Ñ¥½¸ˆèì‰µ…á}å±•Ìˆèµ…à Ä°É•Ñ…¥¹}å±•Ì¤°€‰¡¥ÍÑ½Éå}å±•Ìˆèµ…à À°É•Ñ…¥¹}å±•Ì€´€Ä¥ô°(€€€€€€€€‰ÉÕ¹ÌˆèmÉÕ¸™½ÈÉÕ¸¥¸½É‘•É•¥˜ÍÑÈ¡ÉÕ¸¹•Ð ‰¥¹¥Ñ}ÕÑŒˆ°€ˆˆ¤¤¥¸­••Át°(€€€ô(€€€Á…Ñ ¹Á…É•¹Ð¹µ­‘¥È¡Á…É•¹ÑÌõQÉÕ”°•á¥ÍÑ}½¬õQÉÕ”¤(€€€Ñ•µÁ½É…Éä€ôÁ…Ñ ¹Ý¥Ñ¡}¹…µ”¡Á…Ñ ¹¹…µ”€¬€ˆ¹ÑµÀˆ¤(€€€Ñ•µÁ½É…Éä¹ÝÉ¥Ñ•}Ñ•áÐ¡©Í½¸¹‘ÕµÁÌ¡Á…å±½…°¥¹‘•¹ÐôÈ¤€¬€‰q¸ˆ°•¹½‘¥¹œô‰ÕÑ˜´àˆ¤(€€€Ñ•µÁ½É…Éä¹É•Á±…”¡Á…Ñ ¤(()‘•˜‰Õ¥±‘}Á…ÉÍ•È ¤€´ø…ÉÁ…ÉÍ”¹ÉÕµ•¹ÑA…ÉÍ•Èè(€€€Á…ÉÍ•È€ô…ÉÁ…ÉÍ”¹ÉÕµ•¹ÑA…ÉÍ•È¡‘•ÍÉ¥ÁÑ¥½¸õ}}‘½}|¤(€€€Á…ÉÍ•È¹…‘‘}…ÉÕµ•¹Ð ˆ´µÁÉ½‘ÕÐˆ°¡½¥•Ìô ‰…±°ˆ°€©AI=UQ}MAL¤°‘•™…Õ±Ðô‰…±°ˆ¤(€€€Á…ÉÍ•È¹…‘‘}…ÉÕµ•¹Ð ˆ´µ¥¹¥Ðˆ°‘•™…Õ±Ðô‰±…Ñ•ÍÐˆ°¡•±Àô‰A™¥ÉÍÐÑ…É•Ðµ½¹Ñ …Ìeeee54½È±…Ñ•ÍÐˆ¤(€€€Á…ÉÍ•È¹…‘‘}…ÉÕµ•¹Ð ˆ´µÑ…É•ÐµÝ¥¹‘½Üˆ°‘•™…Õ±Ðôˆˆ°¡•±Àô‰Ñ¡É•”µµ½¹Ñ ½™™Í•ÑÌ™É½´Ñ¡”™¥ÉÍÐÑ…É•Ðµ½¹Ñ ì‘•™…Õ±ÑÌÑ¼Ñ¡”™…ÈÝ¥¹‘½Ü™½ÈÑ¡”Í•±•Ñ•¡½É¥é½¸ˆ¤(€€€Á…ÉÍ•È¹…‘‘}…ÉÕµ•¹Ð ˆ´µ‘…Ñ…Í•Ðˆ°‘•™…Õ±Ðô‰55|Ù5=9Q ˆ°¡½¥•Ìô ‰55|Í5=9Q ˆ°€‰55|Ù5=9Q ˆ¤¤(€€€Á…ÉÍ•È¹…‘‘}…ÉÕµ•¹Ð ˆ´µ±•…µµ½¹Ñ ˆ°‘•™…Õ±Ðõ9½¹”°¡½¥•Ìô ˆÌµ5=8ˆ°€ˆØµ5=8ˆ¤¤(€€€Á…ÉÍ•È¹…‘‘}…ÉÕµ•¹Ð ˆ´µÉ•Í½±ÕÑ¥½¸ˆ°‘•™…Õ±ÐôˆÈ¸Ôˆ°¡½¥•Ìô ˆÄ¸Àˆ°€ˆÈ¸Ôˆ¤¤(€€€Á…ÉÍ•È¹…‘‘}…ÉÕµ•¹Ð ˆ´µµ•Ñ¡½ˆ°‘•™…Õ±Ðô‰M4ˆ°¡½¥•Ìô ‰M4ˆ°€‰ULˆ¤¤(€€€Á…ÉÍ•È¹…‘‘}…ÉÕµ•¹Ð ˆ´µÉ•ÅÕ•ÍÐµÕÉ°ˆ°‘•™…Õ±ÐõA}IEUMQ}UI0¤(€€€Á…ÉÍ•È¹…‘‘}…ÉÕµ•¹Ð ˆ´µÍÑ…ÑÕÌµÕÉ°ˆ°‘•™…Õ±ÐõA}MQQUM}UI0¤(€€€Á…ÉÍ•È¹…‘‘}…ÉÕµ•¹Ð ˆ´µÑ¥µ•½ÕÐµµ¥¹ÕÑ•Ìˆ°ÑåÁ”õ¥¹Ð°‘•™…Õ±ÐôÐÔ¤(€€€Á…ÉÍ•È¹…‘‘}…ÉÕµ•¹Ð ˆ´µÁ½±°µÍ•½¹‘Ìˆ°ÑåÁ”õ™±½…Ð°‘•™…Õ±ÐôÄÀ¸À¤(€€€Á…ÉÍ•È¹…‘‘}…ÉÕµ•¹Ð ˆ´µ…¡”µ‘¥Èˆ°‘•™…Õ±Ðôˆ¹…¡”½…ÁŒˆ¤(€€€Á…ÉÍ•È¹…‘‘}…ÉÕµ•¹Ð ˆ´µ½ÕÑÁÕÐµ‘¥Èˆ°‘•™…Õ±Ðô‰ÁÕ‰±¥Œ½Í•…Í½¹…°½…ÁŒˆ¤(€€€Á…ÉÍ•È¹…‘‘}…ÉÕµ•¹Ð ˆ´µµ…¹¥™•ÍÐˆ°‘•™…Õ±Ðô‰ÁÕ‰±¥Œ½Í•…Í½¹…°½…Á}µ…¹¥™•ÍÐ¹©Í½¸ˆ¤(€€€Á…ÉÍ•È¹…‘‘}…ÉÕµ•¹Ð ˆ´µÁÉ•Ù¥½ÕÌµµ…¹¥™•ÍÐˆ°ÑåÁ”õA…Ñ ¤(€€€Á…ÉÍ•È¹…‘‘}…ÉÕµ•¹Ð ˆ´µÉ•Ñ…¥¸µå±•Ìˆ°ÑåÁ”õ¥¹Ð°‘•™…Õ±ÐôÐ¤(€€€Á…ÉÍ•È¹…‘‘}…ÉÕµ•¹Ð ˆ´µ‰½É‘•Èµ•½©Í½¸ˆ°…Ñ¥½¸ô‰…ÁÁ•¹ˆ°ÑåÁ”õA…Ñ ¤(€€€Á…ÉÍ•È¹…‘‘}…ÉÕµ•¹Ð ˆ´µ¹¼µ‰½É‘•ÉÌˆ°…Ñ¥½¸ô‰ÍÑ½É•}ÑÉÕ”ˆ¤(€€€Á…ÉÍ•È¹…‘‘}…ÉÕµ•¹Ð ˆ´µ‘•½‘”µ½¹±äˆ°…Ñ¥½¸ô‰ÍÑ½É•}ÑÉÕ”ˆ¤(€€€É•ÑÕÉ¸Á…ÉÍ•È(()‘•˜ÉÕ¸¡…ÉÌè…ÉÁ…ÉÍ”¹9…µ•ÍÁ…”¤€´ø¥¹Ðè(€€€É•Á½}É½½Ð€ôA…Ñ ¡}}™¥±•}|¤¹É•Í½±Ù” ¤¹Á…É•¹ÑÍlÅt(€€€•áÁ•Ñ•‘}¡½É¥é½¸€ô€ˆÌµ5=8ˆ¥˜…ÉÌ¹‘…Ñ…Í•Ð€ôô€‰55|Í5=9Q ˆ•±Í”€ˆØµ5=8ˆ(€€€¥˜…ÉÌ¹±•…‘}µ½¹Ñ …¹…ÉÌ¹±•…‘}µ½¹Ñ €„ô•áÁ•Ñ•‘}¡½É¥é½¸è(€€€€€€€É…¥Í”AÉÉ½È¡˜‰í…ÉÌ¹‘…Ñ…Í•ÑôµÕÍÐÕÍ”Ñ¡”í•áÁ•Ñ•‘}¡½É¥é½¹ô™½É•…ÍÐ¡½É¥é½¸ˆ¤(€€€…ÉÌ¹±•…‘}µ½¹Ñ €ô•áÁ•Ñ•‘}¡½É¥é½¸(€€€¥˜¹½Ð…ÉÌ¹Ñ…É•Ñ}Ý¥¹‘½Üè(€€€€€€€…ÉÌ¹Ñ…É•Ñ}Ý¥¹‘½Ü€ô€ˆÀ°Ä°Èˆ¥˜…ÉÌ¹‘…Ñ…Í•Ð€ôô€‰55|Í5=9Q ˆ•±Í”€ˆÌ°Ð°Ôˆ(€€€¥¹¥Ð€ôÁ…ÉÍ•}¥¹¥Ð¡…ÉÌ¹¥¹¥Ð¤(€€€É•ÅÕ•ÍÑ•‘}Ñ…É•Ñ}½‘”°É•ÅÕ•ÍÑ•‘}Á•É¥½°É•ÅÕ•ÍÑ•‘}™¥ÉÍÑ}Ñ…É•Ð€ôÑ…É•Ñ}Ý¥¹‘½Ü¡¥¹¥Ð°…ÉÌ¹Ñ…É•Ñ}Ý¥¹‘½Ü¤(€€€Í•±•Ñ•€ô±¥ÍÐ¡AI=UQ}MAL¤¥˜…ÉÌ¹ÁÉ½‘ÕÐ€ôô€‰…±°ˆ•±Í”m…ÉÌ¹ÁÉ½‘ÕÑt(€€€…¡•}‘¥È€ôA…Ñ ¡…ÉÌ¹…¡•}‘¥È¤¥˜A…Ñ ¡…ÉÌ¹…¡•}‘¥È¤¹¥Í}…‰Í½±ÕÑ” ¤•±Í”É•Á½}É½½Ð€¼…ÉÌ¹…¡•}‘¥È(€€€½ÕÑÁÕÑ}‘¥È€ôA…Ñ ¡…ÉÌ¹½ÕÑÁÕÑ}‘¥È¤¥˜A…Ñ ¡…ÉÌ¹½ÕÑÁÕÑ}‘¥È¤¹¥Í}…‰Í½±ÕÑ” ¤•±Í”É•Á½}É½½Ð€¼…ÉÌ¹½ÕÑÁÕÑ}‘¥È(€€€µ…¹¥™•ÍÑ}Á…Ñ €ôA…Ñ ¡…ÉÌ¹µ…¹¥™•ÍÐ¤¥˜A…Ñ ¡…ÉÌ¹µ…¹¥™•ÍÐ¤¹¥Í}…‰Í½±ÕÑ” ¤•±Í”É•Á½}É½½Ð€¼…ÉÌ¹µ…¹¥™•ÍÐ(€€€ÁÉ•Ù¥½ÕÌ€ô…ÉÌ¹ÁÉ•Ù¥½ÕÍ}µ…¹¥™•ÍÐ¥˜¹½Ð…ÉÌ¹ÁÉ•Ù¥½ÕÍ}µ…¹¥™•ÍÐ½È…ÉÌ¹ÁÉ•Ù¥½ÕÍ}µ…¹¥™•ÍÐ¹¥Í}…‰Í½±ÕÑ” ¤•±Í”É•Á½}É½½Ð€¼…ÉÌ¹ÁÉ•Ù¥½ÕÍ}µ…¹¥™•ÍÐ(€€€‰½É‘•ÉÌ€ô•¹ÍÕÉ•}‰½É‘•É}™¥±•Ì¡…ÉÌ°…¡•}‘¥È°É•Á½}É½½Ð¤(€€€Ù…É¥…‰±•Ì€ôÍ½ÉÑ•¡íAI=UQ}MAMmÁÉ½‘ÕÑul‰…Á¥}Ù…É¥…‰±”‰t™½ÈÁÉ½‘ÕÐ¥¸Í•±•Ñ•‘ô¤(€€€…É¡¥Ù”€ô…¡•}‘¥È€¼€‰…É¡¥Ù•Ìˆ€¼˜‰í…ÉÌ¹‘…Ñ…Í•Ð¹±½Ý•È ¥õ}í…ÉÌ¹±•…‘}µ½¹Ñ ¹±½Ý•È ¥õ}í¥¹¥Ñõ}ì|œ¹©½¥¸¡Ù…É¥…‰±•Ì¥ô¹é¥Àˆ(€€€™¥±•Ìè±¥ÍÑmA…Ñ¡t€ômt(€€€¥˜¹½Ð…ÉÌ¹‘•½‘•}½¹±äè(€€€€€€€É•ÅÕ•ÍÑ}…É¡¥Ù”¡}É•ÅÕ•ÍÑ}‘•Ñ…¥±Ì¡…ÉÌ°¥¹¥Ð°Ù…É¥…‰±•Ì¤°…É¡¥Ù”°…ÉÌ¤(€€€€€€€™¥±•Ì€ôÍ…™•}•áÑÉ…Ð¡…É¡¥Ù”°…¡•}‘¥È€¼€‰•áÑÉ…Ñ•ˆ€¼…É¡¥Ù”¹ÍÑ•´¤(€€€É•ÅÕ•ÍÑ•‘}™¥ÉÍÑ}å•…È°É•ÅÕ•ÍÑ•‘}™¥ÉÍÑ}µ½¹Ñ €ô¥¹Ð¡É•ÅÕ•ÍÑ•‘}™¥ÉÍÑ}Ñ…É•ÑlèÑt¤°¥¹Ð¡É•ÅÕ•ÍÑ•‘}™¥ÉÍÑ}Ñ…É•ÑlÐét¤(€€€É•ÅÕ•ÍÑ•‘}±…ÍÑ}å•…È°É•ÅÕ•ÍÑ•‘}±…ÍÑ}µ½¹Ñ €ôµ½¹Ñ¡}…™Ñ•È¡É•ÅÕ•ÍÑ•‘}™¥ÉÍÑ}å•…È°É•ÅÕ•ÍÑ•‘}™¥ÉÍÑ}µ½¹Ñ °€È¤(€€€É•ÅÕ•ÍÑ•‘}•¹‘}å•…È°É•ÅÕ•ÍÑ•‘}•¹‘}µ½¹Ñ €ôµ½¹Ñ¡}…™Ñ•È¡É•ÅÕ•ÍÑ•‘}±…ÍÑ}å•…È°É•ÅÕ•ÍÑ•‘}±…ÍÑ}µ½¹Ñ °€Ä¤(€€€¹…Ñ¥Ù•}Á•É¥½€ôì(€€€€€€€€‰Í•…Í½¹}½‘”ˆèÉ•ÅÕ•ÍÑ•‘}Á•É¥½¹ÍÁ±¥Ð ¥lÁt°(€€€€€€€€‰Á•É¥½‘}±…‰•°ˆèÉ•ÅÕ•ÍÑ•‘}Á•É¥½°(€€€€€€€€‰Ñ…É•Ñ}½‘”ˆèÉ•ÅÕ•ÍÑ•‘}Ñ…É•Ñ}½‘”°(€€€€€€€€‰™¥ÉÍÑ}Ñ…É•ÐˆèÉ•ÅÕ•ÍÑ•‘}™¥ÉÍÑ}Ñ…É•Ð°(€€€€€€€€‰Ù…±¥‘}ÍÑ…ÉÑ}ÕÑŒˆè˜‰íÉ•ÅÕ•ÍÑ•‘}Ñ…É•Ñ}½‘•lèÑuôµíÉ•ÅÕ•ÍÑ•‘}Ñ…É•Ñ}½‘•lÐèÙuô´ÀÅPÀÀèÀÀèÀÁhˆ°(€€€€€€€€‰Ù…±¥‘}•¹‘}ÕÑŒˆè˜‰íÉ•ÅÕ•ÍÑ•‘}•¹‘}å•…ÈèÀÑ‘ôµíÉ•ÅÕ•ÍÑ•‘}•¹‘}µ½¹Ñ èÀÉ‘ô´ÀÅPÀÀèÀÀèÀÁhˆ°(€€€€€€€€‰‘…åÌˆèÍÕ´ (€€€€€€€€€€€…±•¹‘…È¹µ½¹Ñ¡É…¹”¡å•…È°µ½¹Ñ ¥lÅt(€€€€€€€€€€€™½Èå•…È°µ½¹Ñ ¥¸€ (€€€€€€€€€€€€€€€€¡É•ÅÕ•ÍÑ•‘}™¥ÉÍÑ}å•…È°É•ÅÕ•ÍÑ•‘}™¥ÉÍÑ}µ½¹Ñ ¤°(€€€€€€€€€€€€€€€µ½¹Ñ¡}…™Ñ•È¡É•ÅÕ•ÍÑ•‘}™¥ÉÍÑ}å•…È°É•ÅÕ•ÍÑ•‘}™¥ÉÍÑ}µ½¹Ñ °€Ä¤°(€€€€€€€€€€€€€€€€¡É•ÅÕ•ÍÑ•‘}±…ÍÑ}å•…È°É•ÅÕ•ÍÑ•‘}±…ÍÑ}µ½¹Ñ ¤°(€€€€€€€€€€€€¤(€€€€€€€€¤°(€€€€€€€€‰™½É•…ÍÑ}¥¹™¼ˆè€ˆˆ°(€€€€€€€€‰™…±±‰…¬ˆèQÉÕ”°(€€€ô(€€€¥˜™¥±•Ìè(€€€€€€€É•ÅÕ•ÍÑ•‘}Í•…Í½¹}½‘”€ôÉ•ÅÕ•ÍÑ•‘}Á•É¥½¹ÍÁ±¥Ð ¥lÁt¹ÕÁÁ•È ¤(€€€€€€€¥˜É•ÅÕ•ÍÑ•‘}Í•…Í½¹}½‘”¹½Ð¥¸MM=9}MQIQ}5=9Q è(€€€€€€€€€€€É…¥Í”AÉÉ½È (€€€€€€€€€€€€€€€€ˆ´µÑ…É•ÐµÝ¥¹‘½ÜµÕÍÐÉ•Í½±Ù”Ñ¼„¹…µ•Ñ¡É•”µµ½¹Ñ Í•…Í½¸™½ÈAÍ•…Í½¹…°‘…Ñ„ˆ(€€€€€€€€€€€€¤(€€€€€€€É•™•É•¹•}Á…Ñ €ô™¥¹‘}ÁÉ½‘ÕÑ}™¥±” (€€€€€€€€€€€™¥±•Ì°(€€€€€€€€€€€AI=UQ}MAMmÍ•±•Ñ•‘lÁut°(€€€€€€€€€€€É•ÅÕ•ÍÑ•‘}Í•…Í½¹}½‘”°(€€€€€€€€¤(€€€€€€€É•™•É•¹•}µ•Ñ…‘…Ñ„€ôÉ•…‘}¹•Ñ‘™}µ•Ñ…‘…Ñ„¡É•™•É•¹•}Á…Ñ °AI=UQ}MAMmÍ•±•Ñ•‘lÁut¤(€€€€€€€¹…Ñ¥Ù•}Á•É¥½€ôÍ½ÕÉ•}Á•É¥½‘}™É½µ}µ•Ñ…‘…Ñ„ (€€€€€€€€€€€É•™•É•¹•}µ•Ñ…‘…Ñ…l‰±½‰…±}…ÑÑÉÌ‰t°¥¹¥Ð°Í½ÕÉ•}Á…Ñ õÉ•™•É•¹•}Á…Ñ (€€€€€€€€¤(€€€€€€€¥˜¹…Ñ¥Ù•}Á•É¥½‘l‰Ñ…É•Ñ}½‘”‰t€„ôÉ•ÅÕ•ÍÑ•‘}Ñ…É•Ñ}½‘”è(€€€€€€€€€€€É…¥Í”AÉÉ½È (€€€€€€€€€€€€€€€€‰AÍ½ÕÉ”Í•…Í½¸‘½•Ì¹½Ðµ…Ñ Ñ¡”É•ÅÕ•ÍÑ•Ñ…É•ÐÝ¥¹‘½Ü€ˆ(€€€€€€€€€€€€€€€˜ˆ¡í¹…Ñ¥Ù•}Á•É¥½‘lÑ…É•Ñ}½‘”uô€„ôíÉ•ÅÕ•ÍÑ•‘}Ñ…É•Ñ}½‘•ô¤ˆ(€€€€€€€€€€€€¤(€€€Ñ…É•Ñ}½‘”€ô¹…Ñ¥Ù•}Á•É¥½‘l‰Ñ…É•Ñ}½‘”‰t(€€€Á•É¥½€ô¹…Ñ¥Ù•}Á•É¥½‘l‰Á•É¥½‘}±…‰•°‰t(€€€™¥ÉÍÑ}Ñ…É•Ð€ô¹…Ñ¥Ù•}Á•É¥½‘l‰™¥ÉÍÑ}Ñ…É•Ð‰t(€€€•¹ÑÉ¥•Ìè±¥ÍÑm‘¥ÑmÍÑÈ°¹åut€ômt(€€€ÍÕ•ÍÍ•Ì€ô€À(€€€¥ÍÍÕ•}‘…Ñ•Ñ¥µ”€ôÍ½ÕÉ•}¥ÍÍÕ•}‘…Ñ•Ñ¥µ” (€€€€€€€É•™•É•¹•}µ•Ñ…‘…Ñ…l‰±½‰…±}…ÑÑÉÌ‰t¥˜™¥±•Ì•±Í”íô°(€€€€€€€¥¹¥Ð°(€€€€¤(€€€¥¹¥Ñ}ÕÑŒ€ô¥Í½}ÕÑŒ¡¥ÍÍÕ•}‘…Ñ•Ñ¥µ”¤(€€€É•¹‘•É•É}¥¹¥Ð€ô¥ÍÍÕ•}‘…Ñ•Ñ¥µ”¹ÍÑÉ™Ñ¥µ” ˆ•d•´•• ˆ¤(€€€¥ÍÍÕ•}±…‰•°€ô˜‰%ÍÍÕ•í¥ÍÍÕ•}‘…Ñ•Ñ¥µ”è•€•ˆ€•eôˆ(€€€Ù…±¥‘}ÍÑ…ÉÐ€ô¹…Ñ¥Ù•}Á•É¥½‘l‰Ù…±¥‘}ÍÑ…ÉÑ}ÕÑŒ‰t(€€€Ù…±¥‘}•¹€ô¹…Ñ¥Ù•}Á•É¥½‘l‰Ù…±¥‘}•¹‘}ÕÑŒ‰t(€€€Í½ÕÉ•}Í•…Í½¹}½‘”€ôÍÑÈ¡¹…Ñ¥Ù•}Á•É¥½¹•Ð ‰Í•…Í½¹}½‘”ˆ°€ˆˆ¤¤(€€€™½ÈÁÉ½‘ÕÑ}¹…µ”¥¸Í•±•Ñ•è(€€€€€€€ÁÉ½‘ÕÐ€ôAI=UQ}MAMmÁÉ½‘ÕÑ}¹…µ•t(€€€€€€€Ñ…É•Ñ}•¹ÑÉäè‘¥ÑmÍÑÈ°¹åt€ôì(€€€€€€€€€€€€‰¥ˆè˜‰…ÁŒµí¥¹¥ÑôµíÁÉ½‘ÕÑl¥‘}Ñ½­•¸uôµíÑ…É•Ñ}½‘•ôˆ°(€€€€€€€€€€€€‰Ù…±¥‘}ÍÑ…ÉÑ}ÕÑŒˆèÙ…±¥‘}ÍÑ…ÉÐ°(€€€€€€€€€€€€‰Ù…±¥‘}•¹‘}ÕÑŒˆèÙ…±¥‘}•¹°(€€€€€€€€€€€€‰±•…‘}µ½¹Ñ ˆè…ÉÌ¹±•…‘}µ½¹Ñ °(€€€€€€€€€€€€‰Ñ…É•Ñ}µ½¹Ñ ˆèÑ…É•Ñ}½‘”°(€€€€€€€€€€€€‰Á•É¥½‘}±…‰•°ˆèÁ•É¥½°(€€€€€€€€€€€€‰…É•…Ñ¥½¸ˆè€‰¹…Ñ¥Ù”AÍ•…Í½¹…°µ•…¸ˆ°(€€€€€€€€€€€€‰™¥•±ˆèÁÉ½‘ÕÑl‰™¥•±‰t°(€€€€€€€€€€€€‰Õ¹¥ÑÌˆèÁÉ½‘ÕÑl‰Õ¹¥ÑÌ‰t°(€€€€€€€€€€€€‰É…Ý}™¥•±ˆèÁÉ½‘ÕÑl‰É…Ý}™¥•±‰t°(€€€€€€€€€€€€‰É…Ý}Õ¹¥ÑÌˆèÁÉ½‘ÕÑl‰É…Ý}Õ¹¥ÑÌ‰t°(€€€€€€€€€€€€‰ÍÑ…Ñ¥ÍÑ¥Œˆè€‰AµÕ±Ñ¤µµ½‘•°•¹Í•µ‰±”µ•…¸ˆ°(€€€€€€€€€€€€‰•¹Í•µ‰±•}Í½Á”ˆè€‰A55Í•…Í½¹…°ÁÉ½‘ÕÐˆ°(€€€€€€€€€€€€‰Í½ÕÉ•}ÕÉ±Ìˆèm‘…Ñ…Í•Ñ}ÕÉ°¡…ÉÌ¹‘…Ñ…Í•Ð¤°A}A%}=M}UI1t°(€€€€€€€€€€€€‰Í½ÕÉ•}Á•É¥½ˆè¹…Ñ¥Ù•}Á•É¥½°(€€€€€€€€€€€€‰Í½ÕÉ•}¥ÍÍÕ•}ÕÑŒˆè¥¹¥Ñ}ÕÑŒ°(€€€€€€€€€€€€‰ÍÑ…ÑÕÌˆè€‰Á±…¹¹•ˆ°(€€€€€€€ô(€€€€€€€ÉÕ¹}•¹ÑÉäè‘¥ÑmÍÑÈ°¹åt€ôì(€€€€€€€€€€€€‰¥ˆè˜‰…ÁŒµí¥¹¥ÑôµíÁÉ½‘ÕÑ}¹…µ•ôˆ°(€€€€€€€€€€€€‰¥¹¥Ñ}ÕÑŒˆè¥¹¥Ñ}ÕÑŒ°(€€€€€€€€€€€€‰ÁÉ½‘ÕÐˆèÁÉ½‘ÕÑ}¹…µ”°(€€€€€€€€€€€€‰ÍÑ…ÑÕÌˆè€‰Á±…¹¹•ˆ°(€€€€€€€€€€€€‰Í½ÕÉ”ˆè€‰AµÕ±Ñ¤µµ½‘•°•¹Í•µ‰±”Ù¥„1%,ˆ°(€€€€€€€€€€€€‰Í½ÕÉ•}ÕÉ°ˆèA}M=UI}UI0°(€€€€€€€€€€€€‰‘…Ñ…Í•Ðˆè…ÉÌ¹‘…Ñ…Í•Ð°(€€€€€€€€€€€€‰±•…‘}µ½¹Ñ ˆè…ÉÌ¹±•…‘}µ½¹Ñ °(€€€€€€€€€€€€‰™½É•…ÍÑ}¡½É¥é½¸ˆè…ÉÌ¹±•…‘}µ½¹Ñ °(€€€€€€€€€€€€‰É•ÅÕ•ÍÑ}Ñ…É•Ñ}µ½¹Ñ ˆè¥¹¥Ð°(€€€€€€€€€€€€‰É•Í½±ÕÑ¥½¸ˆè…ÉÌ¹É•Í½±ÕÑ¥½¸°(€€€€€€€€€€€€‰µ•Ñ¡½ˆè…ÉÌ¹µ•Ñ¡½°(€€€€€€€€€€€€‰É•ÅÕ•ÍÑ•‘}Ñ…É•Ñ}Ý¥¹‘½Üˆè…ÉÌ¹Ñ…É•Ñ}Ý¥¹‘½Ü°(€€€€€€€€€€€€‰¹…Ñ¥Ù•}Á•É¥½ˆè¹…Ñ¥Ù•}Á•É¥½°(€€€€€€€€€€€€‰Ñ…É•ÑÌˆèmÑ…É•Ñ}•¹ÑÉåt°(€€€€€€€€€€€€‰½ÕÑÁÕÑ}‘¥ÈˆèÉ•±…Ñ¥Ù•}Á…Ñ ¡½ÕÑÁÕÑ}‘¥È°É•Á½}É½½Ð¤°(€€€€€€€ô(€€€€€€€ÑÉäè(€€€€€€€€€€€¥˜…ÉÌ¹‘•½‘•}½¹±äè(€€€€€€€€€€€€€€€É…¥Í”AÉÉ½È ˆ´µ‘•½‘”µ½¹±äÉ•ÅÕ¥É•Ì„…¡•A…É¡¥Ù”ìÁÉ½Ù¥‘”Ñ¡”…‘…ÁÑ•È…¡”™¥ÉÍÐˆ¤(€€€€€€€€€€€Í½ÕÉ•}Á…Ñ €ô™¥¹‘}ÁÉ½‘ÕÑ}™¥±”¡™¥±•Ì°ÁÉ½‘ÕÐ°Í½ÕÉ•}Í•…Í½¹}½‘”¤(€€€€€€€€€€€µ•Ñ…‘…Ñ„€ôÉ•…‘}¹•Ñ‘™}µ•Ñ…‘…Ñ„¡Í½ÕÉ•}Á…Ñ °ÁÉ½‘ÕÐ¤(€€€€€€€€€€€Í½ÕÉ•}Õ¹¥ÑÌ€ô}Í½ÕÉ•}Õ¹¥ÑÌ¡µ•Ñ…‘…Ñ…l‰‘…Ñ…}…ÑÑÉÌ‰t¤(€€€€€€€€€€€É¥€ôÉ¥‘}™É½µ}¹•Ñ‘˜¡Í½ÕÉ•}Á…Ñ °ÁÉ½‘ÕÐ°ÁÉ•¥Á}‘…åÌõ¥¹Ð¡¹…Ñ¥Ù•}Á•É¥½‘l‰‘…åÌ‰t¤¤(€€€€€€€€€€€ÍÑ…ÑÌ€ôÉ¥‘}ÍÑ…ÑÌ¡É¥¤(€€€€€€€€€€€½ÕÑÁÕÐ€ô½ÕÑÁÕÑ}‘¥È€¼¥¹¥Ð€¼˜‰…Á}íÁÉ½‘ÕÑl¥‘}Ñ½­•¸uõ}íÑ…É•Ñ}½‘•ô¹©Áœˆ(€€€€€€€€€€€É•¹‘•É}µ…À (€€€€€€€€€€€€€€€É¥°(€€€€€€€€€€€€€€€É•¹‘•É•É}¥¹¥Ð°(€€€€€€€€€€€€€€€™¥ÉÍÑ}Ñ…É•Ð°(€€€€€€€€€€€€€€€…ÉÌ¹±•…‘}µ½¹Ñ °(€€€€€€€€€€€€€€€mt°(€€€€€€€€€€€€€€€½ÕÑÁÕÐ°(€€€€€€€€€€€€€€€…¹½µ…±äõQÉÕ”°(€€€€€€€€€€€€€€€‰…Í•±¥¹•}±…‰•°ô‰9…Ñ¥Ù”A55…¹½µ…±äˆ°(€€€€€€€€€€€€€€€‰½É‘•É}Á…Ñ¡Ìõ‰½É‘•ÉÌ°(€€€€€€€€€€€€€€€Á•É¥½‘}±…‰•°õÁ•É¥½°(€€€€€€€€€€€€€€€•¹Í•µ‰±•}±…‰•°ô‰AµÕ±Ñ¤µµ½‘•°•¹Í•µ‰±”µ•…¸ˆ°(€€€€€€€€€€€€€€€¥¹¥Ñ¥…±¥é…Ñ¥½¹}±…‰•°õ¥ÍÍÕ•}±…‰•°°(€€€€€€€€€€€€€€€ÁÉ½‘ÕÑ}ÍÁ•Œõì(€€€€€€€€€€€€€€€€€€€€¨©ÁÉ½‘ÕÐ°(€€€€€€€€€€€€€€€€€€€€‰¹…µ”ˆèÁÉ½‘ÕÑ}¹…µ”°(€€€€€€€€€€€€€€€€€€€€‰Í½ÕÉ•}±…‰•°ˆè€‰A55€¼1%,ˆ°(€€€€€€€€€€€€€€€€€€€€‰±•…‘}±…‰•°ˆè˜‰í…ÉÌ¹±•…‘}µ½¹Ñ¡ô¡½É¥é½¸ˆ°(€€€€€€€€€€€€€€€ô°(€€€€€€€€€€€€¤(€€€€€€€€€€€Ñ…É•Ñ}•¹ÑÉål‰¥µ…”‰t€ôÉ•±…Ñ¥Ù•}Á…Ñ ¡½ÕÑÁÕÐ°É•Á½}É½½Ð¤(€€€€€€€€€€€Ñ…É•Ñ}•¹ÑÉål‰Í½ÕÉ•}™¥±”‰t€ôÉ•±…Ñ¥Ù•}Á…Ñ ¡Í½ÕÉ•}Á…Ñ °É•Á½}É½½Ð¤(€€€€€€€€€€€Ñ…É•Ñ}•¹ÑÉål‰É…Ý}Õ¹¥ÑÌ‰t€ôÍ½ÕÉ•}Õ¹¥ÑÌ(€€€€€€€€€€€Ñ…É•Ñ}•¹ÑÉål‰‘…Ñ…}É…¹”‰t€ôÍÑ…ÑÌ(€€€€€€€€€€€Ñ…É•Ñ}•¹ÑÉål‰¹…Ñ¥Ù•}É¥‰t€ôÉ¥‘}É•Í½±ÕÑ¥½¸¡É¥¤(€€€€€€€€€€€Ñ…É•Ñ}•¹ÑÉål‰‰…Í•±¥¹”‰t€ôì‰ÍÑ…ÑÕÌˆè€‰¹…Ñ¥Ù•}Í½ÕÉ•}…¹½µ…±äˆ°€‰±…‰•°ˆè€‰9…Ñ¥Ù”A55…¹½µ…±ä‰ô(€€€€€€€€€€€¥˜ÁÉ½‘ÕÑ}¹…µ”€ôô€‰ÁÉ•¥Á¥Ñ…Ñ¥½¹}…¹½µ…±äˆè(€€€€€€€€€€€€€€€Ñ…É•Ñ}•¹ÑÉål‰½¹Ù•ÉÍ¥½¸‰t€ôÁÉ½‘ÕÑl‰ÁÉ•¥Á¥Ñ…Ñ¥½¹}½¹Ù•ÉÍ¥½¸‰t(€€€€€€€€€€€€€€€Ñ…É•Ñ}•¹ÑÉål‰…É•…Ñ¥½¸‰t€ô€‰Í•…Í½¹…°…ÕµÕ±…Ñ¥½¸™É½´¹…Ñ¥Ù”AÍ•…Í½¹…°µ•…¸ˆ(€€€€€€€€€€€Ñ…É•Ñ}•¹ÑÉål‰ÍÑ…ÑÕÌ‰t€ô€‰É•¹‘•É•ˆ(€€€€€€€€€€€ÉÕ¹}•¹ÑÉål‰ÍÑ…ÑÕÌ‰t€ô€‰É•¹‘•É•ˆ(€€€€€€€€€€€ÍÕ•ÍÍ•Ì€¬ô€Ä(€€€€€€€€€€€ÁÉ¥¹Ð¡˜‰É•¹‘•É•AíÁÉ½‘ÕÑ}¹…µ•ôèí½ÕÑÁÕÑôˆ¤(€€€€€€€•á•ÁÐá•ÁÑ¥½¸…Ì•áŒè(€€€€€€€€€€€Ñ…É•Ñ}•¹ÑÉål‰ÍÑ…ÑÕÌ‰t€ô€‰™…¥±•ˆ(€€€€€€€€€€€Ñ…É•Ñ}•¹ÑÉål‰•ÉÉ½È‰t€ôÍÑÈ¡•áŒ¤(€€€€€€€€€€€ÉÕ¹}•¹ÑÉål‰ÍÑ…ÑÕÌ‰t€ô€‰™…¥±•ˆ(€€€€€€€€€€€ÁÉ¥¹Ð¡˜‰AíÁÉ½‘ÕÑ}¹…µ•ô™…¥±•èí•áôˆ¤(€€€€€€€•¹ÑÉ¥•Ì¹…ÁÁ•¹¡ÉÕ¹}•¹ÑÉä¤(€€€ÝÉ¥Ñ•}µ…¹¥™•ÍÐ¡µ…¹¥™•ÍÑ}Á…Ñ °•¹ÑÉ¥•Ì°ÁÉ•Ù¥½ÕÌ°…ÉÌ¹É•Ñ…¥¹}å±•Ì°…ÉÌ¹‘…Ñ…Í•Ð¤(€€€ÁÉ¥¹Ð¡˜‰ÝÉ½Ñ”Aµ…¹¥™•ÍÐèíµ…¹¥™•ÍÑ}Á…Ñ¡ô€¡í±•¸¡•¹ÑÉ¥•Ì¥ôÁÉ½‘ÕÐÉÕ¸¡Ì¤¤ˆ¤(€€€É•ÑÕÉ¸€À¥˜ÍÕ•ÍÍ•Ì•±Í”€È(()‘•˜µ…¥¸ ¤€´ø¥¹Ðè(€€€ÑÉäè(€€€€€€€É•ÑÕÉ¸ÉÕ¸¡‰Õ¥±‘}Á…ÉÍ•È ¤¹Á…ÉÍ•}…ÉÌ ¤¤(€€€•á•ÁÐAÉÉ½È…Ì•áŒè(€€€€€€€ÁÉ¥¹Ð¡˜‰AII=Hèí•áôˆ¤(€€€€€€€É•ÑÕÉ¸€È(()¥˜}}¹…µ•}|€ôô€‰}}µ…¥¹}|ˆè(€€€É…¥Í”MåÍÑ•µá¥Ð¡µ…¥¸ ¤¤(

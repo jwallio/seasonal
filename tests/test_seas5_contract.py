@@ -114,6 +114,11 @@ def main() -> int:
     check(height_spec["anomaly_palette"] == module.ANOMALY_PALETTE, "SEAS5 500-mb should use the shared 500-mb anomaly palette")
     check((height_spec["anomaly_min"], height_spec["anomaly_max"]) == (-100.0, 100.0), "SEAS5 500-mb should use the shared ±100 m range")
     check(height_spec["anomaly_ticks"] == list(range(-100, 101, 10)), "SEAS5 500-mb should use 10-metre labelled bounds")
+    for product in (module.T850_ANOMALY, module.T2M_ANOMALY):
+        temperature_spec = module.PRODUCT_SPECS[product]
+        check((temperature_spec["anomaly_min"], temperature_spec["anomaly_max"]) == (-7.0, 7.0), f"SEAS5 {product} should use the shared ±7 °C range")
+        check(temperature_spec["anomaly_ticks"] == list(range(-7, 8)), f"SEAS5 {product} should use 1 °C labelled bounds")
+        check(len(temperature_spec["anomaly_ticks"]) == len(temperature_spec["anomaly_palette"]) + 1, f"SEAS5 {product} bounds must align with colors")
     check(module.PRODUCT_SPECS[module.PRECIP_ANOMALY]["anomaly_palette"] == module.SEAS5_PRECIP_ANOMALY_PALETTE, "SEAS5 precipitation should use its darker negative palette")
     sst_spec = module.PRODUCT_SPECS[module.SST_ANOMALY]
     check(sst_spec["map_domain"] == "ocean", "SEAS5 SST must mask land")

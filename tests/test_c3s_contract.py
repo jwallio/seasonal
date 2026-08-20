@@ -59,6 +59,11 @@ def main() -> int:
     check((height_spec["anomaly_min"], height_spec["anomaly_max"]) == (-100.0, 100.0), "C3S and JMA 500-mb maps should use the shared ±100 m range")
     check(height_spec["anomaly_ticks"] == list(range(-100, 101, 10)), "C3S and JMA 500-mb maps should use 10-metre labelled bounds")
     check(len(height_spec["anomaly_ticks"]) == len(height_spec["anomaly_palette"]) + 1, "C3S 500-mb color bounds must align with swatches")
+    for product in ("850mb_temperature_anomaly", "2m_temperature_anomaly"):
+        temperature_spec = module.PRODUCT_SPECS[product]
+        check((temperature_spec["anomaly_min"], temperature_spec["anomaly_max"]) == (-7.0, 7.0), f"C3S {product} should use the shared ±7 °C range")
+        check(temperature_spec["anomaly_ticks"] == list(range(-7, 8)), f"C3S {product} should use 1 °C labelled bounds")
+        check(len(temperature_spec["anomaly_ticks"]) == len(temperature_spec["anomaly_palette"]) + 1, f"C3S {product} bounds must align with colors")
     mslp_spec = module.PRODUCT_SPECS["mslp_anomaly"]
     check((mslp_spec["anomaly_min"], mslp_spec["anomaly_max"]) == (-10.0, 10.0), "C3S and super-ensemble MSLP should use ±10 hPa")
     check(len(mslp_spec["anomaly_ticks"]) == len(mslp_spec["anomaly_palette"]) + 1, "C3S MSLP bounds must align with swatches")

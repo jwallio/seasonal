@@ -26,6 +26,10 @@ from cfsv2_seasonal import (
     CONUS_PRECIP_REGION,
     DEFAULT_REGION,
     Grid,
+    TEMPERATURE_ANOMALY_MAX_C,
+    TEMPERATURE_ANOMALY_MIN_C,
+    TEMPERATURE_ANOMALY_PALETTE,
+    TEMPERATURE_ANOMALY_TICKS,
     ensure_border_files,
     mean_grids,
     relative_path,
@@ -65,10 +69,6 @@ CENTRES: dict[str, dict[str, Any]] = {
     "bom": {"label": "BOM", "system": "2", "members": 33},
 }
 
-TEMP_PALETTE = [
-    "#28567f", "#397ba2", "#5b9fba", "#82bdca", "#b4d6dc", "#e7eeee",
-    "#ffffff", "#f8dedd", "#efb6b5", "#e38e8e", "#d36c73", "#b84c5a",
-]
 MSLP_PALETTE = ANOMALY_PALETTE
 SST_PALETTE = ["#28567f", "#5b9fba", "#b4d6dc", "#ffffff", "#efb6b5", "#b84c5a"]
 PRECIP_PALETTE = [
@@ -92,8 +92,8 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "name": "850mb_temperature_anomaly", "variable": "t850", "field": "t850_anomaly",
         "raw_field": "temperature anomaly", "raw_units": "K", "units": "¬∞C",
         "seasonal_units": "¬∞C", "height_contours": False, "region": DEFAULT_REGION,
-        "monthly_reducer": "mean", "seasonal_reducer": "mean", "anomaly_min": -6.0,
-        "anomaly_max": 6.0, "anomaly_ticks": list(range(-6, 7)), "anomaly_palette": TEMP_PALETTE,
+        "monthly_reducer": "mean", "seasonal_reducer": "mean", "anomaly_min": TEMPERATURE_ANOMALY_MIN_C,
+        "anomaly_max": TEMPERATURE_ANOMALY_MAX_C, "anomaly_ticks": TEMPERATURE_ANOMALY_TICKS, "anomaly_palette": TEMPERATURE_ANOMALY_PALETTE,
         "cds_dataset": PRESSURE_DATASET, "cds_variable": "temperature_anomaly",
         "cds_pressure_level": "850",
     },
@@ -101,8 +101,8 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "name": "2m_temperature_anomaly", "variable": "t2m", "field": "t2m_anomaly",
         "raw_field": "2-m temperature anomaly", "raw_units": "K", "units": "¬∞C",
         "seasonal_units": "¬∞C", "height_contours": False, "region": DEFAULT_REGION,
-        "monthly_reducer": "mean", "seasonal_reducer": "mean", "anomaly_min": -6.0,
-        "anomaly_max": 6.0, "anomaly_ticks": list(range(-6, 7)), "anomaly_palette": TEMP_PALETTE,
+        "monthly_reducer": "mean", "seasonal_reducer": "mean", "anomaly_min": TEMPERATURE_ANOMALY_MIN_C,
+        "anomaly_max": TEMPERATURE_ANOMALY_MAX_C, "anomaly_ticks": TEMPERATURE_ANOMALY_TICKS, "anomaly_palette": TEMPERATURE_ANOMALY_PALETTE,
         "cds_dataset": SINGLE_DATASET, "cds_variable": "2m_temperature_anomaly",
     },
     "precipitation_anomaly": {
@@ -330,67 +330,7 @@ def product_spec(product: str, label: str, *, multisystem: bool = False) -> dict
         "500mb_height_anomaly": "500-mb Geopotential Height & Anomaly (m)",
         "850mb_temperature_anomaly": "850-mb Temperature Anomaly (¬∞C)",
         "2m_temperature_anomaly": "2-m Temperature Anomaly (¬∞C)",
-        "precipitation_anomaly": "CONUS Precipitation Anomaly (in)",
-        "sea_surface_temperature_anomaly": "Sea-Surface Temperature Anomaly (¬∞C)",
-        "mslp_anomaly": "Mean Sea-Level Pressure Anomaly (hPa)",
-    }[product]
-    base["title"] = f"{prefix} {subject}"
-    base["absolute_title"] = base["title"].replace(" & Anomaly", "")
-    base["source_label"] = f"Copernicus C3S / {('multi-system' if multisystem else label)}"
-    base["header_detail"] = "{source_label}  ‚Ä¢  Native C3S postprocessed anomaly  ‚Ä¢  " + (
-        "Height contours in dam" if base["height_contours"] else f"{base['units']} anomaly"
-    )
-    return base
-
-
-def render_target(
-    grid: Grid,
-    product: dict[str, Any],
-    init: str,
-    target: str,
-    lead: int | str,
-    output: Path,
-    borders: list[Path],
-    height: Grid | None,
-    ensemble_label: str,
-    period: str = "",
-) -> None:
-    render_map(
-        grid, init, target, lead, list(range(max(1, int(str(lead).split("‚Äì")[0])))), output,
-        anomaly=True, baseline_label="C3S native postprocessed anomaly", border_paths=borders,
-        period_label=period, height_grid=height, ensemble_label=ensemble_label,
-        product_spec=product,
-    )
-
-
-def base_run_entry(
-    component: str,
-    label: str,
-    system: str,
-    product: dict[str, Any],
-    product_name: str,
-    init: str,
-    members: int | None,
-    multisystem: bool,
-    centres: list[str],
-) -> dict[str, Any]:
-    source_datasets = [product["cds_dataset"]]
-    if product["height_contours"]:
-        source_datasets.append(product["cds_raw_dataset"])
-    return {
-        "id": f"c3s-{component}-{init}-{product_name}",
-        "model": "C3S multi-system" if multisystem else f"C3S {label}",
-        "component": component,
-        "component_label": label,
-        "components": centres if multisystem else [component],
-        "originating_centre": "multi-system" if multisystem else component,
-        "system": system if not multisystem else "multiple",
-        "source": f"Copernicus C3S / {label if not multisystem else 'multi-system'}",
-        "source_url": dataset_url(product["cds_dataset"]),
-        "source_urls": [dataset_url(dataset) for dataset in source_datasets],
-        "archive_root": CDS_API_ROOT,
-        "source_datasets": source_datasets,
-        "model_version": CENTRES.get(component, {}).get("model_version") if not multisystem else "C3S multi-system",
+        "precipitation_anomaly": "CONUS PrecipitatiÔŒ-¢Gß≤⁄Óù∆≠y–multi-system",
         "product": product_name,
         "variable": product["variable"],
         "init_utc": iso_utc(dt.datetime.strptime(init, "%Y%m%d%H").replace(tzinfo=dt.timezone.utc)),
