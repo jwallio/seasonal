@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "kind": "seas5_seasonal_manifest",
-  "generated_utc": "2026-08-20T00:37:45Z",
+  "generated_utc": "2026-08-20T00:53:05Z",
   "source": "ECMWF SEAS5 / Copernicus CDS",
   "source_url": "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-single-levels",
   "source_urls": [
@@ -9,8 +9,11 @@
   ],
   "archive_root": "https://cds.climate.copernicus.eu/api",
   "retention": {
+    "scope": "per_product",
     "max_runs": 4,
-    "history_runs": 3
+    "history_runs": 3,
+    "max_runs_per_product": 4,
+    "history_runs_per_product": 3
   },
   "runs": [
     {
@@ -709,6 +712,182 @@
             "status": "official_postprocessed",
             "source": "C3S official postprocessed anomaly; ECMWF/System 51",
             "dataset": "seasonal-postprocessed-pressure-levels"
+          }
+        }
+      ],
+      "status": "rendered",
+      "archive_latest_init": "2026080100",
+      "archive_age_days": 19,
+      "output_dir": "public/seasonal/seas5"
+    },
+    {
+      "id": "seas5-2026080100-2m_temperature_anomaly",
+      "source": "ECMWF SEAS5 / Copernicus CDS",
+      "source_url": "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-single-levels",
+      "source_urls": [
+        "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-single-levels"
+      ],
+      "archive_root": "https://cds.climate.copernicus.eu/api",
+      "source_datasets": [
+        "seasonal-postprocessed-single-levels"
+      ],
+      "originating_centre": "ecmwf",
+      "system": "51",
+      "model": "ECMWF SEAS5",
+      "product": "2m_temperature_anomaly",
+      "variable": "t2m",
+      "init_utc": "2026-08-01T00:00:00Z",
+      "statistic": "ensemble_mean",
+      "ensemble_scope": "ECMWF SEAS5/System 51 forecast ensemble",
+      "ensemble_members": 51,
+      "aggregation": "3-month mean of official CDS monthly ensemble-mean anomalies",
+      "field": "t2m_anomaly",
+      "units": "\u00b0C",
+      "raw_field": "t2m",
+      "raw_units": "K",
+      "conversion": "Kelvin-to-Celsius offset cancels in anomaly differences",
+      "climatology": {
+        "source": "C3S postprocessed anomaly field",
+        "years_requested": "1981-2016",
+        "method": "official CDS bias-adjusted monthly ensemble-mean anomaly; no local hindcast subtraction",
+        "status": "not_used"
+      },
+      "border_sources": [
+        {
+          "name": "countries.geojson"
+        },
+        {
+          "name": "us-states.geojson"
+        }
+      ],
+      "targets": [
+        {
+          "id": "seas5-2026080100-2m_temperature_anomaly-lead04",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-01-01T00:00:00Z",
+          "lead_month": 4,
+          "target_month": "202612",
+          "aggregation": "monthly mean",
+          "field": "t2m_anomaly",
+          "units": "\u00b0C",
+          "raw_field": "t2m",
+          "raw_units": "K",
+          "statistic": "ensemble_mean",
+          "originating_centre": "ecmwf",
+          "system": "51",
+          "ensemble_members": 51,
+          "status": "rendered",
+          "source_dataset": "seasonal-postprocessed-single-levels",
+          "source_variable": "2m_temperature_anomaly",
+          "source_file": ".cache/seas5/cds/north-america/seasonal_postprocessed_single_levels_2m_temperature_anomaly_202608_lead04.grib",
+          "source_url": "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-single-levels",
+          "area": [
+            90.0,
+            -170.0,
+            15.0,
+            0.0
+          ],
+          "baseline": {
+            "status": "official_postprocessed",
+            "source": "C3S official postprocessed anomaly; ECMWF/System 51",
+            "dataset": "seasonal-postprocessed-single-levels"
+          },
+          "image": "public/seasonal/seas5/20260801/seas5_t2m_202612.jpg"
+        },
+        {
+          "id": "seas5-2026080100-2m_temperature_anomaly-lead05",
+          "valid_start_utc": "2027-01-01T00:00:00Z",
+          "valid_end_utc": "2027-02-01T00:00:00Z",
+          "lead_month": 5,
+          "target_month": "202701",
+          "aggregation": "monthly mean",
+          "field": "t2m_anomaly",
+          "units": "\u00b0C",
+          "raw_field": "t2m",
+          "raw_units": "K",
+          "statistic": "ensemble_mean",
+          "originating_centre": "ecmwf",
+          "system": "51",
+          "ensemble_members": 51,
+          "status": "rendered",
+          "source_dataset": "seasonal-postprocessed-single-levels",
+          "source_variable": "2m_temperature_anomaly",
+          "source_file": ".cache/seas5/cds/north-america/seasonal_postprocessed_single_levels_2m_temperature_anomaly_202608_lead05.grib",
+          "source_url": "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-single-levels",
+          "area": [
+            90.0,
+            -170.0,
+            15.0,
+            0.0
+          ],
+          "baseline": {
+            "status": "official_postprocessed",
+            "source": "C3S official postprocessed anomaly; ECMWF/System 51",
+            "dataset": "seasonal-postprocessed-single-levels"
+          },
+          "image": "public/seasonal/seas5/20260801/seas5_t2m_202701.jpg"
+        },
+        {
+          "id": "seas5-2026080100-2m_temperature_anomaly-lead06",
+          "valid_start_utc": "2027-02-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": 6,
+          "target_month": "202702",
+          "aggregation": "monthly mean",
+          "field": "t2m_anomaly",
+          "units": "\u00b0C",
+          "raw_field": "t2m",
+          "raw_units": "K",
+          "statistic": "ensemble_mean",
+          "originating_centre": "ecmwf",
+          "system": "51",
+          "ensemble_members": 51,
+          "status": "rendered",
+          "source_dataset": "seasonal-postprocessed-single-levels",
+          "source_variable": "2m_temperature_anomaly",
+          "source_file": ".cache/seas5/cds/north-america/seasonal_postprocessed_single_levels_2m_temperature_anomaly_202608_lead06.grib",
+          "source_url": "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-single-levels",
+          "area": [
+            90.0,
+            -170.0,
+            15.0,
+            0.0
+          ],
+          "baseline": {
+            "status": "official_postprocessed",
+            "source": "C3S official postprocessed anomaly; ECMWF/System 51",
+            "dataset": "seasonal-postprocessed-single-levels"
+          },
+          "image": "public/seasonal/seas5/20260801/seas5_t2m_202702.jpg"
+        },
+        {
+          "id": "seas5-2026080100-2m_temperature_anomaly-202612-202702",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": "4-6",
+          "target_month": "202612-202702",
+          "aggregation": "3-month mean",
+          "field": "t2m_anomaly",
+          "units": "\u00b0C",
+          "raw_field": "t2m",
+          "raw_units": "K",
+          "statistic": "ensemble_mean",
+          "monthly_leads": [
+            4,
+            5,
+            6
+          ],
+          "originating_centre": "ecmwf",
+          "system": "51",
+          "ensemble_members": 51,
+          "status": "rendered",
+          "image": "public/seasonal/seas5/20260801/seas5_t2m_202612-202702.jpg",
+          "source_dataset": "seasonal-postprocessed-single-levels",
+          "source_url": "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-single-levels",
+          "baseline": {
+            "status": "official_postprocessed",
+            "source": "C3S official postprocessed anomaly; ECMWF/System 51",
+            "dataset": "seasonal-postprocessed-single-levels"
           }
         }
       ],
