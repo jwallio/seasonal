@@ -142,10 +142,35 @@ def main() -> int:
     with tempfile.TemporaryDirectory() as temporary:
         output = Path(temporary) / "manifest.json"
         previous = Path(temporary) / "previous.json"
-        previous.write_text(json.dumps({"runs": [{"id": f"old-{index}", "init_utc": f"2025-0{index}-01T00:00:00Z"} for index in range(1, 5)]}), encoding="utf-8")
-        module.write_manifest(output, ROOT, {"id": "current", "init_utc": "2026-08-13T00:00:00Z"}, previous, 4)
-        retained = json.loads(output.read_text(encoding="utf-8"))["runs"]
-        check([run["id"] for run in retained] == ["current", "old-4", "old-3", "old-2"], "manifest should retain current plus three prior runs")
+        products = (module.T850_ANOMALY, module.T2M_ANOMALY)
+        previous.write_text(json.dumps({"runs": [
+            {
+                "id": f"{product}-old-{index}",
+                "product": product,
+                "init_utc": f"2025-0{index}-01T00:00:00Z",
+            }
+            for product in products
+            for index in range(1, 5)
+        ]}), encoding="utf-8")
+        for product in products:
+            module.write_manifest(
+                output,
+                ROOT,
+                {
+                    "id": f"{product}-current",
+                    "product": product,
+                    "init_utc": "2026-08-13T00:00:00Z",
+                },
+                previous,
+                4,
+            )
+        retained_payload = json.loads(output.read_text(encoding="utf-8"))
+        retained = retained_payload["runs"]
+        for product in products:
+            product_runs = [run["id"] for run in retained if run["product"] == product]
+            check(product_runs == [f"{product}-current", f"{product}-old-4", f"{product}-old-3", f"{product}-old-2"], "manifest should retain current plus three prior runs for each product")
+        check(retained_payload["retention"]["scope"] == "per_product", "manifest retention should identify its per-product scope")
+        check(retained_payload["retention"]["max_runs_per_product"] == 4, "manifest should retain four runs for each product")
     print("SEAS5 CONTRACT OK: CDS source, GRIB access, conversions, official anomalies, viewer, workflow, retention")
     return 0
 
