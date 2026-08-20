@@ -37,6 +37,10 @@ from cfsv2_seasonal import (
     MSLP_ANOMALY_TICKS,
     PRECIP_ANOMALY_PALETTE,
     PRECIP_ANOMALY_TICKS,
+    TEMPERATURE_ANOMALY_MAX_C,
+    TEMPERATURE_ANOMALY_MIN_C,
+    TEMPERATURE_ANOMALY_PALETTE,
+    TEMPERATURE_ANOMALY_TICKS,
     download_file,
     ensure_border_files,
     land_mask_from_borders,
@@ -65,12 +69,6 @@ EXPECTED_LONG_RANGE_MEMBERS = 10
 MAX_LEAD = 8
 DRIFT_LABEL = "NASA GEOS-S2S-3 provider drift climatology"
 
-TEMPERATURE_ANOMALY_TICKS = list(range(-8, 9))
-TEMPERATURE_ANOMALY_PALETTE = [
-    "#24527a", "#306b90", "#3d83a6", "#4891b0", "#539cb8", "#70b2c6",
-    "#95c4d3", "#e1e4e7", "#f2cecd", "#eaaaa8", "#e28c8b", "#db797b",
-    "#d3686c", "#ca5861", "#a1384a", "#84283f",
-]
 SST_ANOMALY_TICKS = list(range(-3, 4))
 SST_ANOMALY_PALETTE = [
     "#28567f", "#5b9fba", "#b4d6dc", "#ffffff", "#efb6b5", "#b84c5a",
@@ -126,8 +124,8 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "height_contours": False,
         "region": DEFAULT_REGION,
         "seasonal_reducer": "mean",
-        "anomaly_min": -8.0,
-        "anomaly_max": 8.0,
+        "anomaly_min": TEMPERATURE_ANOMALY_MIN_C,
+        "anomaly_max": TEMPERATURE_ANOMALY_MAX_C,
         "anomaly_ticks": TEMPERATURE_ANOMALY_TICKS,
         "anomaly_palette": TEMPERATURE_ANOMALY_PALETTE,
         "source_label": "NASA GEOS-S2S-3 / NCCS",
@@ -151,8 +149,8 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "height_contours": False,
         "region": DEFAULT_REGION,
         "seasonal_reducer": "mean",
-        "anomaly_min": -8.0,
-        "anomaly_max": 8.0,
+        "anomaly_min": TEMPERATURE_ANOMALY_MIN_C,
+        "anomaly_max": TEMPERATURE_ANOMALY_MAX_C,
         "anomaly_ticks": TEMPERATURE_ANOMALY_TICKS,
         "anomaly_palette": TEMPERATURE_ANOMALY_PALETTE,
         "source_label": "NASA GEOS-S2S-3 / NCCS",

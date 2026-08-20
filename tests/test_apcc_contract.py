@@ -69,6 +69,10 @@ def main() -> int:
     height_spec = module.PRODUCT_SPECS["500mb_height_anomaly"]
     check((height_spec["anomaly_min"], height_spec["anomaly_max"]) == (-100.0, 100.0), "APCC 500-mb should retain the shared ±100 m range")
     check(height_spec["anomaly_ticks"] == list(range(-100, 101, 10)), "APCC 500-mb should retain 10-metre labelled bounds")
+    for product in ("850mb_temperature_anomaly", "2m_temperature_anomaly"):
+        temperature_spec = module.PRODUCT_SPECS[product]
+        check((temperature_spec["anomaly_min"], temperature_spec["anomaly_max"]) == (-7.0, 7.0), f"APCC {product} should use the shared ±7 °C range")
+        check(temperature_spec["anomaly_ticks"] == list(range(-7, 8)), f"APCC {product} should use 1 °C labelled bounds")
     check(module.PRODUCT_SPECS["precipitation_anomaly"]["raw_units"] == "mm/day", "APCC precipitation units are incorrect")
     check(module.PRODUCT_SPECS["precipitation_anomaly"]["anomaly_max"] == 200.0, "APCC precipitation scale is not native")
     check("6-MON" in module.dataset_url("MME_6MONTH"), "APCC 6-month provenance URL is incorrect")

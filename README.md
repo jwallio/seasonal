@@ -48,6 +48,11 @@ CMA CPSv3, C3S and its JMA component, APCC, and the deduplicated super ensemble.
 separately labelled 200-mb product retains its own scale, and GEOS remains
 excluded until its source passes the 500-hPa pressure check.
 
+Seasonal 850-mb and 2-m temperature-anomaly maps use a shared fixed -7 to
++7 °C scale with 1 °C intervals across providers and the super ensemble. This
+prevents stronger anomalies from saturating model-specific ±3/4/6 °C scales;
+sea-surface temperature and probability products retain their own scales.
+
 The unified [Seasonal Model Dashboard](/d:/weather-projects/wn2/public/seasonal/index.html) is published at
 [`/seasonal/`](https://jwallio.github.io/wn2/seasonal/). It provides one model,
 parameter, run, and target control surface for CFSv2, ECMWF SEAS5, CanSIPS

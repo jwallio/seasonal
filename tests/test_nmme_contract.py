@@ -45,6 +45,10 @@ def main() -> int:
     check(module.target_month("2026080800", 1) == "202609", "NMME public lead 1 should be one month after initialization")
     check(module.target_month("2026080800", 4) == "202612", "NMME public lead 4 should align with the shared December target")
     check(module.target_month("2026080800", 6) == "202702", "NMME lead conversion should cross the year boundary")
+    temperature_spec = module.BASE_PRODUCTS["2m_temperature_anomaly"]
+    check((temperature_spec["min"], temperature_spec["max"]) == (-7.0, 7.0), "NMME 2-m temperature should use the shared ±7 °C range")
+    check(temperature_spec["ticks"] == list(range(-7, 8)), "NMME 2-m temperature should use 1 °C labelled bounds")
+    check(len(temperature_spec["ticks"]) == len(temperature_spec["palette"]) + 1, "NMME 2-m temperature bounds must align with colors")
     for product in ("probability_above_normal", "probability_near_normal", "probability_below_normal", "multi_model_consensus"):
         base = module.spec_for(product, "2m_temperature_anomaly")
         check(len(base["anomaly_ticks"]) == len(base["anomaly_palette"]) + 1, f"NMME {product} color bounds must align with swatches")

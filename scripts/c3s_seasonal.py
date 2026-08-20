@@ -26,6 +26,10 @@ from cfsv2_seasonal import (
     CONUS_PRECIP_REGION,
     DEFAULT_REGION,
     Grid,
+    TEMPERATURE_ANOMALY_MAX_C,
+    TEMPERATURE_ANOMALY_MIN_C,
+    TEMPERATURE_ANOMALY_PALETTE,
+    TEMPERATURE_ANOMALY_TICKS,
     ensure_border_files,
     mean_grids,
     relative_path,
@@ -65,10 +69,6 @@ CENTRES: dict[str, dict[str, Any]] = {
     "bom": {"label": "BOM", "system": "2", "members": 33},
 }
 
-TEMP_PALETTE = [
-    "#28567f", "#397ba2", "#5b9fba", "#82bdca", "#b4d6dc", "#e7eeee",
-    "#ffffff", "#f8dedd", "#efb6b5", "#e38e8e", "#d36c73", "#b84c5a",
-]
 MSLP_PALETTE = ANOMALY_PALETTE
 SST_PALETTE = ["#28567f", "#5b9fba", "#b4d6dc", "#ffffff", "#efb6b5", "#b84c5a"]
 PRECIP_PALETTE = [
@@ -92,8 +92,8 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "name": "850mb_temperature_anomaly", "variable": "t850", "field": "t850_anomaly",
         "raw_field": "temperature anomaly", "raw_units": "K", "units": "°C",
         "seasonal_units": "°C", "height_contours": False, "region": DEFAULT_REGION,
-        "monthly_reducer": "mean", "seasonal_reducer": "mean", "anomaly_min": -6.0,
-        "anomaly_max": 6.0, "anomaly_ticks": list(range(-6, 7)), "anomaly_palette": TEMP_PALETTE,
+        "monthly_reducer": "mean", "seasonal_reducer": "mean", "anomaly_min": TEMPERATURE_ANOMALY_MIN_C,
+        "anomaly_max": TEMPERATURE_ANOMALY_MAX_C, "anomaly_ticks": TEMPERATURE_ANOMALY_TICKS, "anomaly_palette": TEMPERATURE_ANOMALY_PALETTE,
         "cds_dataset": PRESSURE_DATASET, "cds_variable": "temperature_anomaly",
         "cds_pressure_level": "850",
     },
@@ -101,8 +101,8 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "name": "2m_temperature_anomaly", "variable": "t2m", "field": "t2m_anomaly",
         "raw_field": "2-m temperature anomaly", "raw_units": "K", "units": "°C",
         "seasonal_units": "°C", "height_contours": False, "region": DEFAULT_REGION,
-        "monthly_reducer": "mean", "seasonal_reducer": "mean", "anomaly_min": -6.0,
-        "anomaly_max": 6.0, "anomaly_ticks": list(range(-6, 7)), "anomaly_palette": TEMP_PALETTE,
+        "monthly_reducer": "mean", "seasonal_reducer": "mean", "anomaly_min": TEMPERATURE_ANOMALY_MIN_C,
+        "anomaly_max": TEMPERATURE_ANOMALY_MAX_C, "anomaly_ticks": TEMPERATURE_ANOMALY_TICKS, "anomaly_palette": TEMPERATURE_ANOMALY_PALETTE,
         "cds_dataset": SINGLE_DATASET, "cds_variable": "2m_temperature_anomaly",
     },
     "precipitation_anomaly": {

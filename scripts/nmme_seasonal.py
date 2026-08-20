@@ -19,7 +19,18 @@ from urllib.parse import urljoin
 
 import numpy as np
 
-from cfsv2_seasonal import DEFAULT_REGION, Grid, ensure_border_files, mean_grids, relative_path, render_map
+from cfsv2_seasonal import (
+    DEFAULT_REGION,
+    Grid,
+    TEMPERATURE_ANOMALY_MAX_C,
+    TEMPERATURE_ANOMALY_MIN_C,
+    TEMPERATURE_ANOMALY_PALETTE,
+    TEMPERATURE_ANOMALY_TICKS,
+    ensure_border_files,
+    mean_grids,
+    relative_path,
+    render_map,
+)
 
 
 REALTIME_ROOT = "https://ftp.cpc.ncep.noaa.gov/NMME/realtime_anom/ENSMEAN/"
@@ -29,10 +40,6 @@ NCEI_URL = "https://www.ncei.noaa.gov/products/weather-climate-models/north-amer
 COMPONENTS = ("CanESM5", "CFSv2", "GEM5.2_NEMO", "NASA_GEOS5v2", "NCAR_CCSM4", "NCAR_CESM1")
 RETIRED_PRODUCTS = frozenset({"model_spread"})
 
-TEMP_PALETTE = [
-    "#28567f", "#397ba2", "#5b9fba", "#82bdca", "#b4d6dc", "#e7eeee",
-    "#ffffff", "#f8dedd", "#efb6b5", "#e38e8e", "#d36c73", "#b84c5a",
-]
 PRECIP_PALETTE = [
     "#7f3b08", "#914b0d", "#a6611a", "#bd7a2d", "#d0a052", "#dfbd7d",
     "#ead8b3", "#ffffff", "#e5f1dc", "#c8e4bf", "#aad89f", "#86c879",
@@ -64,8 +71,8 @@ PROBABILITY_VARIABLES = ("prob_above", "prob_norm", "prob_below")
 BASE_PRODUCTS: dict[str, dict[str, Any]] = {
     "2m_temperature_anomaly": {
         "file_var": "tmp2m", "field": "tmp2m_anomaly", "raw_field": "2-m temperature anomaly",
-        "units": "°C", "seasonal_units": "°C", "min": -6.0, "max": 6.0,
-        "ticks": list(range(-6, 7)), "palette": TEMP_PALETTE, "title": "2-m Temperature Anomaly (°C)",
+        "units": "°C", "seasonal_units": "°C", "min": TEMPERATURE_ANOMALY_MIN_C, "max": TEMPERATURE_ANOMALY_MAX_C,
+        "ticks": TEMPERATURE_ANOMALY_TICKS, "palette": TEMPERATURE_ANOMALY_PALETTE, "title": "2-m Temperature Anomaly (°C)",
         "conversion": "Kelvin anomaly increments are displayed in °C", "reducer": "mean",
     },
     "precipitation_anomaly": {

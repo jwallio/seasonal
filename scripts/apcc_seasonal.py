@@ -26,6 +26,10 @@ from cfsv2_seasonal import (
     ANOMALY_PALETTE,
     DEFAULT_REGION,
     Grid,
+    TEMPERATURE_ANOMALY_MAX_C,
+    TEMPERATURE_ANOMALY_MIN_C,
+    TEMPERATURE_ANOMALY_PALETTE,
+    TEMPERATURE_ANOMALY_TICKS,
     ensure_border_files,
     relative_path,
     render_map,
@@ -47,11 +51,6 @@ APCC_ACKNOWLEDGEMENT = (
 )
 
 APCC_Z500_TICKS = list(range(-100, 101, 10))
-APCC_TEMP_TICKS = [value / 2 for value in range(-6, 7)]
-APCC_TEMP_PALETTE = [
-    "#28567f", "#397ba2", "#5b9fba", "#82bdca", "#b4d6dc", "#e7eeee",
-    "#ffffff", "#f8dedd", "#efb6b5", "#e38e8e", "#d36c73", "#b84c5a",
-]
 APCC_PRECIP_TICKS = list(range(-200, 201, 25))
 APCC_PRECIP_PALETTE = [
     "#7f3b08", "#914b0d", "#a6611a", "#bd7a2d", "#d0a052", "#dfbd7d",
@@ -90,9 +89,8 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "api_variable": "t850", "field": "t850_anomaly", "raw_field": "850-mb temperature anomaly",
         "raw_units": "K", "units": "°C", "title": "APCC MME 850-mb Temperature Anomaly (°C)",
         "absolute_title": "APCC MME 850-mb Temperature (°C)", "height_contours": False,
-        "region": DEFAULT_REGION, "anomaly_min": -3.0, "anomaly_max": 3.0,
-        "anomaly_ticks": APCC_TEMP_TICKS, "anomaly_palette": APCC_TEMP_PALETTE,
-        "anomaly_tick_decimals": 1,
+        "region": DEFAULT_REGION, "anomaly_min": TEMPERATURE_ANOMALY_MIN_C, "anomaly_max": TEMPERATURE_ANOMALY_MAX_C,
+        "anomaly_ticks": TEMPERATURE_ANOMALY_TICKS, "anomaly_palette": TEMPERATURE_ANOMALY_PALETTE,
         "header_detail": "{source_label}  •  {baseline_label}  •  Native APCC seasonal MME anomaly",
         "id_token": "t850a",
     },
@@ -100,9 +98,8 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "api_variable": "t2m", "field": "t2m_anomaly", "raw_field": "2-m temperature anomaly",
         "raw_units": "K", "units": "°C", "title": "APCC MME 2-m Temperature Anomaly (°C)",
         "absolute_title": "APCC MME 2-m Temperature (°C)", "height_contours": False,
-        "region": DEFAULT_REGION, "anomaly_min": -3.0, "anomaly_max": 3.0,
-        "anomaly_ticks": APCC_TEMP_TICKS, "anomaly_palette": APCC_TEMP_PALETTE,
-        "anomaly_tick_decimals": 1,
+        "region": DEFAULT_REGION, "anomaly_min": TEMPERATURE_ANOMALY_MIN_C, "anomaly_max": TEMPERATURE_ANOMALY_MAX_C,
+        "anomaly_ticks": TEMPERATURE_ANOMALY_TICKS, "anomaly_palette": TEMPERATURE_ANOMALY_PALETTE,
         "header_detail": "{source_label}  •  {baseline_label}  •  Native APCC seasonal MME anomaly",
         "id_token": "t2ma",
     },

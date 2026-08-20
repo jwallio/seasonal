@@ -128,13 +128,19 @@ SWE_ANOMALY_PALETTE = [
     "#1d496f",
     "#143b5f",
 ]
-TEMPERATURE_ANOMALY_TICKS = list(range(-8, 9))
-CFSV2_TEMPERATURE_ANOMALY_TICKS = [value / 2.0 for value in range(-8, 9)]
+# Shared fixed scale for seasonal 850-mb and 2-m temperature anomalies.
+# Model-specific narrower ranges clipped stronger signals and made the same
+# anomaly look different in comparison views.
+TEMPERATURE_ANOMALY_MIN_C = -7.0
+TEMPERATURE_ANOMALY_MAX_C = 7.0
+TEMPERATURE_ANOMALY_TICKS = list(range(-7, 8))
+# Retain the CFSv2 name for callers that imported the former model-specific
+# tick list; CFSv2 now uses the shared scale too.
+CFSV2_TEMPERATURE_ANOMALY_TICKS = TEMPERATURE_ANOMALY_TICKS
 TEMPERATURE_ANOMALY_PALETTE = [
     "#24527a",
     "#306b90",
     "#3d83a6",
-    "#4891b0",
     "#539cb8",
     "#70b2c6",
     "#95c4d3",
@@ -142,7 +148,6 @@ TEMPERATURE_ANOMALY_PALETTE = [
     "#f2cecd",
     "#eaaaa8",
     "#e28c8b",
-    "#db797b",
     "#d3686c",
     "#ca5861",
     "#a1384a",
@@ -257,8 +262,8 @@ PRODUCT_SPECS = {
         "seasonal_aggregation": "seasonal mean",
         "seasonal_units": "°C",
         "monthly_aggregation": "monthly mean 2-m temperature",
-        "anomaly_min": -4.0,
-        "anomaly_max": 4.0,
+        "anomaly_min": TEMPERATURE_ANOMALY_MIN_C,
+        "anomaly_max": TEMPERATURE_ANOMALY_MAX_C,
         "anomaly_ticks": CFSV2_TEMPERATURE_ANOMALY_TICKS,
         "anomaly_palette": TEMPERATURE_ANOMALY_PALETTE,
         "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in °C",
