@@ -10,16 +10,48 @@
     * { box-sizing:border-box; }
     body { margin:0; min-height:100vh; background:radial-gradient(circle at 15% 0%,#1a3d4b 0,transparent 34rem),#08141b; color:var(--ink); font:15px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
     a { color:var(--teal); }
+    button:focus-visible, a:focus-visible, select:focus-visible { outline:3px solid var(--blue); outline-offset:3px; }
     .shell { width:min(1440px,calc(100% - 32px)); margin:0 auto; padding:18px 0 52px; }
     h1 { margin:0; font-size:clamp(30px,5vw,54px); line-height:1; letter-spacing:-.045em; }
     .hero { display:flex; flex-direction:column; align-items:flex-start; gap:10px; padding-bottom:14px; }
     .brand { color:var(--ink); font-size:clamp(18px,2.6vw,28px); font-weight:800; letter-spacing:-.04em; line-height:1; text-decoration:none; white-space:nowrap; }
     .brand-dot { color:var(--teal); }
     .card { background:linear-gradient(145deg,#132c37e8,#0c1d25e8); border:1px solid var(--line); border-radius:22px; box-shadow:0 18px 60px #0005; overflow:hidden; }
-    .view-tabs { display:flex; gap:8px; margin:0 0 12px; }
+    .view-bar { display:flex; align-items:center; justify-content:space-between; gap:12px; margin:0 0 12px; }
+    .view-tabs { display:flex; gap:8px; }
     .view-tabs button { border-radius:10px; padding:9px 14px; color:var(--muted); }
     .view-tabs button.active { border-color:var(--teal); background:#173c45; color:var(--ink); }
-    .compare-view[hidden], #single-toolbar[hidden], #single-view[hidden] { display:none; }
+    .page-actions { display:flex; align-items:center; gap:10px; }
+    .copy-status { min-width:5.5rem; color:var(--muted); font-size:12px; text-align:right; }
+    .overview-view[hidden], .compare-view[hidden], #single-toolbar[hidden], #single-view[hidden] { display:none; }
+    .overview-view { display:grid; gap:18px; }
+    .overview-lead { display:flex; align-items:center; justify-content:space-between; gap:24px; padding:20px 22px; }
+    .overview-lead h2 { margin:2px 0 6px; font-size:clamp(21px,3vw,30px); letter-spacing:-.025em; }
+    .overview-lead p { max-width:760px; margin:0; color:var(--muted); }
+    .eyebrow { color:var(--teal)!important; font-size:10px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; }
+    .quick-actions { display:flex; flex-wrap:wrap; justify-content:flex-end; gap:8px; }
+    .overview-stats { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; }
+    .overview-stat { min-height:102px; padding:16px 18px; }
+    .overview-stat small { display:block; color:var(--muted); font-size:10px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; }
+    .overview-stat strong { display:block; margin-top:8px; font-size:25px; line-height:1; }
+    .overview-stat span { display:block; margin-top:7px; color:var(--muted); font-size:11px; }
+    .overview-notices { margin:0; padding:12px 16px; border:1px solid #315364; border-radius:14px; background:#0e232c; color:#bed0d8; font-size:12px; }
+    .matrix-head { align-items:flex-start; }
+    .matrix-head p { max-width:650px; margin:0; color:var(--muted); font-size:12px; text-align:right; }
+    .matrix-wrap { overflow-x:auto; }
+    .overview-matrix { width:100%; min-width:900px; border-collapse:collapse; }
+    .overview-matrix th, .overview-matrix td { padding:11px 10px; border-bottom:1px solid #213d49; text-align:center; }
+    .overview-matrix th { color:var(--muted); font-size:10px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; }
+    .overview-matrix th:first-child, .overview-matrix td:first-child { position:sticky; left:0; z-index:1; width:190px; background:#102630; text-align:left; }
+    .overview-model { display:block; color:var(--ink); font-size:13px; }
+    .overview-role { display:block; color:var(--muted); font-size:10px; font-weight:500; }
+    .status-pill { min-width:76px; border-radius:9px; padding:6px 8px; font-size:10px; font-weight:800; letter-spacing:.03em; }
+    .status-fresh { border-color:#3ba88f; background:#123e39; color:#c9fff2; }
+    .status-aging { border-color:#c39a42; background:#3c3118; color:#ffe2a0; }
+    .status-stale, .status-failed { border-color:#bf6555; background:#43251f; color:#ffd1c8; }
+    .status-partial { border-color:#b982da; background:#352442; color:#ead2f7; }
+    .status-unavailable { border-color:#36505c; background:#0c1b22; color:#7f949e; cursor:default; }
+    .matrix-note { margin:0; padding:12px 18px 16px; color:var(--muted); font-size:11px; }
     .toolbar { display:grid; grid-template-columns:minmax(180px,.9fr) minmax(230px,1.3fr) minmax(260px,1.5fr); gap:12px; padding:16px; margin-bottom:18px; }
     .selector { display:grid; gap:5px; }
     .selector label, .control-label { color:var(--muted); font-size:10px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; }
@@ -65,15 +97,24 @@
     .model-role { display:inline-block; margin-top:4px; padding:2px 7px; border:1px solid #355563; border-radius:999px; color:#9eb2bc; font-size:9px; font-weight:800; letter-spacing:.08em; line-height:1.4; text-transform:uppercase; }
     .compare-image-wrap { display:grid; place-items:center; min-height:230px; margin:12px; background:#dfeaf0; border:1px solid #486774; border-radius:12px; overflow:hidden; }
     .compare-image-wrap img { display:block; width:100%; height:auto; }
+    .image-button { width:100%; padding:0; border:0; border-radius:0; background:transparent; }
+    .image-button:hover { background:transparent; }
     .compare-image-wrap .empty { width:100%; padding:42px 18px; }
     .compare-meta { margin:0; padding:0 14px 14px; color:var(--muted); font-size:11px; line-height:1.45; }
     .footer { display:flex; align-items:center; flex-wrap:wrap; gap:8px; margin-top:20px; color:#8298a3; font-size:12px; }
     .footer-copy { flex:1 1 260px; }
     .footer-brand { color:var(--ink); font-weight:800; letter-spacing:-.02em; text-decoration:none; white-space:nowrap; }
+    dialog { width:min(1180px,calc(100% - 24px)); max-height:calc(100vh - 24px); padding:0; border:1px solid var(--line); border-radius:18px; background:#0b1b23; color:var(--ink); box-shadow:0 30px 100px #000b; }
+    dialog::backdrop { background:#02080dcc; backdrop-filter:blur(5px); }
+    .dialog-head { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:12px 14px; border-bottom:1px solid var(--line); }
+    .dialog-head h2 { margin:0; font-size:14px; }
+    .dialog-body { padding:12px; background:#dfeaf0; }
+    .dialog-body img { display:block; width:100%; max-height:calc(100vh - 150px); object-fit:contain; }
+    .dialog-actions { display:flex; gap:10px; }
     @media (max-width:1280px) { .compare-grid{grid-template-columns:repeat(2,minmax(0,1fr))} }
-    @media (max-width:900px) { .toolbar{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.grid{grid-template-columns:1fr} }
-    @media (max-width:600px) { .hero{display:flex}.brand{display:block;margin-bottom:0;text-align:left}.shell{width:min(100% - 20px,1440px);padding-top:12px}.toolbar{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.toolbar .selector:nth-child(3){grid-column:1 / -1}.map-wrap{min-height:280px}.card-head{padding:15px}.viewer{padding:10px}.controls{padding:0 10px 12px}.ratio-control{margin-left:0}.facts{padding:10px}.links{padding:0 15px 15px} }
-    @media (max-width:600px) { .compare-grid{grid-template-columns:1fr}.compare-toolbar{align-items:stretch}.compare-summary{width:100%;margin:0}.compare-image-wrap{margin:10px}.view-tabs{margin-bottom:10px} }
+    @media (max-width:900px) { .toolbar{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.grid{grid-template-columns:1fr}.overview-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.overview-lead{align-items:flex-start;flex-direction:column}.quick-actions{justify-content:flex-start} }
+    @media (max-width:600px) { .hero{display:flex}.brand{display:block;margin-bottom:0;text-align:left}.shell{width:min(100% - 20px,1440px);padding-top:12px}.view-bar{align-items:flex-start;flex-direction:column}.view-tabs{width:100%}.view-tabs button{flex:1;padding-inline:8px}.page-actions{align-self:flex-end}.toolbar{position:sticky;top:8px;z-index:5;grid-template-columns:minmax(0,1fr) minmax(0,1fr);background:#10232df5;backdrop-filter:blur(10px)}.toolbar .selector:nth-child(3){grid-column:1 / -1}.map-wrap{min-height:280px}.card-head{padding:15px}.viewer{padding:10px}.controls{padding:0 10px 12px}.ratio-control{margin-left:0}.facts{padding:10px}.links{padding:0 15px 15px}.overview-stats{grid-template-columns:1fr 1fr}.overview-stat{min-height:90px;padding:14px}.overview-lead{padding:17px}.footer{font-size:13px} }
+    @media (max-width:600px) { .compare-grid{grid-template-columns:1fr}.compare-toolbar{position:sticky;top:8px;z-index:5;align-items:stretch;background:#10232df5;backdrop-filter:blur(10px)}.compare-toolbar .selector{width:calc(50% - 7px)}.compare-summary{width:100%;margin:0}.compare-image-wrap{margin:10px}.matrix-head{display:block}.matrix-head p{margin-top:6px;text-align:left} }
   </style>
 </head>
 <body>
@@ -83,18 +124,52 @@
       <h1>Seasonal Model Dashboard</h1>
     </header>
 
-    <nav class="view-tabs" role="tablist" aria-label="Dashboard view">
-      <button id="single-tab" type="button" role="tab" class="active" aria-selected="true" aria-controls="single-toolbar single-view" tabindex="0">Single model</button>
-      <button id="compare-tab" type="button" role="tab" aria-selected="false" aria-controls="compare-view" tabindex="-1">Compare</button>
-    </nav>
+    <div class="view-bar">
+      <nav class="view-tabs" role="tablist" aria-label="Dashboard view">
+        <button id="overview-tab" type="button" role="tab" class="active" aria-selected="true" aria-controls="overview-view" tabindex="0">Overview</button>
+        <button id="single-tab" type="button" role="tab" aria-selected="false" aria-controls="single-toolbar single-view" tabindex="-1">Explore</button>
+        <button id="compare-tab" type="button" role="tab" aria-selected="false" aria-controls="compare-view" tabindex="-1">Compare</button>
+      </nav>
+      <div class="page-actions"><button id="copy-link" type="button">Copy link</button><span class="copy-status" id="copy-status" role="status" aria-live="polite"></span></div>
+    </div>
 
-    <section class="toolbar card" id="single-toolbar" aria-label="Dashboard selectors">
+    <section class="overview-view" id="overview-view" role="tabpanel" aria-labelledby="overview-tab">
+      <article class="card overview-lead">
+        <div>
+          <p class="eyebrow">Operational status</p>
+          <h2>Start with coverage, then inspect the forecast.</h2>
+          <p>See which model families and parameters are current, partial, or unavailable before opening a map. Each available matrix cell links directly to that model and field.</p>
+        </div>
+        <div class="quick-actions" aria-label="Forecast shortcuts">
+          <button type="button" data-overview-compare="500mb_height_anomaly">Compare 500-mb</button>
+          <button type="button" data-overview-compare="2m_temperature_anomaly">Compare 2-m temperature</button>
+          <button type="button" data-overview-model="superensemble">Explore Super Ensemble</button>
+        </div>
+      </article>
+      <div class="overview-stats" id="overview-stats" aria-label="Dashboard summary"></div>
+      <p class="overview-notices" id="overview-notices" role="status">Loading published model manifests…</p>
+      <article class="card">
+        <div class="card-head matrix-head">
+          <h2>Model × parameter freshness</h2>
+          <p>Blends combine forecast systems; forecast families are independent forecast sources; component models are retained for diagnostic comparison.</p>
+        </div>
+        <div class="matrix-wrap">
+          <table class="overview-matrix" id="overview-matrix">
+            <thead><tr><th scope="col">Model</th><th scope="col">500-mb height</th><th scope="col">850-mb temp</th><th scope="col">2-m temp</th><th scope="col">Precipitation</th><th scope="col">MSLP</th><th scope="col">SST</th></tr></thead>
+            <tbody id="overview-matrix-body"></tbody>
+          </table>
+        </div>
+        <p class="matrix-note">Freshness thresholds: CFSv2 is fresh through 2 days and aging through 4 days; monthly systems are fresh through 35 days and aging through 50 days. Partial coverage is always identified separately.</p>
+      </article>
+    </section>
+
+    <section class="toolbar card" id="single-toolbar" aria-label="Dashboard selectors" hidden>
       <div class="selector"><label for="model-select">Model</label><select id="model-select"></select></div>
       <div class="selector"><label for="product-select">Parameter</label><select id="product-select" disabled><option>Loading…</option></select></div>
       <div class="selector"><label for="run-select">Run history</label><select id="run-select" disabled><option>Loading…</option></select></div>
     </section>
 
-    <section class="grid" id="single-view" role="tabpanel" aria-labelledby="single-tab">
+    <section class="grid" id="single-view" role="tabpanel" aria-labelledby="single-tab" hidden>
       <article class="card">
         <div class="viewer"><div class="map-wrap" id="map-wrap"><div class="empty">Reading the latest published run.</div></div></div>
         <div class="controls" id="target-controls"></div>
@@ -116,7 +191,7 @@
         <article class="card">
           <div class="card-head"><h2>Run metadata</h2></div>
           <div class="copy"><p id="scope">The selected manifest will identify its initialization, aggregation, and data lineage.</p><p id="source-detail">Source: —</p></div>
-          <div class="links"><a id="source-link" href="#">Source</a><a id="direct-link" href="../">Direct viewer</a><a href="https://github.com/jwallio/wn2/actions">Actions</a></div>
+          <div class="links"><a id="source-link" href="#">Source</a><a id="direct-link" href="../">Direct viewer</a><a id="download-link" href="#" download hidden>Download image</a><a href="https://github.com/jwallio/wn2/actions">Actions</a></div>
         </article>
       </aside>
     </section>
@@ -126,12 +201,17 @@
         <div class="selector"><label for="compare-product-select">Parameter</label><select id="compare-product-select" disabled><option>Loading…</option></select></div>
         <div class="selector"><label for="compare-target-select">Valid period</label><select id="compare-target-select" disabled><option>Loading…</option></select></div>
         <div class="selector"><label for="compare-baseline-select">Reference</label><select id="compare-baseline-select" disabled><option>Loading…</option></select></div>
+        <div class="selector"><label for="compare-role-select">Model type</label><select id="compare-role-select"><option value="all">All model types</option><option value="blend">Blends</option><option value="family">Forecast families</option><option value="component">Component models</option></select></div>
         <label class="compare-filter" for="compare-available-only"><input id="compare-available-only" type="checkbox" checked>Available only</label>
         <p class="compare-summary" id="compare-summary">Seasonal anomaly · matching published target across models</p>
         <p class="compare-missing" id="compare-missing"></p>
       </div>
       <div class="compare-grid" id="compare-grid"></div>
     </section>
+    <dialog id="map-dialog" aria-labelledby="map-dialog-title">
+      <div class="dialog-head"><h2 id="map-dialog-title">Forecast map</h2><div class="dialog-actions"><a id="map-dialog-download" href="#" download>Download</a><button id="map-dialog-close" type="button">Close</button></div></div>
+      <div class="dialog-body"><img id="map-dialog-image" alt=""></div>
+    </dialog>
     <div class="footer" id="footer"><span class="footer-copy" id="footer-copy">Operational dashboard · Model-specific direct viewers remain available for focused review.</span><a class="footer-brand" href="https://wall.cloud/" aria-label="wall.cloud">wall<span class="brand-dot">.</span>cloud</a></div>
   </main>
 
@@ -163,7 +243,7 @@
       NCAR_CCSM4: 'NCAR CCSM4', NCAR_CESM1: 'NCAR CESM1', multisystem: 'C3S multi-system',
     };
     const modelStates = Object.fromEntries(Object.keys(MODEL_CONFIG).map(key => [key, { manifest: null, runs: [], error: null }]));
-    const selection = { view: 'single', model: 'cfsv2', product: '', run: '', target: '', compareProduct: '500mb_height_anomaly', compareTarget: '', compareBaseline: '', ratio: '10' };
+    const selection = { view: 'overview', model: 'cfsv2', product: '', run: '', target: '', compareProduct: '500mb_height_anomaly', compareTarget: '', compareBaseline: '', compareRole: 'all', compareAvailableOnly: true, ratio: '10' };
     const DEFAULT_PRODUCT_PRIORITY = [
       '500mb_height_anomaly',
       '2m_temperature_anomaly',
@@ -235,7 +315,7 @@
     ];
     const COMPARE_BASELINES = [
       { value: 'native', label: 'Native model reference' },
-      { value: 'common_1991_2020', label: 'Common 1991–2020 reference' },
+      { value: 'common_1991_2020', label: 'Common 1991–2020 (limited)' },
     ];
     const PRODUCT_LABELS = {
       '500mb_height_anomaly': '500-mb Height Anomaly', '500mb_height_absolute': '500-mb Geopotential Height',
@@ -247,6 +327,43 @@
       'probability_above_normal': 'Above Normal Probability', 'probability_near_normal': 'Near Normal Probability', 'probability_below_normal': 'Below Normal Probability',
       'multi_model_consensus': 'Multi-Model Consensus',
     };
+    function readUrlState() {
+      const params = new URLSearchParams(location.search);
+      const view = params.get('view');
+      if (['overview', 'single', 'compare'].includes(view)) selection.view = view;
+      const model = params.get('model');
+      if (MODEL_CONFIG[model]) selection.model = model;
+      if (params.has('product')) selection.product = params.get('product') || '';
+      if (params.has('run')) selection.run = params.get('run') || '';
+      if (params.has('target')) selection.target = params.get('target') || '';
+      if (params.has('ratio')) selection.ratio = params.get('ratio') || '10';
+      if (params.has('compare')) selection.compareProduct = params.get('compare') || DEFAULT_COMPARE_PRODUCT;
+      if (params.has('period')) selection.compareTarget = params.get('period') || '';
+      if (params.has('reference')) selection.compareBaseline = params.get('reference') || '';
+      const role = params.get('role');
+      if (['all', 'blend', 'family', 'component'].includes(role)) selection.compareRole = role;
+      if (params.has('available')) selection.compareAvailableOnly = params.get('available') !== '0';
+    }
+    function syncUrlState() {
+      const params = new URLSearchParams();
+      params.set('view', selection.view);
+      if (selection.view === 'single') {
+        params.set('model', selection.model);
+        if (selection.product) params.set('product', selection.product);
+        if (selection.run) params.set('run', selection.run);
+        if (selection.target) params.set('target', selection.target);
+        if (selection.ratio !== '10') params.set('ratio', selection.ratio);
+      } else if (selection.view === 'compare') {
+        if (selection.compareProduct) params.set('compare', selection.compareProduct);
+        if (selection.compareTarget) params.set('period', selection.compareTarget);
+        if (selection.compareBaseline) params.set('reference', selection.compareBaseline);
+        if (selection.compareRole !== 'all') params.set('role', selection.compareRole);
+        params.set('available', selection.compareAvailableOnly ? '1' : '0');
+      }
+      const query = params.toString();
+      history.replaceState(null, '', `${location.pathname}${query ? `?${query}` : ''}${location.hash}`);
+    }
+    readUrlState();
     const numberList = (values, min = null, max = null) => [...new Set((Array.isArray(values) ? values : []).map(value => Number(value)).filter(value => Number.isFinite(value) && (min === null || value >= min) && (max === null || value <= max)))].sort((a,b) => a - b);
     const pretty = value => String(value || '').replaceAll('_', ' ').replace(/\b\w/g, letter => letter.toUpperCase());
     function componentLabel(run) {
@@ -408,6 +525,31 @@
       const candidates = eligible.length ? eligible : primaryPool;
       return [...candidates].sort((left, right) => String(right.init_utc || '').localeCompare(String(left.init_utc || '')) || String(right.id || '').localeCompare(String(left.id || '')))[0] || null;
     }
+    function freshnessState(modelKey, productKey) {
+      const aliases = compareProductAliases(productKey);
+      const runs = (modelStates[modelKey]?.runs || []).filter(run => aliases.has(String(run.product || '')));
+      const run = preferredRun(runs, modelKey, productKey);
+      if (!run) {
+        const failed = [...runs].filter(isFailedRun).sort((left, right) => String(right.init_utc || '').localeCompare(String(left.init_utc || '')))[0];
+        if (failed) return { label: 'Failed', className: 'status-failed', title: `Latest published run failed · Init ${initLabel(failed.init_utc)}`, run: null, product: productKey, available: false };
+        return { label: 'No map', className: 'status-unavailable', title: 'No published map for this model and parameter', run: null, product: productKey, available: false };
+      }
+      const target = (Array.isArray(run.targets) ? run.targets : []).find(item => !['failed', 'error'].includes(String(item?.status || '').toLowerCase()) && Boolean(item?.image));
+      if (!target) return { label: 'No map', className: 'status-unavailable', title: `A run exists, but it has no usable rendered target · Init ${initLabel(run.init_utc)}`, run: null, product: String(run.product || productKey), available: false };
+      const counts = runCoverageCounts(run, target);
+      const partial = String(run.status || '').toLowerCase() === 'partial' || String(target.status || '').toLowerCase() === 'partial';
+      const coverage = counts ? ` ${counts.available}/${counts.expected}` : '';
+      const titlePrefix = `${runDisplayName(MODEL_CONFIG[modelKey], run)} · Init ${initLabel(run.init_utc)}`;
+      if (partial) return { label: `Partial${coverage}`, className: 'status-partial', title: `${titlePrefix} · partial coverage${coverage}`, run, product: String(run.product || productKey), available: true };
+      const initialized = new Date(run.init_utc || '');
+      if (Number.isNaN(initialized.valueOf())) return { label: 'Available', className: 'status-fresh', title: titlePrefix, run, product: String(run.product || productKey), available: true };
+      const ageDays = Math.max(0, (Date.now() - initialized.valueOf()) / 86400000);
+      const freshDays = modelKey === 'cfsv2' ? 2 : 35;
+      const agingDays = modelKey === 'cfsv2' ? 4 : 50;
+      if (ageDays <= freshDays) return { label: 'Fresh', className: 'status-fresh', title: `${titlePrefix} · ${Math.floor(ageDays)} day(s) old`, run, product: String(run.product || productKey), available: true };
+      if (ageDays <= agingDays) return { label: 'Aging', className: 'status-aging', title: `${titlePrefix} · ${Math.floor(ageDays)} day(s) old`, run, product: String(run.product || productKey), available: true };
+      return { label: 'Stale', className: 'status-stale', title: `${titlePrefix} · ${Math.floor(ageDays)} day(s) old`, run, product: String(run.product || productKey), available: true };
+    }
     function selectedRun(model) {
       const available = modelStates[selection.model].runs.filter(run => supportsProduct(model, run, selection.product));
       return available.find(run => String(run.id) === String(selection.run)) || preferredRun(available, selection.model, selection.product);
@@ -477,6 +619,19 @@
       return value.units ? `${value.field || 'Field'} (${value.units})` : (value.field || '—');
     }
     function setMessage(message) { el('map-wrap').replaceChildren(Object.assign(document.createElement('div'), { className: 'empty', textContent: message })); }
+    function downloadFileName(src) {
+      try { return decodeURIComponent(new URL(src, location.href).pathname.split('/').pop() || 'seasonal-map.png'); }
+      catch (_) { return 'seasonal-map.png'; }
+    }
+    function openMapDialog(src, title) {
+      const dialog = el('map-dialog');
+      el('map-dialog-title').textContent = title;
+      el('map-dialog-image').src = src;
+      el('map-dialog-image').alt = title;
+      el('map-dialog-download').href = src;
+      el('map-dialog-download').download = downloadFileName(src);
+      if (typeof dialog.showModal === 'function') dialog.showModal();
+    }
     function renderModelOptions() {
       const select = el('model-select');
       select.replaceChildren();
@@ -505,7 +660,62 @@
       el('source-detail').textContent = `Source: ${model.source}`;
       el('source-link').href = model.direct;
       el('direct-link').href = model.direct;
+      el('download-link').hidden = true;
       el('warning').style.display = 'none';
+      syncUrlState();
+    }
+    function renderOverview() {
+      const body = el('overview-matrix-body');
+      const states = [];
+      const rows = COMPARE_MODELS.map(modelKey => {
+        const model = MODEL_CONFIG[modelKey];
+        const row = document.createElement('tr');
+        const heading = document.createElement('th'); heading.scope = 'row';
+        const name = document.createElement('span'); name.className = 'overview-model'; name.textContent = model.label; heading.appendChild(name);
+        const role = document.createElement('span'); role.className = 'overview-role'; role.textContent = MODEL_ROLE_LABELS[model.role] || pretty(model.role); heading.appendChild(role);
+        row.appendChild(heading);
+        COMPARE_PRODUCTS.forEach(productConfig => {
+          const state = freshnessState(modelKey, productConfig.value); states.push({ ...state, modelKey, productKey: productConfig.value });
+          const cell = document.createElement('td');
+          const button = document.createElement('button'); button.type = 'button'; button.className = `status-pill ${state.className}`; button.textContent = state.label; button.title = state.title;
+          button.setAttribute('aria-label', `${model.label} ${productConfig.label}: ${state.label}`);
+          if (!state.available) button.disabled = true;
+          else button.addEventListener('click', () => {
+            selection.model = modelKey; selection.product = state.product; selection.run = String(state.run.id); selection.target = '';
+            setView('single');
+          });
+          cell.appendChild(button); row.appendChild(cell);
+        });
+        return row;
+      });
+      body.replaceChildren(...rows);
+      const online = COMPARE_MODELS.filter(modelKey => Boolean(modelStates[modelKey].manifest)).length;
+      const available = states.filter(state => state.available).length;
+      const fresh = states.filter(state => state.className === 'status-fresh').length;
+      const attention = states.filter(state => ['status-aging', 'status-stale', 'status-partial', 'status-failed'].includes(state.className)).length;
+      const stats = [
+        { label: 'Models online', value: `${online}/${COMPARE_MODELS.length}`, detail: 'published manifests loaded' },
+        { label: 'Map coverage', value: `${available}/${states.length}`, detail: 'model-parameter surfaces' },
+        { label: 'Fresh guidance', value: String(fresh), detail: 'within source cadence' },
+        { label: 'Needs attention', value: String(attention), detail: 'aging, stale, partial, or failed' },
+      ];
+      el('overview-stats').replaceChildren(...stats.map(stat => {
+        const card = document.createElement('article'); card.className = 'card overview-stat';
+        const label = document.createElement('small'); label.textContent = stat.label;
+        const value = document.createElement('strong'); value.textContent = stat.value;
+        const detail = document.createElement('span'); detail.textContent = stat.detail;
+        card.append(label, value, detail); return card;
+      }));
+      const unavailableModels = COMPARE_MODELS.filter(modelKey => modelStates[modelKey].error).map(modelKey => MODEL_CONFIG[modelKey].label);
+      const partialCount = states.filter(state => state.className === 'status-partial').length;
+      const staleCount = states.filter(state => state.className === 'status-stale').length;
+      const notices = [];
+      if (unavailableModels.length) notices.push(`Manifest unavailable: ${unavailableModels.join(' · ')}`);
+      if (partialCount) notices.push(`${partialCount} surface${partialCount === 1 ? '' : 's'} have partial ensemble coverage`);
+      if (staleCount) notices.push(`${staleCount} surface${staleCount === 1 ? '' : 's'} are beyond the expected refresh window`);
+      el('overview-notices').textContent = notices.length ? notices.join('. ') + '.' : 'All loaded guidance is within its expected refresh window and no partial products are present.';
+      el('footer-copy').textContent = 'Seasonal model operations overview · Select any available matrix cell to inspect its source run and valid periods.';
+      syncUrlState();
     }
     function compareEmpty(message) {
       const empty = document.createElement('div'); empty.className = 'empty'; empty.textContent = message; return empty;
@@ -513,20 +723,24 @@
     function compareBaselineLabel(value) {
       return COMPARE_BASELINES.find(item => item.value === value)?.label || 'Model reference';
     }
-    function compareModelListLabel() {
-      return COMPARE_MODELS.map(modelKey => MODEL_CONFIG[modelKey].label).join(' · ');
+    function compareFilteredModels() {
+      return selection.compareRole === 'all' ? COMPARE_MODELS : COMPARE_MODELS.filter(modelKey => MODEL_CONFIG[modelKey].role === selection.compareRole);
+    }
+    function compareModelListLabel(models = compareFilteredModels()) {
+      return models.map(modelKey => MODEL_CONFIG[modelKey].label).join(' · ');
     }
     function renderCompareGrid(targetKey) {
       const grid = el('compare-grid');
-      const available = targetKey ? COMPARE_MODELS.filter(modelKey => Boolean(compareRunForTarget(modelKey, targetKey, selection.compareBaseline, selection.compareProduct))) : [];
-      const availableOnly = el('compare-available-only').checked && Boolean(targetKey);
-      const visible = availableOnly ? available : COMPARE_MODELS;
+      const models = compareFilteredModels();
+      const available = targetKey ? models.filter(modelKey => Boolean(compareRunForTarget(modelKey, targetKey, selection.compareBaseline, selection.compareProduct))) : [];
+      const availableOnly = selection.compareAvailableOnly && Boolean(targetKey);
+      const visible = availableOnly ? available : models;
       if (visible.length) grid.replaceChildren(...visible.map(modelKey => renderCompareCard(modelKey, targetKey)));
       else {
         const empty = compareEmpty('No forecast surface is available for this parameter, period, and reference.');
         empty.classList.add('card'); grid.replaceChildren(empty);
       }
-      const missing = targetKey ? COMPARE_MODELS.filter(modelKey => !available.includes(modelKey)) : [];
+      const missing = targetKey ? models.filter(modelKey => !available.includes(modelKey)) : [];
       el('compare-missing').textContent = missing.length ? `Not published for this selection: ${missing.map(modelKey => MODEL_CONFIG[modelKey].label).join(' · ')}` : '';
       return available.length;
     }
@@ -559,7 +773,9 @@
         image.alt = `${runDisplayName(model, run)} ${product} ${periodLabel(target.target_month)} · ${compareBaselineLabel(baseline)}`;
         image.loading = 'lazy';
         image.addEventListener('error', () => imageWrap.replaceChildren(compareEmpty('The manifest target exists, but its image is not in the published Pages tree.')));
-        imageWrap.appendChild(image);
+        const imageButton = document.createElement('button'); imageButton.type = 'button'; imageButton.className = 'image-button'; imageButton.setAttribute('aria-label', `Open full-size ${image.alt}`);
+        imageButton.addEventListener('click', () => openMapDialog(image.src, image.alt));
+        imageButton.appendChild(image); imageWrap.appendChild(imageButton);
       }
       card.appendChild(imageWrap);
       const metadata = document.createElement('p'); metadata.className = 'compare-meta';
@@ -573,6 +789,9 @@
       const productSelect = el('compare-product-select');
       const select = el('compare-target-select');
       const baselineSelect = el('compare-baseline-select');
+      const roleSelect = el('compare-role-select');
+      roleSelect.value = selection.compareRole;
+      el('compare-available-only').checked = selection.compareAvailableOnly;
       const productOptions = compareProductOptions();
       if (!productOptions.length) {
         productSelect.replaceChildren(Object.assign(document.createElement('option'), { textContent: 'No comparable parameters' }));
@@ -587,6 +806,7 @@
         el('compare-summary').textContent = 'No comparable anomaly products have been published across the model manifests';
         renderCompareGrid('');
         el('footer-copy').textContent = `Seasonal model comparison · ${compareModelListLabel()}`;
+        syncUrlState();
         return;
       }
       if (!productOptions.some(item => item.value === selection.compareProduct)) {
@@ -608,6 +828,7 @@
         el('compare-summary').textContent = `${product} · no matching target has been published across the model manifests`;
         renderCompareGrid('');
         el('footer-copy').textContent = `${product} comparison · ${compareModelListLabel()}`;
+        syncUrlState();
         return;
       }
       const preferred = options.find(item => /^\d{6}-\d{6}$/.test(String(item.value))) || options[options.length - 1];
@@ -615,12 +836,28 @@
       populate(select, options, selection.compareTarget);
       selection.compareTarget = select.value || preferred.value;
       const availableCount = renderCompareGrid(selection.compareTarget);
-      el('compare-summary').textContent = `${product} · ${periodLabel(selection.compareTarget)} · ${compareBaselineLabel(selection.compareBaseline)} · ${availableCount}/${COMPARE_MODELS.length} forecast surfaces available`;
+      el('compare-summary').textContent = `${product} · ${periodLabel(selection.compareTarget)} · ${compareBaselineLabel(selection.compareBaseline)} · ${availableCount}/${compareFilteredModels().length} forecast surfaces available`;
       el('footer-copy').textContent = `${product} comparison · ${compareBaselineLabel(selection.compareBaseline)} · ${compareModelListLabel()}`;
+      syncUrlState();
     }
     function renderControls(model, run, targets) {
       const controls = el('target-controls'); controls.replaceChildren();
-      targets.forEach((target, index) => { const button = document.createElement('button'); button.type = 'button'; button.textContent = target.label; button.classList.toggle('active', String(target.key) === String(selection.target)); button.addEventListener('click', () => { selection.target = target.key; renderAll(); }); controls.appendChild(button); });
+      targets.forEach((target, index) => {
+        const button = document.createElement('button'); button.type = 'button'; button.textContent = target.label; button.dataset.targetIndex = String(index);
+        const active = String(target.key) === String(selection.target); button.classList.toggle('active', active); button.setAttribute('aria-pressed', String(active));
+        button.addEventListener('click', () => { selection.target = target.key; renderAll(); });
+        button.addEventListener('keydown', event => {
+          let next = null;
+          if (event.key === 'ArrowLeft') next = (index - 1 + targets.length) % targets.length;
+          if (event.key === 'ArrowRight') next = (index + 1) % targets.length;
+          if (event.key === 'Home') next = 0;
+          if (event.key === 'End') next = targets.length - 1;
+          if (next === null) return;
+          event.preventDefault(); selection.target = targets[next].key; renderAll();
+          requestAnimationFrame(() => el('target-controls').querySelector(`[data-target-index="${next}"]`)?.focus());
+        });
+        controls.appendChild(button);
+      });
       if (isSnowProduct(model, selection.product)) {
         const wrapper = document.createElement('label'); wrapper.className = 'ratio-control'; wrapper.id = 'ratio-control'; wrapper.innerHTML = '<span class="control-label">Snow ratio</span><select id="ratio-select"></select>';
         controls.appendChild(wrapper);
@@ -631,6 +868,7 @@
     }
     function renderAll() {
       renderModelOptions();
+      el('download-link').hidden = true;
       const model = MODEL_CONFIG[selection.model]; const modelState = modelStates[selection.model];
       if (!modelState.manifest) { renderUnavailable(model); return; }
       const products = manifestProducts(model);
@@ -664,6 +902,7 @@
         el('fact-model').textContent = model.label;
         el('scope').textContent = runs.length ? 'All published runs for this parameter are failed or lack a rendered target.' : 'No published run is available for this parameter.';
         const warning = el('warning'); warning.style.display = runs.length ? 'block' : 'none'; warning.textContent = runs.length ? 'No failed run was selected automatically; retained history remains available for diagnosis.' : '';
+        syncUrlState();
         return;
       }
       const targetValue = target.value;
@@ -680,40 +919,77 @@
       el('source-link').href = run.source_url || model.direct; el('direct-link').href = model.direct;
       const image = imagePath(model, run, target); setMessage('');
       el('map-wrap').replaceChildren();
-      if (image) { const imageElement = document.createElement('img'); imageElement.src = image; imageElement.alt = `${runDisplayName(model, run)} ${label} ${targetText(model, target)}`; imageElement.loading = 'eager'; imageElement.addEventListener('error', () => { setMessage('The manifest is available, but this image is not present in the published Pages tree.'); }); el('map-wrap').appendChild(imageElement); } else setMessage('No rendered image is available for this target.');
+      if (image) {
+        const imageElement = document.createElement('img'); imageElement.src = image; imageElement.alt = `${runDisplayName(model, run)} ${label} ${targetText(model, target)}`; imageElement.loading = 'eager';
+        imageElement.addEventListener('error', () => { el('download-link').hidden = true; setMessage('The manifest is available, but this image is not present in the published Pages tree.'); });
+        const imageButton = document.createElement('button'); imageButton.type = 'button'; imageButton.className = 'image-button'; imageButton.setAttribute('aria-label', `Open full-size ${imageElement.alt}`); imageButton.addEventListener('click', () => openMapDialog(imageElement.src, imageElement.alt)); imageButton.appendChild(imageElement); el('map-wrap').appendChild(imageButton);
+        el('download-link').href = image; el('download-link').download = downloadFileName(image); el('download-link').hidden = false;
+      } else setMessage('No rendered image is available for this target.');
       const warning = el('warning');
       if (targetValue?.status === 'failed') { warning.style.display = 'block'; warning.textContent = targetValue.error || 'This target failed; retained history remains selectable.'; }
       else if (targetValue?.status === 'partial' || run.status === 'partial') { const counts = runCoverageCounts(run, targetValue); const coverage = counts ? ` (${counts.available}/${counts.expected} ${run.ensemble_scope === 'rolling_initial_conditions' ? 'cycles' : 'members'})` : ''; warning.style.display = 'block'; warning.textContent = `This run is partial${coverage}; retained history remains selectable.`; }
       else if (run.source_warning) { warning.style.display = 'block'; warning.textContent = run.source_warning; }
       else warning.style.display = 'none';
       el('footer-copy').textContent = `${model.source} · ${modelState.manifest.generated_utc ? `Manifest generated ${initLabel(modelState.manifest.generated_utc)}` : 'Published manifest loaded'} · Direct model pages remain available.`;
+      syncUrlState();
     }
-    function renderCurrentView() { if (selection.view === 'compare') renderCompare(); else renderAll(); }
+    function renderCurrentView() {
+      if (selection.view === 'overview') renderOverview();
+      else if (selection.view === 'compare') renderCompare();
+      else renderAll();
+    }
     function setView(view) {
-      selection.view = view === 'compare' ? 'compare' : 'single';
-      const isCompare = selection.view === 'compare';
-      el('single-tab').classList.toggle('active', !isCompare); el('single-tab').setAttribute('aria-selected', String(!isCompare));
-      el('compare-tab').classList.toggle('active', isCompare); el('compare-tab').setAttribute('aria-selected', String(isCompare));
-      el('single-tab').tabIndex = isCompare ? -1 : 0; el('compare-tab').tabIndex = isCompare ? 0 : -1;
-      el('single-toolbar').hidden = isCompare; el('single-view').hidden = isCompare; el('compare-view').hidden = !isCompare;
+      selection.view = ['overview', 'single', 'compare'].includes(view) ? view : 'overview';
+      ['overview', 'single', 'compare'].forEach(item => {
+        const active = selection.view === item; const tab = el(`${item}-tab`);
+        tab.classList.toggle('active', active); tab.setAttribute('aria-selected', String(active)); tab.tabIndex = active ? 0 : -1;
+      });
+      el('overview-view').hidden = selection.view !== 'overview';
+      el('single-toolbar').hidden = selection.view !== 'single'; el('single-view').hidden = selection.view !== 'single';
+      el('compare-view').hidden = selection.view !== 'compare';
       renderCurrentView();
+    }
+    async function copyCurrentLink() {
+      syncUrlState(); const status = el('copy-status');
+      try {
+        await navigator.clipboard.writeText(location.href);
+        status.textContent = 'Link copied';
+      } catch (_) {
+        const field = document.createElement('textarea'); field.value = location.href; field.setAttribute('readonly', ''); field.style.position = 'fixed'; field.style.opacity = '0'; document.body.appendChild(field); field.select();
+        const copied = document.execCommand('copy'); field.remove(); status.textContent = copied ? 'Link copied' : 'Copy failed';
+      }
+      window.setTimeout(() => { status.textContent = ''; }, 2200);
     }
     el('model-select').addEventListener('change', event => { selection.model = event.target.value; selection.product = ''; selection.run = ''; selection.target = ''; renderAll(); });
     el('product-select').addEventListener('change', event => { selection.product = event.target.value; selection.run = ''; selection.target = ''; renderAll(); });
     el('run-select').addEventListener('change', event => { selection.run = event.target.value; selection.target = ''; renderAll(); });
+    el('overview-tab').addEventListener('click', () => setView('overview'));
     el('single-tab').addEventListener('click', () => setView('single'));
     el('compare-tab').addEventListener('click', () => setView('compare'));
     el('compare-product-select').addEventListener('change', event => { selection.compareProduct = event.target.value; selection.compareTarget = ''; selection.compareBaseline = 'native'; renderCompare(); });
     el('compare-target-select').addEventListener('change', event => { selection.compareTarget = event.target.value; renderCompare(); });
     el('compare-baseline-select').addEventListener('change', event => { selection.compareBaseline = event.target.value; renderCompare(); });
-    el('compare-available-only').addEventListener('change', () => renderCompare());
+    el('compare-role-select').addEventListener('change', event => { selection.compareRole = event.target.value; renderCompare(); });
+    el('compare-available-only').addEventListener('change', event => { selection.compareAvailableOnly = event.target.checked; renderCompare(); });
+    el('copy-link').addEventListener('click', copyCurrentLink);
+    el('map-dialog-close').addEventListener('click', () => el('map-dialog').close());
+    el('map-dialog').addEventListener('click', event => { if (event.target === el('map-dialog')) el('map-dialog').close(); });
+    document.querySelector('.view-tabs').addEventListener('keydown', event => {
+      const ids = ['overview-tab', 'single-tab', 'compare-tab']; const current = ids.indexOf(event.target.id);
+      if (current < 0 || !['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+      event.preventDefault();
+      const next = event.key === 'Home' ? 0 : event.key === 'End' ? ids.length - 1 : event.key === 'ArrowLeft' ? (current - 1 + ids.length) % ids.length : (current + 1) % ids.length;
+      const nextView = ids[next].replace('-tab', ''); setView(nextView); el(ids[next]).focus();
+    });
+    document.querySelectorAll('[data-overview-compare]').forEach(button => button.addEventListener('click', () => { selection.compareProduct = button.dataset.overviewCompare; selection.compareTarget = ''; selection.compareBaseline = 'native'; setView('compare'); }));
+    document.querySelectorAll('[data-overview-model]').forEach(button => button.addEventListener('click', () => { selection.model = button.dataset.overviewModel; selection.product = ''; selection.run = ''; selection.target = ''; setView('single'); }));
     renderModelOptions();
     Promise.all(Object.entries(MODEL_CONFIG).map(async ([key, config]) => {
       try { const response = await fetch(config.manifest); if (!response.ok) throw new Error(`Manifest returned ${response.status}`); const manifest = await response.json(); modelStates[key].manifest = manifest; modelStates[key].runs = Array.isArray(manifest.runs) ? manifest.runs.filter(run => run && run.id) : []; }
       catch (error) { modelStates[key].error = error.message; }
     })).then(() => {
       if (!modelStates[selection.model].manifest) selection.model = Object.keys(MODEL_CONFIG).find(key => modelStates[key].manifest) || selection.model;
-      renderCurrentView();
+      setView(selection.view);
     });
   </script>
 </body>
