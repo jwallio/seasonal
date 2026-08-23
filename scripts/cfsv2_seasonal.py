@@ -30,6 +30,11 @@ from dataclasses import dataclass
 from typing import Callable, Iterable, Iterator, Sequence
 from urllib.parse import urljoin
 
+SCRIPT_DIRECTORY = str(Path(__file__).resolve().parent)
+if SCRIPT_DIRECTORY not in sys.path:
+    sys.path.insert(0, SCRIPT_DIRECTORY)
+from seasonal_products import grid_quality_control, require_quality_control
+
 
 NOMADS_ROOT = "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/"
 NCEI_CALIBRATION_ROOT = "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs_refor_calclim_mm_9m_pgbf/"
@@ -2083,6 +2088,14 @@ def run(args: argparse.Namespace) -> int:
                     target_entry["baseline"]["downloaded"] = baseline_downloaded
 
             output_path = output_dir / init / f"cfsv2_{product['file_token']}_{target}.jpg"
+            target_entry["quality_control"] = grid_quality_control(
+                product_name,
+                anomaly_grid.values,
+                units=product["units"],
+                field=product["field"],
+                seasonal=False,
+            )
+            require_quality_control(target_entry["quality_control"], CFSv2Error)
             render_map(
                 anomaly_grid,
                 init,
@@ -2116,6 +2129,14 @@ def run(args: argparse.Namespace) -> int:
                         f"common reference {target}",
                     )
                     common_grid = subtract_grids(ensemble, common_reference)
+                    common_qc = grid_quality_control(
+                        product_name,
+                        common_grid.values,
+                        units=product["units"],
+                        field=product["field"],
+                        seasonal=False,
+                    )
+                    require_quality_control(common_qc, CFSv2Error)
                     common_output = output_dir / init / f"cfsv2_{product['file_token']}_{target}_common-1991-2020.jpg"
                     render_map(
                         common_grid,
@@ -2135,6 +2156,7 @@ def run(args: argparse.Namespace) -> int:
                         "common_1991_2020": {
                             "image": relative_path(common_output, repo_root),
                             "status": "rendered",
+                            "quality_control": common_qc,
                             "baseline": {
                                 "label": COMMON_REFERENCE_LABEL,
                                 "years": COMMON_REFERENCE_YEARS,
@@ -2252,6 +2274,14 @@ def run(args: argparse.Namespace) -> int:
             end_date = dt.datetime.strptime(last_target, "%Y%m")
             period_label = seasonal_period_label(first_target, last_target)
             output_path = output_dir / init / f"cfsv2_{product['file_token']}_{first_target}-{last_target}.jpg"
+            seasonal_entry["quality_control"] = grid_quality_control(
+                product_name,
+                seasonal_grid.values,
+                units=product["seasonal_units"],
+                field=product["field"],
+                seasonal=True,
+            )
+            require_quality_control(seasonal_entry["quality_control"], CFSv2Error)
             render_map(
                 seasonal_grid,
                 init,
@@ -2304,6 +2334,14 @@ def run(args: argparse.Namespace) -> int:
                         else mean_grids(common_references)
                     )
                     common_grid = subtract_grids(seasonal_forecast, common_baseline)
+                    common_qc = grid_quality_control(
+                        product_name,
+                        common_grid.values,
+                        units=product["seasonal_units"],
+                        field=product["field"],
+                        seasonal=True,
+                    )
+                    require_quality_control(common_qc, CFSv2Error)
                     common_output = output_dir / init / f"cfsv2_{product['file_token']}_{first_target}-{last_target}_common-1991-2020.jpg"
                     render_map(
                         common_grid,
@@ -2329,6 +2367,7 @@ def run(args: argparse.Namespace) -> int:
                         "common_1991_2020": {
                             "image": relative_path(common_output, repo_root),
                             "status": "rendered",
+                            "quality_control": common_qc,
                             "baseline": {
                                 "label": COMMON_REFERENCE_LABEL,
                                 "years": COMMON_REFERENCE_YEARS,

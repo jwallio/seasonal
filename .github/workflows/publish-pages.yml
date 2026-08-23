@@ -71,6 +71,8 @@ jobs:
           path: dashboard-source
           sparse-checkout: |
             public/seasonal/index.html
+            public/seasonal/dashboard.css
+            public/seasonal/dashboard.js
             public/seasonal/c3s/index.html
             public/seasonal/cma_cpsv3/index.html
             public/seasonal/jma/index.html
@@ -78,7 +80,18 @@ jobs:
             public/seasonal/geos_s2s3/index.html
             public/seasonal/nmme/index.html
             public/seasonal/superensemble/index.html
+            scripts/seasonal_products.py
+            scripts/build_seasonal_catalog.py
+            scripts/build_seasonal_thumbnails.py
           sparse-checkout-cone-mode: false
+
+      - name: Set up thumbnail runtime
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install thumbnail dependency
+        run: python -m pip install --disable-pip-version-check --quiet Pillow
 
       - name: Download WN2 payload
         if: ${{ env.SOURCE_WORKFLOW == 'WeatherNext Runner' || env.SOURCE_WORKFLOW == 'WeatherNext Runner Custom' }}
@@ -198,8 +211,12 @@ jobs:
           test -f site/seasonal/cfsv2/index.html
           test -f site/seasonal/seas5/index.html
           test -f dashboard-source/public/seasonal/index.html
+          test -f dashboard-source/public/seasonal/dashboard.css
+          test -f dashboard-source/public/seasonal/dashboard.js
           mkdir -p site/seasonal
           cp dashboard-source/public/seasonal/index.html site/seasonal/index.html
+          cp dashboard-source/public/seasonal/dashboard.css site/seasonal/dashboard.css
+          cp dashboard-source/public/seasonal/dashboard.js site/seasonal/dashboard.js
           mkdir -p site/seasonal/c3s site/seasonal/cma_cpsv3 site/seasonal/jma site/seasonal/apcc site/seasonal/geos_s2s3 site/seasonal/nmme site/seasonal/superensemble
           cp dashboard-source/public/seasonal/c3s/index.html site/seasonal/c3s/index.html
           cp dashboard-source/public/seasonal/cma_cpsv3/index.html site/seasonal/cma_cpsv3/index.html
@@ -359,6 +376,16 @@ jobs:
           esac
 
           rm -rf site/.git
+
+      - name: Validate seasonal manifests and build catalog
+        run: |
+          python dashboard-source/scripts/build_seasonal_catalog.py \
+            --site-root site \
+            --strict \
+            --source-revision "${GITHUB_SHA}"
+
+      - name: Build seasonal Compare thumbnails
+        run: python dashboard-source/scripts/build_seasonal_thumbnails.py --site-root site --max-width 560 --quality 82
 
       - name: Publish the merged Pages tree
         uses: peaceiris/actions-gh-pages@v4

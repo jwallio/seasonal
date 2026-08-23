@@ -37,6 +37,7 @@ from cfsv2_seasonal import (
     sum_grids,
 )
 from seas5_seasonal import grid_from_grib
+from seasonal_products import grid_quality_control, require_quality_control
 
 
 CDS_API_ROOT = "https://cds.climate.copernicus.eu/api"
@@ -432,6 +433,14 @@ def build_run(
                 if product["height_contours"] and not decode_only:
                     height, _ = archive.height(product, init, target, lead)
                     lead_heights[lead] = height
+            target_entry["quality_control"] = grid_quality_control(
+                product_name,
+                lead_grids[lead].values,
+                units=product["units"],
+                field=product["field"],
+                seasonal=False,
+            )
+            require_quality_control(target_entry["quality_control"], C3SError)
             if decode_only:
                 target_entry["status"] = "decoded"
             else:
@@ -461,6 +470,14 @@ def build_run(
                 raise C3SError("seasonal window is missing one or more component grids")
             combine = sum_grids if product["seasonal_reducer"] == "sum" else mean_grids
             seasonal_grid = combine([lead_grids[lead] for lead in seasonal_leads])
+            target_entry["quality_control"] = grid_quality_control(
+                product_name,
+                seasonal_grid.values,
+                units=product["seasonal_units"],
+                field=product["field"],
+                seasonal=True,
+            )
+            require_quality_control(target_entry["quality_control"], C3SError)
             seasonal_height = combine([lead_heights[lead] for lead in seasonal_leads]) if product["height_contours"] and all(lead in lead_heights for lead in seasonal_leads) else None
             output = output_dir / init[:8] / f"c3s_{component}_{product['variable']}_{first_target}-{last_target}.jpg"
             render_target(seasonal_grid, product, init, first_target, f"{first}–{last}", output, borders, seasonal_height, f"{members or len(centres)}-member mean" if not multisystem else f"{len(centres)}-system mean", period_label(first_target, last_target))

@@ -17,6 +17,7 @@ WORKFLOW = ROOT / ".github" / "workflows" / "cma-cpsv3.yml"
 PAGES = ROOT / ".github" / "workflows" / "publish-pages.yml"
 PAGE = ROOT / "public" / "seasonal" / "cma_cpsv3" / "index.html"
 DASHBOARD = ROOT / "public" / "seasonal" / "index.html"
+DASHBOARD_SCRIPT = ROOT / "public" / "seasonal" / "dashboard.js"
 DOC = ROOT / "docs" / "SEASONAL_CMA_CPSV3.md"
 
 
@@ -37,13 +38,13 @@ def load_adapter():
 
 
 def main() -> int:
-    for path in (ADAPTER, WORKFLOW, PAGES, PAGE, DASHBOARD, DOC):
+    for path in (ADAPTER, WORKFLOW, PAGES, PAGE, DASHBOARD, DASHBOARD_SCRIPT, DOC):
         check(path.exists(), f"missing CMA CPSv3 contract file: {path}")
     adapter_text = ADAPTER.read_text(encoding="utf-8")
     workflow = WORKFLOW.read_text(encoding="utf-8")
     pages = PAGES.read_text(encoding="utf-8")
     page = PAGE.read_text(encoding="utf-8")
-    dashboard = DASHBOARD.read_text(encoding="utf-8")
+    dashboard = DASHBOARD.read_text(encoding="utf-8") + DASHBOARD_SCRIPT.read_text(encoding="utf-8")
     documentation = DOC.read_text(encoding="utf-8")
     module = load_adapter()
 

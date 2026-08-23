@@ -7,6 +7,8 @@ from pathlib import Path
 import sys
 import tempfile
 
+import numpy as np
+
 
 ROOT = Path(__file__).resolve().parents[1]
 ADAPTER = ROOT / "scripts" / "apcc_seasonal.py"
@@ -73,8 +75,21 @@ def main() -> int:
         temperature_spec = module.PRODUCT_SPECS[product]
         check((temperature_spec["anomaly_min"], temperature_spec["anomaly_max"]) == (-7.0, 7.0), f"APCC {product} should use the shared ±7 °C range")
         check(temperature_spec["anomaly_ticks"] == list(range(-7, 8)), f"APCC {product} should use 1 °C labelled bounds")
-    check(module.PRODUCT_SPECS["precipitation_anomaly"]["raw_units"] == "mm/day", "APCC precipitation units are incorrect")
-    check(module.PRODUCT_SPECS["precipitation_anomaly"]["anomaly_max"] == 200.0, "APCC precipitation scale is not native")
+    precipitation_spec = module.PRODUCT_SPECS["precipitation_anomaly"]
+    check(precipitation_spec["raw_units"] == "mm/day", "APCC raw precipitation units are incorrect")
+    check(precipitation_spec["units"] == "in", "APCC comparison precipitation must use inches")
+    check(
+        (precipitation_spec["anomaly_min"], precipitation_spec["anomaly_max"]) == (-8.0, 8.0),
+        "APCC seasonal precipitation should use the shared ±8-inch range",
+    )
+    converted = module._convert_values(
+        np.array([25.4]), precipitation_spec, {"units": "mm/day"}, precip_days=3
+    )
+    check(np.allclose(converted, np.array([3.0])), "APCC precipitation conversion should accumulate and convert mm to inches")
+    sst_spec = module.PRODUCT_SPECS["sea_surface_temperature_anomaly"]
+    check((sst_spec["anomaly_min"], sst_spec["anomaly_max"]) == (-3.0, 3.0), "APCC SST should use the shared ±3 °C range")
+    mslp_spec = module.PRODUCT_SPECS["mslp_anomaly"]
+    check((mslp_spec["anomaly_min"], mslp_spec["anomaly_max"]) == (-10.0, 10.0), "APCC MSLP should use the shared ±10 hPa range")
     check("6-MON" in module.dataset_url("MME_6MONTH"), "APCC 6-month provenance URL is incorrect")
     check(module.PRODUCT_SPECS["sea_surface_temperature_anomaly"]["map_domain"] == "ocean", "APCC SST must be ocean-only")
     parser_defaults = module.build_parser().parse_args([])
@@ -90,7 +105,7 @@ def main() -> int:
         check(selected == djf_file, "APCC archive selection must use the requested season rather than the first file")
     for name, spec in module.PRODUCT_SPECS.items():
         check(len(spec["anomaly_ticks"]) == len(spec["anomaly_palette"]) + 1, f"APCC {name} palette bounds are misaligned")
-    print("APCC CONTRACT OK: target-month indexing, far 6-month season, source issue date, native anomalies, workflow, and retention")
+    print("APCC CONTRACT OK: target-month indexing, canonical comparison units/scales, source issue date, native anomalies, workflow, and retention")
     return 0
 
 

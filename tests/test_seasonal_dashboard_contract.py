@@ -7,7 +7,12 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 PAGE = ROOT / "public" / "seasonal" / "index.html"
+STYLESHEET = ROOT / "public" / "seasonal" / "dashboard.css"
+DASHBOARD_SCRIPT = ROOT / "public" / "seasonal" / "dashboard.js"
 PUBLISH_WORKFLOW = ROOT / ".github" / "workflows" / "publish-pages.yml"
+THUMBNAIL_SCRIPT = ROOT / "scripts" / "build_seasonal_thumbnails.py"
+CATALOG_SCRIPT = ROOT / "scripts" / "build_seasonal_catalog.py"
+PRODUCT_REGISTRY = ROOT / "scripts" / "seasonal_products.py"
 
 
 def check(condition: bool, message: str) -> None:
@@ -17,9 +22,21 @@ def check(condition: bool, message: str) -> None:
 
 def main() -> int:
     check(PAGE.exists(), "unified seasonal dashboard is missing")
+    check(STYLESHEET.exists(), "seasonal dashboard stylesheet is missing")
+    check(DASHBOARD_SCRIPT.exists(), "seasonal dashboard script is missing")
     check(PUBLISH_WORKFLOW.exists(), "central Pages workflow is missing")
-    page = PAGE.read_text(encoding="utf-8")
+    check(THUMBNAIL_SCRIPT.exists(), "seasonal thumbnail builder is missing")
+    check(CATALOG_SCRIPT.exists(), "seasonal catalog builder is missing")
+    check(PRODUCT_REGISTRY.exists(), "canonical seasonal product registry is missing")
+    page_markup = PAGE.read_text(encoding="utf-8")
+    stylesheet = STYLESHEET.read_text(encoding="utf-8")
+    dashboard_script = DASHBOARD_SCRIPT.read_text(encoding="utf-8")
+    page = "\n".join((page_markup, stylesheet, dashboard_script))
     workflow = PUBLISH_WORKFLOW.read_text(encoding="utf-8")
+
+    check('href="dashboard.css"' in page_markup, "dashboard must load its external stylesheet")
+    check('src="dashboard.js" defer' in page_markup, "dashboard must defer its external script")
+    check("<style>" not in page_markup and "<script>" not in page_markup, "dashboard must not restore large inline assets")
 
     for term in (
         "<title>Seasonal Model Dashboard</title>",
@@ -62,6 +79,7 @@ def main() -> int:
         'id="copy-link"',
         'id="download-link"',
         'id="map-dialog"',
+        'id="provenance-details"',
         'role="tablist"',
         'role="tabpanel"',
         "const DEFAULT_COMPARE_PRODUCT = '500mb_height_anomaly';",
@@ -76,12 +94,31 @@ def main() -> int:
         "common_1991_2020",
         "Common 1991–2020 (limited)",
         "function freshnessState(modelKey, productKey)",
+        "const CATALOG_URL = assetPath('seasonal/catalog.json');",
+        "function catalogProductConfig(productKey)",
+        "function canonicalProductKey(productKey)",
+        "function productSupport(modelKey, productKey)",
+        "function productSurface(modelKey, productKey)",
+        "run?._catalog?.comparable !== false",
+        "applicable: false",
+        "supported model-parameter surfaces",
+        "intentionally unsupported or quarantined",
+        "Excluded until regenerated with canonical units/metadata:",
+        "function loadDashboardData()",
+        "seasonal_dashboard_catalog",
         "function renderOverview()",
         "function readUrlState()",
         "function syncUrlState()",
         "history.replaceState",
         "navigator.clipboard.writeText",
         "function openMapDialog(src, title)",
+        "function thumbnailPath(value)",
+        "seasonal/thumbnails/",
+        "image.src = thumbnailPath(asset.image)",
+        "openMapDialog(fullImage, image.alt)",
+        "usedFullImageFallback",
+        "window.matchMedia('(min-width: 901px)')",
+        "function syncProvenanceDisclosure",
         "dialog.showModal()",
         "event.key === 'ArrowRight'",
         "position:sticky",
@@ -149,12 +186,18 @@ def main() -> int:
     check("preferredComponent: 'ENSMEAN'" in page, "NMME comparisons should prefer the official ensemble mean")
     check("runDisplayName(model, run)" in page[page.index("function runLabel"):page.index("function isFailedRun")], "run-history labels must use the selected blend or component identity")
     check("runs[0]" not in page[page.index("function preferredRun"):page.index("function selectedRun")], "failed history must not be used as a default fallback")
+    overview_block = page[page.index("function renderOverview()"):page.index("function compareEmpty")]
+    check("states.length" not in overview_block, "coverage denominator must exclude intentional unsupported and quarantined surfaces")
+    check("applicable.length" in overview_block, "coverage denominator must count only supported surfaces")
     compare_period_block = page[page.index("function comparePeriodOptions"):page.index("function compareBaselineOptions")]
     check("const keys = new Set();" in compare_period_block, "compare periods must collect a union of published months")
     check("COMPARE_MODELS.forEach" in compare_period_block and "keys.add(key)" in compare_period_block, "compare periods must include months published by any compared model")
     check("availableSets.every" not in compare_period_block, "individual compare months must not be hidden by an all-model intersection")
     compare_baseline_block = page[page.index("function compareBaselineOptions"):page.index("function compareRunForTarget")]
     check("productKey === DEFAULT_COMPARE_PRODUCT" in compare_baseline_block, "common-reference comparison must remain limited to 500-mb height")
+    compare_card_block = page[page.index("function renderCompareCard"):page.index("function renderCompare()")]
+    check("image.src = thumbnailPath(asset.image)" in compare_card_block, "Compare cards must load compact WebP thumbnails")
+    check("openMapDialog(fullImage, image.alt)" in compare_card_block, "Compare lightbox must retain the full-resolution image")
 
     check("WN2 /" not in page, "unified dashboard should use a generic dashboard title")
     check("WeatherNext 2" not in page, "seasonal dashboard should not present WeatherNext 2 as a seasonal model")
@@ -180,10 +223,30 @@ def main() -> int:
         "ref: main",
         "public/seasonal/index.html",
         "cp dashboard-source/public/seasonal/index.html site/seasonal/index.html",
+        "public/seasonal/dashboard.css",
+        "public/seasonal/dashboard.js",
+        "cp dashboard-source/public/seasonal/dashboard.css site/seasonal/dashboard.css",
+        "cp dashboard-source/public/seasonal/dashboard.js site/seasonal/dashboard.js",
+        "scripts/build_seasonal_thumbnails.py",
+        "scripts/seasonal_products.py",
+        "scripts/build_seasonal_catalog.py",
+        "name: Validate seasonal manifests and build catalog",
+        "--strict",
+        "--source-revision \"${GITHUB_SHA}\"",
+        "name: Build seasonal Compare thumbnails",
+        "--site-root site --max-width 560 --quality 82",
+        "pip install --disable-pip-version-check --quiet Pillow",
     ):
         check(term in workflow, f"Pages workflow missing dashboard term: {term}")
 
-    print("SEASONAL DASHBOARD CONTRACT OK: unified model selectors, manifests, direct links, and Pages publish")
+    check(
+        workflow.index("name: Validate seasonal manifests and build catalog")
+        < workflow.index("name: Build seasonal Compare thumbnails")
+        < workflow.index("name: Publish the merged Pages tree"),
+        "catalog validation must block thumbnail generation and publication",
+    )
+
+    print("SEASONAL DASHBOARD CONTRACT OK: canonical catalog, supported-surface coverage, selectors, and guarded Pages publish")
     return 0
 
 

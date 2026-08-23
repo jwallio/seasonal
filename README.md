@@ -52,6 +52,10 @@ Seasonal 850-mb and 2-m temperature-anomaly maps use a shared fixed -7 to
 +7 °C scale with 1 °C intervals across providers and the super ensemble. This
 prevents stronger anomalies from saturating model-specific ±3/4/6 °C scales;
 sea-surface temperature and probability products retain their own scales.
+Seasonal precipitation comparisons use inches (±4 monthly and ±8 seasonal),
+MSLP uses ±10 hPa, and SST uses ±3 °C. APCC precipitation is converted from
+its native millimetres to accumulated inches before rendering, so its maps no
+longer mix units with the other providers.
 
 The unified [Seasonal Model Dashboard](/d:/weather-projects/wn2/public/seasonal/index.html) is published at
 [`/seasonal/`](https://jwallio.github.io/wn2/seasonal/). It provides one model,
@@ -70,6 +74,27 @@ each model's native anomaly. For 500-mb height only, the Reference selector can
 optionally show a common 1991-2020 reference based on the CanSIPS v3 hindcast
 mean. Compare periods start with December 2026; earlier valid periods remain
 available only in the model-specific and Single Model views.
+
+The dashboard now opens on an operational Overview with model-by-parameter
+freshness and coverage. Compare supports blend/family/component filtering,
+shareable URL state, and 560-pixel WebP card thumbnails that open the original
+full-resolution map. The serialized Pages publisher creates only missing
+thumbnails from the retained manifests, while the browser falls back to the
+full image if a thumbnail has not been generated yet. Explore keeps detailed
+run provenance expanded on desktop and collapsed by default on mobile. The
+static shell, stylesheet, and state/render logic are kept in separate
+`index.html`, `dashboard.css`, and `dashboard.js` assets without a frontend
+framework.
+
+The dashboard is driven by a generated `seasonal/catalog.json` built from the
+canonical contracts in `scripts/seasonal_products.py`. The catalog declares
+which model/parameter surfaces are supported, intentionally unavailable, or
+quality-control blocked; Overview coverage excludes intentional N/A cells.
+Before every Pages update, `scripts/build_seasonal_catalog.py --strict`
+validates timestamps, pressure/field identity, units, probability integrity,
+safe asset paths, and the existence of rendered images. New C3S, CFSv2, APCC,
+and super-ensemble outputs also carry numerical range and clipping QC in their
+manifest targets. A validation error stops publication.
 
 The automatic release-aligned schedule for all seasonal workflows is documented
 in [`docs/SEASONAL_SCHEDULES.md`](/d:/weather-projects/wn2/docs/SEASONAL_SCHEDULES.md).
@@ -96,6 +121,8 @@ in [`docs/SEASONAL_SCHEDULES.md`](/d:/weather-projects/wn2/docs/SEASONAL_SCHEDUL
 - [`scripts/geos_s2s3_seasonal.py`](/d:/weather-projects/wn2/scripts/geos_s2s3_seasonal.py): NASA GEOS-S2S-3 numerical ensemble/drift adapter
 - [`.github/workflows/geos-s2s3.yml`](/d:/weather-projects/wn2/.github/workflows/geos-s2s3.yml): monthly NASA GEOS-S2S-3 workflow
 - [`scripts/superensemble_seasonal.py`](/d:/weather-projects/wn2/scripts/superensemble_seasonal.py): equal-weight deduplicated seasonal forecast-family blend
+- [`scripts/seasonal_products.py`](/d:/weather-projects/wn2/scripts/seasonal_products.py): canonical seasonal product, unit, scale, model-support, and numerical-QC registry
+- [`scripts/build_seasonal_catalog.py`](/d:/weather-projects/wn2/scripts/build_seasonal_catalog.py): strict manifest/asset validator and compact dashboard catalog builder
 - [`.github/workflows/superensemble.yml`](/d:/weather-projects/wn2/.github/workflows/superensemble.yml): monthly super-ensemble workflow
 - [`.github/workflows/publish-pages.yml`](/d:/weather-projects/wn2/.github/workflows/publish-pages.yml): single serialized seasonal Pages publisher
 - [`docs/SEASONAL_SCHEDULES.md`](/d:/weather-projects/wn2/docs/SEASONAL_SCHEDULES.md): provider release windows and UTC automation schedule
@@ -374,6 +401,6 @@ The GitHub Actions workflows require:
 - `main` is the source/default branch
 - `gh-pages` is the published static site branch
 
-The renderer workflows upload scoped payloads. The single `publish-pages.yml` workflow serializes successful model and super-ensemble completions, merges each payload into the existing `gh-pages` tree, and publishes the complete site so one product cannot remove another product's assets.
+The renderer workflows upload scoped payloads. The single `publish-pages.yml` workflow serializes successful model and super-ensemble completions, merges each payload into the existing `gh-pages` tree, validates and rebuilds the seasonal catalog, and publishes the complete site so one product cannot remove another product's assets. Invalid metadata or missing map assets fail closed before publication.
 
 Seasonal additions are documented in [`docs/SEASONAL_CMA_CPSV3.md`](/d:/weather-projects/wn2/docs/SEASONAL_CMA_CPSV3.md), [`docs/SEASONAL_C3S.md`](/d:/weather-projects/wn2-seasonal-dashboard/docs/SEASONAL_C3S.md), [`docs/SEASONAL_JMA.md`](/d:/weather-projects/wn2-seasonal-dashboard/docs/SEASONAL_JMA.md), [`docs/SEASONAL_NMME.md`](/d:/weather-projects/wn2-seasonal-dashboard/docs/SEASONAL_NMME.md), and [`docs/SEASONAL_SUPERENSEMBLE.md`](/d:/weather-projects/wn2/docs/SEASONAL_SUPERENSEMBLE.md). The unified viewer includes native-model comparison maps and a transparent deduplicated super ensemble. For supported products, that package uses the standalone 10-day rolling CFSv2 blend as the single CFSv2-family vote, includes CMA only for WMO-available forecast months 1-3, and excludes duplicate C3S/NMME copies.

@@ -37,6 +37,7 @@ from cfsv2_seasonal import (
     subtract_grids,
     sum_grids,
 )
+from seasonal_products import grid_quality_control, require_quality_control
 
 
 SOURCE_URLS = [
@@ -912,6 +913,14 @@ def render_product_run(
             continue
         try:
             anomaly = aligned_mean(member_grids[lead], keys, f"{product} lead {lead}")
+            entry["quality_control"] = grid_quality_control(
+                product,
+                anomaly.values,
+                units=c3s.PRODUCT_SPECS[product]["units"],
+                field=c3s.PRODUCT_SPECS[product]["field"],
+                seasonal=False,
+            )
+            require_quality_control(entry["quality_control"], SuperEnsembleError)
             height_keys = [key for key in keys if key in height_grids[lead]]
             height = aligned_mean(height_grids[lead], height_keys, f"height lead {lead}") if height_keys else None
             entry["height_member_count"] = len(height_keys)
@@ -994,6 +1003,14 @@ def render_product_run(
                     for key in keys
                 }
                 anomaly = aligned_mean(member_seasonal, keys, f"{product} seasonal blend")
+                entry["quality_control"] = grid_quality_control(
+                    product,
+                    anomaly.values,
+                    units=c3s.PRODUCT_SPECS[product]["seasonal_units"],
+                    field=c3s.PRODUCT_SPECS[product]["field"],
+                    seasonal=True,
+                )
+                require_quality_control(entry["quality_control"], SuperEnsembleError)
                 height_keys = [
                     key for key in keys
                     if all(key in height_grids[lead] for lead in seasonal_leads)

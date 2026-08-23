@@ -17,6 +17,7 @@ PAGES_WORKFLOW = ROOT / ".github" / "workflows" / "publish-pages.yml"
 DOC = ROOT / "docs" / "SEASONAL_CANSIPS.md"
 PAGE = ROOT / "public" / "seasonal" / "cansips" / "index.html"
 DASHBOARD = ROOT / "public" / "seasonal" / "index.html"
+DASHBOARD_SCRIPT = ROOT / "public" / "seasonal" / "dashboard.js"
 
 
 def load_adapter():
@@ -38,7 +39,7 @@ def main() -> int:
     for path, label in (
         (ADAPTER, "adapter"), (WRAPPER, "wrapper"), (WORKFLOW, "workflow"),
         (PAGES_WORKFLOW, "central Pages workflow"), (DOC, "documentation"),
-        (PAGE, "viewer"), (DASHBOARD, "dashboard"),
+        (PAGE, "viewer"), (DASHBOARD, "dashboard"), (DASHBOARD_SCRIPT, "dashboard script"),
     ):
         check(path.exists(), f"CanSIPS {label} missing")
 
@@ -47,7 +48,7 @@ def main() -> int:
     pages_workflow = PAGES_WORKFLOW.read_text(encoding="utf-8")
     documentation = DOC.read_text(encoding="utf-8")
     page = PAGE.read_text(encoding="utf-8")
-    dashboard = DASHBOARD.read_text(encoding="utf-8")
+    dashboard = DASHBOARD.read_text(encoding="utf-8") + DASHBOARD_SCRIPT.read_text(encoding="utf-8")
     for term in (
         "CANSIPS_FORECAST_ROOT", "CANSIPS_HINDCAST_ROOT", "GeopotentialHeight",
         "ISBL-0500", "MM-ENS", "CANSIPS_ENSEMBLE_MEMBERS = 40",

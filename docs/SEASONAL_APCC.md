@@ -24,9 +24,11 @@ multiplies it by the number of days in the returned three-month season and
 labels the map in seasonal accumulation `mm`. The manifest records the native
 units, conversion, source season, grid resolution, and rendered data range.
 
-The six products use parameter-appropriate scales. The 500-mb height product
-matches the common seasonal ±100 m scale; 850-mb and 2-m temperature use the
-shared ±7°C scale, precipitation ±200 mm, SST ±4°C, and MSLP ±6 hPa. APCC's z500 archive contains anomalies only, so no
+The six products use the dashboard's canonical comparison units and scales.
+The 500-mb height product uses ±100 m; 850-mb and 2-m temperature use ±7°C;
+seasonal precipitation is accumulated and converted from the native APCC
+millimetres to inches with a ±8-inch scale; SST uses ±3°C; and MSLP uses
+±10 hPa. APCC's z500 archive contains anomalies only, so no
 absolute-height contour overlay is fabricated.
 
 SST is rendered only over ocean cells. A missing land-mask geometry is treated

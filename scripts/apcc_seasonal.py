@@ -34,6 +34,7 @@ from cfsv2_seasonal import (
     relative_path,
     render_map,
 )
+from seasonal_products import grid_quality_control, require_quality_control
 
 
 APCC_SOURCE_URL = "https://apcc21.org/clik/processing/prediction"
@@ -51,22 +52,18 @@ APCC_ACKNOWLEDGEMENT = (
 )
 
 APCC_Z500_TICKS = list(range(-100, 101, 10))
-APCC_PRECIP_TICKS = list(range(-200, 201, 25))
+APCC_PRECIP_TICKS = list(range(-8, 9))
 APCC_PRECIP_PALETTE = [
     "#7f3b08", "#914b0d", "#a6611a", "#bd7a2d", "#d0a052", "#dfbd7d",
     "#ead8b3", "#ffffff", "#ffffff", "#e5f1dc", "#c8e4bf", "#aad89f",
     "#86c879", "#5fba6b", "#3aa55b", "#006d2c",
 ]
-APCC_SST_TICKS = list(range(-4, 5))
+APCC_SST_TICKS = list(range(-3, 4))
 APCC_SST_PALETTE = [
-    "#28567f", "#397ba2", "#5b9fba", "#b4d6dc", "#ffffff", "#efb6b5",
-    "#d36c73", "#a1384a",
+    "#28567f", "#5b9fba", "#b4d6dc", "#ffffff", "#efb6b5", "#b84c5a",
 ]
-APCC_PRESSURE_TICKS = list(range(-6, 7))
-APCC_PRESSURE_PALETTE = [
-    "#306b90", "#4891b0", "#61a7bf", "#95c4d3", "#c4dce3", "#e1e4e7",
-    "#f2cecd", "#eaaaa8", "#e28c8b", "#d3686c", "#bf4856", "#84283f",
-]
+APCC_PRESSURE_TICKS = list(range(-10, 11))
+APCC_PRESSURE_PALETTE = ANOMALY_PALETTE
 
 
 def dataset_url(dataset: str) -> str:
@@ -105,11 +102,11 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
     },
     "precipitation_anomaly": {
         "api_variable": "prec", "field": "precipitation_anomaly", "raw_field": "precipitation anomaly",
-        "raw_units": "mm/day", "units": "mm", "title": "APCC MME Seasonal Precipitation Anomaly (mm)",
-        "absolute_title": "APCC MME Precipitation (mm)", "height_contours": False,
-        "region": DEFAULT_REGION, "anomaly_min": -200.0, "anomaly_max": 200.0,
+        "raw_units": "mm/day", "units": "in", "title": "APCC MME Seasonal Precipitation Anomaly (in)",
+        "absolute_title": "APCC MME Precipitation (in)", "height_contours": False,
+        "region": DEFAULT_REGION, "anomaly_min": -8.0, "anomaly_max": 8.0,
         "anomaly_ticks": APCC_PRECIP_TICKS, "anomaly_palette": APCC_PRECIP_PALETTE,
-        "precipitation_conversion": "seasonal mean mm/day × valid-season days = seasonal accumulation mm",
+        "precipitation_conversion": "seasonal mean mm/day × valid-season days ÷ 25.4 = seasonal accumulation inches",
         "header_detail": "{source_label}  •  {baseline_label}  •  Native APCC seasonal MME anomaly",
         "id_token": "preca",
     },
@@ -117,7 +114,7 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "api_variable": "sst", "field": "sst_anomaly", "raw_field": "sea-surface temperature anomaly",
         "raw_units": "K", "units": "°C", "title": "APCC MME Sea-Surface Temperature Anomaly (°C)",
         "absolute_title": "APCC MME Sea-Surface Temperature (°C)", "height_contours": False,
-        "region": DEFAULT_REGION, "anomaly_min": -4.0, "anomaly_max": 4.0,
+        "region": DEFAULT_REGION, "anomaly_min": -3.0, "anomaly_max": 3.0,
         "anomaly_ticks": APCC_SST_TICKS, "anomaly_palette": APCC_SST_PALETTE,
         "map_domain": "ocean",
         "header_detail": "{source_label}  •  {baseline_label}  •  Native APCC seasonal MME anomaly",
@@ -127,7 +124,7 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "api_variable": "slp", "field": "mslp_anomaly", "raw_field": "mean sea-level pressure anomaly",
         "raw_units": "mb", "units": "hPa", "title": "APCC MME Mean Sea-Level Pressure Anomaly (hPa)",
         "absolute_title": "APCC MME Mean Sea-Level Pressure (hPa)", "height_contours": False,
-        "region": DEFAULT_REGION, "anomaly_min": -6.0, "anomaly_max": 6.0,
+        "region": DEFAULT_REGION, "anomaly_min": -10.0, "anomaly_max": 10.0,
         "anomaly_ticks": APCC_PRESSURE_TICKS, "anomaly_palette": APCC_PRESSURE_PALETTE,
         "header_detail": "{source_label}  •  {baseline_label}  •  Native APCC seasonal MME anomaly",
         "id_token": "slpa",
@@ -442,6 +439,11 @@ def _convert_values(
             values = values * 1000.0
         elif "mm/day" in units or "mm day" in units:
             values = values * max(1, precip_days)
+        elif units in {"in", "inch", "inches"}:
+            return values
+        elif units not in {"mm", "millimeter", "millimetre", "millimeters", "millimetres"}:
+            raise APCCError(f"unsupported APCC precipitation units: {units or 'missing'}")
+        values = values / 25.4
     return values
 
 
@@ -725,6 +727,14 @@ def run(args: argparse.Namespace) -> int:
             source_units = _source_units(metadata["data_attrs"])
             grid = grid_from_netcdf(source_path, product, precip_days=int(native_period["days"]))
             stats = grid_stats(grid)
+            target_entry["quality_control"] = grid_quality_control(
+                product_name,
+                grid.values,
+                units=product["units"],
+                field=product["field"],
+                seasonal=True,
+            )
+            require_quality_control(target_entry["quality_control"], APCCError)
             output = output_dir / init / f"apcc_{product['id_token']}_{target_code}.jpg"
             render_map(
                 grid,
