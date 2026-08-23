@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "kind": "nmme_seasonal_manifest",
-  "generated_utc": "2026-08-20T00:31:45Z",
+  "generated_utc": "2026-08-23T21:53:31Z",
   "source": "NOAA CPC NMME",
   "source_url": "https://www.cpc.ncep.noaa.gov/products/NMME/data.html",
   "source_urls": [
@@ -25,7 +25,9 @@
     {
       "id": "nmme-probability-2026080800-probability_near_normal-2m_temperature_anomaly",
       "model": "NOAA NMME",
+      "model_role": "blend",
       "component": "PROBABILITY",
+      "component_label": "NMME Official Probability",
       "components": [
         "CanESM5",
         "CFSv2",
@@ -44,7 +46,7 @@
       ],
       "archive_root": "https://ftp.cpc.ncep.noaa.gov/NMME/realtime_anom/ENSMEAN/",
       "init_utc": "2026-08-08T00:00:00Z",
-      "statistic": "official CPC probability",
+      "statistic": "official CPC NMME category probability",
       "ensemble_scope": "CPC NMME probability product",
       "field": "probability_near_normal",
       "units": "%",
@@ -81,7 +83,9 @@
     {
       "id": "nmme-probability-2026080800-probability_below_normal-2m_temperature_anomaly",
       "model": "NOAA NMME",
+      "model_role": "blend",
       "component": "PROBABILITY",
+      "component_label": "NMME Official Probability",
       "components": [
         "CanESM5",
         "CFSv2",
@@ -100,7 +104,7 @@
       ],
       "archive_root": "https://ftp.cpc.ncep.noaa.gov/NMME/realtime_anom/ENSMEAN/",
       "init_utc": "2026-08-08T00:00:00Z",
-      "statistic": "official CPC probability",
+      "statistic": "official CPC NMME category probability",
       "ensemble_scope": "CPC NMME probability product",
       "field": "probability_below_normal",
       "units": "%",
@@ -137,7 +141,9 @@
     {
       "id": "nmme-probability-2026080800-probability_above_normal-2m_temperature_anomaly",
       "model": "NOAA NMME",
+      "model_role": "blend",
       "component": "PROBABILITY",
+      "component_label": "NMME Official Probability",
       "components": [
         "CanESM5",
         "CFSv2",
@@ -156,7 +162,7 @@
       ],
       "archive_root": "https://ftp.cpc.ncep.noaa.gov/NMME/realtime_anom/ENSMEAN/",
       "init_utc": "2026-08-08T00:00:00Z",
-      "statistic": "official CPC probability",
+      "statistic": "official CPC NMME category probability",
       "ensemble_scope": "CPC NMME probability product",
       "field": "probability_above_normal",
       "units": "%",
@@ -193,7 +199,9 @@
     {
       "id": "nmme-ncar_cesm1-2026080800-2m_temperature_anomaly-2m_temperature_anomaly",
       "model": "NOAA NMME",
+      "model_role": "component",
       "component": "NCAR_CESM1",
+      "component_label": "NCAR CESM1",
       "components": [
         "NCAR_CESM1"
       ],
@@ -207,8 +215,8 @@
       ],
       "archive_root": "https://ftp.cpc.ncep.noaa.gov/NMME/realtime_anom/ENSMEAN/",
       "init_utc": "2026-08-08T00:00:00Z",
-      "statistic": "equal-weight component mean",
-      "ensemble_scope": "CPC NMME probability product",
+      "statistic": "official NCAR CESM1 ensemble mean",
+      "ensemble_scope": "individual NCAR CESM1 forecast family",
       "field": "tmp2m_anomaly",
       "units": "\u00b0C",
       "raw_field": "2-m temperature anomaly",
@@ -278,7 +286,9 @@
     {
       "id": "nmme-ncar_ccsm4-2026080800-2m_temperature_anomaly-2m_temperature_anomaly",
       "model": "NOAA NMME",
+      "model_role": "component",
       "component": "NCAR_CCSM4",
+      "component_label": "NCAR CCSM4",
       "components": [
         "NCAR_CCSM4"
       ],
@@ -292,8 +302,8 @@
       ],
       "archive_root": "https://ftp.cpc.ncep.noaa.gov/NMME/realtime_anom/ENSMEAN/",
       "init_utc": "2026-08-08T00:00:00Z",
-      "statistic": "equal-weight component mean",
-      "ensemble_scope": "CPC NMME probability product",
+      "statistic": "official NCAR CCSM4 ensemble mean",
+      "ensemble_scope": "individual NCAR CCSM4 forecast family",
       "field": "tmp2m_anomaly",
       "units": "\u00b0C",
       "raw_field": "2-m temperature anomaly",
@@ -363,7 +373,9 @@
     {
       "id": "nmme-nasa_geos5v2-2026080800-2m_temperature_anomaly-2m_temperature_anomaly",
       "model": "NOAA NMME",
+      "model_role": "component",
       "component": "NASA_GEOS5v2",
+      "component_label": "NASA GEOS5v2",
       "components": [
         "NASA_GEOS5v2"
       ],
@@ -377,8 +389,8 @@
       ],
       "archive_root": "https://ftp.cpc.ncep.noaa.gov/NMME/realtime_anom/ENSMEAN/",
       "init_utc": "2026-08-08T00:00:00Z",
-      "statistic": "equal-weight component mean",
-      "ensemble_scope": "CPC NMME probability product",
+      "statistic": "official NASA GEOS5v2 ensemble mean",
+      "ensemble_scope": "individual NASA GEOS5v2 forecast family",
       "field": "tmp2m_anomaly",
       "units": "\u00b0C",
       "raw_field": "2-m temperature anomaly",
@@ -448,7 +460,9 @@
     {
       "id": "nmme-gem5_2_nemo-2026080800-2m_temperature_anomaly-2m_temperature_anomaly",
       "model": "NOAA NMME",
+      "model_role": "component",
       "component": "GEM5.2_NEMO",
+      "component_label": "ECCC GEM5.2-NEMO",
       "components": [
         "GEM5.2_NEMO"
       ],
@@ -462,8 +476,8 @@
       ],
       "archive_root": "https://ftp.cpc.ncep.noaa.gov/NMME/realtime_anom/ENSMEAN/",
       "init_utc": "2026-08-08T00:00:00Z",
-      "statistic": "equal-weight component mean",
-      "ensemble_scope": "CPC NMME probability product",
+      "statistic": "official ECCC GEM5.2-NEMO ensemble mean",
+      "ensemble_scope": "individual ECCC GEM5.2-NEMO forecast family",
       "field": "tmp2m_anomaly",
       "units": "\u00b0C",
       "raw_field": "2-m temperature anomaly",
@@ -533,7 +547,9 @@
     {
       "id": "nmme-ensmean-2026080800-2m_temperature_anomaly-2m_temperature_anomaly",
       "model": "NOAA NMME",
+      "model_role": "blend",
       "component": "ENSMEAN",
+      "component_label": "NMME Ensemble Mean",
       "components": [
         "CanESM5",
         "CFSv2",
@@ -552,8 +568,8 @@
       ],
       "archive_root": "https://ftp.cpc.ncep.noaa.gov/NMME/realtime_anom/ENSMEAN/",
       "init_utc": "2026-08-08T00:00:00Z",
-      "statistic": "official NMME ensemble mean",
-      "ensemble_scope": "NMME realtime ensemble mean",
+      "statistic": "official NMME multi-model ensemble mean",
+      "ensemble_scope": "NMME realtime multi-model ensemble mean",
       "field": "tmp2m_anomaly",
       "units": "\u00b0C",
       "raw_field": "2-m temperature anomaly",
@@ -623,7 +639,9 @@
     {
       "id": "nmme-consensus-2026080800-multi_model_consensus-2m_temperature_anomaly",
       "model": "NOAA NMME",
+      "model_role": "blend",
       "component": "CONSENSUS",
+      "component_label": "NMME Multi-Model Consensus",
       "components": [
         "CanESM5",
         "CFSv2",
@@ -642,8 +660,8 @@
       ],
       "archive_root": "https://ftp.cpc.ncep.noaa.gov/NMME/realtime_anom/ENSMEAN/",
       "init_utc": "2026-08-08T00:00:00Z",
-      "statistic": "equal-weight component mean",
-      "ensemble_scope": "NMME component models",
+      "statistic": "equal-weight NMME component-model consensus",
+      "ensemble_scope": "NMME component-model consensus",
       "field": "tmp2m_anomaly_consensus",
       "units": "\u00b0C",
       "raw_field": "2-m temperature anomaly",
@@ -713,7 +731,9 @@
     {
       "id": "nmme-cfsv2-2026080800-2m_temperature_anomaly-2m_temperature_anomaly",
       "model": "NOAA NMME",
+      "model_role": "component",
       "component": "CFSv2",
+      "component_label": "NCEP CFSv2",
       "components": [
         "CFSv2"
       ],
@@ -727,8 +747,8 @@
       ],
       "archive_root": "https://ftp.cpc.ncep.noaa.gov/NMME/realtime_anom/ENSMEAN/",
       "init_utc": "2026-08-08T00:00:00Z",
-      "statistic": "equal-weight component mean",
-      "ensemble_scope": "CPC NMME probability product",
+      "statistic": "official NCEP CFSv2 ensemble mean",
+      "ensemble_scope": "individual NCEP CFSv2 forecast family",
       "field": "tmp2m_anomaly",
       "units": "\u00b0C",
       "raw_field": "2-m temperature anomaly",
@@ -798,7 +818,9 @@
     {
       "id": "nmme-canesm5-2026080800-2m_temperature_anomaly-2m_temperature_anomaly",
       "model": "NOAA NMME",
+      "model_role": "component",
       "component": "CanESM5",
+      "component_label": "ECCC CanESM5",
       "components": [
         "CanESM5"
       ],
@@ -812,8 +834,8 @@
       ],
       "archive_root": "https://ftp.cpc.ncep.noaa.gov/NMME/realtime_anom/ENSMEAN/",
       "init_utc": "2026-08-08T00:00:00Z",
-      "statistic": "equal-weight component mean",
-      "ensemble_scope": "CPC NMME probability product",
+      "statistic": "official ECCC CanESM5 ensemble mean",
+      "ensemble_scope": "individual ECCC CanESM5 forecast family",
       "field": "tmp2m_anomaly",
       "units": "\u00b0C",
       "raw_field": "2-m temperature anomaly",
