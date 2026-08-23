@@ -49,6 +49,25 @@ def main() -> int:
     check((temperature_spec["min"], temperature_spec["max"]) == (-7.0, 7.0), "NMME 2-m temperature should use the shared ±7 °C range")
     check(temperature_spec["ticks"] == list(range(-7, 8)), "NMME 2-m temperature should use 1 °C labelled bounds")
     check(len(temperature_spec["ticks"]) == len(temperature_spec["palette"]) + 1, "NMME 2-m temperature bounds must align with colors")
+    run_spec = module.spec_for("2m_temperature_anomaly", "2m_temperature_anomaly")
+    entries = {
+        component: module.make_run_entry(
+            "2m_temperature_anomaly", "2m_temperature_anomaly", "2026080800",
+            component, [component], run_spec, "3-MON",
+        )
+        for component in ("ENSMEAN", *module.COMPONENTS, "PROBABILITY", "CONSENSUS")
+    }
+    check(
+        {entries[component]["component_label"] for component in ("ENSMEAN", *module.COMPONENTS)}
+        == {module.COMPONENT_LABELS[component] for component in ("ENSMEAN", *module.COMPONENTS)},
+        "NMME blend and component runs need distinct human-readable labels",
+    )
+    check(entries["ENSMEAN"]["model_role"] == "blend", "NMME ensemble mean should be identified as a blend")
+    check(entries["PROBABILITY"]["model_role"] == "blend", "NMME probability should be identified as a blend")
+    check(entries["NCAR_CESM1"]["model_role"] == "component", "individual NMME systems should be identified as components")
+    check(entries["NCAR_CESM1"]["ensemble_scope"] == "individual NCAR CESM1 forecast family", "NMME component scope must not claim to be a probability product")
+    check(entries["PROBABILITY"]["ensemble_scope"] == "CPC NMME probability product", "NMME probability scope should remain explicit")
+    check(entries["CONSENSUS"]["ensemble_scope"] == "NMME component-model consensus", "NMME consensus scope should remain explicit")
     for product in ("probability_above_normal", "probability_near_normal", "probability_below_normal", "multi_model_consensus"):
         base = module.spec_for(product, "2m_temperature_anomaly")
         check(len(base["anomaly_ticks"]) == len(base["anomaly_palette"]) + 1, f"NMME {product} color bounds must align with swatches")
@@ -74,7 +93,9 @@ def main() -> int:
     check("model_spread" in module.RETIRED_PRODUCTS, "retired NMME spread product must be purged from retained manifests")
     check("model_spread" not in workflow, "NMME workflow must not schedule or expose model spread")
     check("model_spread" not in pages, "Pages workflow must not expose model spread")
-    print("NMME CONTRACT OK: aligned public leads, validated category triplets, semantic palettes, official feeds, and workflow")
+    check("rm -rf site/seasonal/nmme" not in pages, "NMME publishing must preserve images referenced by retained history")
+    check('cp -R "$payload_root/nmme/." site/seasonal/nmme/' in pages, "NMME publishing must overlay targeted repairs onto retained history")
+    print("NMME CONTRACT OK: aligned public leads, explicit component identities, validated category triplets, semantic palettes, official feeds, and workflow")
     return 0
 
 

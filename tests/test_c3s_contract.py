@@ -72,10 +72,13 @@ def main() -> int:
         output = Path(temporary) / "manifest.json"
         previous = Path(temporary) / "previous.json"
         previous.write_text(json.dumps({"runs": [{"id": f"old-{year}", "init_utc": f"2025-{year:02d}-01T00:00:00Z"} for year in range(1, 5)]}), encoding="utf-8")
-        module.write_manifest(output, [{"id": "current", "init_utc": "2026-08-01T00:00:00Z"}], previous, 4)
+        module.write_manifest(output, [{"id": "current-z500", "init_utc": "2026-08-01T00:00:00Z"}], previous, 4)
+        module.write_manifest(output, [{"id": "current-t2m", "init_utc": "2026-08-01T00:00:00Z"}], previous, 4)
         payload = json.loads(output.read_text(encoding="utf-8"))
-        check(len(payload["runs"]) == 4, "C3S retention should keep the current cycle plus three prior cycles")
-    print("C3S CONTRACT OK: official centres/systems, native anomalies, blend metadata, workflow, and retention")
+        run_ids = {run["id"] for run in payload["runs"]}
+        check({"current-z500", "current-t2m"}.issubset(run_ids), "C3S repeated product renders must accumulate in the current manifest")
+        check(len({run["init_utc"] for run in payload["runs"]}) == 4, "C3S retention should keep the current cycle plus three prior cycles")
+    print("C3S CONTRACT OK: official centres/systems, native anomalies, blend metadata, multi-product accumulation, workflow, and retention")
     return 0
 
 

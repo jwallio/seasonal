@@ -38,6 +38,17 @@ PROB_ROOT = "https://ftp.cpc.ncep.noaa.gov/NMME/prob/netcdf/"
 SOURCE_URL = "https://www.cpc.ncep.noaa.gov/products/NMME/data.html"
 NCEI_URL = "https://www.ncei.noaa.gov/products/weather-climate-models/north-american-multi-model"
 COMPONENTS = ("CanESM5", "CFSv2", "GEM5.2_NEMO", "NASA_GEOS5v2", "NCAR_CCSM4", "NCAR_CESM1")
+COMPONENT_LABELS = {
+    "ENSMEAN": "NMME Ensemble Mean",
+    "PROBABILITY": "NMME Official Probability",
+    "CONSENSUS": "NMME Multi-Model Consensus",
+    "CanESM5": "ECCC CanESM5",
+    "CFSv2": "NCEP CFSv2",
+    "GEM5.2_NEMO": "ECCC GEM5.2-NEMO",
+    "NASA_GEOS5v2": "NASA GEOS5v2",
+    "NCAR_CCSM4": "NCAR CCSM4",
+    "NCAR_CESM1": "NCAR CESM1",
+}
 RETIRED_PRODUCTS = frozenset({"model_spread"})
 
 PRECIP_PALETTE = [
@@ -354,13 +365,30 @@ def product_base(product_name: str, requested: str) -> str:
 
 
 def make_run_entry(product_name: str, base_name: str, init: str, component: str, components: list[str], product: dict[str, Any], probability_period: str) -> dict[str, Any]:
+    component_label = COMPONENT_LABELS.get(component, component.replace("_", " "))
+    if component == "ENSMEAN":
+        statistic = "official NMME multi-model ensemble mean"
+        ensemble_scope = "NMME realtime multi-model ensemble mean"
+        model_role = "blend"
+    elif component == "PROBABILITY":
+        statistic = "official CPC NMME category probability"
+        ensemble_scope = "CPC NMME probability product"
+        model_role = "blend"
+    elif component == "CONSENSUS":
+        statistic = "equal-weight NMME component-model consensus"
+        ensemble_scope = "NMME component-model consensus"
+        model_role = "blend"
+    else:
+        statistic = f"official {component_label} ensemble mean"
+        ensemble_scope = f"individual {component_label} forecast family"
+        model_role = "component"
     return {
         "id": f"nmme-{component.lower().replace('.', '_')}-{init}-{product_name}-{base_name}",
-        "model": "NOAA NMME", "component": component, "components": components, "product": product_name,
+        "model": "NOAA NMME", "model_role": model_role, "component": component, "component_label": component_label,
+        "components": components, "product": product_name,
         "base_product": base_name, "source": "NOAA CPC NMME", "source_url": SOURCE_URL, "source_urls": [SOURCE_URL, NCEI_URL],
         "archive_root": REALTIME_ROOT, "init_utc": iso_utc(dt.datetime.strptime(init, "%Y%m%d%H").replace(tzinfo=dt.timezone.utc)),
-        "statistic": "official NMME ensemble mean" if component == "ENSMEAN" else ("official CPC probability" if component == "PROBABILITY" else "equal-weight component mean"),
-        "ensemble_scope": "NMME realtime ensemble mean" if component == "ENSMEAN" else ("NMME component models" if component == "CONSENSUS" else "CPC NMME probability product"),
+        "statistic": statistic, "ensemble_scope": ensemble_scope,
         "field": product["field"], "units": product["units"], "raw_field": product["raw_field"], "raw_units": product["raw_units"],
         "conversion": product["conversion"], "probability_period": probability_period if component == "PROBABILITY" else None,
         "baseline": {"status": "official_nmme_anomaly_or_probability"}, "targets": [], "status": "planned",
@@ -629,7 +657,7 @@ def run(args: argparse.Namespace) -> int:
                     except Exception as exc:
                         print(f"NMME component {component} lead {lead} unavailable: {exc}", file=sys.stderr)
                 if grids:
-                    component_spec = {**spec, "title": f"NMME {component} · {BASE_PRODUCTS[product_name]['title']}", "header_detail": "{source_label}  •  Individual NMME component-model mean"}
+                    component_spec = {**spec, "title": f"NMME {COMPONENT_LABELS.get(component, component)} · {BASE_PRODUCTS[product_name]['title']}", "header_detail": "{source_label}  •  Individual NMME component-model mean"}
                     entry, count = render_run(product_name=product_name, base_name=base_name, init=init, component=component, components=[component], product=component_spec, grid_by_lead=grids, output_dir=output_dir, borders=borders, leads=leads, seasonal_leads=seasonal, probability_period=args.probability_period, source_files={}, decode_only=args.decode_only)
                     entries.append(entry)
                     failures += count

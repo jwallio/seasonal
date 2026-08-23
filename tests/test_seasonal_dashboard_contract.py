@@ -51,7 +51,11 @@ def main() -> int:
         'id="compare-product-select"',
         'id="compare-target-select"',
         'id="compare-baseline-select"',
+        'id="compare-available-only"',
+        'id="compare-missing"',
         'id="compare-grid"',
+        'role="tablist"',
+        'role="tabpanel"',
         "const DEFAULT_COMPARE_PRODUCT = '500mb_height_anomaly';",
         "const COMPARE_PRODUCTS = [",
         "function compareProductAliases(productKey)",
@@ -67,10 +71,20 @@ def main() -> int:
         "target_month",
         "source_url",
         "preferredTarget",
-        "run.model || run.component_label || model.label",
+        "const COMPONENT_LABELS = {",
+        "function componentLabel(run)",
+        "function runDisplayName(model, run)",
+        "function preferredComponent(modelKey, productKey)",
+        "return 'ENSMEAN';",
+        "function runCoverageCounts(run, target = null)",
+        "function defaultEligibleRun(run)",
         "function isFailedRun(run)",
-        "function preferredRun(runs)",
-        "usable.find(run => String(run.component || '') === 'multisystem')",
+        "function preferredRun(runs,",
+        "if (!usable.length) return null;",
+        "&& !isFailedRun(run)",
+        "document.createElement('optgroup')",
+        "forecast surfaces available",
+        "Not published for this selection:",
         "probability_above_normal",
         "multi_model_consensus",
         "const DEFAULT_PRODUCT_PRIORITY = [",
@@ -110,7 +124,11 @@ def main() -> int:
     ):
         check(product in page, f"compare parameter menu is missing {product}")
     check("'sea_surface_temperature_anomaly', 'sst_anomaly'" in page, "compare SST must normalize the two published manifest product names")
-    check("'geos_s2s3', 'nmme'" in page, "parameter comparison must include GEOS and NMME when they publish the selected field")
+    check("'geos_s2s3'" in page and "'nmme'" in page, "parameter comparison must include GEOS and NMME when they publish the selected field")
+    check("preferredComponent: 'multisystem'" in page, "C3S comparisons should prefer the multi-system blend")
+    check("preferredComponent: 'ENSMEAN'" in page, "NMME comparisons should prefer the official ensemble mean")
+    check("runDisplayName(model, run)" in page[page.index("function runLabel"):page.index("function isFailedRun")], "run-history labels must use the selected blend or component identity")
+    check("runs[0]" not in page[page.index("function preferredRun"):page.index("function selectedRun")], "failed history must not be used as a default fallback")
     compare_period_block = page[page.index("function comparePeriodOptions"):page.index("function compareBaselineOptions")]
     check("const keys = new Set();" in compare_period_block, "compare periods must collect a union of published months")
     check("COMPARE_MODELS.forEach" in compare_period_block and "keys.add(key)" in compare_period_block, "compare periods must include months published by any compared model")

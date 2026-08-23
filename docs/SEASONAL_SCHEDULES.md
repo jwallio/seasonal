@@ -15,9 +15,15 @@ provider is late or a historical cycle needs to be regenerated.
 | ECMWF SEAS5 | ECMWF 7-month forecast on the 5th at 12:00 | 5th of each month at 15:30 |
 | C3S multi-system | Non-ECMWF systems on the 10th at 12:00 | 10th of each month at 15:30 |
 | JMA / MRI-CPS4 | JMA is a non-ECMWF C3S component | 10th of each month at 15:30 |
-| APCC MME | APCC seasonal MME around the middle of the month | 16th of each month at 16:30 |
+| APCC MME | APCC seasonal MME around the middle of the month | 20th of each month at 16:30 |
 | NASA GEOS-S2S-3 | Public NCCS numerical APCN archives during the first week | 6th of each month at 16:30 |
-| Deduplicated super ensemble | After C3S, NMME, and component source windows | 16th of each month at 18:30 |
+| Deduplicated super ensemble | After APCC, CMA, and the other component source windows | 22nd of each month at 20:30 |
+
+Scheduled C3S, JMA, and SEAS5 runs generate the full advertised anomaly suite:
+500-mb height, 850-mb temperature, 2-m temperature, precipitation,
+sea-surface temperature, and mean sea-level pressure. Manual dispatches remain
+single-product so a failed or late field can be repaired without rebuilding the
+entire suite. The scheduled super ensemble likewise uses its `all` product mode.
 
 The central `publish-pages.yml` workflow already serializes Pages updates with
 `cancel-in-progress: false`, so simultaneous model releases do not overwrite

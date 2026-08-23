@@ -54,6 +54,7 @@ jobs:
     timeout-minutes: 360
     env:
       C3S_PRODUCT: ${{ inputs.product || '500mb_height_anomaly' }}
+      SCHEDULED_C3S_PRODUCTS: 500mb_height_anomaly,850mb_temperature_anomaly,2m_temperature_anomaly,precipitation_anomaly,sea_surface_temperature_anomaly,mslp_anomaly
       C3S_CENTRES: ${{ inputs.centres || 'all' }}
       C3S_SYSTEMS: ${{ inputs.systems || '' }}
       C3S_INIT: ${{ inputs.init || 'latest' }}
@@ -108,19 +109,29 @@ jobs:
           fi
 
       - name: Render C3S products
+        shell: bash
         run: |
-          python scripts/c3s_seasonal.py \
-            --product "$C3S_PRODUCT" \
-            --centres "$C3S_CENTRES" \
-            --systems "$C3S_SYSTEMS" \
-            --init "$C3S_INIT" \
-            --lead-months "$LEAD_MONTHS" \
-            --seasonal-window "$SEASONAL_WINDOW" \
-            --cache-dir .cache/c3s \
-            --output-dir public/seasonal/c3s \
-            --manifest public/seasonal/c3s_manifest.json \
-            --previous-manifest .cache/c3s/previous_manifest.json \
-            --retain-cycles 4
+          set -euo pipefail
+          if [[ "${{ github.event_name }}" == "schedule" ]]; then
+            IFS=',' read -r -a products <<< "$SCHEDULED_C3S_PRODUCTS"
+          else
+            products=("$C3S_PRODUCT")
+          fi
+          for product in "${products[@]}"; do
+            echo "Rendering C3S product: $product"
+            python scripts/c3s_seasonal.py \
+              --product "$product" \
+              --centres "$C3S_CENTRES" \
+              --systems "$C3S_SYSTEMS" \
+              --init "$C3S_INIT" \
+              --lead-months "$LEAD_MONTHS" \
+              --seasonal-window "$SEASONAL_WINDOW" \
+              --cache-dir .cache/c3s \
+              --output-dir public/seasonal/c3s \
+              --manifest public/seasonal/c3s_manifest.json \
+              --previous-manifest .cache/c3s/previous_manifest.json \
+              --retain-cycles 4
+          done
 
       - name: Package C3S Pages payload
         if: success()

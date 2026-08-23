@@ -2,8 +2,8 @@ name: Deduplicated Seasonal Super Ensemble
 
 on:
   schedule:
-    # Run after the monthly C3S, NMME, and other component release windows.
-    - cron: "30 18 16 * *"
+    # Run after APCC and CMA complete the late-month component release windows.
+    - cron: "30 20 22 * *"
   workflow_dispatch:
     inputs:
       product:
@@ -53,6 +53,7 @@ jobs:
     timeout-minutes: 360
     env:
       SUPER_PRODUCT: ${{ inputs.product || '500mb_height_anomaly' }}
+      SCHEDULED_SUPER_PRODUCT: all
       SUPER_INIT: ${{ inputs.init || 'latest' }}
       LEAD_MONTHS: ${{ inputs.lead_months || '4,5,6' }}
       SEASONAL_WINDOW: ${{ inputs.seasonal_window || '4,5,6' }}
@@ -179,9 +180,16 @@ jobs:
           echo "CANSIPS_WGRIB2=$wgrib2_bin" >> "$GITHUB_ENV"
 
       - name: Render deduplicated super ensemble
+        shell: bash
         run: |
+          set -euo pipefail
+          product="$SUPER_PRODUCT"
+          if [[ "${{ github.event_name }}" == "schedule" ]]; then
+            product="$SCHEDULED_SUPER_PRODUCT"
+          fi
+          echo "Rendering super-ensemble product selection: $product"
           python scripts/superensemble_seasonal.py \
-            --product "$SUPER_PRODUCT" \
+            --product "$product" \
             --init "$SUPER_INIT" \
             --lead-months "$LEAD_MONTHS" \
             --seasonal-window "$SEASONAL_WINDOW" \

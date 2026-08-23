@@ -51,6 +51,7 @@ jobs:
     timeout-minutes: 360
     env:
       SEAS5_PRODUCT: ${{ inputs.product || '500mb_height_anomaly' }}
+      SCHEDULED_SEAS5_PRODUCTS: 500mb_height_anomaly,850mb_temperature_anomaly,2m_temperature_anomaly,precipitation_anomaly,sst_anomaly,mslp_anomaly
       SEAS5_INIT: ${{ inputs.init || 'latest' }}
       LEAD_MONTHS: ${{ inputs.lead_months || '4,5,6' }}
       SEASONAL_WINDOW: ${{ inputs.seasonal_window || '4,5,6' }}
@@ -107,20 +108,30 @@ jobs:
           fi
 
       - name: Render SEAS5 products
+        shell: bash
         run: |
-          python scripts/seas5_seasonal.py \
-            --product "$SEAS5_PRODUCT" \
-            --init "$SEAS5_INIT" \
-            --lead-months "$LEAD_MONTHS" \
-            --seasonal-window "$SEASONAL_WINDOW" \
-            --climo-years "$CLIMO_YEARS" \
-            --cache-dir .cache/seas5 \
-            --output-dir public/seasonal/seas5 \
-            --manifest public/seasonal/seas5_manifest.json \
-            --previous-manifest .cache/seas5/previous_manifest.json \
-            --retain-runs 4 \
-            --common-reference-dir .cache/seas5/common-reference \
-            --common-reference-url "https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/seasonal/common_reference/1991-2020/"
+          set -euo pipefail
+          if [[ "${{ github.event_name }}" == "schedule" ]]; then
+            IFS=',' read -r -a products <<< "$SCHEDULED_SEAS5_PRODUCTS"
+          else
+            products=("$SEAS5_PRODUCT")
+          fi
+          for product in "${products[@]}"; do
+            echo "Rendering SEAS5 product: $product"
+            python scripts/seas5_seasonal.py \
+              --product "$product" \
+              --init "$SEAS5_INIT" \
+              --lead-months "$LEAD_MONTHS" \
+              --seasonal-window "$SEASONAL_WINDOW" \
+              --climo-years "$CLIMO_YEARS" \
+              --cache-dir .cache/seas5 \
+              --output-dir public/seasonal/seas5 \
+              --manifest public/seasonal/seas5_manifest.json \
+              --previous-manifest .cache/seas5/previous_manifest.json \
+              --retain-runs 4 \
+              --common-reference-dir .cache/seas5/common-reference \
+              --common-reference-url "https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/seasonal/common_reference/1991-2020/"
+          done
       - name: Package SEAS5 Pages payload
         if: success()
         shell: bash

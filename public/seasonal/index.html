@@ -51,12 +51,18 @@
     .links { display:flex; flex-wrap:wrap; gap:12px; padding:0 20px 20px; font-size:13px; }
     .compare-toolbar { display:flex; align-items:end; flex-wrap:wrap; gap:14px; padding:14px 16px; margin-bottom:18px; }
     .compare-toolbar .selector { width:min(280px,100%); }
+    .compare-filter { display:flex; align-items:center; gap:8px; min-height:40px; color:var(--muted); cursor:pointer; font-size:12px; }
+    .compare-filter input { width:16px; height:16px; margin:0; accent-color:var(--teal); }
     .compare-summary { margin:0 0 2px auto; color:var(--muted); font-size:12px; }
+    .compare-missing { width:100%; margin:0; color:#8ea3ad; font-size:12px; }
+    .compare-missing:empty { display:none; }
     .compare-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:14px; }
     .compare-card { min-width:0; }
     .compare-card-head { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:14px 15px; border-bottom:1px solid var(--line); }
+    .compare-card-title { min-width:0; }
     .compare-card-head h2 { margin:0; font-size:15px; }
     .compare-card-head a { font-size:11px; white-space:nowrap; }
+    .model-role { display:inline-block; margin-top:4px; padding:2px 7px; border:1px solid #355563; border-radius:999px; color:#9eb2bc; font-size:9px; font-weight:800; letter-spacing:.08em; line-height:1.4; text-transform:uppercase; }
     .compare-image-wrap { display:grid; place-items:center; min-height:230px; margin:12px; background:#dfeaf0; border:1px solid #486774; border-radius:12px; overflow:hidden; }
     .compare-image-wrap img { display:block; width:100%; height:auto; }
     .compare-image-wrap .empty { width:100%; padding:42px 18px; }
@@ -77,9 +83,9 @@
       <h1>Seasonal Model Dashboard</h1>
     </header>
 
-    <nav class="view-tabs" aria-label="Dashboard view">
-      <button id="single-tab" type="button" class="active" aria-selected="true">Single model</button>
-      <button id="compare-tab" type="button" aria-selected="false">Compare</button>
+    <nav class="view-tabs" role="tablist" aria-label="Dashboard view">
+      <button id="single-tab" type="button" role="tab" class="active" aria-selected="true" aria-controls="single-toolbar single-view" tabindex="0">Single model</button>
+      <button id="compare-tab" type="button" role="tab" aria-selected="false" aria-controls="compare-view" tabindex="-1">Compare</button>
     </nav>
 
     <section class="toolbar card" id="single-toolbar" aria-label="Dashboard selectors">
@@ -88,7 +94,7 @@
       <div class="selector"><label for="run-select">Run history</label><select id="run-select" disabled><option>Loading…</option></select></div>
     </section>
 
-    <section class="grid" id="single-view">
+    <section class="grid" id="single-view" role="tabpanel" aria-labelledby="single-tab">
       <article class="card">
         <div class="viewer"><div class="map-wrap" id="map-wrap"><div class="empty">Reading the latest published run.</div></div></div>
         <div class="controls" id="target-controls"></div>
@@ -115,12 +121,14 @@
       </aside>
     </section>
 
-    <section class="compare-view" id="compare-view" hidden>
+    <section class="compare-view" id="compare-view" role="tabpanel" aria-labelledby="compare-tab" hidden>
       <div class="compare-toolbar card">
         <div class="selector"><label for="compare-product-select">Parameter</label><select id="compare-product-select" disabled><option>Loading…</option></select></div>
         <div class="selector"><label for="compare-target-select">Valid period</label><select id="compare-target-select" disabled><option>Loading…</option></select></div>
         <div class="selector"><label for="compare-baseline-select">Reference</label><select id="compare-baseline-select" disabled><option>Loading…</option></select></div>
+        <label class="compare-filter" for="compare-available-only"><input id="compare-available-only" type="checkbox" checked>Available only</label>
         <p class="compare-summary" id="compare-summary">Seasonal anomaly · matching published target across models</p>
+        <p class="compare-missing" id="compare-missing"></p>
       </div>
       <div class="compare-grid" id="compare-grid"></div>
     </section>
@@ -132,16 +140,27 @@
     const assetPath = value => `${root}/${String(value || '').replace(/^\/+/, '').replace(/^public\//, '')}`;
     const el = id => document.getElementById(id);
     const MODEL_CONFIG = {
-      superensemble: { label: 'Super Ensemble', kind: 'seasonal', manifest: assetPath('seasonal/superensemble_manifest.json'), direct: assetPath('seasonal/superensemble/'), source: 'Deduplicated seasonal forecast families, including target-aligned CMA CPSv3' },
-      cfsv2: { label: 'CFSv2', kind: 'seasonal', manifest: assetPath('seasonal/cfsv2_manifest.json'), direct: assetPath('seasonal/cfsv2/'), source: 'NOAA CFSv2 NOMADS' },
-      seas5: { label: 'ECMWF SEAS5', kind: 'seasonal', manifest: assetPath('seasonal/seas5_manifest.json'), direct: assetPath('seasonal/seas5/'), source: 'ECMWF SEAS5 / Copernicus CDS' },
-      cansips: { label: 'CanSIPS v3', kind: 'seasonal', manifest: assetPath('seasonal/cansips_manifest.json'), direct: assetPath('seasonal/cansips/'), source: 'ECCC MSC Datamart' },
-      cma_cpsv3: { label: 'CMA CPSv3', kind: 'seasonal', manifest: assetPath('seasonal/cma_cpsv3_manifest.json'), direct: assetPath('seasonal/cma_cpsv3/'), source: 'WMO LC-SPMME / GPC Beijing' },
-      c3s: { label: 'C3S multi-system', kind: 'seasonal', manifest: assetPath('seasonal/c3s_manifest.json'), direct: assetPath('seasonal/c3s/'), source: 'Copernicus C3S seasonal forecasts' },
-      jma: { label: 'JMA', kind: 'seasonal', manifest: assetPath('seasonal/jma_manifest.json'), direct: assetPath('seasonal/jma/'), source: 'JMA/MRI-CPS4 via Copernicus C3S' },
-      apcc: { label: 'APCC MME', kind: 'seasonal', manifest: assetPath('seasonal/apcc_manifest.json'), direct: assetPath('seasonal/apcc/'), source: 'APCC multi-model ensemble via CLIK' },
-      geos_s2s3: { label: 'NASA GEOS-S2S-3', kind: 'seasonal', manifest: assetPath('seasonal/geos_s2s3_manifest.json'), direct: assetPath('seasonal/geos_s2s3/'), source: 'NASA GEOS-S2S-3 NCCS numerical forecasts' },
-      nmme: { label: 'NOAA NMME', kind: 'seasonal', manifest: assetPath('seasonal/nmme_manifest.json'), direct: assetPath('seasonal/nmme/'), source: 'NOAA CPC NMME' },
+      superensemble: { label: 'Super Ensemble', role: 'blend', kind: 'seasonal', manifest: assetPath('seasonal/superensemble_manifest.json'), direct: assetPath('seasonal/superensemble/'), source: 'Deduplicated seasonal forecast families, including target-aligned CMA CPSv3' },
+      cfsv2: { label: 'CFSv2', role: 'family', kind: 'seasonal', manifest: assetPath('seasonal/cfsv2_manifest.json'), direct: assetPath('seasonal/cfsv2/'), source: 'NOAA CFSv2 NOMADS' },
+      seas5: { label: 'ECMWF SEAS5', role: 'family', kind: 'seasonal', manifest: assetPath('seasonal/seas5_manifest.json'), direct: assetPath('seasonal/seas5/'), source: 'ECMWF SEAS5 / Copernicus CDS' },
+      cansips: { label: 'CanSIPS v3', role: 'family', kind: 'seasonal', manifest: assetPath('seasonal/cansips_manifest.json'), direct: assetPath('seasonal/cansips/'), source: 'ECCC MSC Datamart' },
+      cma_cpsv3: { label: 'CMA CPSv3', role: 'family', kind: 'seasonal', manifest: assetPath('seasonal/cma_cpsv3_manifest.json'), direct: assetPath('seasonal/cma_cpsv3/'), source: 'WMO LC-SPMME / GPC Beijing' },
+      c3s: { label: 'C3S multi-system', role: 'blend', preferredComponent: 'multisystem', kind: 'seasonal', manifest: assetPath('seasonal/c3s_manifest.json'), direct: assetPath('seasonal/c3s/'), source: 'Copernicus C3S seasonal forecasts' },
+      jma: { label: 'JMA', role: 'component', kind: 'seasonal', manifest: assetPath('seasonal/jma_manifest.json'), direct: assetPath('seasonal/jma/'), source: 'JMA/MRI-CPS4 via Copernicus C3S' },
+      apcc: { label: 'APCC MME', role: 'blend', kind: 'seasonal', manifest: assetPath('seasonal/apcc_manifest.json'), direct: assetPath('seasonal/apcc/'), source: 'APCC multi-model ensemble via CLIK' },
+      geos_s2s3: { label: 'NASA GEOS-S2S-3', role: 'family', kind: 'seasonal', manifest: assetPath('seasonal/geos_s2s3_manifest.json'), direct: assetPath('seasonal/geos_s2s3/'), source: 'NASA GEOS-S2S-3 NCCS numerical forecasts' },
+      nmme: { label: 'NOAA NMME', role: 'blend', preferredComponent: 'ENSMEAN', kind: 'seasonal', manifest: assetPath('seasonal/nmme_manifest.json'), direct: assetPath('seasonal/nmme/'), source: 'NOAA CPC NMME' },
+    };
+    const MODEL_ROLE_LABELS = { blend: 'Blend', family: 'Forecast family', component: 'Component model' };
+    const MODEL_ROLE_GROUPS = [
+      { role: 'blend', label: 'Multi-model blends' },
+      { role: 'family', label: 'Forecast families' },
+      { role: 'component', label: 'Component models' },
+    ];
+    const COMPONENT_LABELS = {
+      ENSMEAN: 'NMME Ensemble Mean', PROBABILITY: 'NMME Official Probability', CONSENSUS: 'NMME Multi-Model Consensus',
+      CanESM5: 'ECCC CanESM5', CFSv2: 'NCEP CFSv2', 'GEM5.2_NEMO': 'ECCC GEM5.2-NEMO', NASA_GEOS5v2: 'NASA GEOS5v2',
+      NCAR_CCSM4: 'NCAR CCSM4', NCAR_CESM1: 'NCAR CESM1', multisystem: 'C3S multi-system',
     };
     const modelStates = Object.fromEntries(Object.keys(MODEL_CONFIG).map(key => [key, { manifest: null, runs: [], error: null }]));
     const selection = { view: 'single', model: 'cfsv2', product: '', run: '', target: '', compareProduct: '500mb_height_anomaly', compareTarget: '', compareBaseline: '', ratio: '10' };
@@ -165,11 +184,11 @@
         return !['failed', 'error'].includes(status) && Boolean(target?.image) && defaultTargetPeriod(target) === period;
       }) || null;
     }
-    function orderedDefaultRuns(runs) {
+    function orderedDefaultRuns(runs, modelKey, productKey) {
       const remaining = [...runs];
       const ordered = [];
       while (remaining.length) {
-        const candidate = preferredRun(remaining);
+        const candidate = preferredRun(remaining, modelKey, productKey);
         if (!candidate) break;
         ordered.push(candidate);
         const index = remaining.indexOf(candidate);
@@ -185,7 +204,7 @@
         if (!products.includes(product)) continue;
         const candidates = runs.filter(run => supportsProduct(model, run, product) && !isFailedRun(run));
         for (const period of DEFAULT_PERIOD_PRIORITY) {
-          for (const run of orderedDefaultRuns(candidates)) {
+          for (const run of orderedDefaultRuns(candidates, selection.model, product)) {
             const target = defaultTargetForPeriod(run, period);
             if (target) {
               const targetIndex = (Array.isArray(run.targets) ? run.targets : []).indexOf(target);
@@ -199,13 +218,13 @@
     function genericSelectionForModel(model, products) {
       const product = DEFAULT_PRODUCT_PRIORITY.find(value => products.includes(value)) || products[0] || '';
       const runs = modelStates[selection.model].runs.filter(run => supportsProduct(model, run, product));
-      const run = preferredRun(runs);
+      const run = preferredRun(runs, selection.model, product);
       const targets = targetItems(model, run);
       return { product, run: String(run?.id || ''), target: String(targets[0]?.key || '') };
     }
     const DEFAULT_COMPARE_PRODUCT = '500mb_height_anomaly';
     const COMPARE_MIN_VALID_MONTH = 202612;
-    const COMPARE_MODELS = ['superensemble', 'cfsv2', 'seas5', 'cansips', 'cma_cpsv3', 'c3s', 'jma', 'apcc', 'geos_s2s3', 'nmme'];
+    const COMPARE_MODELS = ['superensemble', 'c3s', 'apcc', 'nmme', 'cfsv2', 'seas5', 'cansips', 'cma_cpsv3', 'geos_s2s3', 'jma'];
     const COMPARE_PRODUCTS = [
       { value: '500mb_height_anomaly', label: '500-mb Height Anomaly', aliases: ['500mb_height_anomaly'] },
       { value: '850mb_temperature_anomaly', label: '850-mb Temperature Anomaly', aliases: ['850mb_temperature_anomaly'] },
@@ -230,6 +249,46 @@
     };
     const numberList = (values, min = null, max = null) => [...new Set((Array.isArray(values) ? values : []).map(value => Number(value)).filter(value => Number.isFinite(value) && (min === null || value >= min) && (max === null || value <= max)))].sort((a,b) => a - b);
     const pretty = value => String(value || '').replaceAll('_', ' ').replace(/\b\w/g, letter => letter.toUpperCase());
+    function componentLabel(run) {
+      const component = String(run?.component || '');
+      const explicit = String(run?.component_label || '').trim();
+      if (explicit && !(component === 'multisystem' && explicit.toLowerCase() === 'multi-system')) return explicit;
+      return COMPONENT_LABELS[component] || explicit || (component ? pretty(component) : '');
+    }
+    function runDisplayName(model, run) {
+      if (!run) return model.label;
+      if (run.component) return componentLabel(run) || String(run.model || model.label);
+      return String(run.model || run.component_label || model.label);
+    }
+    function preferredComponent(modelKey, productKey) {
+      if (modelKey === 'nmme') {
+        if (String(productKey || '').startsWith('probability_')) return 'PROBABILITY';
+        if (productKey === 'multi_model_consensus') return 'CONSENSUS';
+        return 'ENSMEAN';
+      }
+      return MODEL_CONFIG[modelKey]?.preferredComponent || '';
+    }
+    function runCoverageCounts(run, target = null) {
+      const targetValue = target?.value || target;
+      const sources = [targetValue, ...(Array.isArray(run?.targets) ? run.targets : []), run].filter(Boolean);
+      const availableKeys = ['ensemble_members', 'available_members', 'available_cycles', 'successful_exports'];
+      const expectedKeys = ['ensemble_expected_members', 'expected_members', 'expected_cycles', 'expected_exports'];
+      for (const source of sources) {
+        const available = availableKeys.map(key => Number(source[key])).find(Number.isFinite);
+        const expected = expectedKeys.map(key => Number(source[key])).find(value => Number.isFinite(value) && value > 0);
+        if (Number.isFinite(available) && Number.isFinite(expected)) return { available, expected };
+      }
+      return null;
+    }
+    function runCoverageRatio(run) {
+      const counts = runCoverageCounts(run);
+      return counts ? counts.available / counts.expected : null;
+    }
+    function defaultEligibleRun(run) {
+      if (isFailedRun(run)) return false;
+      const coverage = runCoverageRatio(run);
+      return String(run?.status || '').toLowerCase() !== 'partial' || coverage === null || coverage >= 0.8;
+    }
     const initLabel = value => { if (!value) return '—'; const date = new Date(value); return Number.isNaN(date.valueOf()) ? value : new Intl.DateTimeFormat(undefined, {day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit', hour12:false, timeZone:'UTC'}).format(date).replace(',', '') + 'Z'; };
     const monthLabel = value => { if (!value) return '—'; const date = new Date(value); return Number.isNaN(date.valueOf()) ? value : new Intl.DateTimeFormat(undefined, {month:'short', year:'numeric', timeZone:'UTC'}).format(date); };
     const monthCodeLabel = code => /^\d{6}$/.test(String(code || '')) ? monthLabel(`${String(code).slice(0,4)}-${String(code).slice(4,6)}-01T00:00:00Z`) : String(code || '—');
@@ -258,12 +317,15 @@
     }
     function compareRuns(modelKey, productKey = selection.compareProduct || DEFAULT_COMPARE_PRODUCT) {
       const aliases = compareProductAliases(productKey);
+      const preferred = preferredComponent(modelKey, productKey);
       return (modelStates[modelKey]?.runs || [])
-        .filter(run => aliases.has(String(run.product || '')))
+        .filter(run => aliases.has(String(run.product || '')) && !isFailedRun(run))
         .sort((left, right) => {
-          const leftBlend = modelKey === 'c3s' && String(left.component || '') === 'multisystem' ? 1 : 0;
-          const rightBlend = modelKey === 'c3s' && String(right.component || '') === 'multisystem' ? 1 : 0;
-          return rightBlend - leftBlend || String(right.init_utc || '').localeCompare(String(left.init_utc || ''));
+          const leftPreferred = preferred && String(left.component || '') === preferred ? 1 : 0;
+          const rightPreferred = preferred && String(right.component || '') === preferred ? 1 : 0;
+          const leftEligible = defaultEligibleRun(left) ? 1 : 0;
+          const rightEligible = defaultEligibleRun(right) ? 1 : 0;
+          return rightEligible - leftEligible || rightPreferred - leftPreferred || String(right.init_utc || '').localeCompare(String(left.init_utc || ''));
         });
     }
     function compareTargetAsset(target, baseline) {
@@ -330,19 +392,25 @@
     }
     function runLabel(model, run) {
       if (model.kind === 'weathernext') return `${run.label || run.run_date || run.id || 'Published run'} · ${run.status || 'available'}`;
-      const modelName = run.model || run.component_label || model.label;
-      return `${modelName} · Init ${initLabel(run.init_utc)} · ${run.status || 'available'}`;
+      return `${runDisplayName(model, run)} · Init ${initLabel(run.init_utc)} · ${run.status || 'available'}`;
     }
     function isFailedRun(run) {
       return String(run?.status || '').toLowerCase() === 'failed';
     }
-    function preferredRun(runs) {
+    function preferredRun(runs, modelKey = selection.model, productKey = selection.product) {
       const usable = runs.filter(run => !isFailedRun(run));
-      return usable.find(run => String(run.component || '') === 'multisystem') || usable[0] || runs[0] || null;
+      if (!usable.length) return null;
+      const preferred = preferredComponent(modelKey, productKey);
+      const preferredRuns = preferred ? usable.filter(run => String(run.component || '') === preferred) : [];
+      const primaryPool = preferredRuns.length ? preferredRuns : usable;
+      let eligible = primaryPool.filter(defaultEligibleRun);
+      if (!eligible.length && preferredRuns.length) eligible = usable.filter(defaultEligibleRun);
+      const candidates = eligible.length ? eligible : primaryPool;
+      return [...candidates].sort((left, right) => String(right.init_utc || '').localeCompare(String(left.init_utc || '')) || String(right.id || '').localeCompare(String(left.id || '')))[0] || null;
     }
     function selectedRun(model) {
       const available = modelStates[selection.model].runs.filter(run => supportsProduct(model, run, selection.product));
-      return available.find(run => String(run.id) === String(selection.run)) || preferredRun(available);
+      return available.find(run => String(run.id) === String(selection.run)) || preferredRun(available, selection.model, selection.product);
     }
     function targetItems(model, run) {
       if (!run) return [];
@@ -378,6 +446,25 @@
       if (run.ensemble_scope === 'rolling_initial_conditions') return `${source.ensemble_members || members || 0}/${source.ensemble_expected_members || 40} cycles`;
       return members ? `${members} members` : pretty(source.ensemble_scope || run.ensemble_scope || 'ensemble');
     }
+    function statusText(run, target) {
+      const targetValue = target?.value || target;
+      const runStatus = String(run?.status || '').toLowerCase();
+      const status = runStatus === 'partial' ? 'partial' : (targetValue?.status || run?.status || 'available');
+      const counts = runCoverageCounts(run, targetValue);
+      if (!counts) return status;
+      const unit = run?.ensemble_scope === 'rolling_initial_conditions' ? 'cycles' : 'members';
+      return `${status} · ${counts.available}/${counts.expected} ${unit}`;
+    }
+    function runMethodText(model, run) {
+      if (model === MODEL_CONFIG.nmme) {
+        const component = String(run?.component || '');
+        if (component === 'ENSMEAN') return 'Official NMME multi-model ensemble mean';
+        if (component === 'PROBABILITY') return 'Official CPC NMME category probability';
+        if (component === 'CONSENSUS') return 'Equal-weight NMME component-model consensus';
+        if (component) return `Individual ${componentLabel(run)} ensemble mean`;
+      }
+      return run?.aggregation || run?.statistic || 'Seasonal ensemble mean';
+    }
     function leadText(model, target) {
       if (!target) return '—';
       if (model.kind === 'weathernext') return `Hour ${String(target.value).padStart(3, '0')}`;
@@ -391,7 +478,21 @@
     }
     function setMessage(message) { el('map-wrap').replaceChildren(Object.assign(document.createElement('div'), { className: 'empty', textContent: message })); }
     function renderModelOptions() {
-      populate(el('model-select'), Object.entries(MODEL_CONFIG).map(([key, config]) => { const state = modelStates[key]; const suffix = state.error ? ' · unavailable' : state.manifest ? '' : ' · loading'; return { value: key, label: config.label + suffix }; }), selection.model);
+      const select = el('model-select');
+      select.replaceChildren();
+      MODEL_ROLE_GROUPS.forEach(groupConfig => {
+        const entries = Object.entries(MODEL_CONFIG).filter(([, config]) => config.role === groupConfig.role);
+        if (!entries.length) return;
+        const group = document.createElement('optgroup'); group.label = groupConfig.label;
+        entries.forEach(([key, config]) => {
+          const state = modelStates[key];
+          const suffix = state.error ? ' · unavailable' : state.manifest ? '' : ' · loading';
+          const option = document.createElement('option'); option.value = key; option.textContent = config.label + suffix; group.appendChild(option);
+        });
+        select.appendChild(group);
+      });
+      select.disabled = false;
+      if (MODEL_CONFIG[selection.model]) select.value = selection.model;
     }
     function renderUnavailable(model) {
       el('product-select').replaceChildren(); el('product-select').disabled = true;
@@ -415,6 +516,20 @@
     function compareModelListLabel() {
       return COMPARE_MODELS.map(modelKey => MODEL_CONFIG[modelKey].label).join(' · ');
     }
+    function renderCompareGrid(targetKey) {
+      const grid = el('compare-grid');
+      const available = targetKey ? COMPARE_MODELS.filter(modelKey => Boolean(compareRunForTarget(modelKey, targetKey, selection.compareBaseline, selection.compareProduct))) : [];
+      const availableOnly = el('compare-available-only').checked && Boolean(targetKey);
+      const visible = availableOnly ? available : COMPARE_MODELS;
+      if (visible.length) grid.replaceChildren(...visible.map(modelKey => renderCompareCard(modelKey, targetKey)));
+      else {
+        const empty = compareEmpty('No forecast surface is available for this parameter, period, and reference.');
+        empty.classList.add('card'); grid.replaceChildren(empty);
+      }
+      const missing = targetKey ? COMPARE_MODELS.filter(modelKey => !available.includes(modelKey)) : [];
+      el('compare-missing').textContent = missing.length ? `Not published for this selection: ${missing.map(modelKey => MODEL_CONFIG[modelKey].label).join(' · ')}` : '';
+      return available.length;
+    }
     function renderCompareCard(modelKey, targetKey) {
       const model = MODEL_CONFIG[modelKey];
       const state = modelStates[modelKey];
@@ -422,7 +537,10 @@
       const product = compareProductLabel(productKey);
       const card = document.createElement('article'); card.className = 'card compare-card';
       const header = document.createElement('div'); header.className = 'compare-card-head';
-      const title = document.createElement('h2'); title.textContent = model.label; header.appendChild(title);
+      const heading = document.createElement('div'); heading.className = 'compare-card-title';
+      const title = document.createElement('h2'); title.textContent = model.label; heading.appendChild(title);
+      const role = document.createElement('span'); role.className = 'model-role'; role.textContent = MODEL_ROLE_LABELS[model.role] || pretty(model.role); heading.appendChild(role);
+      header.appendChild(heading);
       const direct = document.createElement('a'); direct.href = model.direct; direct.textContent = 'Direct page'; header.appendChild(direct);
       card.appendChild(header);
       const imageWrap = document.createElement('div'); imageWrap.className = 'compare-image-wrap';
@@ -438,7 +556,7 @@
       } else {
         const image = document.createElement('img');
         image.src = assetPath(asset.image);
-        image.alt = `${model.label} ${product} ${periodLabel(target.target_month)} · ${compareBaselineLabel(baseline)}`;
+        image.alt = `${runDisplayName(model, run)} ${product} ${periodLabel(target.target_month)} · ${compareBaselineLabel(baseline)}`;
         image.loading = 'lazy';
         image.addEventListener('error', () => imageWrap.replaceChildren(compareEmpty('The manifest target exists, but its image is not in the published Pages tree.')));
         imageWrap.appendChild(image);
@@ -446,7 +564,7 @@
       card.appendChild(imageWrap);
       const metadata = document.createElement('p'); metadata.className = 'compare-meta';
       metadata.textContent = target && asset && run
-        ? `Valid: ${periodLabel(target.target_month)} · Init: ${initLabel(run.init_utc)} · ${compareBaselineLabel(baseline)} · ${asset.status || target.status || run.status || 'available'}`
+        ? `${runDisplayName(model, run)} · Valid: ${periodLabel(target.target_month)} · Init: ${initLabel(run.init_utc)} · ${compareBaselineLabel(baseline)} · ${asset.status || target.status || run.status || 'available'}`
         : (state.manifest ? `No matching ${product} target for this period.` : `Unavailable: ${state.error || 'manifest not published'}`);
       card.appendChild(metadata);
       return card;
@@ -455,7 +573,6 @@
       const productSelect = el('compare-product-select');
       const select = el('compare-target-select');
       const baselineSelect = el('compare-baseline-select');
-      const grid = el('compare-grid');
       const productOptions = compareProductOptions();
       if (!productOptions.length) {
         productSelect.replaceChildren(Object.assign(document.createElement('option'), { textContent: 'No comparable parameters' }));
@@ -468,7 +585,7 @@
         selection.compareTarget = '';
         selection.compareBaseline = '';
         el('compare-summary').textContent = 'No comparable anomaly products have been published across the model manifests';
-        grid.replaceChildren(...COMPARE_MODELS.map(modelKey => renderCompareCard(modelKey, '')));
+        renderCompareGrid('');
         el('footer-copy').textContent = `Seasonal model comparison · ${compareModelListLabel()}`;
         return;
       }
@@ -489,7 +606,7 @@
         select.disabled = true;
         selection.compareTarget = '';
         el('compare-summary').textContent = `${product} · no matching target has been published across the model manifests`;
-        grid.replaceChildren(...COMPARE_MODELS.map(modelKey => renderCompareCard(modelKey, '')));
+        renderCompareGrid('');
         el('footer-copy').textContent = `${product} comparison · ${compareModelListLabel()}`;
         return;
       }
@@ -497,9 +614,8 @@
       if (!options.some(item => String(item.value) === String(selection.compareTarget))) selection.compareTarget = preferred.value;
       populate(select, options, selection.compareTarget);
       selection.compareTarget = select.value || preferred.value;
-      const availableCount = COMPARE_MODELS.filter(modelKey => Boolean(compareRunForTarget(modelKey, selection.compareTarget, selection.compareBaseline, selection.compareProduct))).length;
-      el('compare-summary').textContent = `${product} · ${periodLabel(selection.compareTarget)} · ${compareBaselineLabel(selection.compareBaseline)} · ${availableCount}/${COMPARE_MODELS.length} model maps available`;
-      grid.replaceChildren(...COMPARE_MODELS.map(modelKey => renderCompareCard(modelKey, selection.compareTarget)));
+      const availableCount = renderCompareGrid(selection.compareTarget);
+      el('compare-summary').textContent = `${product} · ${periodLabel(selection.compareTarget)} · ${compareBaselineLabel(selection.compareBaseline)} · ${availableCount}/${COMPARE_MODELS.length} forecast surfaces available`;
       el('footer-copy').textContent = `${product} comparison · ${compareBaselineLabel(selection.compareBaseline)} · ${compareModelListLabel()}`;
     }
     function renderControls(model, run, targets) {
@@ -523,12 +639,17 @@
       selection.product = productWasSelected ? selection.product : (preferred?.product || products[0] || '');
       populate(el('product-select'), products.map(value => ({ value, label: productLabel(model, value) })), selection.product);
       const runs = modelState.runs.filter(run => supportsProduct(model, run, selection.product));
-      const defaultRun = preferredRun(runs);
+      const defaultRun = preferredRun(runs, selection.model, selection.product);
       const preferredRunId = preferred?.product === selection.product ? String(preferred.run || '') : '';
       if (!runs.some(run => String(run.id) === String(selection.run))) {
         selection.run = runs.some(run => String(run.id) === preferredRunId) ? preferredRunId : String(defaultRun?.id || '');
       }
-      populate(el('run-select'), runs.map(run => ({ value: run.id, label: runLabel(model, run) })), selection.run);
+      const runSelect = el('run-select');
+      populate(runSelect, runs.map(run => ({ value: run.id, label: runLabel(model, run) })), selection.run);
+      if (!selection.run && runs.length) {
+        const placeholder = document.createElement('option'); placeholder.value = ''; placeholder.textContent = 'No usable run selected'; placeholder.disabled = true; placeholder.selected = true;
+        runSelect.insertBefore(placeholder, runSelect.firstChild); runSelect.value = '';
+      }
       const run = selectedRun(model); const targets = targetItems(model, run);
       const preferredTarget = targets.find(target => model.kind === 'seasonal' && /^\d{6}-\d{6}$/.test(String(target.value?.target_month || ''))) || targets[0];
       const preferredTargetKey = preferred?.product === selection.product && String(preferred?.run || '') === String(selection.run) ? String(preferred.target || '') : '';
@@ -537,25 +658,32 @@
       }
       renderControls(model, run, targets);
       const target = targets.find(item => String(item.key) === String(selection.target)) || targets[0];
-      if (!run || !target) { setMessage('No rendered target is available for the selected parameter.'); return; }
+      if (!run || !target) {
+        setMessage(runs.length ? 'No usable rendered target is available by default. Choose a retained run to inspect its failure.' : 'No rendered target is available for the selected parameter.');
+        ['fact-target','fact-lead','fact-ensemble','fact-field','fact-status'].forEach(id => el(id).textContent = '—');
+        el('fact-model').textContent = model.label;
+        el('scope').textContent = runs.length ? 'All published runs for this parameter are failed or lack a rendered target.' : 'No published run is available for this parameter.';
+        const warning = el('warning'); warning.style.display = runs.length ? 'block' : 'none'; warning.textContent = runs.length ? 'No failed run was selected automatically; retained history remains available for diagnosis.' : '';
+        return;
+      }
       const targetValue = target.value;
       const label = productLabel(model, selection.product);
-      el('fact-model').textContent = model.label; el('fact-target').textContent = model.kind === 'weathernext' ? targetText(model, target) : periodLabel(targetValue.target_month || targetValue.valid_start_utc);
-      el('fact-lead').textContent = leadText(model, target); el('fact-ensemble').textContent = ensembleText(model, run, target); el('fact-field').textContent = fieldText(target); el('fact-status').textContent = targetValue?.status || run.status || 'available';
+      el('fact-model').textContent = runDisplayName(model, run); el('fact-target').textContent = model.kind === 'weathernext' ? targetText(model, target) : periodLabel(targetValue.target_month || targetValue.valid_start_utc);
+      el('fact-lead').textContent = leadText(model, target); el('fact-ensemble').textContent = ensembleText(model, run, target); el('fact-field').textContent = fieldText(target); el('fact-status').textContent = statusText(run, target);
       if (model.kind === 'weathernext') {
         el('scope').textContent = `${run.source_label || run.source || model.source} · Updated ${initLabel(run.updated_utc)}. ${run.successful_exports || 0} successful exports.`;
       } else {
         const baseline = run.climatology?.source || targetValue?.baseline?.source || 'model calibration baseline';
-        el('scope').textContent = `${run.aggregation || 'Seasonal ensemble mean'} from ${initLabel(run.init_utc)}. Baseline: ${baseline}.`;
+        el('scope').textContent = `${runMethodText(model, run)} from ${initLabel(run.init_utc)}. Baseline: ${baseline}.`;
       }
       el('source-detail').textContent = `Source: ${run.source || run.source_label || model.source}`;
       el('source-link').href = run.source_url || model.direct; el('direct-link').href = model.direct;
       const image = imagePath(model, run, target); setMessage('');
       el('map-wrap').replaceChildren();
-      if (image) { const imageElement = document.createElement('img'); imageElement.src = image; imageElement.alt = `${model.label} ${label} ${targetText(model, target)}`; imageElement.loading = 'eager'; imageElement.addEventListener('error', () => { setMessage('The manifest is available, but this image is not present in the published Pages tree.'); }); el('map-wrap').appendChild(imageElement); } else setMessage('No rendered image is available for this target.');
+      if (image) { const imageElement = document.createElement('img'); imageElement.src = image; imageElement.alt = `${runDisplayName(model, run)} ${label} ${targetText(model, target)}`; imageElement.loading = 'eager'; imageElement.addEventListener('error', () => { setMessage('The manifest is available, but this image is not present in the published Pages tree.'); }); el('map-wrap').appendChild(imageElement); } else setMessage('No rendered image is available for this target.');
       const warning = el('warning');
       if (targetValue?.status === 'failed') { warning.style.display = 'block'; warning.textContent = targetValue.error || 'This target failed; retained history remains selectable.'; }
-      else if (targetValue?.status === 'partial' || run.status === 'partial') { warning.style.display = 'block'; warning.textContent = 'This run is partial; retained history remains selectable.'; }
+      else if (targetValue?.status === 'partial' || run.status === 'partial') { const counts = runCoverageCounts(run, targetValue); const coverage = counts ? ` (${counts.available}/${counts.expected} ${run.ensemble_scope === 'rolling_initial_conditions' ? 'cycles' : 'members'})` : ''; warning.style.display = 'block'; warning.textContent = `This run is partial${coverage}; retained history remains selectable.`; }
       else if (run.source_warning) { warning.style.display = 'block'; warning.textContent = run.source_warning; }
       else warning.style.display = 'none';
       el('footer-copy').textContent = `${model.source} · ${modelState.manifest.generated_utc ? `Manifest generated ${initLabel(modelState.manifest.generated_utc)}` : 'Published manifest loaded'} · Direct model pages remain available.`;
@@ -566,6 +694,7 @@
       const isCompare = selection.view === 'compare';
       el('single-tab').classList.toggle('active', !isCompare); el('single-tab').setAttribute('aria-selected', String(!isCompare));
       el('compare-tab').classList.toggle('active', isCompare); el('compare-tab').setAttribute('aria-selected', String(isCompare));
+      el('single-tab').tabIndex = isCompare ? -1 : 0; el('compare-tab').tabIndex = isCompare ? 0 : -1;
       el('single-toolbar').hidden = isCompare; el('single-view').hidden = isCompare; el('compare-view').hidden = !isCompare;
       renderCurrentView();
     }
@@ -577,6 +706,7 @@
     el('compare-product-select').addEventListener('change', event => { selection.compareProduct = event.target.value; selection.compareTarget = ''; selection.compareBaseline = 'native'; renderCompare(); });
     el('compare-target-select').addEventListener('change', event => { selection.compareTarget = event.target.value; renderCompare(); });
     el('compare-baseline-select').addEventListener('change', event => { selection.compareBaseline = event.target.value; renderCompare(); });
+    el('compare-available-only').addEventListener('change', () => renderCompare());
     renderModelOptions();
     Promise.all(Object.entries(MODEL_CONFIG).map(async ([key, config]) => {
       try { const response = await fetch(config.manifest); if (!response.ok) throw new Error(`Manifest returned ${response.status}`); const manifest = await response.json(); modelStates[key].manifest = manifest; modelStates[key].runs = Array.isArray(manifest.runs) ? manifest.runs.filter(run => run && run.id) : []; }

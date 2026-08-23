@@ -480,12 +480,19 @@ def build_run(
 
 def write_manifest(path: Path, entries: Iterable[dict[str, Any]], previous: Path | None, retain_cycles: int) -> None:
     all_entries: list[dict[str, Any]] = []
-    if previous and previous.exists():
+    seen_manifests: set[Path] = set()
+    for candidate in (previous, path):
+        if not candidate or not candidate.exists():
+            continue
+        resolved = candidate.resolve()
+        if resolved in seen_manifests:
+            continue
+        seen_manifests.add(resolved)
         try:
-            old = json.loads(previous.read_text(encoding="utf-8"))
+            old = json.loads(candidate.read_text(encoding="utf-8"))
             all_entries.extend(run for run in old.get("runs", []) if isinstance(run, dict))
         except (OSError, ValueError) as exc:
-            raise C3SError(f"could not read previous C3S manifest: {exc}") from exc
+            raise C3SError(f"could not read C3S manifest {candidate}: {exc}") from exc
     all_entries.extend(entries)
     unique: dict[str, dict[str, Any]] = {str(run.get("id")): run for run in all_entries if run.get("id")}
     ordered = sorted(unique.values(), key=lambda run: (str(run.get("init_utc", "")), str(run.get("id", ""))), reverse=True)

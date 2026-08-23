@@ -334,9 +334,8 @@ jobs:
                 payload_root="$payload_root/.pages-payload"
               fi
               test -f "$payload_root/nmme_manifest.json"
-              # Replace the complete NMME tree so retired products cannot
-              # remain as unreferenced files on the published branch.
-              rm -rf site/seasonal/nmme
+              # Overlay the new payload so images referenced by retained run
+              # history survive targeted/manual product repairs.
               mkdir -p site/seasonal/nmme
               cp -R "$payload_root/nmme/." site/seasonal/nmme/
               cp "$payload_root/nmme_manifest.json" site/seasonal/nmme_manifest.json

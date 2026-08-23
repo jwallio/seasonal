@@ -48,6 +48,7 @@ jobs:
     timeout-minutes: 360
     env:
       JMA_PRODUCT: ${{ inputs.product || '500mb_height_anomaly' }}
+      SCHEDULED_JMA_PRODUCTS: 500mb_height_anomaly,850mb_temperature_anomaly,2m_temperature_anomaly,precipitation_anomaly,sea_surface_temperature_anomaly,mslp_anomaly
       JMA_SYSTEMS: ${{ inputs.systems || '' }}
       JMA_INIT: ${{ inputs.init || 'latest' }}
       LEAD_MONTHS: ${{ inputs.lead_months || '4,5,6' }}
@@ -101,20 +102,30 @@ jobs:
           fi
 
       - name: Render JMA products
+        shell: bash
         run: |
-          python scripts/c3s_seasonal.py \
-            --product "$JMA_PRODUCT" \
-            --centres jma \
-            --systems "$JMA_SYSTEMS" \
-            --init "$JMA_INIT" \
-            --lead-months "$LEAD_MONTHS" \
-            --seasonal-window "$SEASONAL_WINDOW" \
-            --cache-dir .cache/jma \
-            --output-dir public/seasonal/jma \
-            --manifest public/seasonal/jma_manifest.json \
-            --previous-manifest .cache/jma/previous_manifest.json \
-            --retain-cycles 4 \
-            --no-blend
+          set -euo pipefail
+          if [[ "${{ github.event_name }}" == "schedule" ]]; then
+            IFS=',' read -r -a products <<< "$SCHEDULED_JMA_PRODUCTS"
+          else
+            products=("$JMA_PRODUCT")
+          fi
+          for product in "${products[@]}"; do
+            echo "Rendering JMA product: $product"
+            python scripts/c3s_seasonal.py \
+              --product "$product" \
+              --centres jma \
+              --systems "$JMA_SYSTEMS" \
+              --init "$JMA_INIT" \
+              --lead-months "$LEAD_MONTHS" \
+              --seasonal-window "$SEASONAL_WINDOW" \
+              --cache-dir .cache/jma \
+              --output-dir public/seasonal/jma \
+              --manifest public/seasonal/jma_manifest.json \
+              --previous-manifest .cache/jma/previous_manifest.json \
+              --retain-cycles 4 \
+              --no-blend
+          done
 
       - name: Package JMA Pages payload
         if: success()
