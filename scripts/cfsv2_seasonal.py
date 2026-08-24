@@ -2111,6 +2111,11 @@ def run(args: argparse.Namespace) -> int:
                 product_spec=product,
             )
             target_entry["image"] = relative_path(output_path, repo_root)
+            if product_name == PRODUCT_HEIGHT_ANOMALY:
+                numeric_grid_path = output_dir / init / f"cfsv2_{product['file_token']}_{target}.csv.gz"
+                write_grid_state(anomaly_grid, numeric_grid_path)
+                target_entry["numeric_grid"] = relative_path(numeric_grid_path, repo_root)
+                target_entry["numeric_grid_format"] = "csv.gz"
             target_entry["status"] = "partial" if not target_entry["ensemble_complete"] else "rendered"
             print(f"rendered CFSv2 {target} lead {lead}: {output_path}")
             if common_reference_enabled:
@@ -2303,6 +2308,11 @@ def run(args: argparse.Namespace) -> int:
                 product_spec=product,
             )
             seasonal_entry["image"] = relative_path(output_path, repo_root)
+            if product_name == PRODUCT_HEIGHT_ANOMALY:
+                numeric_grid_path = output_dir / init / f"cfsv2_{product['file_token']}_{first_target}-{last_target}.csv.gz"
+                write_grid_state(seasonal_grid, numeric_grid_path)
+                seasonal_entry["numeric_grid"] = relative_path(numeric_grid_path, repo_root)
+                seasonal_entry["numeric_grid_format"] = "csv.gz"
             seasonal_entry["status"] = "rendered" if seasonal_entry["ensemble_complete"] else "partial"
             print(f"rendered CFSv2 seasonal product {first_target}-{last_target}: {output_path}")
             if common_reference_enabled:

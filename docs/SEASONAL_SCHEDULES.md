@@ -18,6 +18,7 @@ provider is late or a historical cycle needs to be regenerated.
 | APCC MME | APCC seasonal MME around the middle of the month | 20th of each month at 16:30 |
 | NASA GEOS-S2S-3 | Public NCCS numerical APCN archives during the first week | 6th of each month at 16:30 |
 | Deduplicated super ensemble | After APCC, CMA, and the other component source windows | 22nd of each month at 20:30 |
+| 500-mb pattern analogs | After each successful CFSv2 or super-ensemble release | Triggered by the completed source workflow |
 
 Scheduled C3S, JMA, and SEAS5 runs generate the full advertised anomaly suite:
 500-mb height, 850-mb temperature, 2-m temperature, precipitation,
