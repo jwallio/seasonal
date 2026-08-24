@@ -116,6 +116,9 @@ def main() -> int:
     check(module.nmme.target_month("2026080800", 4) == "202612", "NMME lead alignment should match December")
     for term in ("intersection of canonical members", "APCC MME", "C3S multi-system mean", "NMME CFSv2", "native_model_baselines", "NASA GEOS-S2S-3"):
         check(term in adapter_text, f"adapter is missing deduplication term: {term}")
+    for term in ("numeric_grid", "numeric_grid_format", "write_grid_state(anomaly", "csv.gz"):
+        check(term in adapter_text, f"adapter is missing analog numeric-grid export term: {term}")
+    check(adapter_text.count("write_grid_state(anomaly") == 2, "monthly and seasonal super-ensemble maps should both export numeric grids")
     for term in ("name: Deduplicated Seasonal Super Ensemble", "CDS_API_KEY", "Restore rolling CFSv2 state", "Restore CMA CPSv3 source cache", "--cma-cache-dir", "Restore NASA GEOS-S2S-3 numerical cache", "--geos-cache-dir", "cfsv2-rolling-", "superensemble-pages-", "30 20 22 * *", "SCHEDULED_SUPER_PRODUCT: all"):
         check(term in workflow, f"workflow is missing term: {term}")
     for term in ("Deduplicated Seasonal Super Ensemble", "superensemble_manifest.json", "incoming/superensemble"):

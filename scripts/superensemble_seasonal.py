@@ -36,6 +36,7 @@ from cfsv2_seasonal import (
     render_map,
     subtract_grids,
     sum_grids,
+    write_grid_state,
 )
 from seasonal_products import grid_quality_control, require_quality_control
 
@@ -942,6 +943,11 @@ def render_product_run(
                     footer_text=included_models_footer(keys, definitions),
                 )
                 entry["image"] = relative_path(output, root)
+                if product == "500mb_height_anomaly":
+                    numeric_grid_path = output_dir / init[:8] / f"superensemble_{c3s.PRODUCT_SPECS[product]['variable']}_{target}.csv.gz"
+                    write_grid_state(anomaly, numeric_grid_path)
+                    entry["numeric_grid"] = relative_path(numeric_grid_path, root)
+                    entry["numeric_grid_format"] = "csv.gz"
             entry["status"] = "partial" if len(keys) < len(expected) else ("decoded" if args.decode_only else "rendered")
         except Exception as exc:
             failures += 1
@@ -1044,6 +1050,11 @@ def render_product_run(
                         footer_text=included_models_footer(keys, definitions),
                     )
                     entry["image"] = relative_path(output, root)
+                    if product == "500mb_height_anomaly":
+                        numeric_grid_path = output_dir / init[:8] / f"superensemble_{c3s.PRODUCT_SPECS[product]['variable']}_{target}.csv.gz"
+                        write_grid_state(anomaly, numeric_grid_path)
+                        entry["numeric_grid"] = relative_path(numeric_grid_path, root)
+                        entry["numeric_grid_format"] = "csv.gz"
                 entry["status"] = "partial" if len(keys) < len(expected) else ("decoded" if args.decode_only else "rendered")
             except Exception as exc:
                 failures += 1

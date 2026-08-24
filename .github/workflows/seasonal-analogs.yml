@@ -1,0 +1,137 @@
+name: Seasonal 500-mb Pattern Analogs
+
+on:
+  workflow_run:
+    workflows:
+      - CFSv2 Rolling Seasonal Graphics
+      - Deduplicated Seasonal Super Ensemble
+    types:
+      - completed
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+
+concurrency:
+  group: seasonal-analogs
+  cancel-in-progress: false
+
+jobs:
+  build:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: [self-hosted, windows, x64, wn2-analogwx]
+    timeout-minutes: 90
+    env:
+      ANALOGWX_DATA_ROOT: ${{ vars.ANALOGWX_DATA_ROOT }}
+      ANALOGWX_PYTHON: ${{ vars.ANALOGWX_PYTHON }}
+      SOURCE_WORKFLOW: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.name || '' }}
+      SOURCE_RUN_ID: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.id || '' }}
+    steps:
+      - name: Checkout analog builder
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: source
+          fetch-depth: 1
+
+      - name: Checkout current Pages tree
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: site
+          fetch-depth: 1
+
+      - name: Download fresh CFSv2 payload
+        if: ${{ env.SOURCE_WORKFLOW == 'CFSv2 Rolling Seasonal Graphics' }}
+        uses: actions/download-artifact@v4
+        with:
+          name: cfsv2-pages-${{ env.SOURCE_RUN_ID }}
+          path: incoming/cfsv2
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: ${{ env.SOURCE_RUN_ID }}
+
+      - name: Download fresh Super Ensemble payload
+        if: ${{ env.SOURCE_WORKFLOW == 'Deduplicated Seasonal Super Ensemble' }}
+        uses: actions/download-artifact@v4
+        with:
+          name: superensemble-pages-${{ env.SOURCE_RUN_ID }}
+          path: incoming/superensemble
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: ${{ env.SOURCE_RUN_ID }}
+
+      - name: Overlay fresh source payload
+        if: ${{ env.SOURCE_WORKFLOW != '' }}
+        shell: powershell
+        run: |
+          $source = $env:SOURCE_WORKFLOW
+          if ($source -eq 'CFSv2 Rolling Seasonal Graphics') {
+            $payload = Join-Path $PWD 'incoming\cfsv2'
+            if (Test-Path (Join-Path $payload 'pages-payload')) { $payload = Join-Path $payload 'pages-payload' }
+            if (Test-Path (Join-Path $payload '.pages-payload')) { $payload = Join-Path $payload '.pages-payload' }
+            $manifest = Join-Path $payload 'cfsv2_manifest.json'
+            $modelDir = Join-Path $payload 'cfsv2'
+            if (-not (Test-Path -LiteralPath $manifest) -or -not (Test-Path -LiteralPath $modelDir)) { throw "Fresh CFSv2 payload is incomplete: $payload" }
+            New-Item -ItemType Directory -Force -Path 'site\seasonal\cfsv2' | Out-Null
+            Copy-Item -LiteralPath $manifest -Destination 'site\seasonal\cfsv2_manifest.json' -Force
+            Copy-Item -Path (Join-Path $modelDir '*') -Destination 'site\seasonal\cfsv2' -Recurse -Force
+          } elseif ($source -eq 'Deduplicated Seasonal Super Ensemble') {
+            $payload = Join-Path $PWD 'incoming\superensemble'
+            if (Test-Path (Join-Path $payload 'pages-payload')) { $payload = Join-Path $payload 'pages-payload' }
+            if (Test-Path (Join-Path $payload '.pages-payload')) { $payload = Join-Path $payload '.pages-payload' }
+            $manifest = Join-Path $payload 'superensemble_manifest.json'
+            $modelDir = Join-Path $payload 'superensemble'
+            if (-not (Test-Path -LiteralPath $manifest) -or -not (Test-Path -LiteralPath $modelDir)) { throw "Fresh Super Ensemble payload is incomplete: $payload" }
+            New-Item -ItemType Directory -Force -Path 'site\seasonal\superensemble' | Out-Null
+            Copy-Item -LiteralPath $manifest -Destination 'site\seasonal\superensemble_manifest.json' -Force
+            Copy-Item -Path (Join-Path $modelDir '*') -Destination 'site\seasonal\superensemble' -Recurse -Force
+          } else {
+            throw "Unsupported source workflow: $source"
+          }
+
+      - name: Build analog manifest from the local AnalogWX archive
+        shell: powershell
+        run: |
+          $dataRoot = $env:ANALOGWX_DATA_ROOT
+          if ([string]::IsNullOrWhiteSpace($dataRoot)) { $dataRoot = 'D:\analogwx\data' }
+          $archive = Join-Path $dataRoot 'era5_proc\z500_anom.zarr'
+          if (-not (Test-Path -LiteralPath (Join-Path $archive 'zarr.json'))) { throw "AnalogWX Zarr archive not found: $archive. Set the ANALOGWX_DATA_ROOT repository variable." }
+
+          $python = $env:ANALOGWX_PYTHON
+          if ([string]::IsNullOrWhiteSpace($python)) {
+            $candidates = @('C:\Users\jlwal\miniconda3\python.exe', 'D:\analogwx\.venv\Scripts\python.exe')
+            $python = $candidates | Where-Object { Test-Path -LiteralPath $_ } | Select-Object -First 1
+          }
+          if ([string]::IsNullOrWhiteSpace($python)) {
+            $python = (Get-Command python -ErrorAction Stop).Source
+          }
+          & $python -c "import numpy, xarray, zarr"
+          if ($LASTEXITCODE -ne 0) {
+            & $python -m pip install --disable-pip-version-check --quiet numpy xarray zarr dask
+            if ($LASTEXITCODE -ne 0) { throw 'Could not install the AnalogWX archive reader dependencies.' }
+          }
+          & $python source\scripts\build_seasonal_analogs.py `
+            --root site `
+            --archive $archive `
+            --models cfsv2,superensemble `
+            --top-n 10 `
+            --output seasonal\analog_z500_manifest.json
+          if ($LASTEXITCODE -ne 0) { throw 'Analog manifest generation failed; the previous Pages artifact will be retained.' }
+          if (-not (Test-Path -LiteralPath 'site\seasonal\analog_z500_manifest.json')) { throw 'Analog manifest was not written.' }
+
+      - name: Package analog Pages payload
+        shell: powershell
+        run: |
+          if (-not (Test-Path -LiteralPath 'site\seasonal\analog_z500_manifest.json')) { throw 'Analog manifest is missing.' }
+          New-Item -ItemType Directory -Force -Path 'pages-payload\seasonal' | Out-Null
+          Copy-Item -LiteralPath 'site\seasonal\analog_z500_manifest.json' -Destination 'pages-payload\seasonal\analog_z500_manifest.json' -Force
+
+      - name: Upload analog Pages payload
+        uses: actions/upload-artifact@v4
+        with:
+          name: analog-pages-${{ github.run_id }}
+          path: pages-payload
+          if-no-files-found: error
+          retention-days: 14

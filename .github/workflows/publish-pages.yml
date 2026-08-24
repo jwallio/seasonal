@@ -15,6 +15,7 @@ on:
       - NASA GEOS-S2S-3 Seasonal Graphics
       - NOAA NMME Seasonal Graphics
       - Deduplicated Seasonal Super Ensemble
+      - Seasonal 500-mb Pattern Analogs
     types:
       - completed
   workflow_dispatch:
@@ -36,6 +37,7 @@ on:
           - NASA GEOS-S2S-3 Seasonal Graphics
           - NOAA NMME Seasonal Graphics
           - Deduplicated Seasonal Super Ensemble
+          - Seasonal 500-mb Pattern Analogs
       source_run_id:
         description: "GitHub Actions run ID containing the uploaded Pages artifact"
         required: true
@@ -199,6 +201,16 @@ jobs:
         with:
           name: superensemble-pages-${{ env.SOURCE_RUN_ID }}
           path: incoming/superensemble
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: ${{ env.SOURCE_RUN_ID }}
+
+      - name: Download seasonal analog payload
+        if: ${{ env.SOURCE_WORKFLOW == 'Seasonal 500-mb Pattern Analogs' }}
+        uses: actions/download-artifact@v4
+        with:
+          name: analog-pages-${{ env.SOURCE_RUN_ID }}
+          path: incoming/analogs
           github-token: ${{ secrets.GITHUB_TOKEN }}
           repository: ${{ github.repository }}
           run-id: ${{ env.SOURCE_RUN_ID }}
@@ -368,6 +380,17 @@ jobs:
               mkdir -p site/seasonal/superensemble
               cp -R "$payload_root/superensemble/." site/seasonal/superensemble/
               cp "$payload_root/superensemble_manifest.json" site/seasonal/superensemble_manifest.json
+              ;;
+            "Seasonal 500-mb Pattern Analogs")
+              payload_root=incoming/analogs
+              if [ -d "$payload_root/pages-payload" ]; then
+                payload_root="$payload_root/pages-payload"
+              elif [ -d "$payload_root/.pages-payload" ]; then
+                payload_root="$payload_root/.pages-payload"
+              fi
+              test -f "$payload_root/seasonal/analog_z500_manifest.json"
+              mkdir -p site/seasonal
+              cp "$payload_root/seasonal/analog_z500_manifest.json" site/seasonal/analog_z500_manifest.json
               ;;
             *)
               echo "Unsupported workflow_run source: $SOURCE_WORKFLOW" >&2
