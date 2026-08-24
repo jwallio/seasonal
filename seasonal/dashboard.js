@@ -824,6 +824,10 @@ el('run-select').addEventListener('change', event => { selection.run = event.tar
 el('overview-tab').addEventListener('click', () => setView('overview'));
 el('single-tab').addEventListener('click', () => setView('single'));
 el('compare-tab').addEventListener('click', () => setView('compare'));
+el('compare-controls-toggle').addEventListener('click', () => {
+  const toolbar = document.querySelector('.compare-toolbar');
+  setCompareControlsCollapsed(!toolbar.classList.contains('is-collapsed'));
+});
 el('compare-product-select').addEventListener('change', event => { selection.compareProduct = event.target.value; selection.compareTarget = ''; selection.compareBaseline = 'native'; renderCompare(); });
 el('compare-target-select').addEventListener('change', event => { selection.compareTarget = event.target.value; renderCompare(); });
 el('compare-baseline-select').addEventListener('change', event => { selection.compareBaseline = event.target.value; renderCompare(); });
@@ -845,6 +849,16 @@ const provenanceMedia = window.matchMedia('(min-width: 901px)');
 function syncProvenanceDisclosure(event = provenanceMedia) { el('provenance-details').open = event.matches; }
 provenanceMedia.addEventListener('change', syncProvenanceDisclosure);
 syncProvenanceDisclosure();
+const compareControlsMedia = window.matchMedia('(max-width: 600px)');
+function setCompareControlsCollapsed(collapsed) {
+  const shouldCollapse = compareControlsMedia.matches && collapsed;
+  document.querySelector('.compare-toolbar').classList.toggle('is-collapsed', shouldCollapse);
+  el('compare-controls-toggle').setAttribute('aria-expanded', String(!shouldCollapse));
+  el('compare-controls-toggle-state').textContent = shouldCollapse ? 'Show' : 'Hide';
+}
+function syncCompareControlsDisclosure(event = compareControlsMedia) { setCompareControlsCollapsed(event.matches); }
+compareControlsMedia.addEventListener('change', syncCompareControlsDisclosure);
+syncCompareControlsDisclosure();
 renderModelOptions();
 async function loadManifest(key, config) {
   try {

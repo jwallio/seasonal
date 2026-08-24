@@ -87,12 +87,15 @@
     </section>
 
     <section class="compare-view" id="compare-view" role="tabpanel" aria-labelledby="compare-tab" hidden>
-      <div class="compare-toolbar card">
-        <div class="selector"><label for="compare-product-select">Parameter</label><select id="compare-product-select" disabled><option>Loading…</option></select></div>
-        <div class="selector"><label for="compare-target-select">Valid period</label><select id="compare-target-select" disabled><option>Loading…</option></select></div>
-        <div class="selector"><label for="compare-baseline-select">Reference</label><select id="compare-baseline-select" disabled><option>Loading…</option></select></div>
-        <div class="selector"><label for="compare-role-select">Model type</label><select id="compare-role-select"><option value="all">All model types</option><option value="blend">Blends</option><option value="family">Forecast families</option><option value="component">Component models</option></select></div>
-        <label class="compare-filter" for="compare-available-only"><input id="compare-available-only" type="checkbox" checked>Available only</label>
+      <div class="compare-toolbar card is-collapsed">
+        <button class="compare-controls-toggle" id="compare-controls-toggle" type="button" aria-expanded="false" aria-controls="compare-control-fields"><span>Compare options</span><span class="compare-controls-toggle-state" id="compare-controls-toggle-state">Show</span></button>
+        <div class="compare-control-fields" id="compare-control-fields">
+          <div class="selector"><label for="compare-product-select">Parameter</label><select id="compare-product-select" disabled><option>Loading…</option></select></div>
+          <div class="selector"><label for="compare-target-select">Valid period</label><select id="compare-target-select" disabled><option>Loading…</option></select></div>
+          <div class="selector"><label for="compare-baseline-select">Reference</label><select id="compare-baseline-select" disabled><option>Loading…</option></select></div>
+          <div class="selector"><label for="compare-role-select">Model type</label><select id="compare-role-select"><option value="all">All model types</option><option value="blend">Blends</option><option value="family">Forecast families</option><option value="component">Component models</option></select></div>
+          <label class="compare-filter" for="compare-available-only"><input id="compare-available-only" type="checkbox" checked>Available only</label>
+        </div>
         <p class="compare-summary" id="compare-summary">Seasonal anomaly · matching published target across models</p>
         <p class="compare-missing" id="compare-missing"></p>
       </div>
