@@ -74,6 +74,8 @@ def main() -> int:
         'id="compare-baseline-select"',
         'id="compare-role-select"',
         'id="compare-available-only"',
+        'id="compare-controls-toggle"',
+        'id="compare-control-fields"',
         'id="compare-missing"',
         'id="compare-grid"',
         'id="copy-link"',
@@ -119,6 +121,9 @@ def main() -> int:
         "usedFullImageFallback",
         "window.matchMedia('(min-width: 901px)')",
         "function syncProvenanceDisclosure",
+        "const compareControlsMedia = window.matchMedia('(max-width: 600px)');",
+        "function setCompareControlsCollapsed",
+        "function syncCompareControlsDisclosure",
         "dialog.showModal()",
         "event.key === 'ArrowRight'",
         "position:sticky",
@@ -185,6 +190,9 @@ def main() -> int:
     check("preferredComponent: 'multisystem'" in page, "C3S comparisons should prefer the multi-system blend")
     check("preferredComponent: 'ENSMEAN'" in page, "NMME comparisons should prefer the official ensemble mean")
     check("runDisplayName(model, run)" in page[page.index("function runLabel"):page.index("function isFailedRun")], "run-history labels must use the selected blend or component identity")
+    check(".toolbar{position:static" in stylesheet, "Explore selectors must not stay pinned over maps on phones")
+    check(".compare-toolbar{position:static" in stylesheet, "Compare options must not stay pinned over maps on phones")
+    check(".compare-toolbar.is-collapsed .compare-control-fields{display:none}" in stylesheet, "mobile Compare options must collapse to expose the maps")
     check("runs[0]" not in page[page.index("function preferredRun"):page.index("function selectedRun")], "failed history must not be used as a default fallback")
     overview_block = page[page.index("function renderOverview()"):page.index("function compareEmpty")]
     check("states.length" not in overview_block, "coverage denominator must exclude intentional unsupported and quarantined surfaces")
