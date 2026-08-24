@@ -2,6 +2,7 @@ const root = location.pathname.includes('/seasonal/') ? location.pathname.split(
 const normalizeAssetPath = value => String(value || '').replace(/^\/+/, '').replace(/^public\//, '');
 const assetPath = value => `${root}/${normalizeAssetPath(value)}`;
 const CATALOG_URL = assetPath('seasonal/catalog.json');
+const ANALOG_MANIFEST_URL = assetPath('seasonal/analog_z500_manifest.json');
 function thumbnailPath(value) {
   const relative = normalizeAssetPath(value).replace(/^seasonal\//, '');
   const webp = /\.[^/.]+$/.test(relative) ? relative.replace(/\.[^/.]+$/, '.webp') : `${relative}.webp`;
@@ -32,6 +33,8 @@ const COMPONENT_LABELS = {
   NCAR_CCSM4: 'NCAR CCSM4', NCAR_CESM1: 'NCAR CESM1', multisystem: 'C3S multi-system',
 };
 let seasonalCatalog = null;
+let seasonalAnalogs = null;
+let analogManifestError = '';
 const modelStates = Object.fromEntries(Object.keys(MODEL_CONFIG).map(key => [key, { manifest: null, catalog: null, runs: [], error: null }]));
 const selection = { view: 'overview', model: 'cfsv2', product: '', run: '', target: '', compareProduct: '500mb_height_anomaly', compareTarget: '', compareBaseline: '', compareRole: 'all', compareAvailableOnly: true, ratio: '10' };
 const DEFAULT_PRODUCT_PRIORITY = [
@@ -643,6 +646,57 @@ function renderCompareCard(modelKey, targetKey) {
   card.appendChild(metadata);
   return card;
 }
+function analogEntry(modelKey, targetKey) {
+  return (seasonalAnalogs?.entries || []).find(entry => String(entry.model || '') === modelKey && String(entry.target || '') === String(targetKey || '')) || null;
+}
+function renderAnalogPanel(targetKey) {
+  const panel = el('analog-panel');
+  const grid = el('analog-grid');
+  const summary = el('analog-summary');
+  const isHeight = canonicalProductKey(selection.compareProduct || DEFAULT_COMPARE_PRODUCT) === DEFAULT_COMPARE_PRODUCT;
+  if (!panel || !grid || !summary || !isHeight || !targetKey) {
+    if (panel) panel.hidden = true;
+    return;
+  }
+  panel.hidden = false;
+  const models = ['superensemble', 'cfsv2'];
+  const entries = models.map(modelKey => analogEntry(modelKey, targetKey)).filter(Boolean);
+  if (!seasonalAnalogs) {
+    summary.textContent = 'Analog search is waiting for the first published CFSv2/Super Ensemble numeric grids.';
+    grid.replaceChildren(compareEmpty(analogManifestError ? 'The analog manifest is not available for this release.' : 'Loading historical analogs…'));
+    return;
+  }
+  summary.textContent = `${periodLabel(targetKey)} · AnalogWX ERA5 · normalized 500-mb pattern correlation · Super Ensemble and CFSv2`;
+  if (!entries.length) {
+    grid.replaceChildren(compareEmpty(`No historical analog result is published for ${periodLabel(targetKey)}.`));
+    return;
+  }
+  grid.replaceChildren(...models.map(modelKey => {
+    const entry = analogEntry(modelKey, targetKey);
+    const card = document.createElement('section');
+    card.className = 'analog-card';
+    const heading = document.createElement('h3');
+    heading.textContent = MODEL_CONFIG[modelKey].label;
+    card.appendChild(heading);
+    const meta = document.createElement('p');
+    meta.className = 'analog-meta';
+    meta.textContent = entry ? `Init ${initLabel(entry.init_utc)} · ${entry.results?.length || 0} ranked analogs` : 'No numeric grid published for this target';
+    card.appendChild(meta);
+    if (!entry) return card;
+    const table = document.createElement('table');
+    table.className = 'analog-table';
+    table.innerHTML = '<thead><tr><th scope="col">Rank</th><th scope="col">Historical period</th><th scope="col">Pattern match</th></tr></thead>';
+    const body = document.createElement('tbody');
+    (entry.results || []).forEach(result => {
+      const row = document.createElement('tr');
+      const rank = document.createElement('th'); rank.scope = 'row'; rank.textContent = String(result.rank ?? '—');
+      const label = document.createElement('td'); label.textContent = result.label || '—';
+      const score = document.createElement('td'); score.textContent = Number.isFinite(Number(result.pattern_correlation)) ? Number(result.pattern_correlation).toFixed(3) : '—';
+      row.append(rank, label, score); body.appendChild(row);
+    });
+    table.appendChild(body); card.appendChild(table); return card;
+  }));
+}
 function renderCompare() {
   const productSelect = el('compare-product-select');
   const select = el('compare-target-select');
@@ -662,6 +716,7 @@ function renderCompare() {
     selection.compareTarget = '';
     selection.compareBaseline = '';
     el('compare-summary').textContent = 'No comparable anomaly products have been published across the model manifests';
+    renderAnalogPanel('');
     renderCompareGrid('');
     el('footer-copy').textContent = `Seasonal model comparison · ${compareModelListLabel()}`;
     syncUrlState();
@@ -684,6 +739,7 @@ function renderCompare() {
     select.disabled = true;
     selection.compareTarget = '';
     el('compare-summary').textContent = `${product} · no matching target has been published across the model manifests`;
+    renderAnalogPanel('');
     renderCompareGrid('');
     el('footer-copy').textContent = `${product} comparison · ${compareModelListLabel()}`;
     syncUrlState();
@@ -694,6 +750,7 @@ function renderCompare() {
   populate(select, options, selection.compareTarget);
   selection.compareTarget = select.value || preferred.value;
   const availableCount = renderCompareGrid(selection.compareTarget);
+  renderAnalogPanel(selection.compareTarget);
   el('compare-summary').textContent = `${product} · ${periodLabel(selection.compareTarget)} · ${compareBaselineLabel(selection.compareBaseline)} · ${availableCount}/${compareFilteredModels().length} forecast surfaces available`;
   el('footer-copy').textContent = `${product} comparison · ${compareBaselineLabel(selection.compareBaseline)} · ${compareModelListLabel()}`;
   syncUrlState();
@@ -871,6 +928,17 @@ async function loadManifest(key, config) {
     modelStates[key].error = error.message;
   }
 }
+async function loadAnalogManifest() {
+  try {
+    const response = await fetch(ANALOG_MANIFEST_URL);
+    if (!response.ok) throw new Error(`Analog manifest returned ${response.status}`);
+    const manifest = await response.json();
+    if (manifest?.schema_version !== 'seasonal_z500_analogs_v1' || manifest?.kind !== 'seasonal_z500_analog_manifest') throw new Error('Analog manifest schema is not recognized');
+    seasonalAnalogs = manifest;
+  } catch (error) {
+    analogManifestError = error.message;
+  }
+}
 async function loadDashboardData() {
   const catalogModels = new Set();
   try {
@@ -903,6 +971,7 @@ async function loadDashboardData() {
   await Promise.all(Object.entries(MODEL_CONFIG)
     .filter(([key]) => !catalogModels.has(key))
     .map(([key, config]) => loadManifest(key, config)));
+  await loadAnalogManifest();
 }
 loadDashboardData().then(() => {
   if (!modelStates[selection.model].manifest) selection.model = Object.keys(MODEL_CONFIG).find(key => modelStates[key].manifest) || selection.model;
