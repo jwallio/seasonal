@@ -86,12 +86,19 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p .cache/nmme
+          published_manifest=".cache/nmme/previous_manifest.json"
+          temporary_manifest="${published_manifest}.tmp"
           pages_url="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/seasonal/nmme_manifest.json"
-          if curl -fsSL --retry 2 --connect-timeout 10 "$pages_url" -o .cache/nmme/previous_manifest.json; then
+          if curl -fsSL --retry 2 --connect-timeout 10 "$pages_url" -o "$temporary_manifest"; then
+            mv "$temporary_manifest" "$published_manifest"
             echo "Restored prior NMME manifest."
           else
-            rm -f .cache/nmme/previous_manifest.json
-            echo "No prior NMME manifest was available."
+            rm -f "$temporary_manifest"
+            if [ -f "$published_manifest" ]; then
+              echo "Could not refresh NMME manifest; retaining cached last-known-good history."
+            else
+              echo "No prior NMME manifest was available."
+            fi
           fi
 
       - name: Render NMME products
@@ -129,3 +136,4 @@ jobs:
           path: pages-payload
           if-no-files-found: error
           retention-days: 14
+

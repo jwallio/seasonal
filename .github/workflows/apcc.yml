@@ -99,12 +99,19 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p .cache/apcc
+          published_manifest=".cache/apcc/previous_manifest.json"
+          temporary_manifest="${published_manifest}.tmp"
           pages_url="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/seasonal/apcc_manifest.json"
-          if curl -fsSL --retry 2 --connect-timeout 10 "$pages_url" -o .cache/apcc/previous_manifest.json; then
+          if curl -fsSL --retry 2 --connect-timeout 10 "$pages_url" -o "$temporary_manifest"; then
+            mv "$temporary_manifest" "$published_manifest"
             echo "Restored prior APCC manifest."
           else
-            rm -f .cache/apcc/previous_manifest.json
-            echo "No prior APCC manifest was available."
+            rm -f "$temporary_manifest"
+            if [ -f "$published_manifest" ]; then
+              echo "Could not refresh APCC manifest; retaining cached last-known-good history."
+            else
+              echo "No prior APCC manifest was available."
+            fi
           fi
 
       - name: Render APCC products
@@ -143,3 +150,4 @@ jobs:
           path: pages-payload
           if-no-files-found: error
           retention-days: 14
+

@@ -37,6 +37,10 @@ UTC_PATTERN = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z$")
 TARGET_PATTERN = re.compile(r"^\d{6}(?:-\d{6})?$")
 USABLE_STATUSES = {"available", "decoded", "partial", "rendered"}
 FAILED_STATUSES = {"error", "failed"}
+FRESHNESS_WINDOWS = {
+    "default": {"fresh_days": 35, "aging_days": 50},
+    "cfsv2": {"fresh_days": 2, "aging_days": 4},
+}
 
 RUN_FIELDS = (
     "id", "model", "component", "component_label", "model_role", "source", "source_url", "source_urls",
@@ -369,12 +373,38 @@ def _usable_targets(run: dict[str, Any]) -> list[dict[str, Any]]:
     ]
 
 
+def _utc_datetime(value: Any) -> dt.datetime | None:
+    if not _valid_utc(value):
+        return None
+    try:
+        return dt.datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+    except ValueError:
+        return None
+
+
+def _freshness(model_key: str, init_utc: Any, as_of_utc: str) -> tuple[str, float | None]:
+    initialized = _utc_datetime(init_utc)
+    as_of = _utc_datetime(as_of_utc)
+    if not initialized or not as_of:
+        return "unknown", None
+    age_days = max(0.0, (as_of - initialized).total_seconds() / 86400.0)
+    window = FRESHNESS_WINDOWS.get(model_key, FRESHNESS_WINDOWS["default"])
+    if age_days <= window["fresh_days"]:
+        state = "fresh"
+    elif age_days <= window["aging_days"]:
+        state = "aging"
+    else:
+        state = "stale"
+    return state, round(age_days, 1)
+
+
 def _surface_state(model_key: str, runs: list[dict[str, Any]], product: str) -> dict[str, Any]:
     support = dict(MODELS[model_key]["support"][product])
     if support["state"] != "supported":
         return {**support, "available": False, "comparable": False}
     candidates = _preferred_runs(model_key, runs, product)
     candidates.sort(key=lambda run: (str(run.get("init_utc") or ""), str(run.get("id") or "")), reverse=True)
+    latest = candidates[0] if candidates else {}
     usable = next((run for run in candidates if _usable_targets(run)), None)
     if not usable:
         failed = next((run for run in candidates if str(run.get("status") or "").lower() in FAILED_STATUSES), None)
@@ -384,12 +414,17 @@ def _surface_state(model_key: str, runs: list[dict[str, Any]], product: str) -> 
             "available": False,
             "comparable": False,
             "latest_init_utc": (failed or {}).get("init_utc"),
+            "latest_run_id": latest.get("id"),
+            "latest_run_status": latest.get("status"),
+            "latest_run_init_utc": latest.get("init_utc"),
+            "retained_fallback": False,
         }
     targets = _usable_targets(usable)
     partial = str(usable.get("status") or "").lower() == "partial" or any(
         str(target.get("status") or "").lower() == "partial" for target in targets
     )
     comparable = bool(usable.get("_catalog", {}).get("comparable", True))
+    retained_fallback = bool(latest) and str(latest.get("id") or "") != str(usable.get("id") or "")
     return {
         "state": "partial" if partial else "available",
         "reason": (
@@ -404,6 +439,135 @@ def _surface_state(model_key: str, runs: list[dict[str, Any]], product: str) -> 
         "latest_init_utc": usable.get("init_utc"),
         "run_id": usable.get("id"),
         "target_count": len(targets),
+        "latest_run_id": latest.get("id"),
+        "latest_run_status": latest.get("status"),
+        "latest_run_init_utc": latest.get("init_utc"),
+        "retained_fallback": retained_fallback,
+    }
+
+
+def _surface_health(
+    model_key: str,
+    surface: dict[str, Any],
+    *,
+    as_of_utc: str,
+) -> dict[str, Any]:
+    if surface.get("state") in {"unsupported", "quarantined"}:
+        return {
+            "health_state": "not_applicable",
+            "freshness": "not_applicable",
+            "age_days": None,
+            "latest_status": None,
+            "latest_init_utc": None,
+            "selected_init_utc": None,
+            "selected_run_id": None,
+            "retained_fallback": False,
+            "reason": surface.get("reason"),
+        }
+
+    freshness, age_days = _freshness(model_key, surface.get("latest_init_utc"), as_of_utc)
+    latest_status = str(surface.get("latest_run_status") or "").lower()
+    retained_fallback = bool(surface.get("retained_fallback"))
+    if surface.get("state") in {"failed", "missing"}:
+        health_state = str(surface["state"])
+    elif retained_fallback and latest_status in FAILED_STATUSES:
+        health_state = "failed"
+    elif surface.get("state") == "partial":
+        health_state = "partial"
+    elif surface.get("comparable") is False:
+        health_state = "noncomparable"
+    elif freshness in {"stale", "aging"}:
+        health_state = freshness
+    else:
+        health_state = "healthy"
+
+    reason = str(surface.get("reason") or "")
+    if retained_fallback and latest_status in FAILED_STATUSES:
+        reason = "Latest run failed; retaining the last usable rendered run."
+    elif retained_fallback:
+        reason = "Latest run has no usable rendered target; retaining the last usable rendered run."
+    return {
+        "health_state": health_state,
+        "freshness": freshness,
+        "age_days": age_days,
+        "latest_status": surface.get("latest_run_status"),
+        "latest_init_utc": surface.get("latest_run_init_utc"),
+        "selected_init_utc": surface.get("latest_init_utc"),
+        "selected_run_id": surface.get("run_id"),
+        "retained_fallback": retained_fallback,
+        "reason": reason,
+    }
+
+
+def _build_health_report(
+    catalog_models: dict[str, Any],
+    *,
+    generated_utc: str,
+) -> dict[str, Any]:
+    surfaces: list[dict[str, Any]] = []
+    attention: list[dict[str, Any]] = []
+    counts = {
+        "healthy": 0,
+        "aging": 0,
+        "stale": 0,
+        "partial": 0,
+        "failed": 0,
+        "missing": 0,
+        "noncomparable": 0,
+        "not_applicable": 0,
+    }
+    for model_key, model_entry in catalog_models.items():
+        model_surfaces = model_entry.get("surfaces") or {}
+        for product in CORE_COMPARISON_PRODUCTS:
+            surface = model_surfaces.get(product)
+            if surface is None:
+                support = dict((model_entry.get("support") or {}).get(product) or {
+                    "state": "supported",
+                    "reason": "Provider adapter publishes this core product.",
+                })
+                surface = {
+                    **support,
+                    "state": "missing" if support.get("state") == "supported" else support.get("state"),
+                    "reason": (
+                        "Catalog surface is missing."
+                        if support.get("state") == "supported"
+                        else support.get("reason")
+                    ),
+                    "available": False,
+                    "comparable": False,
+                }
+            health = _surface_health(
+                model_key,
+                surface,
+                as_of_utc=generated_utc,
+            )
+            item = {
+                "model": model_key,
+                "model_label": model_entry.get("label", model_key),
+                "product": product,
+                "product_label": PRODUCTS.get(product, {}).get("label", product),
+                "surface_state": surface.get("state"),
+                "available": bool(surface.get("available")),
+                "comparable": bool(surface.get("comparable")),
+                **health,
+            }
+            surfaces.append(item)
+            health_state = str(item["health_state"])
+            counts[health_state] = counts.get(health_state, 0) + 1
+            if health_state not in {"healthy", "not_applicable"}:
+                attention.append(item)
+
+    return {
+        "status": "attention" if attention else "healthy",
+        "generated_utc": generated_utc,
+        "freshness_policy_days": FRESHNESS_WINDOWS,
+        "summary": {
+            "surfaces": len(surfaces),
+            "attention_surfaces": len(attention),
+            "by_state": counts,
+        },
+        "surfaces": surfaces,
+        "attention": attention,
     }
 
 
@@ -420,6 +584,9 @@ def build_catalog(
     unknown = [key for key in keys if key not in MODELS]
     if unknown:
         raise ValueError(f"unknown seasonal model key(s): {', '.join(unknown)}")
+    generated = generated_utc or iso_utc(dt.datetime.now(dt.timezone.utc))
+    if not _valid_utc(generated):
+        raise ValueError(f"invalid catalog generated_utc: {generated!r}")
 
     catalog_models: dict[str, Any] = {}
     global_issues = IssueCollector()
@@ -507,9 +674,7 @@ def build_catalog(
                 global_issues.add(issue["code"], "error", f"{model_key}: {issue['message']}")
         catalog_models[model_key] = model_entry
 
-    generated = generated_utc or iso_utc(dt.datetime.now(dt.timezone.utc))
-    if not _valid_utc(generated):
-        raise ValueError(f"invalid catalog generated_utc: {generated!r}")
+    health = _build_health_report(catalog_models, generated_utc=generated)
     return {
         "schema_version": CATALOG_SCHEMA_VERSION,
         "registry_version": REGISTRY_VERSION,
@@ -519,6 +684,7 @@ def build_catalog(
         "model_order": keys,
         "products": public_product_registry(),
         "models": catalog_models,
+        "health": health,
         "summary": {
             "models_expected": len(keys),
             "models_online": models_online,
@@ -541,6 +707,46 @@ def write_catalog(path: Path, catalog: dict[str, Any]) -> None:
     temporary = path.with_name(path.name + ".tmp")
     temporary.write_text(json.dumps(catalog, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     temporary.replace(path)
+
+
+def write_github_step_summary(catalog: dict[str, Any]) -> None:
+    """Append the non-blocking health report to a GitHub Actions summary."""
+
+    summary_path = os.environ.get("GITHUB_STEP_SUMMARY")
+    if not summary_path:
+        return
+    health = catalog.get("health") or {}
+    summary = health.get("summary") or {}
+    lines = [
+        "## Seasonal health",
+        "",
+        f"**Status:** `{health.get('status', 'unknown')}`  ",
+        f"**Attention:** {summary.get('attention_surfaces', 0)} of {summary.get('surfaces', 0)} surfaces",
+        "",
+    ]
+    attention = health.get("attention") or []
+    if attention:
+        lines.extend([
+            "| Model | Product | Status | Selected init | Latest init | Details |",
+            "| --- | --- | --- | --- | --- | --- |",
+        ])
+        for item in attention:
+            reason = str(item.get("reason") or "").replace("|", "\\|")
+            lines.append(
+                f"| {item.get('model_label', item.get('model', ''))} "
+                f"| {item.get('product_label', item.get('product', ''))} "
+                f"| `{item.get('health_state', 'unknown')}` "
+                f"| {item.get('selected_init_utc') or '—'} "
+                f"| {item.get('latest_init_utc') or '—'} "
+                f"| {reason} |"
+            )
+    else:
+        lines.append("No supported seasonal surfaces require attention.")
+    lines.append("")
+    summary_file = Path(summary_path)
+    summary_file.parent.mkdir(parents=True, exist_ok=True)
+    with summary_file.open("a", encoding="utf-8") as handle:
+        handle.write("\n".join(lines))
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -575,6 +781,19 @@ def main(argv: list[str] | None = None) -> int:
         f"{summary['intentional_unavailable_surfaces']} intentional N/A; "
         f"{catalog['validation']['error_count']} validation error(s)"
     )
+    health = catalog["health"]
+    health_summary = health["summary"]
+    print(
+        "seasonal health: "
+        f"{health['status']}; {health_summary['attention_surfaces']}/{health_summary['surfaces']} "
+        "surface(s) need attention"
+    )
+    for item in health.get("attention", []):
+        print(
+            f"ATTENTION [{item['health_state']}] "
+            f"{item['model_label']} / {item['product_label']}: {item['reason']}"
+        )
+    write_github_step_summary(catalog)
     if args.strict and catalog["validation"]["status"] == "failed":
         for issue in catalog["validation"]["issues"]:
             print(f"ERROR [{issue['code']}] {issue['message']}", file=sys.stderr)
@@ -584,3 +803,4 @@ def main(argv: list[str] | None = None) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+

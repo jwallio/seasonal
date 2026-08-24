@@ -82,8 +82,12 @@ jobs:
             mv "$temporary_manifest" "$published_manifest"
             echo "Restored prior CFSv2 manifest for current-plus-three retention per parameter."
           else
-            rm -f "$temporary_manifest" "$published_manifest"
-            echo "No prior published CFSv2 manifest was available; starting a new history."
+            rm -f "$temporary_manifest"
+            if [ -f "$published_manifest" ]; then
+              echo "Could not refresh CFSv2 manifest; retaining cached last-known-good history."
+            else
+              echo "No prior published CFSv2 manifest was available; starting a new history."
+            fi
           fi
 
       - name: Build wgrib2
@@ -165,3 +169,4 @@ jobs:
           path: pages-payload
           if-no-files-found: error
           retention-days: 14
+

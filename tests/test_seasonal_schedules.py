@@ -24,6 +24,19 @@ SCHEDULED_SUITES = {
     ".github/workflows/seas5.yml": ("SCHEDULED_SEAS5_PRODUCTS", {"500mb_height_anomaly", "850mb_temperature_anomaly", "2m_temperature_anomaly", "precipitation_anomaly", "sst_anomaly", "mslp_anomaly"}),
 }
 
+HISTORY_WORKFLOWS = (
+    ".github/workflows/apcc.yml",
+    ".github/workflows/c3s.yml",
+    ".github/workflows/cansips.yml",
+    ".github/workflows/cfsv2.yml",
+    ".github/workflows/cma-cpsv3.yml",
+    ".github/workflows/geos-s2s3.yml",
+    ".github/workflows/jma.yml",
+    ".github/workflows/nmme.yml",
+    ".github/workflows/seas5.yml",
+    ".github/workflows/superensemble.yml",
+)
+
 
 def check(condition: bool, message: str) -> None:
     if not condition:
@@ -46,6 +59,16 @@ def main() -> int:
         check('github.event_name }}" == "schedule"' in text, f"{relative_path} must distinguish scheduled suites from manual product reruns")
         check('for product in "${products[@]}"' in text, f"{relative_path} must render every scheduled product")
 
+    for relative_path in HISTORY_WORKFLOWS:
+        text = (ROOT / relative_path).read_text(encoding="utf-8")
+        check('published_manifest=' in text, f"{relative_path} must name the retained manifest")
+        check('temporary_manifest="${published_manifest}.tmp"' in text, f"{relative_path} must restore manifests through a temporary file")
+        check(' -o "$temporary_manifest"' in text, f"{relative_path} must not truncate the retained manifest during download")
+        check('mv "$temporary_manifest" "$published_manifest"' in text, f"{relative_path} must atomically replace a retained manifest after a successful download")
+        check('rm -f "$temporary_manifest"' in text, f"{relative_path} must clean up a failed temporary download")
+        check(not re.search(r"rm -f [^\n]*previous_manifest\.json", text), f"{relative_path} must not delete last-known-good history")
+        check("retaining cached last-known-good history" in text, f"{relative_path} must report retained history when Pages is unavailable")
+
     super_workflow = (ROOT / ".github/workflows/superensemble.yml").read_text(encoding="utf-8")
     check("SCHEDULED_SUPER_PRODUCT: all" in super_workflow, "scheduled super ensemble must render all supported parameters")
     check('product="$SCHEDULED_SUPER_PRODUCT"' in super_workflow, "scheduled super ensemble must select all-product mode")
@@ -63,3 +86,4 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+

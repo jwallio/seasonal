@@ -87,8 +87,12 @@ jobs:
             mv "$temporary_manifest" "$published_manifest"
             echo "Restored prior CMA CPSv3 manifest for current-plus-three cycle retention."
           else
-            rm -f "$temporary_manifest" "$published_manifest"
-            echo "No prior published CMA CPSv3 manifest was available; starting a new history."
+            rm -f "$temporary_manifest"
+            if [ -f "$published_manifest" ]; then
+              echo "Could not refresh CMA CPSv3 manifest; retaining cached last-known-good history."
+            else
+              echo "No prior published CMA CPSv3 manifest was available; starting a new history."
+            fi
           fi
 
       - name: Render CMA CPSv3 products
@@ -126,3 +130,4 @@ jobs:
           path: pages-payload
           if-no-files-found: error
           retention-days: 14
+

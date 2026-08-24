@@ -30,6 +30,13 @@ The central `publish-pages.yml` workflow already serializes Pages updates with
 one another. A scheduled GitHub event can still be delayed during platform
 load; the dates above are release-aligned targets, not provider SLAs.
 
+Each Pages validation also writes a per-model/per-parameter health report to
+`seasonal/catalog.json` and the GitHub job summary. It distinguishes healthy,
+aging, stale, partial, failed, missing, non-comparable, and intentional
+not-applicable surfaces without blocking publication solely because a provider
+is late; strict publication failures remain driven by validation errors such as
+invalid manifests or missing rendered assets.
+
 ## Official timing references
 
 - [ECMWF dissemination schedule](https://confluence.ecmwf.int/pages/viewpage.action?pageId=685248329)
@@ -41,3 +48,4 @@ load; the dates above are release-aligned targets, not provider SLAs.
 - [NOAA NOMADS](https://nomads.ncep.noaa.gov/)
 - [APCC CLIK API](https://apcc21.org/clik/clikapi?lang=en)
 - [NASA GEOS-S2S-3 numerical forecast archive](https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/NRT/APCN/)
+

@@ -115,6 +115,79 @@ def main() -> int:
         check(summary["available_surfaces"] == 1, "one synthetic CFSv2 surface should be available")
         check(summary["intentional_unavailable_surfaces"] == 2, "CFSv2 t850 and SST should be intentional N/A")
         check(catalog["models"]["cfsv2"]["surfaces"]["500mb_height_anomaly"]["available"], "z500 surface should be available")
+        health_surface = next(
+            item for item in catalog["health"]["surfaces"]
+            if item["model"] == "cfsv2" and item["product"] == "500mb_height_anomaly"
+        )
+        check(health_surface["health_state"] == "healthy", "current rendered surface should be healthy")
+        check(health_surface["freshness"] == "fresh", "current rendered surface should be fresh")
+
+        missing_model_catalog = build_catalog(
+            site,
+            model_keys=["nmme"],
+            generated_utc="2026-08-23T12:00:00Z",
+            source_revision="test-revision",
+        )
+        nmme_height_health = next(
+            item for item in missing_model_catalog["health"]["surfaces"]
+            if item["product"] == "500mb_height_anomaly"
+        )
+        nmme_temperature_health = next(
+            item for item in missing_model_catalog["health"]["surfaces"]
+            if item["product"] == "2m_temperature_anomaly"
+        )
+        check(nmme_height_health["health_state"] == "not_applicable", "missing manifests must preserve intentional N/A support states")
+        check(nmme_temperature_health["health_state"] == "missing", "missing manifests must still flag supported products as missing")
+
+        fallback_manifest = {
+            "schema_version": 1,
+            "kind": "cfsv2_seasonal",
+            "generated_utc": "2026-08-23T12:00:00Z",
+            "runs": [
+                {
+                    "id": "cfsv2-failed",
+                    "init_utc": "2026-08-23T00:00:00Z",
+                    "product": "500mb_height_anomaly",
+                    "status": "failed",
+                    "targets": [{
+                        "id": "failed-target",
+                        "target_month": "202612-202702",
+                        "valid_start_utc": "2026-12-01T00:00:00Z",
+                        "valid_end_utc": "2027-03-01T00:00:00Z",
+                        "lead_month": "4-6",
+                        "field": "z500_anomaly",
+                        "units": "m",
+                        "status": "failed",
+                        "error": "upstream unavailable",
+                    }],
+                },
+                {
+                    "id": "cfsv2-retained",
+                    "init_utc": "2026-08-01T00:00:00Z",
+                    "product": "500mb_height_anomaly",
+                    "status": "rendered",
+                    "targets": [target()],
+                },
+            ],
+        }
+        manifest_path.write_text(json.dumps(fallback_manifest), encoding="utf-8")
+        fallback_catalog = build_catalog(
+            site,
+            model_keys=["cfsv2"],
+            generated_utc="2026-08-23T12:00:00Z",
+            source_revision="test-revision",
+        )
+        fallback_surface = fallback_catalog["models"]["cfsv2"]["surfaces"]["500mb_height_anomaly"]
+        check(fallback_surface["available"], "a retained rendered surface should remain available after a failed latest run")
+        check(fallback_surface["retained_fallback"], "catalog should disclose retained fallback selection")
+        check(fallback_surface["latest_run_status"] == "failed", "catalog should preserve latest failed status")
+        fallback_health = next(
+            item for item in fallback_catalog["health"]["surfaces"]
+            if item["model"] == "cfsv2" and item["product"] == "500mb_height_anomaly"
+        )
+        check(fallback_health["health_state"] == "failed", "health report should flag a failed latest run")
+        check(fallback_health["available"], "failed latest run should still report retained map availability")
+        check(fallback_health["selected_run_id"] == "cfsv2-retained", "health report should identify the retained run")
 
         image.unlink()
         _, validation = validate_manifest("cfsv2", manifest(), site_root=site, check_assets=True)
@@ -154,3 +227,4 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+

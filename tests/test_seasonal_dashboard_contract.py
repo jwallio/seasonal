@@ -31,8 +31,13 @@ def main() -> int:
     page_markup = PAGE.read_text(encoding="utf-8")
     stylesheet = STYLESHEET.read_text(encoding="utf-8")
     dashboard_script = DASHBOARD_SCRIPT.read_text(encoding="utf-8")
+    catalog_builder = CATALOG_SCRIPT.read_text(encoding="utf-8")
     page = "\n".join((page_markup, stylesheet, dashboard_script))
     workflow = PUBLISH_WORKFLOW.read_text(encoding="utf-8")
+
+    check("_build_health_report" in catalog_builder, "seasonal catalog must include per-surface health")
+    check("write_github_step_summary" in catalog_builder, "seasonal catalog must report health to the CI summary")
+    check("freshness_policy_days" in catalog_builder, "seasonal health must disclose its freshness policy")
 
     check('href="dashboard.css"' in page_markup, "dashboard must load its external stylesheet")
     check('src="dashboard.js" defer' in page_markup, "dashboard must defer its external script")
@@ -260,3 +265,4 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+

@@ -93,12 +93,19 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p .cache/jma
+          published_manifest=".cache/jma/previous_manifest.json"
+          temporary_manifest="${published_manifest}.tmp"
           pages_url="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/seasonal/jma_manifest.json"
-          if curl -fsSL --retry 2 --connect-timeout 10 "$pages_url" -o .cache/jma/previous_manifest.json; then
+          if curl -fsSL --retry 2 --connect-timeout 10 "$pages_url" -o "$temporary_manifest"; then
+            mv "$temporary_manifest" "$published_manifest"
             echo "Restored prior JMA manifest."
           else
-            rm -f .cache/jma/previous_manifest.json
-            echo "No prior JMA manifest was available."
+            rm -f "$temporary_manifest"
+            if [ -f "$published_manifest" ]; then
+              echo "Could not refresh JMA manifest; retaining cached last-known-good history."
+            else
+              echo "No prior JMA manifest was available."
+            fi
           fi
 
       - name: Render JMA products
@@ -147,3 +154,4 @@ jobs:
           path: pages-payload
           if-no-files-found: error
           retention-days: 14
+

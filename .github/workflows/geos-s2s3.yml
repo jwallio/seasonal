@@ -75,12 +75,19 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p .cache/geos-s2s3
+          published_manifest=".cache/geos-s2s3/previous_manifest.json"
+          temporary_manifest="${published_manifest}.tmp"
           pages_url="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/seasonal/geos_s2s3_manifest.json"
-          if curl -fsSL --retry 2 --connect-timeout 10 "$pages_url" -o .cache/geos-s2s3/previous_manifest.json; then
+          if curl -fsSL --retry 2 --connect-timeout 10 "$pages_url" -o "$temporary_manifest"; then
+            mv "$temporary_manifest" "$published_manifest"
             echo "Restored prior NASA GEOS-S2S-3 manifest."
           else
-            rm -f .cache/geos-s2s3/previous_manifest.json
-            echo "No prior NASA GEOS-S2S-3 manifest was available."
+            rm -f "$temporary_manifest"
+            if [ -f "$published_manifest" ]; then
+              echo "Could not refresh NASA GEOS-S2S-3 manifest; retaining cached last-known-good history."
+            else
+              echo "No prior NASA GEOS-S2S-3 manifest was available."
+            fi
           fi
 
       - name: Render NASA GEOS-S2S-3 numerical anomalies
@@ -117,3 +124,4 @@ jobs:
           path: pages-payload
           if-no-files-found: error
           retention-days: 14
+

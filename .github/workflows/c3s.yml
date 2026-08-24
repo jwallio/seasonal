@@ -100,12 +100,19 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p .cache/c3s
+          published_manifest=".cache/c3s/previous_manifest.json"
+          temporary_manifest="${published_manifest}.tmp"
           pages_url="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/seasonal/c3s_manifest.json"
-          if curl -fsSL --retry 2 --connect-timeout 10 "$pages_url" -o .cache/c3s/previous_manifest.json; then
+          if curl -fsSL --retry 2 --connect-timeout 10 "$pages_url" -o "$temporary_manifest"; then
+            mv "$temporary_manifest" "$published_manifest"
             echo "Restored prior C3S manifest."
           else
-            rm -f .cache/c3s/previous_manifest.json
-            echo "No prior C3S manifest was available."
+            rm -f "$temporary_manifest"
+            if [ -f "$published_manifest" ]; then
+              echo "Could not refresh C3S manifest; retaining cached last-known-good history."
+            else
+              echo "No prior C3S manifest was available."
+            fi
           fi
 
       - name: Render C3S products
@@ -153,3 +160,4 @@ jobs:
           path: pages-payload
           if-no-files-found: error
           retention-days: 14
+

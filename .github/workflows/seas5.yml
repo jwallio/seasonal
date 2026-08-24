@@ -103,8 +103,12 @@ jobs:
             mv "$temporary_manifest" "$published_manifest"
             echo "Restored prior SEAS5 manifest for current-plus-three run retention."
           else
-            rm -f "$temporary_manifest" "$published_manifest"
-            echo "No prior published SEAS5 manifest was available; starting a new history."
+            rm -f "$temporary_manifest"
+            if [ -f "$published_manifest" ]; then
+              echo "Could not refresh SEAS5 manifest; retaining cached last-known-good history."
+            else
+              echo "No prior published SEAS5 manifest was available; starting a new history."
+            fi
           fi
 
       - name: Render SEAS5 products
@@ -152,3 +156,4 @@ jobs:
           path: pages-payload
           if-no-files-found: error
           retention-days: 14
+
