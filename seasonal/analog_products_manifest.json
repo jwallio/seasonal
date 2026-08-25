@@ -1,0 +1,369 @@
+{
+  "schema_version": "seasonal_analog_products_v1",
+  "kind": "seasonal_analog_products_manifest",
+  "generated_utc": "2026-08-25T11:39:57Z",
+  "source": {
+    "analog_manifest": "seasonal/analog_z500_manifest.json",
+    "climatology_years": "1981-2010",
+    "psl": "https://psl.noaa.gov/data/atmoswrit/map/",
+    "mrcc": "https://mrcc.purdue.edu/CLIMATE/maps/interpolated",
+    "nws_region": "NWS Eastern Region (ER)",
+    "period_rule": "monthly analogs use that calendar month; DJF analogs use December through February",
+    "retained_on_source_failure": true
+  },
+  "status": "partial",
+  "entries": [
+    {
+      "model": "superensemble",
+      "model_label": "Super Ensemble",
+      "target": "202702",
+      "target_label": "February 2027",
+      "init_utc": "2026-08-01T00:00:00Z",
+      "top_analog_key": "superensemble:202702:1983",
+      "top_analog": {
+        "label": "February 1983",
+        "winter_year": 1983,
+        "pattern_correlation": 0.625527,
+        "nh_correlation": 0.512327,
+        "conus_correlation": 0.889662,
+        "nh_valid_fraction": 1.0,
+        "conus_valid_fraction": 1.0,
+        "sample_count": 28,
+        "rank": 1
+      },
+      "period": {
+        "period_type": "month",
+        "label": "February 1983",
+        "start_date": "1983-02-01",
+        "end_date": "1983-02-28",
+        "psl_year": 1983,
+        "psl_start_month": 2,
+        "psl_end_month": 2,
+        "winter_year": 1983
+      },
+      "status": "partial",
+      "products": {
+        "psl_500mb_height_anomaly": {
+          "product": "psl_500mb_height_anomaly",
+          "label": "500-mb Geopotential Height Anomaly",
+          "provider": "NOAA PSL WRIT",
+          "status": "ready",
+          "image": "seasonal/analog_products/superensemble/202702/1983/psl_500mb_height_anomaly.png",
+          "top_analog_key": "superensemble:202702:1983",
+          "period": {
+            "period_type": "month",
+            "label": "February 1983",
+            "start_date": "1983-02-01",
+            "end_date": "1983-02-28",
+            "psl_year": 1983,
+            "psl_start_month": 2,
+            "psl_end_month": 2,
+            "winter_year": 1983
+          },
+          "source_url": "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=ERA5&var=Geopotential+Height&level=500mb&iy=1983&fmonth=1&fmonth2=1&type=1&map=0&mapt=0&proj=North+America&colortable=MPL_BrBG&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+          "provider_asset_url": "https://psl.noaa.gov/img/icons/us_flag_small.png",
+          "dataset": "ERA5",
+          "climatology_years": "1981-2010",
+          "generated_utc": "2026-08-25T11:36:49Z"
+        },
+        "psl_2m_temperature_anomaly": {
+          "product": "psl_2m_temperature_anomaly",
+          "label": "2-m Temperature Anomaly",
+          "provider": "NOAA PSL WRIT",
+          "status": "ready",
+          "image": "seasonal/analog_products/superensemble/202702/1983/psl_2m_temperature_anomaly.png",
+          "top_analog_key": "superensemble:202702:1983",
+          "period": {
+            "period_type": "month",
+            "label": "February 1983",
+            "start_date": "1983-02-01",
+            "end_date": "1983-02-28",
+            "psl_year": 1983,
+            "psl_start_month": 2,
+            "psl_end_month": 2,
+            "winter_year": 1983
+          },
+          "source_url": "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=ERA5&var=2m+Air+Temperature&level=1000mb&iy=1983&fmonth=1&fmonth2=1&type=1&map=0&mapt=0&proj=North+America&colortable=MPL_BrBG&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+          "provider_asset_url": "https://psl.noaa.gov/img/icons/us_flag_small.png",
+          "dataset": "ERA5",
+          "climatology_years": "1981-2010",
+          "generated_utc": "2026-08-25T11:36:50Z"
+        },
+        "mrcc_snowfall_departure": {
+          "product": "mrcc_snowfall_departure",
+          "label": "Snowfall Departure \u00b7 NWS Eastern Region",
+          "provider": "MRCC / ACIS",
+          "status": "unavailable",
+          "top_analog_key": "superensemble:202702:1983",
+          "source_url": "https://gridded.geddes.rcac.purdue.edu/generate-map?s=station&a=region&loc=ER&var=snow&ds=19830201&de=19830228&stat=total&calc=departure&con=5&lta=F&cwa=F&cities=T&counties=T&state=F&mask=F&lakes=T&oceans=T&roads=F&output=map_btd.png",
+          "checked_utc": "2026-08-25T11:37:23Z",
+          "error": "HTTP 500 from https://gridded.geddes.rcac.purdue.edu/generate-map?s=station&a=region&loc=ER&var=snow&ds=19830201&de=19830228&stat=total&calc=departure&con=5&lta=F&cwa=F&cities=T&counties=T&state=F&mask=F&lakes=T&oceans=T&roads=F&output=map_btd.png: {\"area\":\"region\",\"calc\":\"departure\",\"cities\":\"T\",\"con\":5,\"counties\":\"T\",\"cwa\":\"F\",\"de\":\"19830228\",\"ds\":\"19830201\",\"gddB\":\"50\",\"gddC\":\"86\",\"lakes\":\"T\",\"line error\":\"52\",\"ll\":\"F\",\"loc\":\"ER\",\"lta\":\"F\",\"mask\":\"F\",\"message\":\"string index out of range\",\"o\":\"map_btd.png\",\"oceans\":\"T\",\"roads\":\"F\",\"sids\":\"\","
+        }
+      }
+    },
+    {
+      "model": "superensemble",
+      "model_label": "Super Ensemble",
+      "target": "202701",
+      "target_label": "January 2027",
+      "init_utc": "2026-08-01T00:00:00Z",
+      "top_analog_key": "superensemble:202701:1958",
+      "top_analog": {
+        "label": "January 1958",
+        "winter_year": 1958,
+        "pattern_correlation": 0.634833,
+        "nh_correlation": 0.557497,
+        "conus_correlation": 0.815281,
+        "nh_valid_fraction": 1.0,
+        "conus_valid_fraction": 1.0,
+        "sample_count": 31,
+        "rank": 1
+      },
+      "period": {
+        "period_type": "month",
+        "label": "January 1958",
+        "start_date": "1958-01-01",
+        "end_date": "1958-01-31",
+        "psl_year": 1958,
+        "psl_start_month": 1,
+        "psl_end_month": 1,
+        "winter_year": 1958
+      },
+      "status": "partial",
+      "products": {
+        "psl_500mb_height_anomaly": {
+          "product": "psl_500mb_height_anomaly",
+          "label": "500-mb Geopotential Height Anomaly",
+          "provider": "NOAA PSL WRIT",
+          "status": "ready",
+          "image": "seasonal/analog_products/superensemble/202701/1958/psl_500mb_height_anomaly.png",
+          "top_analog_key": "superensemble:202701:1958",
+          "period": {
+            "period_type": "month",
+            "label": "January 1958",
+            "start_date": "1958-01-01",
+            "end_date": "1958-01-31",
+            "psl_year": 1958,
+            "psl_start_month": 1,
+            "psl_end_month": 1,
+            "winter_year": 1958
+          },
+          "source_url": "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=ERA5&var=Geopotential+Height&level=500mb&iy=1958&fmonth=0&fmonth2=0&type=1&map=0&mapt=0&proj=North+America&colortable=MPL_BrBG&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+          "provider_asset_url": "https://psl.noaa.gov/img/icons/us_flag_small.png",
+          "dataset": "ERA5",
+          "climatology_years": "1981-2010",
+          "generated_utc": "2026-08-25T11:37:24Z"
+        },
+        "psl_2m_temperature_anomaly": {
+          "product": "psl_2m_temperature_anomaly",
+          "label": "2-m Temperature Anomaly",
+          "provider": "NOAA PSL WRIT",
+          "status": "ready",
+          "image": "seasonal/analog_products/superensemble/202701/1958/psl_2m_temperature_anomaly.png",
+          "top_analog_key": "superensemble:202701:1958",
+          "period": {
+            "period_type": "month",
+            "label": "January 1958",
+            "start_date": "1958-01-01",
+            "end_date": "1958-01-31",
+            "psl_year": 1958,
+            "psl_start_month": 1,
+            "psl_end_month": 1,
+            "winter_year": 1958
+          },
+          "source_url": "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=ERA5&var=2m+Air+Temperature&level=1000mb&iy=1958&fmonth=0&fmonth2=0&type=1&map=0&mapt=0&proj=North+America&colortable=MPL_BrBG&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+          "provider_asset_url": "https://psl.noaa.gov/img/icons/us_flag_small.png",
+          "dataset": "ERA5",
+          "climatology_years": "1981-2010",
+          "generated_utc": "2026-08-25T11:37:26Z"
+        },
+        "mrcc_snowfall_departure": {
+          "product": "mrcc_snowfall_departure",
+          "label": "Snowfall Departure \u00b7 NWS Eastern Region",
+          "provider": "MRCC / ACIS",
+          "status": "unavailable",
+          "top_analog_key": "superensemble:202701:1958",
+          "source_url": "https://gridded.geddes.rcac.purdue.edu/generate-map?s=station&a=region&loc=ER&var=snow&ds=19580101&de=19580131&stat=total&calc=departure&con=5&lta=F&cwa=F&cities=T&counties=T&state=F&mask=F&lakes=T&oceans=T&roads=F&output=map_btd.png",
+          "checked_utc": "2026-08-25T11:38:35Z",
+          "error": "HTTP 500 from https://gridded.geddes.rcac.purdue.edu/generate-map?s=station&a=region&loc=ER&var=snow&ds=19580101&de=19580131&stat=total&calc=departure&con=5&lta=F&cwa=F&cities=T&counties=T&state=F&mask=F&lakes=T&oceans=T&roads=F&output=map_btd.png: {\"area\":\"region\",\"calc\":\"departure\",\"cities\":\"T\",\"con\":5,\"counties\":\"T\",\"cwa\":\"F\",\"de\":\"19580131\",\"ds\":\"19580101\",\"gddB\":\"50\",\"gddC\":\"86\",\"lakes\":\"T\",\"line error\":\"52\",\"ll\":\"F\",\"loc\":\"ER\",\"lta\":\"F\",\"mask\":\"F\",\"message\":\"string index out of range\",\"o\":\"map_btd.png\",\"oceans\":\"T\",\"roads\":\"F\",\"sids\":\"\","
+        }
+      }
+    },
+    {
+      "model": "superensemble",
+      "model_label": "Super Ensemble",
+      "target": "202612-202702",
+      "target_label": "DJF 2026-27",
+      "init_utc": "2026-08-01T00:00:00Z",
+      "top_analog_key": "superensemble:202612-202702:1998",
+      "top_analog": {
+        "label": "DJF 1997-98",
+        "winter_year": 1998,
+        "pattern_correlation": 0.726097,
+        "nh_correlation": 0.645456,
+        "conus_correlation": 0.914259,
+        "nh_valid_fraction": 1.0,
+        "conus_valid_fraction": 1.0,
+        "sample_count": 90,
+        "rank": 1
+      },
+      "period": {
+        "period_type": "djf",
+        "label": "DJF 1997-98",
+        "start_date": "1997-12-01",
+        "end_date": "1998-02-28",
+        "psl_year": 1998,
+        "psl_start_month": 12,
+        "psl_end_month": 2,
+        "winter_year": 1998
+      },
+      "status": "partial",
+      "products": {
+        "psl_500mb_height_anomaly": {
+          "product": "psl_500mb_height_anomaly",
+          "label": "500-mb Geopotential Height Anomaly",
+          "provider": "NOAA PSL WRIT",
+          "status": "ready",
+          "image": "seasonal/analog_products/superensemble/202612-202702/1998/psl_500mb_height_anomaly.png",
+          "top_analog_key": "superensemble:202612-202702:1998",
+          "period": {
+            "period_type": "djf",
+            "label": "DJF 1997-98",
+            "start_date": "1997-12-01",
+            "end_date": "1998-02-28",
+            "psl_year": 1998,
+            "psl_start_month": 12,
+            "psl_end_month": 2,
+            "winter_year": 1998
+          },
+          "source_url": "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=ERA5&var=Geopotential+Height&level=500mb&iy=1998&fmonth=11&fmonth2=1&type=1&map=0&mapt=0&proj=North+America&colortable=MPL_BrBG&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+          "provider_asset_url": "https://psl.noaa.gov/img/icons/us_flag_small.png",
+          "dataset": "ERA5",
+          "climatology_years": "1981-2010",
+          "generated_utc": "2026-08-25T11:38:37Z"
+        },
+        "psl_2m_temperature_anomaly": {
+          "product": "psl_2m_temperature_anomaly",
+          "label": "2-m Temperature Anomaly",
+          "provider": "NOAA PSL WRIT",
+          "status": "ready",
+          "image": "seasonal/analog_products/superensemble/202612-202702/1998/psl_2m_temperature_anomaly.png",
+          "top_analog_key": "superensemble:202612-202702:1998",
+          "period": {
+            "period_type": "djf",
+            "label": "DJF 1997-98",
+            "start_date": "1997-12-01",
+            "end_date": "1998-02-28",
+            "psl_year": 1998,
+            "psl_start_month": 12,
+            "psl_end_month": 2,
+            "winter_year": 1998
+          },
+          "source_url": "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=ERA5&var=2m+Air+Temperature&level=1000mb&iy=1998&fmonth=11&fmonth2=1&type=1&map=0&mapt=0&proj=North+America&colortable=MPL_BrBG&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+          "provider_asset_url": "https://psl.noaa.gov/img/icons/us_flag_small.png",
+          "dataset": "ERA5",
+          "climatology_years": "1981-2010",
+          "generated_utc": "2026-08-25T11:38:38Z"
+        },
+        "mrcc_snowfall_departure": {
+          "product": "mrcc_snowfall_departure",
+          "label": "Snowfall Departure \u00b7 NWS Eastern Region",
+          "provider": "MRCC / ACIS",
+          "status": "unavailable",
+          "top_analog_key": "superensemble:202612-202702:1998",
+          "source_url": "https://gridded.geddes.rcac.purdue.edu/generate-map?s=station&a=region&loc=ER&var=snow&ds=19971201&de=19980228&stat=total&calc=departure&con=5&lta=F&cwa=F&cities=T&counties=T&state=F&mask=F&lakes=T&oceans=T&roads=F&output=map_btd.png",
+          "checked_utc": "2026-08-25T11:39:15Z",
+          "error": "HTTP 500 from https://gridded.geddes.rcac.purdue.edu/generate-map?s=station&a=region&loc=ER&var=snow&ds=19971201&de=19980228&stat=total&calc=departure&con=5&lta=F&cwa=F&cities=T&counties=T&state=F&mask=F&lakes=T&oceans=T&roads=F&output=map_btd.png: {\"area\":\"region\",\"calc\":\"departure\",\"cities\":\"T\",\"con\":5,\"counties\":\"T\",\"cwa\":\"F\",\"de\":\"19980228\",\"ds\":\"19971201\",\"gddB\":\"50\",\"gddC\":\"86\",\"lakes\":\"T\",\"line error\":\"52\",\"ll\":\"F\",\"loc\":\"ER\",\"lta\":\"F\",\"mask\":\"F\",\"message\":\"string index out of range\",\"o\":\"map_btd.png\",\"oceans\":\"T\",\"roads\":\"F\",\"sids\":\"\","
+        }
+      }
+    },
+    {
+      "model": "superensemble",
+      "model_label": "Super Ensemble",
+      "target": "202612",
+      "target_label": "December 2026",
+      "init_utc": "2026-08-01T00:00:00Z",
+      "top_analog_key": "superensemble:202612:2024",
+      "top_analog": {
+        "label": "December 2023",
+        "winter_year": 2024,
+        "pattern_correlation": 0.638073,
+        "nh_correlation": 0.614121,
+        "conus_correlation": 0.693959,
+        "nh_valid_fraction": 1.0,
+        "conus_valid_fraction": 1.0,
+        "sample_count": 31,
+        "rank": 1
+      },
+      "period": {
+        "period_type": "month",
+        "label": "December 2023",
+        "start_date": "2023-12-01",
+        "end_date": "2023-12-31",
+        "psl_year": 2023,
+        "psl_start_month": 12,
+        "psl_end_month": 12,
+        "winter_year": 2024
+      },
+      "status": "partial",
+      "products": {
+        "psl_500mb_height_anomaly": {
+          "product": "psl_500mb_height_anomaly",
+          "label": "500-mb Geopotential Height Anomaly",
+          "provider": "NOAA PSL WRIT",
+          "status": "ready",
+          "image": "seasonal/analog_products/superensemble/202612/2024/psl_500mb_height_anomaly.png",
+          "top_analog_key": "superensemble:202612:2024",
+          "period": {
+            "period_type": "month",
+            "label": "December 2023",
+            "start_date": "2023-12-01",
+            "end_date": "2023-12-31",
+            "psl_year": 2023,
+            "psl_start_month": 12,
+            "psl_end_month": 12,
+            "winter_year": 2024
+          },
+          "source_url": "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=ERA5&var=Geopotential+Height&level=500mb&iy=2023&fmonth=11&fmonth2=11&type=1&map=0&mapt=0&proj=North+America&colortable=MPL_BrBG&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+          "provider_asset_url": "https://psl.noaa.gov/img/icons/us_flag_small.png",
+          "dataset": "ERA5",
+          "climatology_years": "1981-2010",
+          "generated_utc": "2026-08-25T11:39:16Z"
+        },
+        "psl_2m_temperature_anomaly": {
+          "product": "psl_2m_temperature_anomaly",
+          "label": "2-m Temperature Anomaly",
+          "provider": "NOAA PSL WRIT",
+          "status": "ready",
+          "image": "seasonal/analog_products/superensemble/202612/2024/psl_2m_temperature_anomaly.png",
+          "top_analog_key": "superensemble:202612:2024",
+          "period": {
+            "period_type": "month",
+            "label": "December 2023",
+            "start_date": "2023-12-01",
+            "end_date": "2023-12-31",
+            "psl_year": 2023,
+            "psl_start_month": 12,
+            "psl_end_month": 12,
+            "winter_year": 2024
+          },
+          "source_url": "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=ERA5&var=2m+Air+Temperature&level=1000mb&iy=2023&fmonth=11&fmonth2=11&type=1&map=0&mapt=0&proj=North+America&colortable=MPL_BrBG&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+          "provider_asset_url": "https://psl.noaa.gov/img/icons/us_flag_small.png",
+          "dataset": "ERA5",
+          "climatology_years": "1981-2010",
+          "generated_utc": "2026-08-25T11:39:18Z"
+        },
+        "mrcc_snowfall_departure": {
+          "product": "mrcc_snowfall_departure",
+          "label": "Snowfall Departure \u00b7 NWS Eastern Region",
+          "provider": "MRCC / ACIS",
+          "status": "unavailable",
+          "top_analog_key": "superensemble:202612:2024",
+          "source_url": "https://gridded.geddes.rcac.purdue.edu/generate-map?s=station&a=region&loc=ER&var=snow&ds=20231201&de=20231231&stat=total&calc=departure&con=5&lta=F&cwa=F&cities=T&counties=T&state=F&mask=F&lakes=T&oceans=T&roads=F&output=map_btd.png",
+          "checked_utc": "2026-08-25T11:39:57Z",
+          "error": "HTTP 500 from https://gridded.geddes.rcac.purdue.edu/generate-map?s=station&a=region&loc=ER&var=snow&ds=20231201&de=20231231&stat=total&calc=departure&con=5&lta=F&cwa=F&cities=T&counties=T&state=F&mask=F&lakes=T&oceans=T&roads=F&output=map_btd.png: {\"area\":\"region\",\"calc\":\"departure\",\"cities\":\"T\",\"con\":5,\"counties\":\"T\",\"cwa\":\"F\",\"de\":\"20231231\",\"ds\":\"20231201\",\"gddB\":\"50\",\"gddC\":\"86\",\"lakes\":\"T\",\"line error\":\"52\",\"ll\":\"F\",\"loc\":\"ER\",\"lta\":\"F\",\"mask\":\"F\",\"message\":\"string index out of range\",\"o\":\"map_btd.png\",\"oceans\":\"T\",\"roads\":\"F\",\"sids\":\"\","
+        }
+      }
+    }
+  ]
+}
