@@ -125,6 +125,21 @@ def main() -> int:
         )
         check(all(product["status"] == "ready" for product in retained["entries"][0]["products"].values()), "unchanged top analog should reuse good products")
 
+        legacy = json.loads(json.dumps(first))
+        legacy["entries"][0]["products"]["psl_500mb_height_anomaly"]["provider_asset_url"] = "https://psl.noaa.gov/img/icons/us_flag_small.png"
+        module.write_manifest(output_path, legacy)
+        calls.clear()
+        refreshed = module.build_manifest(
+            root=root,
+            analog_manifest_path=analog_path,
+            output_manifest_path=output_path,
+            output_dir=output_dir,
+            fetcher=fetcher,
+        )
+        refreshed_psl = refreshed["entries"][0]["products"]["psl_500mb_height_anomaly"]
+        check(refreshed_psl["provider_asset_url"] == "https://psl.noaa.gov/tmp/test.png", "legacy PSL icon assets should be refreshed")
+        check(len(calls) == 2, "only legacy PSL assets should be fetched again")
+
         changed = json.loads(json.dumps(analog_manifest))
         changed["entries"][0]["results"][0]["winter_year"] = 1942
         changed["entries"][0]["results"][0]["label"] = "December 1941"

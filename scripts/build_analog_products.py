@@ -341,7 +341,9 @@ def _build_product(
     top_key = _top_key(model, target, top)
     if old and old.get("top_analog_key") == top_key:
         old_path = _resolve_rooted(root, str(old.get("image", ""))) if old.get("image") else None
-        if old_path and old_path.exists() and old.get("status") == "ready":
+        provider_asset_url = str(old.get("provider_asset_url", "")).lower()
+        legacy_psl_icon = product_key.startswith("psl_") and "/img/icons/" in provider_asset_url
+        if old_path and old_path.exists() and old.get("status") == "ready" and not legacy_psl_icon:
             return old
 
     image_path = output_dir / model / target / str(period["winter_year"]) / f"{product_key}.png"
