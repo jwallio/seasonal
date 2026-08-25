@@ -1,7 +1,7 @@
 {
   "schema_version": "seasonal_analog_products_v1",
   "kind": "seasonal_analog_products_manifest",
-  "generated_utc": "2026-08-25T19:23:46Z",
+  "generated_utc": "2026-08-25T21:26:39Z",
   "source": {
     "analog_manifest": "seasonal/analog_z500_manifest.json",
     "climatology_years": "1981-2010",
@@ -11,7 +11,7 @@
     "period_rule": "monthly analogs use that calendar month; DJF analogs use December through February",
     "retained_on_source_failure": true
   },
-  "status": "partial",
+  "status": "ready",
   "entries": [
     {
       "model": "superensemble",
@@ -41,7 +41,7 @@
         "psl_end_month": 2,
         "winter_year": 1983
       },
-      "status": "partial",
+      "status": "ready",
       "products": {
         "psl_500mb_height_anomaly": {
           "product": "psl_500mb_height_anomaly",
@@ -93,11 +93,24 @@
           "product": "mrcc_snowfall_departure",
           "label": "Snowfall Departure \u00b7 NWS Eastern Region",
           "provider": "MRCC / ACIS",
-          "status": "unavailable",
+          "status": "ready",
+          "image": "seasonal/analog_products/superensemble/202702/1983/mrcc_snowfall_departure.png",
           "top_analog_key": "superensemble:202702:1983",
-          "source_url": "https://gridded.geddes.rcac.purdue.edu/generate-map?s=station&a=region&loc=ER&var=snow&ds=19830201&de=19830228&stat=total&calc=departure&con=5&lta=F&cwa=F&cities=T&counties=T&state=F&mask=F&lakes=T&oceans=T&roads=F&output=map_btd.png",
-          "checked_utc": "2026-08-25T19:13:04Z",
-          "error": "HTTP 500 from https://gridded.geddes.rcac.purdue.edu/generate-map?s=station&a=region&loc=ER&var=snow&ds=19830201&de=19830228&stat=total&calc=departure&con=5&lta=F&cwa=F&cities=T&counties=T&state=F&mask=F&lakes=T&oceans=T&roads=F&output=map_btd.png: {\"area\":\"region\",\"calc\":\"departure\",\"cities\":\"T\",\"con\":5,\"counties\":\"T\",\"cwa\":\"F\",\"de\":\"19830228\",\"ds\":\"19830201\",\"gddB\":\"50\",\"gddC\":\"86\",\"lakes\":\"T\",\"line error\":\"52\",\"ll\":\"F\",\"loc\":\"ER\",\"lta\":\"F\",\"mask\":\"F\",\"message\":\"string index out of range\",\"o\":\"map_btd.png\",\"oceans\":\"T\",\"roads\":\"F\",\"sids\":\"\","
+          "period": {
+            "period_type": "month",
+            "label": "February 1983",
+            "start_date": "1983-02-01",
+            "end_date": "1983-02-28",
+            "psl_year": 1983,
+            "psl_start_month": 2,
+            "psl_end_month": 2,
+            "winter_year": 1983
+          },
+          "source_url": "https://gridded.geddes.rcac.purdue.edu/generate-map?s=station&a=region&loc=ER&var=snow&ds=19830201&de=19830228&stat=total&calc=departure&gddB=null&gddC=null&con=5&lta=F&cwa=F&cities=T&counties=T&state=F&mask=F&lakes=F&oceans=F&roads=F&sids=wban+coop+faa+ghcn+cocorahs+wmo+icao+nwsli&output=map_btd.png",
+          "provider_asset_url": "https://gridded.geddes.rcac.purdue.edu/generate-map?s=station&a=region&loc=ER&var=snow&ds=19830201&de=19830228&stat=total&calc=departure&gddB=null&gddC=null&con=5&lta=F&cwa=F&cities=T&counties=T&state=F&mask=F&lakes=F&oceans=F&roads=F&sids=wban+coop+faa+ghcn+cocorahs+wmo+icao+nwsli&output=map_btd.png",
+          "dataset": "MRCC station-interpolated snowfall",
+          "climatology_years": "1981-2010",
+          "generated_utc": "2026-08-25T21:18:16Z"
         }
       }
     },
@@ -129,7 +142,7 @@
         "psl_end_month": 1,
         "winter_year": 1958
       },
-      "status": "partial",
+      "status": "ready",
       "products": {
         "psl_500mb_height_anomaly": {
           "product": "psl_500mb_height_anomaly",
@@ -181,11 +194,24 @@
           "product": "mrcc_snowfall_departure",
           "label": "Snowfall Departure \u00b7 NWS Eastern Region",
           "provider": "MRCC / ACIS",
-          "status": "unavailable",
+          "status": "ready",
+          "image": "seasonal/analog_products/superensemble/202701/1958/mrcc_snowfall_departure.png",
           "top_analog_key": "superensemble:202701:1958",
-          "source_url": "https://gridded.geddes.rcac.purdue.edu/generate-map?s=station&a=region&loc=ER&var=snow&ds=19580101&de=19580131&stat=total&calc=departure&con=5&lta=F&cwa=F&cities=T&counties=T&state=F&mask=F&lakes=T&oceans=T&roads=F&output=map_btd.png",
-          "checked_utc": "2026-08-25T19:14:58Z",
-          "error": "HTTP 500 from https://gridded.geddes.rcac.purdue.edu/generate-map?s=station&a=region&loc=ER&var=snow&ds=19580101&de=19580131&stat=total&calc=departure&con=5&lta=F&cwa=F&cities=T&counties=T&state=F&mask=F&lakes=T&oceans=T&roads=F&output=map_btd.png: {\"area\":\"region\",\"calc\":\"departure\",\"cities\":\"T\",\"con\":5,\"counties\":\"T\",\"cwa\":\"F\",\"de\":\"19580131\",\"ds\":\"19580101\",\"gddB\":\"50\",\"gddC\":\"86\",\"lakes\":\"T\",\"line error\":\"52\",\"ll\":\"F\",\"loc\":\"ER\",\"lta\":\"F\",\"mask\":\"F\",\"message\":\"string index out of range\",\"o\":\"map_btd.png\",\"oceans\":\"T\",\"roads\":\"F\",\"sids\":\"\","
+          "period": {
+            "period_type": "month",
+            "label": "January 1958",
+            "start_date": "1958-01-01",
+            "end_date": "1958-01-31",
+            "psl_year": 1958,
+            "psl_start_month": 1,
+            "psl_end_month": 1,
+            "winter_year": 1958
+          },
+          "source_url": "https://gridded.geddes.rcac.purdue.edu/generate-map?s=station&a=region&loc=ER&var=snow&ds=19580101&de=19580131&stat=total&calc=departure&gddB=null&gddC=null&con=5&lta=F&cwa=F&cities=T&counties=T&state=F&mask=F&lakes=F&oceans=F&roads=F&sids=wban+coop+faa+ghcn+cocorahs+wmo+icao+nwsli&output=map_btd.png",
+          "provider_asset_url": "https://gridded.geddes.rcac.purdue.edu/generate-map?s=station&a=region&loc=ER&var=snow&ds=19580101&de=19580131&stat=total&calc=departure&gddB=null&gddC=null&con=5&lta=F&cwa=F&cities=T&counties=T&state=F&mask=F&lakes=F&oceans=F&roads=F&sids=wban+coop+faa+ghcn+cocorahs+wmo+icao+nwsli&output=map_btd.png",
+          "dataset": "MRCC station-interpolated snowfall",
+          "climatology_years": "1981-2010",
+          "generated_utc": "2026-08-25T21:19:25Z"
         }
       }
     },
@@ -217,7 +243,7 @@
         "psl_end_month": 2,
         "winter_year": 1998
       },
-      "status": "partial",
+      "status": "ready",
       "products": {
         "psl_500mb_height_anomaly": {
           "product": "psl_500mb_height_anomaly",
@@ -269,11 +295,24 @@
           "product": "mrcc_snowfall_departure",
           "label": "Snowfall Departure \u00b7 NWS Eastern Region",
           "provider": "MRCC / ACIS",
-          "status": "unavailable",
+          "status": "ready",
+          "image": "seasonal/analog_products/superensemble/202612-202702/1998/mrcc_snowfall_departure.png",
           "top_analog_key": "superensemble:202612-202702:1998",
-          "source_url": "https://gridded.geddes.rcac.purdue.edu/generate-map?s=station&a=region&loc=ER&var=snow&ds=19971201&de=19980228&stat=total&calc=departure&con=5&lta=F&cwa=F&cities=T&counties=T&state=F&mask=F&lakes=T&oceans=T&roads=F&output=map_btd.png",
-          "checked_utc": "2026-08-25T19:16:33Z",
-          "error": "HTTP 500 from https://gridded.geddes.rcac.purdue.edu/generate-map?s=station&a=region&loc=ER&var=snow&ds=19971201&de=19980228&stat=total&calc=departure&con=5&lta=F&cwa=F&cities=T&counties=T&state=F&mask=F&lakes=T&oceans=T&roads=F&output=map_btd.png: {\"area\":\"region\",\"calc\":\"departure\",\"cities\":\"T\",\"con\":5,\"counties\":\"T\",\"cwa\":\"F\",\"de\":\"19980228\",\"ds\":\"19971201\",\"gddB\":\"50\",\"gddC\":\"86\",\"lakes\":\"T\",\"line error\":\"52\",\"ll\":\"F\",\"loc\":\"ER\",\"lta\":\"F\",\"mask\":\"F\",\"message\":\"string index out of range\",\"o\":\"map_btd.png\",\"oceans\":\"T\",\"roads\":\"F\",\"sids\":\"\","
+          "period": {
+            "period_type": "djf",
+            "label": "DJF 1997-98",
+            "start_date": "1997-12-01",
+            "end_date": "1998-02-28",
+            "psl_year": 1998,
+            "psl_start_month": 12,
+            "psl_end_month": 2,
+            "winter_year": 1998
+          },
+          "source_url": "https://gridded.geddes.rcac.purdue.edu/generate-map?s=station&a=region&loc=ER&var=snow&ds=19971201&de=19980228&stat=total&calc=departure&gddB=null&gddC=null&con=5&lta=F&cwa=F&cities=T&counties=T&state=F&mask=F&lakes=F&oceans=F&roads=F&sids=wban+coop+faa+ghcn+cocorahs+wmo+icao+nwsli&output=map_btd.png",
+          "provider_asset_url": "https://gridded.geddes.rcac.purdue.edu/generate-map?s=station&a=region&loc=ER&var=snow&ds=19971201&de=19980228&stat=total&calc=departure&gddB=null&gddC=null&con=5&lta=F&cwa=F&cities=T&counties=T&state=F&mask=F&lakes=F&oceans=F&roads=F&sids=wban+coop+faa+ghcn+cocorahs+wmo+icao+nwsli&output=map_btd.png",
+          "dataset": "MRCC station-interpolated snowfall",
+          "climatology_years": "1981-2010",
+          "generated_utc": "2026-08-25T21:20:31Z"
         }
       }
     },
@@ -305,7 +344,7 @@
         "psl_end_month": 12,
         "winter_year": 2024
       },
-      "status": "partial",
+      "status": "ready",
       "products": {
         "psl_500mb_height_anomaly": {
           "product": "psl_500mb_height_anomaly",
@@ -357,11 +396,24 @@
           "product": "mrcc_snowfall_departure",
           "label": "Snowfall Departure \u00b7 NWS Eastern Region",
           "provider": "MRCC / ACIS",
-          "status": "unavailable",
+          "status": "ready",
+          "image": "seasonal/analog_products/superensemble/202612/2024/mrcc_snowfall_departure.png",
           "top_analog_key": "superensemble:202612:2024",
-          "source_url": "https://gridded.geddes.rcac.purdue.edu/generate-map?s=station&a=region&loc=ER&var=snow&ds=20231201&de=20231231&stat=total&calc=departure&con=5&lta=F&cwa=F&cities=T&counties=T&state=F&mask=F&lakes=T&oceans=T&roads=F&output=map_btd.png",
-          "checked_utc": "2026-08-25T19:17:56Z",
-          "error": "HTTP 500 from https://gridded.geddes.rcac.purdue.edu/generate-map?s=station&a=region&loc=ER&var=snow&ds=20231201&de=20231231&stat=total&calc=departure&con=5&lta=F&cwa=F&cities=T&counties=T&state=F&mask=F&lakes=T&oceans=T&roads=F&output=map_btd.png: {\"area\":\"region\",\"calc\":\"departure\",\"cities\":\"T\",\"con\":5,\"counties\":\"T\",\"cwa\":\"F\",\"de\":\"20231231\",\"ds\":\"20231201\",\"gddB\":\"50\",\"gddC\":\"86\",\"lakes\":\"T\",\"line error\":\"52\",\"ll\":\"F\",\"loc\":\"ER\",\"lta\":\"F\",\"mask\":\"F\",\"message\":\"string index out of range\",\"o\":\"map_btd.png\",\"oceans\":\"T\",\"roads\":\"F\",\"sids\":\"\","
+          "period": {
+            "period_type": "month",
+            "label": "December 2023",
+            "start_date": "2023-12-01",
+            "end_date": "2023-12-31",
+            "psl_year": 2023,
+            "psl_start_month": 12,
+            "psl_end_month": 12,
+            "winter_year": 2024
+          },
+          "source_url": "https://gridded.geddes.rcac.purdue.edu/generate-map?s=station&a=region&loc=ER&var=snow&ds=20231201&de=20231231&stat=total&calc=departure&gddB=null&gddC=null&con=5&lta=F&cwa=F&cities=T&counties=T&state=F&mask=F&lakes=F&oceans=F&roads=F&sids=wban+coop+faa+ghcn+cocorahs+wmo+icao+nwsli&output=map_btd.png",
+          "provider_asset_url": "https://gridded.geddes.rcac.purdue.edu/generate-map?s=station&a=region&loc=ER&var=snow&ds=20231201&de=20231231&stat=total&calc=departure&gddB=null&gddC=null&con=5&lta=F&cwa=F&cities=T&counties=T&state=F&mask=F&lakes=F&oceans=F&roads=F&sids=wban+coop+faa+ghcn+cocorahs+wmo+icao+nwsli&output=map_btd.png",
+          "dataset": "MRCC station-interpolated snowfall",
+          "climatology_years": "1981-2010",
+          "generated_utc": "2026-08-25T21:21:48Z"
         }
       }
     },
@@ -393,7 +445,7 @@
         "psl_end_month": 2,
         "winter_year": 1998
       },
-      "status": "partial",
+      "status": "ready",
       "products": {
         "psl_500mb_height_anomaly": {
           "product": "psl_500mb_height_anomaly",
@@ -445,11 +497,24 @@
           "product": "mrcc_snowfall_departure",
           "label": "Snowfall Departure \u00b7 NWS Eastern Region",
           "provider": "MRCC / ACIS",
-          "status": "unavailable",
+          "status": "ready",
+          "image": "seasonal/analog_products/cfsv2/202702/1998/mrcc_snowfall_departure.png",
           "top_analog_key": "cfsv2:202702:1998",
-          "source_url": "https://gridded.geddes.rcac.purdue.edu/generate-map?s=station&a=region&loc=ER&var=snow&ds=19980201&de=19980228&stat=total&calc=departure&con=5&lta=F&cwa=F&cities=T&counties=T&state=F&mask=F&lakes=T&oceans=T&roads=F&output=map_btd.png",
-          "checked_utc": "2026-08-25T19:19:08Z",
-          "error": "HTTP 500 from https://gridded.geddes.rcac.purdue.edu/generate-map?s=station&a=region&loc=ER&var=snow&ds=19980201&de=19980228&stat=total&calc=departure&con=5&lta=F&cwa=F&cities=T&counties=T&state=F&mask=F&lakes=T&oceans=T&roads=F&output=map_btd.png: {\"area\":\"region\",\"calc\":\"departure\",\"cities\":\"T\",\"con\":5,\"counties\":\"T\",\"cwa\":\"F\",\"de\":\"19980228\",\"ds\":\"19980201\",\"gddB\":\"50\",\"gddC\":\"86\",\"lakes\":\"T\",\"line error\":\"52\",\"ll\":\"F\",\"loc\":\"ER\",\"lta\":\"F\",\"mask\":\"F\",\"message\":\"string index out of range\",\"o\":\"map_btd.png\",\"oceans\":\"T\",\"roads\":\"F\",\"sids\":\"\","
+          "period": {
+            "period_type": "month",
+            "label": "February 1998",
+            "start_date": "1998-02-01",
+            "end_date": "1998-02-28",
+            "psl_year": 1998,
+            "psl_start_month": 2,
+            "psl_end_month": 2,
+            "winter_year": 1998
+          },
+          "source_url": "https://gridded.geddes.rcac.purdue.edu/generate-map?s=station&a=region&loc=ER&var=snow&ds=19980201&de=19980228&stat=total&calc=departure&gddB=null&gddC=null&con=5&lta=F&cwa=F&cities=T&counties=T&state=F&mask=F&lakes=F&oceans=F&roads=F&sids=wban+coop+faa+ghcn+cocorahs+wmo+icao+nwsli&output=map_btd.png",
+          "provider_asset_url": "https://gridded.geddes.rcac.purdue.edu/generate-map?s=station&a=region&loc=ER&var=snow&ds=19980201&de=19980228&stat=total&calc=departure&gddB=null&gddC=null&con=5&lta=F&cwa=F&cities=T&counties=T&state=F&mask=F&lakes=F&oceans=F&roads=F&sids=wban+coop+faa+ghcn+cocorahs+wmo+icao+nwsli&output=map_btd.png",
+          "dataset": "MRCC station-interpolated snowfall",
+          "climatology_years": "1981-2010",
+          "generated_utc": "2026-08-25T21:22:53Z"
         }
       }
     },
@@ -481,7 +546,7 @@
         "psl_end_month": 1,
         "winter_year": 1983
       },
-      "status": "partial",
+      "status": "ready",
       "products": {
         "psl_500mb_height_anomaly": {
           "product": "psl_500mb_height_anomaly",
@@ -533,11 +598,24 @@
           "product": "mrcc_snowfall_departure",
           "label": "Snowfall Departure \u00b7 NWS Eastern Region",
           "provider": "MRCC / ACIS",
-          "status": "unavailable",
+          "status": "ready",
+          "image": "seasonal/analog_products/cfsv2/202701/1983/mrcc_snowfall_departure.png",
           "top_analog_key": "cfsv2:202701:1983",
-          "source_url": "https://gridded.geddes.rcac.purdue.edu/generate-map?s=station&a=region&loc=ER&var=snow&ds=19830101&de=19830131&stat=total&calc=departure&con=5&lta=F&cwa=F&cities=T&counties=T&state=F&mask=F&lakes=T&oceans=T&roads=F&output=map_btd.png",
-          "checked_utc": "2026-08-25T19:20:36Z",
-          "error": "HTTP 500 from https://gridded.geddes.rcac.purdue.edu/generate-map?s=station&a=region&loc=ER&var=snow&ds=19830101&de=19830131&stat=total&calc=departure&con=5&lta=F&cwa=F&cities=T&counties=T&state=F&mask=F&lakes=T&oceans=T&roads=F&output=map_btd.png: {\"area\":\"region\",\"calc\":\"departure\",\"cities\":\"T\",\"con\":5,\"counties\":\"T\",\"cwa\":\"F\",\"de\":\"19830131\",\"ds\":\"19830101\",\"gddB\":\"50\",\"gddC\":\"86\",\"lakes\":\"T\",\"line error\":\"52\",\"ll\":\"F\",\"loc\":\"ER\",\"lta\":\"F\",\"mask\":\"F\",\"message\":\"string index out of range\",\"o\":\"map_btd.png\",\"oceans\":\"T\",\"roads\":\"F\",\"sids\":\"\","
+          "period": {
+            "period_type": "month",
+            "label": "January 1983",
+            "start_date": "1983-01-01",
+            "end_date": "1983-01-31",
+            "psl_year": 1983,
+            "psl_start_month": 1,
+            "psl_end_month": 1,
+            "winter_year": 1983
+          },
+          "source_url": "https://gridded.geddes.rcac.purdue.edu/generate-map?s=station&a=region&loc=ER&var=snow&ds=19830101&de=19830131&stat=total&calc=departure&gddB=null&gddC=null&con=5&lta=F&cwa=F&cities=T&counties=T&state=F&mask=F&lakes=F&oceans=F&roads=F&sids=wban+coop+faa+ghcn+cocorahs+wmo+icao+nwsli&output=map_btd.png",
+          "provider_asset_url": "https://gridded.geddes.rcac.purdue.edu/generate-map?s=station&a=region&loc=ER&var=snow&ds=19830101&de=19830131&stat=total&calc=departure&gddB=null&gddC=null&con=5&lta=F&cwa=F&cities=T&counties=T&state=F&mask=F&lakes=F&oceans=F&roads=F&sids=wban+coop+faa+ghcn+cocorahs+wmo+icao+nwsli&output=map_btd.png",
+          "dataset": "MRCC station-interpolated snowfall",
+          "climatology_years": "1981-2010",
+          "generated_utc": "2026-08-25T21:24:09Z"
         }
       }
     },
@@ -569,7 +647,7 @@
         "psl_end_month": 2,
         "winter_year": 2024
       },
-      "status": "partial",
+      "status": "ready",
       "products": {
         "psl_500mb_height_anomaly": {
           "product": "psl_500mb_height_anomaly",
@@ -621,11 +699,24 @@
           "product": "mrcc_snowfall_departure",
           "label": "Snowfall Departure \u00b7 NWS Eastern Region",
           "provider": "MRCC / ACIS",
-          "status": "unavailable",
+          "status": "ready",
+          "image": "seasonal/analog_products/cfsv2/202612-202702/2024/mrcc_snowfall_departure.png",
           "top_analog_key": "cfsv2:202612-202702:2024",
-          "source_url": "https://gridded.geddes.rcac.purdue.edu/generate-map?s=station&a=region&loc=ER&var=snow&ds=20231201&de=20240229&stat=total&calc=departure&con=5&lta=F&cwa=F&cities=T&counties=T&state=F&mask=F&lakes=T&oceans=T&roads=F&output=map_btd.png",
-          "checked_utc": "2026-08-25T19:22:10Z",
-          "error": "HTTP 500 from https://gridded.geddes.rcac.purdue.edu/generate-map?s=station&a=region&loc=ER&var=snow&ds=20231201&de=20240229&stat=total&calc=departure&con=5&lta=F&cwa=F&cities=T&counties=T&state=F&mask=F&lakes=T&oceans=T&roads=F&output=map_btd.png: {\"area\":\"region\",\"calc\":\"departure\",\"cities\":\"T\",\"con\":5,\"counties\":\"T\",\"cwa\":\"F\",\"de\":\"20240229\",\"ds\":\"20231201\",\"gddB\":\"50\",\"gddC\":\"86\",\"lakes\":\"T\",\"line error\":\"52\",\"ll\":\"F\",\"loc\":\"ER\",\"lta\":\"F\",\"mask\":\"F\",\"message\":\"string index out of range\",\"o\":\"map_btd.png\",\"oceans\":\"T\",\"roads\":\"F\",\"sids\":\"\","
+          "period": {
+            "period_type": "djf",
+            "label": "DJF 2023-24",
+            "start_date": "2023-12-01",
+            "end_date": "2024-02-29",
+            "psl_year": 2024,
+            "psl_start_month": 12,
+            "psl_end_month": 2,
+            "winter_year": 2024
+          },
+          "source_url": "https://gridded.geddes.rcac.purdue.edu/generate-map?s=station&a=region&loc=ER&var=snow&ds=20231201&de=20240229&stat=total&calc=departure&gddB=null&gddC=null&con=5&lta=F&cwa=F&cities=T&counties=T&state=F&mask=F&lakes=F&oceans=F&roads=F&sids=wban+coop+faa+ghcn+cocorahs+wmo+icao+nwsli&output=map_btd.png",
+          "provider_asset_url": "https://gridded.geddes.rcac.purdue.edu/generate-map?s=station&a=region&loc=ER&var=snow&ds=20231201&de=20240229&stat=total&calc=departure&gddB=null&gddC=null&con=5&lta=F&cwa=F&cities=T&counties=T&state=F&mask=F&lakes=F&oceans=F&roads=F&sids=wban+coop+faa+ghcn+cocorahs+wmo+icao+nwsli&output=map_btd.png",
+          "dataset": "MRCC station-interpolated snowfall",
+          "climatology_years": "1981-2010",
+          "generated_utc": "2026-08-25T21:25:27Z"
         }
       }
     },
@@ -657,7 +748,7 @@
         "psl_end_month": 12,
         "winter_year": 2016
       },
-      "status": "partial",
+      "status": "ready",
       "products": {
         "psl_500mb_height_anomaly": {
           "product": "psl_500mb_height_anomaly",
@@ -709,11 +800,24 @@
           "product": "mrcc_snowfall_departure",
           "label": "Snowfall Departure \u00b7 NWS Eastern Region",
           "provider": "MRCC / ACIS",
-          "status": "unavailable",
+          "status": "ready",
+          "image": "seasonal/analog_products/cfsv2/202612/2016/mrcc_snowfall_departure.png",
           "top_analog_key": "cfsv2:202612:2016",
-          "source_url": "https://gridded.geddes.rcac.purdue.edu/generate-map?s=station&a=region&loc=ER&var=snow&ds=20151201&de=20151231&stat=total&calc=departure&con=5&lta=F&cwa=F&cities=T&counties=T&state=F&mask=F&lakes=T&oceans=T&roads=F&output=map_btd.png",
-          "checked_utc": "2026-08-25T19:23:46Z",
-          "error": "HTTP 500 from https://gridded.geddes.rcac.purdue.edu/generate-map?s=station&a=region&loc=ER&var=snow&ds=20151201&de=20151231&stat=total&calc=departure&con=5&lta=F&cwa=F&cities=T&counties=T&state=F&mask=F&lakes=T&oceans=T&roads=F&output=map_btd.png: {\"area\":\"region\",\"calc\":\"departure\",\"cities\":\"T\",\"con\":5,\"counties\":\"T\",\"cwa\":\"F\",\"de\":\"20151231\",\"ds\":\"20151201\",\"gddB\":\"50\",\"gddC\":\"86\",\"lakes\":\"T\",\"line error\":\"52\",\"ll\":\"F\",\"loc\":\"ER\",\"lta\":\"F\",\"mask\":\"F\",\"message\":\"string index out of range\",\"o\":\"map_btd.png\",\"oceans\":\"T\",\"roads\":\"F\",\"sids\":\"\","
+          "period": {
+            "period_type": "month",
+            "label": "December 2015",
+            "start_date": "2015-12-01",
+            "end_date": "2015-12-31",
+            "psl_year": 2015,
+            "psl_start_month": 12,
+            "psl_end_month": 12,
+            "winter_year": 2016
+          },
+          "source_url": "https://gridded.geddes.rcac.purdue.edu/generate-map?s=station&a=region&loc=ER&var=snow&ds=20151201&de=20151231&stat=total&calc=departure&gddB=null&gddC=null&con=5&lta=F&cwa=F&cities=T&counties=T&state=F&mask=F&lakes=F&oceans=F&roads=F&sids=wban+coop+faa+ghcn+cocorahs+wmo+icao+nwsli&output=map_btd.png",
+          "provider_asset_url": "https://gridded.geddes.rcac.purdue.edu/generate-map?s=station&a=region&loc=ER&var=snow&ds=20151201&de=20151231&stat=total&calc=departure&gddB=null&gddC=null&con=5&lta=F&cwa=F&cities=T&counties=T&state=F&mask=F&lakes=F&oceans=F&roads=F&sids=wban+coop+faa+ghcn+cocorahs+wmo+icao+nwsli&output=map_btd.png",
+          "dataset": "MRCC station-interpolated snowfall",
+          "climatology_years": "1981-2010",
+          "generated_utc": "2026-08-25T21:26:39Z"
         }
       }
     }
