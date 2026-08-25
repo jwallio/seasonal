@@ -75,6 +75,14 @@ optionally show a common 1991-2020 reference based on the CanSIPS v3 hindcast
 mean. Compare periods start with December 2026; earlier valid periods remain
 available only in the model-specific and Single Model views.
 
+When the Compare tab has a CFSv2 or Super Ensemble 500-mb analog, the analog
+workflow also builds maps for its rank-1 historical match: PSL ERA5 500-mb
+height and 2-metre temperature anomalies, plus MRCC station-interpolated
+snowfall departure for the NWS Eastern Region. Monthly matches use their
+calendar month; DJF matches use December through February. These outputs are
+stored in `seasonal/analog_products_manifest.json` and retain the last good
+image when a source is unavailable.
+
 The dashboard now opens on an operational Overview with model-by-parameter
 freshness and coverage. Compare supports blend/family/component filtering,
 shareable URL state, and 560-pixel WebP card thumbnails that open the original
@@ -121,6 +129,7 @@ in [`docs/SEASONAL_SCHEDULES.md`](/d:/weather-projects/wn2/docs/SEASONAL_SCHEDUL
 - [`scripts/geos_s2s3_seasonal.py`](/d:/weather-projects/wn2/scripts/geos_s2s3_seasonal.py): NASA GEOS-S2S-3 numerical ensemble/drift adapter
 - [`.github/workflows/geos-s2s3.yml`](/d:/weather-projects/wn2/.github/workflows/geos-s2s3.yml): monthly NASA GEOS-S2S-3 workflow
 - [`scripts/superensemble_seasonal.py`](/d:/weather-projects/wn2/scripts/superensemble_seasonal.py): equal-weight deduplicated seasonal forecast-family blend
+- [`scripts/build_analog_products.py`](/d:/weather-projects/wn2/scripts/build_analog_products.py): rank-1 analog PSL and MRCC map builder with retained-source fallback
 - [`scripts/seasonal_products.py`](/d:/weather-projects/wn2/scripts/seasonal_products.py): canonical seasonal product, unit, scale, model-support, and numerical-QC registry
 - [`scripts/build_seasonal_catalog.py`](/d:/weather-projects/wn2/scripts/build_seasonal_catalog.py): strict manifest/asset validator and compact dashboard catalog builder
 - [`.github/workflows/superensemble.yml`](/d:/weather-projects/wn2/.github/workflows/superensemble.yml): monthly super-ensemble workflow

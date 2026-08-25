@@ -121,12 +121,24 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'Analog manifest generation failed; the previous Pages artifact will be retained.' }
           if (-not (Test-Path -LiteralPath 'site\seasonal\analog_z500_manifest.json')) { throw 'Analog manifest was not written.' }
 
+          & $python source\scripts\build_analog_products.py `
+            --root site `
+            --analog-manifest seasonal\analog_z500_manifest.json `
+            --output seasonal\analog_products_manifest.json `
+            --output-dir seasonal\analog_products
+          if ($LASTEXITCODE -ne 0) { throw 'Analog product manifest generation failed; the previous Pages artifact will be retained.' }
+          if (-not (Test-Path -LiteralPath 'site\seasonal\analog_products_manifest.json')) { throw 'Analog product manifest was not written.' }
+
       - name: Package analog Pages payload
         shell: powershell
         run: |
           if (-not (Test-Path -LiteralPath 'site\seasonal\analog_z500_manifest.json')) { throw 'Analog manifest is missing.' }
+          if (-not (Test-Path -LiteralPath 'site\seasonal\analog_products_manifest.json')) { throw 'Analog product manifest is missing.' }
+          if (-not (Test-Path -LiteralPath 'site\seasonal\analog_products')) { throw 'Analog product directory is missing.' }
           New-Item -ItemType Directory -Force -Path 'pages-payload\seasonal' | Out-Null
           Copy-Item -LiteralPath 'site\seasonal\analog_z500_manifest.json' -Destination 'pages-payload\seasonal\analog_z500_manifest.json' -Force
+          Copy-Item -LiteralPath 'site\seasonal\analog_products_manifest.json' -Destination 'pages-payload\seasonal\analog_products_manifest.json' -Force
+          Copy-Item -Path 'site\seasonal\analog_products' -Destination 'pages-payload\seasonal\analog_products' -Recurse -Force
 
       - name: Upload analog Pages payload
         uses: actions/upload-artifact@v4

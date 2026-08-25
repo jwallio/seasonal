@@ -31,6 +31,9 @@ def main() -> int:
         "superensemble-pages-",
         "seasonal_analogs.py",
         "analog_z500_manifest.json",
+        "build_analog_products.py",
+        "analog_products_manifest.json",
+        "analog_products",
         "Analog manifest generation failed",
         "analog-pages-",
     ):
@@ -40,6 +43,8 @@ def main() -> int:
         "analog-pages-",
         "incoming/analogs",
         "seasonal/analog_z500_manifest.json",
+        "seasonal/analog_products_manifest.json",
+        "seasonal/analog_products",
     ):
         check(term in publisher, f"Pages publisher is missing analog term: {term}")
     check("cancel-in-progress: false" in workflow, "analog builds must not cancel a prior archive read")

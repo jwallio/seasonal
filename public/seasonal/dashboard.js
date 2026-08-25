@@ -3,6 +3,8 @@ const normalizeAssetPath = value => String(value || '').replace(/^\/+/, '').repl
 const assetPath = value => `${root}/${normalizeAssetPath(value)}`;
 const CATALOG_URL = assetPath('seasonal/catalog.json');
 const ANALOG_MANIFEST_URL = assetPath('seasonal/analog_z500_manifest.json');
+const ANALOG_PRODUCTS_MANIFEST_URL = assetPath('seasonal/analog_products_manifest.json');
+const ANALOG_PRODUCT_ORDER = ['psl_500mb_height_anomaly', 'psl_2m_temperature_anomaly', 'mrcc_snowfall_departure'];
 function thumbnailPath(value) {
   const relative = normalizeAssetPath(value).replace(/^seasonal\//, '');
   const webp = /\.[^/.]+$/.test(relative) ? relative.replace(/\.[^/.]+$/, '.webp') : `${relative}.webp`;
@@ -34,7 +36,9 @@ const COMPONENT_LABELS = {
 };
 let seasonalCatalog = null;
 let seasonalAnalogs = null;
+let seasonalAnalogProducts = null;
 let analogManifestError = '';
+let analogProductsManifestError = '';
 const modelStates = Object.fromEntries(Object.keys(MODEL_CONFIG).map(key => [key, { manifest: null, catalog: null, runs: [], error: null }]));
 const selection = { view: 'overview', model: 'cfsv2', product: '', run: '', target: '', compareProduct: '500mb_height_anomaly', compareTarget: '', compareBaseline: '', compareRole: 'all', compareAvailableOnly: true, ratio: '10' };
 const DEFAULT_PRODUCT_PRIORITY = [
@@ -649,6 +653,77 @@ function renderCompareCard(modelKey, targetKey) {
 function analogEntry(modelKey, targetKey) {
   return (seasonalAnalogs?.entries || []).find(entry => String(entry.model || '') === modelKey && String(entry.target || '') === String(targetKey || '')) || null;
 }
+function analogProductEntry(modelKey, targetKey) {
+  return (seasonalAnalogProducts?.entries || []).find(entry => String(entry.model || '') === modelKey && String(entry.target || '') === String(targetKey || '')) || null;
+}
+function renderAnalogProducts(card, modelKey, targetKey) {
+  const entry = analogProductEntry(modelKey, targetKey);
+  const section = document.createElement('div');
+  section.className = 'analog-products';
+  const heading = document.createElement('h4');
+  heading.textContent = entry ? `Maps from ${entry.top_analog?.label || entry.period?.label || 'the top analog'}` : 'Top-analog maps';
+  section.appendChild(heading);
+  if (!seasonalAnalogProducts) {
+    const message = document.createElement('p');
+    message.className = 'analog-product-note';
+    message.textContent = analogProductsManifestError ? 'Map products are unavailable for this release.' : 'Map products are loading…';
+    section.appendChild(message);
+    card.appendChild(section);
+    return;
+  }
+  if (!entry) {
+    const message = document.createElement('p');
+    message.className = 'analog-product-note';
+    message.textContent = 'No generated maps are available for this target.';
+    section.appendChild(message);
+    card.appendChild(section);
+    return;
+  }
+  const grid = document.createElement('div');
+  grid.className = 'analog-product-grid';
+  ANALOG_PRODUCT_ORDER.map(key => entry.products?.[key]).filter(Boolean).forEach(product => {
+    const tile = document.createElement('article');
+    tile.className = 'analog-product';
+    const title = document.createElement('h5');
+    title.textContent = product.label || product.product || 'Analog product';
+    tile.appendChild(title);
+    const image = product.image && ['ready', 'stale'].includes(String(product.status || '').toLowerCase()) ? assetPath(product.image) : '';
+    if (image) {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'image-button';
+      button.setAttribute('aria-label', `Open full-size ${title.textContent}`);
+      const img = document.createElement('img');
+      img.src = image;
+      img.alt = `${title.textContent} for ${entry.top_analog?.label || entry.period?.label || targetKey}`;
+      img.loading = 'lazy';
+      img.addEventListener('error', () => { tile.replaceChildren(title, Object.assign(document.createElement('p'), { className: 'analog-product-note', textContent: 'The generated image is not in the published tree.' })); });
+      button.addEventListener('click', () => openMapDialog(image, img.alt));
+      button.appendChild(img);
+      tile.appendChild(button);
+    } else {
+      const message = document.createElement('p');
+      message.className = 'analog-product-note';
+      message.textContent = product.error || 'Waiting for the source map.';
+      tile.appendChild(message);
+    }
+    const meta = document.createElement('p');
+    meta.className = 'analog-product-meta';
+    meta.textContent = `${product.provider || 'Source'} · ${product.status || 'unavailable'}${product.status === 'stale' ? ' · retained last good map' : ''}`;
+    tile.appendChild(meta);
+    if (product.source_url) {
+      const source = document.createElement('a');
+      source.href = product.source_url;
+      source.target = '_blank';
+      source.rel = 'noopener';
+      source.textContent = 'Source';
+      tile.appendChild(source);
+    }
+    grid.appendChild(tile);
+  });
+  section.appendChild(grid);
+  card.appendChild(section);
+}
 function renderAnalogPanel(targetKey) {
   const panel = el('analog-panel');
   const grid = el('analog-grid');
@@ -666,7 +741,7 @@ function renderAnalogPanel(targetKey) {
     grid.replaceChildren(compareEmpty(analogManifestError ? 'The analog manifest is not available for this release.' : 'Loading historical analogs…'));
     return;
   }
-  summary.textContent = `${periodLabel(targetKey)} · AnalogWX ERA5 · normalized 500-mb pattern correlation · Super Ensemble and CFSv2`;
+  summary.textContent = `${periodLabel(targetKey)} · AnalogWX ERA5 · normalized 500-mb pattern correlation · automatic PSL 500-mb/2-m maps and MRCC NWS Eastern snowfall departure`;
   if (!entries.length) {
     grid.replaceChildren(compareEmpty(`No historical analog result is published for ${periodLabel(targetKey)}.`));
     return;
@@ -694,7 +769,9 @@ function renderAnalogPanel(targetKey) {
       const score = document.createElement('td'); score.textContent = Number.isFinite(Number(result.pattern_correlation)) ? Number(result.pattern_correlation).toFixed(3) : '—';
       row.append(rank, label, score); body.appendChild(row);
     });
-    table.appendChild(body); card.appendChild(table); return card;
+    table.appendChild(body); card.appendChild(table);
+    renderAnalogProducts(card, modelKey, targetKey);
+    return card;
   }));
 }
 function renderCompare() {
@@ -939,6 +1016,17 @@ async function loadAnalogManifest() {
     analogManifestError = error.message;
   }
 }
+async function loadAnalogProductsManifest() {
+  try {
+    const response = await fetch(ANALOG_PRODUCTS_MANIFEST_URL);
+    if (!response.ok) throw new Error(`Analog product manifest returned ${response.status}`);
+    const manifest = await response.json();
+    if (manifest?.schema_version !== 'seasonal_analog_products_v1' || manifest?.kind !== 'seasonal_analog_products_manifest') throw new Error('Analog product manifest schema is not recognized');
+    seasonalAnalogProducts = manifest;
+  } catch (error) {
+    analogProductsManifestError = error.message;
+  }
+}
 async function loadDashboardData() {
   const catalogModels = new Set();
   try {
@@ -971,7 +1059,7 @@ async function loadDashboardData() {
   await Promise.all(Object.entries(MODEL_CONFIG)
     .filter(([key]) => !catalogModels.has(key))
     .map(([key, config]) => loadManifest(key, config)));
-  await loadAnalogManifest();
+  await Promise.all([loadAnalogManifest(), loadAnalogProductsManifest()]);
 }
 loadDashboardData().then(() => {
   if (!modelStates[selection.model].manifest) selection.model = Object.keys(MODEL_CONFIG).find(key => modelStates[key].manifest) || selection.model;

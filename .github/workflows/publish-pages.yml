@@ -389,8 +389,13 @@ jobs:
                 payload_root="$payload_root/.pages-payload"
               fi
               test -f "$payload_root/seasonal/analog_z500_manifest.json"
+              test -f "$payload_root/seasonal/analog_products_manifest.json"
+              test -d "$payload_root/seasonal/analog_products"
               mkdir -p site/seasonal
               cp "$payload_root/seasonal/analog_z500_manifest.json" site/seasonal/analog_z500_manifest.json
+              cp "$payload_root/seasonal/analog_products_manifest.json" site/seasonal/analog_products_manifest.json
+              mkdir -p site/seasonal/analog_products
+              cp -R "$payload_root/seasonal/analog_products/." site/seasonal/analog_products/
               ;;
             *)
               echo "Unsupported workflow_run source: $SOURCE_WORKFLOW" >&2
