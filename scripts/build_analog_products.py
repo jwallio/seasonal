@@ -29,6 +29,16 @@ PSL_MAP_PAGE = "https://psl.noaa.gov/data/atmoswrit/map/"
 MRCC_MAP_URL = "https://gridded.geddes.rcac.purdue.edu/generate-map"
 MRCC_MAP_PAGE = "https://mrcc.purdue.edu/CLIMATE/maps/interpolated"
 NWS_EASTERN_REGION = "ER"
+MRCC_SNOWFALL_STATION_NETWORKS = (
+    "wban",
+    "coop",
+    "faa",
+    "ghcn",
+    "cocorahs",
+    "wmo",
+    "icao",
+    "nwsli",
+)
 MRCC_REQUEST_ATTEMPTS = 2
 MRCC_RETRY_DELAY_SECONDS = 5.0
 MRCC_GENERATION_TIMEOUT_SECONDS = 600
@@ -205,6 +215,10 @@ def _mrcc_url(period: dict[str, Any]) -> str:
         "de": str(period["end_date"]).replace("-", ""),
         "stat": "total",
         "calc": "departure",
+        # Match the current MRCC interpolated-map form.  These null degree-day
+        # fields are emitted by the UI even though snowfall does not use them.
+        "gddB": "null",
+        "gddC": "null",
         "con": "5",
         "lta": "F",
         "cwa": "F",
@@ -212,9 +226,10 @@ def _mrcc_url(period: dict[str, Any]) -> str:
         "counties": "T",
         "state": "F",
         "mask": "F",
-        "lakes": "T",
-        "oceans": "T",
+        "lakes": "F",
+        "oceans": "F",
         "roads": "F",
+        "sids": " ".join(MRCC_SNOWFALL_STATION_NETWORKS),
         "output": "map_btd.png",
     }
     return f"{MRCC_MAP_URL}?{urlencode(query)}"
@@ -518,3 +533,4 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+

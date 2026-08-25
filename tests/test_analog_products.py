@@ -59,6 +59,13 @@ def main() -> int:
     check(mrcc_query["loc"] == ["ER"], "MRCC must target the NWS Eastern Region")
     check(mrcc_query["ds"] == ["19401201"] and mrcc_query["de"] == ["19410228"], "MRCC DJF dates are wrong")
     check(mrcc_query["var"] == ["snow"] and mrcc_query["calc"] == ["departure"], "MRCC snowfall departure controls are wrong")
+    check(mrcc_query["stat"] == ["total"], "MRCC snowfall must use accumulated totals")
+    check(mrcc_query["lakes"] == ["F"] and mrcc_query["oceans"] == ["F"], "MRCC overlays must match the current interpolated-map UI")
+    check(
+        mrcc_query["sids"] == ["wban coop faa ghcn cocorahs wmo icao nwsli"],
+        "MRCC snowfall must request all station networks used by the current UI",
+    )
+    check(mrcc_query["gddB"] == ["null"] and mrcc_query["gddC"] == ["null"], "MRCC snowfall degree-day fields must match the current UI")
 
     retry_calls: list[str] = []
     original_retry_delay = module.MRCC_RETRY_DELAY_SECONDS
@@ -202,3 +209,4 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
