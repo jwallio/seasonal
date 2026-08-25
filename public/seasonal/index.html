@@ -24,18 +24,9 @@
     </div>
 
     <section class="overview-view" id="overview-view" role="tabpanel" aria-labelledby="overview-tab">
-      <article class="card overview-lead">
-        <div>
-          <p class="eyebrow">Operational status</p>
-          <h2>Start with coverage, then inspect the forecast.</h2>
-          <p>See which model families and parameters are current, partial, or unavailable before opening a map. Each available matrix cell links directly to that model and field.</p>
-        </div>
-        <div class="quick-actions" aria-label="Forecast shortcuts">
-          <button type="button" data-overview-compare="500mb_height_anomaly">Compare 500-mb</button>
-          <button type="button" data-overview-compare="2m_temperature_anomaly">Compare 2-m temperature</button>
+      <div class="overview-actions" aria-label="Forecast shortcuts">
           <button type="button" data-overview-model="superensemble">Explore Super Ensemble</button>
-        </div>
-      </article>
+      </div>
       <div class="overview-stats" id="overview-stats" aria-label="Dashboard summary"></div>
       <p class="overview-notices" id="overview-notices" role="status">Loading published model manifests…</p>
       <article class="card">
@@ -117,3 +108,4 @@
   <script src="dashboard.js" defer></script>
 </body>
 </html>
+

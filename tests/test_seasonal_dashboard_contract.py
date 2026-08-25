@@ -234,6 +234,14 @@ def main() -> int:
     check("'model_spread': 'Model Spread'" not in page, "dashboard must not expose retired NMME model spread")
     check('id="map-title"' not in page, "map card should not duplicate titles already rendered in the image")
     check('id="run-status"' not in page, "map card should not duplicate image status in a header badge")
+    check('class="overview-lead"' not in page_markup, "overview should not show the retired introductory lead card")
+    check('data-overview-compare=' not in page_markup, "overview should not show duplicate Compare shortcuts")
+    for retired_intro in (
+        "Operational status",
+        "Start with coverage, then inspect the forecast.",
+        "See which model families and parameters are current, partial, or unavailable before opening a map.",
+    ):
+        check(retired_intro not in page_markup, f"overview should not show retired introductory copy: {retired_intro}")
     for term in (
         "name: Publish Seasonal Model Dashboard Pages",
         "WeatherNext Runner",
@@ -279,4 +287,5 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
 

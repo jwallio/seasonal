@@ -977,7 +977,6 @@ document.querySelector('.view-tabs').addEventListener('keydown', event => {
   const next = event.key === 'Home' ? 0 : event.key === 'End' ? ids.length - 1 : event.key === 'ArrowLeft' ? (current - 1 + ids.length) % ids.length : (current + 1) % ids.length;
   const nextView = ids[next].replace('-tab', ''); setView(nextView); el(ids[next]).focus();
 });
-document.querySelectorAll('[data-overview-compare]').forEach(button => button.addEventListener('click', () => { selection.compareProduct = button.dataset.overviewCompare; selection.compareTarget = ''; selection.compareBaseline = 'native'; setView('compare'); }));
 document.querySelectorAll('[data-overview-model]').forEach(button => button.addEventListener('click', () => { selection.model = button.dataset.overviewModel; selection.product = ''; selection.run = ''; selection.target = ''; setView('single'); }));
 const provenanceMedia = window.matchMedia('(min-width: 901px)');
 function syncProvenanceDisclosure(event = provenanceMedia) { el('provenance-details').open = event.matches; }
@@ -1065,3 +1064,4 @@ loadDashboardData().then(() => {
   if (!modelStates[selection.model].manifest) selection.model = Object.keys(MODEL_CONFIG).find(key => modelStates[key].manifest) || selection.model;
   setView(selection.view);
 });
+
