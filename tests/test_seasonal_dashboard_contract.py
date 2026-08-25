@@ -211,6 +211,10 @@ def main() -> int:
     check(".toolbar{position:static" in stylesheet, "Explore selectors must not stay pinned over maps on phones")
     check(".compare-toolbar{position:static" in stylesheet, "Compare options must not stay pinned over maps on phones")
     check(".compare-toolbar.is-collapsed .compare-control-fields{display:none}" in stylesheet, "mobile Compare options must collapse to expose the maps")
+    check(".page-actions { display:none; }" in stylesheet, "mobile header should hide the space-consuming copy action")
+    check(".compare-control-fields .selector, .compare-filter { grid-column:1 / -1; }" in stylesheet, "mobile Compare controls should use readable full-width fields")
+    check(".analog-product-grid { grid-template-columns:1fr; }" in stylesheet, "mobile analog maps should use the available screen width")
+    check('aria-label="Copy current dashboard link"' in page_markup, "copy action should retain an accessible label when compacted")
     check("runs[0]" not in page[page.index("function preferredRun"):page.index("function selectedRun")], "failed history must not be used as a default fallback")
     overview_block = page[page.index("function renderOverview()"):page.index("function compareEmpty")]
     check("states.length" not in overview_block, "coverage denominator must exclude intentional unsupported and quarantined surfaces")
