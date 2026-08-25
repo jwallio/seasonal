@@ -156,6 +156,12 @@ The manifest records this as `baseline.rolling_policy =
 anchor_initialization`. A custom target-month baseline directory can be used
 when a month-specific 1991-2020 climatology is preferred.
 
+The scheduled workflow also passes `--allow-stale-calibration`. If NCEI returns
+a transient error after bounded retries, the adapter may use a cached matching
+cycle from the prior seven days. The image header and manifest identify the
+requested and used initialization so the fallback is never presented as an
+exact current-cycle calibration.
+
 For a custom baseline, identify it in the command with `--baseline-label` and,
 when known, `--baseline-years`; `--ncei-calibration` supplies those values from
 the official file automatically. Do not use the WN2 ERA5/MERRA-2 baseline and

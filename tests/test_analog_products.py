@@ -53,6 +53,22 @@ def main() -> int:
     check(mrcc_query["ds"] == ["19401201"] and mrcc_query["de"] == ["19410228"], "MRCC DJF dates are wrong")
     check(mrcc_query["var"] == ["snow"] and mrcc_query["calc"] == ["departure"], "MRCC snowfall departure controls are wrong")
 
+    retry_calls: list[str] = []
+    original_retry_delay = module.MRCC_RETRY_DELAY_SECONDS
+    module.MRCC_RETRY_DELAY_SECONDS = 0
+    try:
+        def transient_mrcc_fetcher(url: str, _timeout: int) -> bytes:
+            retry_calls.append(url)
+            if len(retry_calls) == 1:
+                raise module.AnalogProductError("HTTP 500 from MRCC test endpoint")
+            return module.PNG_SIGNATURE + b"retry-test"
+
+        retry_image = module._fetch_mrcc_image(transient_mrcc_fetcher, module._mrcc_url(djf), 1)
+        check(retry_image.startswith(module.PNG_SIGNATURE), "MRCC retry should return the recovered PNG")
+        check(len(retry_calls) == 2, "MRCC transient 500 should be retried once")
+    finally:
+        module.MRCC_RETRY_DELAY_SECONDS = original_retry_delay
+
     analog_manifest = {
         "source": {"climatology_years": "1981-2010"},
         "entries": [{

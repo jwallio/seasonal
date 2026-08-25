@@ -45,6 +45,8 @@ NCEI_FLUX_CALIBRATION_ROOT = (
 NCEI_CALIBRATION_YEARS = "1982-2010"
 NCEI_CALIBRATION_LABEL = "NCEI CFS reforecast calibration climatology; 1982-2010"
 NCEI_FLUX_CALIBRATION_LABEL = "NCEI CFS reforecast flux calibration climatology; 1982-2010"
+NCEI_CALIBRATION_DOWNLOAD_ATTEMPTS = 3
+NCEI_CALIBRATION_FALLBACK_MAX_DAYS = 7
 COMMON_REFERENCE_YEARS = "1991-2020"
 COMMON_REFERENCE_LABEL = "Common 1991-2020 reference (CanSIPS v3 hindcast)"
 COMMON_REFERENCE_FILENAME = "z500_{target}.csv.gz"
@@ -590,6 +592,94 @@ def cached_calibration_path(
     return cache_dir / "calibration" / source_kind / init / Path(
         ncei_calibration_url(init, lead, source_kind)
     ).name
+
+
+def cached_calibration_fallback(
+    cache_dir: Path,
+    init: str,
+    lead: int,
+    source_kind: str = "pgbf",
+    max_age_days: int = NCEI_CALIBRATION_FALLBACK_MAX_DAYS,
+) -> tuple[Path, str] | None:
+    """Find a recent prior-cycle calibration when NCEI has a transient outage.
+
+    The fallback is deliberately restricted to the same initialization month,
+    preferably the same cycle hour, and a short age window.  Callers must label
+    the result as a fallback in the manifest and map header.
+    """
+
+    requested_time = dt.datetime.strptime(init, "%Y%m%d%H")
+    calibration_root = cache_dir / "calibration" / source_kind
+    if not calibration_root.exists():
+        return None
+
+    candidates: list[tuple[tuple[bool, bool, dt.datetime], Path, str]] = []
+    for candidate_dir in calibration_root.iterdir():
+        if not candidate_dir.is_dir():
+            continue
+        candidate_init = candidate_dir.name
+        try:
+            candidate_time = dt.datetime.strptime(candidate_init, "%Y%m%d%H")
+        except ValueError:
+            continue
+        if candidate_time >= requested_time:
+            continue
+        if requested_time - candidate_time > dt.timedelta(days=max_age_days):
+            continue
+        candidate_path = cached_calibration_path(cache_dir, candidate_init, lead, source_kind)
+        if not candidate_path.exists() or candidate_path.stat().st_size <= 0:
+            continue
+        same_month = candidate_init[4:6] == init[4:6]
+        same_hour = candidate_init[8:] == init[8:]
+        candidates.append(((same_month, same_hour, candidate_time), candidate_path, candidate_init))
+
+    if not candidates:
+        return None
+    _, path, candidate_init = max(candidates, key=lambda item: item[0])
+    return path, candidate_init
+
+
+def load_ncei_calibration(
+    *,
+    cache_dir: Path,
+    init: str,
+    lead: int,
+    source_kind: str,
+    request_delay: float,
+    last_request: float,
+    allow_stale: bool,
+) -> tuple[Path, str, bool, float, str | None]:
+    """Download the matching calibration, optionally retaining a recent cache.
+
+    Returns the path, initialization represented by that path, download flag,
+    updated request clock, and the original error when a fallback was used.
+    """
+
+    requested_url = ncei_calibration_url(init, lead, source_kind)
+    requested_path = cached_calibration_path(cache_dir, init, lead, source_kind)
+    try:
+        downloaded, last_request = download_file(
+            requested_url,
+            requested_path,
+            request_delay,
+            last_request,
+            attempts=NCEI_CALIBRATION_DOWNLOAD_ATTEMPTS,
+            timeout=(30, 300),
+        )
+        return requested_path, init, downloaded, last_request, None
+    except Exception as exc:
+        if not allow_stale:
+            raise
+        fallback = cached_calibration_fallback(cache_dir, init, lead, source_kind)
+        if fallback is None:
+            raise
+        fallback_path, fallback_init = fallback
+        fallback_url = ncei_calibration_url(fallback_init, lead, source_kind)
+        print(
+            f"CFSv2 calibration unavailable for {requested_url} ({exc}); "
+            f"using cached prior cycle {fallback_url}"
+        )
+        return fallback_path, fallback_init, False, last_request, str(exc)
 
 
 def rolling_cycle_inits(end_init: str, cycle_count: int) -> list[str]:
@@ -1853,6 +1943,11 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--baseline-file", type=Path, help="one CFSv2/reforecast baseline CSV or GRIB2 grid")
     parser.add_argument("--baseline-dir", type=Path, help="directory containing a baseline grid for each YYYYMM target")
     parser.add_argument("--ncei-calibration", action="store_true", help="fetch the matching official NCEI CFS reforecast calibration baseline (1982-2010)")
+    parser.add_argument(
+        "--allow-stale-calibration",
+        action="store_true",
+        help="when NCEI is temporarily unavailable, use a cached prior-cycle calibration and label the fallback",
+    )
     parser.add_argument("--baseline-label", default="", help="human-readable baseline source and period for metadata")
     parser.add_argument("--baseline-years", default="", help="optional baseline years for manifest provenance")
     parser.add_argument("--common-reference-dir", type=Path, help="cached CanSIPS 1991-2020 reference grids for the comparison view")
@@ -1889,6 +1984,8 @@ def run(args: argparse.Namespace) -> int:
     )
     if configured_baselines > 1:
         raise CFSv2Error("use only one of --baseline-file, --baseline-dir, and --ncei-calibration")
+    if args.allow_stale_calibration and not args.ncei_calibration:
+        raise CFSv2Error("--allow-stale-calibration requires --ncei-calibration")
     if args.ncei_calibration and args.baseline_years and args.baseline_years != NCEI_CALIBRATION_YEARS:
         raise CFSv2Error(
             f"--ncei-calibration uses the published {NCEI_CALIBRATION_YEARS} baseline"
@@ -2060,16 +2157,28 @@ def run(args: argparse.Namespace) -> int:
             if not absolute:
                 baseline_url = None
                 baseline_downloaded = False
+                baseline_init = init
+                baseline_fallback_error = None
                 if args.ncei_calibration:
                     baseline_url = ncei_calibration_url(init, lead, product["source_kind"])
-                    baseline_path = cached_calibration_path(cache_dir, init, lead, product["source_kind"])
-                    baseline_downloaded, last_request = download_file(
-                        baseline_url,
+                    (
                         baseline_path,
-                        max(0.0, args.request_delay),
+                        baseline_init,
+                        baseline_downloaded,
                         last_request,
+                        baseline_fallback_error,
+                    ) = load_ncei_calibration(
+                        cache_dir=cache_dir,
+                        init=init,
+                        lead=lead,
+                        source_kind=product["source_kind"],
+                        request_delay=max(0.0, args.request_delay),
+                        last_request=last_request,
+                        allow_stale=getattr(args, "allow_stale_calibration", False),
                     )
                     baseline_label = configured_baseline_label(args)
+                    if baseline_fallback_error:
+                        baseline_label = f"{baseline_label} (cached {baseline_init} fallback)"
                 else:
                     baseline_path, baseline_label = baseline_for_target(args, target, repo_root)
                 baseline_grid = load_baseline(baseline_path, wgrib2, product, target)
@@ -2084,7 +2193,21 @@ def run(args: argparse.Namespace) -> int:
                     target_entry["baseline"]["rolling_policy"] = "anchor_initialization"
                     target_entry["baseline"]["anchor_init"] = init
                 if baseline_url:
-                    target_entry["baseline"]["url"] = baseline_url
+                    target_entry["baseline"]["url"] = ncei_calibration_url(
+                        baseline_init,
+                        lead,
+                        product["source_kind"],
+                    )
+                    if baseline_fallback_error:
+                        target_entry["baseline"].update(
+                            {
+                                "requested_url": baseline_url,
+                                "requested_initialization": init,
+                                "used_initialization": baseline_init,
+                                "fallback": "cached_prior_initialization",
+                                "fallback_error": baseline_fallback_error,
+                            }
+                        )
                     target_entry["baseline"]["downloaded"] = baseline_downloaded
 
             output_path = output_dir / init / f"cfsv2_{product['file_token']}_{target}.jpg"
@@ -2240,14 +2363,23 @@ def run(args: argparse.Namespace) -> int:
                     else mean_grids([baseline_grids[lead] for lead in seasonal_leads])
                 )
                 seasonal_grid = subtract_grids(seasonal_forecast, seasonal_baseline)
-                baseline_label = configured_baseline_label(args)
+                monthly_baselines = [
+                    target_entries_by_lead[lead]["baseline"]
+                    for lead in seasonal_leads
+                    if "baseline" in target_entries_by_lead.get(lead, {})
+                ]
+                baseline_label = (
+                    monthly_baselines[0].get("label", configured_baseline_label(args))
+                    if monthly_baselines
+                    else configured_baseline_label(args)
+                )
                 seasonal_entry["baseline"] = {
                     "files": [
                         target_entries_by_lead[lead]["baseline"]["file"]
                         for lead in seasonal_leads
                         if "baseline" in target_entries_by_lead.get(lead, {})
                     ],
-                    "label": baseline_label,
+                    "label": monthly_baselines[0].get("label", baseline_label) if monthly_baselines else baseline_label,
                     "years": NCEI_CALIBRATION_YEARS if args.ncei_calibration else (args.baseline_years or None),
                 }
                 if rolling_mode:
@@ -2260,6 +2392,19 @@ def run(args: argparse.Namespace) -> int:
                 ]
                 if baseline_urls:
                     seasonal_entry["baseline"]["urls"] = baseline_urls
+                fallback_baselines = [
+                    {
+                        "requested_initialization": item["requested_initialization"],
+                        "used_initialization": item["used_initialization"],
+                        "requested_url": item["requested_url"],
+                        "url": item["url"],
+                        "error": item["fallback_error"],
+                    }
+                    for item in monthly_baselines
+                    if item.get("fallback") == "cached_prior_initialization"
+                ]
+                if fallback_baselines:
+                    seasonal_entry["baseline"]["fallbacks"] = fallback_baselines
             else:
                 seasonal_entry["baseline"] = {"status": "not_applicable", "reason": "absolute smoke output"}
             seasonal_entry["source_files"] = [

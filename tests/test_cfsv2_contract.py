@@ -318,7 +318,7 @@ def main() -> int:
         check(term in workflow, f"workflow missing product selector term: {term}")
     for term in ("baseline", "reforecast", "monthly_grib_01", "lead_month", "GRIB2", "rolling", "NOMADS"):
         check(term in documentation, f"documentation missing contract term: {term}")
-    for term in ("rolling-days", "rolling-state-dir", "actions/cache", "--ncei-calibration", "--common-reference-dir", "--common-reference-url"):
+    for term in ("rolling-days", "rolling-state-dir", "actions/cache", "--ncei-calibration", "--allow-stale-calibration", "--common-reference-dir", "--common-reference-url"):
         check(term in workflow, f"workflow missing contract term: {term}")
     check("SCHEDULED_CFSV2_PRODUCTS: 500mb_height_anomaly,2m_temperature_anomaly,mslp_anomaly,precipitation_anomaly" in workflow, "twice-daily workflow should refresh the complete core anomaly suite")
     check('if [[ "${{ github.event_name }}" == "schedule" ]]' in workflow, "scheduled suite should remain distinct from manual single-product dispatch")
@@ -326,6 +326,35 @@ def main() -> int:
         check(term in workflow, f"workflow missing history-retention term: {term}")
     check("peaceiris/actions-gh-pages" not in workflow, "CFSv2 workflow must not publish Pages directly")
     check("peaceiris/actions-gh-pages" not in update_workflow, "WeatherNext workflow must not publish Pages directly")
+    with tempfile.TemporaryDirectory() as temporary:
+        cache_dir = Path(temporary)
+        fallback_path = adapter_module.cached_calibration_path(cache_dir, "2026082306", 4, "pgbf")
+        fallback_path.parent.mkdir(parents=True)
+        fallback_path.write_bytes(b"cached calibration")
+        fallback = adapter_module.cached_calibration_fallback(cache_dir, "2026082506", 4, "pgbf")
+        check(fallback == (fallback_path, "2026082306"), "calibration fallback should select a recent prior same-cycle cache")
+        original_download = adapter_module.download_file
+        download_kwargs = {}
+        try:
+            def failed_calibration_download(*args, **kwargs):
+                download_kwargs.update(kwargs)
+                raise RuntimeError("HTTP 503 from NCEI test endpoint")
+
+            adapter_module.download_file = failed_calibration_download
+            loaded = adapter_module.load_ncei_calibration(
+                cache_dir=cache_dir,
+                init="2026082506",
+                lead=4,
+                source_kind="pgbf",
+                request_delay=0.0,
+                last_request=0.0,
+                allow_stale=True,
+            )
+            check(loaded[0] == fallback_path and loaded[1] == "2026082306", "NCEI loader should use the selected cached fallback")
+            check(loaded[4] == "HTTP 503 from NCEI test endpoint", "NCEI loader should preserve the triggering error")
+            check(download_kwargs.get("attempts") == 3, "NCEI calibration should use bounded retries")
+        finally:
+            adapter_module.download_file = original_download
     for term in ("Package WN2 Pages payload", "wn2-pages-${{ github.run_id }}"):
         check(term in update_workflow, f"WeatherNext workflow missing Pages payload term: {term}")
     for term in (

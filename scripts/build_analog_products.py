@@ -14,6 +14,7 @@ import html
 import json
 import re
 from pathlib import Path
+import time
 from typing import Any, Callable
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode, urljoin
@@ -28,6 +29,8 @@ PSL_MAP_PAGE = "https://psl.noaa.gov/data/atmoswrit/map/"
 MRCC_MAP_URL = "https://gridded.geddes.rcac.purdue.edu/generate-map"
 MRCC_MAP_PAGE = "https://mrcc.purdue.edu/CLIMATE/maps/interpolated"
 NWS_EASTERN_REGION = "ER"
+MRCC_REQUEST_ATTEMPTS = 2
+MRCC_RETRY_DELAY_SECONDS = 2.0
 
 PRODUCT_SPECS: dict[str, dict[str, str]] = {
     "psl_500mb_height_anomaly": {
@@ -214,6 +217,36 @@ def _mrcc_url(period: dict[str, Any]) -> str:
     return f"{MRCC_MAP_URL}?{urlencode(query)}"
 
 
+def _mrcc_retryable(error: AnalogProductError) -> bool:
+    message = str(error)
+    return bool(
+        re.search(r"\bHTTP (?:429|500|502|503|504)\b", message)
+        or "timed out" in message.lower()
+        or "source request failed" in message.lower()
+    )
+
+
+def _fetch_mrcc_image(
+    fetcher: Callable[[str, int], bytes],
+    url: str,
+    timeout: int,
+) -> bytes:
+    """Retry transient MRCC generator failures before retaining a prior map."""
+
+    errors: list[str] = []
+    for attempt in range(1, MRCC_REQUEST_ATTEMPTS + 1):
+        try:
+            return fetcher(url, timeout)
+        except AnalogProductError as exc:
+            errors.append(str(exc))
+            if attempt >= MRCC_REQUEST_ATTEMPTS or not _mrcc_retryable(exc):
+                raise
+            time.sleep(MRCC_RETRY_DELAY_SECONDS)
+    raise AnalogProductError(
+        f"MRCC request failed after {MRCC_REQUEST_ATTEMPTS} attempts: {' | '.join(errors)}"
+    )
+
+
 def _extract_psl_image_url(page: bytes) -> str:
     text = page.decode("latin-1", errors="replace")
     match = re.search(r"<img[^>]+src=[\"']([^\"']+\.png)[\"']", text, re.IGNORECASE)
@@ -307,7 +340,7 @@ def _build_product(
             image = fetcher(image_url, timeout)
             provider_asset_url = image_url
         else:
-            image = fetcher(source_url, timeout)
+            image = _fetch_mrcc_image(fetcher, source_url, timeout)
             provider_asset_url = source_url
         _write_png(image_path, image)
         return {
@@ -434,7 +467,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--analog-manifest", default="seasonal/analog_z500_manifest.json")
     parser.add_argument("--output", default="seasonal/analog_products_manifest.json")
     parser.add_argument("--output-dir", default="seasonal/analog_products")
-    parser.add_argument("--timeout", type=int, default=180)
+    parser.add_argument("--timeout", type=int, default=300)
     return parser
 
 

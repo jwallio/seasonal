@@ -144,7 +144,7 @@ jobs:
             if [[ "$product" == "500mb_height_absolute" ]]; then
               args+=(--product "$product" --absolute)
             else
-              args+=(--product "$product" --ncei-calibration)
+              args+=(--product "$product" --ncei-calibration --allow-stale-calibration)
             fi
             python "${args[@]}"
           done
