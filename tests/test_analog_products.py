@@ -47,6 +47,9 @@ def main() -> int:
     check(psl_query["dataset1"] == ["ERA5"], "PSL must use the same ERA5 archive family")
     check(psl_query["iy"] == ["1940"] and psl_query["fmonth"] == ["11"], "PSL monthly year controls are wrong")
     check(psl_query["type"] == ["1"] and psl_query["level"] == ["500mb"], "PSL anomaly controls are wrong")
+    check(psl_query["colortable"] == ["default"], "PSL 500-mb maps should use the default color table")
+    temperature_query = parse_qs(urlsplit(module._psl_url(december, module.PRODUCT_SPECS["psl_2m_temperature_anomaly"])).query)
+    check(temperature_query["colortable"] == ["testcmap"], "PSL 2-m temperature maps should use testcmap")
     psl_image_url = module._extract_psl_image_url(
         b'<img src="/img/icons/us_flag_small.png"><IMG src="/tmp/generated_map.png">'
     )
@@ -139,6 +142,21 @@ def main() -> int:
         refreshed_psl = refreshed["entries"][0]["products"]["psl_500mb_height_anomaly"]
         check(refreshed_psl["provider_asset_url"] == "https://psl.noaa.gov/tmp/test.png", "legacy PSL icon assets should be refreshed")
         check(len(calls) == 2, "only legacy PSL assets should be fetched again")
+
+        color_change = json.loads(json.dumps(first))
+        color_change["entries"][0]["products"]["psl_500mb_height_anomaly"]["source_url"] = color_change["entries"][0]["products"]["psl_500mb_height_anomaly"]["source_url"].replace("colortable=default", "colortable=MPL_BrBG")
+        module.write_manifest(output_path, color_change)
+        calls.clear()
+        refreshed_color = module.build_manifest(
+            root=root,
+            analog_manifest_path=analog_path,
+            output_manifest_path=output_path,
+            output_dir=output_dir,
+            fetcher=fetcher,
+        )
+        refreshed_color_psl = refreshed_color["entries"][0]["products"]["psl_500mb_height_anomaly"]
+        check("colortable=default" in refreshed_color_psl["source_url"], "changed PSL color tables should refresh cached maps")
+        check(len(calls) == 2, "only PSL assets with changed source controls should be fetched again")
 
         changed = json.loads(json.dumps(analog_manifest))
         changed["entries"][0]["results"][0]["winter_year"] = 1942

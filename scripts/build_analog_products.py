@@ -40,6 +40,7 @@ PRODUCT_SPECS: dict[str, dict[str, str]] = {
         "variable": "Geopotential Height",
         "level": "500mb",
         "contourtype": "Shaded w/overlying contours",
+        "colortable": "default",
     },
     "psl_2m_temperature_anomaly": {
         "label": "2-m Temperature Anomaly",
@@ -48,6 +49,7 @@ PRODUCT_SPECS: dict[str, dict[str, str]] = {
         "variable": "2m Air Temperature",
         "level": "1000mb",
         "contourtype": "Shaded",
+        "colortable": "testcmap",
     },
     "mrcc_snowfall_departure": {
         "label": "Snowfall Departure · NWS Eastern Region",
@@ -179,7 +181,7 @@ def _psl_url(period: dict[str, Any], spec: dict[str, str]) -> str:
         "map": "0",
         "mapt": "0",
         "proj": "North America",
-        "colortable": "MPL_BrBG",
+        "colortable": spec["colortable"],
         "labelc": "0",
         "contourtype": spec["contourtype"],
         "scale": "100",
@@ -339,15 +341,16 @@ def _build_product(
 ) -> dict[str, Any]:
     spec = PRODUCT_SPECS[product_key]
     top_key = _top_key(model, target, top)
+    source_url = _psl_url(period, spec) if product_key.startswith("psl_") else _mrcc_url(period)
     if old and old.get("top_analog_key") == top_key:
         old_path = _resolve_rooted(root, str(old.get("image", ""))) if old.get("image") else None
         provider_asset_url = str(old.get("provider_asset_url", "")).lower()
         legacy_psl_icon = product_key.startswith("psl_") and "/img/icons/" in provider_asset_url
-        if old_path and old_path.exists() and old.get("status") == "ready" and not legacy_psl_icon:
+        source_changed = str(old.get("source_url", "")) != source_url
+        if old_path and old_path.exists() and old.get("status") == "ready" and not legacy_psl_icon and not source_changed:
             return old
 
     image_path = output_dir / model / target / str(period["winter_year"]) / f"{product_key}.png"
-    source_url = _psl_url(period, spec) if product_key.startswith("psl_") else _mrcc_url(period)
     try:
         if product_key.startswith("psl_"):
             page = fetcher(source_url, timeout)
