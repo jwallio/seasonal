@@ -136,3 +136,44 @@ dialog::backdrop { background:#02080dcc; backdrop-filter:blur(5px); }
 @media (max-width:600px) { .analog-grid{grid-template-columns:1fr;padding:10px}.analog-card{padding:12px}.card-subtitle{line-height:1.35} }
 @media (max-width:600px) { .analog-product-grid{grid-template-columns:1fr 1fr}.analog-product h5{min-height:0} }
 
+/* Keep the forecast surface dominant on narrow screens. */
+@media (max-width:600px) {
+  .shell { width:min(calc(100% - 16px),1440px); padding-top:10px; padding-bottom:32px; }
+  h1 { font-size:clamp(26px,8vw,32px); line-height:1.05; }
+  .hero { gap:6px; padding-bottom:10px; }
+  .view-bar { margin-bottom:10px; }
+  .view-tabs { gap:4px; }
+  .view-tabs button { padding:8px 6px; font-size:11px; }
+  .page-actions { display:none; }
+  .overview-view { gap:12px; }
+  .overview-actions { margin-top:-2px; }
+  .overview-stats { gap:8px; }
+  .overview-stat { min-height:78px; padding:11px 12px; }
+  .overview-stat strong { margin-top:6px; font-size:21px; }
+  .overview-stat span { margin-top:5px; font-size:10px; line-height:1.3; }
+  .overview-notices { padding:10px 12px; font-size:11px; line-height:1.4; }
+  .card { border-radius:16px; }
+  .matrix-head { padding:13px 14px; }
+  .matrix-note { padding:10px 14px 13px; font-size:10px; }
+  .toolbar { gap:8px; padding:10px; margin-bottom:12px; }
+  .selector label, .control-label { font-size:9px; }
+  select { padding:9px; font-size:12px; }
+  .grid { gap:12px; }
+  .viewer { padding:6px; }
+  .map-wrap { min-height:220px; border-radius:11px; }
+  .controls { gap:6px; }
+  .controls button { padding:7px 9px; font-size:11px; }
+  .facts { gap:8px; }
+  .fact { min-height:68px; padding:10px; }
+  .fact strong { font-size:14px; }
+  .compare-toolbar { padding:8px 10px; }
+  .compare-control-fields { gap:8px; }
+  .compare-control-fields .selector, .compare-filter { grid-column:1 / -1; }
+  .compare-toolbar .selector { width:100%; }
+  .compare-summary { font-size:11px; }
+  .compare-image-wrap { min-height:0; }
+  .analog-product-grid { grid-template-columns:1fr; }
+  .analog-product h5 { font-size:11px; }
+  .footer { margin-top:14px; font-size:11px; }
+}
+
