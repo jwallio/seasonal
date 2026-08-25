@@ -136,9 +136,10 @@ jobs:
           if (-not (Test-Path -LiteralPath 'site\seasonal\analog_products_manifest.json')) { throw 'Analog product manifest is missing.' }
           if (-not (Test-Path -LiteralPath 'site\seasonal\analog_products')) { throw 'Analog product directory is missing.' }
           New-Item -ItemType Directory -Force -Path 'pages-payload\seasonal' | Out-Null
+          New-Item -ItemType Directory -Force -Path 'pages-payload\seasonal\analog_products' | Out-Null
           Copy-Item -LiteralPath 'site\seasonal\analog_z500_manifest.json' -Destination 'pages-payload\seasonal\analog_z500_manifest.json' -Force
           Copy-Item -LiteralPath 'site\seasonal\analog_products_manifest.json' -Destination 'pages-payload\seasonal\analog_products_manifest.json' -Force
-          Copy-Item -Path 'site\seasonal\analog_products' -Destination 'pages-payload\seasonal\analog_products' -Recurse -Force
+          Copy-Item -Path 'site\seasonal\analog_products\*' -Destination 'pages-payload\seasonal\analog_products' -Recurse -Force
 
       - name: Upload analog Pages payload
         uses: actions/upload-artifact@v4
