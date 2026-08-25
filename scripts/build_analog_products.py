@@ -249,10 +249,23 @@ def _fetch_mrcc_image(
 
 def _extract_psl_image_url(page: bytes) -> str:
     text = page.decode("latin-1", errors="replace")
-    match = re.search(r"<img[^>]+src=[\"']([^\"']+\.png)[\"']", text, re.IGNORECASE)
-    if not match:
+    sources = re.findall(r"<img[^>]+src=[\"']([^\"']+\.png)[\"']", text, re.IGNORECASE)
+    generated = next(
+        (
+            source
+            for source in sources
+            if "/tmp/" in source.lower() or "plot" in source.lower() or "map" in source.lower()
+        ),
+        None,
+    )
+    if generated is None:
+        generated = next(
+            (source for source in sources if "icon" not in source.lower()),
+            None,
+        )
+    if generated is None:
         raise AnalogProductError("PSL response did not contain a generated PNG")
-    return urljoin(PSL_MAP_URL, html.unescape(match.group(1)))
+    return urljoin(PSL_MAP_URL, html.unescape(generated))
 
 
 def _write_png(path: Path, data: bytes) -> None:

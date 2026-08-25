@@ -47,6 +47,10 @@ def main() -> int:
     check(psl_query["dataset1"] == ["ERA5"], "PSL must use the same ERA5 archive family")
     check(psl_query["iy"] == ["1940"] and psl_query["fmonth"] == ["11"], "PSL monthly year controls are wrong")
     check(psl_query["type"] == ["1"] and psl_query["level"] == ["500mb"], "PSL anomaly controls are wrong")
+    psl_image_url = module._extract_psl_image_url(
+        b'<img src="/img/icons/us_flag_small.png"><IMG src="/tmp/generated_map.png">'
+    )
+    check(psl_image_url == "https://psl.noaa.gov/tmp/generated_map.png", "PSL should select the generated map instead of the NOAA flag icon")
 
     mrcc_query = parse_qs(urlsplit(module._mrcc_url(djf)).query)
     check(mrcc_query["loc"] == ["ER"], "MRCC must target the NWS Eastern Region")
