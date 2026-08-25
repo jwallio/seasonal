@@ -30,7 +30,8 @@ MRCC_MAP_URL = "https://gridded.geddes.rcac.purdue.edu/generate-map"
 MRCC_MAP_PAGE = "https://mrcc.purdue.edu/CLIMATE/maps/interpolated"
 NWS_EASTERN_REGION = "ER"
 MRCC_REQUEST_ATTEMPTS = 2
-MRCC_RETRY_DELAY_SECONDS = 2.0
+MRCC_RETRY_DELAY_SECONDS = 5.0
+MRCC_GENERATION_TIMEOUT_SECONDS = 600
 
 PRODUCT_SPECS: dict[str, dict[str, str]] = {
     "psl_500mb_height_anomaly": {
@@ -220,10 +221,13 @@ def _mrcc_url(period: dict[str, Any]) -> str:
 
 
 def _mrcc_retryable(error: AnalogProductError) -> bool:
+    """Retry quick transient provider errors, not a timeout after the full wait."""
+
     message = str(error)
+    if "timed out" in message.lower():
+        return False
     return bool(
         re.search(r"\bHTTP (?:429|500|502|503|504)\b", message)
-        or "timed out" in message.lower()
         or "source request failed" in message.lower()
     )
 
@@ -358,7 +362,8 @@ def _build_product(
             image = fetcher(image_url, timeout)
             provider_asset_url = image_url
         else:
-            image = _fetch_mrcc_image(fetcher, source_url, timeout)
+            mrcc_timeout = max(timeout, MRCC_GENERATION_TIMEOUT_SECONDS)
+            image = _fetch_mrcc_image(fetcher, source_url, mrcc_timeout)
             provider_asset_url = source_url
         _write_png(image_path, image)
         return {

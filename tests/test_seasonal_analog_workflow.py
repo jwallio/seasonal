@@ -48,6 +48,7 @@ def main() -> int:
     ):
         check(term in publisher, f"Pages publisher is missing analog term: {term}")
     check("cancel-in-progress: false" in workflow, "analog builds must not cancel a prior archive read")
+    check("timeout-minutes: 120" in workflow, "analog builds must allow slow MRCC map generation to finish")
     check("site\\seasonal\\analog_products\\*" in workflow, "analog payload must copy product contents without an extra directory level")
     check("previous Pages artifact" in workflow, "workflow must document retained-artifact fallback")
     print("SEASONAL ANALOG WORKFLOW OK: self-hosted archive access, source handoff, and serialized Pages publish")

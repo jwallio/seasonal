@@ -21,7 +21,7 @@ jobs:
   build:
     if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: [self-hosted, windows, x64, wn2-analogwx]
-    timeout-minutes: 90
+    timeout-minutes: 120
     env:
       ANALOGWX_DATA_ROOT: ${{ vars.ANALOGWX_DATA_ROOT }}
       ANALOGWX_PYTHON: ${{ vars.ANALOGWX_PYTHON }}

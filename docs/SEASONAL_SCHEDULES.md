@@ -32,6 +32,9 @@ station-interpolated snowfall departure for the NWS Eastern Region (`ER`). A
 monthly analog uses that calendar month; a DJF analog uses December through
 February. A source outage retains the last good image and records the stale
 status in `seasonal/analog_products_manifest.json`.
+The MRCC generator is given a ten-minute per-map wait window; quick HTTP 5xx
+responses are retried, while a true timeout is marked unavailable only after
+that full window. The analog job allows 120 minutes for this slow provider.
 
 The central `publish-pages.yml` workflow already serializes Pages updates with
 `cancel-in-progress: false`, so simultaneous model releases do not overwrite

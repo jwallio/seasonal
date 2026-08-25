@@ -76,6 +76,24 @@ def main() -> int:
     finally:
         module.MRCC_RETRY_DELAY_SECONDS = original_retry_delay
 
+    timeout_calls: list[tuple[str, int]] = []
+
+    def timed_out_mrcc_fetcher(url: str, request_timeout: int) -> bytes:
+        timeout_calls.append((url, request_timeout))
+        raise module.AnalogProductError("source request timed out for MRCC test endpoint")
+
+    try:
+        module._fetch_mrcc_image(
+            timed_out_mrcc_fetcher,
+            module._mrcc_url(djf),
+            module.MRCC_GENERATION_TIMEOUT_SECONDS,
+        )
+    except module.AnalogProductError:
+        pass
+    else:
+        raise AssertionError("MRCC timeout test should fail after the generation window")
+    check(len(timeout_calls) == 1, "MRCC should not repeat another full generation wait after a timeout")
+
     analog_manifest = {
         "source": {"climatology_years": "1981-2010"},
         "entries": [{
@@ -89,9 +107,11 @@ def main() -> int:
     }
     png = module.PNG_SIGNATURE + b"offline-test"
     calls: list[str] = []
+    request_timeouts: list[tuple[str, int]] = []
 
-    def fetcher(url: str, _timeout: int) -> bytes:
+    def fetcher(url: str, request_timeout: int) -> bytes:
         calls.append(url)
+        request_timeouts.append((url, request_timeout))
         if url.startswith(module.PSL_MAP_URL):
             return b'<html><IMG src="/tmp/test.png"></html>'
         return png
@@ -112,6 +132,11 @@ def main() -> int:
         )
         check(first["status"] == "ready", "offline product build should be ready")
         check(len(calls) == 5, "PSL and MRCC should each be requested once per product")
+        check(
+            [timeout for url, timeout in request_timeouts if url.startswith(module.MRCC_MAP_URL)]
+            == [module.MRCC_GENERATION_TIMEOUT_SECONDS],
+            "MRCC should receive the extended generation timeout",
+        )
         module.write_manifest(output_path, first)
         for product in first["entries"][0]["products"].values():
             check(product["status"] == "ready" and (root / product["image"]).exists(), "product image was not retained")
