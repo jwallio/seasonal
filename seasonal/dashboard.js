@@ -798,7 +798,7 @@ function renderAnalogPanel(targetKey) {
     if (!entry) return card;
     const table = document.createElement('table');
     table.className = 'analog-table';
-    table.innerHTML = '<thead><tr><th scope="col">Rank</th><th scope="col">Historical period</th><th scope="col">Pattern</th><th scope="col">Amplitude</th><th scope="col">Composite wt.</th></tr></thead>';
+    table.innerHTML = '<thead><tr><th scope="col">Rank</th><th scope="col" title="Historical analog month or season">Period</th><th scope="col" title="Centered spatial pattern correlation">Pattern</th><th scope="col" title="Area-weighted anomaly amplitude similarity">Amplitude</th><th scope="col" title="Inverse similarity-distance composite weight">Weight</th></tr></thead>';
     const body = document.createElement('tbody');
     (entry.results || []).forEach(result => {
       const row = document.createElement('tr');
