@@ -196,6 +196,36 @@ def main() -> int:
     check("Retaining ${history} prior run${history === 1 ? '' : 's'} per parameter" in page, "Pages viewer should report per-parameter run history")
     check("available.find(run => !isFailedRun(run))" in page, "Pages viewer should default to the latest non-failed run")
     adapter_module = load_adapter()
+    readiness_calls = []
+
+    def readiness_probe(url):
+        readiness_calls.append(url)
+        return 403 if ".2026082518." in url else 200
+
+    selected_ready_init = adapter_module.discover_latest_ready_init(
+        [
+            adapter_module.PRODUCT_HEIGHT_ANOMALY,
+            adapter_module.PRODUCT_2M_TEMPERATURE_ANOMALY,
+            adapter_module.PRODUCT_MSLP_ANOMALY,
+            adapter_module.PRODUCT_PRECIPITATION_ANOMALY,
+        ],
+        [4, 5, 6],
+        candidate_inits=["2026082518", "2026082512"],
+        probe=readiness_probe,
+    )
+    check(selected_ready_init == "2026082512", "readiness discovery should fall back to the newest complete cycle")
+    check(len(readiness_calls) == 12, "readiness discovery should probe six unique source files for each candidate")
+    try:
+        adapter_module.discover_latest_ready_init(
+            [adapter_module.PRODUCT_HEIGHT_ANOMALY],
+            [4, 5, 6],
+            candidate_inits=["2026082518"],
+            probe=lambda _url: 404,
+        )
+    except adapter_module.CFSv2Error:
+        pass
+    else:
+        raise AssertionError("readiness discovery should fail when no candidate has all required files")
     check(len(adapter_module.ANOMALY_PALETTE) == len(adapter_module.ANOMALY_TICKS) - 1, "height anomaly colors should align with labelled transitions")
     check(len(adapter_module.ANOMALY_PALETTE) == len(adapter_module.CFSV2_HEIGHT_ANOMALY_TICKS) - 1, "CFSv2 height anomaly colors should align with labelled transitions")
     check(len(adapter_module.TEMPERATURE_ANOMALY_PALETTE) == len(adapter_module.CFSV2_TEMPERATURE_ANOMALY_TICKS) - 1, "CFSv2 2-m temperature colors should align with labelled transitions")
@@ -320,6 +350,9 @@ def main() -> int:
         check(term in documentation, f"documentation missing contract term: {term}")
     for term in ("rolling-days", "rolling-state-dir", "actions/cache", "--ncei-calibration", "--allow-stale-calibration", "--common-reference-dir", "--common-reference-url"):
         check(term in workflow, f"workflow missing contract term: {term}")
+    for term in ("discover_latest_ready_init", "readiness_products", "readiness_leads", '35 4,16 * * *'):
+        check(term in workflow, f"workflow missing CFSv2 readiness term: {term}")
+    check("--allow-partial-rolling" not in workflow, "scheduled CFSv2 workflow must not publish an incomplete rolling blend")
     check("SCHEDULED_CFSV2_PRODUCTS: 500mb_height_anomaly,2m_temperature_anomaly,mslp_anomaly,precipitation_anomaly" in workflow, "twice-daily workflow should refresh the complete core anomaly suite")
     check('if [[ "${{ github.event_name }}" == "schedule" ]]' in workflow, "scheduled suite should remain distinct from manual single-product dispatch")
     for term in ("Restore published CFSv2 run history", "previous_manifest.json", "--previous-manifest", "--retain-runs 4"):

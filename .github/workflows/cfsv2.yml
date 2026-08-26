@@ -2,9 +2,9 @@ name: CFSv2 Rolling Seasonal Graphics
 
 on:
   schedule:
-    # CFSv2 runs every six hours; use the 06Z and 18Z cycles for the twice-daily
-    # rolling blend and allow NOMADS time to publish the monthly means.
-    - cron: "35 10,22 * * *"
+    # CFSv2 runs every six hours; run well after the 06Z and 18Z cycles so the
+    # readiness probe can select a complete monthly-file set.
+    - cron: "35 4,16 * * *"
   workflow_dispatch:
     inputs:
       product:
@@ -115,10 +115,24 @@ jobs:
           set -euo pipefail
           if [[ "${{ github.event_name }}" == "schedule" ]]; then
             IFS=',' read -r -a products <<< "$SCHEDULED_CFSV2_PRODUCTS"
+            readiness_products="$SCHEDULED_CFSV2_PRODUCTS"
           else
             products=("$CFSV2_PRODUCT")
+            readiness_products="$CFSV2_PRODUCT"
           fi
-          anchor_init="$(python -c "import sys; sys.path.insert(0, 'scripts'); from cfsv2_seasonal import discover_latest_init; print(discover_latest_init())")"
+          readiness_leads="${LEAD_MONTHS},${SEASONAL_WINDOW}"
+          anchor_init="$(
+            python - "$readiness_products" "$readiness_leads" <<'PY'
+          import sys
+
+          sys.path.insert(0, "scripts")
+          from cfsv2_seasonal import discover_latest_ready_init
+
+          products = [value.strip() for value in sys.argv[1].split(",") if value.strip()]
+          leads = sorted({int(value) for value in sys.argv[2].split(",") if value.strip()})
+          print(discover_latest_ready_init(products, leads))
+          PY
+          )"
           echo "Using CFSv2 anchor initialization $anchor_init for ${#products[@]} product(s)."
           for product in "${products[@]}"; do
             echo "Rendering CFSv2 product: $product"
@@ -131,7 +145,6 @@ jobs:
               --rolling-days "$ROLLING_DAYS"
               --rolling-member 1
               --rolling-state-dir .cache/cfsv2/rolling
-              --allow-partial-rolling
               --cache-dir .cache/cfsv2
               --output-dir public/seasonal/cfsv2
               --manifest public/seasonal/cfsv2_manifest.json

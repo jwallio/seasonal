@@ -513,8 +513,11 @@ def seasonal_period_label(first_target: str, last_target: str) -> str:
     return f"{start:%b %Y}\u2013{end:%b %Y}"
 
 
-def discover_latest_init(root: str = NOMADS_ROOT) -> str:
-    """Select the newest listed cycle from the official NOMADS directory."""
+def listed_cycle_inits(
+    root: str = NOMADS_ROOT,
+    now: dt.datetime | None = None,
+) -> list[str]:
+    """Return usable CFSv2 cycles listed by NOMADS, newest first."""
 
     try:
         import requests
@@ -529,12 +532,117 @@ def discover_latest_init(root: str = NOMADS_ROOT) -> str:
     dates = sorted(set(re.findall(r'href="cfs\.(\d{8})/"', response.text)), reverse=True)
     if not dates:
         raise CFSv2Error("could not find a cfs.YYYYMMDD cycle in the NOMADS index")
+    current = now or dt.datetime.now(dt.timezone.utc)
+    if current.tzinfo is not None:
+        current = current.astimezone(dt.timezone.utc).replace(tzinfo=None)
+    candidates = []
     for date_text in dates:
-        for hour in (18, 12, 6, 0):
+        for hour in reversed(CFS_CYCLE_HOURS):
             candidate = f"{date_text}{hour:02d}"
-            if dt.datetime.strptime(candidate, "%Y%m%d%H") <= dt.datetime.now(dt.timezone.utc).replace(tzinfo=None):
-                return candidate
-    raise CFSv2Error("NOMADS listed no usable CFSv2 cycle")
+            if dt.datetime.strptime(candidate, "%Y%m%d%H") <= current:
+                candidates.append(candidate)
+    return candidates
+
+
+def discover_latest_init(root: str = NOMADS_ROOT) -> str:
+    """Select the newest listed cycle from the official NOMADS directory."""
+
+    candidates = listed_cycle_inits(root)
+    if not candidates:
+        raise CFSv2Error("NOMADS listed no usable CFSv2 cycle")
+    return candidates[0]
+
+
+def discover_latest_ready_init(
+    product_names: Sequence[str],
+    leads: Sequence[int],
+    root: str = NOMADS_ROOT,
+    *,
+    candidate_inits: Sequence[str] | None = None,
+    probe: Callable[[str], int | None] | None = None,
+) -> str:
+    """Select the newest cycle whose requested monthly files are published.
+
+    NOMADS lists a cycle directory before all of that cycle's monthly GRIB2
+    files are necessarily available.  A rolling blend can use retained state
+    for older cycles, but the selected anchor must have every requested target
+    file ready or the run will be incomplete from the outset.
+
+    ``candidate_inits`` and ``probe`` are injectable so the readiness policy
+    can be tested without making network requests.
+    """
+
+    if isinstance(product_names, str):
+        product_names = [value.strip() for value in product_names.split(",") if value.strip()]
+    normalized_products = list(dict.fromkeys(product_names))
+    if not normalized_products:
+        raise CFSv2Error("at least one CFSv2 product is required for readiness checks")
+    product_specs = [get_product_spec(product_name) for product_name in normalized_products]
+
+    if isinstance(leads, str):
+        leads = [value.strip() for value in leads.split(",") if value.strip()]
+    try:
+        normalized_leads = sorted({int(lead) for lead in leads})
+    except (TypeError, ValueError) as exc:
+        raise CFSv2Error("CFSv2 readiness leads must be integers") from exc
+    if not normalized_leads or any(lead < 1 or lead > 9 for lead in normalized_leads):
+        raise CFSv2Error("CFSv2 readiness leads must be between 1 and 9")
+
+    if probe is None:
+        try:
+            import requests
+        except ImportError as exc:  # pragma: no cover - minimal environments only
+            raise CFSv2Error("requests is required for CFSv2 readiness checks") from exc
+
+        session = requests.Session()
+
+        def probe(url: str) -> int | None:
+            try:
+                response = session.head(
+                    url,
+                    allow_redirects=True,
+                    timeout=(15, 45),
+                )
+                return response.status_code
+            except requests.RequestException:
+                return None
+
+    candidates = list(candidate_inits) if candidate_inits is not None else listed_cycle_inits(root)
+    for candidate in candidates:
+        urls = sorted(
+            {
+                cfs_file_url(
+                    candidate,
+                    ROLLING_MEMBER_DEFAULT,
+                    target_month(candidate, lead),
+                    product_spec["source_kind"],
+                    root=root,
+                )
+                for product_spec in product_specs
+                for lead in normalized_leads
+            }
+        )
+        statuses = [(url, probe(url)) for url in urls]
+        missing = [(url, status) for url, status in statuses if status is None or not 200 <= status < 300]
+        if not missing:
+            print(
+                f"CFSv2 readiness selected {candidate}: {len(urls)} required monthly files are available",
+                file=sys.stderr,
+            )
+            return candidate
+        examples = ", ".join(
+            f"{url.rsplit('/', 1)[-1]}={status or 'request-error'}"
+            for url, status in missing[:3]
+        )
+        print(
+            f"CFSv2 readiness skipped {candidate}: {len(missing)}/{len(urls)} required files unavailable ({examples})",
+            file=sys.stderr,
+        )
+
+    product_label = ", ".join(normalized_products)
+    raise CFSv2Error(
+        f"no ready CFSv2 cycle found for {product_label} leads {','.join(map(str, normalized_leads))}"
+    )
 
 
 def find_wgrib2(explicit: str) -> str:
@@ -556,11 +664,17 @@ def find_wgrib2(explicit: str) -> str:
     )
 
 
-def cfs_file_url(init: str, member: int, target: str, source_kind: str = "pgbf") -> str:
+def cfs_file_url(
+    init: str,
+    member: int,
+    target: str,
+    source_kind: str = "pgbf",
+    root: str = NOMADS_ROOT,
+) -> str:
     date_text, hour_text = init[:8], init[8:]
     filename = f"{source_kind}.{member:02d}.{init}.{target}.avrg.grib.grb2"
     return urljoin(
-        NOMADS_ROOT,
+        root.rstrip("/") + "/",
         f"cfs.{date_text}/{hour_text}/monthly_grib_{member:02d}/{filename}",
     )
 

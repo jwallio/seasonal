@@ -86,8 +86,12 @@ product and not CPC's official outlook.
 The NOMADS real-time archive rotates after seven days. Each rolling run writes
 the decoded product grids to `--rolling-state-dir` so the scheduled job can
 carry the older members forward. A full 40-member product therefore requires
-the state cache to be retained between runs; `--allow-partial-rolling` is
-available only for clearly marked incomplete smoke products.
+the state cache to be retained between runs. The scheduled workflow probes the
+required monthly GRIB2 files for every selected product and lead, chooses the
+newest ready anchor, and fails closed if the retained rolling window is still
+missing a cycle; it never publishes a partial scheduled blend. The
+`--allow-partial-rolling` option remains available only for explicitly marked
+incomplete smoke products.
 
 The original single-cycle mode remains available when `--rolling-days` is zero
 and records its scope as `single_initial_condition_cycle`.
@@ -114,9 +118,9 @@ That keeps a failed or stale seasonal run visible instead of silently
 presenting an incomplete forecast as current.
 
 The twice-daily scheduled workflow downloads the previously published manifest
-before each render, refreshes the height, 2-m temperature, MSLP, and
-precipitation anomaly suite, and retains the current run plus three prior runs
-for each parameter. It uploads a scoped
+before each render, readiness-checks the CFSv2 monthly files, refreshes the
+height, 2-m temperature, MSLP, and precipitation anomaly suite, and retains
+the current run plus three prior runs for each parameter. It uploads a scoped
 Pages payload; `.github/workflows/publish-pages.yml` serializes that payload
 with WN2 and SEAS5 output before the single Pages publish. The static CFSv2
 viewer exposes those retained runs through Parameter and Run history selectors;

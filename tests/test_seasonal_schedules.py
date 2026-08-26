@@ -8,7 +8,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 
 EXPECTED = {
-    ".github/workflows/cfsv2.yml": "35 10,22 * * *",
+    ".github/workflows/cfsv2.yml": "35 4,16 * * *",
     ".github/workflows/cansips.yml": "30 16 2 * *",
     ".github/workflows/cma-cpsv3.yml": "30 18 21 * *",
     ".github/workflows/nmme.yml": "30 15 9 * *",
