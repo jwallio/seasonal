@@ -8,7 +8,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 
 EXPECTED = {
-    ".github/workflows/cfsv2.yml": "35 4,16 * * *",
+    ".github/workflows/cfsv2.yml": "35 10,22 * * *",
     ".github/workflows/cansips.yml": "30 16 2 * *",
     ".github/workflows/cma-cpsv3.yml": "30 18 21 * *",
     ".github/workflows/nmme.yml": "30 15 9 * *",
@@ -51,6 +51,11 @@ def main() -> int:
         crons = re.findall(r'^\s*- cron:\s*"([^"]+)"', text, re.MULTILINE)
         check(expected_cron in crons, f"{relative_path} is missing {expected_cron}")
 
+    analog_workflow = ROOT / ".github/workflows/seasonal-analogs.yml"
+    check(analog_workflow.exists(), "missing seasonal analog workflow")
+    analog_crons = re.findall(r'^\s*- cron:\s*"([^"]+)"', analog_workflow.read_text(encoding="utf-8"), re.MULTILINE)
+    check("35 2,14 * * *" in analog_crons, "seasonal analog workflow is missing its delayed reconciliation schedule")
+
     for relative_path, (variable, expected_products) in SCHEDULED_SUITES.items():
         text = (ROOT / relative_path).read_text(encoding="utf-8")
         match = re.search(rf"^\s*{variable}:\s*([^\n]+)$", text, re.MULTILINE)
@@ -79,6 +84,8 @@ def main() -> int:
 
     check("22nd of each month at 20:30" in doc, "super-ensemble documentation must reflect its post-CMA schedule")
     check("full advertised anomaly suite" in doc, "schedule documentation must describe the multi-product refresh contract")
+    check("two-hour readiness retry" in doc, "schedule documentation must describe the CFSv2 delayed readiness retry")
+    check("scheduled reconciliation" in doc, "schedule documentation must describe the analog catch-up")
 
     print("SEASONAL SCHEDULE CONTRACT OK: release-aligned UTC workflows, full scheduled suites, and documentation")
     return 0

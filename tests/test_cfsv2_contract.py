@@ -226,6 +226,29 @@ def main() -> int:
         pass
     else:
         raise AssertionError("readiness discovery should fail when no candidate has all required files")
+    retry_clock = [0.0]
+    retry_attempts = {}
+
+    def delayed_readiness_probe(url):
+        retry_attempts[url] = retry_attempts.get(url, 0) + 1
+        return 404 if retry_attempts[url] == 1 else 200
+
+    def delayed_readiness_sleep(seconds):
+        retry_clock[0] += seconds
+
+    delayed_init = adapter_module.discover_latest_ready_init(
+        [adapter_module.PRODUCT_HEIGHT_ANOMALY],
+        [4],
+        candidate_inits=["2026082606", "2026082600"],
+        probe=delayed_readiness_probe,
+        wait_for_latest_minutes=1,
+        retry_seconds=30,
+        sleep_fn=delayed_readiness_sleep,
+        clock_fn=lambda: retry_clock[0],
+    )
+    check(delayed_init == "2026082606", "readiness retry should wait for the newest listed cycle")
+    check(retry_clock[0] == 30, "readiness retry should use the configured retry interval")
+    check(all(count == 2 for count in retry_attempts.values()), "readiness retry should re-probe the newest cycle")
     check(len(adapter_module.ANOMALY_PALETTE) == len(adapter_module.ANOMALY_TICKS) - 1, "height anomaly colors should align with labelled transitions")
     check(len(adapter_module.ANOMALY_PALETTE) == len(adapter_module.CFSV2_HEIGHT_ANOMALY_TICKS) - 1, "CFSv2 height anomaly colors should align with labelled transitions")
     check(len(adapter_module.TEMPERATURE_ANOMALY_PALETTE) == len(adapter_module.CFSV2_TEMPERATURE_ANOMALY_TICKS) - 1, "CFSv2 2-m temperature colors should align with labelled transitions")
@@ -350,7 +373,16 @@ def main() -> int:
         check(term in documentation, f"documentation missing contract term: {term}")
     for term in ("rolling-days", "rolling-state-dir", "actions/cache", "--ncei-calibration", "--allow-stale-calibration", "--common-reference-dir", "--common-reference-url"):
         check(term in workflow, f"workflow missing contract term: {term}")
-    for term in ("discover_latest_ready_init", "readiness_products", "readiness_leads", '35 4,16 * * *'):
+    for term in (
+        "discover_latest_ready_init",
+        "readiness_products",
+        "readiness_leads",
+        "readiness_wait_minutes",
+        "readiness_retry_seconds",
+        "wait_for_latest_minutes",
+        "retry_seconds",
+        '35 10,22 * * *',
+    ):
         check(term in workflow, f"workflow missing CFSv2 readiness term: {term}")
     check("--allow-partial-rolling" not in workflow, "scheduled CFSv2 workflow must not publish an incomplete rolling blend")
     check("SCHEDULED_CFSV2_PRODUCTS: 500mb_height_anomaly,2m_temperature_anomaly,mslp_anomaly,precipitation_anomaly" in workflow, "twice-daily workflow should refresh the complete core anomaly suite")

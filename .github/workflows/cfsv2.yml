@@ -2,9 +2,10 @@ name: CFSv2 Rolling Seasonal Graphics
 
 on:
   schedule:
-    # CFSv2 runs every six hours; run well after the 06Z and 18Z cycles so the
-    # readiness probe can select a complete monthly-file set.
-    - cron: "35 4,16 * * *"
+    # CFSv2 runs every six hours. Run after the 06Z and 18Z cycles so the
+    # newest listed cycle is normally available, and let the readiness probe
+    # retry it before falling back to an older complete monthly-file set.
+    - cron: "35 10,22 * * *"
   workflow_dispatch:
     inputs:
       product:
@@ -121,8 +122,14 @@ jobs:
             readiness_products="$CFSV2_PRODUCT"
           fi
           readiness_leads="${LEAD_MONTHS},${SEASONAL_WINDOW}"
+          readiness_wait_minutes=0
+          readiness_retry_seconds=60
+          if [[ "${{ github.event_name }}" == "schedule" ]]; then
+            readiness_wait_minutes=120
+            readiness_retry_seconds=300
+          fi
           anchor_init="$(
-            python - "$readiness_products" "$readiness_leads" <<'PY'
+            python - "$readiness_products" "$readiness_leads" "$readiness_wait_minutes" "$readiness_retry_seconds" <<'PY'
           import sys
 
           sys.path.insert(0, "scripts")
@@ -130,7 +137,14 @@ jobs:
 
           products = [value.strip() for value in sys.argv[1].split(",") if value.strip()]
           leads = sorted({int(value) for value in sys.argv[2].split(",") if value.strip()})
-          print(discover_latest_ready_init(products, leads))
+          print(
+              discover_latest_ready_init(
+                  products,
+                  leads,
+                  wait_for_latest_minutes=int(sys.argv[3]),
+                  retry_seconds=int(sys.argv[4]),
+              )
+          )
           PY
           )"
           echo "Using CFSv2 anchor initialization $anchor_init for ${#products[@]} product(s)."

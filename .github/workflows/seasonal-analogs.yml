@@ -7,6 +7,10 @@ on:
       - Deduplicated Seasonal Super Ensemble
     types:
       - completed
+  schedule:
+    # Reconcile late Pages/source publication after the twice-daily CFSv2
+    # windows. The freshness gate below avoids rebuilding unchanged maps.
+    - cron: "35 2,14 * * *"
   workflow_dispatch:
 
 permissions:
@@ -19,7 +23,7 @@ concurrency:
 
 jobs:
   build:
-    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'schedule' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: [self-hosted, windows, x64, wn2-analogwx]
     timeout-minutes: 120
     env:
@@ -91,7 +95,83 @@ jobs:
             throw "Unsupported source workflow: $source"
           }
 
+      - name: Check scheduled source freshness
+        id: freshness
+        if: ${{ github.event_name == 'schedule' }}
+        shell: powershell
+        run: |
+          $usableStatuses = @('rendered', 'partial', 'decoded')
+          $needsBuild = $false
+          $reasons = @()
+          $analogPath = 'site\seasonal\analog_z500_manifest.json'
+          $analog = $null
+
+          if (-not (Test-Path -LiteralPath $analogPath)) {
+            $needsBuild = $true
+            $reasons += 'analog manifest is missing'
+          } else {
+            try {
+              $analog = Get-Content -LiteralPath $analogPath -Raw | ConvertFrom-Json
+            } catch {
+              $needsBuild = $true
+              $reasons += "analog manifest could not be read: $($_.Exception.Message)"
+            }
+          }
+
+          $sources = @(
+            @{ key = 'cfsv2'; path = 'site\seasonal\cfsv2_manifest.json' },
+            @{ key = 'superensemble'; path = 'site\seasonal\superensemble_manifest.json' }
+          )
+          foreach ($sourceSpec in $sources) {
+            if (-not (Test-Path -LiteralPath $sourceSpec.path)) {
+              $reasons += "$($sourceSpec.key) source manifest is unavailable; retaining its current analog"
+              continue
+            }
+            try {
+              $source = Get-Content -LiteralPath $sourceSpec.path -Raw | ConvertFrom-Json
+            } catch {
+              $reasons += "$($sourceSpec.key) source manifest could not be read; retaining its current analog"
+              continue
+            }
+            $sourceRuns = @($source.runs | Where-Object { $usableStatuses -contains [string]$_.status })
+            if ($sourceRuns.Count -eq 0) { continue }
+            $sourceLatest = $sourceRuns |
+              Sort-Object -Property `
+                @{ Expression = { [string]$_.init_utc }; Descending = $true }, `
+                @{ Expression = { [string]$_.generated_utc }; Descending = $true }, `
+                @{ Expression = { [string]$_.id }; Descending = $true } |
+              Select-Object -First 1
+            $analogEntries = @()
+            if ($null -ne $analog) {
+              $analogEntries = @($analog.entries | Where-Object { [string]$_.model -eq $sourceSpec.key })
+            }
+            if ($analogEntries.Count -eq 0) {
+              $needsBuild = $true
+              $reasons += "$($sourceSpec.key) has no analog entry"
+              continue
+            }
+            $analogLatest = $analogEntries |
+              Sort-Object -Property `
+                @{ Expression = { [string]$_.init_utc }; Descending = $true }, `
+                @{ Expression = { [string]$_.run_id }; Descending = $true } |
+              Select-Object -First 1
+            $sourceInit = [string]$sourceLatest.init_utc
+            $analogInit = [string]$analogLatest.init_utc
+            $sourceRunId = [string]$sourceLatest.id
+            $analogRunId = [string]$analogLatest.run_id
+            if ($sourceInit -gt $analogInit -or ($sourceInit -eq $analogInit -and $sourceRunId -ne $analogRunId)) {
+              $needsBuild = $true
+              $reasons += "$($sourceSpec.key) source advanced to $sourceInit ($sourceRunId)"
+            }
+          }
+
+          $value = if ($needsBuild) { 'true' } else { 'false' }
+          "needs_build=$value" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+          if ($reasons.Count -eq 0) { $reasons = @('all source analogs are current') }
+          Write-Host "Scheduled analog reconciliation: needs_build=$value; $($reasons -join '; ')"
+
       - name: Build analog manifest from the local AnalogWX archive
+        if: ${{ github.event_name != 'schedule' || steps.freshness.outputs.needs_build == 'true' }}
         shell: powershell
         run: |
           $dataRoot = $env:ANALOGWX_DATA_ROOT

@@ -560,6 +560,10 @@ def discover_latest_ready_init(
     *,
     candidate_inits: Sequence[str] | None = None,
     probe: Callable[[str], int | None] | None = None,
+    wait_for_latest_minutes: int = 0,
+    retry_seconds: int = 60,
+    sleep_fn: Callable[[float], None] = time.sleep,
+    clock_fn: Callable[[], float] = time.monotonic,
 ) -> str:
     """Select the newest cycle whose requested monthly files are published.
 
@@ -568,8 +572,13 @@ def discover_latest_ready_init(
     for older cycles, but the selected anchor must have every requested target
     file ready or the run will be incomplete from the outset.
 
-    ``candidate_inits`` and ``probe`` are injectable so the readiness policy
-    can be tested without making network requests.
+    When ``wait_for_latest_minutes`` is positive, the newest listed cycle is
+    retried before falling back to an older complete cycle.  This handles the
+    normal gap between a cycle appearing in the NOMADS directory and all of
+    its monthly files being published, without ever selecting a partial
+    anchor.  ``candidate_inits``, ``probe``, and the timing functions are
+    injectable so the readiness policy can be tested without making network
+    requests or sleeping.
     """
 
     if isinstance(product_names, str):
@@ -587,6 +596,13 @@ def discover_latest_ready_init(
         raise CFSv2Error("CFSv2 readiness leads must be integers") from exc
     if not normalized_leads or any(lead < 1 or lead > 9 for lead in normalized_leads):
         raise CFSv2Error("CFSv2 readiness leads must be between 1 and 9")
+    try:
+        wait_seconds = max(0, int(wait_for_latest_minutes)) * 60
+        retry_seconds = int(retry_seconds)
+    except (TypeError, ValueError) as exc:
+        raise CFSv2Error("CFSv2 readiness retry timing must be integers") from exc
+    if retry_seconds < 1:
+        raise CFSv2Error("CFSv2 readiness retry interval must be at least one second")
 
     if probe is None:
         try:
@@ -608,8 +624,11 @@ def discover_latest_ready_init(
                 return None
 
     candidates = list(candidate_inits) if candidate_inits is not None else listed_cycle_inits(root)
-    for candidate in candidates:
-        urls = sorted(
+    if not candidates:
+        raise CFSv2Error("NOMADS listed no usable CFSv2 cycle")
+
+    def required_urls(candidate: str) -> list[str]:
+        return sorted(
             {
                 cfs_file_url(
                     candidate,
@@ -622,6 +641,9 @@ def discover_latest_ready_init(
                 for lead in normalized_leads
             }
         )
+
+    def is_ready(candidate: str) -> bool:
+        urls = required_urls(candidate)
         statuses = [(url, probe(url)) for url in urls]
         missing = [(url, status) for url, status in statuses if status is None or not 200 <= status < 300]
         if not missing:
@@ -629,7 +651,7 @@ def discover_latest_ready_init(
                 f"CFSv2 readiness selected {candidate}: {len(urls)} required monthly files are available",
                 file=sys.stderr,
             )
-            return candidate
+            return True
         examples = ", ".join(
             f"{url.rsplit('/', 1)[-1]}={status or 'request-error'}"
             for url, status in missing[:3]
@@ -638,6 +660,26 @@ def discover_latest_ready_init(
             f"CFSv2 readiness skipped {candidate}: {len(missing)}/{len(urls)} required files unavailable ({examples})",
             file=sys.stderr,
         )
+        return False
+
+    newest = candidates[0]
+    deadline = clock_fn() + wait_seconds
+    while True:
+        if is_ready(newest):
+            return newest
+        remaining = deadline - clock_fn()
+        if remaining <= 0:
+            break
+        delay = min(float(retry_seconds), remaining)
+        print(
+            f"CFSv2 readiness waiting for newest listed cycle {newest}; retrying in {delay:.0f} seconds",
+            file=sys.stderr,
+        )
+        sleep_fn(delay)
+
+    for candidate in candidates[1:]:
+        if is_ready(candidate):
+            return candidate
 
     product_label = ", ".join(normalized_products)
     raise CFSv2Error(

@@ -8,7 +8,7 @@ provider is late or a historical cycle needs to be regenerated.
 
 | Workflow | Provider release window | Automatic run (UTC) |
 | --- | --- | --- |
-| CFSv2 | New model cycles every 6 hours | Twice daily at 04:35 and 16:35, after the 18Z and 06Z cycles; readiness-gated |
+| CFSv2 | New model cycles every 6 hours | Twice daily at 10:35 and 22:35, after the 06Z and 18Z cycles; readiness-gated with a two-hour readiness retry |
 | CanSIPS v3 | ECCC monthly refresh on the 1st | 2nd of each month at 16:30 |
 | CMA CPSv3 | WMO GPC Beijing exchange window on the 15th-20th | 21st of each month at 18:30 |
 | NOAA NMME | CPC public products update on the 9th | 9th of each month at 15:30 |
@@ -18,7 +18,7 @@ provider is late or a historical cycle needs to be regenerated.
 | APCC MME | APCC seasonal MME around the middle of the month | 20th of each month at 16:30 |
 | NASA GEOS-S2S-3 | Public NCCS numerical APCN archives during the first week | 6th of each month at 16:30 |
 | Deduplicated super ensemble | After APCC, CMA, and the other component source windows | 22nd of each month at 20:30 |
-| 500-mb pattern analogs and top-analog maps | After each successful CFSv2 or super-ensemble release | Triggered by the completed source workflow |
+| 500-mb pattern analogs and top-analog maps | After each successful CFSv2 or super-ensemble release | Source-triggered, with scheduled reconciliation at 02:35 and 14:35 |
 
 Scheduled C3S, JMA, and SEAS5 runs generate the full advertised anomaly suite:
 500-mb height, 850-mb temperature, 2-m temperature, precipitation,
@@ -36,10 +36,19 @@ The MRCC generator is given a ten-minute per-map wait window; quick HTTP 5xx
 responses are retried, while a true timeout is marked unavailable only after
 that full window. The analog job allows 120 minutes for this slow provider.
 
+The CFSv2 readiness check retries the newest listed cycle for two hours before
+falling back to the newest complete prior cycle. That prevents the normal
+NOMADS directory-versus-file publication gap from turning a newly listed cycle
+into an unnecessarily old analog input. The analog workflow also runs a
+scheduled reconciliation after each CFSv2 window; it compares the current
+Pages source manifests with the analog manifest and only rebuilds when a
+source run is newer or changed. This covers delayed workflow events and Pages
+propagation without repeatedly regenerating unchanged MRCC maps.
+
 The central `publish-pages.yml` workflow already serializes Pages updates with
 `cancel-in-progress: false`, so simultaneous model releases do not overwrite
 one another. A scheduled GitHub event can still be delayed during platform
-load; the dates above are release-aligned targets, not provider SLAs.
+load; the times above are release-aligned targets, not provider SLAs.
 
 Each Pages validation also writes a per-model/per-parameter health report to
 `seasonal/catalog.json` and the GitHub job summary. It distinguishes healthy,

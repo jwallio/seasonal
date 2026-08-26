@@ -117,14 +117,18 @@ per-target status (`planned`, `decoded`, `rendered`, `partial`, or `failed`).
 That keeps a failed or stale seasonal run visible instead of silently
 presenting an incomplete forecast as current.
 
-The twice-daily scheduled workflow downloads the previously published manifest
-before each render, readiness-checks the CFSv2 monthly files, refreshes the
-height, 2-m temperature, MSLP, and precipitation anomaly suite, and retains
-the current run plus three prior runs for each parameter. It uploads a scoped
-Pages payload; `.github/workflows/publish-pages.yml` serializes that payload
-with WN2 and SEAS5 output before the single Pages publish. The static CFSv2
-viewer exposes those retained runs through Parameter and Run history selectors;
-the central publisher keeps the referenced historical image paths available.
+The twice-daily scheduled workflow runs at 10:35 and 22:35 UTC, after the
+nominal 06Z and 18Z source cycles. It downloads the previously published
+manifest before each render and readiness-checks the newest listed monthly
+files. If that newest cycle is listed before its files finish propagating, the
+check retries it for two hours before selecting the newest complete prior
+cycle. The workflow refreshes the height, 2-m temperature, MSLP, and
+precipitation anomaly suite and retains the current run plus three prior runs
+for each parameter. It uploads a scoped Pages payload;
+`.github/workflows/publish-pages.yml` serializes that payload with WN2 and
+SEAS5 output before the single Pages publish. The static CFSv2 viewer exposes
+those retained runs through Parameter and Run history selectors; the central
+publisher keeps the referenced historical image paths available.
 The unified seasonal dashboard at `/seasonal/` adds CFSv2 to the same model and
 parameter control surface while preserving this direct viewer for focused
 source and run-history review.
