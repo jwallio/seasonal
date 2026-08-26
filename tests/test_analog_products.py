@@ -44,12 +44,17 @@ def main() -> int:
     check(djf["psl_year"] == 1941 and djf["psl_end_month"] == 2, "DJF PSL controls are wrong")
 
     psl_query = parse_qs(urlsplit(module._psl_url(december, module.PRODUCT_SPECS["psl_500mb_height_anomaly"])).query)
-    check(psl_query["dataset1"] == ["ERA5"], "PSL must use the same ERA5 archive family")
+    check(psl_query["dataset1"] == [module.WRIT_EARLY_DATASET], "pre-1979 PSL analog maps must use the WRIT fallback archive")
     check(psl_query["iy"] == ["1940"] and psl_query["fmonth"] == ["11"], "PSL monthly year controls are wrong")
     check(psl_query["type"] == ["1"] and psl_query["level"] == ["500mb"], "PSL anomaly controls are wrong")
     check(psl_query["mapt"] == ["6"] and psl_query["proj"] == ["North America"], "PSL 500-mb projection controls are wrong")
     check(psl_query["colortable"] == ["default"], "PSL 500-mb maps should use the default color table")
-    temperature_query = parse_qs(urlsplit(module._psl_url(december, module.PRODUCT_SPECS["psl_2m_temperature_anomaly"])).query)
+    cfsr_december = module._period_for_result("202612", {"label": "December 2015", "winter_year": 2016})
+    cfsr_query = parse_qs(urlsplit(module._psl_url(cfsr_december, module.PRODUCT_SPECS["psl_500mb_height_anomaly"])).query)
+    check(cfsr_query["dataset1"] == [module.WRIT_DATASET], "post-1978 PSL analog maps must use the CFSR archive family")
+    temperature_query = parse_qs(urlsplit(module._psl_url(cfsr_december, module.PRODUCT_SPECS["psl_2m_temperature_anomaly"])).query)
+    check(temperature_query["dataset1"] == [module.WRIT_DATASET], "PSL temperature maps must use the CFSR archive family")
+    check(temperature_query["proj"] == ["USA(CONUS)"], "PSL 2-m temperature maps should use the CONUS region")
     check(temperature_query["colortable"] == ["testcmap"], "PSL 2-m temperature maps should use testcmap")
     psl_image_url = module._extract_psl_image_url(
         b'<img src="/img/icons/us_flag_small.png"><IMG src="/tmp/generated_map.png">'
@@ -167,6 +172,14 @@ def main() -> int:
             first["entries"][0]["products"]["psl_500mb_height_anomaly"]["rendering"]["projection"]
             == "Lambert Conformal Conic",
             "WRIT product should record the shared seasonal projection",
+        )
+        check(
+            first["entries"][0]["products"]["psl_500mb_height_anomaly"]["dataset"] == module.WRIT_EARLY_DATASET,
+            "pre-1979 WRIT product should record the fallback dataset",
+        )
+        check(
+            first["entries"][0]["products"]["psl_2m_temperature_anomaly"]["map_region"] == "USA(CONUS)",
+            "WRIT temperature product should record the CONUS map region",
         )
 
         def failing_fetcher(_url: str, _timeout: int) -> bytes:

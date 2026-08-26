@@ -76,16 +76,19 @@ mean. Compare periods start with December 2026; earlier valid periods remain
 available only in the model-specific and Single Model views.
 
 When the Compare tab has a CFSv2 or Super Ensemble 500-mb analog, the analog
-workflow also builds maps for its rank-1 historical match: PSL ERA5 500-mb
-height and 2-metre temperature anomalies, plus MRCC station-interpolated
+workflow also builds maps for its rank-1 historical match: PSL NCEP CFSR 500-mb
+height and 2-metre temperature anomalies (with WRIT 20CRv3 for pre-1979
+analog dates), plus MRCC station-interpolated
 snowfall departure for the NWS Eastern Region. Monthly matches use their
 calendar month; DJF matches use December through February. These outputs are
 stored in `seasonal/analog_products_manifest.json` and retain the last good
 image when a source is unavailable.
 The WRIT products are data-first: the generated WRIT NetCDF grid is re-rendered
-through the shared seasonal Lambert Conformal Conic renderer, using the same
-North America bounds and 1080×1080 canvas as the operational 500-mb maps. The
-original WRIT image and NetCDF URLs remain in each product entry for provenance.
+through the shared seasonal Lambert Conformal Conic renderer, using the native
+WRIT NCEP/CFSR 1981-2010 climatology, the same North America bounds for 500-mb
+height, and the shared CONUS bounds for 2-metre temperature. Both retain the
+1080×1080 canvas, while the original WRIT image and NetCDF URLs remain in each
+product entry for provenance.
 
 The dashboard now opens on an operational Overview with model-by-parameter
 freshness and coverage. Compare supports blend/family/component filtering,
