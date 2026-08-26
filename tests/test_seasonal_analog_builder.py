@@ -120,9 +120,13 @@ def main() -> int:
             "the newest failed run must never be selected",
         )
         check(payload["source"]["failed_runs_excluded"], "manifest should record failed-run exclusion")
+        check(payload["source"]["amplitude_method"] == analogs.AMPLITUDE_METHOD, "manifest should record amplitude matching")
+        check(payload["source"]["composite"]["count"] == analogs.COMPOSITE_ANALOG_COUNT, "manifest should record the composite count")
         check(payload["entries"][0]["results"][0]["rank"] == 1, "analog result rank is missing")
+        check("amplitude_similarity" in payload["entries"][0]["results"][0], "analog result amplitude similarity is missing")
+        check("composite_weight" in payload["entries"][0]["results"][0], "analog result composite weight is missing")
 
-    print("SEASONAL ANALOG BUILDER OK: scoped models, numeric grids, and failed-run fallback")
+    print("SEASONAL ANALOG BUILDER OK: scoped models, numeric grids, amplitude metadata, and failed-run fallback")
     return 0
 
 

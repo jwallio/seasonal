@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 import sys
 import tempfile
+from types import SimpleNamespace
 from urllib.parse import parse_qs, urlsplit
 
 
@@ -239,7 +240,125 @@ def main() -> int:
         check(all(product["status"] == "stale" for product in stale["entries"][0]["products"].values()), "a changed top analog should retain the last good products")
         module._render_writ_netcdf = original_renderer
 
-    print("ANALOG PRODUCTS OK: monthly/DJF windows, PSL/MRCC controls, and retained source failures")
+    members = module._composite_members(
+        "202612",
+        [
+            {"rank": 1, "label": "December 2015", "winter_year": 2016, "pattern_correlation": 0.91, "amplitude_similarity": 0.90},
+            {"rank": 2, "label": "December 2005", "winter_year": 2006, "pattern_correlation": 0.80, "amplitude_similarity": 0.75},
+        ],
+    )
+    check(len(members) == 2, "two ranked analogs should form a composite selection")
+    check(abs(sum(member["weight"] for member in members) - 1.0) < 0.000001, "composite member weights must sum to one")
+    check(members[0]["weight"] > members[1]["weight"], "the closer analog should receive more composite weight")
+    grids = [
+        SimpleNamespace(lons=[0.0, 10.0], lats=[20.0, 30.0], values=[[1.0, 2.0], [3.0, 4.0]]),
+        SimpleNamespace(lons=[0.0, 10.0], lats=[20.0, 30.0], values=[[5.0, 6.0], [7.0, 8.0]]),
+    ]
+    averaged = module._average_writ_grids(grids, [0.75, 0.25])
+    check(averaged.values[0][0] == 2.0 and averaged.values[1][1] == 5.0, "WRIT composite grid averaging is wrong")
+
+    original_grid_fetch = module._fetch_writ_grid
+    original_grid_renderer = module._render_writ_grid
+    try:
+        def fake_grid_fetch(_fetcher, source_url: str, _timeout: int, cache: dict) -> dict:
+            if source_url not in cache:
+                cache[source_url] = {
+                    "source_url": source_url,
+                    "provider_image_url": source_url + "&image=1",
+                    "provider_asset_url": source_url + "&asset=1",
+                    "grid": SimpleNamespace(lons=[0.0, 10.0], lats=[20.0, 30.0], values=[[1.0, 2.0], [3.0, 4.0]]),
+                }
+            return cache[source_url]
+
+        def fake_grid_renderer(*, output_path: Path, **_kwargs) -> dict:
+            module._write_png(output_path, png)
+            return {"id": module.WRIT_RENDERER_ID, "projection": "Lambert Conformal Conic"}
+
+        module._fetch_writ_grid = fake_grid_fetch
+        module._render_writ_grid = fake_grid_renderer
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            composite = module._build_composite_product(
+                root=root,
+                output_dir=root / "seasonal" / "analog_products",
+                model="cfsv2",
+                target="202612",
+                target_label="December 2026",
+                members=members,
+                product_key="psl_500mb_height_anomaly",
+                old=None,
+                fetcher=lambda _url, _timeout: b"unused",
+                timeout=1,
+                grid_cache={},
+            )
+            check(composite["status"] == "ready", "WRIT composite product should render")
+            check(composite["composite_count"] == 2, "WRIT composite member count is wrong")
+            check((root / composite["image"]).exists(), "WRIT composite image was not written")
+            retained = module._build_composite_product(
+                root=root,
+                output_dir=root / "seasonal" / "analog_products",
+                model="cfsv2",
+                target="202612",
+                target_label="December 2026",
+                members=members,
+                product_key="psl_500mb_height_anomaly",
+                old=composite,
+                fetcher=lambda _url, _timeout: (_ for _ in ()).throw(module.AnalogProductError("should not fetch")),
+                timeout=1,
+                grid_cache={},
+            )
+            check(retained is composite, "unchanged WRIT composite should be reused")
+            analog_path = root / "seasonal" / "analog_z500_manifest.json"
+            analog_path.parent.mkdir(parents=True, exist_ok=True)
+            analog_path.write_text(
+                json.dumps(
+                    {
+                        "source": {"climatology_years": "1981-2010"},
+                        "entries": [{
+                            "model": "cfsv2",
+                            "model_label": "CFSv2",
+                            "target": "202612",
+                            "target_label": "December 2026",
+                            "init_utc": "2026-08-20T06:00:00Z",
+                            "results": [
+                                {"rank": 1, "label": "December 2015", "winter_year": 2016, "pattern_correlation": 0.91, "amplitude_similarity": 0.90},
+                                {"rank": 2, "label": "December 2005", "winter_year": 2006, "pattern_correlation": 0.80, "amplitude_similarity": 0.75},
+                            ],
+                        }],
+                    }
+                ),
+                encoding="utf-8",
+            )
+            original_netcdf_renderer = module._render_writ_netcdf
+
+            def fake_netcdf_renderer(*, output_path: Path, **_kwargs) -> dict:
+                module._write_png(output_path, png)
+                return {"id": module.WRIT_RENDERER_ID, "projection": "Lambert Conformal Conic"}
+
+            module._render_writ_netcdf = fake_netcdf_renderer
+            try:
+                integrated = module.build_manifest(
+                    root=root,
+                    analog_manifest_path=analog_path,
+                    output_manifest_path=root / "seasonal" / "analog_products_manifest.json",
+                    output_dir=root / "seasonal" / "analog_products",
+                    fetcher=lambda url, _timeout: (
+                        b'<html><IMG src="/tmp/test.png"><a href="/tmp/test.nc">NetCDF</a></html>'
+                        if url.startswith(module.PSL_MAP_URL)
+                        else b"netcdf-test" if url.endswith(".nc") else png
+                    ),
+                )
+            finally:
+                module._render_writ_netcdf = original_netcdf_renderer
+            integrated_entry = integrated["entries"][0]
+            check(integrated_entry["composite"]["count"] == 2, "integrated manifest composite metadata is missing")
+            check(set(integrated_entry["composites"]) == set(module.COMPOSITE_PRODUCT_KEYS), "integrated manifest composite products are missing")
+            check(all(product["status"] == "ready" for product in integrated_entry["composites"].values()), "integrated composite products should be ready")
+    finally:
+        module._fetch_writ_grid = original_grid_fetch
+        module._render_writ_grid = original_grid_renderer
+
+    print("ANALOG PRODUCTS OK: source controls, retained products, amplitude weights, and WRIT composites")
     return 0
 
 

@@ -656,32 +656,10 @@ function analogEntry(modelKey, targetKey) {
 function analogProductEntry(modelKey, targetKey) {
   return (seasonalAnalogProducts?.entries || []).find(entry => String(entry.model || '') === modelKey && String(entry.target || '') === String(targetKey || '')) || null;
 }
-function renderAnalogProducts(card, modelKey, targetKey) {
-  const entry = analogProductEntry(modelKey, targetKey);
-  const section = document.createElement('div');
-  section.className = 'analog-products';
-  const heading = document.createElement('h4');
-  heading.textContent = entry ? `Maps from ${entry.top_analog?.label || entry.period?.label || 'the top analog'}` : 'Top-analog maps';
-  section.appendChild(heading);
-  if (!seasonalAnalogProducts) {
-    const message = document.createElement('p');
-    message.className = 'analog-product-note';
-    message.textContent = analogProductsManifestError ? 'Map products are unavailable for this release.' : 'Map products are loading…';
-    section.appendChild(message);
-    card.appendChild(section);
-    return;
-  }
-  if (!entry) {
-    const message = document.createElement('p');
-    message.className = 'analog-product-note';
-    message.textContent = 'No generated maps are available for this target.';
-    section.appendChild(message);
-    card.appendChild(section);
-    return;
-  }
+function renderAnalogProductGrid(section, products, entry, analogLabel) {
   const grid = document.createElement('div');
   grid.className = 'analog-product-grid';
-  ANALOG_PRODUCT_ORDER.map(key => entry.products?.[key]).filter(Boolean).forEach(product => {
+  products.filter(Boolean).forEach(product => {
     const tile = document.createElement('article');
     tile.className = 'analog-product';
     const title = document.createElement('h5');
@@ -695,7 +673,7 @@ function renderAnalogProducts(card, modelKey, targetKey) {
       button.setAttribute('aria-label', `Open full-size ${title.textContent}`);
       const img = document.createElement('img');
       img.src = image;
-      img.alt = `${title.textContent} for ${entry.top_analog?.label || entry.period?.label || targetKey}`;
+      img.alt = `${title.textContent} for ${analogLabel || entry.top_analog?.label || entry.period?.label || 'the selected period'}`;
       img.loading = 'lazy';
       img.addEventListener('error', () => { tile.replaceChildren(title, Object.assign(document.createElement('p'), { className: 'analog-product-note', textContent: 'The generated image is not in the published tree.' })); });
       button.addEventListener('click', () => openMapDialog(image, img.alt));
@@ -721,7 +699,66 @@ function renderAnalogProducts(card, modelKey, targetKey) {
     }
     grid.appendChild(tile);
   });
-  section.appendChild(grid);
+  if (!grid.children.length) {
+    const message = document.createElement('p');
+    message.className = 'analog-product-note';
+    message.textContent = 'No generated maps are available for this target.';
+    section.appendChild(message);
+  } else {
+    section.appendChild(grid);
+  }
+}
+function renderAnalogProducts(card, modelKey, targetKey) {
+  const entry = analogProductEntry(modelKey, targetKey);
+  const section = document.createElement('div');
+  section.className = 'analog-products';
+  if (!seasonalAnalogProducts) {
+    const heading = document.createElement('h4');
+    heading.textContent = 'Analog maps';
+    section.appendChild(heading);
+    const message = document.createElement('p');
+    message.className = 'analog-product-note';
+    message.textContent = analogProductsManifestError ? 'Map products are unavailable for this release.' : 'Map products are loading…';
+    section.appendChild(message);
+    card.appendChild(section);
+    return;
+  }
+  if (!entry) {
+    const heading = document.createElement('h4');
+    heading.textContent = 'Analog maps';
+    section.appendChild(heading);
+    const message = document.createElement('p');
+    message.className = 'analog-product-note';
+    message.textContent = 'No generated maps are available for this target.';
+    section.appendChild(message);
+    card.appendChild(section);
+    return;
+  }
+
+  const compositeKeys = ['psl_500mb_height_anomaly', 'psl_2m_temperature_anomaly'];
+  const compositeProducts = compositeKeys.map(key => entry.composites?.[key]).filter(Boolean);
+  if (entry.composite?.count >= 2 || compositeProducts.length) {
+    const compositeSection = document.createElement('div');
+    compositeSection.className = 'analog-products analog-composite-products';
+    const compositeHeading = document.createElement('h4');
+    const compositeCount = entry.composite?.count || compositeProducts[0]?.composite_count || 5;
+    compositeHeading.textContent = `Weighted top-${compositeCount} analog composite`;
+    compositeSection.appendChild(compositeHeading);
+    const compositeNote = document.createElement('p');
+    compositeNote.className = 'analog-product-note';
+    compositeNote.textContent = 'Inverse-distance weights use 80% pattern similarity and 20% amplitude similarity. MRCC snowfall remains from the rank-1 analog.';
+    compositeSection.appendChild(compositeNote);
+    renderAnalogProductGrid(compositeSection, compositeProducts, entry, `${compositeCount}-analog composite`);
+    section.appendChild(compositeSection);
+  }
+
+  const topSection = document.createElement('div');
+  topSection.className = 'analog-products';
+  const heading = document.createElement('h4');
+  heading.textContent = `Maps from ${entry.top_analog?.label || entry.period?.label || 'the top analog'}`;
+  topSection.appendChild(heading);
+  renderAnalogProductGrid(topSection, ANALOG_PRODUCT_ORDER.map(key => entry.products?.[key]), entry, entry.top_analog?.label || entry.period?.label || targetKey);
+  section.appendChild(topSection);
   card.appendChild(section);
 }
 function renderAnalogPanel(targetKey) {
@@ -741,7 +778,8 @@ function renderAnalogPanel(targetKey) {
     grid.replaceChildren(compareEmpty(analogManifestError ? 'The analog manifest is not available for this release.' : 'Loading historical analogs…'));
     return;
   }
-  summary.textContent = `${periodLabel(targetKey)} · AnalogWX ERA5 · normalized 500-mb pattern correlation · automatic PSL 500-mb/2-m maps and MRCC NWS Eastern snowfall departure`;
+  const compositeCount = seasonalAnalogs.source?.composite?.count || 5;
+  summary.textContent = `${periodLabel(targetKey)} · AnalogWX ERA5 · normalized 500-mb pattern + amplitude similarity · weighted top-${compositeCount} PSL 500-mb/2-m composite and rank-1 MRCC snowfall departure`;
   if (!entries.length) {
     grid.replaceChildren(compareEmpty(`No historical analog result is published for ${periodLabel(targetKey)}.`));
     return;
@@ -760,14 +798,21 @@ function renderAnalogPanel(targetKey) {
     if (!entry) return card;
     const table = document.createElement('table');
     table.className = 'analog-table';
-    table.innerHTML = '<thead><tr><th scope="col">Rank</th><th scope="col">Historical period</th><th scope="col">Pattern match</th></tr></thead>';
+    table.innerHTML = '<thead><tr><th scope="col">Rank</th><th scope="col">Historical period</th><th scope="col">Pattern</th><th scope="col">Amplitude</th><th scope="col">Composite wt.</th></tr></thead>';
     const body = document.createElement('tbody');
     (entry.results || []).forEach(result => {
       const row = document.createElement('tr');
       const rank = document.createElement('th'); rank.scope = 'row'; rank.textContent = String(result.rank ?? '—');
       const label = document.createElement('td'); label.textContent = result.label || '—';
       const score = document.createElement('td'); score.textContent = Number.isFinite(Number(result.pattern_correlation)) ? Number(result.pattern_correlation).toFixed(3) : '—';
-      row.append(rank, label, score); body.appendChild(row);
+      score.title = 'Centered spatial correlation; higher values indicate a more similar pattern.';
+      const amplitude = document.createElement('td');
+      amplitude.textContent = Number.isFinite(Number(result.amplitude_similarity)) ? `${(Number(result.amplitude_similarity) * 100).toFixed(0)}%` : '—';
+      amplitude.title = 'Area-weighted RMS anomaly amplitude similarity; 100% means equal amplitude.';
+      const weight = document.createElement('td');
+      weight.textContent = Number.isFinite(Number(result.composite_weight)) && Number(result.composite_weight) > 0 ? `${(Number(result.composite_weight) * 100).toFixed(1)}%` : '—';
+      weight.title = 'Inverse similarity-distance weight in the displayed top-analog composite.';
+      row.append(rank, label, score, amplitude, weight); body.appendChild(row);
     });
     table.appendChild(body); card.appendChild(table);
     renderAnalogProducts(card, modelKey, targetKey);

@@ -41,6 +41,13 @@ WRIT 20CRv3, which has the same native climatology period. Both are re-rendered
 through the shared seasonal Lambert Conformal Conic renderer. The 500-mb maps
 retain the North America frame; 2-metre temperature uses the shared CONUS
 frame. Both retain the provider image/data URLs in the product manifest.
+Analog ranking remains ordered by centered pattern correlation, with a separate
+cosine-latitude-weighted RMS anomaly amplitude similarity. The top five ranked
+analogs are combined into PSL 500-mb and 2-metre maps using inverse
+similarity-distance weights (80% pattern, 20% amplitude); the MRCC snowfall
+image remains rank-1 only because that provider does not expose a numeric field
+for compositing. Composite source failures retain the previous good image and
+mark it stale.
 
 The CFSv2 readiness check retries the newest listed cycle for two hours before
 falling back to the newest complete prior cycle. That prevents the normal

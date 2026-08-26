@@ -1,9 +1,9 @@
 """Pattern-based seasonal 500-mb analog matching.
 
-The matcher deliberately compares normalized anomaly patterns rather than
-model anomaly magnitudes.  Forecast fields may therefore use their native
-model baseline while the historical fields come from the AnalogWX ERA5
-archive.
+The matcher ranks normalized anomaly patterns so forecast fields may use their
+native model baseline while the historical fields come from the AnalogWX ERA5
+archive.  It also reports the relative anomaly amplitude and uses that metric
+only for the documented multi-analog composite weights.
 """
 
 from __future__ import annotations
@@ -27,6 +27,13 @@ ANALOG_MONTHS = (12, 1, 2)
 NH_WEIGHT = 0.7
 CONUS_WEIGHT = 0.3
 DEFAULT_TOP_N = 10
+COMPOSITE_ANALOG_COUNT = 5
+COMPOSITE_PATTERN_WEIGHT = 0.8
+COMPOSITE_AMPLITUDE_WEIGHT = 0.2
+COMPOSITE_MIN_DISTANCE = 0.05
+PATTERN_METHOD = "cosine-latitude-weighted centered pattern correlation"
+AMPLITUDE_METHOD = "cosine-latitude-weighted anomaly RMS amplitude similarity"
+COMPOSITE_METHOD = "inverse similarity-distance weighting over the top analogs"
 
 _MONTH_TARGET = re.compile(r"^(?P<year>\d{4})(?P<month>\d{2})$")
 _DJF_TARGET = re.compile(
@@ -333,6 +340,74 @@ def _region_mask(
     return lat_mask[:, None] & lon_mask[None, :]
 
 
+def _pattern_metrics(
+    forecast: np.ndarray,
+    historical: np.ndarray,
+    lats: np.ndarray,
+    lons: np.ndarray,
+    region: str,
+) -> dict[str, float]:
+    """Return centered pattern correlation and anomaly-amplitude metrics."""
+
+    region_mask = _region_mask(lats, lons, region)
+    valid = region_mask & np.isfinite(forecast) & np.isfinite(historical)
+    total = int(region_mask.sum())
+    count = int(valid.sum())
+    valid_fraction = count / total if total else 0.0
+    empty = {
+        "correlation": float("nan"),
+        "amplitude_similarity": float("nan"),
+        "forecast_amplitude": float("nan"),
+        "historical_amplitude": float("nan"),
+        "valid_fraction": valid_fraction,
+    }
+    if total == 0 or count < 2 or count / total < 0.5:
+        return empty
+    weights = np.cos(np.deg2rad(lats))[:, None]
+    weights = np.broadcast_to(weights, forecast.shape)[valid]
+    left = forecast[valid]
+    right = historical[valid]
+    weight_sum = float(weights.sum())
+    if weight_sum <= 0:
+        return empty
+
+    # Amplitude is the area-weighted RMS of the anomaly itself.  It is kept
+    # separate from the centered correlation so a map with the right shape
+    # but a much larger or smaller signal is visible to the user.
+    forecast_amplitude = float(np.sqrt(np.sum(weights * left * left) / weight_sum))
+    historical_amplitude = float(np.sqrt(np.sum(weights * right * right) / weight_sum))
+    amplitude_max = max(forecast_amplitude, historical_amplitude)
+    if amplitude_max == 0.0:
+        amplitude_similarity = 1.0
+    else:
+        amplitude_similarity = min(forecast_amplitude, historical_amplitude) / amplitude_max
+
+    centered_left = left - float(np.sum(weights * left) / weight_sum)
+    centered_right = right - float(np.sum(weights * right) / weight_sum)
+    denominator = float(
+        np.sqrt(
+            np.sum(weights * centered_left * centered_left)
+            * np.sum(weights * centered_right * centered_right)
+        )
+    )
+    if denominator <= 0:
+        empty.update(
+            {
+                "amplitude_similarity": amplitude_similarity,
+                "forecast_amplitude": forecast_amplitude,
+                "historical_amplitude": historical_amplitude,
+            }
+        )
+        return empty
+    return {
+        "correlation": float(np.sum(weights * centered_left * centered_right) / denominator),
+        "amplitude_similarity": float(amplitude_similarity),
+        "forecast_amplitude": forecast_amplitude,
+        "historical_amplitude": historical_amplitude,
+        "valid_fraction": valid_fraction,
+    }
+
+
 def _pattern_correlation(
     forecast: np.ndarray,
     historical: np.ndarray,
@@ -340,25 +415,57 @@ def _pattern_correlation(
     lons: np.ndarray,
     region: str,
 ) -> tuple[float, float]:
-    region_mask = _region_mask(lats, lons, region)
-    valid = region_mask & np.isfinite(forecast) & np.isfinite(historical)
-    total = int(region_mask.sum())
-    count = int(valid.sum())
-    if total == 0 or count < 2 or count / total < 0.5:
-        return float("nan"), count / total if total else 0.0
-    weights = np.cos(np.deg2rad(lats))[:, None]
-    weights = np.broadcast_to(weights, forecast.shape)[valid]
-    left = forecast[valid]
-    right = historical[valid]
-    weight_sum = float(weights.sum())
-    if weight_sum <= 0:
-        return float("nan"), count / total
-    left = left - float(np.sum(weights * left) / weight_sum)
-    right = right - float(np.sum(weights * right) / weight_sum)
-    denominator = float(np.sqrt(np.sum(weights * left * left) * np.sum(weights * right * right)))
-    if denominator <= 0:
-        return float("nan"), count / total
-    return float(np.sum(weights * left * right) / denominator), count / total
+    """Keep the original compact correlation helper for callers and tests."""
+
+    metrics = _pattern_metrics(forecast, historical, lats, lons, region)
+    return metrics["correlation"], metrics["valid_fraction"]
+
+
+def composite_weights(
+    results: Iterable[dict[str, Any]],
+    *,
+    count: int = COMPOSITE_ANALOG_COUNT,
+) -> list[float]:
+    """Return normalized inverse-distance weights for the first ``count`` results.
+
+    Pattern correlation remains the ranking metric.  The amplitude term only
+    controls how much each selected analog contributes to the composite.  A
+    missing amplitude field is treated as neutral for old manifests.
+    """
+
+    if count < 1:
+        raise SeasonalAnalogError("composite analog count must be positive")
+    selected = list(results)[:count]
+    if not selected:
+        return []
+    distances: list[float] = []
+    for result in selected:
+        try:
+            pattern = float(result.get("pattern_correlation", 0.0))
+        except (TypeError, ValueError):
+            pattern = 0.0
+        try:
+            amplitude = float(result.get("amplitude_similarity", 1.0))
+        except (TypeError, ValueError):
+            amplitude = 1.0
+        if not np.isfinite(pattern):
+            pattern = 0.0
+        if not np.isfinite(amplitude):
+            amplitude = 1.0
+        pattern = float(np.clip(pattern, -1.0, 1.0))
+        amplitude = float(np.clip(amplitude, 0.0, 1.0))
+        distance = (
+            # Normalize correlation's [-1, 1] range to the same [0, 1]
+            # distance scale used by the amplitude similarity.
+            COMPOSITE_PATTERN_WEIGHT * ((1.0 - pattern) / 2.0)
+            + COMPOSITE_AMPLITUDE_WEIGHT * (1.0 - amplitude)
+        )
+        distances.append(max(COMPOSITE_MIN_DISTANCE, distance))
+    inverse_distances = 1.0 / np.asarray(distances, dtype=float)
+    total = float(inverse_distances.sum())
+    if total <= 0.0 or not np.isfinite(total):
+        return [1.0 / len(selected)] * len(selected)
+    return [float(value / total) for value in inverse_distances]
 
 
 def match_forecast(
@@ -389,40 +496,59 @@ def match_forecast(
     for record in historical.records:
         if record.values.shape != forecast.shape:
             raise SeasonalAnalogError("historical fields do not share the archive grid")
-        nh, nh_valid = _pattern_correlation(
+        nh = _pattern_metrics(
             forecast, record.values, historical.lats, historical.lons, "nh"
         )
-        conus, conus_valid = _pattern_correlation(
+        conus = _pattern_metrics(
             forecast, record.values, historical.lats, historical.lons, "conus"
         )
-        components = [(nh, nh_weight), (conus, conus_weight)]
+        components = [(nh["correlation"], nh_weight), (conus["correlation"], conus_weight)]
         available = [(score, weight) for score, weight in components if np.isfinite(score)]
         if not available:
             continue
         score = sum(value * weight for value, weight in available) / sum(
             weight for _value, weight in available
         )
+        amplitude_components = [
+            (nh["amplitude_similarity"], nh_weight),
+            (conus["amplitude_similarity"], conus_weight),
+        ]
+        amplitude_available = [
+            (value, weight) for value, weight in amplitude_components if np.isfinite(value)
+        ]
+        amplitude_similarity = (
+            sum(value * weight for value, weight in amplitude_available)
+            / sum(weight for _value, weight in amplitude_available)
+            if amplitude_available
+            else float("nan")
+        )
         scores.append(
             {
                 "label": record.label,
                 "winter_year": record.winter_year,
                 "pattern_correlation": round(float(score), 6),
-                "nh_correlation": round(float(nh), 6) if np.isfinite(nh) else None,
-                "conus_correlation": round(float(conus), 6) if np.isfinite(conus) else None,
-                "nh_valid_fraction": round(float(nh_valid), 4),
-                "conus_valid_fraction": round(float(conus_valid), 4),
+                "nh_correlation": round(float(nh["correlation"]), 6) if np.isfinite(nh["correlation"]) else None,
+                "conus_correlation": round(float(conus["correlation"]), 6) if np.isfinite(conus["correlation"]) else None,
+                "amplitude_similarity": round(float(amplitude_similarity), 6) if np.isfinite(amplitude_similarity) else None,
+                "nh_amplitude_similarity": round(float(nh["amplitude_similarity"]), 6) if np.isfinite(nh["amplitude_similarity"]) else None,
+                "conus_amplitude_similarity": round(float(conus["amplitude_similarity"]), 6) if np.isfinite(conus["amplitude_similarity"]) else None,
+                "nh_valid_fraction": round(float(nh["valid_fraction"]), 4),
+                "conus_valid_fraction": round(float(conus["valid_fraction"]), 4),
                 "sample_count": record.sample_count,
                 "_sort_score": float(score),
                 "_weight_total": weight_total,
             }
         )
     scores.sort(key=lambda item: (-item["_sort_score"], item["winter_year"]))
-    for item in scores:
+    selected = scores[:top_n]
+    weights = composite_weights(selected)
+    for index, item in enumerate(selected):
+        item["composite_weight"] = round(weights[index], 6) if index < len(weights) else 0.0
         item.pop("_sort_score", None)
         item.pop("_weight_total", None)
-    for rank, item in enumerate(scores[:top_n], start=1):
+    for rank, item in enumerate(selected, start=1):
         item["rank"] = rank
-    return scores[:top_n]
+    return selected
 
 
 def build_artifact(
@@ -456,8 +582,15 @@ def build_artifact(
             "target": str(target),
             "period_type": metadata["period_type"],
             "label": metadata["label"],
-            "method": "cosine-latitude-weighted centered pattern correlation",
+            "method": PATTERN_METHOD,
             "regional_weights": {"nh": NH_WEIGHT, "conus": CONUS_WEIGHT},
+            "amplitude_method": AMPLITUDE_METHOD,
+            "composite": {
+                "count": min(COMPOSITE_ANALOG_COUNT, top_n),
+                "method": COMPOSITE_METHOD,
+                "pattern_weight": COMPOSITE_PATTERN_WEIGHT,
+                "amplitude_weight": COMPOSITE_AMPLITUDE_WEIGHT,
+            },
             "historical_grid": {"lat_min": 20.0, "lat_max": 90.0, "resolution": "1 degree"},
         },
         "results": match_forecast(

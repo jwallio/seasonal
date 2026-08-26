@@ -2,14 +2,15 @@
 
 The analog matcher is intentionally independent from these external map
 services.  This builder consumes its published manifest, requests the maps
-only for a new top historical period, and retains the previous image when a
-provider is unavailable.
+for a new top historical period and its weighted top-five composite, and
+retains the previous image when a provider is unavailable.
 """
 
 from __future__ import annotations
 
 import argparse
 import datetime as dt
+import hashlib
 import html
 import io
 import json
@@ -54,6 +55,10 @@ WRIT_NORTH_AMERICA_REGION = "North America"
 WRIT_CONUS_REGION = "USA(CONUS)"
 WRIT_RENDERER_ID = "wn2-seasonal-lcc-v1"
 WRIT_RENDERER_LABEL = "WN2 shared seasonal Lambert Conformal Conic renderer"
+COMPOSITE_PRODUCT_KEYS = (
+    "psl_500mb_height_anomaly",
+    "psl_2m_temperature_anomaly",
+)
 
 PRODUCT_SPECS: dict[str, dict[str, str]] = {
     "psl_500mb_height_anomaly": {
@@ -202,7 +207,11 @@ def _writ_dataset_for_period(period: dict[str, Any]) -> str:
 
 
 def _writ_dataset_label(dataset: str) -> str:
-    return WRIT_DATASET_LABEL if dataset == WRIT_DATASET else WRIT_EARLY_DATASET_LABEL
+    if dataset == WRIT_DATASET:
+        return WRIT_DATASET_LABEL
+    if dataset == WRIT_EARLY_DATASET:
+        return WRIT_EARLY_DATASET_LABEL
+    return str(dataset)
 
 
 def _writ_climatology_label(dataset: str) -> str:
@@ -480,6 +489,63 @@ def _writ_border_paths(root: Path, seasonal: Any) -> list[Path]:
     return _WRIT_BORDER_PATHS[key]
 
 
+def _render_writ_grid(
+    *,
+    grid: Any,
+    product_key: str,
+    period: dict[str, Any],
+    output_path: Path,
+    root: Path,
+    dataset: str,
+    period_label: str | None = None,
+    baseline_label: str | None = None,
+    title: str | None = None,
+    source_label: str | None = None,
+    lead_label: str | None = None,
+    ensemble_label: str | None = None,
+    initialization_label: str | None = None,
+    footer_text: str = "",
+) -> dict[str, Any]:
+    """Render a WRIT grid with the operational seasonal map geometry."""
+
+    try:
+        import cfsv2_seasonal as seasonal
+    except ImportError as exc:  # pragma: no cover - workflow imports this module
+        raise AnalogProductError("the shared seasonal renderer is unavailable") from exc
+    start_date = dt.date.fromisoformat(str(period["start_date"]))
+    product_spec = _writ_render_product_spec(product_key, seasonal, dataset)
+    if title:
+        product_spec["title"] = title
+        product_spec["absolute_title"] = title
+    if source_label:
+        product_spec["source_label"] = source_label
+    if lead_label:
+        product_spec["lead_label"] = lead_label
+    region = tuple(product_spec["region"])
+    seasonal.render_map(
+        grid=grid,
+        init=f"{start_date:%Y%m%d}00",
+        target=f"{start_date:%Y%m}",
+        lead=period["label"],
+        members=(1,),
+        output_path=output_path,
+        anomaly=True,
+        baseline_label=baseline_label or _writ_climatology_label(dataset),
+        border_paths=_writ_border_paths(root, seasonal),
+        period_label=period_label or str(period["label"]),
+        seasonal=period["period_type"] == "djf",
+        ensemble_label=ensemble_label or f"{_writ_dataset_label(dataset)} WRIT composite",
+        product_spec=product_spec,
+        initialization_label=initialization_label or f"Historical analog {period['label']}",
+        footer_text=footer_text,
+    )
+    return _writ_rendering_metadata(
+        seasonal,
+        region=region,
+        map_region=PRODUCT_SPECS[product_key]["map_region"],
+    )
+
+
 def _render_writ_netcdf(
     *,
     content: bytes,
@@ -490,35 +556,14 @@ def _render_writ_netcdf(
 ) -> dict[str, Any]:
     """Render a WRIT data asset with the operational seasonal map geometry."""
 
-    try:
-        import cfsv2_seasonal as seasonal
-    except ImportError as exc:  # pragma: no cover - workflow imports this module
-        raise AnalogProductError("the shared seasonal renderer is unavailable") from exc
-    grid = _read_writ_grid(content)
-    start_date = dt.date.fromisoformat(str(period["start_date"]))
     dataset = _writ_dataset_for_period(period)
-    product_spec = _writ_render_product_spec(product_key, seasonal, dataset)
-    region = tuple(product_spec["region"])
-    seasonal.render_map(
-        grid=grid,
-        init=f"{start_date:%Y%m%d}00",
-        target=f"{start_date:%Y%m}",
-        lead=period["label"],
-        members=(1,),
+    return _render_writ_grid(
+        grid=_read_writ_grid(content),
+        product_key=product_key,
+        period=period,
         output_path=output_path,
-        anomaly=True,
-        baseline_label=_writ_climatology_label(dataset),
-        border_paths=_writ_border_paths(root, seasonal),
-        period_label=str(period["label"]),
-        seasonal=period["period_type"] == "djf",
-        ensemble_label=f"{_writ_dataset_label(dataset)} WRIT composite",
-        product_spec=product_spec,
-        initialization_label=f"Historical analog {period['label']}",
-    )
-    return _writ_rendering_metadata(
-        seasonal,
-        region=region,
-        map_region=PRODUCT_SPECS[product_key]["map_region"],
+        root=root,
+        dataset=dataset,
     )
 
 
@@ -533,6 +578,138 @@ def _write_png(path: Path, data: bytes) -> None:
 
 def _top_key(model: str, target: str, result: dict[str, Any]) -> str:
     return f"{model}:{target}:{int(result['winter_year'])}"
+
+
+def _composite_members(target: str, results: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Return the ranked top-five analogs and their normalized weights."""
+
+    candidates = [result for result in results if isinstance(result, dict)]
+    candidates.sort(
+        key=lambda result: (
+            int(result.get("rank", 9999)) if str(result.get("rank", "")).isdigit() else 9999,
+            int(result.get("winter_year", 9999)) if str(result.get("winter_year", "")).isdigit() else 9999,
+        )
+    )
+    selected = candidates[:analogs.COMPOSITE_ANALOG_COUNT]
+    if len(selected) < 2:
+        return []
+    weights = analogs.composite_weights(selected, count=len(selected))
+    members: list[dict[str, Any]] = []
+    for index, (result, weight) in enumerate(zip(selected, weights, strict=True), start=1):
+        try:
+            winter_year = int(result["winter_year"])
+        except (KeyError, TypeError, ValueError) as exc:
+            raise AnalogProductError(f"analog result has no valid winter_year: {result}") from exc
+        members.append(
+            {
+                "result": result,
+                "rank": int(result.get("rank") or index),
+                "label": str(result.get("label") or f"Historical analog {winter_year}"),
+                "winter_year": winter_year,
+                "period": _period_for_result(target, result),
+                "weight": float(weight),
+            }
+        )
+    return members
+
+
+def _composite_key(model: str, target: str, members: list[dict[str, Any]]) -> str:
+    """Build a stable cache key from the selected analogs and their weights."""
+
+    selection = [
+        {
+            "rank": member["rank"],
+            "winter_year": member["winter_year"],
+            "pattern_correlation": member["result"].get("pattern_correlation"),
+            "amplitude_similarity": member["result"].get("amplitude_similarity"),
+            "weight": round(float(member["weight"]), 8),
+        }
+        for member in members
+    ]
+    digest = hashlib.sha256(
+        json.dumps(selection, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    ).hexdigest()[:12]
+    return f"{model}:{target}:top{len(members)}:composite-{digest}"
+
+
+def _composite_member_summary(member: dict[str, Any]) -> dict[str, Any]:
+    result = member["result"]
+    return {
+        "rank": member["rank"],
+        "label": member["label"],
+        "winter_year": member["winter_year"],
+        "pattern_correlation": result.get("pattern_correlation"),
+        "amplitude_similarity": result.get("amplitude_similarity"),
+        "weight": round(float(member["weight"]), 6),
+    }
+
+
+def _fetch_writ_grid(
+    fetcher: Callable[[str, int], bytes],
+    source_url: str,
+    timeout: int,
+    cache: dict[str, dict[str, Any]],
+) -> dict[str, Any]:
+    """Fetch and decode one WRIT NetCDF product, retaining it in-run."""
+
+    if source_url in cache:
+        return cache[source_url]
+    page = fetcher(source_url, timeout)
+    image_url = _extract_psl_image_url(page)
+    data_url = _extract_psl_netcdf_url(page)
+    data = fetcher(data_url, timeout)
+    asset = {
+        "source_url": source_url,
+        "provider_image_url": image_url,
+        "provider_asset_url": data_url,
+        "grid": _read_writ_grid(data),
+    }
+    cache[source_url] = asset
+    return asset
+
+
+def _average_writ_grids(grids: list[Any], weights: list[float]) -> Any:
+    """Return a finite, coordinate-aligned weighted average of WRIT grids."""
+
+    try:
+        import cfsv2_seasonal as seasonal
+        import numpy as np
+    except ImportError as exc:  # pragma: no cover - workflow imports these modules
+        raise AnalogProductError("WRIT composite rendering requires numpy and the seasonal renderer") from exc
+    if not grids or len(grids) != len(weights):
+        raise AnalogProductError("WRIT composite has no matching grids and weights")
+    reference = grids[0]
+    reference_lons = np.asarray(reference.lons, dtype=float)
+    reference_lats = np.asarray(reference.lats, dtype=float)
+    arrays: list[np.ndarray] = []
+    for grid in grids:
+        values = np.asarray(grid.values, dtype=float)
+        if list(grid.lons) != list(reference.lons) or list(grid.lats) != list(reference.lats):
+            values = analogs.regrid_nearest(
+                values,
+                grid.lats,
+                grid.lons,
+                reference.lats,
+                reference.lons,
+            )
+        if values.shape != (reference_lats.size, reference_lons.size):
+            raise AnalogProductError("WRIT composite grids do not share a compatible shape")
+        arrays.append(values)
+    stack = np.asarray(arrays, dtype=float)
+    weight_array = np.asarray(weights, dtype=float)[:, None, None]
+    finite = np.isfinite(stack)
+    numerator = np.where(finite, stack, 0.0) * weight_array
+    denominator = np.where(finite, weight_array, 0.0).sum(axis=0)
+    with np.errstate(divide="ignore", invalid="ignore"):
+        composite = numerator.sum(axis=0) / denominator
+    composite[denominator <= 0.0] = np.nan
+    if not np.isfinite(composite).any():
+        raise AnalogProductError("WRIT composite contains no finite values")
+    return seasonal.Grid(
+        reference_lons.tolist(),
+        reference_lats.tolist(),
+        composite.tolist(),
+    )
 
 
 def _existing_entries(path: Path) -> dict[tuple[str, str], dict[str, Any]]:
@@ -575,6 +752,163 @@ def _retained_or_unavailable(
         "checked_utc": _now_iso(),
         "error": error,
     }
+
+
+def _retained_composite_or_unavailable(
+    *,
+    root: Path,
+    old: dict[str, Any] | None,
+    product_key: str,
+    composite_key: str,
+    source_urls: list[str],
+    member_count: int,
+    error: str,
+) -> dict[str, Any]:
+    """Retain an earlier composite when one of its source maps fails."""
+
+    old_image = str((old or {}).get("image", ""))
+    old_path = _resolve_rooted(root, old_image) if old_image else None
+    if old_path and old_path.exists():
+        return {
+            **old,
+            "status": "stale",
+            "requested_composite_key": composite_key,
+            "retained_composite_key": old.get("composite_key"),
+            "source_urls": source_urls,
+            "checked_utc": _now_iso(),
+            "error": error,
+        }
+    return {
+        "product": product_key,
+        "label": f"Weighted Top {member_count}-Analog Composite · {PRODUCT_SPECS[product_key]['label']}",
+        "provider": PRODUCT_SPECS[product_key]["provider"],
+        "status": "unavailable",
+        "composite_key": composite_key,
+        "source_urls": source_urls,
+        "checked_utc": _now_iso(),
+        "error": error,
+    }
+
+
+def _build_composite_product(
+    *,
+    root: Path,
+    output_dir: Path,
+    model: str,
+    target: str,
+    target_label: str,
+    members: list[dict[str, Any]],
+    product_key: str,
+    old: dict[str, Any] | None,
+    fetcher: Callable[[str, int], bytes],
+    timeout: int,
+    grid_cache: dict[str, dict[str, Any]],
+) -> dict[str, Any]:
+    """Build one weighted numerical WRIT composite for the selected analogs."""
+
+    if product_key not in COMPOSITE_PRODUCT_KEYS:
+        raise AnalogProductError(f"unsupported analog composite product: {product_key}")
+    spec = PRODUCT_SPECS[product_key]
+    composite_key = _composite_key(model, target, members)
+    source_urls = [_psl_url(member["period"], spec) for member in members]
+    image_path = output_dir / model / target / "composite" / f"{product_key}.png"
+    if (
+        old
+        and old.get("composite_key") == composite_key
+        and old.get("composite_method") == analogs.COMPOSITE_METHOD
+        and old.get("status") == "ready"
+        and old.get("image")
+        and _resolve_rooted(root, str(old.get("image", ""))).exists()
+    ):
+        return old
+
+    try:
+        assets = [
+            _fetch_writ_grid(fetcher, source_url, timeout, grid_cache)
+            for source_url in source_urls
+        ]
+        grids = [asset["grid"] for asset in assets]
+        weights = [float(member["weight"]) for member in members]
+        composite_grid = _average_writ_grids(grids, weights)
+        datasets = sorted(
+            {
+                _writ_dataset_for_period(member["period"])
+                for member in members
+            }
+        )
+        dataset_labels = [_writ_dataset_label(dataset) for dataset in datasets]
+        dataset_label = " + ".join(dataset_labels)
+        product_label = f"Weighted Top {len(members)}-Analog Composite · {spec['label']}"
+        if product_key == "psl_500mb_height_anomaly":
+            title = f"Weighted Top {len(members)}-Analog 500-mb Height Anomaly (m)"
+        else:
+            title = f"Weighted Top {len(members)}-Analog 2-m Temperature Anomaly (°C)"
+        footer_lines = [
+            "Weighted analog members: "
+            + "  •  ".join(
+                f"{member['rank']} {member['label']} ({member['weight'] * 100:.1f}%)"
+                for member in members[:3]
+            )
+        ]
+        if len(members) > 3:
+            footer_lines.append(
+                "  •  ".join(
+                    f"{member['rank']} {member['label']} ({member['weight'] * 100:.1f}%)"
+                    for member in members[3:]
+                )
+            )
+        rendering = _render_writ_grid(
+            grid=composite_grid,
+            product_key=product_key,
+            period=members[0]["period"],
+            output_path=image_path,
+            root=root,
+            dataset=dataset_label,
+            period_label=target_label,
+            baseline_label=f"WRIT native climatologies; {WRIT_CLIMATOLOGY_YEARS}",
+            title=title,
+            source_label=f"NOAA PSL WRIT / {dataset_label}",
+            lead_label="Inverse-distance analog composite",
+            ensemble_label=f"{len(members)}-analog weighted composite",
+            initialization_label=f"Historical analog composite · {target_label}",
+            footer_text="\n".join(footer_lines),
+        )
+        return {
+            "product": product_key,
+            "label": product_label,
+            "provider": spec["provider"],
+            "status": "ready",
+            "image": _relative_asset(root, image_path),
+            "composite_key": composite_key,
+            "composite_method": analogs.COMPOSITE_METHOD,
+            "composite_pattern_weight": analogs.COMPOSITE_PATTERN_WEIGHT,
+            "composite_amplitude_weight": analogs.COMPOSITE_AMPLITUDE_WEIGHT,
+            "composite_count": len(members),
+            "analog_members": [_composite_member_summary(member) for member in members],
+            "valid_target": target,
+            "valid_target_label": target_label,
+            "source_url": PSL_MAP_PAGE,
+            "source_urls": source_urls,
+            "provider_asset_urls": [asset["provider_asset_url"] for asset in assets],
+            "provider_image_urls": [asset["provider_image_url"] for asset in assets],
+            "dataset": dataset_label,
+            "datasets": dataset_labels,
+            "climatology_years": WRIT_CLIMATOLOGY_YEARS,
+            "climatology_label": f"WRIT native climatologies; {WRIT_CLIMATOLOGY_YEARS}",
+            "rendering": rendering,
+            "map_region": spec["map_region"],
+            "generated_utc": _now_iso(),
+        }
+    except (AnalogProductError, OSError, ValueError) as exc:
+        return _retained_composite_or_unavailable(
+            root=root,
+            old=old,
+            product_key=product_key,
+            composite_key=composite_key,
+            source_urls=source_urls,
+            member_count=len(members),
+            error=str(exc),
+        )
 
 
 def _build_product(
@@ -686,6 +1020,7 @@ def build_manifest(
     source = analog_manifest.get("source") if isinstance(analog_manifest.get("source"), dict) else {}
     climatology_years = str(source.get("climatology_years") or "unspecified")
     entries: list[dict[str, Any]] = []
+    writ_grid_cache: dict[str, dict[str, Any]] = {}
     for raw in analog_manifest.get("entries", []):
         if not isinstance(raw, dict) or str(raw.get("model")) not in MODEL_LABELS:
             continue
@@ -702,6 +1037,7 @@ def build_manifest(
         period = _period_for_result(target, top)
         old_entry = old_entries.get((model, target))
         old_products = old_entry.get("products", {}) if isinstance(old_entry, dict) else {}
+        old_composites = old_entry.get("composites", {}) if isinstance(old_entry, dict) else {}
         products = {
             key: _build_product(
                 root=root,
@@ -718,8 +1054,38 @@ def build_manifest(
             )
             for key in PRODUCT_SPECS
         }
+        composite_members = _composite_members(target, results)
+        composites = {
+            key: _build_composite_product(
+                root=root,
+                output_dir=output_dir,
+                model=model,
+                target=target,
+                target_label=str(raw.get("target_label") or target),
+                members=composite_members,
+                product_key=key,
+                old=old_composites.get(key) if isinstance(old_composites, dict) else None,
+                fetcher=fetcher,
+                timeout=timeout,
+                grid_cache=writ_grid_cache,
+            )
+            for key in COMPOSITE_PRODUCT_KEYS
+        } if composite_members else {}
         statuses = {str(product.get("status")) for product in products.values()}
+        statuses.update(str(product.get("status")) for product in composites.values())
         entry_status = "ready" if statuses == {"ready"} else "stale" if "stale" in statuses else "partial" if "ready" in statuses else "unavailable"
+        composite_info = (
+            {
+                "count": len(composite_members),
+                "method": analogs.COMPOSITE_METHOD,
+                "pattern_weight": analogs.COMPOSITE_PATTERN_WEIGHT,
+                "amplitude_weight": analogs.COMPOSITE_AMPLITUDE_WEIGHT,
+                "members": [_composite_member_summary(member) for member in composite_members],
+                "products": list(composites),
+            }
+            if composite_members
+            else None
+        )
         entries.append(
             {
                 "model": model,
@@ -732,6 +1098,8 @@ def build_manifest(
                 "period": period,
                 "status": entry_status,
                 "products": products,
+                "composite": composite_info,
+                "composites": composites,
             }
         )
 
@@ -754,6 +1122,14 @@ def build_manifest(
             "nws_region": "NWS Eastern Region (ER)",
             "period_rule": "monthly analogs use that calendar month; DJF analogs use December through February",
             "retained_on_source_failure": True,
+            "composite": {
+                "count": analogs.COMPOSITE_ANALOG_COUNT,
+                "method": analogs.COMPOSITE_METHOD,
+                "pattern_weight": analogs.COMPOSITE_PATTERN_WEIGHT,
+                "amplitude_weight": analogs.COMPOSITE_AMPLITUDE_WEIGHT,
+                "products": list(COMPOSITE_PRODUCT_KEYS),
+                "snowfall": "rank-1 only; MRCC publishes a rendered image rather than a numeric field",
+            },
         },
         "status": overall,
         "entries": entries,
