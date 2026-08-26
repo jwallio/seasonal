@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import datetime as dt
 import html
+import io
 import json
 import re
 from pathlib import Path
@@ -42,6 +43,8 @@ MRCC_SNOWFALL_STATION_NETWORKS = (
 MRCC_REQUEST_ATTEMPTS = 2
 MRCC_RETRY_DELAY_SECONDS = 5.0
 MRCC_GENERATION_TIMEOUT_SECONDS = 600
+WRIT_RENDERER_ID = "wn2-seasonal-lcc-v1"
+WRIT_RENDERER_LABEL = "WN2 shared seasonal Lambert Conformal Conic renderer"
 
 PRODUCT_SPECS: dict[str, dict[str, str]] = {
     "psl_500mb_height_anomaly": {
@@ -190,7 +193,9 @@ def _psl_url(period: dict[str, Any], spec: dict[str, str]) -> str:
         "fmonth2": str(int(period["psl_end_month"]) - 1),
         "type": "1",
         "map": "0",
-        "mapt": "0",
+        # Keep the provider-side plot close to the dashboard view as well;
+        # the published image itself is re-rendered locally from WRIT NetCDF.
+        "mapt": "6",
         "proj": "North America",
         "colortable": spec["colortable"],
         "labelc": "0",
@@ -289,6 +294,189 @@ def _extract_psl_image_url(page: bytes) -> str:
     return urljoin(PSL_MAP_URL, html.unescape(generated))
 
 
+def _extract_psl_netcdf_url(page: bytes) -> str:
+    """Return WRIT's generated NetCDF asset rather than its final PNG."""
+
+    text = page.decode("latin-1", errors="replace")
+    sources = re.findall(
+        r"<a[^>]+href=[\"']([^\"']+\.nc(?:\?[^\"']*)?)[\"']",
+        text,
+        re.IGNORECASE,
+    )
+    generated = next(
+        (source for source in sources if "/tmp/" in source.lower()),
+        sources[0] if sources else None,
+    )
+    if generated is None:
+        raise AnalogProductError("PSL response did not contain a generated NetCDF file")
+    return urljoin(PSL_MAP_URL, html.unescape(generated))
+
+
+def _read_writ_grid(content: bytes):
+    """Decode a WRIT NetCDF grid into the shared seasonal ``Grid`` type."""
+
+    try:
+        import numpy as np
+        import xarray as xr
+        import cfsv2_seasonal as seasonal
+    except ImportError as exc:  # pragma: no cover - workflow installs these
+        raise AnalogProductError(
+            "WRIT re-rendering requires numpy, xarray, scipy, and the seasonal renderer"
+        ) from exc
+
+    stream = io.BytesIO(content)
+    dataset = None
+    try:
+        # WRIT returns classic NetCDF. xarray's file-like path selects its
+        # scipy backend, which lets us decode the response without creating a
+        # second provider-specific file format or a persistent temp artifact.
+        dataset = xr.open_dataset(stream, decode_times=False, mask_and_scale=True)
+        if "lat" not in dataset or "lon" not in dataset:
+            raise AnalogProductError("WRIT NetCDF is missing lat/lon coordinates")
+        data_array = dataset.data_vars.get("VAR")
+        if data_array is None:
+            candidates = [
+                value
+                for value in dataset.data_vars.values()
+                if "lat" in value.dims and "lon" in value.dims
+            ]
+            data_array = candidates[0] if candidates else None
+        if data_array is None:
+            raise AnalogProductError("WRIT NetCDF has no lat/lon data variable")
+        data_array = data_array.squeeze(drop=True)
+        extra_dims = [dimension for dimension in data_array.dims if dimension not in {"lat", "lon"}]
+        if extra_dims:
+            raise AnalogProductError(
+                f"WRIT NetCDF data has unsupported dimensions: {', '.join(extra_dims)}"
+            )
+        data_array = data_array.transpose("lat", "lon")
+        values = data_array.values
+        if np.ma.isMaskedArray(values):
+            values = np.ma.filled(values, np.nan)
+        values = np.asarray(values, dtype=float)
+        values[np.abs(values) > 1.0e30] = np.nan
+        lats = np.asarray(dataset["lat"].values, dtype=float)
+        lons = np.asarray(dataset["lon"].values, dtype=float)
+    except AnalogProductError:
+        raise
+    except Exception as exc:
+        raise AnalogProductError(f"could not decode WRIT NetCDF: {exc}") from exc
+    finally:
+        if dataset is not None:
+            dataset.close()
+
+    if lats.ndim != 1 or lons.ndim != 1 or values.shape != (lats.size, lons.size):
+        raise AnalogProductError("WRIT NetCDF has inconsistent coordinate and data dimensions")
+    if lats.size < 2 or lons.size < 2:
+        raise AnalogProductError("WRIT NetCDF grid is too small to render")
+    if not np.isfinite(values).any():
+        raise AnalogProductError("WRIT NetCDF contains no finite data")
+
+    lat_order = np.argsort(lats, kind="stable")
+    lats = lats[lat_order]
+    values = values[lat_order, :]
+    # The shared renderer accepts either -180..180 or 0..360, but normalizing
+    # here makes the longitude ordering explicit and avoids a seam-dependent
+    # result when WRIT changes its lonFlip convention.
+    lons = np.mod(lons + 180.0, 360.0) - 180.0
+    lon_order = np.argsort(lons, kind="stable")
+    lons = lons[lon_order]
+    values = values[:, lon_order]
+    if np.any(np.diff(lats) <= 0.0) or np.any(np.diff(lons) <= 0.0):
+        raise AnalogProductError("WRIT NetCDF coordinates are not strictly increasing")
+    return seasonal.Grid(lons.tolist(), lats.tolist(), values.tolist())
+
+
+def _writ_rendering_metadata(seasonal: Any) -> dict[str, Any]:
+    return {
+        "id": WRIT_RENDERER_ID,
+        "label": WRIT_RENDERER_LABEL,
+        "projection": seasonal.SEASONAL_LCC_PROJECTION_NAME,
+        "standard_parallels": [
+            seasonal.SEASONAL_LCC_STANDARD_PARALLEL_1,
+            seasonal.SEASONAL_LCC_STANDARD_PARALLEL_2,
+        ],
+        "latitude_origin": seasonal.SEASONAL_LCC_LATITUDE_ORIGIN,
+        "central_longitude": seasonal.SEASONAL_LCC_CENTRAL_LONGITUDE,
+        "region": list(seasonal.DEFAULT_REGION),
+        "canvas": "1080x1080",
+    }
+
+
+def _writ_render_product_spec(product_key: str, seasonal: Any) -> dict[str, Any]:
+    source_product = (
+        seasonal.PRODUCT_HEIGHT_ANOMALY
+        if product_key == "psl_500mb_height_anomaly"
+        else seasonal.PRODUCT_2M_TEMPERATURE_ANOMALY
+    )
+    spec = dict(seasonal.PRODUCT_SPECS[source_product])
+    if product_key == "psl_500mb_height_anomaly":
+        title = "ERA5 500-mb Geopotential Height Anomaly (m)"
+    else:
+        title = "ERA5 2-m Temperature Anomaly (°C)"
+    spec.update(
+        {
+            "title": title,
+            "absolute_title": title,
+            "height_contours": False,
+            "source_label": "NOAA PSL WRIT / ERA5",
+            "header_detail": (
+                "{source_label}  •  {baseline_label}  •  "
+                f"{seasonal.SEASONAL_LCC_PROJECTION_NAME}"
+            ),
+            "lead_label": "Historical analog",
+        }
+    )
+    return spec
+
+
+_WRIT_BORDER_PATHS: dict[Path, list[Path]] = {}
+
+
+def _writ_border_paths(root: Path, seasonal: Any) -> list[Path]:
+    key = root.resolve()
+    if key not in _WRIT_BORDER_PATHS:
+        options = argparse.Namespace(no_borders=False, border_geojson=None)
+        cache_dir = key / ".cache" / "seasonal_analogs"
+        _WRIT_BORDER_PATHS[key] = seasonal.ensure_border_files(options, cache_dir, key)
+    return _WRIT_BORDER_PATHS[key]
+
+
+def _render_writ_netcdf(
+    *,
+    content: bytes,
+    product_key: str,
+    period: dict[str, Any],
+    output_path: Path,
+    root: Path,
+) -> dict[str, Any]:
+    """Render a WRIT data asset with the operational seasonal map geometry."""
+
+    try:
+        import cfsv2_seasonal as seasonal
+    except ImportError as exc:  # pragma: no cover - workflow imports this module
+        raise AnalogProductError("the shared seasonal renderer is unavailable") from exc
+    grid = _read_writ_grid(content)
+    start_date = dt.date.fromisoformat(str(period["start_date"]))
+    seasonal.render_map(
+        grid=grid,
+        init=f"{start_date:%Y%m%d}00",
+        target=f"{start_date:%Y%m}",
+        lead=period["label"],
+        members=(1,),
+        output_path=output_path,
+        anomaly=True,
+        baseline_label="WRIT native ERA5 anomaly baseline",
+        border_paths=_writ_border_paths(root, seasonal),
+        period_label=str(period["label"]),
+        seasonal=period["period_type"] == "djf",
+        ensemble_label="ERA5 WRIT composite",
+        product_spec=_writ_render_product_spec(product_key, seasonal),
+        initialization_label=f"Historical analog {period['label']}",
+    )
+    return _writ_rendering_metadata(seasonal)
+
+
 def _write_png(path: Path, data: bytes) -> None:
     if not data.startswith(PNG_SIGNATURE):
         raise AnalogProductError(f"source response is not a PNG: {path.name}")
@@ -366,22 +554,45 @@ def _build_product(
         provider_asset_url = str(old.get("provider_asset_url", "")).lower()
         legacy_psl_icon = product_key.startswith("psl_") and "/img/icons/" in provider_asset_url
         source_changed = str(old.get("source_url", "")) != source_url
-        if old_path and old_path.exists() and old.get("status") == "ready" and not legacy_psl_icon and not source_changed:
+        old_rendering = old.get("rendering") if isinstance(old.get("rendering"), dict) else {}
+        renderer_current = (
+            not product_key.startswith("psl_")
+            or old_rendering.get("id") == WRIT_RENDERER_ID
+        )
+        if (
+            old_path
+            and old_path.exists()
+            and old.get("status") == "ready"
+            and not legacy_psl_icon
+            and not source_changed
+            and renderer_current
+        ):
             return old
 
     image_path = output_dir / model / target / str(period["winter_year"]) / f"{product_key}.png"
     try:
+        image: bytes | None = None
         if product_key.startswith("psl_"):
             page = fetcher(source_url, timeout)
             image_url = _extract_psl_image_url(page)
-            image = fetcher(image_url, timeout)
-            provider_asset_url = image_url
+            data_url = _extract_psl_netcdf_url(page)
+            data = fetcher(data_url, timeout)
+            rendering = _render_writ_netcdf(
+                content=data,
+                product_key=product_key,
+                period=period,
+                output_path=image_path,
+                root=root,
+            )
+            provider_asset_url = data_url
         else:
             mrcc_timeout = max(timeout, MRCC_GENERATION_TIMEOUT_SECONDS)
             image = _fetch_mrcc_image(fetcher, source_url, mrcc_timeout)
             provider_asset_url = source_url
-        _write_png(image_path, image)
-        return {
+            rendering = None
+        if image is not None:
+            _write_png(image_path, image)
+        product = {
             "product": product_key,
             "label": spec["label"],
             "provider": spec["provider"],
@@ -395,6 +606,10 @@ def _build_product(
             "climatology_years": climatology_years,
             "generated_utc": _now_iso(),
         }
+        if product_key.startswith("psl_"):
+            product["provider_image_url"] = image_url
+            product["rendering"] = rendering
+        return product
     except (AnalogProductError, OSError, ValueError) as exc:
         return _retained_or_unavailable(
             root=root,

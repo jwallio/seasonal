@@ -173,6 +173,14 @@ CONUS_PRECIP_REGION = (-128.0, -65.0, 22.0, 52.0)
 # Shift the projected window slightly west so the CONUS sits at the visual
 # center of the square canvas while preserving Alaska and all of Greenland.
 PROJECTED_X_SHIFT_FRACTION = 0.035
+# Keep the projection definition named and shared with other seasonal
+# renderers. Analog products are re-rendered through this same function so
+# their geometry cannot drift from the operational seasonal maps.
+SEASONAL_LCC_PROJECTION_NAME = "Lambert Conformal Conic"
+SEASONAL_LCC_STANDARD_PARALLEL_1 = 30.0
+SEASONAL_LCC_STANDARD_PARALLEL_2 = 60.0
+SEASONAL_LCC_LATITUDE_ORIGIN = 45.0
+SEASONAL_LCC_CENTRAL_LONGITUDE = -100.0
 DEFAULT_BORDER_URLS = (
     (
         "countries.geojson",
@@ -1531,10 +1539,10 @@ def render_map(
     # Match the centered ECMWF-style North America Lambert Conformal Conic
     # framing: a -100° meridian center, 45° latitude origin, and broad
     # 30°/60° standard parallels.
-    standard_parallel_1 = np.deg2rad(30.0)
-    standard_parallel_2 = np.deg2rad(60.0)
-    latitude_origin = np.deg2rad(45.0)
-    central_longitude = np.deg2rad(-100.0)
+    standard_parallel_1 = np.deg2rad(SEASONAL_LCC_STANDARD_PARALLEL_1)
+    standard_parallel_2 = np.deg2rad(SEASONAL_LCC_STANDARD_PARALLEL_2)
+    latitude_origin = np.deg2rad(SEASONAL_LCC_LATITUDE_ORIGIN)
+    central_longitude = np.deg2rad(SEASONAL_LCC_CENTRAL_LONGITUDE)
     n_coefficient = np.log(np.cos(standard_parallel_1) / np.cos(standard_parallel_2)) / np.log(
             np.tan(np.pi / 4.0 + standard_parallel_2 / 2.0)
             / np.tan(np.pi / 4.0 + standard_parallel_1 / 2.0)
