@@ -1,7 +1,7 @@
 {
   "schema_version": "seasonal_analog_products_v1",
   "kind": "seasonal_analog_products_manifest",
-  "generated_utc": "2026-08-26T18:01:29Z",
+  "generated_utc": "2026-08-26T19:45:28Z",
   "source": {
     "analog_manifest": "seasonal/analog_z500_manifest.json",
     "climatology_years": "1981-2010",
@@ -14,7 +14,18 @@
     "mrcc": "https://mrcc.purdue.edu/CLIMATE/maps/interpolated",
     "nws_region": "NWS Eastern Region (ER)",
     "period_rule": "monthly analogs use that calendar month; DJF analogs use December through February",
-    "retained_on_source_failure": true
+    "retained_on_source_failure": true,
+    "composite": {
+      "count": 5,
+      "method": "inverse similarity-distance weighting over the top analogs",
+      "pattern_weight": 0.8,
+      "amplitude_weight": 0.2,
+      "products": [
+        "psl_500mb_height_anomaly",
+        "psl_2m_temperature_anomaly"
+      ],
+      "snowfall": "rank-1 only; MRCC publishes a rendered image rather than a numeric field"
+    }
   },
   "status": "ready",
   "entries": [
@@ -31,9 +42,13 @@
         "pattern_correlation": 0.625527,
         "nh_correlation": 0.512327,
         "conus_correlation": 0.889662,
+        "amplitude_similarity": 0.618145,
+        "nh_amplitude_similarity": 0.602061,
+        "conus_amplitude_similarity": 0.655675,
         "nh_valid_fraction": 1.0,
         "conus_valid_fraction": 1.0,
         "sample_count": 28,
+        "composite_weight": 0.208335,
         "rank": 1
       },
       "period": {
@@ -161,6 +176,272 @@
           "climatology_years": "1981-2010",
           "generated_utc": "2026-08-25T21:18:16Z"
         }
+      },
+      "composite": {
+        "count": 5,
+        "method": "inverse similarity-distance weighting over the top analogs",
+        "pattern_weight": 0.8,
+        "amplitude_weight": 0.2,
+        "members": [
+          {
+            "rank": 1,
+            "label": "February 1983",
+            "winter_year": 1983,
+            "pattern_correlation": 0.625527,
+            "amplitude_similarity": 0.618145,
+            "weight": 0.208335
+          },
+          {
+            "rank": 2,
+            "label": "February 1998",
+            "winter_year": 1998,
+            "pattern_correlation": 0.579547,
+            "amplitude_similarity": 0.493404,
+            "weight": 0.174831
+          },
+          {
+            "rank": 3,
+            "label": "February 2004",
+            "winter_year": 2004,
+            "pattern_correlation": 0.571885,
+            "amplitude_similarity": 0.945819,
+            "weight": 0.258768
+          },
+          {
+            "rank": 4,
+            "label": "February 1941",
+            "winter_year": 1941,
+            "pattern_correlation": 0.567269,
+            "amplitude_similarity": 0.67329,
+            "weight": 0.19761
+          },
+          {
+            "rank": 5,
+            "label": "February 2010",
+            "winter_year": 2010,
+            "pattern_correlation": 0.531723,
+            "amplitude_similarity": 0.468329,
+            "weight": 0.160456
+          }
+        ],
+        "products": [
+          "psl_500mb_height_anomaly",
+          "psl_2m_temperature_anomaly"
+        ]
+      },
+      "composites": {
+        "psl_500mb_height_anomaly": {
+          "product": "psl_500mb_height_anomaly",
+          "label": "Weighted Top 5-Analog Composite \u00b7 500-mb Geopotential Height Anomaly",
+          "provider": "NOAA PSL WRIT",
+          "status": "ready",
+          "image": "seasonal/analog_products/superensemble/202702/composite/psl_500mb_height_anomaly.png",
+          "composite_key": "superensemble:202702:top5:composite-eccc0bd038ab",
+          "composite_method": "inverse similarity-distance weighting over the top analogs",
+          "composite_pattern_weight": 0.8,
+          "composite_amplitude_weight": 0.2,
+          "composite_count": 5,
+          "analog_members": [
+            {
+              "rank": 1,
+              "label": "February 1983",
+              "winter_year": 1983,
+              "pattern_correlation": 0.625527,
+              "amplitude_similarity": 0.618145,
+              "weight": 0.208335
+            },
+            {
+              "rank": 2,
+              "label": "February 1998",
+              "winter_year": 1998,
+              "pattern_correlation": 0.579547,
+              "amplitude_similarity": 0.493404,
+              "weight": 0.174831
+            },
+            {
+              "rank": 3,
+              "label": "February 2004",
+              "winter_year": 2004,
+              "pattern_correlation": 0.571885,
+              "amplitude_similarity": 0.945819,
+              "weight": 0.258768
+            },
+            {
+              "rank": 4,
+              "label": "February 1941",
+              "winter_year": 1941,
+              "pattern_correlation": 0.567269,
+              "amplitude_similarity": 0.67329,
+              "weight": 0.19761
+            },
+            {
+              "rank": 5,
+              "label": "February 2010",
+              "winter_year": 2010,
+              "pattern_correlation": 0.531723,
+              "amplitude_similarity": 0.468329,
+              "weight": 0.160456
+            }
+          ],
+          "valid_target": "202702",
+          "valid_target_label": "February 2027",
+          "source_url": "https://psl.noaa.gov/data/atmoswrit/map/",
+          "source_urls": [
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=Geopotential+Height&level=500mb&iy=1983&fmonth=1&fmonth2=1&type=1&map=0&mapt=6&proj=North+America&colortable=default&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=Geopotential+Height&level=500mb&iy=1998&fmonth=1&fmonth2=1&type=1&map=0&mapt=6&proj=North+America&colortable=default&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=Geopotential+Height&level=500mb&iy=2004&fmonth=1&fmonth2=1&type=1&map=0&mapt=6&proj=North+America&colortable=default&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=20th+Century+Reanalysis+V3&var=Geopotential+Height&level=500mb&iy=1941&fmonth=1&fmonth2=1&type=1&map=0&mapt=6&proj=North+America&colortable=default&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=Geopotential+Height&level=500mb&iy=2010&fmonth=1&fmonth2=1&type=1&map=0&mapt=6&proj=North+America&colortable=default&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot"
+          ],
+          "provider_asset_urls": [
+            "https://psl.noaa.gov/tmp/ncllbbI2PxAp2.nc",
+            "https://psl.noaa.gov/tmp/ncl340hkad_m5.nc",
+            "https://psl.noaa.gov/tmp/nclxdE_GKnB74.nc",
+            "https://psl.noaa.gov/tmp/nclIqrcGx96BD.nc",
+            "https://psl.noaa.gov/tmp/nclnEnDKj4fXu.nc"
+          ],
+          "provider_image_urls": [
+            "https://psl.noaa.gov/tmp/ncllbbI2PxAp2.tmpqq.png",
+            "https://psl.noaa.gov/tmp/ncl340hkad_m5.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclxdE_GKnB74.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclIqrcGx96BD.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclnEnDKj4fXu.tmpqq.png"
+          ],
+          "dataset": "20CRv3 + NCEP CFSR",
+          "datasets": [
+            "20CRv3",
+            "NCEP CFSR"
+          ],
+          "climatology_years": "1981-2010",
+          "climatology_label": "WRIT native climatologies; 1981-2010",
+          "rendering": {
+            "id": "wn2-seasonal-lcc-v1",
+            "label": "WN2 shared seasonal Lambert Conformal Conic renderer",
+            "projection": "Lambert Conformal Conic",
+            "standard_parallels": [
+              30.0,
+              60.0
+            ],
+            "latitude_origin": 45.0,
+            "central_longitude": -100.0,
+            "map_region": "North America",
+            "region": [
+              -160.0,
+              -10.0,
+              22.0,
+              85.0
+            ],
+            "canvas": "1080x1080"
+          },
+          "map_region": "North America",
+          "generated_utc": "2026-08-26T19:43:46Z"
+        },
+        "psl_2m_temperature_anomaly": {
+          "product": "psl_2m_temperature_anomaly",
+          "label": "Weighted Top 5-Analog Composite \u00b7 2-m Temperature Anomaly",
+          "provider": "NOAA PSL WRIT",
+          "status": "ready",
+          "image": "seasonal/analog_products/superensemble/202702/composite/psl_2m_temperature_anomaly.png",
+          "composite_key": "superensemble:202702:top5:composite-eccc0bd038ab",
+          "composite_method": "inverse similarity-distance weighting over the top analogs",
+          "composite_pattern_weight": 0.8,
+          "composite_amplitude_weight": 0.2,
+          "composite_count": 5,
+          "analog_members": [
+            {
+              "rank": 1,
+              "label": "February 1983",
+              "winter_year": 1983,
+              "pattern_correlation": 0.625527,
+              "amplitude_similarity": 0.618145,
+              "weight": 0.208335
+            },
+            {
+              "rank": 2,
+              "label": "February 1998",
+              "winter_year": 1998,
+              "pattern_correlation": 0.579547,
+              "amplitude_similarity": 0.493404,
+              "weight": 0.174831
+            },
+            {
+              "rank": 3,
+              "label": "February 2004",
+              "winter_year": 2004,
+              "pattern_correlation": 0.571885,
+              "amplitude_similarity": 0.945819,
+              "weight": 0.258768
+            },
+            {
+              "rank": 4,
+              "label": "February 1941",
+              "winter_year": 1941,
+              "pattern_correlation": 0.567269,
+              "amplitude_similarity": 0.67329,
+              "weight": 0.19761
+            },
+            {
+              "rank": 5,
+              "label": "February 2010",
+              "winter_year": 2010,
+              "pattern_correlation": 0.531723,
+              "amplitude_similarity": 0.468329,
+              "weight": 0.160456
+            }
+          ],
+          "valid_target": "202702",
+          "valid_target_label": "February 2027",
+          "source_url": "https://psl.noaa.gov/data/atmoswrit/map/",
+          "source_urls": [
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=2m+Air+Temperature&level=1000mb&iy=1983&fmonth=1&fmonth2=1&type=1&map=0&mapt=6&proj=USA%28CONUS%29&colortable=testcmap&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=2m+Air+Temperature&level=1000mb&iy=1998&fmonth=1&fmonth2=1&type=1&map=0&mapt=6&proj=USA%28CONUS%29&colortable=testcmap&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=2m+Air+Temperature&level=1000mb&iy=2004&fmonth=1&fmonth2=1&type=1&map=0&mapt=6&proj=USA%28CONUS%29&colortable=testcmap&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=20th+Century+Reanalysis+V3&var=2m+Air+Temperature&level=1000mb&iy=1941&fmonth=1&fmonth2=1&type=1&map=0&mapt=6&proj=USA%28CONUS%29&colortable=testcmap&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=2m+Air+Temperature&level=1000mb&iy=2010&fmonth=1&fmonth2=1&type=1&map=0&mapt=6&proj=USA%28CONUS%29&colortable=testcmap&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot"
+          ],
+          "provider_asset_urls": [
+            "https://psl.noaa.gov/tmp/ncldDjs_UsdAf.nc",
+            "https://psl.noaa.gov/tmp/ncljqcpgntvNQ.nc",
+            "https://psl.noaa.gov/tmp/nclTodbdAUfF5.nc",
+            "https://psl.noaa.gov/tmp/nclO2ob7SWM_y.nc",
+            "https://psl.noaa.gov/tmp/ncl6dXmtSabub.nc"
+          ],
+          "provider_image_urls": [
+            "https://psl.noaa.gov/tmp/ncldDjs_UsdAf.tmpqq.png",
+            "https://psl.noaa.gov/tmp/ncljqcpgntvNQ.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclTodbdAUfF5.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclO2ob7SWM_y.tmpqq.png",
+            "https://psl.noaa.gov/tmp/ncl6dXmtSabub.tmpqq.png"
+          ],
+          "dataset": "20CRv3 + NCEP CFSR",
+          "datasets": [
+            "20CRv3",
+            "NCEP CFSR"
+          ],
+          "climatology_years": "1981-2010",
+          "climatology_label": "WRIT native climatologies; 1981-2010",
+          "rendering": {
+            "id": "wn2-seasonal-lcc-v1",
+            "label": "WN2 shared seasonal Lambert Conformal Conic renderer",
+            "projection": "Lambert Conformal Conic",
+            "standard_parallels": [
+              30.0,
+              60.0
+            ],
+            "latitude_origin": 45.0,
+            "central_longitude": -100.0,
+            "map_region": "USA(CONUS)",
+            "region": [
+              -128.0,
+              -65.0,
+              22.0,
+              52.0
+            ],
+            "canvas": "1080x1080"
+          },
+          "map_region": "USA(CONUS)",
+          "generated_utc": "2026-08-26T19:43:55Z"
+        }
       }
     },
     {
@@ -176,9 +457,13 @@
         "pattern_correlation": 0.634833,
         "nh_correlation": 0.557497,
         "conus_correlation": 0.815281,
+        "amplitude_similarity": 0.558063,
+        "nh_amplitude_similarity": 0.613102,
+        "conus_amplitude_similarity": 0.429637,
         "nh_valid_fraction": 1.0,
         "conus_valid_fraction": 1.0,
         "sample_count": 31,
+        "composite_weight": 0.2104,
         "rank": 1
       },
       "period": {
@@ -306,6 +591,272 @@
           "climatology_years": "1981-2010",
           "generated_utc": "2026-08-25T21:19:25Z"
         }
+      },
+      "composite": {
+        "count": 5,
+        "method": "inverse similarity-distance weighting over the top analogs",
+        "pattern_weight": 0.8,
+        "amplitude_weight": 0.2,
+        "members": [
+          {
+            "rank": 1,
+            "label": "January 1958",
+            "winter_year": 1958,
+            "pattern_correlation": 0.634833,
+            "amplitude_similarity": 0.558063,
+            "weight": 0.2104
+          },
+          {
+            "rank": 2,
+            "label": "January 1987",
+            "winter_year": 1987,
+            "pattern_correlation": 0.558648,
+            "amplitude_similarity": 0.739684,
+            "weight": 0.215784
+          },
+          {
+            "rank": 3,
+            "label": "January 2001",
+            "winter_year": 2001,
+            "pattern_correlation": 0.531787,
+            "amplitude_similarity": 0.710054,
+            "weight": 0.201118
+          },
+          {
+            "rank": 4,
+            "label": "January 1995",
+            "winter_year": 1995,
+            "pattern_correlation": 0.531221,
+            "amplitude_similarity": 0.684734,
+            "weight": 0.196872
+          },
+          {
+            "rank": 5,
+            "label": "January 2010",
+            "winter_year": 2010,
+            "pattern_correlation": 0.524847,
+            "amplitude_similarity": 0.547521,
+            "weight": 0.175826
+          }
+        ],
+        "products": [
+          "psl_500mb_height_anomaly",
+          "psl_2m_temperature_anomaly"
+        ]
+      },
+      "composites": {
+        "psl_500mb_height_anomaly": {
+          "product": "psl_500mb_height_anomaly",
+          "label": "Weighted Top 5-Analog Composite \u00b7 500-mb Geopotential Height Anomaly",
+          "provider": "NOAA PSL WRIT",
+          "status": "ready",
+          "image": "seasonal/analog_products/superensemble/202701/composite/psl_500mb_height_anomaly.png",
+          "composite_key": "superensemble:202701:top5:composite-9179de055e4b",
+          "composite_method": "inverse similarity-distance weighting over the top analogs",
+          "composite_pattern_weight": 0.8,
+          "composite_amplitude_weight": 0.2,
+          "composite_count": 5,
+          "analog_members": [
+            {
+              "rank": 1,
+              "label": "January 1958",
+              "winter_year": 1958,
+              "pattern_correlation": 0.634833,
+              "amplitude_similarity": 0.558063,
+              "weight": 0.2104
+            },
+            {
+              "rank": 2,
+              "label": "January 1987",
+              "winter_year": 1987,
+              "pattern_correlation": 0.558648,
+              "amplitude_similarity": 0.739684,
+              "weight": 0.215784
+            },
+            {
+              "rank": 3,
+              "label": "January 2001",
+              "winter_year": 2001,
+              "pattern_correlation": 0.531787,
+              "amplitude_similarity": 0.710054,
+              "weight": 0.201118
+            },
+            {
+              "rank": 4,
+              "label": "January 1995",
+              "winter_year": 1995,
+              "pattern_correlation": 0.531221,
+              "amplitude_similarity": 0.684734,
+              "weight": 0.196872
+            },
+            {
+              "rank": 5,
+              "label": "January 2010",
+              "winter_year": 2010,
+              "pattern_correlation": 0.524847,
+              "amplitude_similarity": 0.547521,
+              "weight": 0.175826
+            }
+          ],
+          "valid_target": "202701",
+          "valid_target_label": "January 2027",
+          "source_url": "https://psl.noaa.gov/data/atmoswrit/map/",
+          "source_urls": [
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=20th+Century+Reanalysis+V3&var=Geopotential+Height&level=500mb&iy=1958&fmonth=0&fmonth2=0&type=1&map=0&mapt=6&proj=North+America&colortable=default&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=Geopotential+Height&level=500mb&iy=1987&fmonth=0&fmonth2=0&type=1&map=0&mapt=6&proj=North+America&colortable=default&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=Geopotential+Height&level=500mb&iy=2001&fmonth=0&fmonth2=0&type=1&map=0&mapt=6&proj=North+America&colortable=default&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=Geopotential+Height&level=500mb&iy=1995&fmonth=0&fmonth2=0&type=1&map=0&mapt=6&proj=North+America&colortable=default&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=Geopotential+Height&level=500mb&iy=2010&fmonth=0&fmonth2=0&type=1&map=0&mapt=6&proj=North+America&colortable=default&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot"
+          ],
+          "provider_asset_urls": [
+            "https://psl.noaa.gov/tmp/ncl1j01qFy2CH.nc",
+            "https://psl.noaa.gov/tmp/nclTp4oz2arZM.nc",
+            "https://psl.noaa.gov/tmp/nclSMbtCdt58H.nc",
+            "https://psl.noaa.gov/tmp/nclflK4uw4KDD.nc",
+            "https://psl.noaa.gov/tmp/nclJfzbGCqV9T.nc"
+          ],
+          "provider_image_urls": [
+            "https://psl.noaa.gov/tmp/ncl1j01qFy2CH.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclTp4oz2arZM.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclSMbtCdt58H.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclflK4uw4KDD.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclJfzbGCqV9T.tmpqq.png"
+          ],
+          "dataset": "20CRv3 + NCEP CFSR",
+          "datasets": [
+            "20CRv3",
+            "NCEP CFSR"
+          ],
+          "climatology_years": "1981-2010",
+          "climatology_label": "WRIT native climatologies; 1981-2010",
+          "rendering": {
+            "id": "wn2-seasonal-lcc-v1",
+            "label": "WN2 shared seasonal Lambert Conformal Conic renderer",
+            "projection": "Lambert Conformal Conic",
+            "standard_parallels": [
+              30.0,
+              60.0
+            ],
+            "latitude_origin": 45.0,
+            "central_longitude": -100.0,
+            "map_region": "North America",
+            "region": [
+              -160.0,
+              -10.0,
+              22.0,
+              85.0
+            ],
+            "canvas": "1080x1080"
+          },
+          "map_region": "North America",
+          "generated_utc": "2026-08-26T19:44:04Z"
+        },
+        "psl_2m_temperature_anomaly": {
+          "product": "psl_2m_temperature_anomaly",
+          "label": "Weighted Top 5-Analog Composite \u00b7 2-m Temperature Anomaly",
+          "provider": "NOAA PSL WRIT",
+          "status": "ready",
+          "image": "seasonal/analog_products/superensemble/202701/composite/psl_2m_temperature_anomaly.png",
+          "composite_key": "superensemble:202701:top5:composite-9179de055e4b",
+          "composite_method": "inverse similarity-distance weighting over the top analogs",
+          "composite_pattern_weight": 0.8,
+          "composite_amplitude_weight": 0.2,
+          "composite_count": 5,
+          "analog_members": [
+            {
+              "rank": 1,
+              "label": "January 1958",
+              "winter_year": 1958,
+              "pattern_correlation": 0.634833,
+              "amplitude_similarity": 0.558063,
+              "weight": 0.2104
+            },
+            {
+              "rank": 2,
+              "label": "January 1987",
+              "winter_year": 1987,
+              "pattern_correlation": 0.558648,
+              "amplitude_similarity": 0.739684,
+              "weight": 0.215784
+            },
+            {
+              "rank": 3,
+              "label": "January 2001",
+              "winter_year": 2001,
+              "pattern_correlation": 0.531787,
+              "amplitude_similarity": 0.710054,
+              "weight": 0.201118
+            },
+            {
+              "rank": 4,
+              "label": "January 1995",
+              "winter_year": 1995,
+              "pattern_correlation": 0.531221,
+              "amplitude_similarity": 0.684734,
+              "weight": 0.196872
+            },
+            {
+              "rank": 5,
+              "label": "January 2010",
+              "winter_year": 2010,
+              "pattern_correlation": 0.524847,
+              "amplitude_similarity": 0.547521,
+              "weight": 0.175826
+            }
+          ],
+          "valid_target": "202701",
+          "valid_target_label": "January 2027",
+          "source_url": "https://psl.noaa.gov/data/atmoswrit/map/",
+          "source_urls": [
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=20th+Century+Reanalysis+V3&var=2m+Air+Temperature&level=1000mb&iy=1958&fmonth=0&fmonth2=0&type=1&map=0&mapt=6&proj=USA%28CONUS%29&colortable=testcmap&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=2m+Air+Temperature&level=1000mb&iy=1987&fmonth=0&fmonth2=0&type=1&map=0&mapt=6&proj=USA%28CONUS%29&colortable=testcmap&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=2m+Air+Temperature&level=1000mb&iy=2001&fmonth=0&fmonth2=0&type=1&map=0&mapt=6&proj=USA%28CONUS%29&colortable=testcmap&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=2m+Air+Temperature&level=1000mb&iy=1995&fmonth=0&fmonth2=0&type=1&map=0&mapt=6&proj=USA%28CONUS%29&colortable=testcmap&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=2m+Air+Temperature&level=1000mb&iy=2010&fmonth=0&fmonth2=0&type=1&map=0&mapt=6&proj=USA%28CONUS%29&colortable=testcmap&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot"
+          ],
+          "provider_asset_urls": [
+            "https://psl.noaa.gov/tmp/nclflzbMHPVWj.nc",
+            "https://psl.noaa.gov/tmp/nclp5kjTTgRj2.nc",
+            "https://psl.noaa.gov/tmp/nclPatDs1Palj.nc",
+            "https://psl.noaa.gov/tmp/nclLTHln61Y5t.nc",
+            "https://psl.noaa.gov/tmp/nclbzOooJdUV8.nc"
+          ],
+          "provider_image_urls": [
+            "https://psl.noaa.gov/tmp/nclflzbMHPVWj.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclp5kjTTgRj2.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclPatDs1Palj.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclLTHln61Y5t.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclbzOooJdUV8.tmpqq.png"
+          ],
+          "dataset": "20CRv3 + NCEP CFSR",
+          "datasets": [
+            "20CRv3",
+            "NCEP CFSR"
+          ],
+          "climatology_years": "1981-2010",
+          "climatology_label": "WRIT native climatologies; 1981-2010",
+          "rendering": {
+            "id": "wn2-seasonal-lcc-v1",
+            "label": "WN2 shared seasonal Lambert Conformal Conic renderer",
+            "projection": "Lambert Conformal Conic",
+            "standard_parallels": [
+              30.0,
+              60.0
+            ],
+            "latitude_origin": 45.0,
+            "central_longitude": -100.0,
+            "map_region": "USA(CONUS)",
+            "region": [
+              -128.0,
+              -65.0,
+              22.0,
+              52.0
+            ],
+            "canvas": "1080x1080"
+          },
+          "map_region": "USA(CONUS)",
+          "generated_utc": "2026-08-26T19:44:12Z"
+        }
       }
     },
     {
@@ -321,9 +872,13 @@
         "pattern_correlation": 0.726097,
         "nh_correlation": 0.645456,
         "conus_correlation": 0.914259,
+        "amplitude_similarity": 0.740869,
+        "nh_amplitude_similarity": 0.836775,
+        "conus_amplitude_similarity": 0.517088,
         "nh_valid_fraction": 1.0,
         "conus_valid_fraction": 1.0,
         "sample_count": 90,
+        "composite_weight": 0.242641,
         "rank": 1
       },
       "period": {
@@ -451,6 +1006,272 @@
           "climatology_years": "1981-2010",
           "generated_utc": "2026-08-25T21:20:31Z"
         }
+      },
+      "composite": {
+        "count": 5,
+        "method": "inverse similarity-distance weighting over the top analogs",
+        "pattern_weight": 0.8,
+        "amplitude_weight": 0.2,
+        "members": [
+          {
+            "rank": 1,
+            "label": "DJF 1997-98",
+            "winter_year": 1998,
+            "pattern_correlation": 0.726097,
+            "amplitude_similarity": 0.740869,
+            "weight": 0.242641
+          },
+          {
+            "rank": 2,
+            "label": "DJF 1959-60",
+            "winter_year": 1960,
+            "pattern_correlation": 0.643434,
+            "amplitude_similarity": 0.858589,
+            "weight": 0.229124
+          },
+          {
+            "rank": 3,
+            "label": "DJF 2023-24",
+            "winter_year": 2024,
+            "pattern_correlation": 0.596627,
+            "amplitude_similarity": 0.776921,
+            "weight": 0.190126
+          },
+          {
+            "rank": 4,
+            "label": "DJF 1986-87",
+            "winter_year": 1987,
+            "pattern_correlation": 0.576119,
+            "amplitude_similarity": 0.881549,
+            "weight": 0.202643
+          },
+          {
+            "rank": 5,
+            "label": "DJF 2009-10",
+            "winter_year": 2010,
+            "pattern_correlation": 0.523822,
+            "amplitude_similarity": 0.506996,
+            "weight": 0.135465
+          }
+        ],
+        "products": [
+          "psl_500mb_height_anomaly",
+          "psl_2m_temperature_anomaly"
+        ]
+      },
+      "composites": {
+        "psl_500mb_height_anomaly": {
+          "product": "psl_500mb_height_anomaly",
+          "label": "Weighted Top 5-Analog Composite \u00b7 500-mb Geopotential Height Anomaly",
+          "provider": "NOAA PSL WRIT",
+          "status": "ready",
+          "image": "seasonal/analog_products/superensemble/202612-202702/composite/psl_500mb_height_anomaly.png",
+          "composite_key": "superensemble:202612-202702:top5:composite-496730458e25",
+          "composite_method": "inverse similarity-distance weighting over the top analogs",
+          "composite_pattern_weight": 0.8,
+          "composite_amplitude_weight": 0.2,
+          "composite_count": 5,
+          "analog_members": [
+            {
+              "rank": 1,
+              "label": "DJF 1997-98",
+              "winter_year": 1998,
+              "pattern_correlation": 0.726097,
+              "amplitude_similarity": 0.740869,
+              "weight": 0.242641
+            },
+            {
+              "rank": 2,
+              "label": "DJF 1959-60",
+              "winter_year": 1960,
+              "pattern_correlation": 0.643434,
+              "amplitude_similarity": 0.858589,
+              "weight": 0.229124
+            },
+            {
+              "rank": 3,
+              "label": "DJF 2023-24",
+              "winter_year": 2024,
+              "pattern_correlation": 0.596627,
+              "amplitude_similarity": 0.776921,
+              "weight": 0.190126
+            },
+            {
+              "rank": 4,
+              "label": "DJF 1986-87",
+              "winter_year": 1987,
+              "pattern_correlation": 0.576119,
+              "amplitude_similarity": 0.881549,
+              "weight": 0.202643
+            },
+            {
+              "rank": 5,
+              "label": "DJF 2009-10",
+              "winter_year": 2010,
+              "pattern_correlation": 0.523822,
+              "amplitude_similarity": 0.506996,
+              "weight": 0.135465
+            }
+          ],
+          "valid_target": "202612-202702",
+          "valid_target_label": "DJF 2026-27",
+          "source_url": "https://psl.noaa.gov/data/atmoswrit/map/",
+          "source_urls": [
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=Geopotential+Height&level=500mb&iy=1998&fmonth=11&fmonth2=1&type=1&map=0&mapt=6&proj=North+America&colortable=default&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=20th+Century+Reanalysis+V3&var=Geopotential+Height&level=500mb&iy=1960&fmonth=11&fmonth2=1&type=1&map=0&mapt=6&proj=North+America&colortable=default&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=Geopotential+Height&level=500mb&iy=2024&fmonth=11&fmonth2=1&type=1&map=0&mapt=6&proj=North+America&colortable=default&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=Geopotential+Height&level=500mb&iy=1987&fmonth=11&fmonth2=1&type=1&map=0&mapt=6&proj=North+America&colortable=default&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=Geopotential+Height&level=500mb&iy=2010&fmonth=11&fmonth2=1&type=1&map=0&mapt=6&proj=North+America&colortable=default&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot"
+          ],
+          "provider_asset_urls": [
+            "https://psl.noaa.gov/tmp/ncl5T5ob1lymc.nc",
+            "https://psl.noaa.gov/tmp/nclVlHEcbbG0z.nc",
+            "https://psl.noaa.gov/tmp/nclkaKCMVux59.nc",
+            "https://psl.noaa.gov/tmp/nclu574_3vHkY.nc",
+            "https://psl.noaa.gov/tmp/nclNqJi4JO2g_.nc"
+          ],
+          "provider_image_urls": [
+            "https://psl.noaa.gov/tmp/ncl5T5ob1lymc.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclVlHEcbbG0z.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclkaKCMVux59.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclu574_3vHkY.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclNqJi4JO2g_.tmpqq.png"
+          ],
+          "dataset": "20CRv3 + NCEP CFSR",
+          "datasets": [
+            "20CRv3",
+            "NCEP CFSR"
+          ],
+          "climatology_years": "1981-2010",
+          "climatology_label": "WRIT native climatologies; 1981-2010",
+          "rendering": {
+            "id": "wn2-seasonal-lcc-v1",
+            "label": "WN2 shared seasonal Lambert Conformal Conic renderer",
+            "projection": "Lambert Conformal Conic",
+            "standard_parallels": [
+              30.0,
+              60.0
+            ],
+            "latitude_origin": 45.0,
+            "central_longitude": -100.0,
+            "map_region": "North America",
+            "region": [
+              -160.0,
+              -10.0,
+              22.0,
+              85.0
+            ],
+            "canvas": "1080x1080"
+          },
+          "map_region": "North America",
+          "generated_utc": "2026-08-26T19:44:21Z"
+        },
+        "psl_2m_temperature_anomaly": {
+          "product": "psl_2m_temperature_anomaly",
+          "label": "Weighted Top 5-Analog Composite \u00b7 2-m Temperature Anomaly",
+          "provider": "NOAA PSL WRIT",
+          "status": "ready",
+          "image": "seasonal/analog_products/superensemble/202612-202702/composite/psl_2m_temperature_anomaly.png",
+          "composite_key": "superensemble:202612-202702:top5:composite-496730458e25",
+          "composite_method": "inverse similarity-distance weighting over the top analogs",
+          "composite_pattern_weight": 0.8,
+          "composite_amplitude_weight": 0.2,
+          "composite_count": 5,
+          "analog_members": [
+            {
+              "rank": 1,
+              "label": "DJF 1997-98",
+              "winter_year": 1998,
+              "pattern_correlation": 0.726097,
+              "amplitude_similarity": 0.740869,
+              "weight": 0.242641
+            },
+            {
+              "rank": 2,
+              "label": "DJF 1959-60",
+              "winter_year": 1960,
+              "pattern_correlation": 0.643434,
+              "amplitude_similarity": 0.858589,
+              "weight": 0.229124
+            },
+            {
+              "rank": 3,
+              "label": "DJF 2023-24",
+              "winter_year": 2024,
+              "pattern_correlation": 0.596627,
+              "amplitude_similarity": 0.776921,
+              "weight": 0.190126
+            },
+            {
+              "rank": 4,
+              "label": "DJF 1986-87",
+              "winter_year": 1987,
+              "pattern_correlation": 0.576119,
+              "amplitude_similarity": 0.881549,
+              "weight": 0.202643
+            },
+            {
+              "rank": 5,
+              "label": "DJF 2009-10",
+              "winter_year": 2010,
+              "pattern_correlation": 0.523822,
+              "amplitude_similarity": 0.506996,
+              "weight": 0.135465
+            }
+          ],
+          "valid_target": "202612-202702",
+          "valid_target_label": "DJF 2026-27",
+          "source_url": "https://psl.noaa.gov/data/atmoswrit/map/",
+          "source_urls": [
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=2m+Air+Temperature&level=1000mb&iy=1998&fmonth=11&fmonth2=1&type=1&map=0&mapt=6&proj=USA%28CONUS%29&colortable=testcmap&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=20th+Century+Reanalysis+V3&var=2m+Air+Temperature&level=1000mb&iy=1960&fmonth=11&fmonth2=1&type=1&map=0&mapt=6&proj=USA%28CONUS%29&colortable=testcmap&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=2m+Air+Temperature&level=1000mb&iy=2024&fmonth=11&fmonth2=1&type=1&map=0&mapt=6&proj=USA%28CONUS%29&colortable=testcmap&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=2m+Air+Temperature&level=1000mb&iy=1987&fmonth=11&fmonth2=1&type=1&map=0&mapt=6&proj=USA%28CONUS%29&colortable=testcmap&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=2m+Air+Temperature&level=1000mb&iy=2010&fmonth=11&fmonth2=1&type=1&map=0&mapt=6&proj=USA%28CONUS%29&colortable=testcmap&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot"
+          ],
+          "provider_asset_urls": [
+            "https://psl.noaa.gov/tmp/nclpy2QGoVSJ5.nc",
+            "https://psl.noaa.gov/tmp/nclqRWD5hcmPk.nc",
+            "https://psl.noaa.gov/tmp/nclezc4zkrqrf.nc",
+            "https://psl.noaa.gov/tmp/ncl4CKXiDVLyx.nc",
+            "https://psl.noaa.gov/tmp/ncl2VymEEnS2o.nc"
+          ],
+          "provider_image_urls": [
+            "https://psl.noaa.gov/tmp/nclpy2QGoVSJ5.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclqRWD5hcmPk.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclezc4zkrqrf.tmpqq.png",
+            "https://psl.noaa.gov/tmp/ncl4CKXiDVLyx.tmpqq.png",
+            "https://psl.noaa.gov/tmp/ncl2VymEEnS2o.tmpqq.png"
+          ],
+          "dataset": "20CRv3 + NCEP CFSR",
+          "datasets": [
+            "20CRv3",
+            "NCEP CFSR"
+          ],
+          "climatology_years": "1981-2010",
+          "climatology_label": "WRIT native climatologies; 1981-2010",
+          "rendering": {
+            "id": "wn2-seasonal-lcc-v1",
+            "label": "WN2 shared seasonal Lambert Conformal Conic renderer",
+            "projection": "Lambert Conformal Conic",
+            "standard_parallels": [
+              30.0,
+              60.0
+            ],
+            "latitude_origin": 45.0,
+            "central_longitude": -100.0,
+            "map_region": "USA(CONUS)",
+            "region": [
+              -128.0,
+              -65.0,
+              22.0,
+              52.0
+            ],
+            "canvas": "1080x1080"
+          },
+          "map_region": "USA(CONUS)",
+          "generated_utc": "2026-08-26T19:44:29Z"
+        }
       }
     },
     {
@@ -466,9 +1287,13 @@
         "pattern_correlation": 0.638073,
         "nh_correlation": 0.614121,
         "conus_correlation": 0.693959,
+        "amplitude_similarity": 0.413264,
+        "nh_amplitude_similarity": 0.466797,
+        "conus_amplitude_similarity": 0.288352,
         "nh_valid_fraction": 1.0,
         "conus_valid_fraction": 1.0,
         "sample_count": 31,
+        "composite_weight": 0.238909,
         "rank": 1
       },
       "period": {
@@ -596,6 +1421,272 @@
           "climatology_years": "1981-2010",
           "generated_utc": "2026-08-25T21:21:48Z"
         }
+      },
+      "composite": {
+        "count": 5,
+        "method": "inverse similarity-distance weighting over the top analogs",
+        "pattern_weight": 0.8,
+        "amplitude_weight": 0.2,
+        "members": [
+          {
+            "rank": 1,
+            "label": "December 2023",
+            "winter_year": 2024,
+            "pattern_correlation": 0.638073,
+            "amplitude_similarity": 0.413264,
+            "weight": 0.238909
+          },
+          {
+            "rank": 2,
+            "label": "December 1952",
+            "winter_year": 1953,
+            "pattern_correlation": 0.456436,
+            "amplitude_similarity": 0.438052,
+            "weight": 0.189871
+          },
+          {
+            "rank": 3,
+            "label": "December 1997",
+            "winter_year": 1998,
+            "pattern_correlation": 0.449145,
+            "amplitude_similarity": 0.476975,
+            "weight": 0.192715
+          },
+          {
+            "rank": 4,
+            "label": "December 1987",
+            "winter_year": 1988,
+            "pattern_correlation": 0.440423,
+            "amplitude_similarity": 0.487414,
+            "weight": 0.191888
+          },
+          {
+            "rank": 5,
+            "label": "December 1986",
+            "winter_year": 1987,
+            "pattern_correlation": 0.418101,
+            "amplitude_similarity": 0.485972,
+            "weight": 0.186617
+          }
+        ],
+        "products": [
+          "psl_500mb_height_anomaly",
+          "psl_2m_temperature_anomaly"
+        ]
+      },
+      "composites": {
+        "psl_500mb_height_anomaly": {
+          "product": "psl_500mb_height_anomaly",
+          "label": "Weighted Top 5-Analog Composite \u00b7 500-mb Geopotential Height Anomaly",
+          "provider": "NOAA PSL WRIT",
+          "status": "ready",
+          "image": "seasonal/analog_products/superensemble/202612/composite/psl_500mb_height_anomaly.png",
+          "composite_key": "superensemble:202612:top5:composite-49d4825b8b33",
+          "composite_method": "inverse similarity-distance weighting over the top analogs",
+          "composite_pattern_weight": 0.8,
+          "composite_amplitude_weight": 0.2,
+          "composite_count": 5,
+          "analog_members": [
+            {
+              "rank": 1,
+              "label": "December 2023",
+              "winter_year": 2024,
+              "pattern_correlation": 0.638073,
+              "amplitude_similarity": 0.413264,
+              "weight": 0.238909
+            },
+            {
+              "rank": 2,
+              "label": "December 1952",
+              "winter_year": 1953,
+              "pattern_correlation": 0.456436,
+              "amplitude_similarity": 0.438052,
+              "weight": 0.189871
+            },
+            {
+              "rank": 3,
+              "label": "December 1997",
+              "winter_year": 1998,
+              "pattern_correlation": 0.449145,
+              "amplitude_similarity": 0.476975,
+              "weight": 0.192715
+            },
+            {
+              "rank": 4,
+              "label": "December 1987",
+              "winter_year": 1988,
+              "pattern_correlation": 0.440423,
+              "amplitude_similarity": 0.487414,
+              "weight": 0.191888
+            },
+            {
+              "rank": 5,
+              "label": "December 1986",
+              "winter_year": 1987,
+              "pattern_correlation": 0.418101,
+              "amplitude_similarity": 0.485972,
+              "weight": 0.186617
+            }
+          ],
+          "valid_target": "202612",
+          "valid_target_label": "December 2026",
+          "source_url": "https://psl.noaa.gov/data/atmoswrit/map/",
+          "source_urls": [
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=Geopotential+Height&level=500mb&iy=2023&fmonth=11&fmonth2=11&type=1&map=0&mapt=6&proj=North+America&colortable=default&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=20th+Century+Reanalysis+V3&var=Geopotential+Height&level=500mb&iy=1952&fmonth=11&fmonth2=11&type=1&map=0&mapt=6&proj=North+America&colortable=default&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=Geopotential+Height&level=500mb&iy=1997&fmonth=11&fmonth2=11&type=1&map=0&mapt=6&proj=North+America&colortable=default&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=Geopotential+Height&level=500mb&iy=1987&fmonth=11&fmonth2=11&type=1&map=0&mapt=6&proj=North+America&colortable=default&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=Geopotential+Height&level=500mb&iy=1986&fmonth=11&fmonth2=11&type=1&map=0&mapt=6&proj=North+America&colortable=default&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot"
+          ],
+          "provider_asset_urls": [
+            "https://psl.noaa.gov/tmp/ncllBp_ysZzKK.nc",
+            "https://psl.noaa.gov/tmp/nclw5ZISzfmlu.nc",
+            "https://psl.noaa.gov/tmp/nclZvUwtyazc9.nc",
+            "https://psl.noaa.gov/tmp/nclDQ8iberX0o.nc",
+            "https://psl.noaa.gov/tmp/nclZW3hcy2F90.nc"
+          ],
+          "provider_image_urls": [
+            "https://psl.noaa.gov/tmp/ncllBp_ysZzKK.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclw5ZISzfmlu.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclZvUwtyazc9.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclDQ8iberX0o.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclZW3hcy2F90.tmpqq.png"
+          ],
+          "dataset": "20CRv3 + NCEP CFSR",
+          "datasets": [
+            "20CRv3",
+            "NCEP CFSR"
+          ],
+          "climatology_years": "1981-2010",
+          "climatology_label": "WRIT native climatologies; 1981-2010",
+          "rendering": {
+            "id": "wn2-seasonal-lcc-v1",
+            "label": "WN2 shared seasonal Lambert Conformal Conic renderer",
+            "projection": "Lambert Conformal Conic",
+            "standard_parallels": [
+              30.0,
+              60.0
+            ],
+            "latitude_origin": 45.0,
+            "central_longitude": -100.0,
+            "map_region": "North America",
+            "region": [
+              -160.0,
+              -10.0,
+              22.0,
+              85.0
+            ],
+            "canvas": "1080x1080"
+          },
+          "map_region": "North America",
+          "generated_utc": "2026-08-26T19:44:37Z"
+        },
+        "psl_2m_temperature_anomaly": {
+          "product": "psl_2m_temperature_anomaly",
+          "label": "Weighted Top 5-Analog Composite \u00b7 2-m Temperature Anomaly",
+          "provider": "NOAA PSL WRIT",
+          "status": "ready",
+          "image": "seasonal/analog_products/superensemble/202612/composite/psl_2m_temperature_anomaly.png",
+          "composite_key": "superensemble:202612:top5:composite-49d4825b8b33",
+          "composite_method": "inverse similarity-distance weighting over the top analogs",
+          "composite_pattern_weight": 0.8,
+          "composite_amplitude_weight": 0.2,
+          "composite_count": 5,
+          "analog_members": [
+            {
+              "rank": 1,
+              "label": "December 2023",
+              "winter_year": 2024,
+              "pattern_correlation": 0.638073,
+              "amplitude_similarity": 0.413264,
+              "weight": 0.238909
+            },
+            {
+              "rank": 2,
+              "label": "December 1952",
+              "winter_year": 1953,
+              "pattern_correlation": 0.456436,
+              "amplitude_similarity": 0.438052,
+              "weight": 0.189871
+            },
+            {
+              "rank": 3,
+              "label": "December 1997",
+              "winter_year": 1998,
+              "pattern_correlation": 0.449145,
+              "amplitude_similarity": 0.476975,
+              "weight": 0.192715
+            },
+            {
+              "rank": 4,
+              "label": "December 1987",
+              "winter_year": 1988,
+              "pattern_correlation": 0.440423,
+              "amplitude_similarity": 0.487414,
+              "weight": 0.191888
+            },
+            {
+              "rank": 5,
+              "label": "December 1986",
+              "winter_year": 1987,
+              "pattern_correlation": 0.418101,
+              "amplitude_similarity": 0.485972,
+              "weight": 0.186617
+            }
+          ],
+          "valid_target": "202612",
+          "valid_target_label": "December 2026",
+          "source_url": "https://psl.noaa.gov/data/atmoswrit/map/",
+          "source_urls": [
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=2m+Air+Temperature&level=1000mb&iy=2023&fmonth=11&fmonth2=11&type=1&map=0&mapt=6&proj=USA%28CONUS%29&colortable=testcmap&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=20th+Century+Reanalysis+V3&var=2m+Air+Temperature&level=1000mb&iy=1952&fmonth=11&fmonth2=11&type=1&map=0&mapt=6&proj=USA%28CONUS%29&colortable=testcmap&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=2m+Air+Temperature&level=1000mb&iy=1997&fmonth=11&fmonth2=11&type=1&map=0&mapt=6&proj=USA%28CONUS%29&colortable=testcmap&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=2m+Air+Temperature&level=1000mb&iy=1987&fmonth=11&fmonth2=11&type=1&map=0&mapt=6&proj=USA%28CONUS%29&colortable=testcmap&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=2m+Air+Temperature&level=1000mb&iy=1986&fmonth=11&fmonth2=11&type=1&map=0&mapt=6&proj=USA%28CONUS%29&colortable=testcmap&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot"
+          ],
+          "provider_asset_urls": [
+            "https://psl.noaa.gov/tmp/nclQLwxxFYgaf.nc",
+            "https://psl.noaa.gov/tmp/ncl8hxT6KZA55.nc",
+            "https://psl.noaa.gov/tmp/nclp_che9N0ze.nc",
+            "https://psl.noaa.gov/tmp/ncl9X4n29ANHG.nc",
+            "https://psl.noaa.gov/tmp/ncl5Grj_T0hDt.nc"
+          ],
+          "provider_image_urls": [
+            "https://psl.noaa.gov/tmp/nclQLwxxFYgaf.tmpqq.png",
+            "https://psl.noaa.gov/tmp/ncl8hxT6KZA55.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclp_che9N0ze.tmpqq.png",
+            "https://psl.noaa.gov/tmp/ncl9X4n29ANHG.tmpqq.png",
+            "https://psl.noaa.gov/tmp/ncl5Grj_T0hDt.tmpqq.png"
+          ],
+          "dataset": "20CRv3 + NCEP CFSR",
+          "datasets": [
+            "20CRv3",
+            "NCEP CFSR"
+          ],
+          "climatology_years": "1981-2010",
+          "climatology_label": "WRIT native climatologies; 1981-2010",
+          "rendering": {
+            "id": "wn2-seasonal-lcc-v1",
+            "label": "WN2 shared seasonal Lambert Conformal Conic renderer",
+            "projection": "Lambert Conformal Conic",
+            "standard_parallels": [
+              30.0,
+              60.0
+            ],
+            "latitude_origin": 45.0,
+            "central_longitude": -100.0,
+            "map_region": "USA(CONUS)",
+            "region": [
+              -128.0,
+              -65.0,
+              22.0,
+              52.0
+            ],
+            "canvas": "1080x1080"
+          },
+          "map_region": "USA(CONUS)",
+          "generated_utc": "2026-08-26T19:44:46Z"
+        }
       }
     },
     {
@@ -611,9 +1702,13 @@
         "pattern_correlation": 0.590957,
         "nh_correlation": 0.481677,
         "conus_correlation": 0.845944,
+        "amplitude_similarity": 0.61576,
+        "nh_amplitude_similarity": 0.606819,
+        "conus_amplitude_similarity": 0.636624,
         "nh_valid_fraction": 1.0,
         "conus_valid_fraction": 1.0,
         "sample_count": 28,
+        "composite_weight": 0.213729,
         "rank": 1
       },
       "period": {
@@ -741,6 +1836,272 @@
           "climatology_years": "1981-2010",
           "generated_utc": "2026-08-25T21:22:53Z"
         }
+      },
+      "composite": {
+        "count": 5,
+        "method": "inverse similarity-distance weighting over the top analogs",
+        "pattern_weight": 0.8,
+        "amplitude_weight": 0.2,
+        "members": [
+          {
+            "rank": 1,
+            "label": "February 1998",
+            "winter_year": 1998,
+            "pattern_correlation": 0.590957,
+            "amplitude_similarity": 0.61576,
+            "weight": 0.213729
+          },
+          {
+            "rank": 2,
+            "label": "February 1969",
+            "winter_year": 1969,
+            "pattern_correlation": 0.555375,
+            "amplitude_similarity": 0.615029,
+            "weight": 0.201669
+          },
+          {
+            "rank": 3,
+            "label": "February 1960",
+            "winter_year": 1960,
+            "pattern_correlation": 0.547508,
+            "amplitude_similarity": 0.70273,
+            "weight": 0.213741
+          },
+          {
+            "rank": 4,
+            "label": "February 2010",
+            "winter_year": 2010,
+            "pattern_correlation": 0.527177,
+            "amplitude_similarity": 0.588738,
+            "weight": 0.18938
+          },
+          {
+            "rank": 5,
+            "label": "February 1999",
+            "winter_year": 1999,
+            "pattern_correlation": 0.436729,
+            "amplitude_similarity": 0.710567,
+            "weight": 0.18148
+          }
+        ],
+        "products": [
+          "psl_500mb_height_anomaly",
+          "psl_2m_temperature_anomaly"
+        ]
+      },
+      "composites": {
+        "psl_500mb_height_anomaly": {
+          "product": "psl_500mb_height_anomaly",
+          "label": "Weighted Top 5-Analog Composite \u00b7 500-mb Geopotential Height Anomaly",
+          "provider": "NOAA PSL WRIT",
+          "status": "ready",
+          "image": "seasonal/analog_products/cfsv2/202702/composite/psl_500mb_height_anomaly.png",
+          "composite_key": "cfsv2:202702:top5:composite-54dc59c0db17",
+          "composite_method": "inverse similarity-distance weighting over the top analogs",
+          "composite_pattern_weight": 0.8,
+          "composite_amplitude_weight": 0.2,
+          "composite_count": 5,
+          "analog_members": [
+            {
+              "rank": 1,
+              "label": "February 1998",
+              "winter_year": 1998,
+              "pattern_correlation": 0.590957,
+              "amplitude_similarity": 0.61576,
+              "weight": 0.213729
+            },
+            {
+              "rank": 2,
+              "label": "February 1969",
+              "winter_year": 1969,
+              "pattern_correlation": 0.555375,
+              "amplitude_similarity": 0.615029,
+              "weight": 0.201669
+            },
+            {
+              "rank": 3,
+              "label": "February 1960",
+              "winter_year": 1960,
+              "pattern_correlation": 0.547508,
+              "amplitude_similarity": 0.70273,
+              "weight": 0.213741
+            },
+            {
+              "rank": 4,
+              "label": "February 2010",
+              "winter_year": 2010,
+              "pattern_correlation": 0.527177,
+              "amplitude_similarity": 0.588738,
+              "weight": 0.18938
+            },
+            {
+              "rank": 5,
+              "label": "February 1999",
+              "winter_year": 1999,
+              "pattern_correlation": 0.436729,
+              "amplitude_similarity": 0.710567,
+              "weight": 0.18148
+            }
+          ],
+          "valid_target": "202702",
+          "valid_target_label": "February 2027",
+          "source_url": "https://psl.noaa.gov/data/atmoswrit/map/",
+          "source_urls": [
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=Geopotential+Height&level=500mb&iy=1998&fmonth=1&fmonth2=1&type=1&map=0&mapt=6&proj=North+America&colortable=default&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=20th+Century+Reanalysis+V3&var=Geopotential+Height&level=500mb&iy=1969&fmonth=1&fmonth2=1&type=1&map=0&mapt=6&proj=North+America&colortable=default&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=20th+Century+Reanalysis+V3&var=Geopotential+Height&level=500mb&iy=1960&fmonth=1&fmonth2=1&type=1&map=0&mapt=6&proj=North+America&colortable=default&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=Geopotential+Height&level=500mb&iy=2010&fmonth=1&fmonth2=1&type=1&map=0&mapt=6&proj=North+America&colortable=default&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=Geopotential+Height&level=500mb&iy=1999&fmonth=1&fmonth2=1&type=1&map=0&mapt=6&proj=North+America&colortable=default&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot"
+          ],
+          "provider_asset_urls": [
+            "https://psl.noaa.gov/tmp/ncl340hkad_m5.nc",
+            "https://psl.noaa.gov/tmp/nclGd7BttSDs3.nc",
+            "https://psl.noaa.gov/tmp/nclhvTjTQAcdH.nc",
+            "https://psl.noaa.gov/tmp/nclnEnDKj4fXu.nc",
+            "https://psl.noaa.gov/tmp/ncl13mjgFucH9.nc"
+          ],
+          "provider_image_urls": [
+            "https://psl.noaa.gov/tmp/ncl340hkad_m5.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclGd7BttSDs3.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclhvTjTQAcdH.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclnEnDKj4fXu.tmpqq.png",
+            "https://psl.noaa.gov/tmp/ncl13mjgFucH9.tmpqq.png"
+          ],
+          "dataset": "20CRv3 + NCEP CFSR",
+          "datasets": [
+            "20CRv3",
+            "NCEP CFSR"
+          ],
+          "climatology_years": "1981-2010",
+          "climatology_label": "WRIT native climatologies; 1981-2010",
+          "rendering": {
+            "id": "wn2-seasonal-lcc-v1",
+            "label": "WN2 shared seasonal Lambert Conformal Conic renderer",
+            "projection": "Lambert Conformal Conic",
+            "standard_parallels": [
+              30.0,
+              60.0
+            ],
+            "latitude_origin": 45.0,
+            "central_longitude": -100.0,
+            "map_region": "North America",
+            "region": [
+              -160.0,
+              -10.0,
+              22.0,
+              85.0
+            ],
+            "canvas": "1080x1080"
+          },
+          "map_region": "North America",
+          "generated_utc": "2026-08-26T19:44:52Z"
+        },
+        "psl_2m_temperature_anomaly": {
+          "product": "psl_2m_temperature_anomaly",
+          "label": "Weighted Top 5-Analog Composite \u00b7 2-m Temperature Anomaly",
+          "provider": "NOAA PSL WRIT",
+          "status": "ready",
+          "image": "seasonal/analog_products/cfsv2/202702/composite/psl_2m_temperature_anomaly.png",
+          "composite_key": "cfsv2:202702:top5:composite-54dc59c0db17",
+          "composite_method": "inverse similarity-distance weighting over the top analogs",
+          "composite_pattern_weight": 0.8,
+          "composite_amplitude_weight": 0.2,
+          "composite_count": 5,
+          "analog_members": [
+            {
+              "rank": 1,
+              "label": "February 1998",
+              "winter_year": 1998,
+              "pattern_correlation": 0.590957,
+              "amplitude_similarity": 0.61576,
+              "weight": 0.213729
+            },
+            {
+              "rank": 2,
+              "label": "February 1969",
+              "winter_year": 1969,
+              "pattern_correlation": 0.555375,
+              "amplitude_similarity": 0.615029,
+              "weight": 0.201669
+            },
+            {
+              "rank": 3,
+              "label": "February 1960",
+              "winter_year": 1960,
+              "pattern_correlation": 0.547508,
+              "amplitude_similarity": 0.70273,
+              "weight": 0.213741
+            },
+            {
+              "rank": 4,
+              "label": "February 2010",
+              "winter_year": 2010,
+              "pattern_correlation": 0.527177,
+              "amplitude_similarity": 0.588738,
+              "weight": 0.18938
+            },
+            {
+              "rank": 5,
+              "label": "February 1999",
+              "winter_year": 1999,
+              "pattern_correlation": 0.436729,
+              "amplitude_similarity": 0.710567,
+              "weight": 0.18148
+            }
+          ],
+          "valid_target": "202702",
+          "valid_target_label": "February 2027",
+          "source_url": "https://psl.noaa.gov/data/atmoswrit/map/",
+          "source_urls": [
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=2m+Air+Temperature&level=1000mb&iy=1998&fmonth=1&fmonth2=1&type=1&map=0&mapt=6&proj=USA%28CONUS%29&colortable=testcmap&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=20th+Century+Reanalysis+V3&var=2m+Air+Temperature&level=1000mb&iy=1969&fmonth=1&fmonth2=1&type=1&map=0&mapt=6&proj=USA%28CONUS%29&colortable=testcmap&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=20th+Century+Reanalysis+V3&var=2m+Air+Temperature&level=1000mb&iy=1960&fmonth=1&fmonth2=1&type=1&map=0&mapt=6&proj=USA%28CONUS%29&colortable=testcmap&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=2m+Air+Temperature&level=1000mb&iy=2010&fmonth=1&fmonth2=1&type=1&map=0&mapt=6&proj=USA%28CONUS%29&colortable=testcmap&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=2m+Air+Temperature&level=1000mb&iy=1999&fmonth=1&fmonth2=1&type=1&map=0&mapt=6&proj=USA%28CONUS%29&colortable=testcmap&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot"
+          ],
+          "provider_asset_urls": [
+            "https://psl.noaa.gov/tmp/ncljqcpgntvNQ.nc",
+            "https://psl.noaa.gov/tmp/nclXYIXcelFSc.nc",
+            "https://psl.noaa.gov/tmp/nclcUVhy40XT3.nc",
+            "https://psl.noaa.gov/tmp/ncl6dXmtSabub.nc",
+            "https://psl.noaa.gov/tmp/nclaX2OHajbXO.nc"
+          ],
+          "provider_image_urls": [
+            "https://psl.noaa.gov/tmp/ncljqcpgntvNQ.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclXYIXcelFSc.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclcUVhy40XT3.tmpqq.png",
+            "https://psl.noaa.gov/tmp/ncl6dXmtSabub.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclaX2OHajbXO.tmpqq.png"
+          ],
+          "dataset": "20CRv3 + NCEP CFSR",
+          "datasets": [
+            "20CRv3",
+            "NCEP CFSR"
+          ],
+          "climatology_years": "1981-2010",
+          "climatology_label": "WRIT native climatologies; 1981-2010",
+          "rendering": {
+            "id": "wn2-seasonal-lcc-v1",
+            "label": "WN2 shared seasonal Lambert Conformal Conic renderer",
+            "projection": "Lambert Conformal Conic",
+            "standard_parallels": [
+              30.0,
+              60.0
+            ],
+            "latitude_origin": 45.0,
+            "central_longitude": -100.0,
+            "map_region": "USA(CONUS)",
+            "region": [
+              -128.0,
+              -65.0,
+              22.0,
+              52.0
+            ],
+            "canvas": "1080x1080"
+          },
+          "map_region": "USA(CONUS)",
+          "generated_utc": "2026-08-26T19:44:58Z"
+        }
       }
     },
     {
@@ -756,9 +2117,13 @@
         "pattern_correlation": 0.596162,
         "nh_correlation": 0.562464,
         "conus_correlation": 0.674789,
+        "amplitude_similarity": 0.728953,
+        "nh_amplitude_similarity": 0.682248,
+        "conus_amplitude_similarity": 0.83793,
         "nh_valid_fraction": 1.0,
         "conus_valid_fraction": 1.0,
         "sample_count": 31,
+        "composite_weight": 0.229227,
         "rank": 1
       },
       "period": {
@@ -886,6 +2251,272 @@
           "climatology_years": "1981-2010",
           "generated_utc": "2026-08-26T11:57:54Z"
         }
+      },
+      "composite": {
+        "count": 5,
+        "method": "inverse similarity-distance weighting over the top analogs",
+        "pattern_weight": 0.8,
+        "amplitude_weight": 0.2,
+        "members": [
+          {
+            "rank": 1,
+            "label": "January 1958",
+            "winter_year": 1958,
+            "pattern_correlation": 0.596162,
+            "amplitude_similarity": 0.728953,
+            "weight": 0.229227
+          },
+          {
+            "rank": 2,
+            "label": "January 1995",
+            "winter_year": 1995,
+            "pattern_correlation": 0.567707,
+            "amplitude_similarity": 0.73745,
+            "weight": 0.219381
+          },
+          {
+            "rank": 3,
+            "label": "January 1983",
+            "winter_year": 1983,
+            "pattern_correlation": 0.474708,
+            "amplitude_similarity": 0.669095,
+            "weight": 0.17899
+          },
+          {
+            "rank": 4,
+            "label": "January 1966",
+            "winter_year": 1966,
+            "pattern_correlation": 0.461671,
+            "amplitude_similarity": 0.686085,
+            "weight": 0.17782
+          },
+          {
+            "rank": 5,
+            "label": "January 1998",
+            "winter_year": 1998,
+            "pattern_correlation": 0.456692,
+            "amplitude_similarity": 0.815833,
+            "weight": 0.194582
+          }
+        ],
+        "products": [
+          "psl_500mb_height_anomaly",
+          "psl_2m_temperature_anomaly"
+        ]
+      },
+      "composites": {
+        "psl_500mb_height_anomaly": {
+          "product": "psl_500mb_height_anomaly",
+          "label": "Weighted Top 5-Analog Composite \u00b7 500-mb Geopotential Height Anomaly",
+          "provider": "NOAA PSL WRIT",
+          "status": "ready",
+          "image": "seasonal/analog_products/cfsv2/202701/composite/psl_500mb_height_anomaly.png",
+          "composite_key": "cfsv2:202701:top5:composite-0d4835d8ad57",
+          "composite_method": "inverse similarity-distance weighting over the top analogs",
+          "composite_pattern_weight": 0.8,
+          "composite_amplitude_weight": 0.2,
+          "composite_count": 5,
+          "analog_members": [
+            {
+              "rank": 1,
+              "label": "January 1958",
+              "winter_year": 1958,
+              "pattern_correlation": 0.596162,
+              "amplitude_similarity": 0.728953,
+              "weight": 0.229227
+            },
+            {
+              "rank": 2,
+              "label": "January 1995",
+              "winter_year": 1995,
+              "pattern_correlation": 0.567707,
+              "amplitude_similarity": 0.73745,
+              "weight": 0.219381
+            },
+            {
+              "rank": 3,
+              "label": "January 1983",
+              "winter_year": 1983,
+              "pattern_correlation": 0.474708,
+              "amplitude_similarity": 0.669095,
+              "weight": 0.17899
+            },
+            {
+              "rank": 4,
+              "label": "January 1966",
+              "winter_year": 1966,
+              "pattern_correlation": 0.461671,
+              "amplitude_similarity": 0.686085,
+              "weight": 0.17782
+            },
+            {
+              "rank": 5,
+              "label": "January 1998",
+              "winter_year": 1998,
+              "pattern_correlation": 0.456692,
+              "amplitude_similarity": 0.815833,
+              "weight": 0.194582
+            }
+          ],
+          "valid_target": "202701",
+          "valid_target_label": "January 2027",
+          "source_url": "https://psl.noaa.gov/data/atmoswrit/map/",
+          "source_urls": [
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=20th+Century+Reanalysis+V3&var=Geopotential+Height&level=500mb&iy=1958&fmonth=0&fmonth2=0&type=1&map=0&mapt=6&proj=North+America&colortable=default&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=Geopotential+Height&level=500mb&iy=1995&fmonth=0&fmonth2=0&type=1&map=0&mapt=6&proj=North+America&colortable=default&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=Geopotential+Height&level=500mb&iy=1983&fmonth=0&fmonth2=0&type=1&map=0&mapt=6&proj=North+America&colortable=default&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=20th+Century+Reanalysis+V3&var=Geopotential+Height&level=500mb&iy=1966&fmonth=0&fmonth2=0&type=1&map=0&mapt=6&proj=North+America&colortable=default&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=Geopotential+Height&level=500mb&iy=1998&fmonth=0&fmonth2=0&type=1&map=0&mapt=6&proj=North+America&colortable=default&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot"
+          ],
+          "provider_asset_urls": [
+            "https://psl.noaa.gov/tmp/ncl1j01qFy2CH.nc",
+            "https://psl.noaa.gov/tmp/nclflK4uw4KDD.nc",
+            "https://psl.noaa.gov/tmp/nclfFFjBNirv1.nc",
+            "https://psl.noaa.gov/tmp/ncliP12k0Rd_Q.nc",
+            "https://psl.noaa.gov/tmp/ncl2TuCLdIPDh.nc"
+          ],
+          "provider_image_urls": [
+            "https://psl.noaa.gov/tmp/ncl1j01qFy2CH.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclflK4uw4KDD.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclfFFjBNirv1.tmpqq.png",
+            "https://psl.noaa.gov/tmp/ncliP12k0Rd_Q.tmpqq.png",
+            "https://psl.noaa.gov/tmp/ncl2TuCLdIPDh.tmpqq.png"
+          ],
+          "dataset": "20CRv3 + NCEP CFSR",
+          "datasets": [
+            "20CRv3",
+            "NCEP CFSR"
+          ],
+          "climatology_years": "1981-2010",
+          "climatology_label": "WRIT native climatologies; 1981-2010",
+          "rendering": {
+            "id": "wn2-seasonal-lcc-v1",
+            "label": "WN2 shared seasonal Lambert Conformal Conic renderer",
+            "projection": "Lambert Conformal Conic",
+            "standard_parallels": [
+              30.0,
+              60.0
+            ],
+            "latitude_origin": 45.0,
+            "central_longitude": -100.0,
+            "map_region": "North America",
+            "region": [
+              -160.0,
+              -10.0,
+              22.0,
+              85.0
+            ],
+            "canvas": "1080x1080"
+          },
+          "map_region": "North America",
+          "generated_utc": "2026-08-26T19:45:04Z"
+        },
+        "psl_2m_temperature_anomaly": {
+          "product": "psl_2m_temperature_anomaly",
+          "label": "Weighted Top 5-Analog Composite \u00b7 2-m Temperature Anomaly",
+          "provider": "NOAA PSL WRIT",
+          "status": "ready",
+          "image": "seasonal/analog_products/cfsv2/202701/composite/psl_2m_temperature_anomaly.png",
+          "composite_key": "cfsv2:202701:top5:composite-0d4835d8ad57",
+          "composite_method": "inverse similarity-distance weighting over the top analogs",
+          "composite_pattern_weight": 0.8,
+          "composite_amplitude_weight": 0.2,
+          "composite_count": 5,
+          "analog_members": [
+            {
+              "rank": 1,
+              "label": "January 1958",
+              "winter_year": 1958,
+              "pattern_correlation": 0.596162,
+              "amplitude_similarity": 0.728953,
+              "weight": 0.229227
+            },
+            {
+              "rank": 2,
+              "label": "January 1995",
+              "winter_year": 1995,
+              "pattern_correlation": 0.567707,
+              "amplitude_similarity": 0.73745,
+              "weight": 0.219381
+            },
+            {
+              "rank": 3,
+              "label": "January 1983",
+              "winter_year": 1983,
+              "pattern_correlation": 0.474708,
+              "amplitude_similarity": 0.669095,
+              "weight": 0.17899
+            },
+            {
+              "rank": 4,
+              "label": "January 1966",
+              "winter_year": 1966,
+              "pattern_correlation": 0.461671,
+              "amplitude_similarity": 0.686085,
+              "weight": 0.17782
+            },
+            {
+              "rank": 5,
+              "label": "January 1998",
+              "winter_year": 1998,
+              "pattern_correlation": 0.456692,
+              "amplitude_similarity": 0.815833,
+              "weight": 0.194582
+            }
+          ],
+          "valid_target": "202701",
+          "valid_target_label": "January 2027",
+          "source_url": "https://psl.noaa.gov/data/atmoswrit/map/",
+          "source_urls": [
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=20th+Century+Reanalysis+V3&var=2m+Air+Temperature&level=1000mb&iy=1958&fmonth=0&fmonth2=0&type=1&map=0&mapt=6&proj=USA%28CONUS%29&colortable=testcmap&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=2m+Air+Temperature&level=1000mb&iy=1995&fmonth=0&fmonth2=0&type=1&map=0&mapt=6&proj=USA%28CONUS%29&colortable=testcmap&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=2m+Air+Temperature&level=1000mb&iy=1983&fmonth=0&fmonth2=0&type=1&map=0&mapt=6&proj=USA%28CONUS%29&colortable=testcmap&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=20th+Century+Reanalysis+V3&var=2m+Air+Temperature&level=1000mb&iy=1966&fmonth=0&fmonth2=0&type=1&map=0&mapt=6&proj=USA%28CONUS%29&colortable=testcmap&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=2m+Air+Temperature&level=1000mb&iy=1998&fmonth=0&fmonth2=0&type=1&map=0&mapt=6&proj=USA%28CONUS%29&colortable=testcmap&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot"
+          ],
+          "provider_asset_urls": [
+            "https://psl.noaa.gov/tmp/nclflzbMHPVWj.nc",
+            "https://psl.noaa.gov/tmp/nclLTHln61Y5t.nc",
+            "https://psl.noaa.gov/tmp/ncldlVctUybUJ.nc",
+            "https://psl.noaa.gov/tmp/ncl537qH7ueCZ.nc",
+            "https://psl.noaa.gov/tmp/nclj_VkLOPbpx.nc"
+          ],
+          "provider_image_urls": [
+            "https://psl.noaa.gov/tmp/nclflzbMHPVWj.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclLTHln61Y5t.tmpqq.png",
+            "https://psl.noaa.gov/tmp/ncldlVctUybUJ.tmpqq.png",
+            "https://psl.noaa.gov/tmp/ncl537qH7ueCZ.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclj_VkLOPbpx.tmpqq.png"
+          ],
+          "dataset": "20CRv3 + NCEP CFSR",
+          "datasets": [
+            "20CRv3",
+            "NCEP CFSR"
+          ],
+          "climatology_years": "1981-2010",
+          "climatology_label": "WRIT native climatologies; 1981-2010",
+          "rendering": {
+            "id": "wn2-seasonal-lcc-v1",
+            "label": "WN2 shared seasonal Lambert Conformal Conic renderer",
+            "projection": "Lambert Conformal Conic",
+            "standard_parallels": [
+              30.0,
+              60.0
+            ],
+            "latitude_origin": 45.0,
+            "central_longitude": -100.0,
+            "map_region": "USA(CONUS)",
+            "region": [
+              -128.0,
+              -65.0,
+              22.0,
+              52.0
+            ],
+            "canvas": "1080x1080"
+          },
+          "map_region": "USA(CONUS)",
+          "generated_utc": "2026-08-26T19:45:09Z"
+        }
       }
     },
     {
@@ -901,9 +2532,13 @@
         "pattern_correlation": 0.733387,
         "nh_correlation": 0.637569,
         "conus_correlation": 0.956962,
+        "amplitude_similarity": 0.94812,
+        "nh_amplitude_similarity": 0.992576,
+        "conus_amplitude_similarity": 0.844391,
         "nh_valid_fraction": 1.0,
         "conus_valid_fraction": 1.0,
         "sample_count": 90,
+        "composite_weight": 0.268848,
         "rank": 1
       },
       "period": {
@@ -1031,6 +2666,272 @@
           "climatology_years": "1981-2010",
           "generated_utc": "2026-08-26T11:58:58Z"
         }
+      },
+      "composite": {
+        "count": 5,
+        "method": "inverse similarity-distance weighting over the top analogs",
+        "pattern_weight": 0.8,
+        "amplitude_weight": 0.2,
+        "members": [
+          {
+            "rank": 1,
+            "label": "DJF 1997-98",
+            "winter_year": 1998,
+            "pattern_correlation": 0.733387,
+            "amplitude_similarity": 0.94812,
+            "weight": 0.268848
+          },
+          {
+            "rank": 2,
+            "label": "DJF 2023-24",
+            "winter_year": 2024,
+            "pattern_correlation": 0.729939,
+            "amplitude_similarity": 0.929442,
+            "weight": 0.257589
+          },
+          {
+            "rank": 3,
+            "label": "DJF 1959-60",
+            "winter_year": 1960,
+            "pattern_correlation": 0.577622,
+            "amplitude_similarity": 0.880487,
+            "weight": 0.163134
+          },
+          {
+            "rank": 4,
+            "label": "DJF 1957-58",
+            "winter_year": 1958,
+            "pattern_correlation": 0.532309,
+            "amplitude_similarity": 0.967114,
+            "weight": 0.16246
+          },
+          {
+            "rank": 5,
+            "label": "DJF 1982-83",
+            "winter_year": 1983,
+            "pattern_correlation": 0.517066,
+            "amplitude_similarity": 0.902773,
+            "weight": 0.147969
+          }
+        ],
+        "products": [
+          "psl_500mb_height_anomaly",
+          "psl_2m_temperature_anomaly"
+        ]
+      },
+      "composites": {
+        "psl_500mb_height_anomaly": {
+          "product": "psl_500mb_height_anomaly",
+          "label": "Weighted Top 5-Analog Composite \u00b7 500-mb Geopotential Height Anomaly",
+          "provider": "NOAA PSL WRIT",
+          "status": "ready",
+          "image": "seasonal/analog_products/cfsv2/202612-202702/composite/psl_500mb_height_anomaly.png",
+          "composite_key": "cfsv2:202612-202702:top5:composite-f4de1b478510",
+          "composite_method": "inverse similarity-distance weighting over the top analogs",
+          "composite_pattern_weight": 0.8,
+          "composite_amplitude_weight": 0.2,
+          "composite_count": 5,
+          "analog_members": [
+            {
+              "rank": 1,
+              "label": "DJF 1997-98",
+              "winter_year": 1998,
+              "pattern_correlation": 0.733387,
+              "amplitude_similarity": 0.94812,
+              "weight": 0.268848
+            },
+            {
+              "rank": 2,
+              "label": "DJF 2023-24",
+              "winter_year": 2024,
+              "pattern_correlation": 0.729939,
+              "amplitude_similarity": 0.929442,
+              "weight": 0.257589
+            },
+            {
+              "rank": 3,
+              "label": "DJF 1959-60",
+              "winter_year": 1960,
+              "pattern_correlation": 0.577622,
+              "amplitude_similarity": 0.880487,
+              "weight": 0.163134
+            },
+            {
+              "rank": 4,
+              "label": "DJF 1957-58",
+              "winter_year": 1958,
+              "pattern_correlation": 0.532309,
+              "amplitude_similarity": 0.967114,
+              "weight": 0.16246
+            },
+            {
+              "rank": 5,
+              "label": "DJF 1982-83",
+              "winter_year": 1983,
+              "pattern_correlation": 0.517066,
+              "amplitude_similarity": 0.902773,
+              "weight": 0.147969
+            }
+          ],
+          "valid_target": "202612-202702",
+          "valid_target_label": "DJF 2026-27",
+          "source_url": "https://psl.noaa.gov/data/atmoswrit/map/",
+          "source_urls": [
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=Geopotential+Height&level=500mb&iy=1998&fmonth=11&fmonth2=1&type=1&map=0&mapt=6&proj=North+America&colortable=default&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=Geopotential+Height&level=500mb&iy=2024&fmonth=11&fmonth2=1&type=1&map=0&mapt=6&proj=North+America&colortable=default&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=20th+Century+Reanalysis+V3&var=Geopotential+Height&level=500mb&iy=1960&fmonth=11&fmonth2=1&type=1&map=0&mapt=6&proj=North+America&colortable=default&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=20th+Century+Reanalysis+V3&var=Geopotential+Height&level=500mb&iy=1958&fmonth=11&fmonth2=1&type=1&map=0&mapt=6&proj=North+America&colortable=default&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=Geopotential+Height&level=500mb&iy=1983&fmonth=11&fmonth2=1&type=1&map=0&mapt=6&proj=North+America&colortable=default&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot"
+          ],
+          "provider_asset_urls": [
+            "https://psl.noaa.gov/tmp/ncl5T5ob1lymc.nc",
+            "https://psl.noaa.gov/tmp/nclkaKCMVux59.nc",
+            "https://psl.noaa.gov/tmp/nclVlHEcbbG0z.nc",
+            "https://psl.noaa.gov/tmp/nclLXkyQhyIfT.nc",
+            "https://psl.noaa.gov/tmp/nclfDXLowuG0F.nc"
+          ],
+          "provider_image_urls": [
+            "https://psl.noaa.gov/tmp/ncl5T5ob1lymc.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclkaKCMVux59.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclVlHEcbbG0z.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclLXkyQhyIfT.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclfDXLowuG0F.tmpqq.png"
+          ],
+          "dataset": "20CRv3 + NCEP CFSR",
+          "datasets": [
+            "20CRv3",
+            "NCEP CFSR"
+          ],
+          "climatology_years": "1981-2010",
+          "climatology_label": "WRIT native climatologies; 1981-2010",
+          "rendering": {
+            "id": "wn2-seasonal-lcc-v1",
+            "label": "WN2 shared seasonal Lambert Conformal Conic renderer",
+            "projection": "Lambert Conformal Conic",
+            "standard_parallels": [
+              30.0,
+              60.0
+            ],
+            "latitude_origin": 45.0,
+            "central_longitude": -100.0,
+            "map_region": "North America",
+            "region": [
+              -160.0,
+              -10.0,
+              22.0,
+              85.0
+            ],
+            "canvas": "1080x1080"
+          },
+          "map_region": "North America",
+          "generated_utc": "2026-08-26T19:45:14Z"
+        },
+        "psl_2m_temperature_anomaly": {
+          "product": "psl_2m_temperature_anomaly",
+          "label": "Weighted Top 5-Analog Composite \u00b7 2-m Temperature Anomaly",
+          "provider": "NOAA PSL WRIT",
+          "status": "ready",
+          "image": "seasonal/analog_products/cfsv2/202612-202702/composite/psl_2m_temperature_anomaly.png",
+          "composite_key": "cfsv2:202612-202702:top5:composite-f4de1b478510",
+          "composite_method": "inverse similarity-distance weighting over the top analogs",
+          "composite_pattern_weight": 0.8,
+          "composite_amplitude_weight": 0.2,
+          "composite_count": 5,
+          "analog_members": [
+            {
+              "rank": 1,
+              "label": "DJF 1997-98",
+              "winter_year": 1998,
+              "pattern_correlation": 0.733387,
+              "amplitude_similarity": 0.94812,
+              "weight": 0.268848
+            },
+            {
+              "rank": 2,
+              "label": "DJF 2023-24",
+              "winter_year": 2024,
+              "pattern_correlation": 0.729939,
+              "amplitude_similarity": 0.929442,
+              "weight": 0.257589
+            },
+            {
+              "rank": 3,
+              "label": "DJF 1959-60",
+              "winter_year": 1960,
+              "pattern_correlation": 0.577622,
+              "amplitude_similarity": 0.880487,
+              "weight": 0.163134
+            },
+            {
+              "rank": 4,
+              "label": "DJF 1957-58",
+              "winter_year": 1958,
+              "pattern_correlation": 0.532309,
+              "amplitude_similarity": 0.967114,
+              "weight": 0.16246
+            },
+            {
+              "rank": 5,
+              "label": "DJF 1982-83",
+              "winter_year": 1983,
+              "pattern_correlation": 0.517066,
+              "amplitude_similarity": 0.902773,
+              "weight": 0.147969
+            }
+          ],
+          "valid_target": "202612-202702",
+          "valid_target_label": "DJF 2026-27",
+          "source_url": "https://psl.noaa.gov/data/atmoswrit/map/",
+          "source_urls": [
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=2m+Air+Temperature&level=1000mb&iy=1998&fmonth=11&fmonth2=1&type=1&map=0&mapt=6&proj=USA%28CONUS%29&colortable=testcmap&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=2m+Air+Temperature&level=1000mb&iy=2024&fmonth=11&fmonth2=1&type=1&map=0&mapt=6&proj=USA%28CONUS%29&colortable=testcmap&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=20th+Century+Reanalysis+V3&var=2m+Air+Temperature&level=1000mb&iy=1960&fmonth=11&fmonth2=1&type=1&map=0&mapt=6&proj=USA%28CONUS%29&colortable=testcmap&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=20th+Century+Reanalysis+V3&var=2m+Air+Temperature&level=1000mb&iy=1958&fmonth=11&fmonth2=1&type=1&map=0&mapt=6&proj=USA%28CONUS%29&colortable=testcmap&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=2m+Air+Temperature&level=1000mb&iy=1983&fmonth=11&fmonth2=1&type=1&map=0&mapt=6&proj=USA%28CONUS%29&colortable=testcmap&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot"
+          ],
+          "provider_asset_urls": [
+            "https://psl.noaa.gov/tmp/nclpy2QGoVSJ5.nc",
+            "https://psl.noaa.gov/tmp/nclezc4zkrqrf.nc",
+            "https://psl.noaa.gov/tmp/nclqRWD5hcmPk.nc",
+            "https://psl.noaa.gov/tmp/ncllzDs53hlkf.nc",
+            "https://psl.noaa.gov/tmp/nclnD6g8Hfb3y.nc"
+          ],
+          "provider_image_urls": [
+            "https://psl.noaa.gov/tmp/nclpy2QGoVSJ5.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclezc4zkrqrf.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclqRWD5hcmPk.tmpqq.png",
+            "https://psl.noaa.gov/tmp/ncllzDs53hlkf.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclnD6g8Hfb3y.tmpqq.png"
+          ],
+          "dataset": "20CRv3 + NCEP CFSR",
+          "datasets": [
+            "20CRv3",
+            "NCEP CFSR"
+          ],
+          "climatology_years": "1981-2010",
+          "climatology_label": "WRIT native climatologies; 1981-2010",
+          "rendering": {
+            "id": "wn2-seasonal-lcc-v1",
+            "label": "WN2 shared seasonal Lambert Conformal Conic renderer",
+            "projection": "Lambert Conformal Conic",
+            "standard_parallels": [
+              30.0,
+              60.0
+            ],
+            "latitude_origin": 45.0,
+            "central_longitude": -100.0,
+            "map_region": "USA(CONUS)",
+            "region": [
+              -128.0,
+              -65.0,
+              22.0,
+              52.0
+            ],
+            "canvas": "1080x1080"
+          },
+          "map_region": "USA(CONUS)",
+          "generated_utc": "2026-08-26T19:45:17Z"
+        }
       }
     },
     {
@@ -1046,9 +2947,13 @@
         "pattern_correlation": 0.637668,
         "nh_correlation": 0.589673,
         "conus_correlation": 0.749656,
+        "amplitude_similarity": 0.529417,
+        "nh_amplitude_similarity": 0.575756,
+        "conus_amplitude_similarity": 0.421292,
         "nh_valid_fraction": 1.0,
         "conus_valid_fraction": 1.0,
         "sample_count": 31,
+        "composite_weight": 0.234656,
         "rank": 1
       },
       "period": {
@@ -1175,6 +3080,272 @@
           "dataset": "MRCC station-interpolated snowfall",
           "climatology_years": "1981-2010",
           "generated_utc": "2026-08-26T12:01:27Z"
+        }
+      },
+      "composite": {
+        "count": 5,
+        "method": "inverse similarity-distance weighting over the top analogs",
+        "pattern_weight": 0.8,
+        "amplitude_weight": 0.2,
+        "members": [
+          {
+            "rank": 1,
+            "label": "December 2023",
+            "winter_year": 2024,
+            "pattern_correlation": 0.637668,
+            "amplitude_similarity": 0.529417,
+            "weight": 0.234656
+          },
+          {
+            "rank": 2,
+            "label": "December 1982",
+            "winter_year": 1983,
+            "pattern_correlation": 0.491399,
+            "amplitude_similarity": 0.623905,
+            "weight": 0.201301
+          },
+          {
+            "rank": 3,
+            "label": "December 2015",
+            "winter_year": 2016,
+            "pattern_correlation": 0.426207,
+            "amplitude_similarity": 0.435997,
+            "weight": 0.163866
+          },
+          {
+            "rank": 4,
+            "label": "December 1952",
+            "winter_year": 1953,
+            "pattern_correlation": 0.41635,
+            "amplitude_similarity": 0.572828,
+            "weight": 0.175903
+          },
+          {
+            "rank": 5,
+            "label": "December 2019",
+            "winter_year": 2020,
+            "pattern_correlation": 0.413952,
+            "amplitude_similarity": 0.921517,
+            "weight": 0.224274
+          }
+        ],
+        "products": [
+          "psl_500mb_height_anomaly",
+          "psl_2m_temperature_anomaly"
+        ]
+      },
+      "composites": {
+        "psl_500mb_height_anomaly": {
+          "product": "psl_500mb_height_anomaly",
+          "label": "Weighted Top 5-Analog Composite \u00b7 500-mb Geopotential Height Anomaly",
+          "provider": "NOAA PSL WRIT",
+          "status": "ready",
+          "image": "seasonal/analog_products/cfsv2/202612/composite/psl_500mb_height_anomaly.png",
+          "composite_key": "cfsv2:202612:top5:composite-d47ed2f52aaa",
+          "composite_method": "inverse similarity-distance weighting over the top analogs",
+          "composite_pattern_weight": 0.8,
+          "composite_amplitude_weight": 0.2,
+          "composite_count": 5,
+          "analog_members": [
+            {
+              "rank": 1,
+              "label": "December 2023",
+              "winter_year": 2024,
+              "pattern_correlation": 0.637668,
+              "amplitude_similarity": 0.529417,
+              "weight": 0.234656
+            },
+            {
+              "rank": 2,
+              "label": "December 1982",
+              "winter_year": 1983,
+              "pattern_correlation": 0.491399,
+              "amplitude_similarity": 0.623905,
+              "weight": 0.201301
+            },
+            {
+              "rank": 3,
+              "label": "December 2015",
+              "winter_year": 2016,
+              "pattern_correlation": 0.426207,
+              "amplitude_similarity": 0.435997,
+              "weight": 0.163866
+            },
+            {
+              "rank": 4,
+              "label": "December 1952",
+              "winter_year": 1953,
+              "pattern_correlation": 0.41635,
+              "amplitude_similarity": 0.572828,
+              "weight": 0.175903
+            },
+            {
+              "rank": 5,
+              "label": "December 2019",
+              "winter_year": 2020,
+              "pattern_correlation": 0.413952,
+              "amplitude_similarity": 0.921517,
+              "weight": 0.224274
+            }
+          ],
+          "valid_target": "202612",
+          "valid_target_label": "December 2026",
+          "source_url": "https://psl.noaa.gov/data/atmoswrit/map/",
+          "source_urls": [
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=Geopotential+Height&level=500mb&iy=2023&fmonth=11&fmonth2=11&type=1&map=0&mapt=6&proj=North+America&colortable=default&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=Geopotential+Height&level=500mb&iy=1982&fmonth=11&fmonth2=11&type=1&map=0&mapt=6&proj=North+America&colortable=default&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=Geopotential+Height&level=500mb&iy=2015&fmonth=11&fmonth2=11&type=1&map=0&mapt=6&proj=North+America&colortable=default&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=20th+Century+Reanalysis+V3&var=Geopotential+Height&level=500mb&iy=1952&fmonth=11&fmonth2=11&type=1&map=0&mapt=6&proj=North+America&colortable=default&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=Geopotential+Height&level=500mb&iy=2019&fmonth=11&fmonth2=11&type=1&map=0&mapt=6&proj=North+America&colortable=default&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot"
+          ],
+          "provider_asset_urls": [
+            "https://psl.noaa.gov/tmp/ncllBp_ysZzKK.nc",
+            "https://psl.noaa.gov/tmp/nclhUsErW3JBO.nc",
+            "https://psl.noaa.gov/tmp/nclG95k_cuSDm.nc",
+            "https://psl.noaa.gov/tmp/nclw5ZISzfmlu.nc",
+            "https://psl.noaa.gov/tmp/nclcuXncH_wVA.nc"
+          ],
+          "provider_image_urls": [
+            "https://psl.noaa.gov/tmp/ncllBp_ysZzKK.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclhUsErW3JBO.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclG95k_cuSDm.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclw5ZISzfmlu.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclcuXncH_wVA.tmpqq.png"
+          ],
+          "dataset": "20CRv3 + NCEP CFSR",
+          "datasets": [
+            "20CRv3",
+            "NCEP CFSR"
+          ],
+          "climatology_years": "1981-2010",
+          "climatology_label": "WRIT native climatologies; 1981-2010",
+          "rendering": {
+            "id": "wn2-seasonal-lcc-v1",
+            "label": "WN2 shared seasonal Lambert Conformal Conic renderer",
+            "projection": "Lambert Conformal Conic",
+            "standard_parallels": [
+              30.0,
+              60.0
+            ],
+            "latitude_origin": 45.0,
+            "central_longitude": -100.0,
+            "map_region": "North America",
+            "region": [
+              -160.0,
+              -10.0,
+              22.0,
+              85.0
+            ],
+            "canvas": "1080x1080"
+          },
+          "map_region": "North America",
+          "generated_utc": "2026-08-26T19:45:23Z"
+        },
+        "psl_2m_temperature_anomaly": {
+          "product": "psl_2m_temperature_anomaly",
+          "label": "Weighted Top 5-Analog Composite \u00b7 2-m Temperature Anomaly",
+          "provider": "NOAA PSL WRIT",
+          "status": "ready",
+          "image": "seasonal/analog_products/cfsv2/202612/composite/psl_2m_temperature_anomaly.png",
+          "composite_key": "cfsv2:202612:top5:composite-d47ed2f52aaa",
+          "composite_method": "inverse similarity-distance weighting over the top analogs",
+          "composite_pattern_weight": 0.8,
+          "composite_amplitude_weight": 0.2,
+          "composite_count": 5,
+          "analog_members": [
+            {
+              "rank": 1,
+              "label": "December 2023",
+              "winter_year": 2024,
+              "pattern_correlation": 0.637668,
+              "amplitude_similarity": 0.529417,
+              "weight": 0.234656
+            },
+            {
+              "rank": 2,
+              "label": "December 1982",
+              "winter_year": 1983,
+              "pattern_correlation": 0.491399,
+              "amplitude_similarity": 0.623905,
+              "weight": 0.201301
+            },
+            {
+              "rank": 3,
+              "label": "December 2015",
+              "winter_year": 2016,
+              "pattern_correlation": 0.426207,
+              "amplitude_similarity": 0.435997,
+              "weight": 0.163866
+            },
+            {
+              "rank": 4,
+              "label": "December 1952",
+              "winter_year": 1953,
+              "pattern_correlation": 0.41635,
+              "amplitude_similarity": 0.572828,
+              "weight": 0.175903
+            },
+            {
+              "rank": 5,
+              "label": "December 2019",
+              "winter_year": 2020,
+              "pattern_correlation": 0.413952,
+              "amplitude_similarity": 0.921517,
+              "weight": 0.224274
+            }
+          ],
+          "valid_target": "202612",
+          "valid_target_label": "December 2026",
+          "source_url": "https://psl.noaa.gov/data/atmoswrit/map/",
+          "source_urls": [
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=2m+Air+Temperature&level=1000mb&iy=2023&fmonth=11&fmonth2=11&type=1&map=0&mapt=6&proj=USA%28CONUS%29&colortable=testcmap&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=2m+Air+Temperature&level=1000mb&iy=1982&fmonth=11&fmonth2=11&type=1&map=0&mapt=6&proj=USA%28CONUS%29&colortable=testcmap&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=2m+Air+Temperature&level=1000mb&iy=2015&fmonth=11&fmonth2=11&type=1&map=0&mapt=6&proj=USA%28CONUS%29&colortable=testcmap&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=20th+Century+Reanalysis+V3&var=2m+Air+Temperature&level=1000mb&iy=1952&fmonth=11&fmonth2=11&type=1&map=0&mapt=6&proj=USA%28CONUS%29&colortable=testcmap&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=2m+Air+Temperature&level=1000mb&iy=2019&fmonth=11&fmonth2=11&type=1&map=0&mapt=6&proj=USA%28CONUS%29&colortable=testcmap&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot"
+          ],
+          "provider_asset_urls": [
+            "https://psl.noaa.gov/tmp/nclQLwxxFYgaf.nc",
+            "https://psl.noaa.gov/tmp/ncla_kwE4gghb.nc",
+            "https://psl.noaa.gov/tmp/nclCCSBl_i647.nc",
+            "https://psl.noaa.gov/tmp/ncl8hxT6KZA55.nc",
+            "https://psl.noaa.gov/tmp/nclSn6hvxs7DG.nc"
+          ],
+          "provider_image_urls": [
+            "https://psl.noaa.gov/tmp/nclQLwxxFYgaf.tmpqq.png",
+            "https://psl.noaa.gov/tmp/ncla_kwE4gghb.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclCCSBl_i647.tmpqq.png",
+            "https://psl.noaa.gov/tmp/ncl8hxT6KZA55.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclSn6hvxs7DG.tmpqq.png"
+          ],
+          "dataset": "20CRv3 + NCEP CFSR",
+          "datasets": [
+            "20CRv3",
+            "NCEP CFSR"
+          ],
+          "climatology_years": "1981-2010",
+          "climatology_label": "WRIT native climatologies; 1981-2010",
+          "rendering": {
+            "id": "wn2-seasonal-lcc-v1",
+            "label": "WN2 shared seasonal Lambert Conformal Conic renderer",
+            "projection": "Lambert Conformal Conic",
+            "standard_parallels": [
+              30.0,
+              60.0
+            ],
+            "latitude_origin": 45.0,
+            "central_longitude": -100.0,
+            "map_region": "USA(CONUS)",
+            "region": [
+              -128.0,
+              -65.0,
+              22.0,
+              52.0
+            ],
+            "canvas": "1080x1080"
+          },
+          "map_region": "USA(CONUS)",
+          "generated_utc": "2026-08-26T19:45:28Z"
         }
       }
     }
