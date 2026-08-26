@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "kind": "cfsv2_seasonal_manifest",
-  "generated_utc": "2026-08-26T00:13:31Z",
+  "generated_utc": "2026-08-26T01:14:30Z",
   "source": "NOAA CFSv2 NOMADS",
   "source_url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/",
   "retention": {
@@ -18767,7 +18767,7 @@
         "required": true,
         "rolling_policy": "anchor_initialization"
       },
-      "status": "partial",
+      "status": "rendered",
       "targets": [
         {
           "id": "cfsv2-202612-z500a-lead04",
@@ -18784,7 +18784,7 @@
           "members": [
             1
           ],
-          "ensemble_members": 38,
+          "ensemble_members": 40,
           "ensemble_scope": "rolling_initial_conditions",
           "source_files": [
             {
@@ -18975,8 +18975,9 @@
               "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260818/06/monthly_grib_01/pgbf.01.2026081806.202612.avrg.grib.grb2",
               "cache_file": ".cache/cfsv2/2026081806/member_01/pgbf.01.2026081806.202612.avrg.grib.grb2",
               "state_file": ".cache/cfsv2/rolling/202612/hgt500.2026081806.m01.csv.gz",
-              "storage": "nomads_grib2",
-              "downloaded": true,
+              "storage": "retained_decoded_grid",
+              "downloaded": false,
+              "download_error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260818/06/monthly_grib_01/pgbf.01.2026081806.202612.avrg.grib.grb2",
               "product": "500mb_height_anomaly",
               "source_kind": "PGBF",
               "decoded_field": "HGT:500 mb",
@@ -18992,8 +18993,9 @@
               "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260818/12/monthly_grib_01/pgbf.01.2026081812.202612.avrg.grib.grb2",
               "cache_file": ".cache/cfsv2/2026081812/member_01/pgbf.01.2026081812.202612.avrg.grib.grb2",
               "state_file": ".cache/cfsv2/rolling/202612/hgt500.2026081812.m01.csv.gz",
-              "storage": "nomads_grib2",
-              "downloaded": true,
+              "storage": "retained_decoded_grid",
+              "downloaded": false,
+              "download_error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260818/12/monthly_grib_01/pgbf.01.2026081812.202612.avrg.grib.grb2",
               "product": "500mb_height_anomaly",
               "source_kind": "PGBF",
               "decoded_field": "HGT:500 mb",
@@ -19452,8 +19454,14 @@
               "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260825/06/monthly_grib_01/pgbf.01.2026082506.202612.avrg.grib.grb2",
               "cache_file": ".cache/cfsv2/2026082506/member_01/pgbf.01.2026082506.202612.avrg.grib.grb2",
               "state_file": ".cache/cfsv2/rolling/202612/hgt500.2026082506.m01.csv.gz",
-              "status": "missing",
-              "error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260825/06/monthly_grib_01/pgbf.01.2026082506.202612.avrg.grib.grb2"
+              "storage": "nomads_grib2",
+              "downloaded": true,
+              "product": "500mb_height_anomaly",
+              "source_kind": "PGBF",
+              "decoded_field": "HGT:500 mb",
+              "raw_units": "m",
+              "units": "m",
+              "status": "available"
             },
             {
               "initialization": "2026082512",
@@ -19463,14 +19471,20 @@
               "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260825/12/monthly_grib_01/pgbf.01.2026082512.202612.avrg.grib.grb2",
               "cache_file": ".cache/cfsv2/2026082512/member_01/pgbf.01.2026082512.202612.avrg.grib.grb2",
               "state_file": ".cache/cfsv2/rolling/202612/hgt500.2026082512.m01.csv.gz",
-              "status": "missing",
-              "error": "403 Client Error: Forbidden for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260825/12/monthly_grib_01/pgbf.01.2026082512.202612.avrg.grib.grb2"
+              "storage": "nomads_grib2",
+              "downloaded": true,
+              "product": "500mb_height_anomaly",
+              "source_kind": "PGBF",
+              "decoded_field": "HGT:500 mb",
+              "raw_units": "m",
+              "units": "m",
+              "status": "available"
             }
           ],
-          "status": "partial",
+          "status": "rendered",
           "ensemble_expected_members": 40,
-          "ensemble_complete": false,
-          "ensemble_label": "38/40-cycle rolling mean",
+          "ensemble_complete": true,
+          "ensemble_label": "40/40-cycle rolling mean",
           "baseline": {
             "file": ".cache/cfsv2/calibration/pgbf/2026082512/pgbf.08.25.12.l04.fclm.1982.2010.grb2",
             "label": "NCEI CFS reforecast calibration climatology; 1982-2010",
@@ -19478,7 +19492,7 @@
             "rolling_policy": "anchor_initialization",
             "anchor_init": "2026082512",
             "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs_refor_calclim_mm_9m_pgbf/08/pgbf.08.25.12.l04.fclm.1982.2010.grb2",
-            "downloaded": true
+            "downloaded": false
           },
           "quality_control": {
             "registry_version": 1,
@@ -19489,17 +19503,17 @@
             "total_points": 65160,
             "finite_points": 65160,
             "finite_fraction": 1.0,
-            "minimum": -53.144474,
-            "maximum": 101.575789,
-            "p01": -29.277697,
-            "p99": 63.069055,
+            "minimum": -53.291,
+            "maximum": 104.3495,
+            "p01": -26.511872,
+            "p99": 65.334215,
             "display": {
               "minimum": -100.0,
               "maximum": 100.0,
               "step": 10.0,
               "below_fraction": 0.0,
-              "above_fraction": 0.000338,
-              "clipped_fraction": 0.000338
+              "above_fraction": 0.000767,
+              "clipped_fraction": 0.000767
             },
             "issues": [],
             "status": "passed"
@@ -19520,17 +19534,17 @@
                 "total_points": 65160,
                 "finite_points": 65160,
                 "finite_fraction": 1.0,
-                "minimum": -119.845772,
-                "maximum": 106.881596,
-                "p01": -81.024001,
-                "p99": 79.886646,
+                "minimum": -121.326,
+                "maximum": 108.88175,
+                "p01": -80.817756,
+                "p99": 81.855811,
                 "display": {
                   "minimum": -100.0,
                   "maximum": 100.0,
                   "step": 10.0,
-                  "below_fraction": 0.003975,
-                  "above_fraction": 0.002103,
-                  "clipped_fraction": 0.006077
+                  "below_fraction": 0.004052,
+                  "above_fraction": 0.002808,
+                  "clipped_fraction": 0.00686
                 },
                 "issues": [],
                 "status": "passed"
@@ -19561,7 +19575,7 @@
           "members": [
             1
           ],
-          "ensemble_members": 38,
+          "ensemble_members": 40,
           "ensemble_scope": "rolling_initial_conditions",
           "source_files": [
             {
@@ -19736,7 +19750,7 @@
               "state_file": ".cache/cfsv2/rolling/202701/hgt500.2026081800.m01.csv.gz",
               "storage": "retained_decoded_grid",
               "downloaded": false,
-              "download_error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260818/00/monthly_grib_01/pgbf.01.2026081800.202701.avrg.grib.grb2",
+              "download_error": "('Connection broken: IncompleteRead(6291456 bytes read, 17657516 more expected)', IncompleteRead(6291456 bytes read, 17657516 more expected))",
               "product": "500mb_height_anomaly",
               "source_kind": "PGBF",
               "decoded_field": "HGT:500 mb",
@@ -19754,7 +19768,7 @@
               "state_file": ".cache/cfsv2/rolling/202701/hgt500.2026081806.m01.csv.gz",
               "storage": "retained_decoded_grid",
               "downloaded": false,
-              "download_error": "503 Server Error: Service Unavailable for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260818/06/monthly_grib_01/pgbf.01.2026081806.202701.avrg.grib.grb2",
+              "download_error": "('Connection aborted.', BadStatusLine('HTTP/1.1   0 Init\\r\\n'))",
               "product": "500mb_height_anomaly",
               "source_kind": "PGBF",
               "decoded_field": "HGT:500 mb",
@@ -19772,7 +19786,7 @@
               "state_file": ".cache/cfsv2/rolling/202701/hgt500.2026081812.m01.csv.gz",
               "storage": "retained_decoded_grid",
               "downloaded": false,
-              "download_error": "('Connection aborted.', BadStatusLine('HTTP/1.1   0 Init\\r\\n'))",
+              "download_error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260818/12/monthly_grib_01/pgbf.01.2026081812.202701.avrg.grib.grb2",
               "product": "500mb_height_anomaly",
               "source_kind": "PGBF",
               "decoded_field": "HGT:500 mb",
@@ -19788,8 +19802,9 @@
               "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260818/18/monthly_grib_01/pgbf.01.2026081818.202701.avrg.grib.grb2",
               "cache_file": ".cache/cfsv2/2026081818/member_01/pgbf.01.2026081818.202701.avrg.grib.grb2",
               "state_file": ".cache/cfsv2/rolling/202701/hgt500.2026081818.m01.csv.gz",
-              "storage": "nomads_grib2",
-              "downloaded": true,
+              "storage": "retained_decoded_grid",
+              "downloaded": false,
+              "download_error": "('Connection broken: IncompleteRead(2097152 bytes read, 21524951 more expected)', IncompleteRead(2097152 bytes read, 21524951 more expected))",
               "product": "500mb_height_anomaly",
               "source_kind": "PGBF",
               "decoded_field": "HGT:500 mb",
@@ -20230,8 +20245,14 @@
               "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260825/06/monthly_grib_01/pgbf.01.2026082506.202701.avrg.grib.grb2",
               "cache_file": ".cache/cfsv2/2026082506/member_01/pgbf.01.2026082506.202701.avrg.grib.grb2",
               "state_file": ".cache/cfsv2/rolling/202701/hgt500.2026082506.m01.csv.gz",
-              "status": "missing",
-              "error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260825/06/monthly_grib_01/pgbf.01.2026082506.202701.avrg.grib.grb2"
+              "storage": "nomads_grib2",
+              "downloaded": true,
+              "product": "500mb_height_anomaly",
+              "source_kind": "PGBF",
+              "decoded_field": "HGT:500 mb",
+              "raw_units": "m",
+              "units": "m",
+              "status": "available"
             },
             {
               "initialization": "2026082512",
@@ -20241,14 +20262,20 @@
               "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260825/12/monthly_grib_01/pgbf.01.2026082512.202701.avrg.grib.grb2",
               "cache_file": ".cache/cfsv2/2026082512/member_01/pgbf.01.2026082512.202701.avrg.grib.grb2",
               "state_file": ".cache/cfsv2/rolling/202701/hgt500.2026082512.m01.csv.gz",
-              "status": "missing",
-              "error": "403 Client Error: Forbidden for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260825/12/monthly_grib_01/pgbf.01.2026082512.202701.avrg.grib.grb2"
+              "storage": "nomads_grib2",
+              "downloaded": true,
+              "product": "500mb_height_anomaly",
+              "source_kind": "PGBF",
+              "decoded_field": "HGT:500 mb",
+              "raw_units": "m",
+              "units": "m",
+              "status": "available"
             }
           ],
-          "status": "partial",
+          "status": "rendered",
           "ensemble_expected_members": 40,
-          "ensemble_complete": false,
-          "ensemble_label": "38/40-cycle rolling mean",
+          "ensemble_complete": true,
+          "ensemble_label": "40/40-cycle rolling mean",
           "baseline": {
             "file": ".cache/cfsv2/calibration/pgbf/2026082512/pgbf.08.25.12.l05.fclm.1982.2010.grb2",
             "label": "NCEI CFS reforecast calibration climatology; 1982-2010",
@@ -20256,7 +20283,7 @@
             "rolling_policy": "anchor_initialization",
             "anchor_init": "2026082512",
             "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs_refor_calclim_mm_9m_pgbf/08/pgbf.08.25.12.l05.fclm.1982.2010.grb2",
-            "downloaded": true
+            "downloaded": false
           },
           "quality_control": {
             "registry_version": 1,
@@ -20267,17 +20294,17 @@
             "total_points": 65160,
             "finite_points": 65160,
             "finite_fraction": 1.0,
-            "minimum": -77.757105,
-            "maximum": 131.235526,
-            "p01": -55.243608,
-            "p99": 91.902911,
+            "minimum": -76.56,
+            "maximum": 130.595,
+            "p01": -54.246868,
+            "p99": 90.419063,
             "display": {
               "minimum": -100.0,
               "maximum": 100.0,
               "step": 10.0,
               "below_fraction": 0.0,
-              "above_fraction": 0.006277,
-              "clipped_fraction": 0.006277
+              "above_fraction": 0.005724,
+              "clipped_fraction": 0.005724
             },
             "issues": [],
             "status": "passed"
@@ -20298,17 +20325,17 @@
                 "total_points": 65160,
                 "finite_points": 65160,
                 "finite_fraction": 1.0,
-                "minimum": -177.396491,
-                "maximum": 124.405877,
-                "p01": -119.297721,
-                "p99": 95.918302,
+                "minimum": -174.955833,
+                "maximum": 125.425917,
+                "p01": -117.722265,
+                "p99": 97.407629,
                 "display": {
                   "minimum": -100.0,
                   "maximum": 100.0,
                   "step": 10.0,
-                  "below_fraction": 0.01705,
-                  "above_fraction": 0.008333,
-                  "clipped_fraction": 0.025384
+                  "below_fraction": 0.016529,
+                  "above_fraction": 0.008886,
+                  "clipped_fraction": 0.025414
                 },
                 "issues": [
                   {
@@ -20345,7 +20372,7 @@
           "members": [
             1
           ],
-          "ensemble_members": 38,
+          "ensemble_members": 40,
           "ensemble_scope": "rolling_initial_conditions",
           "source_files": [
             {
@@ -20518,8 +20545,9 @@
               "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260818/00/monthly_grib_01/pgbf.01.2026081800.202702.avrg.grib.grb2",
               "cache_file": ".cache/cfsv2/2026081800/member_01/pgbf.01.2026081800.202702.avrg.grib.grb2",
               "state_file": ".cache/cfsv2/rolling/202702/hgt500.2026081800.m01.csv.gz",
-              "storage": "nomads_grib2",
-              "downloaded": true,
+              "storage": "retained_decoded_grid",
+              "downloaded": false,
+              "download_error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260818/00/monthly_grib_01/pgbf.01.2026081800.202702.avrg.grib.grb2",
               "product": "500mb_height_anomaly",
               "source_kind": "PGBF",
               "decoded_field": "HGT:500 mb",
@@ -20535,8 +20563,9 @@
               "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260818/06/monthly_grib_01/pgbf.01.2026081806.202702.avrg.grib.grb2",
               "cache_file": ".cache/cfsv2/2026081806/member_01/pgbf.01.2026081806.202702.avrg.grib.grb2",
               "state_file": ".cache/cfsv2/rolling/202702/hgt500.2026081806.m01.csv.gz",
-              "storage": "nomads_grib2",
-              "downloaded": true,
+              "storage": "retained_decoded_grid",
+              "downloaded": false,
+              "download_error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260818/06/monthly_grib_01/pgbf.01.2026081806.202702.avrg.grib.grb2",
               "product": "500mb_height_anomaly",
               "source_kind": "PGBF",
               "decoded_field": "HGT:500 mb",
@@ -21013,8 +21042,14 @@
               "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260825/06/monthly_grib_01/pgbf.01.2026082506.202702.avrg.grib.grb2",
               "cache_file": ".cache/cfsv2/2026082506/member_01/pgbf.01.2026082506.202702.avrg.grib.grb2",
               "state_file": ".cache/cfsv2/rolling/202702/hgt500.2026082506.m01.csv.gz",
-              "status": "missing",
-              "error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260825/06/monthly_grib_01/pgbf.01.2026082506.202702.avrg.grib.grb2"
+              "storage": "nomads_grib2",
+              "downloaded": true,
+              "product": "500mb_height_anomaly",
+              "source_kind": "PGBF",
+              "decoded_field": "HGT:500 mb",
+              "raw_units": "m",
+              "units": "m",
+              "status": "available"
             },
             {
               "initialization": "2026082512",
@@ -21024,14 +21059,20 @@
               "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260825/12/monthly_grib_01/pgbf.01.2026082512.202702.avrg.grib.grb2",
               "cache_file": ".cache/cfsv2/2026082512/member_01/pgbf.01.2026082512.202702.avrg.grib.grb2",
               "state_file": ".cache/cfsv2/rolling/202702/hgt500.2026082512.m01.csv.gz",
-              "status": "missing",
-              "error": "403 Client Error: Forbidden for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260825/12/monthly_grib_01/pgbf.01.2026082512.202702.avrg.grib.grb2"
+              "storage": "nomads_grib2",
+              "downloaded": true,
+              "product": "500mb_height_anomaly",
+              "source_kind": "PGBF",
+              "decoded_field": "HGT:500 mb",
+              "raw_units": "m",
+              "units": "m",
+              "status": "available"
             }
           ],
-          "status": "partial",
+          "status": "rendered",
           "ensemble_expected_members": 40,
-          "ensemble_complete": false,
-          "ensemble_label": "38/40-cycle rolling mean",
+          "ensemble_complete": true,
+          "ensemble_label": "40/40-cycle rolling mean",
           "baseline": {
             "file": ".cache/cfsv2/calibration/pgbf/2026082512/pgbf.08.25.12.l06.fclm.1982.2010.grb2",
             "label": "NCEI CFS reforecast calibration climatology; 1982-2010",
@@ -21039,7 +21080,7 @@
             "rolling_policy": "anchor_initialization",
             "anchor_init": "2026082512",
             "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs_refor_calclim_mm_9m_pgbf/08/pgbf.08.25.12.l06.fclm.1982.2010.grb2",
-            "downloaded": true
+            "downloaded": false
           },
           "quality_control": {
             "registry_version": 1,
@@ -21050,17 +21091,17 @@
             "total_points": 65160,
             "finite_points": 65160,
             "finite_fraction": 1.0,
-            "minimum": -84.980789,
-            "maximum": 124.451053,
-            "p01": -53.714768,
-            "p99": 97.371329,
+            "minimum": -82.188,
+            "maximum": 119.55425,
+            "p01": -50.63088,
+            "p99": 94.958828,
             "display": {
               "minimum": -100.0,
               "maximum": 100.0,
               "step": 10.0,
               "below_fraction": 0.0,
-              "above_fraction": 0.008517,
-              "clipped_fraction": 0.008517
+              "above_fraction": 0.007044,
+              "clipped_fraction": 0.007044
             },
             "issues": [],
             "status": "passed"
@@ -21081,23 +21122,23 @@
                 "total_points": 65160,
                 "finite_points": 65160,
                 "finite_fraction": 1.0,
-                "minimum": -153.041404,
-                "maximum": 137.247456,
-                "p01": -123.874381,
-                "p99": 120.151281,
+                "minimum": -153.143917,
+                "maximum": 131.969667,
+                "p01": -122.70143,
+                "p99": 117.704892,
                 "display": {
                   "minimum": -100.0,
                   "maximum": 100.0,
                   "step": 10.0,
-                  "below_fraction": 0.020626,
-                  "above_fraction": 0.037508,
-                  "clipped_fraction": 0.058134
+                  "below_fraction": 0.019736,
+                  "above_fraction": 0.036096,
+                  "clipped_fraction": 0.055832
                 },
                 "issues": [
                   {
                     "code": "display_scale_clipping",
                     "severity": "warning",
-                    "message": "5.8% of finite cells exceed the fixed display scale."
+                    "message": "5.6% of finite cells exceed the fixed display scale."
                   }
                 ],
                 "status": "warning"
@@ -21128,7 +21169,7 @@
           "members": [
             1
           ],
-          "ensemble_members": 38,
+          "ensemble_members": 40,
           "ensemble_scope": "rolling_initial_conditions",
           "monthly_leads": [
             4,
@@ -21324,8 +21365,9 @@
               "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260818/06/monthly_grib_01/pgbf.01.2026081806.202612.avrg.grib.grb2",
               "cache_file": ".cache/cfsv2/2026081806/member_01/pgbf.01.2026081806.202612.avrg.grib.grb2",
               "state_file": ".cache/cfsv2/rolling/202612/hgt500.2026081806.m01.csv.gz",
-              "storage": "nomads_grib2",
-              "downloaded": true,
+              "storage": "retained_decoded_grid",
+              "downloaded": false,
+              "download_error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260818/06/monthly_grib_01/pgbf.01.2026081806.202612.avrg.grib.grb2",
               "product": "500mb_height_anomaly",
               "source_kind": "PGBF",
               "decoded_field": "HGT:500 mb",
@@ -21341,8 +21383,9 @@
               "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260818/12/monthly_grib_01/pgbf.01.2026081812.202612.avrg.grib.grb2",
               "cache_file": ".cache/cfsv2/2026081812/member_01/pgbf.01.2026081812.202612.avrg.grib.grb2",
               "state_file": ".cache/cfsv2/rolling/202612/hgt500.2026081812.m01.csv.gz",
-              "storage": "nomads_grib2",
-              "downloaded": true,
+              "storage": "retained_decoded_grid",
+              "downloaded": false,
+              "download_error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260818/12/monthly_grib_01/pgbf.01.2026081812.202612.avrg.grib.grb2",
               "product": "500mb_height_anomaly",
               "source_kind": "PGBF",
               "decoded_field": "HGT:500 mb",
@@ -21801,8 +21844,14 @@
               "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260825/06/monthly_grib_01/pgbf.01.2026082506.202612.avrg.grib.grb2",
               "cache_file": ".cache/cfsv2/2026082506/member_01/pgbf.01.2026082506.202612.avrg.grib.grb2",
               "state_file": ".cache/cfsv2/rolling/202612/hgt500.2026082506.m01.csv.gz",
-              "status": "missing",
-              "error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260825/06/monthly_grib_01/pgbf.01.2026082506.202612.avrg.grib.grb2"
+              "storage": "nomads_grib2",
+              "downloaded": true,
+              "product": "500mb_height_anomaly",
+              "source_kind": "PGBF",
+              "decoded_field": "HGT:500 mb",
+              "raw_units": "m",
+              "units": "m",
+              "status": "available"
             },
             {
               "initialization": "2026082512",
@@ -21812,8 +21861,14 @@
               "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260825/12/monthly_grib_01/pgbf.01.2026082512.202612.avrg.grib.grb2",
               "cache_file": ".cache/cfsv2/2026082512/member_01/pgbf.01.2026082512.202612.avrg.grib.grb2",
               "state_file": ".cache/cfsv2/rolling/202612/hgt500.2026082512.m01.csv.gz",
-              "status": "missing",
-              "error": "403 Client Error: Forbidden for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260825/12/monthly_grib_01/pgbf.01.2026082512.202612.avrg.grib.grb2"
+              "storage": "nomads_grib2",
+              "downloaded": true,
+              "product": "500mb_height_anomaly",
+              "source_kind": "PGBF",
+              "decoded_field": "HGT:500 mb",
+              "raw_units": "m",
+              "units": "m",
+              "status": "available"
             },
             {
               "initialization": "2026081518",
@@ -21987,7 +22042,7 @@
               "state_file": ".cache/cfsv2/rolling/202701/hgt500.2026081800.m01.csv.gz",
               "storage": "retained_decoded_grid",
               "downloaded": false,
-              "download_error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260818/00/monthly_grib_01/pgbf.01.2026081800.202701.avrg.grib.grb2",
+              "download_error": "('Connection broken: IncompleteRead(6291456 bytes read, 17657516 more expected)', IncompleteRead(6291456 bytes read, 17657516 more expected))",
               "product": "500mb_height_anomaly",
               "source_kind": "PGBF",
               "decoded_field": "HGT:500 mb",
@@ -22005,7 +22060,7 @@
               "state_file": ".cache/cfsv2/rolling/202701/hgt500.2026081806.m01.csv.gz",
               "storage": "retained_decoded_grid",
               "downloaded": false,
-              "download_error": "503 Server Error: Service Unavailable for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260818/06/monthly_grib_01/pgbf.01.2026081806.202701.avrg.grib.grb2",
+              "download_error": "('Connection aborted.', BadStatusLine('HTTP/1.1   0 Init\\r\\n'))",
               "product": "500mb_height_anomaly",
               "source_kind": "PGBF",
               "decoded_field": "HGT:500 mb",
@@ -22023,7 +22078,7 @@
               "state_file": ".cache/cfsv2/rolling/202701/hgt500.2026081812.m01.csv.gz",
               "storage": "retained_decoded_grid",
               "downloaded": false,
-              "download_error": "('Connection aborted.', BadStatusLine('HTTP/1.1   0 Init\\r\\n'))",
+              "download_error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260818/12/monthly_grib_01/pgbf.01.2026081812.202701.avrg.grib.grb2",
               "product": "500mb_height_anomaly",
               "source_kind": "PGBF",
               "decoded_field": "HGT:500 mb",
@@ -22039,8 +22094,9 @@
               "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260818/18/monthly_grib_01/pgbf.01.2026081818.202701.avrg.grib.grb2",
               "cache_file": ".cache/cfsv2/2026081818/member_01/pgbf.01.2026081818.202701.avrg.grib.grb2",
               "state_file": ".cache/cfsv2/rolling/202701/hgt500.2026081818.m01.csv.gz",
-              "storage": "nomads_grib2",
-              "downloaded": true,
+              "storage": "retained_decoded_grid",
+              "downloaded": false,
+              "download_error": "('Connection broken: IncompleteRead(2097152 bytes read, 21524951 more expected)', IncompleteRead(2097152 bytes read, 21524951 more expected))",
               "product": "500mb_height_anomaly",
               "source_kind": "PGBF",
               "decoded_field": "HGT:500 mb",
@@ -22481,8 +22537,14 @@
               "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260825/06/monthly_grib_01/pgbf.01.2026082506.202701.avrg.grib.grb2",
               "cache_file": ".cache/cfsv2/2026082506/member_01/pgbf.01.2026082506.202701.avrg.grib.grb2",
               "state_file": ".cache/cfsv2/rolling/202701/hgt500.2026082506.m01.csv.gz",
-              "status": "missing",
-              "error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260825/06/monthly_grib_01/pgbf.01.2026082506.202701.avrg.grib.grb2"
+              "storage": "nomads_grib2",
+              "downloaded": true,
+              "product": "500mb_height_anomaly",
+              "source_kind": "PGBF",
+              "decoded_field": "HGT:500 mb",
+              "raw_units": "m",
+              "units": "m",
+              "status": "available"
             },
             {
               "initialization": "2026082512",
@@ -22492,8 +22554,14 @@
               "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260825/12/monthly_grib_01/pgbf.01.2026082512.202701.avrg.grib.grb2",
               "cache_file": ".cache/cfsv2/2026082512/member_01/pgbf.01.2026082512.202701.avrg.grib.grb2",
               "state_file": ".cache/cfsv2/rolling/202701/hgt500.2026082512.m01.csv.gz",
-              "status": "missing",
-              "error": "403 Client Error: Forbidden for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260825/12/monthly_grib_01/pgbf.01.2026082512.202701.avrg.grib.grb2"
+              "storage": "nomads_grib2",
+              "downloaded": true,
+              "product": "500mb_height_anomaly",
+              "source_kind": "PGBF",
+              "decoded_field": "HGT:500 mb",
+              "raw_units": "m",
+              "units": "m",
+              "status": "available"
             },
             {
               "initialization": "2026081518",
@@ -22665,8 +22733,9 @@
               "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260818/00/monthly_grib_01/pgbf.01.2026081800.202702.avrg.grib.grb2",
               "cache_file": ".cache/cfsv2/2026081800/member_01/pgbf.01.2026081800.202702.avrg.grib.grb2",
               "state_file": ".cache/cfsv2/rolling/202702/hgt500.2026081800.m01.csv.gz",
-              "storage": "nomads_grib2",
-              "downloaded": true,
+              "storage": "retained_decoded_grid",
+              "downloaded": false,
+              "download_error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260818/00/monthly_grib_01/pgbf.01.2026081800.202702.avrg.grib.grb2",
               "product": "500mb_height_anomaly",
               "source_kind": "PGBF",
               "decoded_field": "HGT:500 mb",
@@ -22682,8 +22751,9 @@
               "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260818/06/monthly_grib_01/pgbf.01.2026081806.202702.avrg.grib.grb2",
               "cache_file": ".cache/cfsv2/2026081806/member_01/pgbf.01.2026081806.202702.avrg.grib.grb2",
               "state_file": ".cache/cfsv2/rolling/202702/hgt500.2026081806.m01.csv.gz",
-              "storage": "nomads_grib2",
-              "downloaded": true,
+              "storage": "retained_decoded_grid",
+              "downloaded": false,
+              "download_error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260818/06/monthly_grib_01/pgbf.01.2026081806.202702.avrg.grib.grb2",
               "product": "500mb_height_anomaly",
               "source_kind": "PGBF",
               "decoded_field": "HGT:500 mb",
@@ -23160,8 +23230,14 @@
               "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260825/06/monthly_grib_01/pgbf.01.2026082506.202702.avrg.grib.grb2",
               "cache_file": ".cache/cfsv2/2026082506/member_01/pgbf.01.2026082506.202702.avrg.grib.grb2",
               "state_file": ".cache/cfsv2/rolling/202702/hgt500.2026082506.m01.csv.gz",
-              "status": "missing",
-              "error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260825/06/monthly_grib_01/pgbf.01.2026082506.202702.avrg.grib.grb2"
+              "storage": "nomads_grib2",
+              "downloaded": true,
+              "product": "500mb_height_anomaly",
+              "source_kind": "PGBF",
+              "decoded_field": "HGT:500 mb",
+              "raw_units": "m",
+              "units": "m",
+              "status": "available"
             },
             {
               "initialization": "2026082512",
@@ -23171,11 +23247,17 @@
               "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260825/12/monthly_grib_01/pgbf.01.2026082512.202702.avrg.grib.grb2",
               "cache_file": ".cache/cfsv2/2026082512/member_01/pgbf.01.2026082512.202702.avrg.grib.grb2",
               "state_file": ".cache/cfsv2/rolling/202702/hgt500.2026082512.m01.csv.gz",
-              "status": "missing",
-              "error": "403 Client Error: Forbidden for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260825/12/monthly_grib_01/pgbf.01.2026082512.202702.avrg.grib.grb2"
+              "storage": "nomads_grib2",
+              "downloaded": true,
+              "product": "500mb_height_anomaly",
+              "source_kind": "PGBF",
+              "decoded_field": "HGT:500 mb",
+              "raw_units": "m",
+              "units": "m",
+              "status": "available"
             }
           ],
-          "status": "partial",
+          "status": "rendered",
           "baseline": {
             "files": [
               ".cache/cfsv2/calibration/pgbf/2026082512/pgbf.08.25.12.l04.fclm.1982.2010.grb2",
@@ -23192,7 +23274,7 @@
               "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs_refor_calclim_mm_9m_pgbf/08/pgbf.08.25.12.l06.fclm.1982.2010.grb2"
             ]
           },
-          "ensemble_complete": false,
+          "ensemble_complete": true,
           "quality_control": {
             "registry_version": 1,
             "product": "500mb_height_anomaly",
@@ -23202,17 +23284,17 @@
             "total_points": 65160,
             "finite_points": 65160,
             "finite_fraction": 1.0,
-            "minimum": -58.928772,
-            "maximum": 103.837982,
-            "p01": -41.387574,
-            "p99": 79.03258,
+            "minimum": -58.195167,
+            "maximum": 103.904833,
+            "p01": -40.582309,
+            "p99": 77.823668,
             "display": {
               "minimum": -100.0,
               "maximum": 100.0,
               "step": 10.0,
               "below_fraction": 0.0,
-              "above_fraction": 0.000844,
-              "clipped_fraction": 0.000844
+              "above_fraction": 0.000859,
+              "clipped_fraction": 0.000859
             },
             "issues": [],
             "status": "passed"
@@ -23233,17 +23315,17 @@
                 "total_points": 65160,
                 "finite_points": 65160,
                 "finite_fraction": 1.0,
-                "minimum": -146.885614,
-                "maximum": 113.237094,
-                "p01": -106.383052,
-                "p99": 93.629208,
+                "minimum": -147.234,
+                "maximum": 113.850806,
+                "p01": -105.562003,
+                "p99": 94.48104,
                 "display": {
                   "minimum": -100.0,
                   "maximum": 100.0,
                   "step": 10.0,
-                  "below_fraction": 0.012692,
-                  "above_fraction": 0.006354,
-                  "clipped_fraction": 0.019045
+                  "below_fraction": 0.012477,
+                  "above_fraction": 0.006737,
+                  "clipped_fraction": 0.019214
                 },
                 "issues": [],
                 "status": "passed"
