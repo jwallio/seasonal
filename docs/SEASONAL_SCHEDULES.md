@@ -35,6 +35,11 @@ status in `seasonal/analog_products_manifest.json`.
 The MRCC generator is given a ten-minute per-map wait window; quick HTTP 5xx
 responses are retried, while a true timeout is marked unavailable only after
 that full window. The analog job allows 120 minutes for this slow provider.
+WRIT analog height and temperature products are requested as NetCDF data and
+re-rendered through the shared seasonal Lambert Conformal Conic renderer. This
+keeps their North America projection and canvas aligned with the operational
+500-mb products while retaining the provider image/data URLs in the product
+manifest.
 
 The CFSv2 readiness check retries the newest listed cycle for two hours before
 falling back to the newest complete prior cycle. That prevents the normal

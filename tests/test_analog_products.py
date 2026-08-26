@@ -47,6 +47,7 @@ def main() -> int:
     check(psl_query["dataset1"] == ["ERA5"], "PSL must use the same ERA5 archive family")
     check(psl_query["iy"] == ["1940"] and psl_query["fmonth"] == ["11"], "PSL monthly year controls are wrong")
     check(psl_query["type"] == ["1"] and psl_query["level"] == ["500mb"], "PSL anomaly controls are wrong")
+    check(psl_query["mapt"] == ["6"] and psl_query["proj"] == ["North America"], "PSL 500-mb projection controls are wrong")
     check(psl_query["colortable"] == ["default"], "PSL 500-mb maps should use the default color table")
     temperature_query = parse_qs(urlsplit(module._psl_url(december, module.PRODUCT_SPECS["psl_2m_temperature_anomaly"])).query)
     check(temperature_query["colortable"] == ["testcmap"], "PSL 2-m temperature maps should use testcmap")
@@ -54,6 +55,10 @@ def main() -> int:
         b'<img src="/img/icons/us_flag_small.png"><IMG src="/tmp/generated_map.png">'
     )
     check(psl_image_url == "https://psl.noaa.gov/tmp/generated_map.png", "PSL should select the generated map instead of the NOAA flag icon")
+    psl_netcdf_url = module._extract_psl_netcdf_url(
+        b'<a href="/tmp/generated_map.nc">NetCDF</a>'
+    )
+    check(psl_netcdf_url == "https://psl.noaa.gov/tmp/generated_map.nc", "PSL should select the generated NetCDF asset")
 
     mrcc_query = parse_qs(urlsplit(module._mrcc_url(djf)).query)
     check(mrcc_query["loc"] == ["ER"], "MRCC must target the NWS Eastern Region")
@@ -116,11 +121,22 @@ def main() -> int:
     calls: list[str] = []
     request_timeouts: list[tuple[str, int]] = []
 
+    original_renderer = module._render_writ_netcdf
+
+    def fake_renderer(*, content: bytes, product_key: str, period: dict, output_path: Path, root: Path) -> dict:
+        check(content == b"netcdf-test", "WRIT NetCDF payload was not passed to the renderer")
+        module._write_png(output_path, png)
+        return {"id": module.WRIT_RENDERER_ID, "projection": "Lambert Conformal Conic"}
+
+    module._render_writ_netcdf = fake_renderer
+
     def fetcher(url: str, request_timeout: int) -> bytes:
         calls.append(url)
         request_timeouts.append((url, request_timeout))
         if url.startswith(module.PSL_MAP_URL):
-            return b'<html><IMG src="/tmp/test.png"></html>'
+            return b'<html><IMG src="/tmp/test.png"><a href="/tmp/test.nc">NetCDF</a></html>'
+        if url.endswith(".nc"):
+            return b"netcdf-test"
         return png
 
     with tempfile.TemporaryDirectory() as temporary:
@@ -138,7 +154,7 @@ def main() -> int:
             fetcher=fetcher,
         )
         check(first["status"] == "ready", "offline product build should be ready")
-        check(len(calls) == 5, "PSL and MRCC should each be requested once per product")
+        check(len(calls) == 5, "PSL NetCDF and MRCC assets should each be requested once per product")
         check(
             [timeout for url, timeout in request_timeouts if url.startswith(module.MRCC_MAP_URL)]
             == [module.MRCC_GENERATION_TIMEOUT_SECONDS],
@@ -147,6 +163,11 @@ def main() -> int:
         module.write_manifest(output_path, first)
         for product in first["entries"][0]["products"].values():
             check(product["status"] == "ready" and (root / product["image"]).exists(), "product image was not retained")
+        check(
+            first["entries"][0]["products"]["psl_500mb_height_anomaly"]["rendering"]["projection"]
+            == "Lambert Conformal Conic",
+            "WRIT product should record the shared seasonal projection",
+        )
 
         def failing_fetcher(_url: str, _timeout: int) -> bytes:
             raise module.AnalogProductError("simulated source outage")
@@ -172,7 +193,8 @@ def main() -> int:
             fetcher=fetcher,
         )
         refreshed_psl = refreshed["entries"][0]["products"]["psl_500mb_height_anomaly"]
-        check(refreshed_psl["provider_asset_url"] == "https://psl.noaa.gov/tmp/test.png", "legacy PSL icon assets should be refreshed")
+        check(refreshed_psl["provider_asset_url"] == "https://psl.noaa.gov/tmp/test.nc", "legacy PSL icon assets should be refreshed")
+        check(refreshed_psl["provider_image_url"] == "https://psl.noaa.gov/tmp/test.png", "WRIT provider image URL should be retained")
         check(len(calls) == 2, "only legacy PSL assets should be fetched again")
 
         color_change = json.loads(json.dumps(first))
@@ -202,6 +224,7 @@ def main() -> int:
             fetcher=failing_fetcher,
         )
         check(all(product["status"] == "stale" for product in stale["entries"][0]["products"].values()), "a changed top analog should retain the last good products")
+        module._render_writ_netcdf = original_renderer
 
     print("ANALOG PRODUCTS OK: monthly/DJF windows, PSL/MRCC controls, and retained source failures")
     return 0

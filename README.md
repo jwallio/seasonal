@@ -82,6 +82,10 @@ snowfall departure for the NWS Eastern Region. Monthly matches use their
 calendar month; DJF matches use December through February. These outputs are
 stored in `seasonal/analog_products_manifest.json` and retain the last good
 image when a source is unavailable.
+The WRIT products are data-first: the generated WRIT NetCDF grid is re-rendered
+through the shared seasonal Lambert Conformal Conic renderer, using the same
+North America bounds and 1080×1080 canvas as the operational 500-mb maps. The
+original WRIT image and NetCDF URLs remain in each product entry for provenance.
 
 The dashboard now opens on an operational Overview with model-by-parameter
 freshness and coverage. Compare supports blend/family/component filtering,
