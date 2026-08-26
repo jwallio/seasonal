@@ -27,7 +27,7 @@ single-product so a failed or late field can be repaired without rebuilding the
 entire suite. The scheduled super ensemble likewise uses its `all` product mode.
 
 The analog workflow also generates source-backed products for the current rank-1
-analog: PSL ERA5 500-mb height and 2-metre temperature anomalies, plus MRCC
+analog: PSL NCEP CFSR 500-mb height and 2-metre temperature anomalies, plus MRCC
 station-interpolated snowfall departure for the NWS Eastern Region (`ER`). A
 monthly analog uses that calendar month; a DJF analog uses December through
 February. A source outage retains the last good image and records the stale
@@ -35,11 +35,12 @@ status in `seasonal/analog_products_manifest.json`.
 The MRCC generator is given a ten-minute per-map wait window; quick HTTP 5xx
 responses are retried, while a true timeout is marked unavailable only after
 that full window. The analog job allows 120 minutes for this slow provider.
-WRIT analog height and temperature products are requested as NetCDF data and
-re-rendered through the shared seasonal Lambert Conformal Conic renderer. This
-keeps their North America projection and canvas aligned with the operational
-500-mb products while retaining the provider image/data URLs in the product
-manifest.
+WRIT analog height and temperature products are requested as NetCDF data from
+NCEP/CFSR using its native 1981-2010 climatology; pre-1979 analog dates use
+WRIT 20CRv3, which has the same native climatology period. Both are re-rendered
+through the shared seasonal Lambert Conformal Conic renderer. The 500-mb maps
+retain the North America frame; 2-metre temperature uses the shared CONUS
+frame. Both retain the provider image/data URLs in the product manifest.
 
 The CFSv2 readiness check retries the newest listed cycle for two hours before
 falling back to the newest complete prior cycle. That prevents the normal

@@ -43,6 +43,15 @@ MRCC_SNOWFALL_STATION_NETWORKS = (
 MRCC_REQUEST_ATTEMPTS = 2
 MRCC_RETRY_DELAY_SECONDS = 5.0
 MRCC_GENERATION_TIMEOUT_SECONDS = 600
+WRIT_DATASET = "NCEP/CFSR"
+WRIT_DATASET_LABEL = "NCEP CFSR"
+WRIT_EARLY_DATASET = "20th Century Reanalysis V3"
+WRIT_EARLY_DATASET_LABEL = "20CRv3"
+WRIT_CFSR_START_YEAR = 1979
+WRIT_CLIMATOLOGY_YEARS = "1981-2010"
+WRIT_CLIMATOLOGY_LABEL = "NCEP/CFSR native climatology; 1981-2010"
+WRIT_NORTH_AMERICA_REGION = "North America"
+WRIT_CONUS_REGION = "USA(CONUS)"
 WRIT_RENDERER_ID = "wn2-seasonal-lcc-v1"
 WRIT_RENDERER_LABEL = "WN2 shared seasonal Lambert Conformal Conic renderer"
 
@@ -53,6 +62,7 @@ PRODUCT_SPECS: dict[str, dict[str, str]] = {
         "source": PSL_MAP_PAGE,
         "variable": "Geopotential Height",
         "level": "500mb",
+        "map_region": WRIT_NORTH_AMERICA_REGION,
         "contourtype": "Shaded w/overlying contours",
         "colortable": "default",
     },
@@ -62,6 +72,7 @@ PRODUCT_SPECS: dict[str, dict[str, str]] = {
         "source": PSL_MAP_PAGE,
         "variable": "2m Air Temperature",
         "level": "1000mb",
+        "map_region": WRIT_CONUS_REGION,
         "contourtype": "Shaded",
         "colortable": "testcmap",
     },
@@ -183,9 +194,24 @@ def _days_in_month(year: int, month: int) -> int:
     return (next_month - dt.timedelta(days=1)).day
 
 
+def _writ_dataset_for_period(period: dict[str, Any]) -> str:
+    """Select a WRIT dataset that covers the entire historical analog period."""
+
+    start_year = dt.date.fromisoformat(str(period["start_date"])).year
+    return WRIT_DATASET if start_year >= WRIT_CFSR_START_YEAR else WRIT_EARLY_DATASET
+
+
+def _writ_dataset_label(dataset: str) -> str:
+    return WRIT_DATASET_LABEL if dataset == WRIT_DATASET else WRIT_EARLY_DATASET_LABEL
+
+
+def _writ_climatology_label(dataset: str) -> str:
+    return f"{dataset} native climatology; {WRIT_CLIMATOLOGY_YEARS}"
+
+
 def _psl_url(period: dict[str, Any], spec: dict[str, str]) -> str:
     query = {
-        "dataset1": "ERA5",
+        "dataset1": _writ_dataset_for_period(period),
         "var": spec["variable"],
         "level": spec["level"],
         "iy": str(period["psl_year"]),
@@ -196,7 +222,7 @@ def _psl_url(period: dict[str, Any], spec: dict[str, str]) -> str:
         # Keep the provider-side plot close to the dashboard view as well;
         # the published image itself is re-rendered locally from WRIT NetCDF.
         "mapt": "6",
-        "proj": "North America",
+        "proj": spec.get("map_region", WRIT_NORTH_AMERICA_REGION),
         "colortable": spec["colortable"],
         "labelc": "0",
         "contourtype": spec["contourtype"],
@@ -387,7 +413,12 @@ def _read_writ_grid(content: bytes):
     return seasonal.Grid(lons.tolist(), lats.tolist(), values.tolist())
 
 
-def _writ_rendering_metadata(seasonal: Any) -> dict[str, Any]:
+def _writ_rendering_metadata(
+    seasonal: Any,
+    *,
+    region: tuple[float, float, float, float],
+    map_region: str,
+) -> dict[str, Any]:
     return {
         "id": WRIT_RENDERER_ID,
         "label": WRIT_RENDERER_LABEL,
@@ -398,33 +429,40 @@ def _writ_rendering_metadata(seasonal: Any) -> dict[str, Any]:
         ],
         "latitude_origin": seasonal.SEASONAL_LCC_LATITUDE_ORIGIN,
         "central_longitude": seasonal.SEASONAL_LCC_CENTRAL_LONGITUDE,
-        "region": list(seasonal.DEFAULT_REGION),
+        "map_region": map_region,
+        "region": list(region),
         "canvas": "1080x1080",
     }
 
 
-def _writ_render_product_spec(product_key: str, seasonal: Any) -> dict[str, Any]:
+def _writ_render_product_spec(product_key: str, seasonal: Any, dataset: str) -> dict[str, Any]:
+    is_height = product_key == "psl_500mb_height_anomaly"
     source_product = (
         seasonal.PRODUCT_HEIGHT_ANOMALY
-        if product_key == "psl_500mb_height_anomaly"
+        if is_height
         else seasonal.PRODUCT_2M_TEMPERATURE_ANOMALY
     )
     spec = dict(seasonal.PRODUCT_SPECS[source_product])
-    if product_key == "psl_500mb_height_anomaly":
-        title = "ERA5 500-mb Geopotential Height Anomaly (m)"
-    else:
-        title = "ERA5 2-m Temperature Anomaly (°C)"
+    dataset_label = _writ_dataset_label(dataset)
+    title = (
+        f"{dataset_label} 500-mb Geopotential Height Anomaly (m)"
+        if is_height
+        else f"{dataset_label} 2-m Temperature Anomaly (°C)"
+    )
+    map_region = PRODUCT_SPECS[product_key]["map_region"]
+    region = seasonal.DEFAULT_REGION if is_height else seasonal.CONUS_PRECIP_REGION
     spec.update(
         {
             "title": title,
             "absolute_title": title,
             "height_contours": False,
-            "source_label": "NOAA PSL WRIT / ERA5",
+            "source_label": f"NOAA PSL WRIT / {dataset_label}",
             "header_detail": (
                 "{source_label}  •  {baseline_label}  •  "
-                f"{seasonal.SEASONAL_LCC_PROJECTION_NAME}"
+                f"{seasonal.SEASONAL_LCC_PROJECTION_NAME}  •  {map_region} domain"
             ),
             "lead_label": "Historical analog",
+            "region": region,
         }
     )
     return spec
@@ -458,6 +496,9 @@ def _render_writ_netcdf(
         raise AnalogProductError("the shared seasonal renderer is unavailable") from exc
     grid = _read_writ_grid(content)
     start_date = dt.date.fromisoformat(str(period["start_date"]))
+    dataset = _writ_dataset_for_period(period)
+    product_spec = _writ_render_product_spec(product_key, seasonal, dataset)
+    region = tuple(product_spec["region"])
     seasonal.render_map(
         grid=grid,
         init=f"{start_date:%Y%m%d}00",
@@ -466,15 +507,19 @@ def _render_writ_netcdf(
         members=(1,),
         output_path=output_path,
         anomaly=True,
-        baseline_label="WRIT native ERA5 anomaly baseline",
+        baseline_label=_writ_climatology_label(dataset),
         border_paths=_writ_border_paths(root, seasonal),
         period_label=str(period["label"]),
         seasonal=period["period_type"] == "djf",
-        ensemble_label="ERA5 WRIT composite",
-        product_spec=_writ_render_product_spec(product_key, seasonal),
+        ensemble_label=f"{_writ_dataset_label(dataset)} WRIT composite",
+        product_spec=product_spec,
         initialization_label=f"Historical analog {period['label']}",
     )
-    return _writ_rendering_metadata(seasonal)
+    return _writ_rendering_metadata(
+        seasonal,
+        region=region,
+        map_region=PRODUCT_SPECS[product_key]["map_region"],
+    )
 
 
 def _write_png(path: Path, data: bytes) -> None:
@@ -572,6 +617,7 @@ def _build_product(
     image_path = output_dir / model / target / str(period["winter_year"]) / f"{product_key}.png"
     try:
         image: bytes | None = None
+        writ_dataset = _writ_dataset_for_period(period) if product_key.startswith("psl_") else ""
         if product_key.startswith("psl_"):
             page = fetcher(source_url, timeout)
             image_url = _extract_psl_image_url(page)
@@ -602,13 +648,15 @@ def _build_product(
             "period": period,
             "source_url": source_url,
             "provider_asset_url": provider_asset_url,
-            "dataset": "ERA5" if product_key.startswith("psl_") else "MRCC station-interpolated snowfall",
-            "climatology_years": climatology_years,
+            "dataset": writ_dataset if product_key.startswith("psl_") else "MRCC station-interpolated snowfall",
+            "climatology_years": WRIT_CLIMATOLOGY_YEARS if product_key.startswith("psl_") else climatology_years,
             "generated_utc": _now_iso(),
         }
         if product_key.startswith("psl_"):
             product["provider_image_url"] = image_url
             product["rendering"] = rendering
+            product["climatology_label"] = _writ_climatology_label(writ_dataset)
+            product["map_region"] = spec["map_region"]
         return product
     except (AnalogProductError, OSError, ValueError) as exc:
         return _retained_or_unavailable(
@@ -696,6 +744,11 @@ def build_manifest(
         "source": {
             "analog_manifest": "seasonal/analog_z500_manifest.json",
             "climatology_years": climatology_years,
+            "analog_matching_climatology_years": climatology_years,
+            "writ_dataset": WRIT_DATASET,
+            "writ_pre_1979_fallback_dataset": WRIT_EARLY_DATASET,
+            "writ_climatology_years": WRIT_CLIMATOLOGY_YEARS,
+            "writ_climatology_label": WRIT_CLIMATOLOGY_LABEL,
             "psl": PSL_MAP_PAGE,
             "mrcc": MRCC_MAP_PAGE,
             "nws_region": "NWS Eastern Region (ER)",
