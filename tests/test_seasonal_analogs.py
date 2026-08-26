@@ -92,7 +92,29 @@ def main() -> int:
     )
     check(len(result) == 1 and result[0]["winter_year"] == 2021, "pattern match missed the exact analog")
     check(result[0]["pattern_correlation"] > 0.999, "pattern matching should ignore offset and scale")
+    scaled_result = module.match_forecast(
+        january_pattern * 3.0,
+        lats,
+        lons,
+        january_historical,
+        top_n=1,
+    )[0]
+    check(
+        abs(scaled_result["amplitude_similarity"] - (1.0 / 3.0)) < 0.001,
+        "amplitude similarity should expose a threefold magnitude mismatch",
+    )
+    check(abs(scaled_result["composite_weight"] - 1.0) < 0.001, "single analog should receive all composite weight")
     check(result[0]["rank"] == 1 and result[0]["sample_count"] == 31, "analog rank metadata is wrong")
+
+    weights = module.composite_weights(
+        [
+            {"pattern_correlation": 0.80, "amplitude_similarity": 1.0},
+            {"pattern_correlation": 0.60, "amplitude_similarity": 0.5},
+        ],
+        count=2,
+    )
+    check(len(weights) == 2 and abs(sum(weights) - 1.0) < 0.000001, "composite weights must be normalized")
+    check(weights[0] > weights[1], "the closer analog should receive more composite weight")
 
     djf_dates = daily_dates(date(2020, 12, 1), date(2021, 2, 28))
     djf_values = np.asarray([base for _ in djf_dates])
@@ -118,9 +140,11 @@ def main() -> int:
     )
     check(artifact["schema_version"] == module.SCHEMA_VERSION, "artifact schema is missing")
     check(artifact["query"]["period_type"] == "djf", "artifact period type is wrong")
+    check(artifact["query"]["amplitude_method"] == module.AMPLITUDE_METHOD, "artifact amplitude method is missing")
+    check(artifact["query"]["composite"]["count"] == 1, "artifact composite count is wrong")
     check(artifact["results"][0]["label"] == "DJF 2020-21", "artifact result label is wrong")
 
-    print("SEASONAL ANALOGS OK: periods, complete groups, normalized matching, and artifact schema")
+    print("SEASONAL ANALOGS OK: periods, pattern/amplitude matching, composite weights, and artifact schema")
     return 0
 
 
