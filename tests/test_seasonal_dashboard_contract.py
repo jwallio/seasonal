@@ -219,6 +219,9 @@ def main() -> int:
     check(".page-actions { display:none; }" in stylesheet, "mobile header should hide the space-consuming copy action")
     check(".compare-control-fields .selector, .compare-filter { grid-column:1 / -1; }" in stylesheet, "mobile Compare controls should use readable full-width fields")
     check(".analog-product-grid { grid-template-columns:1fr; }" in stylesheet, "mobile analog maps should use the available screen width")
+    check("table-layout:fixed" in stylesheet, "analog table should keep narrow-screen columns bounded")
+    check(".compare-card-head a { max-width:6rem; white-space:normal; text-align:right; }" in stylesheet, "mobile compare links should wrap instead of overflowing")
+    check('title="Historical analog month or season"' in dashboard_script and '>Period<' in dashboard_script, "analog table should use compact, explained period labels")
     check('aria-label="Copy current dashboard link"' in page_markup, "copy action should retain an accessible label when compacted")
     check("runs[0]" not in page[page.index("function preferredRun"):page.index("function selectedRun")], "failed history must not be used as a default fallback")
     overview_block = page[page.index("function renderOverview()"):page.index("function compareEmpty")]
