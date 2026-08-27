@@ -151,6 +151,8 @@ def main() -> int:
         "psl_500mb_height_anomaly",
         "psl_2m_temperature_anomaly",
         "mrcc_snowfall_departure",
+        "mrcc_snowfall_departure_composite",
+        "MRCC/ACIS station departures",
         "selection.compareProduct = event.target.value",
         "product_hours",
         "target_month",

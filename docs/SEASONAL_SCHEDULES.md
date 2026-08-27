@@ -43,11 +43,14 @@ retain the North America frame; 2-metre temperature uses the shared CONUS
 frame. Both retain the provider image/data URLs in the product manifest.
 Analog ranking remains ordered by centered pattern correlation, with a separate
 cosine-latitude-weighted RMS anomaly amplitude similarity. The top five ranked
-analogs are combined into PSL 500-mb and 2-metre maps using inverse
-similarity-distance weights (80% pattern, 20% amplitude); the MRCC snowfall
-image remains rank-1 only because that provider does not expose a numeric field
-for compositing. Composite source failures retain the previous good image and
-mark it stale.
+analogs are combined into PSL 500-mb, 2-metre, and snowfall-departure maps using
+inverse similarity-distance weights (80% pattern, 20% amplitude). Snowfall
+composites use MRCC/ACIS monthly station departures, sum the three monthly
+departures for DJF, then linearly interpolate the stations to a 0.25° NWS
+Eastern Region grid with nearest-neighbor edge filling; if SciPy is unavailable
+or cannot load, the manifest records a NumPy inverse-distance fallback. The
+rendered MRCC map remains available as the rank-1 reference. Composite source
+failures retain the previous good image and mark it stale.
 
 The CFSv2 readiness check retries the newest listed cycle for two hours before
 falling back to the newest complete prior cycle. That prevents the normal

@@ -78,6 +78,39 @@ def main() -> int:
     )
     check(mrcc_query["gddB"] == ["null"] and mrcc_query["gddC"] == ["null"], "MRCC snowfall degree-day fields must match the current UI")
 
+    station_query = parse_qs(urlsplit(module._mrcc_station_data_url(djf)).query)
+    station_payload = json.loads(station_query["params"][0])
+    check(station_payload["state"] == list(module.MRCC_EASTERN_STATES), "ACIS snowfall must query the NWS Eastern Region states")
+    check(
+        station_payload["sdate"] == "1940-12"
+        and station_payload["edate"] == "1941-02",
+        "ACIS snowfall DJF month controls are wrong",
+    )
+    station_element = station_payload["elems"][0]
+    check(
+        station_element["name"] == "snow"
+        and station_element["interval"] == "mly"
+        and station_element["duration"] == "mly"
+        and station_element["normal"] == "departure"
+        and station_element["reduce"] == "sum",
+        "ACIS snowfall departure controls are wrong",
+    )
+    check(module._parse_mrcc_numeric_value("T") == 0.0, "ACIS trace snowfall should be treated as zero")
+    check(module._parse_mrcc_numeric_value("M") != module._parse_mrcc_numeric_value("M"), "ACIS missing snowfall should remain missing")
+    station_records = [
+        {
+            "meta": {"ll": [-84.0 + (index % 4) * 4.0, 31.0 + (index // 4) * 4.0]},
+            "data": [["1.0"], ["2.0"], ["3.0"]],
+        }
+        for index in range(module.MRCC_MIN_STATIONS_FOR_COMPOSITE)
+    ]
+    decoded_stations = module._read_mrcc_station_values(
+        json.dumps({"data": station_records}).encode("utf-8"),
+        djf,
+    )
+    check(decoded_stations["station_count"] == module.MRCC_MIN_STATIONS_FOR_COMPOSITE, "ACIS station count is wrong")
+    check(decoded_stations["values"][0] == 6.0, "ACIS DJF snowfall departures should be summed by station")
+
     retry_calls: list[str] = []
     original_retry_delay = module.MRCC_RETRY_DELAY_SECONDS
     module.MRCC_RETRY_DELAY_SECONDS = 0
@@ -259,6 +292,8 @@ def main() -> int:
 
     original_grid_fetch = module._fetch_writ_grid
     original_grid_renderer = module._render_writ_grid
+    original_station_fetch = module._fetch_mrcc_station_grid
+    original_station_renderer = module._render_mrcc_snowfall_grid
     try:
         def fake_grid_fetch(_fetcher, source_url: str, _timeout: int, cache: dict) -> dict:
             if source_url not in cache:
@@ -274,8 +309,30 @@ def main() -> int:
             module._write_png(output_path, png)
             return {"id": module.WRIT_RENDERER_ID, "projection": "Lambert Conformal Conic"}
 
+        def fake_station_fetch(_fetcher, period: dict, _timeout: int, cache: dict) -> dict:
+            source_url = module._mrcc_station_data_url(period)
+            if source_url not in cache:
+                cache[source_url] = {
+                    "source_url": source_url,
+                    "provider_asset_url": source_url,
+                    "station_count": module.MRCC_MIN_STATIONS_FOR_COMPOSITE,
+                    "interpolation": "test station interpolation",
+                    "grid": SimpleNamespace(
+                        lons=[-86.0, -75.0, -64.0],
+                        lats=[30.0, 40.0, 50.0],
+                        values=[[1.0, 2.0, 3.0], [2.0, 3.0, 4.0], [3.0, 4.0, 5.0]],
+                    ),
+                }
+            return cache[source_url]
+
+        def fake_station_renderer(*, output_path: Path, **_kwargs) -> dict:
+            module._write_png(output_path, png)
+            return {"id": module.WRIT_RENDERER_ID, "projection": "Lambert Conformal Conic"}
+
         module._fetch_writ_grid = fake_grid_fetch
         module._render_writ_grid = fake_grid_renderer
+        module._fetch_mrcc_station_grid = fake_station_fetch
+        module._render_mrcc_snowfall_grid = fake_station_renderer
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             composite = module._build_composite_product(
@@ -352,13 +409,20 @@ def main() -> int:
                 module._render_writ_netcdf = original_netcdf_renderer
             integrated_entry = integrated["entries"][0]
             check(integrated_entry["composite"]["count"] == 2, "integrated manifest composite metadata is missing")
-            check(set(integrated_entry["composites"]) == set(module.COMPOSITE_PRODUCT_KEYS), "integrated manifest composite products are missing")
+            check(set(integrated_entry["composites"]) == set(module.ANALOG_COMPOSITE_PRODUCT_KEYS), "integrated manifest composite products are missing")
             check(all(product["status"] == "ready" for product in integrated_entry["composites"].values()), "integrated composite products should be ready")
+            check(
+                integrated_entry["composites"][module.MRCC_SNOWFALL_COMPOSITE_KEY]["station_counts"]
+                == [module.MRCC_MIN_STATIONS_FOR_COMPOSITE] * 2,
+                "integrated snowfall composite station metadata is missing",
+            )
     finally:
         module._fetch_writ_grid = original_grid_fetch
         module._render_writ_grid = original_grid_renderer
+        module._fetch_mrcc_station_grid = original_station_fetch
+        module._render_mrcc_snowfall_grid = original_station_renderer
 
-    print("ANALOG PRODUCTS OK: source controls, retained products, amplitude weights, and WRIT composites")
+    print("ANALOG PRODUCTS OK: source controls, retained products, amplitude weights, and WRIT/MRCC composites")
     return 0
 
 

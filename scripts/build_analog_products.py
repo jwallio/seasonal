@@ -30,7 +30,34 @@ PSL_MAP_URL = "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl"
 PSL_MAP_PAGE = "https://psl.noaa.gov/data/atmoswrit/map/"
 MRCC_MAP_URL = "https://gridded.geddes.rcac.purdue.edu/generate-map"
 MRCC_MAP_PAGE = "https://mrcc.purdue.edu/CLIMATE/maps/interpolated"
+MRCC_ACIS_MULTI_STATION_URL = "https://data.rcc-acis.org/MultiStnData"
 NWS_EASTERN_REGION = "ER"
+MRCC_EASTERN_STATES = (
+    "ME",
+    "NH",
+    "VT",
+    "NY",
+    "MA",
+    "CT",
+    "RI",
+    "PA",
+    "NJ",
+    "DE",
+    "MD",
+    "VA",
+    "WV",
+    "NC",
+    "SC",
+    "OH",
+)
+MRCC_SNOWFALL_MAP_REGION = "NWS Eastern Region"
+MRCC_SNOWFALL_REGION = (-86.0, -64.0, 30.0, 50.0)
+MRCC_SNOWFALL_GRID_STEP = 0.25
+MRCC_MIN_STATIONS_FOR_COMPOSITE = 12
+MRCC_SNOWFALL_COMPOSITE_KEY = "mrcc_snowfall_departure_composite"
+MRCC_SNOWFALL_COMPOSITE_VERSION = "mrcc-acis-snow-v1"
+MRCC_SNOWFALL_PROVIDER_LABEL = "MRCC / ACIS station-interpolated snowfall departure"
+MRCC_SNOWFALL_BASELINE_LABEL = "MRCC / ACIS provider snowfall departure (normal supplied by ACIS)"
 MRCC_SNOWFALL_STATION_NETWORKS = (
     "wban",
     "coop",
@@ -59,6 +86,7 @@ COMPOSITE_PRODUCT_KEYS = (
     "psl_500mb_height_anomaly",
     "psl_2m_temperature_anomaly",
 )
+ANALOG_COMPOSITE_PRODUCT_KEYS = COMPOSITE_PRODUCT_KEYS + (MRCC_SNOWFALL_COMPOSITE_KEY,)
 
 PRODUCT_SPECS: dict[str, dict[str, str]] = {
     "psl_500mb_height_anomaly": {
@@ -83,6 +111,13 @@ PRODUCT_SPECS: dict[str, dict[str, str]] = {
     },
     "mrcc_snowfall_departure": {
         "label": "Snowfall Departure · NWS Eastern Region",
+        "provider": "MRCC / ACIS",
+        "source": MRCC_MAP_PAGE,
+    },
+}
+COMPOSITE_PRODUCT_SPECS: dict[str, dict[str, str]] = {
+    MRCC_SNOWFALL_COMPOSITE_KEY: {
+        "label": "Snowfall Departure Composite · NWS Eastern Region",
         "provider": "MRCC / ACIS",
         "source": MRCC_MAP_PAGE,
     },
@@ -133,7 +168,7 @@ def _default_fetch(url: str, timeout: int) -> bytes:
     request = Request(
         url,
         headers={
-            "Accept": "text/html,image/png,application/octet-stream",
+            "Accept": "text/html,image/png,application/json,application/octet-stream",
             "User-Agent": "wall.cloud seasonal analog products/1.0",
         },
     )
@@ -305,6 +340,250 @@ def _fetch_mrcc_image(
             time.sleep(MRCC_RETRY_DELAY_SECONDS)
     raise AnalogProductError(
         f"MRCC request failed after {MRCC_REQUEST_ATTEMPTS} attempts: {' | '.join(errors)}"
+    )
+
+
+def _mrcc_station_data_url(period: dict[str, Any]) -> str:
+    """Build an ACIS request for monthly snowfall departures at ER stations."""
+
+    payload = {
+        "state": list(MRCC_EASTERN_STATES),
+        "sdate": str(period["start_date"])[:7],
+        "edate": str(period["end_date"])[:7],
+        "elems": [
+            {
+                "name": "snow",
+                "interval": "mly",
+                "duration": "mly",
+                "reduce": "sum",
+                "normal": "departure",
+                "maxmissing": 5,
+            }
+        ],
+        "meta": ["ll"],
+    }
+    encoded = json.dumps(payload, sort_keys=True, separators=(",", ":"))
+    return f"{MRCC_ACIS_MULTI_STATION_URL}?{urlencode({'params': encoded})}"
+
+
+def _parse_mrcc_numeric_value(raw: Any) -> float:
+    """Convert one ACIS value while preserving missing observations."""
+
+    if isinstance(raw, (int, float)) and not isinstance(raw, bool):
+        return float(raw)
+    text = str(raw or "").strip()
+    upper = text.upper()
+    if upper in {"", "M", "NA", "N/A", "NULL", "-", "--"}:
+        return float("nan")
+    if upper in {"T", "TRACE"}:
+        return 0.0
+    cleaned = text.rstrip("*")
+    cleaned = re.sub(r"(?<=\d)[A-Za-z]+$", "", cleaned).strip()
+    try:
+        return float(cleaned)
+    except ValueError:
+        return float("nan")
+
+
+def _read_mrcc_station_values(content: bytes, period: dict[str, Any]) -> dict[str, Any]:
+    """Decode ACIS monthly station departures and aggregate each station."""
+
+    try:
+        import numpy as np
+    except ImportError as exc:  # pragma: no cover - workflow installs requirements.txt
+        raise AnalogProductError("MRCC/ACIS snowfall compositing requires numpy") from exc
+    try:
+        payload = json.loads(content.decode("utf-8"))
+    except (UnicodeDecodeError, ValueError) as exc:
+        raise AnalogProductError(f"MRCC/ACIS response was not valid JSON: {exc}") from exc
+    if not isinstance(payload, dict):
+        raise AnalogProductError("MRCC/ACIS response was not a JSON object")
+    if payload.get("error"):
+        raise AnalogProductError(f"MRCC/ACIS returned an error: {payload['error']}")
+    records = payload.get("data")
+    if not isinstance(records, list):
+        raise AnalogProductError("MRCC/ACIS response did not contain station data")
+    period_type = str(period.get("period_type", ""))
+    expected_months = 1 if period_type == "month" else 3 if period_type == "djf" else 0
+    if expected_months == 0:
+        raise AnalogProductError(f"unsupported snowfall analog period: {period_type}")
+
+    longitudes: list[float] = []
+    latitudes: list[float] = []
+    values: list[float] = []
+    for record in records:
+        if not isinstance(record, dict):
+            continue
+        metadata = record.get("meta")
+        location = metadata.get("ll") if isinstance(metadata, dict) else None
+        if not isinstance(location, (list, tuple)) or len(location) < 2:
+            continue
+        try:
+            longitude = float(location[0])
+            latitude = float(location[1])
+        except (TypeError, ValueError):
+            continue
+        rows = record.get("data")
+        if not isinstance(rows, list) or len(rows) != expected_months:
+            continue
+        monthly_values: list[float] = []
+        for row in rows:
+            raw = row[0] if isinstance(row, (list, tuple)) and row else row
+            value = _parse_mrcc_numeric_value(raw)
+            monthly_values.append(value)
+        if not np.isfinite(longitude) or not np.isfinite(latitude) or not np.isfinite(monthly_values).all():
+            continue
+        longitudes.append(longitude)
+        latitudes.append(latitude)
+        values.append(float(sum(monthly_values)))
+
+    if len(values) < MRCC_MIN_STATIONS_FOR_COMPOSITE:
+        raise AnalogProductError(
+            f"MRCC/ACIS returned only {len(values)} complete stations; "
+            f"at least {MRCC_MIN_STATIONS_FOR_COMPOSITE} are required"
+        )
+    return {
+        "longitudes": longitudes,
+        "latitudes": latitudes,
+        "values": values,
+        "station_count": len(values),
+    }
+
+
+def _inverse_distance_station_grid(
+    points: Any,
+    station_values: Any,
+    lons: Any,
+    lats: Any,
+    np: Any,
+) -> Any:
+    """Provide a NumPy-only fallback when the optional SciPy wheel is unusable."""
+
+    mesh_lons, mesh_lats = np.meshgrid(lons, lats)
+    query = np.column_stack((mesh_lons.ravel(), mesh_lats.ravel()))
+    distances = np.hypot(
+        query[:, None, 0] - points[None, :, 0],
+        query[:, None, 1] - points[None, :, 1],
+    )
+    neighbor_count = min(16, points.shape[0])
+    indices = np.argpartition(distances, neighbor_count - 1, axis=1)[:, :neighbor_count]
+    selected_distances = np.take_along_axis(distances, indices, axis=1)
+    selected_values = station_values[indices]
+    zero_distance = selected_distances <= 1.0e-12
+    weights = 1.0 / np.maximum(selected_distances, 1.0e-12) ** 2
+    weighted = (selected_values * weights).sum(axis=1) / weights.sum(axis=1)
+    exact_values = np.take_along_axis(
+        selected_values,
+        zero_distance.argmax(axis=1)[:, None],
+        axis=1,
+    )[:, 0]
+    return np.where(zero_distance.any(axis=1), exact_values, weighted).reshape(
+        (lats.size, lons.size)
+    )
+
+
+def _interpolate_mrcc_station_grid(stations: dict[str, Any]) -> tuple[Any, str]:
+    """Interpolate station departures to the Eastern Region seasonal grid."""
+
+    try:
+        import cfsv2_seasonal as seasonal
+        import numpy as np
+    except ImportError as exc:  # pragma: no cover - workflow installs requirements.txt
+        raise AnalogProductError(
+            "MRCC/ACIS snowfall compositing requires numpy and the seasonal renderer"
+        ) from exc
+
+    points = np.column_stack(
+        (
+            np.asarray(stations["longitudes"], dtype=float),
+            np.asarray(stations["latitudes"], dtype=float),
+        )
+    )
+    station_values = np.asarray(stations["values"], dtype=float)
+    finite = np.isfinite(points).all(axis=1) & np.isfinite(station_values)
+    points = points[finite]
+    station_values = station_values[finite]
+    if points.shape[0] < 3:
+        raise AnalogProductError("MRCC/ACIS snowfall data has too few finite station points")
+
+    unique_points, inverse = np.unique(points, axis=0, return_inverse=True)
+    unique_values = np.bincount(inverse, weights=station_values) / np.bincount(inverse)
+    if unique_points.shape[0] < 3:
+        raise AnalogProductError("MRCC/ACIS snowfall data has too few unique station points")
+
+    lon_min, lon_max, lat_min, lat_max = MRCC_SNOWFALL_REGION
+    lons = np.arange(lon_min, lon_max + MRCC_SNOWFALL_GRID_STEP * 0.5, MRCC_SNOWFALL_GRID_STEP)
+    lats = np.arange(lat_min, lat_max + MRCC_SNOWFALL_GRID_STEP * 0.5, MRCC_SNOWFALL_GRID_STEP)
+    mesh_lons, mesh_lats = np.meshgrid(lons, lats)
+    interpolation_method = "linear station interpolation with nearest-neighbor edge fill"
+    try:
+        from scipy.interpolate import griddata
+        from scipy.spatial import QhullError
+    except ImportError:
+        griddata = None
+        QhullError = None
+    if griddata is None:
+        interpolated = _inverse_distance_station_grid(unique_points, unique_values, lons, lats, np)
+        interpolation_method = "inverse-distance station interpolation (NumPy fallback; SciPy unavailable)"
+    else:
+        try:
+            linear = griddata(unique_points, unique_values, (mesh_lons, mesh_lats), method="linear")
+        except (QhullError, ValueError):
+            linear = None
+        if linear is None:
+            interpolated = _inverse_distance_station_grid(unique_points, unique_values, lons, lats, np)
+            interpolation_method = "inverse-distance station interpolation (linear SciPy interpolation unavailable)"
+        else:
+            nearest = griddata(unique_points, unique_values, (mesh_lons, mesh_lats), method="nearest")
+            interpolated = np.where(np.isfinite(linear), linear, nearest)
+    if not np.isfinite(interpolated).any():
+        raise AnalogProductError("MRCC/ACIS snowfall interpolation produced no finite grid cells")
+    return seasonal.Grid(lons.tolist(), lats.tolist(), interpolated.tolist()), interpolation_method
+
+
+def _fetch_mrcc_station_grid(
+    fetcher: Callable[[str, int], bytes],
+    period: dict[str, Any],
+    timeout: int,
+    cache: dict[str, dict[str, Any]],
+) -> dict[str, Any]:
+    """Fetch, decode, and interpolate one ACIS snowfall departure field."""
+
+    source_url = _mrcc_station_data_url(period)
+    if source_url in cache:
+        return cache[source_url]
+    content = _fetch_mrcc_json(fetcher, source_url, timeout)
+    stations = _read_mrcc_station_values(content, period)
+    grid, interpolation_method = _interpolate_mrcc_station_grid(stations)
+    asset = {
+        "source_url": source_url,
+        "provider_asset_url": source_url,
+        "grid": grid,
+        "station_count": stations["station_count"],
+        "interpolation": interpolation_method,
+    }
+    cache[source_url] = asset
+    return asset
+
+
+def _fetch_mrcc_json(
+    fetcher: Callable[[str, int], bytes],
+    url: str,
+    timeout: int,
+) -> bytes:
+    """Retry transient ACIS responses without repeating a full map wait."""
+
+    errors: list[str] = []
+    for attempt in range(1, MRCC_REQUEST_ATTEMPTS + 1):
+        try:
+            return fetcher(url, timeout)
+        except AnalogProductError as exc:
+            errors.append(str(exc))
+            if attempt >= MRCC_REQUEST_ATTEMPTS or not _mrcc_retryable(exc):
+                raise
+            time.sleep(MRCC_RETRY_DELAY_SECONDS)
+    raise AnalogProductError(
+        f"MRCC/ACIS request failed after {MRCC_REQUEST_ATTEMPTS} attempts: {' | '.join(errors)}"
     )
 
 
@@ -546,6 +825,81 @@ def _render_writ_grid(
     )
 
 
+def _mrcc_snowfall_render_product_spec(seasonal: Any, period: dict[str, Any], member_count: int) -> dict[str, Any]:
+    """Use the shared renderer with a fixed, readable snowfall-departure scale."""
+
+    if period["period_type"] == "month":
+        anomaly_min, anomaly_max, tick_step = -20.0, 20.0, 2
+    else:
+        anomaly_min, anomaly_max, tick_step = -40.0, 40.0, 4
+    product_spec = dict(seasonal.PRODUCT_SPECS[seasonal.PRODUCT_PRECIPITATION_ANOMALY])
+    title = f"Weighted Top {member_count}-Analog Snowfall Departure (in)"
+    product_spec.update(
+        {
+            "title": title,
+            "absolute_title": title,
+            "height_contours": False,
+            "source_label": "MRCC / ACIS",
+            "header_detail": (
+                "{source_label}  •  {baseline_label}  •  Snowfall departure (in)  •  "
+                f"{MRCC_SNOWFALL_MAP_REGION}"
+            ),
+            "lead_label": "Inverse-distance analog composite",
+            "region": MRCC_SNOWFALL_REGION,
+            "anomaly_min": anomaly_min,
+            "anomaly_max": anomaly_max,
+            "anomaly_ticks": list(range(int(anomaly_min), int(anomaly_max) + tick_step, tick_step)),
+            "anomaly_palette": seasonal.ANOMALY_PALETTE,
+            "anomaly_tick_decimals": 0,
+            "anomaly_tick_format": "signed",
+            "map_domain": "land",
+        }
+    )
+    return product_spec
+
+
+def _render_mrcc_snowfall_grid(
+    *,
+    grid: Any,
+    period: dict[str, Any],
+    output_path: Path,
+    root: Path,
+    target_label: str,
+    member_count: int,
+    footer_text: str,
+) -> dict[str, Any]:
+    """Render an ACIS snowfall grid with the shared seasonal map geometry."""
+
+    try:
+        import cfsv2_seasonal as seasonal
+    except ImportError as exc:  # pragma: no cover - workflow imports this module
+        raise AnalogProductError("the shared seasonal renderer is unavailable") from exc
+    start_date = dt.date.fromisoformat(str(period["start_date"]))
+    product_spec = _mrcc_snowfall_render_product_spec(seasonal, period, member_count)
+    seasonal.render_map(
+        grid=grid,
+        init=f"{start_date:%Y%m%d}00",
+        target=f"{start_date:%Y%m}",
+        lead=period["label"],
+        members=(1,),
+        output_path=output_path,
+        anomaly=True,
+        baseline_label=MRCC_SNOWFALL_BASELINE_LABEL,
+        border_paths=_writ_border_paths(root, seasonal),
+        period_label=target_label,
+        seasonal=period["period_type"] == "djf",
+        ensemble_label=f"{member_count}-analog weighted composite",
+        product_spec=product_spec,
+        initialization_label=f"Historical analog composite · {target_label}",
+        footer_text=footer_text,
+    )
+    return _writ_rendering_metadata(
+        seasonal,
+        region=MRCC_SNOWFALL_REGION,
+        map_region=MRCC_SNOWFALL_MAP_REGION,
+    )
+
+
 def _render_writ_netcdf(
     *,
     content: bytes,
@@ -721,6 +1075,13 @@ def _existing_entries(path: Path) -> dict[tuple[str, str], dict[str, Any]]:
     }
 
 
+def _product_spec(product_key: str) -> dict[str, str]:
+    spec = PRODUCT_SPECS.get(product_key) or COMPOSITE_PRODUCT_SPECS.get(product_key)
+    if spec is None:
+        raise AnalogProductError(f"unknown analog product: {product_key}")
+    return spec
+
+
 def _retained_or_unavailable(
     *,
     root: Path,
@@ -744,8 +1105,8 @@ def _retained_or_unavailable(
         }
     return {
         "product": product_key,
-        "label": PRODUCT_SPECS[product_key]["label"],
-        "provider": PRODUCT_SPECS[product_key]["provider"],
+        "label": _product_spec(product_key)["label"],
+        "provider": _product_spec(product_key)["provider"],
         "status": "unavailable",
         "top_analog_key": top_key,
         "source_url": source_url,
@@ -780,8 +1141,8 @@ def _retained_composite_or_unavailable(
         }
     return {
         "product": product_key,
-        "label": f"Weighted Top {member_count}-Analog Composite · {PRODUCT_SPECS[product_key]['label']}",
-        "provider": PRODUCT_SPECS[product_key]["provider"],
+        "label": f"Weighted Top {member_count}-Analog Composite · {_product_spec(product_key)['label']}",
+        "provider": _product_spec(product_key)["provider"],
         "status": "unavailable",
         "composite_key": composite_key,
         "source_urls": source_urls,
@@ -911,6 +1272,116 @@ def _build_composite_product(
         )
 
 
+def _build_snowfall_composite_product(
+    *,
+    root: Path,
+    output_dir: Path,
+    model: str,
+    target: str,
+    target_label: str,
+    members: list[dict[str, Any]],
+    old: dict[str, Any] | None,
+    fetcher: Callable[[str, int], bytes],
+    timeout: int,
+    station_grid_cache: dict[str, dict[str, Any]],
+) -> dict[str, Any]:
+    """Build a weighted snowfall-departure composite from ACIS stations."""
+
+    product_key = MRCC_SNOWFALL_COMPOSITE_KEY
+    spec = COMPOSITE_PRODUCT_SPECS[product_key]
+    composite_key = f"{_composite_key(model, target, members)}:{MRCC_SNOWFALL_COMPOSITE_VERSION}"
+    source_urls = [_mrcc_station_data_url(member["period"]) for member in members]
+    image_path = output_dir / model / target / "composite" / f"{product_key}.png"
+    if (
+        old
+        and old.get("composite_key") == composite_key
+        and old.get("composite_method") == analogs.COMPOSITE_METHOD
+        and old.get("composite_version") == MRCC_SNOWFALL_COMPOSITE_VERSION
+        and old.get("status") == "ready"
+        and old.get("image")
+        and _resolve_rooted(root, str(old.get("image", ""))).exists()
+    ):
+        return old
+
+    try:
+        station_timeout = max(timeout, MRCC_GENERATION_TIMEOUT_SECONDS)
+        assets = [
+            _fetch_mrcc_station_grid(fetcher, member["period"], station_timeout, station_grid_cache)
+            for member in members
+        ]
+        composite_grid = _average_writ_grids(
+            [asset["grid"] for asset in assets],
+            [float(member["weight"]) for member in members],
+        )
+        interpolation_methods = sorted({str(asset["interpolation"]) for asset in assets})
+        interpolation = (
+            interpolation_methods[0]
+            if len(interpolation_methods) == 1
+            else "mixed: " + "; ".join(interpolation_methods)
+        )
+        footer_lines = [
+            "Weighted analog members: "
+            + "  •  ".join(
+                f"{member['rank']} {member['label']} ({member['weight'] * 100:.1f}%)"
+                for member in members[:3]
+            )
+        ]
+        if len(members) > 3:
+            footer_lines.append(
+                "  •  ".join(
+                    f"{member['rank']} {member['label']} ({member['weight'] * 100:.1f}%)"
+                    for member in members[3:]
+                )
+            )
+        rendering = _render_mrcc_snowfall_grid(
+            grid=composite_grid,
+            period=members[0]["period"],
+            output_path=image_path,
+            root=root,
+            target_label=target_label,
+            member_count=len(members),
+            footer_text="\n".join(footer_lines),
+        )
+        return {
+            "product": product_key,
+            "label": f"Weighted Top {len(members)}-Analog Composite · {spec['label']}",
+            "provider": spec["provider"],
+            "status": "ready",
+            "image": _relative_asset(root, image_path),
+            "composite_key": composite_key,
+            "composite_method": analogs.COMPOSITE_METHOD,
+            "composite_version": MRCC_SNOWFALL_COMPOSITE_VERSION,
+            "composite_pattern_weight": analogs.COMPOSITE_PATTERN_WEIGHT,
+            "composite_amplitude_weight": analogs.COMPOSITE_AMPLITUDE_WEIGHT,
+            "composite_count": len(members),
+            "analog_members": [_composite_member_summary(member) for member in members],
+            "valid_target": target,
+            "valid_target_label": target_label,
+            "source_url": MRCC_MAP_PAGE,
+            "source_urls": source_urls,
+            "provider_asset_urls": source_urls,
+            "dataset": "MRCC / ACIS MultiStnData monthly snowfall departures",
+            "climatology_years": "provider-defined",
+            "climatology_label": MRCC_SNOWFALL_BASELINE_LABEL,
+            "interpolation": f"{interpolation} on a 0.25° grid",
+            "station_counts": [asset["station_count"] for asset in assets],
+            "rendering": rendering,
+            "map_region": MRCC_SNOWFALL_MAP_REGION,
+            "region": list(MRCC_SNOWFALL_REGION),
+            "generated_utc": _now_iso(),
+        }
+    except (AnalogProductError, OSError, TypeError, ValueError) as exc:
+        return _retained_composite_or_unavailable(
+            root=root,
+            old=old,
+            product_key=product_key,
+            composite_key=composite_key,
+            source_urls=source_urls,
+            member_count=len(members),
+            error=str(exc),
+        )
+
+
 def _build_product(
     *,
     root: Path,
@@ -1021,6 +1492,7 @@ def build_manifest(
     climatology_years = str(source.get("climatology_years") or "unspecified")
     entries: list[dict[str, Any]] = []
     writ_grid_cache: dict[str, dict[str, Any]] = {}
+    station_grid_cache: dict[str, dict[str, Any]] = {}
     for raw in analog_manifest.get("entries", []):
         if not isinstance(raw, dict) or str(raw.get("model")) not in MODEL_LABELS:
             continue
@@ -1055,22 +1527,34 @@ def build_manifest(
             for key in PRODUCT_SPECS
         }
         composite_members = _composite_members(target, results)
-        composites = {
-            key: _build_composite_product(
+        composites: dict[str, dict[str, Any]] = {}
+        if composite_members:
+            for key in COMPOSITE_PRODUCT_KEYS:
+                composites[key] = _build_composite_product(
+                    root=root,
+                    output_dir=output_dir,
+                    model=model,
+                    target=target,
+                    target_label=str(raw.get("target_label") or target),
+                    members=composite_members,
+                    product_key=key,
+                    old=old_composites.get(key) if isinstance(old_composites, dict) else None,
+                    fetcher=fetcher,
+                    timeout=timeout,
+                    grid_cache=writ_grid_cache,
+                )
+            composites[MRCC_SNOWFALL_COMPOSITE_KEY] = _build_snowfall_composite_product(
                 root=root,
                 output_dir=output_dir,
                 model=model,
                 target=target,
                 target_label=str(raw.get("target_label") or target),
                 members=composite_members,
-                product_key=key,
-                old=old_composites.get(key) if isinstance(old_composites, dict) else None,
+                old=old_composites.get(MRCC_SNOWFALL_COMPOSITE_KEY) if isinstance(old_composites, dict) else None,
                 fetcher=fetcher,
                 timeout=timeout,
-                grid_cache=writ_grid_cache,
+                station_grid_cache=station_grid_cache,
             )
-            for key in COMPOSITE_PRODUCT_KEYS
-        } if composite_members else {}
         statuses = {str(product.get("status")) for product in products.values()}
         statuses.update(str(product.get("status")) for product in composites.values())
         entry_status = "ready" if statuses == {"ready"} else "stale" if "stale" in statuses else "partial" if "ready" in statuses else "unavailable"
@@ -1127,8 +1611,11 @@ def build_manifest(
                 "method": analogs.COMPOSITE_METHOD,
                 "pattern_weight": analogs.COMPOSITE_PATTERN_WEIGHT,
                 "amplitude_weight": analogs.COMPOSITE_AMPLITUDE_WEIGHT,
-                "products": list(COMPOSITE_PRODUCT_KEYS),
-                "snowfall": "rank-1 only; MRCC publishes a rendered image rather than a numeric field",
+                "products": list(ANALOG_COMPOSITE_PRODUCT_KEYS),
+                "snowfall": "weighted top-N composite uses MRCC/ACIS station departures; rendered MRCC map remains rank-1",
+                "snowfall_provider": MRCC_SNOWFALL_PROVIDER_LABEL,
+                "snowfall_data": MRCC_ACIS_MULTI_STATION_URL,
+                "snowfall_interpolation": "linear station interpolation with nearest-neighbor edge fill on a 0.25° grid; NumPy inverse-distance fallback is recorded per product when SciPy is unavailable",
             },
         },
         "status": overall,
