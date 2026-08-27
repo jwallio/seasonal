@@ -79,41 +79,42 @@ MRCC_SNOWFALL_MASK_STATE_NAMES = tuple(
     MRCC_SNOWFALL_STATE_NAMES[state] for state in MRCC_SNOWFALL_SOURCE_STATES
 )
 MRCC_SNOWFALL_MAP_REGION = "NWS Eastern Region"
-MRCC_SNOWFALL_MAP_EXTENT = "Zoomed Eastern U.S. frame through the Great Lakes and Southeast"
-MRCC_SNOWFALL_REGION = (-89.5, -65.0, 29.0, 49.0)
+MRCC_SNOWFALL_MAP_EXTENT = "Domain-fitted eastern U.S. frame through the Great Lakes and Southeast"
+MRCC_SNOWFALL_REGION = (-88.5, -65.5, 31.0, 47.5)
 MRCC_SNOWFALL_GRID_STEP = 0.25
 MRCC_MIN_STATIONS_FOR_COMPOSITE = 12
 MRCC_SNOWFALL_COMPOSITE_KEY = "mrcc_snowfall_departure_composite"
-MRCC_SNOWFALL_COMPOSITE_VERSION = "mrcc-acis-snow-v3-eastern-zoom"
+MRCC_SNOWFALL_COMPOSITE_VERSION = "mrcc-acis-snow-v6-eastern-domain-fit"
 MRCC_SNOWFALL_PROVIDER_LABEL = "MRCC / ACIS station-interpolated snowfall departure"
 MRCC_SNOWFALL_BASELINE_LABEL = "MRCC / ACIS provider snowfall departure (normal supplied by ACIS)"
-MRCC_SNOWFALL_RENDERER_ID = "wn2-seasonal-eastern-snow-v3"
-MRCC_SNOWFALL_RENDERER_LABEL = "WN2 centered zoomed eastern U.S. snowfall departure renderer"
-# Signed departures use warm colors below normal and the vivid WN2 blue-to-
-# violet snow colors above normal. This keeps small signals readable instead
-# of assigning the center bins the nearly-white colors used by the generic
-# seasonal anomaly palette.
+MRCC_SNOWFALL_RENDERER_ID = "wn2-seasonal-eastern-snow-v6"
+MRCC_SNOWFALL_RENDERER_LABEL = "WN2 centered domain-fitted eastern U.S. snowfall departure renderer"
+# Signed departures use the requested warm-below-normal and cool-above-normal
+# sequence, with a dedicated white neutral interval around zero. Keeping the
+# center interval explicit prevents small signals from being washed out while
+# preserving an honest zero reference.
 MRCC_SNOWFALL_DEPARTURE_PALETTE = [
-    "#b2182b",
-    "#d7301f",
-    "#e34a33",
-    "#ef6548",
-    "#f46d43",
-    "#fdae61",
-    "#fdb863",
-    "#fec44f",
-    "#ffd166",
-    "#d9e36a",
-    "#63c2ff",
-    "#45a6ef",
-    "#2d84df",
-    "#1f66cc",
-    "#516dd0",
-    "#6b52c6",
-    "#8540be",
-    "#9d36b7",
-    "#b93db8",
-    "#d451bb",
+    "#704214",
+    "#7f1d1d",
+    "#a61b1b",
+    "#c53022",
+    "#dc4b1f",
+    "#ed6a1f",
+    "#f28e2b",
+    "#f6ad3d",
+    "#f8c44f",
+    "#f5df75",
+    "#ffffff",
+    "#c9e9f2",
+    "#94d5e6",
+    "#62b6df",
+    "#3c8ecb",
+    "#225ca8",
+    "#2f3b9d",
+    "#593caa",
+    "#8d3db7",
+    "#d34ba9",
+    "#18c5d5",
 ]
 MRCC_SNOWFALL_STATION_NETWORKS = (
     "wban",
@@ -900,8 +901,20 @@ def _mrcc_snowfall_render_product_spec(seasonal: Any, period: dict[str, Any], me
 
     if period["period_type"] == "month":
         anomaly_min, anomaly_max, tick_step = -20.0, 20.0, 2
+        anomaly_ticks = list(range(int(anomaly_min), int(anomaly_max) + tick_step, tick_step))
+        anomaly_bounds = (
+            list(range(int(anomaly_min), 0, tick_step))
+            + [-1, 1]
+            + list(range(2, int(anomaly_max) + 1, tick_step))
+        )
     else:
         anomaly_min, anomaly_max, tick_step = -40.0, 40.0, 4
+        anomaly_ticks = list(range(int(anomaly_min), int(anomaly_max) + tick_step, tick_step))
+        anomaly_bounds = (
+            list(range(int(anomaly_min), 0, tick_step))
+            + [-2, 2]
+            + list(range(4, int(anomaly_max) + 1, tick_step))
+        )
     product_spec = dict(seasonal.PRODUCT_SPECS[seasonal.PRODUCT_PRECIPITATION_ANOMALY])
     title = f"Weighted Top {member_count}-Analog Snowfall Departure (in)"
     product_spec.update(
@@ -910,27 +923,31 @@ def _mrcc_snowfall_render_product_spec(seasonal: Any, period: dict[str, Any], me
             "absolute_title": title,
             "height_contours": False,
             "source_label": "MRCC / ACIS",
-            "header_detail": (
-                "{source_label}  •  {baseline_label}  •  Snowfall departure (in)  •  "
+            "header_summary": (
+                f"MRCC / ACIS  •  {member_count}-member inverse-distance analog blend  •  "
                 f"{MRCC_SNOWFALL_MAP_REGION}"
             ),
+            "suppress_header_detail": True,
             "map_extent": MRCC_SNOWFALL_MAP_EXTENT,
             "lead_label": "Inverse-distance analog composite",
             "region": MRCC_SNOWFALL_REGION,
             "anomaly_min": anomaly_min,
             "anomaly_max": anomaly_max,
-            "anomaly_ticks": list(range(int(anomaly_min), int(anomaly_max) + tick_step, tick_step)),
+            "anomaly_ticks": anomaly_ticks,
+            "anomaly_bounds": anomaly_bounds,
             "anomaly_palette": list(MRCC_SNOWFALL_DEPARTURE_PALETTE),
             "anomaly_tick_decimals": 0,
             "anomaly_tick_format": "signed",
             "map_domain": "land",
+            "fit_frame_to_domain": True,
+            "domain_frame_padding_fraction": 0.0,
             "mask_states": list(MRCC_SNOWFALL_MASK_STATE_NAMES),
             "border_files": ("us-states.geojson",),
-            "projection_standard_parallel_1": 30.0,
-            "projection_standard_parallel_2": 60.0,
+            "projection_standard_parallel_1": 33.0,
+            "projection_standard_parallel_2": 45.0,
             "projection_latitude_origin": 39.0,
             "projection_central_longitude": -77.5,
-            "projected_x_shift_fraction": 0.07,
+            "projected_x_shift_fraction": 0.0,
         }
     )
     return product_spec

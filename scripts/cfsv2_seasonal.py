@@ -1790,17 +1790,51 @@ def render_map(
             ~land_mask if map_domain == "land" else land_mask,
             masked,
         )
+        if product_spec.get("fit_frame_to_domain"):
+            if map_domain != "land":
+                raise CFSv2Error("fit_frame_to_domain requires a land-only product")
+            domain_points = land_mask & np.isfinite(data)
+            if not np.any(domain_points):
+                raise CFSv2Error("fit_frame_to_domain found no finite land cells")
+            domain_x = canvas_x_mesh[domain_points]
+            domain_y = canvas_y_mesh[domain_points]
+            x_min = float(np.nanmin(domain_x))
+            x_max = float(np.nanmax(domain_x))
+            y_min = float(np.nanmin(domain_y))
+            y_max = float(np.nanmax(domain_y))
+            frame_padding_fraction = float(
+                product_spec.get("domain_frame_padding_fraction", 0.0)
+            )
+            if not math.isfinite(frame_padding_fraction) or frame_padding_fraction < 0.0:
+                raise CFSv2Error("domain_frame_padding_fraction must be a finite non-negative number")
+            x_pad = (x_max - x_min) * frame_padding_fraction
+            y_pad = (y_max - y_min) * frame_padding_fraction
+            map_height = map_width * (y_max - y_min) / (x_max - x_min)
+            if map_height > map_height_limit:
+                map_height = map_height_limit
+                map_width = map_height * (x_max - x_min) / (y_max - y_min)
+                map_left = (1.0 - map_width) / 2.0
+            map_bottom = map_top - map_height
+            axes.set_position([map_left, map_bottom, map_width, map_height])
     if anomaly:
         anomaly_min, anomaly_max, colorbar_ticks, palette = anomaly_style(
             product_spec,
             seasonal=seasonal,
         )
-        # Use one color interval for every labelled tick-to-tick range. This
-        # keeps the labels and tick marks on the actual color transitions
-        # instead of drifting into the middle of adjacent swatches.
-        bounds = np.asarray(colorbar_ticks, dtype=float)
-        if bounds.size != len(palette) + 1:
-            raise CFSv2Error("anomaly palette must have one fewer color than labelled bounds")
+        # Most products use their labelled ticks as color transitions. A
+        # regional product may provide separate boundaries when a labelled
+        # neutral value needs to sit inside a dedicated center swatch (for
+        # example, snowfall departures with white at zero).
+        boundary_values = product_spec.get("anomaly_bounds", colorbar_ticks)
+        bounds = np.asarray(boundary_values, dtype=float)
+        if (
+            bounds.ndim != 1
+            or bounds.size != len(palette) + 1
+            or np.any(np.diff(bounds) <= 0.0)
+        ):
+            raise CFSv2Error(
+                "anomaly palette must have one fewer color than strictly increasing boundaries"
+            )
         cmap = mcolors.ListedColormap(palette)
         norm = mcolors.BoundaryNorm(bounds, cmap.N, clip=True)
         image = axes.contourf(
@@ -1993,49 +2027,61 @@ def render_map(
     available_title_width = max(1.0, valid_box.x0 - title_box.x0 - 16.0)
     if title_box.width > available_title_width:
         title_text.set_fontsize(max(12.5, 15.5 * available_title_width / title_box.width))
-    init_text = initialization_label or f"Init {init_date:%d %b %Y %HZ}"
-    lead_label = str(product_spec.get("lead_label", f"Lead {lead}"))
+    source_label = product_spec.get("source_label", "NOAA CFSv2 / NOMADS")
+    configured_header_summary = product_spec.get("header_summary")
+    if configured_header_summary:
+        header_summary = str(configured_header_summary).format(
+            source_label=source_label,
+            baseline_label=(
+                "Absolute field smoke output" if not anomaly else baseline_label
+            ),
+            period_label=display_period,
+        )
+    else:
+        init_text = initialization_label or f"Init {init_date:%d %b %Y %HZ}"
+        lead_label = str(product_spec.get("lead_label", f"Lead {lead}"))
+        header_summary = f"{init_text}  •  {lead_label}  •  {mean_label}"
     figure.text(
         0.035,
         0.925,
-        f"{init_text}  •  {lead_label}  •  {mean_label}",
+        header_summary,
         ha="left",
         va="center",
         fontsize=10.5,
         color="#42515d",
     )
-    source_label = product_spec.get("source_label", "NOAA CFSv2 / NOMADS")
-    configured_header_detail = product_spec.get("header_detail", "")
-    if configured_header_detail:
-        header_detail = configured_header_detail.format(
-            source_label=source_label,
-            baseline_label=(
-                "Absolute field smoke output" if not anomaly else baseline_label
-            ),
+    if not product_spec.get("suppress_header_detail"):
+        configured_header_detail = product_spec.get("header_detail", "")
+        if configured_header_detail:
+            header_detail = configured_header_detail.format(
+                source_label=source_label,
+                baseline_label=(
+                    "Absolute field smoke output" if not anomaly else baseline_label
+                ),
+            )
+        elif product_spec["height_contours"]:
+            header_detail = (
+                f"{source_label}  •  {baseline_label}  •  Height contours in dam"
+                if anomaly
+                else f"{source_label}  •  Absolute field smoke output  •  Height contours in dam"
+            )
+        else:
+            header_detail = (
+                f"{source_label}  •  {baseline_label}  •  Precipitation accumulation (in)  •  CONUS domain"
+            )
+        if product_spec["name"] == PRODUCT_SWE_ANOMALY:
+            header_detail = (
+                f"{source_label}  •  {baseline_label}  •  Snow-water equivalent (in)  •  CONUS domain"
+            )
+        figure.text(
+            0.035,
+            0.899,
+            header_detail,
+            ha="left",
+            va="center",
+            fontsize=8.2,
+            color="#5d6b75",
         )
-    elif product_spec["height_contours"]:
-        header_detail = (
-            f"{source_label}  •  {baseline_label}  •  Height contours in dam"
-            if anomaly
-            else f"{source_label}  •  Absolute field smoke output  •  Height contours in dam"
-        )
-    else:
-        header_detail = (
-            f"{source_label}  •  {baseline_label}  •  Precipitation accumulation (in)  •  CONUS domain"
-        )
-    if product_spec["name"] == PRODUCT_SWE_ANOMALY:
-        header_detail = (
-            f"{source_label}  •  {baseline_label}  •  Snow-water equivalent (in)  •  CONUS domain"
-        )
-    figure.text(
-        0.035,
-        0.899,
-        header_detail,
-        ha="left",
-        va="center",
-        fontsize=8.2,
-        color="#5d6b75",
-    )
     colorbar_bottom = max(colorbar_floor, map_bottom - colorbar_gap - colorbar_height)
     colorbar_axes = figure.add_axes([map_left, colorbar_bottom, map_width, colorbar_height])
     colorbar_options = {"ticks": colorbar_ticks}
