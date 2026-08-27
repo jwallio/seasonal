@@ -78,7 +78,7 @@ jobs:
           mkdir -p .cache/cfsv2
           published_manifest=".cache/cfsv2/previous_manifest.json"
           temporary_manifest="${published_manifest}.tmp"
-          pages_url="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/seasonal/cfsv2_manifest.json"
+          pages_url="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/cfsv2_manifest.json"
           if curl -fsSL --retry 2 --connect-timeout 10 "$pages_url" -o "$temporary_manifest"; then
             mv "$temporary_manifest" "$published_manifest"
             echo "Restored prior CFSv2 manifest for current-plus-three retention per parameter."
@@ -165,7 +165,7 @@ jobs:
               --previous-manifest .cache/cfsv2/previous_manifest.json
               --retain-runs 4
               --common-reference-dir .cache/cfsv2/common-reference
-              --common-reference-url "https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/seasonal/common_reference/1991-2020/"
+              --common-reference-url "https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/common_reference/1991-2020/"
               --request-delay 2
             )
             if [[ "$product" == "500mb_height_absolute" ]]; then

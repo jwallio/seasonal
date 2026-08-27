@@ -41,24 +41,24 @@ def main() -> int:
         "Check scheduled source freshness",
         "needs_build=",
         "steps.freshness.outputs.needs_build",
-        "site\\seasonal\\cfsv2_manifest.json",
-        "site\\seasonal\\superensemble_manifest.json",
+        "site\\cfsv2_manifest.json",
+        "site\\superensemble_manifest.json",
     ):
         check(term in workflow, f"analog workflow is missing term: {term}")
     for term in (
         "Seasonal 500-mb Pattern Analogs",
         "analog-pages-",
         "incoming/analogs",
-        "seasonal/analog_z500_manifest.json",
-        "seasonal/analog_products_manifest.json",
-        "seasonal/analog_products",
+        "analog_z500_manifest.json",
+        "analog_products_manifest.json",
+        "analog_products",
     ):
         check(term in publisher, f"Pages publisher is missing analog term: {term}")
     check("cancel-in-progress: false" in workflow, "analog builds must not cancel a prior archive read")
     check("timeout-minutes: 120" in workflow, "analog builds must allow slow MRCC map generation to finish")
     check("github.event_name == 'schedule'" in workflow, "analog workflow must reconcile scheduled source updates")
     check("github.event_name != 'schedule'" in workflow, "scheduled freshness checks must not affect source-triggered builds")
-    check("site\\seasonal\\analog_products\\*" in workflow, "analog payload must copy product contents without an extra directory level")
+    check("pages-payload\\analog_products" in workflow, "flat analog payload must copy product contents without an extra directory level")
     check("previous Pages artifact" in workflow, "workflow must document retained-artifact fallback")
     print("SEASONAL ANALOG WORKFLOW OK: self-hosted archive access, source handoff, and serialized Pages publish")
     return 0

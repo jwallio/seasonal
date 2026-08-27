@@ -189,6 +189,24 @@ def main() -> int:
         check(fallback_health["available"], "failed latest run should still report retained map availability")
         check(fallback_health["selected_run_id"] == "cfsv2-retained", "health report should identify the retained run")
 
+        flat_site = site / "flat-pages"
+        flat_image = flat_site / "cfsv2" / "map.jpg"
+        flat_image.parent.mkdir(parents=True)
+        flat_image.write_bytes(b"flat-test-image")
+        flat_manifest_path = flat_site / "cfsv2_manifest.json"
+        flat_manifest_path.write_text(json.dumps(manifest()), encoding="utf-8")
+        flat_catalog = build_catalog(
+            flat_site,
+            model_keys=["cfsv2"],
+            generated_utc="2026-08-23T12:00:00Z",
+            source_revision="test-revision",
+        )
+        flat_model = flat_catalog["models"]["cfsv2"]
+        check(flat_model["manifest"] == "cfsv2_manifest.json", "flat catalog should publish the manifest at the Pages root")
+        check(flat_model["direct"] == "cfsv2/", "flat catalog should publish the direct viewer at the Pages root")
+        flat_target = flat_model["runs"][0]["targets"][0]
+        check(flat_target["image"] == "cfsv2/map.jpg", "flat catalog should publish asset paths without a duplicate seasonal prefix")
+
         image.unlink()
         _, validation = validate_manifest("cfsv2", manifest(), site_root=site, check_assets=True)
         check("asset_missing" in validation["issue_codes"], "missing rendered assets must fail catalog validation")

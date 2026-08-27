@@ -44,9 +44,13 @@ def _resolve_asset(root: Path, value: str) -> Path:
     options = [root / candidate]
     text = candidate.as_posix()
     if text.startswith("public/"):
-        options.append(root / text.removeprefix("public/"))
+        published = text.removeprefix("public/")
+        options.append(root / published)
+        if published.startswith("seasonal/"):
+            options.append(root / published.removeprefix("seasonal/"))
     elif text.startswith("seasonal/"):
         options.append(root / "public" / text)
+        options.append(root / text.removeprefix("seasonal/"))
     for option in options:
         if option.exists():
             return option

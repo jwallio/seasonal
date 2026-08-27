@@ -102,7 +102,7 @@ jobs:
           mkdir -p .cache/c3s
           published_manifest=".cache/c3s/previous_manifest.json"
           temporary_manifest="${published_manifest}.tmp"
-          pages_url="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/seasonal/c3s_manifest.json"
+          pages_url="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/c3s_manifest.json"
           if curl -fsSL --retry 2 --connect-timeout 10 "$pages_url" -o "$temporary_manifest"; then
             mv "$temporary_manifest" "$published_manifest"
             echo "Restored prior C3S manifest."

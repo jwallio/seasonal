@@ -46,6 +46,15 @@ jobs:
           path: site
           fetch-depth: 1
 
+      - name: Resolve seasonal Pages root
+        shell: powershell
+        run: |
+          $flatManifest = (Test-Path -LiteralPath 'site\cfsv2_manifest.json') -or (Test-Path -LiteralPath 'site\superensemble_manifest.json')
+          $nestedManifest = (Test-Path -LiteralPath 'site\seasonal\cfsv2_manifest.json') -or (Test-Path -LiteralPath 'site\seasonal\superensemble_manifest.json')
+          $seasonalRoot = if ($flatManifest) { 'site' } elseif ($nestedManifest) { 'site\seasonal' } else { 'site' }
+          "SEASONAL_SITE_ROOT=$seasonalRoot" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          Write-Host "Seasonal Pages root: $seasonalRoot"
+
       - name: Download fresh CFSv2 payload
         if: ${{ env.SOURCE_WORKFLOW == 'CFSv2 Rolling Seasonal Graphics' }}
         uses: actions/download-artifact@v4
@@ -78,9 +87,10 @@ jobs:
             $manifest = Join-Path $payload 'cfsv2_manifest.json'
             $modelDir = Join-Path $payload 'cfsv2'
             if (-not (Test-Path -LiteralPath $manifest) -or -not (Test-Path -LiteralPath $modelDir)) { throw "Fresh CFSv2 payload is incomplete: $payload" }
-            New-Item -ItemType Directory -Force -Path 'site\seasonal\cfsv2' | Out-Null
-            Copy-Item -LiteralPath $manifest -Destination 'site\seasonal\cfsv2_manifest.json' -Force
-            Copy-Item -Path (Join-Path $modelDir '*') -Destination 'site\seasonal\cfsv2' -Recurse -Force
+            $seasonalRoot = $env:SEASONAL_SITE_ROOT
+            New-Item -ItemType Directory -Force -Path (Join-Path $seasonalRoot 'cfsv2') | Out-Null
+            Copy-Item -LiteralPath $manifest -Destination (Join-Path $seasonalRoot 'cfsv2_manifest.json') -Force
+            Copy-Item -Path (Join-Path $modelDir '*') -Destination (Join-Path $seasonalRoot 'cfsv2') -Recurse -Force
           } elseif ($source -eq 'Deduplicated Seasonal Super Ensemble') {
             $payload = Join-Path $PWD 'incoming\superensemble'
             if (Test-Path (Join-Path $payload 'pages-payload')) { $payload = Join-Path $payload 'pages-payload' }
@@ -88,9 +98,10 @@ jobs:
             $manifest = Join-Path $payload 'superensemble_manifest.json'
             $modelDir = Join-Path $payload 'superensemble'
             if (-not (Test-Path -LiteralPath $manifest) -or -not (Test-Path -LiteralPath $modelDir)) { throw "Fresh Super Ensemble payload is incomplete: $payload" }
-            New-Item -ItemType Directory -Force -Path 'site\seasonal\superensemble' | Out-Null
-            Copy-Item -LiteralPath $manifest -Destination 'site\seasonal\superensemble_manifest.json' -Force
-            Copy-Item -Path (Join-Path $modelDir '*') -Destination 'site\seasonal\superensemble' -Recurse -Force
+            $seasonalRoot = $env:SEASONAL_SITE_ROOT
+            New-Item -ItemType Directory -Force -Path (Join-Path $seasonalRoot 'superensemble') | Out-Null
+            Copy-Item -LiteralPath $manifest -Destination (Join-Path $seasonalRoot 'superensemble_manifest.json') -Force
+            Copy-Item -Path (Join-Path $modelDir '*') -Destination (Join-Path $seasonalRoot 'superensemble') -Recurse -Force
           } else {
             throw "Unsupported source workflow: $source"
           }
@@ -103,7 +114,8 @@ jobs:
           $usableStatuses = @('rendered', 'partial', 'decoded')
           $needsBuild = $false
           $reasons = @()
-          $analogPath = 'site\seasonal\analog_z500_manifest.json'
+          $seasonalRoot = $env:SEASONAL_SITE_ROOT
+          $analogPath = Join-Path $seasonalRoot 'analog_z500_manifest.json'
           $analog = $null
 
           if (-not (Test-Path -LiteralPath $analogPath)) {
@@ -119,8 +131,8 @@ jobs:
           }
 
           $sources = @(
-            @{ key = 'cfsv2'; path = 'site\seasonal\cfsv2_manifest.json' },
-            @{ key = 'superensemble'; path = 'site\seasonal\superensemble_manifest.json' }
+            @{ key = 'cfsv2'; path = (Join-Path $seasonalRoot 'cfsv2_manifest.json') },
+            @{ key = 'superensemble'; path = (Join-Path $seasonalRoot 'superensemble_manifest.json') }
           )
           foreach ($sourceSpec in $sources) {
             if (-not (Test-Path -LiteralPath $sourceSpec.path)) {
@@ -192,34 +204,53 @@ jobs:
             & $python -m pip install --disable-pip-version-check --quiet numpy xarray zarr dask scipy
             if ($LASTEXITCODE -ne 0) { throw 'Could not install the AnalogWX archive reader dependencies.' }
           }
+          $seasonalRoot = $env:SEASONAL_SITE_ROOT
+          $relativeRoot = if ($seasonalRoot -eq 'site') { '' } else { 'seasonal' }
+          $analogRelative = if ($relativeRoot) { Join-Path $relativeRoot 'analog_z500_manifest.json' } else { 'analog_z500_manifest.json' }
+          $productsRelative = if ($relativeRoot) { Join-Path $relativeRoot 'analog_products_manifest.json' } else { 'analog_products_manifest.json' }
+          $productsRelativeDir = if ($relativeRoot) { Join-Path $relativeRoot 'analog_products' } else { 'analog_products' }
+          $analogManifest = Join-Path 'site' $analogRelative
+          $productsManifest = Join-Path 'site' $productsRelative
+          $productsDir = Join-Path 'site' $productsRelativeDir
           & $python source\scripts\build_seasonal_analogs.py `
             --root site `
             --archive $archive `
             --models cfsv2,superensemble `
             --top-n 10 `
-            --output seasonal\analog_z500_manifest.json
+            --output $analogRelative
           if ($LASTEXITCODE -ne 0) { throw 'Analog manifest generation failed; the previous Pages artifact will be retained.' }
-          if (-not (Test-Path -LiteralPath 'site\seasonal\analog_z500_manifest.json')) { throw 'Analog manifest was not written.' }
+          if (-not (Test-Path -LiteralPath $analogManifest)) { throw 'Analog manifest was not written.' }
 
           & $python source\scripts\build_analog_products.py `
             --root site `
-            --analog-manifest seasonal\analog_z500_manifest.json `
-            --output seasonal\analog_products_manifest.json `
-            --output-dir seasonal\analog_products
+            --analog-manifest $analogRelative `
+            --output $productsRelative `
+            --output-dir $productsRelativeDir
           if ($LASTEXITCODE -ne 0) { throw 'Analog product manifest generation failed; the previous Pages artifact will be retained.' }
-          if (-not (Test-Path -LiteralPath 'site\seasonal\analog_products_manifest.json')) { throw 'Analog product manifest was not written.' }
+          if (-not (Test-Path -LiteralPath $productsManifest)) { throw 'Analog product manifest was not written.' }
 
       - name: Package analog Pages payload
         shell: powershell
         run: |
-          if (-not (Test-Path -LiteralPath 'site\seasonal\analog_z500_manifest.json')) { throw 'Analog manifest is missing.' }
-          if (-not (Test-Path -LiteralPath 'site\seasonal\analog_products_manifest.json')) { throw 'Analog product manifest is missing.' }
-          if (-not (Test-Path -LiteralPath 'site\seasonal\analog_products')) { throw 'Analog product directory is missing.' }
-          New-Item -ItemType Directory -Force -Path 'pages-payload\seasonal' | Out-Null
-          New-Item -ItemType Directory -Force -Path 'pages-payload\seasonal\analog_products' | Out-Null
-          Copy-Item -LiteralPath 'site\seasonal\analog_z500_manifest.json' -Destination 'pages-payload\seasonal\analog_z500_manifest.json' -Force
-          Copy-Item -LiteralPath 'site\seasonal\analog_products_manifest.json' -Destination 'pages-payload\seasonal\analog_products_manifest.json' -Force
-          Copy-Item -Path 'site\seasonal\analog_products\*' -Destination 'pages-payload\seasonal\analog_products' -Recurse -Force
+          $seasonalRoot = $env:SEASONAL_SITE_ROOT
+          $analogManifest = Join-Path $seasonalRoot 'analog_z500_manifest.json'
+          $productsManifest = Join-Path $seasonalRoot 'analog_products_manifest.json'
+          $productsDir = Join-Path $seasonalRoot 'analog_products'
+          if (-not (Test-Path -LiteralPath $analogManifest)) { throw 'Analog manifest is missing.' }
+          if (-not (Test-Path -LiteralPath $productsManifest)) { throw 'Analog product manifest is missing.' }
+          if (-not (Test-Path -LiteralPath $productsDir)) { throw 'Analog product directory is missing.' }
+          if ($seasonalRoot -eq 'site') {
+            $payloadRoot = 'pages-payload'
+            $payloadProducts = 'pages-payload\analog_products'
+          } else {
+            $payloadRoot = 'pages-payload\seasonal'
+            $payloadProducts = 'pages-payload\seasonal\analog_products'
+          }
+          New-Item -ItemType Directory -Force -Path $payloadRoot | Out-Null
+          New-Item -ItemType Directory -Force -Path $payloadProducts | Out-Null
+          Copy-Item -LiteralPath $analogManifest -Destination (Join-Path $payloadRoot 'analog_z500_manifest.json') -Force
+          Copy-Item -LiteralPath $productsManifest -Destination (Join-Path $payloadRoot 'analog_products_manifest.json') -Force
+          Copy-Item -Path (Join-Path $productsDir '*') -Destination $payloadProducts -Recurse -Force
 
       - name: Upload analog Pages payload
         uses: actions/upload-artifact@v4
