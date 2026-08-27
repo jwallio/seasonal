@@ -79,16 +79,16 @@ MRCC_SNOWFALL_MASK_STATE_NAMES = tuple(
     MRCC_SNOWFALL_STATE_NAMES[state] for state in MRCC_SNOWFALL_SOURCE_STATES
 )
 MRCC_SNOWFALL_MAP_REGION = "NWS Eastern Region"
-MRCC_SNOWFALL_MAP_EXTENT = "Broad Eastern U.S. frame through the Great Lakes and Southeast"
-MRCC_SNOWFALL_REGION = (-90.0, -64.0, 27.0, 50.0)
+MRCC_SNOWFALL_MAP_EXTENT = "Zoomed Eastern U.S. frame through the Great Lakes and Southeast"
+MRCC_SNOWFALL_REGION = (-89.5, -65.0, 29.0, 49.0)
 MRCC_SNOWFALL_GRID_STEP = 0.25
 MRCC_MIN_STATIONS_FOR_COMPOSITE = 12
 MRCC_SNOWFALL_COMPOSITE_KEY = "mrcc_snowfall_departure_composite"
-MRCC_SNOWFALL_COMPOSITE_VERSION = "mrcc-acis-snow-v2-eastern-frame"
+MRCC_SNOWFALL_COMPOSITE_VERSION = "mrcc-acis-snow-v3-eastern-zoom"
 MRCC_SNOWFALL_PROVIDER_LABEL = "MRCC / ACIS station-interpolated snowfall departure"
 MRCC_SNOWFALL_BASELINE_LABEL = "MRCC / ACIS provider snowfall departure (normal supplied by ACIS)"
-MRCC_SNOWFALL_RENDERER_ID = "wn2-seasonal-eastern-snow-v2"
-MRCC_SNOWFALL_RENDERER_LABEL = "WN2 centered eastern U.S. snowfall departure renderer"
+MRCC_SNOWFALL_RENDERER_ID = "wn2-seasonal-eastern-snow-v3"
+MRCC_SNOWFALL_RENDERER_LABEL = "WN2 centered zoomed eastern U.S. snowfall departure renderer"
 # Signed departures use warm colors below normal and the vivid WN2 blue-to-
 # violet snow colors above normal. This keeps small signals readable instead
 # of assigning the center bins the nearly-white colors used by the generic
@@ -929,8 +929,8 @@ def _mrcc_snowfall_render_product_spec(seasonal: Any, period: dict[str, Any], me
             "projection_standard_parallel_1": 30.0,
             "projection_standard_parallel_2": 60.0,
             "projection_latitude_origin": 39.0,
-            "projection_central_longitude": -77.0,
-            "projected_x_shift_fraction": 0.0,
+            "projection_central_longitude": -77.5,
+            "projected_x_shift_fraction": 0.07,
         }
     )
     return product_spec

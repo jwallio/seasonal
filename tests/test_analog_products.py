@@ -98,7 +98,7 @@ def main() -> int:
         and station_element["reduce"] == "sum",
         "ACIS snowfall departure controls are wrong",
     )
-    check(module.MRCC_SNOWFALL_REGION == (-90.0, -64.0, 27.0, 50.0), "snowfall map should use the broad eastern frame")
+    check(module.MRCC_SNOWFALL_REGION == (-89.5, -65.0, 29.0, 49.0), "snowfall map should use the zoomed eastern frame")
     check(
         len(module.MRCC_SNOWFALL_DEPARTURE_PALETTE) == 20,
         "snowfall departure palette should match the 20 signed intervals",
@@ -113,9 +113,9 @@ def main() -> int:
 
     snow_spec = module._mrcc_snowfall_render_product_spec(seasonal, djf, 5)
     check(
-        snow_spec["projection_central_longitude"] == -77.0
+        snow_spec["projection_central_longitude"] == -77.5
         and snow_spec["projection_latitude_origin"] == 39.0
-        and snow_spec["projected_x_shift_fraction"] == 0.0,
+        and snow_spec["projected_x_shift_fraction"] == 0.07,
         "snowfall map should use the centered eastern projection",
     )
     check(
