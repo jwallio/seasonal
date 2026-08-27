@@ -735,7 +735,7 @@ function renderAnalogProducts(card, modelKey, targetKey) {
     return;
   }
 
-  const compositeKeys = ['psl_500mb_height_anomaly', 'psl_2m_temperature_anomaly'];
+  const compositeKeys = ['psl_500mb_height_anomaly', 'psl_2m_temperature_anomaly', 'mrcc_snowfall_departure_composite'];
   const compositeProducts = compositeKeys.map(key => entry.composites?.[key]).filter(Boolean);
   if (entry.composite?.count >= 2 || compositeProducts.length) {
     const compositeSection = document.createElement('div');
@@ -746,7 +746,7 @@ function renderAnalogProducts(card, modelKey, targetKey) {
     compositeSection.appendChild(compositeHeading);
     const compositeNote = document.createElement('p');
     compositeNote.className = 'analog-product-note';
-    compositeNote.textContent = 'Inverse-distance weights use 80% pattern similarity and 20% amplitude similarity. MRCC snowfall remains from the rank-1 analog.';
+    compositeNote.textContent = 'Inverse-distance weights use 80% pattern similarity and 20% amplitude similarity. Snowfall uses the same weights applied to MRCC/ACIS station departures; the rendered MRCC map remains below.';
     compositeSection.appendChild(compositeNote);
     renderAnalogProductGrid(compositeSection, compositeProducts, entry, `${compositeCount}-analog composite`);
     section.appendChild(compositeSection);
@@ -779,7 +779,7 @@ function renderAnalogPanel(targetKey) {
     return;
   }
   const compositeCount = seasonalAnalogs.source?.composite?.count || 5;
-  summary.textContent = `${periodLabel(targetKey)} · AnalogWX ERA5 · normalized 500-mb pattern + amplitude similarity · weighted top-${compositeCount} PSL 500-mb/2-m composite and rank-1 MRCC snowfall departure`;
+  summary.textContent = `${periodLabel(targetKey)} · AnalogWX ERA5 · normalized 500-mb pattern + amplitude similarity · weighted top-${compositeCount} PSL 500-mb, 2-m, and snowfall departure composites`;
   if (!entries.length) {
     grid.replaceChildren(compareEmpty(`No historical analog result is published for ${periodLabel(targetKey)}.`));
     return;
