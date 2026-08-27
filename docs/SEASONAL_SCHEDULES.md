@@ -52,9 +52,14 @@ composites use MRCC/ACIS monthly station departures, sum the three monthly
 departures for DJF, then linearly interpolate the stations to a 0.25° eastern
 U.S. grid with nearest-neighbor edge filling; if SciPy is unavailable or cannot
 load, the manifest records a NumPy inverse-distance fallback. The snowfall
-composite uses a centered, zoomed eastern Lambert Conformal Conic frame and a
-high-contrast signed departure palette; only the selected state outlines are
-drawn so excluded land does not look like missing data. The rendered MRCC map remains
+composite uses a centered, domain-fitted eastern Lambert Conformal Conic frame
+(33°/45° standard parallels) through the Great Lakes and Southeast, fitting the
+projected window to the selected-state land mask so the states reach and can be
+clipped by the frame like the source regional product. Its high-contrast signed
+departure palette runs
+from brown/dark red/red/orange/yellow through a white zero interval to
+light-blue/blue/purple/pink/cyan; only the selected state outlines are drawn so
+excluded land does not look like missing data. The rendered MRCC map remains
 available as the rank-1 reference. Composite source
 failures retain the previous good image and mark it stale.
 

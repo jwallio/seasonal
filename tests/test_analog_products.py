@@ -98,10 +98,11 @@ def main() -> int:
         and station_element["reduce"] == "sum",
         "ACIS snowfall departure controls are wrong",
     )
-    check(module.MRCC_SNOWFALL_REGION == (-89.5, -65.0, 29.0, 49.0), "snowfall map should use the zoomed eastern frame")
+    check(module.MRCC_SNOWFALL_REGION == (-88.5, -65.5, 31.0, 47.5), "snowfall map should use the tight clipped eastern frame")
     check(
-        len(module.MRCC_SNOWFALL_DEPARTURE_PALETTE) == 20,
-        "snowfall departure palette should match the 20 signed intervals",
+        len(module.MRCC_SNOWFALL_DEPARTURE_PALETTE) == 21
+        and module.MRCC_SNOWFALL_DEPARTURE_PALETTE[10] == "#ffffff",
+        "snowfall departure palette should have 21 intervals with white at zero",
     )
     check(
         "Michigan" in module.MRCC_SNOWFALL_MASK_STATE_NAMES
@@ -113,15 +114,45 @@ def main() -> int:
 
     snow_spec = module._mrcc_snowfall_render_product_spec(seasonal, djf, 5)
     check(
-        snow_spec["projection_central_longitude"] == -77.5
+        snow_spec["projection_standard_parallel_1"] == 33.0
+        and snow_spec["projection_standard_parallel_2"] == 45.0
+        and snow_spec["projection_central_longitude"] == -77.5
         and snow_spec["projection_latitude_origin"] == 39.0
-        and snow_spec["projected_x_shift_fraction"] == 0.07,
+        and snow_spec["projected_x_shift_fraction"] == 0.0,
         "snowfall map should use the centered eastern projection",
+    )
+    check(
+        snow_spec["fit_frame_to_domain"] is True
+        and snow_spec["domain_frame_padding_fraction"] == 0.0,
+        "snowfall map should fit its frame to the selected-state land mask",
+    )
+    check(
+        snow_spec["header_summary"]
+        == "MRCC / ACIS  •  5-member inverse-distance analog blend  •  NWS Eastern Region"
+        and snow_spec["suppress_header_detail"] is True,
+        "snowfall map should use one concise subtitle without duplicate provider text",
     )
     check(
         snow_spec["border_files"] == ("us-states.geojson",)
         and snow_spec["mask_states"] == list(module.MRCC_SNOWFALL_MASK_STATE_NAMES),
         "snowfall map should render and mask only the selected U.S. states",
+    )
+    check(
+        snow_spec["anomaly_ticks"] == list(range(-40, 41, 4))
+        and snow_spec["anomaly_bounds"]
+        == list(range(-40, 0, 4)) + [-2, 2] + list(range(4, 41, 4)),
+        "seasonal snowfall should keep labelled ticks separate from its white zero interval",
+    )
+    month_spec = module._mrcc_snowfall_render_product_spec(
+        seasonal,
+        {"period_type": "month", "label": "December 1997"},
+        5,
+    )
+    check(
+        month_spec["anomaly_ticks"] == list(range(-20, 21, 2))
+        and month_spec["anomaly_bounds"]
+        == list(range(-20, 0, 2)) + [-1, 1] + list(range(2, 21, 2)),
+        "monthly snowfall should keep a dedicated white zero interval",
     )
     check(module._parse_mrcc_numeric_value("T") == 0.0, "ACIS trace snowfall should be treated as zero")
     check(module._parse_mrcc_numeric_value("M") != module._parse_mrcc_numeric_value("M"), "ACIS missing snowfall should remain missing")

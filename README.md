@@ -99,8 +99,13 @@ departures are interpolated from monthly ACIS station values onto a 0.25° NWS
 Eastern Region grid; DJF composites sum the December, January, and February
 departures. If SciPy is unavailable or cannot load, the manifest records a
 NumPy inverse-distance fallback. The rendered MRCC snowfall product remains
-the rank-1 reference. Source failures retain the last good composite and mark
-it stale.
+the rank-1 reference. Its composite map uses a centered, domain-fitted eastern
+Lambert Conformal Conic frame (33°/45° standard parallels) through the Great
+Lakes and Southeast, fitting the projected window to the selected-state land
+mask, with a
+high-contrast brown-to-yellow negative scale, white zero interval, and
+light-blue-to-cyan positive scale. Source failures retain the last good
+composite and mark it stale.
 
 The dashboard now opens on an operational Overview with model-by-parameter
 freshness and coverage. Compare supports blend/family/component filtering,
