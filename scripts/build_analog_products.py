@@ -50,14 +50,71 @@ MRCC_EASTERN_STATES = (
     "SC",
     "OH",
 )
+MRCC_SNOWFALL_SOURCE_STATES = MRCC_EASTERN_STATES + ("MI", "IN", "KY", "TN", "AL", "GA")
+MRCC_SNOWFALL_STATE_NAMES = {
+    "ME": "Maine",
+    "NH": "New Hampshire",
+    "VT": "Vermont",
+    "NY": "New York",
+    "MA": "Massachusetts",
+    "CT": "Connecticut",
+    "RI": "Rhode Island",
+    "PA": "Pennsylvania",
+    "NJ": "New Jersey",
+    "DE": "Delaware",
+    "MD": "Maryland",
+    "VA": "Virginia",
+    "WV": "West Virginia",
+    "NC": "North Carolina",
+    "SC": "South Carolina",
+    "OH": "Ohio",
+    "MI": "Michigan",
+    "IN": "Indiana",
+    "KY": "Kentucky",
+    "TN": "Tennessee",
+    "AL": "Alabama",
+    "GA": "Georgia",
+}
+MRCC_SNOWFALL_MASK_STATE_NAMES = tuple(
+    MRCC_SNOWFALL_STATE_NAMES[state] for state in MRCC_SNOWFALL_SOURCE_STATES
+)
 MRCC_SNOWFALL_MAP_REGION = "NWS Eastern Region"
-MRCC_SNOWFALL_REGION = (-86.0, -64.0, 30.0, 50.0)
+MRCC_SNOWFALL_MAP_EXTENT = "Broad Eastern U.S. frame through the Great Lakes and Southeast"
+MRCC_SNOWFALL_REGION = (-90.0, -64.0, 27.0, 50.0)
 MRCC_SNOWFALL_GRID_STEP = 0.25
 MRCC_MIN_STATIONS_FOR_COMPOSITE = 12
 MRCC_SNOWFALL_COMPOSITE_KEY = "mrcc_snowfall_departure_composite"
-MRCC_SNOWFALL_COMPOSITE_VERSION = "mrcc-acis-snow-v1"
+MRCC_SNOWFALL_COMPOSITE_VERSION = "mrcc-acis-snow-v2-eastern-frame"
 MRCC_SNOWFALL_PROVIDER_LABEL = "MRCC / ACIS station-interpolated snowfall departure"
 MRCC_SNOWFALL_BASELINE_LABEL = "MRCC / ACIS provider snowfall departure (normal supplied by ACIS)"
+MRCC_SNOWFALL_RENDERER_ID = "wn2-seasonal-eastern-snow-v2"
+MRCC_SNOWFALL_RENDERER_LABEL = "WN2 centered eastern U.S. snowfall departure renderer"
+# Signed departures use warm colors below normal and the vivid WN2 blue-to-
+# violet snow colors above normal. This keeps small signals readable instead
+# of assigning the center bins the nearly-white colors used by the generic
+# seasonal anomaly palette.
+MRCC_SNOWFALL_DEPARTURE_PALETTE = [
+    "#b2182b",
+    "#d7301f",
+    "#e34a33",
+    "#ef6548",
+    "#f46d43",
+    "#fdae61",
+    "#fdb863",
+    "#fec44f",
+    "#ffd166",
+    "#d9e36a",
+    "#63c2ff",
+    "#45a6ef",
+    "#2d84df",
+    "#1f66cc",
+    "#516dd0",
+    "#6b52c6",
+    "#8540be",
+    "#9d36b7",
+    "#b93db8",
+    "#d451bb",
+]
 MRCC_SNOWFALL_STATION_NETWORKS = (
     "wban",
     "coop",
@@ -344,10 +401,10 @@ def _fetch_mrcc_image(
 
 
 def _mrcc_station_data_url(period: dict[str, Any]) -> str:
-    """Build an ACIS request for monthly snowfall departures at ER stations."""
+    """Build an ACIS request for ER and adjacent-frame snowfall departures."""
 
     payload = {
-        "state": list(MRCC_EASTERN_STATES),
+        "state": list(MRCC_SNOWFALL_SOURCE_STATES),
         "sdate": str(period["start_date"])[:7],
         "edate": str(period["end_date"])[:7],
         "elems": [
@@ -706,21 +763,33 @@ def _writ_rendering_metadata(
     *,
     region: tuple[float, float, float, float],
     map_region: str,
+    product_spec: dict[str, Any] | None = None,
+    renderer_id: str = WRIT_RENDERER_ID,
+    renderer_label: str = WRIT_RENDERER_LABEL,
 ) -> dict[str, Any]:
-    return {
-        "id": WRIT_RENDERER_ID,
-        "label": WRIT_RENDERER_LABEL,
+    product_spec = product_spec or {}
+    metadata = {
+        "id": renderer_id,
+        "label": renderer_label,
         "projection": seasonal.SEASONAL_LCC_PROJECTION_NAME,
         "standard_parallels": [
-            seasonal.SEASONAL_LCC_STANDARD_PARALLEL_1,
-            seasonal.SEASONAL_LCC_STANDARD_PARALLEL_2,
+            float(product_spec.get("projection_standard_parallel_1", seasonal.SEASONAL_LCC_STANDARD_PARALLEL_1)),
+            float(product_spec.get("projection_standard_parallel_2", seasonal.SEASONAL_LCC_STANDARD_PARALLEL_2)),
         ],
-        "latitude_origin": seasonal.SEASONAL_LCC_LATITUDE_ORIGIN,
-        "central_longitude": seasonal.SEASONAL_LCC_CENTRAL_LONGITUDE,
+        "latitude_origin": float(product_spec.get("projection_latitude_origin", seasonal.SEASONAL_LCC_LATITUDE_ORIGIN)),
+        "central_longitude": float(product_spec.get("projection_central_longitude", seasonal.SEASONAL_LCC_CENTRAL_LONGITUDE)),
+        "projected_x_shift_fraction": float(product_spec.get("projected_x_shift_fraction", seasonal.PROJECTED_X_SHIFT_FRACTION)),
         "map_region": map_region,
         "region": list(region),
         "canvas": "1080x1080",
     }
+    if product_spec.get("mask_states"):
+        metadata["mask_states"] = list(product_spec["mask_states"])
+    if product_spec.get("border_files") is not None:
+        metadata["border_files"] = [Path(str(item)).name for item in product_spec["border_files"]]
+    if product_spec.get("map_extent"):
+        metadata["map_extent"] = str(product_spec["map_extent"])
+    return metadata
 
 
 def _writ_render_product_spec(product_key: str, seasonal: Any, dataset: str) -> dict[str, Any]:
@@ -822,6 +891,7 @@ def _render_writ_grid(
         seasonal,
         region=region,
         map_region=PRODUCT_SPECS[product_key]["map_region"],
+        product_spec=product_spec,
     )
 
 
@@ -844,15 +914,23 @@ def _mrcc_snowfall_render_product_spec(seasonal: Any, period: dict[str, Any], me
                 "{source_label}  •  {baseline_label}  •  Snowfall departure (in)  •  "
                 f"{MRCC_SNOWFALL_MAP_REGION}"
             ),
+            "map_extent": MRCC_SNOWFALL_MAP_EXTENT,
             "lead_label": "Inverse-distance analog composite",
             "region": MRCC_SNOWFALL_REGION,
             "anomaly_min": anomaly_min,
             "anomaly_max": anomaly_max,
             "anomaly_ticks": list(range(int(anomaly_min), int(anomaly_max) + tick_step, tick_step)),
-            "anomaly_palette": seasonal.ANOMALY_PALETTE,
+            "anomaly_palette": list(MRCC_SNOWFALL_DEPARTURE_PALETTE),
             "anomaly_tick_decimals": 0,
             "anomaly_tick_format": "signed",
             "map_domain": "land",
+            "mask_states": list(MRCC_SNOWFALL_MASK_STATE_NAMES),
+            "border_files": ("us-states.geojson",),
+            "projection_standard_parallel_1": 30.0,
+            "projection_standard_parallel_2": 60.0,
+            "projection_latitude_origin": 39.0,
+            "projection_central_longitude": -77.0,
+            "projected_x_shift_fraction": 0.0,
         }
     )
     return product_spec
@@ -897,6 +975,9 @@ def _render_mrcc_snowfall_grid(
         seasonal,
         region=MRCC_SNOWFALL_REGION,
         map_region=MRCC_SNOWFALL_MAP_REGION,
+        product_spec=product_spec,
+        renderer_id=MRCC_SNOWFALL_RENDERER_ID,
+        renderer_label=MRCC_SNOWFALL_RENDERER_LABEL,
     )
 
 
@@ -1365,6 +1446,8 @@ def _build_snowfall_composite_product(
             "climatology_label": MRCC_SNOWFALL_BASELINE_LABEL,
             "interpolation": f"{interpolation} on a 0.25° grid",
             "station_counts": [asset["station_count"] for asset in assets],
+            "station_states": list(MRCC_SNOWFALL_SOURCE_STATES),
+            "map_mask_states": list(MRCC_SNOWFALL_MASK_STATE_NAMES),
             "rendering": rendering,
             "map_region": MRCC_SNOWFALL_MAP_REGION,
             "region": list(MRCC_SNOWFALL_REGION),

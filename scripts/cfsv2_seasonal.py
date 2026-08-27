@@ -1420,8 +1420,34 @@ def geojson_features(payload: dict) -> Iterator[list[list[float]]]:
         yield from _geojson_rings(payload)
 
 
-def land_mask_from_borders(border_paths: Sequence[Path], longitude_values, latitude_values):
-    """Return a land-only mask for a projected longitude/latitude canvas."""
+def _geojson_feature_records(payload: dict) -> Iterator[tuple[dict, dict]]:
+    """Yield GeoJSON properties and geometries without discarding feature metadata."""
+
+    payload_type = payload.get("type")
+    if payload_type == "FeatureCollection":
+        for feature in payload.get("features", []):
+            if not isinstance(feature, dict):
+                continue
+            properties = feature.get("properties")
+            geometry = feature.get("geometry")
+            if isinstance(geometry, dict):
+                yield properties if isinstance(properties, dict) else {}, geometry
+    elif payload_type == "Feature":
+        properties = payload.get("properties")
+        geometry = payload.get("geometry")
+        if isinstance(geometry, dict):
+            yield properties if isinstance(properties, dict) else {}, geometry
+    elif isinstance(payload, dict):
+        yield {}, payload
+
+
+def land_mask_from_borders(
+    border_paths: Sequence[Path],
+    longitude_values,
+    latitude_values,
+    state_names: Sequence[str] | None = None,
+):
+    """Return a land mask, optionally restricted to named U.S. states."""
     try:
         import numpy as np
         from matplotlib.path import Path as MatplotlibPath
@@ -1432,6 +1458,43 @@ def land_mask_from_borders(border_paths: Sequence[Path], longitude_values, latit
     latitudes = np.asarray(latitude_values, dtype=float)
     points = np.column_stack((longitudes.ravel(), latitudes.ravel()))
     land = np.zeros(points.shape[0], dtype=bool)
+
+    requested_states = {
+        str(state).strip().casefold()
+        for state in (state_names or ())
+        if str(state).strip()
+    }
+    if requested_states:
+        state_paths = [path for path in border_paths if path.name == "us-states.geojson"]
+        for border_path in state_paths:
+            try:
+                payload = json.loads(border_path.read_text(encoding="utf-8"))
+                for properties, geometry in _geojson_feature_records(payload):
+                    identifiers = {
+                        str(properties.get(key, "")).strip().casefold()
+                        for key in (
+                            "name",
+                            "NAME",
+                            "state",
+                            "STATE_NAME",
+                            "STUSPS",
+                            "postal",
+                            "abbr",
+                            "code",
+                        )
+                        if properties.get(key)
+                    }
+                    if not identifiers.intersection(requested_states):
+                        continue
+                    for ring in _geojson_rings(geometry):
+                        vertices = np.asarray(ring, dtype=float)
+                        if vertices.ndim != 2 or vertices.shape[0] < 3 or vertices.shape[1] < 2:
+                            continue
+                        land |= MatplotlibPath(vertices[:, :2], closed=True).contains_points(points)
+            except (OSError, ValueError, KeyError, TypeError):
+                continue
+        return land.reshape(longitudes.shape)
+
     country_paths = [path for path in border_paths if path.name == "countries.geojson"]
     for border_path in country_paths:
         try:
@@ -1536,13 +1599,20 @@ def render_map(
     if np.any(np.diff(source_lons) <= 0.0) or np.any(np.diff(source_lats) <= 0.0):
         raise CFSv2Error("decoded CFSv2 grid longitude/latitude coordinates must be sorted")
 
-    # Match the centered ECMWF-style North America Lambert Conformal Conic
-    # framing: a -100° meridian center, 45° latitude origin, and broad
-    # 30°/60° standard parallels.
-    standard_parallel_1 = np.deg2rad(SEASONAL_LCC_STANDARD_PARALLEL_1)
-    standard_parallel_2 = np.deg2rad(SEASONAL_LCC_STANDARD_PARALLEL_2)
-    latitude_origin = np.deg2rad(SEASONAL_LCC_LATITUDE_ORIGIN)
-    central_longitude = np.deg2rad(SEASONAL_LCC_CENTRAL_LONGITUDE)
+    # Match the shared North America Lambert Conformal Conic defaults unless
+    # a regional product supplies its own center and framing parameters.
+    standard_parallel_1 = np.deg2rad(
+        float(product_spec.get("projection_standard_parallel_1", SEASONAL_LCC_STANDARD_PARALLEL_1))
+    )
+    standard_parallel_2 = np.deg2rad(
+        float(product_spec.get("projection_standard_parallel_2", SEASONAL_LCC_STANDARD_PARALLEL_2))
+    )
+    latitude_origin = np.deg2rad(
+        float(product_spec.get("projection_latitude_origin", SEASONAL_LCC_LATITUDE_ORIGIN))
+    )
+    central_longitude = np.deg2rad(
+        float(product_spec.get("projection_central_longitude", SEASONAL_LCC_CENTRAL_LONGITUDE))
+    )
     n_coefficient = np.log(np.cos(standard_parallel_1) / np.cos(standard_parallel_2)) / np.log(
             np.tan(np.pi / 4.0 + standard_parallel_2 / 2.0)
             / np.tan(np.pi / 4.0 + standard_parallel_1 / 2.0)
@@ -1578,7 +1648,9 @@ def render_map(
     _, top_edge_y = lcc_project(top_edge_lons, np.full(top_edge_lons.shape, lat_max))
     x_min, x_max = float(np.nanmin(horizontal_x)), float(np.nanmax(horizontal_x))
     y_min, y_max = float(np.nanmin(bottom_y)), float(np.nanmax(top_edge_y))
-    projected_x_shift = (x_max - x_min) * PROJECTED_X_SHIFT_FRACTION
+    projected_x_shift = (x_max - x_min) * float(
+        product_spec.get("projected_x_shift_fraction", PROJECTED_X_SHIFT_FRACTION)
+    )
     x_min -= projected_x_shift
     x_max -= projected_x_shift
     x_pad = max(0.01, (x_max - x_min) * 0.006)
@@ -1655,10 +1727,22 @@ def render_map(
     # projected bounds so the LCC geometry remains undistorted at square size.
     figure = plt.figure(figsize=(9.0, 9.0), facecolor="#f7f9fb")
     has_footer = bool(footer_text.strip())
+    colorbar_height = 0.032
+    colorbar_gap = 0.025
+    footer_line_count = footer_text.count("\n") + 1 if has_footer else 0
+    colorbar_floor = 0.055 + 0.012 * footer_line_count
     map_left = 0.05 if has_footer else 0.035
     map_width = 0.90 if has_footer else 0.93
     map_height = map_width * (y_max - y_min) / (x_max - x_min)
     map_top = 0.88
+    # Tall regional frames can otherwise push the map behind the colorbar.
+    # Shrink the map box proportionally when needed so the complete requested
+    # geographic extent remains visible above the legend and footer.
+    map_height_limit = map_top - (colorbar_floor + colorbar_gap + colorbar_height)
+    if map_height > map_height_limit:
+        map_height = map_height_limit
+        map_width = map_height * (x_max - x_min) / (y_max - y_min)
+        map_left = (1.0 - map_width) / 2.0
     map_bottom = map_top - map_height
     axes = figure.add_axes([map_left, map_bottom, map_width, map_height])
     axes.set_facecolor("#ffffff" if product_spec["name"] == PRODUCT_SWE_ANOMALY else "#edf3f5")
@@ -1679,10 +1763,17 @@ def render_map(
     if map_domain:
         if map_domain not in {"land", "ocean"}:
             raise CFSv2Error(f"unsupported map domain {map_domain!r}")
-        land_mask = land_mask_from_borders(border_paths, canvas_lons, canvas_lats)
+        mask_states = product_spec.get("mask_states")
+        land_mask = land_mask_from_borders(
+            border_paths,
+            canvas_lons,
+            canvas_lats,
+            state_names=mask_states,
+        )
         if land_mask is None or not np.any(land_mask):
+            mask_label = "selected-state" if mask_states else "countries"
             raise CFSv2Error(
-                f"{product_spec['name']} requires the countries land mask to render its {map_domain}-only domain"
+                f"{product_spec['name']} requires the {mask_label} land mask to render its {map_domain}-only domain"
             )
         # Domain-specific products must not display model fill or extrapolated
         # values where the parameter is undefined.  In particular, several
@@ -1811,7 +1902,13 @@ def render_map(
             segments.append(current)
         return segments
 
-    for border_path in border_paths:
+    configured_border_files = product_spec.get("border_files")
+    render_border_paths = border_paths
+    if configured_border_files is not None:
+        allowed_border_files = {Path(str(item)).name for item in configured_border_files}
+        render_border_paths = [path for path in border_paths if path.name in allowed_border_files]
+
+    for border_path in render_border_paths:
         try:
             payload = json.loads(border_path.read_text(encoding="utf-8"))
             for ring in geojson_features(payload):
@@ -1917,10 +2014,6 @@ def render_map(
         fontsize=8.2,
         color="#5d6b75",
     )
-    colorbar_height = 0.032
-    colorbar_gap = 0.025
-    footer_line_count = footer_text.count("\n") + 1 if has_footer else 0
-    colorbar_floor = 0.055 + 0.012 * footer_line_count
     colorbar_bottom = max(colorbar_floor, map_bottom - colorbar_gap - colorbar_height)
     colorbar_axes = figure.add_axes([map_left, colorbar_bottom, map_width, colorbar_height])
     colorbar_options = {"ticks": colorbar_ticks}
