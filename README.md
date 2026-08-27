@@ -93,10 +93,14 @@ Analog ranking remains ordered by the centered pattern correlation, while each
 result also reports cosine-latitude-weighted RMS anomaly amplitude similarity.
 The top five results receive inverse similarity-distance weights using 80%
 pattern similarity and 20% amplitude similarity. PSL's numerical WRIT grids
-are averaged with those weights into additional 500-mb and 2-metre composite
-maps; the MRCC snowfall product remains the rank-1 map because MRCC publishes
-an image rather than a numeric snowfall field. Source failures retain the last
-good composite and mark it stale.
+and MRCC/ACIS station snowfall departures are averaged with those weights into
+additional 500-mb, 2-metre, and snowfall-departure composite maps. Snowfall
+departures are interpolated from monthly ACIS station values onto a 0.25° NWS
+Eastern Region grid; DJF composites sum the December, January, and February
+departures. If SciPy is unavailable or cannot load, the manifest records a
+NumPy inverse-distance fallback. The rendered MRCC snowfall product remains
+the rank-1 reference. Source failures retain the last good composite and mark
+it stale.
 
 The dashboard now opens on an operational Overview with model-by-parameter
 freshness and coverage. Compare supports blend/family/component filtering,
@@ -144,7 +148,7 @@ in [`docs/SEASONAL_SCHEDULES.md`](/d:/weather-projects/wn2/docs/SEASONAL_SCHEDUL
 - [`scripts/geos_s2s3_seasonal.py`](/d:/weather-projects/wn2/scripts/geos_s2s3_seasonal.py): NASA GEOS-S2S-3 numerical ensemble/drift adapter
 - [`.github/workflows/geos-s2s3.yml`](/d:/weather-projects/wn2/.github/workflows/geos-s2s3.yml): monthly NASA GEOS-S2S-3 workflow
 - [`scripts/superensemble_seasonal.py`](/d:/weather-projects/wn2/scripts/superensemble_seasonal.py): equal-weight deduplicated seasonal forecast-family blend
-- [`scripts/build_analog_products.py`](/d:/weather-projects/wn2/scripts/build_analog_products.py): WRIT top-five composite plus rank-1 PSL/MRCC analog map builder with retained-source fallback
+- [`scripts/build_analog_products.py`](/d:/weather-projects/wn2/scripts/build_analog_products.py): WRIT and MRCC/ACIS top-five composites plus rank-1 PSL/MRCC analog map builder with retained-source fallback
 - [`scripts/seasonal_products.py`](/d:/weather-projects/wn2/scripts/seasonal_products.py): canonical seasonal product, unit, scale, model-support, and numerical-QC registry
 - [`scripts/build_seasonal_catalog.py`](/d:/weather-projects/wn2/scripts/build_seasonal_catalog.py): strict manifest/asset validator and compact dashboard catalog builder
 - [`.github/workflows/superensemble.yml`](/d:/weather-projects/wn2/.github/workflows/superensemble.yml): monthly super-ensemble workflow
