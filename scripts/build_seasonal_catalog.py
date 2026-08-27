@@ -133,6 +133,47 @@ def _normalized_asset_path(value: Any) -> str:
     return path.as_posix()
 
 
+def _published_asset_path(site_root: Path, normalized: str) -> PurePosixPath:
+    """Resolve a logical seasonal asset in either Pages tree layout.
+
+    Provider manifests retain their source-oriented ``seasonal/...`` paths.
+    The legacy project published those paths below ``site/seasonal``; the
+    renamed ``seasonal`` project publishes the same assets at the Pages root.
+    Prefer an existing nested asset for backward-compatible checks, then the
+    flattened path used by the renamed repository.
+    """
+
+    logical = PurePosixPath(normalized)
+    nested = site_root.joinpath(*logical.parts)
+    if nested.exists():
+        return logical
+    flat = PurePosixPath(*logical.parts[1:])
+    flattened = site_root.joinpath(*flat.parts)
+    if flattened.exists() or not (site_root / "seasonal").is_dir():
+        return flat
+    return logical
+
+
+def _published_model_dir(site_root: Path, model_key: str) -> str:
+    """Return the direct-viewer path for the detected Pages tree layout."""
+
+    nested = site_root / "seasonal" / model_key
+    if nested.is_dir():
+        return f"seasonal/{model_key}/"
+    if (site_root / model_key).is_dir() or not (site_root / "seasonal").is_dir():
+        return f"{model_key}/"
+    return f"seasonal/{model_key}/"
+
+
+def _uses_flat_pages_layout(site_root: Path) -> bool:
+    """Detect the renamed-repository Pages root layout."""
+
+    return (site_root / "catalog.json").exists() or (
+        not (site_root / "seasonal").is_dir()
+        and any((site_root / model_key).is_dir() for model_key in MODELS)
+    )
+
+
 def _validate_asset(
     value: Any,
     *,
@@ -146,18 +187,20 @@ def _validate_asset(
     except ValueError as exc:
         collector.add("unsafe_asset_path", "error", str(exc), path)
         return None
-    if Path(normalized).suffix.lower() not in {".jpg", ".jpeg", ".png", ".webp"}:
-        collector.add("unsupported_asset_type", "error", f"Unsupported map asset type: {normalized}", path)
+    published = _published_asset_path(site_root, normalized)
+    published_text = published.as_posix()
+    if Path(published_text).suffix.lower() not in {".jpg", ".jpeg", ".png", ".webp"}:
+        collector.add("unsupported_asset_type", "error", f"Unsupported map asset type: {published_text}", path)
     if check_assets:
-        resolved = (site_root / Path(*PurePosixPath(normalized).parts)).resolve()
+        resolved = (site_root / Path(*published.parts)).resolve()
         try:
             resolved.relative_to(site_root.resolve())
         except ValueError:
-            collector.add("asset_outside_site", "error", f"Asset escapes the Pages tree: {normalized}", path)
+            collector.add("asset_outside_site", "error", f"Asset escapes the Pages tree: {published_text}", path)
         else:
             if not resolved.is_file() or resolved.stat().st_size <= 0:
-                collector.add("asset_missing", "error", f"Rendered map asset is missing: {normalized}", path)
-    return normalized
+                collector.add("asset_missing", "error", f"Rendered map asset is missing: {published_text}", path)
+    return published_text
 
 
 def _copy_fields(value: dict[str, Any], names: Iterable[str]) -> dict[str, Any]:
@@ -598,7 +641,8 @@ def build_catalog(
 
     for model_key in keys:
         definition = public_model_registry()[model_key]
-        manifest_relative = str(definition["manifest"])
+        manifest_logical = str(definition["manifest"])
+        manifest_relative = _published_asset_path(site_root, manifest_logical).as_posix()
         manifest_path = site_root / Path(*PurePosixPath(manifest_relative).parts)
         model_entry: dict[str, Any] = {
             "key": model_key,
@@ -607,7 +651,7 @@ def build_catalog(
             "source": definition["source"],
             "preferred_component": definition.get("preferred_component") or "",
             "manifest": manifest_relative,
-            "direct": f"seasonal/{model_key}/",
+            "direct": _published_model_dir(site_root, model_key),
             "support": definition["support"],
             "runs": [],
         }
@@ -752,7 +796,7 @@ def write_github_step_summary(catalog: dict[str, Any]) -> None:
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--site-root", type=Path, required=True, help="Merged Pages tree containing seasonal manifests/assets")
-    parser.add_argument("--output", type=Path, help="Catalog path; defaults to SITE_ROOT/seasonal/catalog.json")
+    parser.add_argument("--output", type=Path, help="Catalog path; defaults to the detected Pages layout root")
     parser.add_argument("--models", default=",".join(MODELS), help="Comma-separated model registry keys")
     parser.add_argument("--skip-asset-check", action="store_true", help="Validate metadata without checking image files")
     parser.add_argument("--strict", action="store_true", help="Exit non-zero when any catalog validation error is present")
@@ -771,7 +815,8 @@ def main(argv: list[str] | None = None) -> int:
         generated_utc=args.generated_utc or None,
         source_revision=args.source_revision,
     )
-    output = args.output or args.site_root / "seasonal" / "catalog.json"
+    default_catalog_root = args.site_root if _uses_flat_pages_layout(args.site_root) else args.site_root / "seasonal"
+    output = args.output or default_catalog_root / "catalog.json"
     write_catalog(output, catalog)
     summary = catalog["summary"]
     print(

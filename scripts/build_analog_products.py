@@ -201,7 +201,21 @@ def _now_iso() -> str:
 
 def _resolve_rooted(root: Path, value: str | Path) -> Path:
     path = Path(value)
-    return path if path.is_absolute() else root / path
+    if path.is_absolute():
+        return path
+    options = [root / path]
+    text = path.as_posix()
+    if text.startswith("public/"):
+        published = text.removeprefix("public/")
+        options.append(root / published)
+        if published.startswith("seasonal/"):
+            options.append(root / published.removeprefix("seasonal/"))
+    elif text.startswith("seasonal/"):
+        options.append(root / text.removeprefix("seasonal/"))
+    for option in options:
+        if option.exists():
+            return option
+    return options[0]
 
 
 def _relative_asset(root: Path, path: Path) -> str:
@@ -1694,7 +1708,7 @@ def build_manifest(
         "kind": "seasonal_analog_products_manifest",
         "generated_utc": _now_iso(),
         "source": {
-            "analog_manifest": "seasonal/analog_z500_manifest.json",
+            "analog_manifest": _relative_asset(root, analog_manifest_path),
             "climatology_years": climatology_years,
             "analog_matching_climatology_years": climatology_years,
             "writ_dataset": WRIT_DATASET,

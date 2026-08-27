@@ -93,8 +93,8 @@ def main() -> int:
     check("model_spread" in module.RETIRED_PRODUCTS, "retired NMME spread product must be purged from retained manifests")
     check("model_spread" not in workflow, "NMME workflow must not schedule or expose model spread")
     check("model_spread" not in pages, "Pages workflow must not expose model spread")
-    check("rm -rf site/seasonal/nmme" not in pages, "NMME publishing must preserve images referenced by retained history")
-    check('cp -R "$payload_root/nmme/." site/seasonal/nmme/' in pages, "NMME publishing must overlay targeted repairs onto retained history")
+    check("rm -rf site/nmme" not in pages, "NMME publishing must preserve images referenced by retained history")
+    check('cp -R "$payload_root/nmme/." site/nmme/' in pages, "NMME publishing must overlay targeted repairs onto retained history")
     print("NMME CONTRACT OK: aligned public leads, explicit component identities, validated category triplets, semantic palettes, official feeds, and workflow")
     return 0
 

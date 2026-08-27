@@ -75,6 +75,8 @@ jobs:
             public/seasonal/index.html
             public/seasonal/dashboard.css
             public/seasonal/dashboard.js
+            public/seasonal/cfsv2/index.html
+            public/seasonal/seas5/index.html
             public/seasonal/c3s/index.html
             public/seasonal/cma_cpsv3/index.html
             public/seasonal/jma/index.html
@@ -219,24 +221,54 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test -f site/index.html
-          test -f site/seasonal/cfsv2/index.html
-          test -f site/seasonal/seas5/index.html
+
+          # After the repository is renamed to seasonal, gh-pages maps
+          # directly to /seasonal/. Migrate the existing nested tree once and
+          # retain the legacy WeatherNext viewer below /seasonal/wn2/.
+          if [ -d site/seasonal ]; then
+            mkdir -p site/wn2
+            if [ -f site/index.html ]; then
+              if [ ! -f site/wn2/index.html ]; then
+                mv site/index.html site/wn2/index.html
+              else
+                rm -f site/index.html
+              fi
+            fi
+            if [ -f site/runs_manifest.json ]; then
+              if [ ! -f site/wn2/runs_manifest.json ]; then
+                mv site/runs_manifest.json site/wn2/runs_manifest.json
+              else
+                rm -f site/runs_manifest.json
+              fi
+            fi
+            if [ -d site/runs ]; then
+              mkdir -p site/wn2/runs
+              cp -R site/runs/. site/wn2/runs/
+              rm -rf site/runs
+            fi
+            cp -R site/seasonal/. site/
+            rm -rf site/seasonal
+          fi
+
+          test -f site/index.html || test -f site/wn2/index.html
           test -f dashboard-source/public/seasonal/index.html
           test -f dashboard-source/public/seasonal/dashboard.css
           test -f dashboard-source/public/seasonal/dashboard.js
-          mkdir -p site/seasonal
-          cp dashboard-source/public/seasonal/index.html site/seasonal/index.html
-          cp dashboard-source/public/seasonal/dashboard.css site/seasonal/dashboard.css
-          cp dashboard-source/public/seasonal/dashboard.js site/seasonal/dashboard.js
-          mkdir -p site/seasonal/c3s site/seasonal/cma_cpsv3 site/seasonal/jma site/seasonal/apcc site/seasonal/geos_s2s3 site/seasonal/nmme site/seasonal/superensemble
-          cp dashboard-source/public/seasonal/c3s/index.html site/seasonal/c3s/index.html
-          cp dashboard-source/public/seasonal/cma_cpsv3/index.html site/seasonal/cma_cpsv3/index.html
-          cp dashboard-source/public/seasonal/jma/index.html site/seasonal/jma/index.html
-          cp dashboard-source/public/seasonal/apcc/index.html site/seasonal/apcc/index.html
-          cp dashboard-source/public/seasonal/geos_s2s3/index.html site/seasonal/geos_s2s3/index.html
-          cp dashboard-source/public/seasonal/nmme/index.html site/seasonal/nmme/index.html
-          cp dashboard-source/public/seasonal/superensemble/index.html site/seasonal/superensemble/index.html
+          test -f dashboard-source/public/seasonal/cfsv2/index.html
+          test -f dashboard-source/public/seasonal/seas5/index.html
+          cp dashboard-source/public/seasonal/index.html site/index.html
+          cp dashboard-source/public/seasonal/dashboard.css site/dashboard.css
+          cp dashboard-source/public/seasonal/dashboard.js site/dashboard.js
+          mkdir -p site/cfsv2 site/seas5 site/c3s site/cma_cpsv3 site/jma site/apcc site/geos_s2s3 site/nmme site/superensemble
+          cp dashboard-source/public/seasonal/cfsv2/index.html site/cfsv2/index.html
+          cp dashboard-source/public/seasonal/seas5/index.html site/seas5/index.html
+          cp dashboard-source/public/seasonal/c3s/index.html site/c3s/index.html
+          cp dashboard-source/public/seasonal/cma_cpsv3/index.html site/cma_cpsv3/index.html
+          cp dashboard-source/public/seasonal/jma/index.html site/jma/index.html
+          cp dashboard-source/public/seasonal/apcc/index.html site/apcc/index.html
+          cp dashboard-source/public/seasonal/geos_s2s3/index.html site/geos_s2s3/index.html
+          cp dashboard-source/public/seasonal/nmme/index.html site/nmme/index.html
+          cp dashboard-source/public/seasonal/superensemble/index.html site/superensemble/index.html
 
           case "$SOURCE_WORKFLOW" in
             "WeatherNext Runner"|"WeatherNext Runner Custom")
@@ -248,11 +280,12 @@ jobs:
               fi
               test -f "$payload_root/index.html"
               test -f "$payload_root/runs_manifest.json"
-              cp "$payload_root/index.html" site/index.html
-              cp "$payload_root/runs_manifest.json" site/runs_manifest.json
-              mkdir -p site/runs
+              mkdir -p site/wn2
+              sed 's#href="seasonal/"#href="../"#g' "$payload_root/index.html" > site/wn2/index.html
+              cp "$payload_root/runs_manifest.json" site/wn2/runs_manifest.json
+              mkdir -p site/wn2/runs
               if [ -d "$payload_root/runs" ]; then
-                cp -R "$payload_root/runs/." site/runs/
+                cp -R "$payload_root/runs/." site/wn2/runs/
               fi
               ;;
             "CFSv2 Rolling Seasonal Graphics")
@@ -263,9 +296,9 @@ jobs:
                 payload_root="$payload_root/.pages-payload"
               fi
               test -f "$payload_root/cfsv2_manifest.json"
-              mkdir -p site/seasonal/cfsv2
-              cp -R "$payload_root/cfsv2/." site/seasonal/cfsv2/
-              cp "$payload_root/cfsv2_manifest.json" site/seasonal/cfsv2_manifest.json
+              mkdir -p site/cfsv2
+              cp -R "$payload_root/cfsv2/." site/cfsv2/
+              cp "$payload_root/cfsv2_manifest.json" site/cfsv2_manifest.json
               ;;
             "ECMWF SEAS5 Seasonal Graphics")
               payload_root=incoming/seas5
@@ -275,9 +308,9 @@ jobs:
                 payload_root="$payload_root/.pages-payload"
               fi
               test -f "$payload_root/seas5_manifest.json"
-              mkdir -p site/seasonal/seas5
-              cp -R "$payload_root/seas5/." site/seasonal/seas5/
-              cp "$payload_root/seas5_manifest.json" site/seasonal/seas5_manifest.json
+              mkdir -p site/seas5
+              cp -R "$payload_root/seas5/." site/seas5/
+              cp "$payload_root/seas5_manifest.json" site/seas5_manifest.json
               ;;
             "CanSIPS v3 Seasonal Graphics")
               payload_root=incoming/cansips
@@ -287,12 +320,12 @@ jobs:
                 payload_root="$payload_root/.pages-payload"
               fi
               test -f "$payload_root/cansips_manifest.json"
-              mkdir -p site/seasonal/cansips
-              cp -R "$payload_root/cansips/." site/seasonal/cansips/
-              cp "$payload_root/cansips_manifest.json" site/seasonal/cansips_manifest.json
+              mkdir -p site/cansips
+              cp -R "$payload_root/cansips/." site/cansips/
+              cp "$payload_root/cansips_manifest.json" site/cansips_manifest.json
               if [ -d "$payload_root/common_reference" ]; then
-                mkdir -p site/seasonal/common_reference
-                cp -R "$payload_root/common_reference/." site/seasonal/common_reference/
+                mkdir -p site/common_reference
+                cp -R "$payload_root/common_reference/." site/common_reference/
               fi
               ;;
             "C3S Multi-System Seasonal Graphics")
@@ -303,9 +336,9 @@ jobs:
                 payload_root="$payload_root/.pages-payload"
               fi
               test -f "$payload_root/c3s_manifest.json"
-              mkdir -p site/seasonal/c3s
-              cp -R "$payload_root/c3s/." site/seasonal/c3s/
-              cp "$payload_root/c3s_manifest.json" site/seasonal/c3s_manifest.json
+              mkdir -p site/c3s
+              cp -R "$payload_root/c3s/." site/c3s/
+              cp "$payload_root/c3s_manifest.json" site/c3s_manifest.json
               ;;
             "CMA CPSv3 Seasonal Graphics")
               payload_root=incoming/cma_cpsv3
@@ -315,9 +348,9 @@ jobs:
                 payload_root="$payload_root/.pages-payload"
               fi
               test -f "$payload_root/cma_cpsv3_manifest.json"
-              mkdir -p site/seasonal/cma_cpsv3
-              cp -R "$payload_root/cma_cpsv3/." site/seasonal/cma_cpsv3/
-              cp "$payload_root/cma_cpsv3_manifest.json" site/seasonal/cma_cpsv3_manifest.json
+              mkdir -p site/cma_cpsv3
+              cp -R "$payload_root/cma_cpsv3/." site/cma_cpsv3/
+              cp "$payload_root/cma_cpsv3_manifest.json" site/cma_cpsv3_manifest.json
               ;;
             "JMA Seasonal Graphics")
               payload_root=incoming/jma
@@ -327,9 +360,9 @@ jobs:
                 payload_root="$payload_root/.pages-payload"
               fi
               test -f "$payload_root/jma_manifest.json"
-              mkdir -p site/seasonal/jma
-              cp -R "$payload_root/jma/." site/seasonal/jma/
-              cp "$payload_root/jma_manifest.json" site/seasonal/jma_manifest.json
+              mkdir -p site/jma
+              cp -R "$payload_root/jma/." site/jma/
+              cp "$payload_root/jma_manifest.json" site/jma_manifest.json
               ;;
             "APCC MME Seasonal Graphics")
               payload_root=incoming/apcc
@@ -339,9 +372,9 @@ jobs:
                 payload_root="$payload_root/.pages-payload"
               fi
               test -f "$payload_root/apcc_manifest.json"
-              mkdir -p site/seasonal/apcc
-              cp -R "$payload_root/apcc/." site/seasonal/apcc/
-              cp "$payload_root/apcc_manifest.json" site/seasonal/apcc_manifest.json
+              mkdir -p site/apcc
+              cp -R "$payload_root/apcc/." site/apcc/
+              cp "$payload_root/apcc_manifest.json" site/apcc_manifest.json
               ;;
             "NASA GEOS-S2S-3 Seasonal Graphics")
               payload_root=incoming/geos_s2s3
@@ -351,9 +384,9 @@ jobs:
                 payload_root="$payload_root/.pages-payload"
               fi
               test -f "$payload_root/geos_s2s3_manifest.json"
-              mkdir -p site/seasonal/geos_s2s3
-              cp -R "$payload_root/geos_s2s3/." site/seasonal/geos_s2s3/
-              cp "$payload_root/geos_s2s3_manifest.json" site/seasonal/geos_s2s3_manifest.json
+              mkdir -p site/geos_s2s3
+              cp -R "$payload_root/geos_s2s3/." site/geos_s2s3/
+              cp "$payload_root/geos_s2s3_manifest.json" site/geos_s2s3_manifest.json
               ;;
             "NOAA NMME Seasonal Graphics")
               payload_root=incoming/nmme
@@ -365,9 +398,9 @@ jobs:
               test -f "$payload_root/nmme_manifest.json"
               # Overlay the new payload so images referenced by retained run
               # history survive targeted/manual product repairs.
-              mkdir -p site/seasonal/nmme
-              cp -R "$payload_root/nmme/." site/seasonal/nmme/
-              cp "$payload_root/nmme_manifest.json" site/seasonal/nmme_manifest.json
+              mkdir -p site/nmme
+              cp -R "$payload_root/nmme/." site/nmme/
+              cp "$payload_root/nmme_manifest.json" site/nmme_manifest.json
               ;;
             "Deduplicated Seasonal Super Ensemble")
               payload_root=incoming/superensemble
@@ -377,9 +410,9 @@ jobs:
                 payload_root="$payload_root/.pages-payload"
               fi
               test -f "$payload_root/superensemble_manifest.json"
-              mkdir -p site/seasonal/superensemble
-              cp -R "$payload_root/superensemble/." site/seasonal/superensemble/
-              cp "$payload_root/superensemble_manifest.json" site/seasonal/superensemble_manifest.json
+              mkdir -p site/superensemble
+              cp -R "$payload_root/superensemble/." site/superensemble/
+              cp "$payload_root/superensemble_manifest.json" site/superensemble_manifest.json
               ;;
             "Seasonal 500-mb Pattern Analogs")
               payload_root=incoming/analogs
@@ -388,14 +421,18 @@ jobs:
               elif [ -d "$payload_root/.pages-payload" ]; then
                 payload_root="$payload_root/.pages-payload"
               fi
-              test -f "$payload_root/seasonal/analog_z500_manifest.json"
-              test -f "$payload_root/seasonal/analog_products_manifest.json"
-              test -d "$payload_root/seasonal/analog_products"
-              mkdir -p site/seasonal
-              cp "$payload_root/seasonal/analog_z500_manifest.json" site/seasonal/analog_z500_manifest.json
-              cp "$payload_root/seasonal/analog_products_manifest.json" site/seasonal/analog_products_manifest.json
-              mkdir -p site/seasonal/analog_products
-              cp -R "$payload_root/seasonal/analog_products/." site/seasonal/analog_products/
+              analog_root="$payload_root"
+              if [ -d "$payload_root/seasonal" ]; then
+                # Accept one legacy analog artifact during the migration.
+                analog_root="$payload_root/seasonal"
+              fi
+              test -f "$analog_root/analog_z500_manifest.json"
+              test -f "$analog_root/analog_products_manifest.json"
+              test -d "$analog_root/analog_products"
+              cp "$analog_root/analog_z500_manifest.json" site/analog_z500_manifest.json
+              cp "$analog_root/analog_products_manifest.json" site/analog_products_manifest.json
+              mkdir -p site/analog_products
+              cp -R "$analog_root/analog_products/." site/analog_products/
               ;;
             *)
               echo "Unsupported workflow_run source: $SOURCE_WORKFLOW" >&2

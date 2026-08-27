@@ -44,6 +44,22 @@ def thumbnail_asset_path(asset_path: PurePosixPath) -> PurePosixPath:
     return PurePosixPath("seasonal", "thumbnails", relative)
 
 
+def _published_asset_path(site_root: Path, asset_path: PurePosixPath) -> PurePosixPath:
+    """Resolve a logical seasonal asset in nested or flat Pages output."""
+
+    nested = site_root.joinpath(*asset_path.parts)
+    if nested.is_file() or (site_root / "seasonal").is_dir():
+        return asset_path
+    return PurePosixPath(*asset_path.parts[1:])
+
+
+def _published_thumbnail_path(site_root: Path, asset_path: PurePosixPath) -> PurePosixPath:
+    if (site_root / "seasonal").is_dir():
+        return thumbnail_asset_path(asset_path)
+    relative = PurePosixPath(*asset_path.parts[1:]).with_suffix(".webp")
+    return PurePosixPath("thumbnails", relative)
+
+
 def iter_target_images(target: dict[str, Any]) -> Iterable[Any]:
     if str(target.get("status", "")).lower() not in {"failed", "error"}:
         yield target.get("image")
@@ -71,7 +87,12 @@ def manifest_compare_assets(manifest: dict[str, Any]) -> set[PurePosixPath]:
 
 def load_compare_assets(site_root: Path) -> set[PurePosixPath]:
     assets: set[PurePosixPath] = set()
-    for manifest_path in sorted((site_root / "seasonal").glob("*_manifest.json")):
+    manifest_paths = set((site_root / "seasonal").glob("*_manifest.json"))
+    manifest_paths.update(
+        path for path in site_root.glob("*_manifest.json")
+        if path.name != "runs_manifest.json"
+    )
+    for manifest_path in sorted(manifest_paths):
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
         assets.update(manifest_compare_assets(manifest))
     return assets
@@ -100,8 +121,9 @@ def build_thumbnails(site_root: Path, max_width: int = 560, quality: int = 82) -
 
     summary: dict[str, Any] = {"created": 0, "skipped": 0, "missing": 0, "missing_assets": []}
     for asset_path in sorted(load_compare_assets(site_root), key=str):
-        source = site_root.joinpath(*asset_path.parts)
-        destination_path = thumbnail_asset_path(asset_path)
+        source_path = _published_asset_path(site_root, asset_path)
+        source = site_root.joinpath(*source_path.parts)
+        destination_path = _published_thumbnail_path(site_root, asset_path)
         destination = site_root.joinpath(*destination_path.parts)
         if destination.is_file() and destination.stat().st_size > 0:
             summary["skipped"] += 1

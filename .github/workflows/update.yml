@@ -498,12 +498,19 @@ jobs:
           REMOTE_URL="https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
           if git ls-remote --exit-code --heads "${REMOTE_URL}" gh-pages >/dev/null 2>&1; then
             git clone --depth 1 --branch gh-pages "${REMOTE_URL}" .gh-pages
-            if [ -f .gh-pages/runs_manifest.json ]; then
-              cp .gh-pages/runs_manifest.json public/runs_manifest.json
+            # The seasonal repository serves the old WeatherNext viewer below
+            # /seasonal/wn2/. Keep this restore compatible with both the
+            # pre-rename gh-pages root and the migrated wn2/ subtree.
+            wn2_site=".gh-pages/wn2"
+            if [ ! -f "${wn2_site}/runs_manifest.json" ]; then
+              wn2_site=".gh-pages"
             fi
-            if [ -d .gh-pages/runs ]; then
+            if [ -f "${wn2_site}/runs_manifest.json" ]; then
+              cp "${wn2_site}/runs_manifest.json" public/runs_manifest.json
+            fi
+            if [ -d "${wn2_site}/runs" ]; then
               mkdir -p public/runs
-              cp -R .gh-pages/runs/. public/runs/
+              cp -R "${wn2_site}/runs/." public/runs/
             fi
           else
             echo "No gh-pages branch yet; starting with a fresh public/ directory."

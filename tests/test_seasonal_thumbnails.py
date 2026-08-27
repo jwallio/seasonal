@@ -75,6 +75,21 @@ def main() -> int:
         check(str(thumbnail_asset_path(normalized)) == "seasonal/thumbnails/cfsv2/run/map.webp", "thumbnail path contract changed")
         check(normalize_asset_path("../outside.jpg") is None, "unsafe asset paths must be rejected")
 
+    with tempfile.TemporaryDirectory() as temporary:
+        flat_site = Path(temporary)
+        asset = flat_site / "cfsv2" / "2026082306" / "native.jpg"
+        write_image(asset, (1080, 900), "navy")
+        manifest_path = flat_site / "cfsv2_manifest.json"
+        manifest_path.write_text(json.dumps({
+            "runs": [{
+                "product": "2m_temperature_anomaly",
+                "targets": [{"status": "rendered", "image": "seasonal/cfsv2/2026082306/native.jpg"}],
+            }],
+        }), encoding="utf-8")
+        summary = build_thumbnails(flat_site, max_width=560, quality=82)
+        check(summary["created"] == 1 and summary["missing"] == 0, "flat Pages tree should produce one Compare thumbnail")
+        check((flat_site / "thumbnails/cfsv2/2026082306/native.webp").is_file(), "flat thumbnail should be published at the Pages root")
+
     print("SEASONAL THUMBNAIL CONTRACT OK: compare-only WebP generation, sizing, paths, and preservation")
     return 0
 

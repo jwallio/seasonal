@@ -98,7 +98,7 @@ jobs:
           mkdir -p .cache/seas5
           published_manifest=".cache/seas5/previous_manifest.json"
           temporary_manifest="${published_manifest}.tmp"
-          pages_url="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/seasonal/seas5_manifest.json"
+          pages_url="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/seas5_manifest.json"
           if curl -fsSL --retry 2 --connect-timeout 10 "$pages_url" -o "$temporary_manifest"; then
             mv "$temporary_manifest" "$published_manifest"
             echo "Restored prior SEAS5 manifest for current-plus-three run retention."
@@ -134,7 +134,7 @@ jobs:
               --previous-manifest .cache/seas5/previous_manifest.json \
               --retain-runs 4 \
               --common-reference-dir .cache/seas5/common-reference \
-              --common-reference-url "https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/seasonal/common_reference/1991-2020/"
+              --common-reference-url "https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/common_reference/1991-2020/"
           done
       - name: Package SEAS5 Pages payload
         if: success()

@@ -64,16 +64,17 @@
           <div class="fact"><small>Ensemble</small><strong id="ensemble">—</strong></div><div class="fact"><small>Field</small><strong id="field">—</strong></div>
         </div></article>
         <article class="card"><div class="card-head"><h2>Run metadata</h2></div><div class="copy"><p id="scope">The manifest will identify the SEAS5 initialization, target month, ensemble, and hindcast baseline.</p></div>
-          <div class="links"><a href="../">Seasonal dashboard</a><a href="https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-pressure-levels">CDS pressure anomalies</a><a href="https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-single-levels">CDS surface anomalies</a><a href="https://github.com/jwallio/wn2/actions/workflows/seas5.yml">Workflow</a></div>
+          <div class="links"><a href="../">Seasonal dashboard</a><a href="https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-pressure-levels">CDS pressure anomalies</a><a href="https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-single-levels">CDS surface anomalies</a><a href="https://github.com/jwallio/seasonal/actions/workflows/seas5.yml">Workflow</a></div>
         </article>
       </aside>
     </section>
     <div class="footer" id="footer">Source: ECMWF SEAS5 / Copernicus CDS · Loading provenance…</div>
   </main>
   <script>
-    const base = location.pathname.split('/seasonal/')[0] || '';
-    const manifestUrl = `${base}/seasonal/seas5_manifest.json`;
-    const cleanPath = value => `${base}/${String(value || '').replace(/^\/+/, '').replace(/^public\//, '')}`;
+    const siteMatch = location.pathname.match(/^(.*\/seasonal)(?:\/|$)/);
+    const base = siteMatch ? siteMatch[1] : '';
+    const manifestUrl = `${base}/seas5_manifest.json`;
+    const cleanPath = value => `${base}/${String(value || '').replace(/^\/+/, '').replace(/^public\//, '').replace(/^seasonal\//, '')}`;
     const el = id => document.getElementById(id);
     const labels = {
       '500mb_height_anomaly':'500-mb Height Anomaly', '2m_temperature_anomaly':'2-m Temperature Anomaly',

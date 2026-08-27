@@ -58,10 +58,10 @@ its native millimetres to accumulated inches before rendering, so its maps no
 longer mix units with the other providers.
 
 The unified [Seasonal Model Dashboard](/d:/weather-projects/wn2/public/seasonal/index.html) is published at
-[`/seasonal/`](https://jwallio.github.io/wn2/seasonal/). It provides one model,
+[`/seasonal/`](https://jwallio.github.io/seasonal/). It provides one model,
 parameter, run, and target control surface for CFSv2, ECMWF SEAS5, CanSIPS
-v3, CMA CPSv3, APCC MME, and NASA GEOS-S2S-3. WeatherNext 2 remains published by its own workflow at the repository root,
-but is intentionally not listed as a seasonal model. The model-specific pages remain available at
+v3, CMA CPSv3, APCC MME, and NASA GEOS-S2S-3. WeatherNext 2 remains published by its own workflow under
+`/seasonal/wn2/`, but is intentionally not listed as a seasonal model. The model-specific pages remain available at
 `/seasonal/cfsv2/`, `/seasonal/seas5/`, and `/seasonal/cansips/` when focused
 provenance review is needed. The dashboard's Compare tab places the latest
 matching map from each seasonal model side by side. Its Parameter selector

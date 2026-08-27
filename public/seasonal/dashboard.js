@@ -1,14 +1,15 @@
-const root = location.pathname.includes('/seasonal/') ? location.pathname.split('/seasonal/')[0] : '';
-const normalizeAssetPath = value => String(value || '').replace(/^\/+/, '').replace(/^public\//, '');
+const siteMatch = location.pathname.match(/^(.*\/seasonal)(?:\/|$)/);
+const root = siteMatch ? siteMatch[1] : '';
+const normalizeAssetPath = value => String(value || '').replace(/^\/+/, '').replace(/^public\//, '').replace(/^seasonal\//, '');
 const assetPath = value => `${root}/${normalizeAssetPath(value)}`;
 const CATALOG_URL = assetPath('seasonal/catalog.json');
 const ANALOG_MANIFEST_URL = assetPath('seasonal/analog_z500_manifest.json');
 const ANALOG_PRODUCTS_MANIFEST_URL = assetPath('seasonal/analog_products_manifest.json');
 const ANALOG_PRODUCT_ORDER = ['psl_500mb_height_anomaly', 'psl_2m_temperature_anomaly', 'mrcc_snowfall_departure'];
 function thumbnailPath(value) {
-  const relative = normalizeAssetPath(value).replace(/^seasonal\//, '');
+  const relative = normalizeAssetPath(value);
   const webp = /\.[^/.]+$/.test(relative) ? relative.replace(/\.[^/.]+$/, '.webp') : `${relative}.webp`;
-  return assetPath(`seasonal/thumbnails/${webp}`);
+  return assetPath(`thumbnails/${webp}`);
 }
 const el = id => document.getElementById(id);
 const MODEL_CONFIG = {

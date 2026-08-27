@@ -3,7 +3,7 @@
 WN2 includes a standalone CanSIPS v3 adapter at
 [`scripts/cansips_seasonal.py`](/d:/weather-projects/wn2/scripts/cansips_seasonal.py).
 It publishes a separate viewer at
-[`/seasonal/cansips/`](https://jwallio.github.io/wn2/seasonal/cansips/) and
+[`/seasonal/cansips/`](https://jwallio.github.io/seasonal/cansips/) and
 also registers the model in the unified seasonal dashboard.
 
 ## Source and provenance

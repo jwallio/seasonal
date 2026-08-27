@@ -77,7 +77,7 @@ jobs:
           mkdir -p .cache/geos-s2s3
           published_manifest=".cache/geos-s2s3/previous_manifest.json"
           temporary_manifest="${published_manifest}.tmp"
-          pages_url="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/seasonal/geos_s2s3_manifest.json"
+          pages_url="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/geos_s2s3_manifest.json"
           if curl -fsSL --retry 2 --connect-timeout 10 "$pages_url" -o "$temporary_manifest"; then
             mv "$temporary_manifest" "$published_manifest"
             echo "Restored prior NASA GEOS-S2S-3 manifest."

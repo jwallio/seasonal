@@ -4,7 +4,7 @@ WN2 includes a standalone SEAS5 adapter at
 [`scripts/seas5_seasonal.py`](/d:/weather-projects/wn2/scripts/seas5_seasonal.py).
 It uses the current ECMWF/System 51 products distributed by the official
 Copernicus Climate Data Store (CDS) and publishes a separate viewer at
-[`/seasonal/seas5/`](https://jwallio.github.io/wn2/seasonal/seas5/).
+[`/seasonal/seas5/`](https://jwallio.github.io/seasonal/seas5/).
 
 ## Source and provenance
 
