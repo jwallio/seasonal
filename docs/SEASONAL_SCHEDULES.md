@@ -30,8 +30,11 @@ The analog workflow also generates source-backed products for the current rank-1
 analog: PSL NCEP CFSR 500-mb height and 2-metre temperature anomalies, plus MRCC
 station-interpolated snowfall departure for the NWS Eastern Region (`ER`). A
 monthly analog uses that calendar month; a DJF analog uses December through
-February. A source outage retains the last good image and records the stale
-status in `seasonal/analog_products_manifest.json`.
+February. Snowfall uses ER stations plus adjacent Great Lakes and Southeast
+stations so the rendered frame covers the eastern Great Lakes through the
+Southeast, while the fill is masked to those selected U.S. states. A source
+outage retains the last good image and records the stale status in
+`seasonal/analog_products_manifest.json`.
 The MRCC generator is given a ten-minute per-map wait window; quick HTTP 5xx
 responses are retried, while a true timeout is marked unavailable only after
 that full window. The analog job allows 120 minutes for this slow provider.
@@ -46,10 +49,12 @@ cosine-latitude-weighted RMS anomaly amplitude similarity. The top five ranked
 analogs are combined into PSL 500-mb, 2-metre, and snowfall-departure maps using
 inverse similarity-distance weights (80% pattern, 20% amplitude). Snowfall
 composites use MRCC/ACIS monthly station departures, sum the three monthly
-departures for DJF, then linearly interpolate the stations to a 0.25° NWS
-Eastern Region grid with nearest-neighbor edge filling; if SciPy is unavailable
-or cannot load, the manifest records a NumPy inverse-distance fallback. The
-rendered MRCC map remains available as the rank-1 reference. Composite source
+departures for DJF, then linearly interpolate the stations to a 0.25° eastern
+U.S. grid with nearest-neighbor edge filling; if SciPy is unavailable or cannot
+load, the manifest records a NumPy inverse-distance fallback. The snowfall
+composite uses a centered eastern Lambert Conformal Conic frame and a
+high-contrast signed departure palette. The rendered MRCC map remains
+available as the rank-1 reference. Composite source
 failures retain the previous good image and mark it stale.
 
 The CFSv2 readiness check retries the newest listed cycle for two hours before

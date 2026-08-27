@@ -80,7 +80,10 @@ def main() -> int:
 
     station_query = parse_qs(urlsplit(module._mrcc_station_data_url(djf)).query)
     station_payload = json.loads(station_query["params"][0])
-    check(station_payload["state"] == list(module.MRCC_EASTERN_STATES), "ACIS snowfall must query the NWS Eastern Region states")
+    check(
+        station_payload["state"] == list(module.MRCC_SNOWFALL_SOURCE_STATES),
+        "ACIS snowfall must query the NWS Eastern Region plus adjacent-frame states",
+    )
     check(
         station_payload["sdate"] == "1940-12"
         and station_payload["edate"] == "1941-02",
@@ -94,6 +97,31 @@ def main() -> int:
         and station_element["normal"] == "departure"
         and station_element["reduce"] == "sum",
         "ACIS snowfall departure controls are wrong",
+    )
+    check(module.MRCC_SNOWFALL_REGION == (-90.0, -64.0, 27.0, 50.0), "snowfall map should use the broad eastern frame")
+    check(
+        len(module.MRCC_SNOWFALL_DEPARTURE_PALETTE) == 20,
+        "snowfall departure palette should match the 20 signed intervals",
+    )
+    check(
+        "Michigan" in module.MRCC_SNOWFALL_MASK_STATE_NAMES
+        and "Tennessee" in module.MRCC_SNOWFALL_MASK_STATE_NAMES
+        and "Georgia" in module.MRCC_SNOWFALL_MASK_STATE_NAMES,
+        "snowfall state mask should include the adjacent Great Lakes and Southeast frame",
+    )
+    import cfsv2_seasonal as seasonal
+
+    snow_spec = module._mrcc_snowfall_render_product_spec(seasonal, djf, 5)
+    check(
+        snow_spec["projection_central_longitude"] == -77.0
+        and snow_spec["projection_latitude_origin"] == 39.0
+        and snow_spec["projected_x_shift_fraction"] == 0.0,
+        "snowfall map should use the centered eastern projection",
+    )
+    check(
+        snow_spec["border_files"] == ("us-states.geojson",)
+        and snow_spec["mask_states"] == list(module.MRCC_SNOWFALL_MASK_STATE_NAMES),
+        "snowfall map should render and mask only the selected U.S. states",
     )
     check(module._parse_mrcc_numeric_value("T") == 0.0, "ACIS trace snowfall should be treated as zero")
     check(module._parse_mrcc_numeric_value("M") != module._parse_mrcc_numeric_value("M"), "ACIS missing snowfall should remain missing")
