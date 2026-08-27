@@ -1441,6 +1441,27 @@ def _geojson_feature_records(payload: dict) -> Iterator[tuple[dict, dict]]:
         yield {}, payload
 
 
+def _geojson_feature_identifiers(properties: dict) -> set[str]:
+    return {
+        str(properties.get(key, "")).strip().casefold()
+        for key in (
+            "name",
+            "NAME",
+            "state",
+            "STATE_NAME",
+            "STUSPS",
+            "postal",
+            "abbr",
+            "code",
+        )
+        if properties.get(key)
+    }
+
+
+def _geojson_feature_matches(properties: dict, requested_states: set[str]) -> bool:
+    return bool(_geojson_feature_identifiers(properties).intersection(requested_states))
+
+
 def land_mask_from_borders(
     border_paths: Sequence[Path],
     longitude_values,
@@ -1470,21 +1491,7 @@ def land_mask_from_borders(
             try:
                 payload = json.loads(border_path.read_text(encoding="utf-8"))
                 for properties, geometry in _geojson_feature_records(payload):
-                    identifiers = {
-                        str(properties.get(key, "")).strip().casefold()
-                        for key in (
-                            "name",
-                            "NAME",
-                            "state",
-                            "STATE_NAME",
-                            "STUSPS",
-                            "postal",
-                            "abbr",
-                            "code",
-                        )
-                        if properties.get(key)
-                    }
-                    if not identifiers.intersection(requested_states):
+                    if not _geojson_feature_matches(properties, requested_states):
                         continue
                     for ring in _geojson_rings(geometry):
                         vertices = np.asarray(ring, dtype=float)
@@ -1911,7 +1918,22 @@ def render_map(
     for border_path in render_border_paths:
         try:
             payload = json.loads(border_path.read_text(encoding="utf-8"))
-            for ring in geojson_features(payload):
+            mask_states = product_spec.get("mask_states")
+            requested_states = {
+                str(state).strip().casefold()
+                for state in (mask_states or ())
+                if str(state).strip()
+            }
+            if requested_states and border_path.name == "us-states.geojson":
+                border_rings = (
+                    ring
+                    for properties, geometry in _geojson_feature_records(payload)
+                    if _geojson_feature_matches(properties, requested_states)
+                    for ring in _geojson_rings(geometry)
+                )
+            else:
+                border_rings = geojson_features(payload)
+            for ring in border_rings:
                 for segment in projected_ring_segments(ring):
                     axes.plot(
                         [point[0] for point in segment],

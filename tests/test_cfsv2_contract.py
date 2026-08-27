@@ -177,6 +177,7 @@ def main() -> int:
     check('map_domain not in {"land", "ocean"}' in adapter, "shared renderer should validate domain-specific products")
     check('mask_label = "selected-state" if mask_states else "countries"' in adapter, "domain-specific products should identify the selected-state land mask")
     check("_geojson_feature_records" in adapter, "state-specific masks should preserve GeoJSON feature metadata")
+    check("_geojson_feature_matches" in adapter, "state-specific borders should match the land mask selection")
     check("projection_central_longitude" in adapter, "regional products should be able to center their projection")
     check("border_files" in adapter, "regional products should be able to limit rendered borders")
     check('axes.set_facecolor("#ffffff" if product_spec["name"] == PRODUCT_SWE_ANOMALY' in adapter, "SWE ocean background should be white")
