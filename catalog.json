@@ -2,8 +2,8 @@
   "schema_version": 1,
   "registry_version": 1,
   "kind": "seasonal_dashboard_catalog",
-  "generated_utc": "2026-08-28T06:38:26Z",
-  "source_revision": "5a3f84b505a104272040258e28d9d61e0452b5bd",
+  "generated_utc": "2026-08-28T11:51:09Z",
+  "source_revision": "00e0efbd5947d3d1b7d1ff7b393df035bf6b935c",
   "model_order": [
     "superensemble",
     "c3s",
@@ -201,6 +201,47 @@
         "maximum": 100.0
       },
       "minimum_finite_fraction": 0.2,
+      "domain": "conus",
+      "comparison": true
+    },
+    "snowfall_anomaly": {
+      "label": "CONUS Snowfall Water-Equivalent Departure",
+      "aliases": [],
+      "units": "in",
+      "compatible_units": [],
+      "field_tokens": [
+        "snowfall",
+        "sf"
+      ],
+      "forbidden_field_tokens": [
+        "snow_depth",
+        "snow water equivalent",
+        "swe"
+      ],
+      "level": {
+        "type": "surface"
+      },
+      "aggregation": {
+        "monthly": "total",
+        "seasonal": "total"
+      },
+      "display": {
+        "monthly": {
+          "minimum": -8.0,
+          "maximum": 8.0,
+          "step": 1.0
+        },
+        "seasonal": {
+          "minimum": -8.0,
+          "maximum": 8.0,
+          "step": 1.0
+        }
+      },
+      "hard_range": {
+        "minimum": -100.0,
+        "maximum": 100.0
+      },
+      "minimum_finite_fraction": 0.02,
       "domain": "conus",
       "comparison": true
     },
@@ -547,27 +588,31 @@
       "support": {
         "500mb_height_anomaly": {
           "state": "supported",
-          "reason": "Provider adapter publishes this core product."
+          "reason": "Provider adapter publishes this comparison product."
         },
         "850mb_temperature_anomaly": {
           "state": "supported",
-          "reason": "Provider adapter publishes this core product."
+          "reason": "Provider adapter publishes this comparison product."
         },
         "2m_temperature_anomaly": {
           "state": "supported",
-          "reason": "Provider adapter publishes this core product."
+          "reason": "Provider adapter publishes this comparison product."
         },
         "precipitation_anomaly": {
           "state": "supported",
-          "reason": "Provider adapter publishes this core product."
+          "reason": "Provider adapter publishes this comparison product."
         },
         "mslp_anomaly": {
           "state": "supported",
-          "reason": "Provider adapter publishes this core product."
+          "reason": "Provider adapter publishes this comparison product."
         },
         "sea_surface_temperature_anomaly": {
           "state": "supported",
-          "reason": "Provider adapter publishes this core product."
+          "reason": "Provider adapter publishes this comparison product."
+        },
+        "snowfall_anomaly": {
+          "state": "unsupported",
+          "reason": "The current seasonal adapter does not publish snowfall accumulation; snow-water equivalent or precipitation is not interchangeable with snowfall."
         }
       },
       "runs": [
@@ -1898,6 +1943,12 @@
           "latest_run_init_utc": "2026-08-01T00:00:00Z",
           "retained_fallback": false
         },
+        "snowfall_anomaly": {
+          "state": "unsupported",
+          "reason": "The current seasonal adapter does not publish snowfall accumulation; snow-water equivalent or precipitation is not interchangeable with snowfall.",
+          "available": false,
+          "comparable": false
+        },
         "mslp_anomaly": {
           "state": "available",
           "reason": "Rendered target available.",
@@ -1937,27 +1988,31 @@
       "support": {
         "500mb_height_anomaly": {
           "state": "supported",
-          "reason": "Provider adapter publishes this core product."
+          "reason": "Provider adapter publishes this comparison product."
         },
         "850mb_temperature_anomaly": {
           "state": "supported",
-          "reason": "Provider adapter publishes this core product."
+          "reason": "Provider adapter publishes this comparison product."
         },
         "2m_temperature_anomaly": {
           "state": "supported",
-          "reason": "Provider adapter publishes this core product."
+          "reason": "Provider adapter publishes this comparison product."
         },
         "precipitation_anomaly": {
           "state": "supported",
-          "reason": "Provider adapter publishes this core product."
+          "reason": "Provider adapter publishes this comparison product."
         },
         "mslp_anomaly": {
           "state": "supported",
-          "reason": "Provider adapter publishes this core product."
+          "reason": "Provider adapter publishes this comparison product."
         },
         "sea_surface_temperature_anomaly": {
           "state": "supported",
-          "reason": "Provider adapter publishes this core product."
+          "reason": "Provider adapter publishes this comparison product."
+        },
+        "snowfall_anomaly": {
+          "state": "supported",
+          "reason": "Provider adapter publishes this comparison product."
         }
       },
       "runs": [
@@ -7530,6 +7585,17 @@
           "latest_run_init_utc": null,
           "retained_fallback": false
         },
+        "snowfall_anomaly": {
+          "state": "missing",
+          "reason": "No rendered target is currently published.",
+          "available": false,
+          "comparable": false,
+          "latest_init_utc": null,
+          "latest_run_id": null,
+          "latest_run_status": null,
+          "latest_run_init_utc": null,
+          "retained_fallback": false
+        },
         "mslp_anomaly": {
           "state": "available",
           "reason": "Rendered target available.",
@@ -7569,27 +7635,31 @@
       "support": {
         "500mb_height_anomaly": {
           "state": "supported",
-          "reason": "Provider adapter publishes this core product."
+          "reason": "Provider adapter publishes this comparison product."
         },
         "850mb_temperature_anomaly": {
           "state": "supported",
-          "reason": "Provider adapter publishes this core product."
+          "reason": "Provider adapter publishes this comparison product."
         },
         "2m_temperature_anomaly": {
           "state": "supported",
-          "reason": "Provider adapter publishes this core product."
+          "reason": "Provider adapter publishes this comparison product."
         },
         "precipitation_anomaly": {
           "state": "supported",
-          "reason": "Provider adapter publishes this core product."
+          "reason": "Provider adapter publishes this comparison product."
         },
         "mslp_anomaly": {
           "state": "supported",
-          "reason": "Provider adapter publishes this core product."
+          "reason": "Provider adapter publishes this comparison product."
         },
         "sea_surface_temperature_anomaly": {
           "state": "supported",
-          "reason": "Provider adapter publishes this core product."
+          "reason": "Provider adapter publishes this comparison product."
+        },
+        "snowfall_anomaly": {
+          "state": "unsupported",
+          "reason": "The current seasonal adapter does not publish snowfall accumulation; snow-water equivalent or precipitation is not interchangeable with snowfall."
         }
       },
       "runs": [
@@ -8174,6 +8244,12 @@
           "latest_run_init_utc": "2026-08-18T00:00:00Z",
           "retained_fallback": false
         },
+        "snowfall_anomaly": {
+          "state": "unsupported",
+          "reason": "The current seasonal adapter does not publish snowfall accumulation; snow-water equivalent or precipitation is not interchangeable with snowfall.",
+          "available": false,
+          "comparable": false
+        },
         "mslp_anomaly": {
           "state": "available",
           "reason": "Rendered target available.",
@@ -8221,7 +8297,7 @@
         },
         "2m_temperature_anomaly": {
           "state": "supported",
-          "reason": "Provider adapter publishes this core product."
+          "reason": "Provider adapter publishes this comparison product."
         },
         "precipitation_anomaly": {
           "state": "unsupported",
@@ -8234,6 +8310,10 @@
         "sea_surface_temperature_anomaly": {
           "state": "unsupported",
           "reason": "The current NMME adapter does not yet publish this field as a core comparison product."
+        },
+        "snowfall_anomaly": {
+          "state": "unsupported",
+          "reason": "The current seasonal adapter does not publish snowfall accumulation; snow-water equivalent or precipitation is not interchangeable with snowfall."
         }
       },
       "runs": [
@@ -9309,6 +9389,12 @@
           "available": false,
           "comparable": false
         },
+        "snowfall_anomaly": {
+          "state": "unsupported",
+          "reason": "The current seasonal adapter does not publish snowfall accumulation; snow-water equivalent or precipitation is not interchangeable with snowfall.",
+          "available": false,
+          "comparable": false
+        },
         "mslp_anomaly": {
           "state": "unsupported",
           "reason": "The current NMME adapter does not yet publish this field as a core comparison product.",
@@ -9334,7 +9420,7 @@
       "support": {
         "500mb_height_anomaly": {
           "state": "supported",
-          "reason": "Provider adapter publishes this core product."
+          "reason": "Provider adapter publishes this comparison product."
         },
         "850mb_temperature_anomaly": {
           "state": "unsupported",
@@ -9342,19 +9428,23 @@
         },
         "2m_temperature_anomaly": {
           "state": "supported",
-          "reason": "Provider adapter publishes this core product."
+          "reason": "Provider adapter publishes this comparison product."
         },
         "precipitation_anomaly": {
           "state": "supported",
-          "reason": "Provider adapter publishes this core product."
+          "reason": "Provider adapter publishes this comparison product."
         },
         "mslp_anomaly": {
           "state": "supported",
-          "reason": "Provider adapter publishes this core product."
+          "reason": "Provider adapter publishes this comparison product."
         },
         "sea_surface_temperature_anomaly": {
           "state": "unsupported",
           "reason": "The standalone rolling CFSv2 adapter does not expose this field."
+        },
+        "snowfall_anomaly": {
+          "state": "unsupported",
+          "reason": "The current seasonal adapter does not publish snowfall accumulation; snow-water equivalent or precipitation is not interchangeable with snowfall."
         }
       },
       "runs": [
@@ -14664,6 +14754,12 @@
           "latest_run_init_utc": "2026-08-27T18:00:00Z",
           "retained_fallback": false
         },
+        "snowfall_anomaly": {
+          "state": "unsupported",
+          "reason": "The current seasonal adapter does not publish snowfall accumulation; snow-water equivalent or precipitation is not interchangeable with snowfall.",
+          "available": false,
+          "comparable": false
+        },
         "mslp_anomaly": {
           "state": "available",
           "reason": "Rendered target available.",
@@ -14696,27 +14792,31 @@
       "support": {
         "500mb_height_anomaly": {
           "state": "supported",
-          "reason": "Provider adapter publishes this core product."
+          "reason": "Provider adapter publishes this comparison product."
         },
         "850mb_temperature_anomaly": {
           "state": "supported",
-          "reason": "Provider adapter publishes this core product."
+          "reason": "Provider adapter publishes this comparison product."
         },
         "2m_temperature_anomaly": {
           "state": "supported",
-          "reason": "Provider adapter publishes this core product."
+          "reason": "Provider adapter publishes this comparison product."
         },
         "precipitation_anomaly": {
           "state": "supported",
-          "reason": "Provider adapter publishes this core product."
+          "reason": "Provider adapter publishes this comparison product."
         },
         "mslp_anomaly": {
           "state": "supported",
-          "reason": "Provider adapter publishes this core product."
+          "reason": "Provider adapter publishes this comparison product."
         },
         "sea_surface_temperature_anomaly": {
           "state": "supported",
-          "reason": "Provider adapter publishes this core product."
+          "reason": "Provider adapter publishes this comparison product."
+        },
+        "snowfall_anomaly": {
+          "state": "supported",
+          "reason": "Provider adapter publishes this comparison product."
         }
       },
       "runs": [
@@ -15492,6 +15592,17 @@
           "latest_run_init_utc": "2026-08-01T00:00:00Z",
           "retained_fallback": false
         },
+        "snowfall_anomaly": {
+          "state": "missing",
+          "reason": "No rendered target is currently published.",
+          "available": false,
+          "comparable": false,
+          "latest_init_utc": null,
+          "latest_run_id": null,
+          "latest_run_status": null,
+          "latest_run_init_utc": null,
+          "retained_fallback": false
+        },
         "mslp_anomaly": {
           "state": "available",
           "reason": "Rendered target available.",
@@ -15531,27 +15642,31 @@
       "support": {
         "500mb_height_anomaly": {
           "state": "supported",
-          "reason": "Provider adapter publishes this core product."
+          "reason": "Provider adapter publishes this comparison product."
         },
         "850mb_temperature_anomaly": {
           "state": "supported",
-          "reason": "Provider adapter publishes this core product."
+          "reason": "Provider adapter publishes this comparison product."
         },
         "2m_temperature_anomaly": {
           "state": "supported",
-          "reason": "Provider adapter publishes this core product."
+          "reason": "Provider adapter publishes this comparison product."
         },
         "precipitation_anomaly": {
           "state": "supported",
-          "reason": "Provider adapter publishes this core product."
+          "reason": "Provider adapter publishes this comparison product."
         },
         "mslp_anomaly": {
           "state": "supported",
-          "reason": "Provider adapter publishes this core product."
+          "reason": "Provider adapter publishes this comparison product."
         },
         "sea_surface_temperature_anomaly": {
           "state": "supported",
-          "reason": "Provider adapter publishes this core product."
+          "reason": "Provider adapter publishes this comparison product."
+        },
+        "snowfall_anomaly": {
+          "state": "unsupported",
+          "reason": "The current seasonal adapter does not publish snowfall accumulation; snow-water equivalent or precipitation is not interchangeable with snowfall."
         }
       },
       "runs": [
@@ -23755,6 +23870,12 @@
           "latest_run_init_utc": "2026-08-01T00:00:00Z",
           "retained_fallback": false
         },
+        "snowfall_anomaly": {
+          "state": "unsupported",
+          "reason": "The current seasonal adapter does not publish snowfall accumulation; snow-water equivalent or precipitation is not interchangeable with snowfall.",
+          "available": false,
+          "comparable": false
+        },
         "mslp_anomaly": {
           "state": "available",
           "reason": "Rendered target available.",
@@ -23794,27 +23915,31 @@
       "support": {
         "500mb_height_anomaly": {
           "state": "supported",
-          "reason": "Provider adapter publishes this core product."
+          "reason": "Provider adapter publishes this comparison product."
         },
         "850mb_temperature_anomaly": {
           "state": "supported",
-          "reason": "Provider adapter publishes this core product."
+          "reason": "Provider adapter publishes this comparison product."
         },
         "2m_temperature_anomaly": {
           "state": "supported",
-          "reason": "Provider adapter publishes this core product."
+          "reason": "Provider adapter publishes this comparison product."
         },
         "precipitation_anomaly": {
           "state": "supported",
-          "reason": "Provider adapter publishes this core product."
+          "reason": "Provider adapter publishes this comparison product."
         },
         "mslp_anomaly": {
           "state": "supported",
-          "reason": "Provider adapter publishes this core product."
+          "reason": "Provider adapter publishes this comparison product."
         },
         "sea_surface_temperature_anomaly": {
           "state": "supported",
-          "reason": "Provider adapter publishes this core product."
+          "reason": "Provider adapter publishes this comparison product."
+        },
+        "snowfall_anomaly": {
+          "state": "unsupported",
+          "reason": "The current seasonal adapter does not publish snowfall accumulation; snow-water equivalent or precipitation is not interchangeable with snowfall."
         }
       },
       "runs": [
@@ -24602,6 +24727,12 @@
           "latest_run_init_utc": "2026-08-01T00:00:00Z",
           "retained_fallback": false
         },
+        "snowfall_anomaly": {
+          "state": "unsupported",
+          "reason": "The current seasonal adapter does not publish snowfall accumulation; snow-water equivalent or precipitation is not interchangeable with snowfall.",
+          "available": false,
+          "comparable": false
+        },
         "mslp_anomaly": {
           "state": "available",
           "reason": "Rendered target available.",
@@ -24645,23 +24776,27 @@
         },
         "850mb_temperature_anomaly": {
           "state": "supported",
-          "reason": "Provider adapter publishes this core product."
+          "reason": "Provider adapter publishes this comparison product."
         },
         "2m_temperature_anomaly": {
           "state": "supported",
-          "reason": "Provider adapter publishes this core product."
+          "reason": "Provider adapter publishes this comparison product."
         },
         "precipitation_anomaly": {
           "state": "supported",
-          "reason": "Provider adapter publishes this core product."
+          "reason": "Provider adapter publishes this comparison product."
         },
         "mslp_anomaly": {
           "state": "supported",
-          "reason": "Provider adapter publishes this core product."
+          "reason": "Provider adapter publishes this comparison product."
         },
         "sea_surface_temperature_anomaly": {
           "state": "supported",
-          "reason": "Provider adapter publishes this core product."
+          "reason": "Provider adapter publishes this comparison product."
+        },
+        "snowfall_anomaly": {
+          "state": "unsupported",
+          "reason": "The current seasonal adapter does not publish snowfall accumulation; snow-water equivalent or precipitation is not interchangeable with snowfall."
         }
       },
       "runs": [
@@ -25484,6 +25619,12 @@
           "latest_run_init_utc": "2026-08-01T00:00:00Z",
           "retained_fallback": false
         },
+        "snowfall_anomaly": {
+          "state": "unsupported",
+          "reason": "The current seasonal adapter does not publish snowfall accumulation; snow-water equivalent or precipitation is not interchangeable with snowfall.",
+          "available": false,
+          "comparable": false
+        },
         "mslp_anomaly": {
           "state": "available",
           "reason": "Rendered target available.",
@@ -25523,27 +25664,31 @@
       "support": {
         "500mb_height_anomaly": {
           "state": "supported",
-          "reason": "Provider adapter publishes this core product."
+          "reason": "Provider adapter publishes this comparison product."
         },
         "850mb_temperature_anomaly": {
           "state": "supported",
-          "reason": "Provider adapter publishes this core product."
+          "reason": "Provider adapter publishes this comparison product."
         },
         "2m_temperature_anomaly": {
           "state": "supported",
-          "reason": "Provider adapter publishes this core product."
+          "reason": "Provider adapter publishes this comparison product."
         },
         "precipitation_anomaly": {
           "state": "supported",
-          "reason": "Provider adapter publishes this core product."
+          "reason": "Provider adapter publishes this comparison product."
         },
         "mslp_anomaly": {
           "state": "supported",
-          "reason": "Provider adapter publishes this core product."
+          "reason": "Provider adapter publishes this comparison product."
         },
         "sea_surface_temperature_anomaly": {
           "state": "supported",
-          "reason": "Provider adapter publishes this core product."
+          "reason": "Provider adapter publishes this comparison product."
+        },
+        "snowfall_anomaly": {
+          "state": "unsupported",
+          "reason": "The current seasonal adapter does not publish snowfall accumulation; snow-water equivalent or precipitation is not interchangeable with snowfall."
         }
       },
       "runs": [
@@ -25970,6 +26115,12 @@
           "latest_run_init_utc": null,
           "retained_fallback": false
         },
+        "snowfall_anomaly": {
+          "state": "unsupported",
+          "reason": "The current seasonal adapter does not publish snowfall accumulation; snow-water equivalent or precipitation is not interchangeable with snowfall.",
+          "available": false,
+          "comparable": false
+        },
         "mslp_anomaly": {
           "state": "missing",
           "reason": "No rendered target is currently published.",
@@ -25997,7 +26148,7 @@
   },
   "health": {
     "status": "attention",
-    "generated_utc": "2026-08-28T06:38:26Z",
+    "generated_utc": "2026-08-28T11:51:09Z",
     "freshness_policy_days": {
       "default": {
         "fresh_days": 35,
@@ -26009,17 +26160,17 @@
       }
     },
     "summary": {
-      "surfaces": 60,
-      "attention_surfaces": 7,
+      "surfaces": 70,
+      "attention_surfaces": 9,
       "by_state": {
         "healthy": 45,
         "aging": 0,
         "stale": 0,
         "partial": 1,
         "failed": 0,
-        "missing": 5,
+        "missing": 7,
         "noncomparable": 1,
-        "not_applicable": 8
+        "not_applicable": 16
       }
     },
     "surfaces": [
@@ -26033,7 +26184,7 @@
         "comparable": true,
         "health_state": "partial",
         "freshness": "fresh",
-        "age_days": 27.3,
+        "age_days": 27.5,
         "latest_status": "partial",
         "latest_init_utc": "2026-08-01T00:00:00Z",
         "selected_init_utc": "2026-08-01T00:00:00Z",
@@ -26051,7 +26202,7 @@
         "comparable": true,
         "health_state": "healthy",
         "freshness": "fresh",
-        "age_days": 27.3,
+        "age_days": 27.5,
         "latest_status": "rendered",
         "latest_init_utc": "2026-08-01T00:00:00Z",
         "selected_init_utc": "2026-08-01T00:00:00Z",
@@ -26069,7 +26220,7 @@
         "comparable": true,
         "health_state": "healthy",
         "freshness": "fresh",
-        "age_days": 27.3,
+        "age_days": 27.5,
         "latest_status": "rendered",
         "latest_init_utc": "2026-08-01T00:00:00Z",
         "selected_init_utc": "2026-08-01T00:00:00Z",
@@ -26087,13 +26238,31 @@
         "comparable": true,
         "health_state": "healthy",
         "freshness": "fresh",
-        "age_days": 27.3,
+        "age_days": 27.5,
         "latest_status": "rendered",
         "latest_init_utc": "2026-08-01T00:00:00Z",
         "selected_init_utc": "2026-08-01T00:00:00Z",
         "selected_run_id": "superensemble-2026080100-precipitation_anomaly",
         "retained_fallback": false,
         "reason": "Rendered target available."
+      },
+      {
+        "model": "superensemble",
+        "model_label": "Super Ensemble",
+        "product": "snowfall_anomaly",
+        "product_label": "CONUS Snowfall Water-Equivalent Departure",
+        "surface_state": "unsupported",
+        "available": false,
+        "comparable": false,
+        "health_state": "not_applicable",
+        "freshness": "not_applicable",
+        "age_days": null,
+        "latest_status": null,
+        "latest_init_utc": null,
+        "selected_init_utc": null,
+        "selected_run_id": null,
+        "retained_fallback": false,
+        "reason": "The current seasonal adapter does not publish snowfall accumulation; snow-water equivalent or precipitation is not interchangeable with snowfall."
       },
       {
         "model": "superensemble",
@@ -26105,7 +26274,7 @@
         "comparable": true,
         "health_state": "healthy",
         "freshness": "fresh",
-        "age_days": 27.3,
+        "age_days": 27.5,
         "latest_status": "rendered",
         "latest_init_utc": "2026-08-01T00:00:00Z",
         "selected_init_utc": "2026-08-01T00:00:00Z",
@@ -26123,7 +26292,7 @@
         "comparable": true,
         "health_state": "healthy",
         "freshness": "fresh",
-        "age_days": 27.3,
+        "age_days": 27.5,
         "latest_status": "rendered",
         "latest_init_utc": "2026-08-01T00:00:00Z",
         "selected_init_utc": "2026-08-01T00:00:00Z",
@@ -26141,7 +26310,7 @@
         "comparable": true,
         "health_state": "healthy",
         "freshness": "fresh",
-        "age_days": 27.3,
+        "age_days": 27.5,
         "latest_status": "rendered",
         "latest_init_utc": "2026-08-01T00:00:00Z",
         "selected_init_utc": "2026-08-01T00:00:00Z",
@@ -26159,7 +26328,7 @@
         "comparable": true,
         "health_state": "healthy",
         "freshness": "fresh",
-        "age_days": 27.3,
+        "age_days": 27.5,
         "latest_status": "rendered",
         "latest_init_utc": "2026-08-01T00:00:00Z",
         "selected_init_utc": "2026-08-01T00:00:00Z",
@@ -26177,7 +26346,7 @@
         "comparable": true,
         "health_state": "healthy",
         "freshness": "fresh",
-        "age_days": 27.3,
+        "age_days": 27.5,
         "latest_status": "rendered",
         "latest_init_utc": "2026-08-01T00:00:00Z",
         "selected_init_utc": "2026-08-01T00:00:00Z",
@@ -26206,6 +26375,24 @@
       {
         "model": "c3s",
         "model_label": "C3S multi-system",
+        "product": "snowfall_anomaly",
+        "product_label": "CONUS Snowfall Water-Equivalent Departure",
+        "surface_state": "missing",
+        "available": false,
+        "comparable": false,
+        "health_state": "missing",
+        "freshness": "unknown",
+        "age_days": null,
+        "latest_status": null,
+        "latest_init_utc": null,
+        "selected_init_utc": null,
+        "selected_run_id": null,
+        "retained_fallback": false,
+        "reason": "No rendered target is currently published."
+      },
+      {
+        "model": "c3s",
+        "model_label": "C3S multi-system",
         "product": "mslp_anomaly",
         "product_label": "MSLP Anomaly",
         "surface_state": "available",
@@ -26213,7 +26400,7 @@
         "comparable": true,
         "health_state": "healthy",
         "freshness": "fresh",
-        "age_days": 27.3,
+        "age_days": 27.5,
         "latest_status": "rendered",
         "latest_init_utc": "2026-08-01T00:00:00Z",
         "selected_init_utc": "2026-08-01T00:00:00Z",
@@ -26231,7 +26418,7 @@
         "comparable": true,
         "health_state": "healthy",
         "freshness": "fresh",
-        "age_days": 27.3,
+        "age_days": 27.5,
         "latest_status": "rendered",
         "latest_init_utc": "2026-08-01T00:00:00Z",
         "selected_init_utc": "2026-08-01T00:00:00Z",
@@ -26249,7 +26436,7 @@
         "comparable": true,
         "health_state": "healthy",
         "freshness": "fresh",
-        "age_days": 10.3,
+        "age_days": 10.5,
         "latest_status": "rendered",
         "latest_init_utc": "2026-08-18T00:00:00Z",
         "selected_init_utc": "2026-08-18T00:00:00Z",
@@ -26267,7 +26454,7 @@
         "comparable": true,
         "health_state": "healthy",
         "freshness": "fresh",
-        "age_days": 10.3,
+        "age_days": 10.5,
         "latest_status": "rendered",
         "latest_init_utc": "2026-08-18T00:00:00Z",
         "selected_init_utc": "2026-08-18T00:00:00Z",
@@ -26285,7 +26472,7 @@
         "comparable": true,
         "health_state": "healthy",
         "freshness": "fresh",
-        "age_days": 10.3,
+        "age_days": 10.5,
         "latest_status": "rendered",
         "latest_init_utc": "2026-08-18T00:00:00Z",
         "selected_init_utc": "2026-08-18T00:00:00Z",
@@ -26303,13 +26490,31 @@
         "comparable": false,
         "health_state": "noncomparable",
         "freshness": "fresh",
-        "age_days": 10.3,
+        "age_days": 10.5,
         "latest_status": "rendered",
         "latest_init_utc": "2026-08-18T00:00:00Z",
         "selected_init_utc": "2026-08-18T00:00:00Z",
         "selected_run_id": "apcc-202609-precipitation_anomaly",
         "retained_fallback": false,
         "reason": "Rendered target uses noncanonical units or field metadata and is excluded from comparison."
+      },
+      {
+        "model": "apcc",
+        "model_label": "APCC MME",
+        "product": "snowfall_anomaly",
+        "product_label": "CONUS Snowfall Water-Equivalent Departure",
+        "surface_state": "unsupported",
+        "available": false,
+        "comparable": false,
+        "health_state": "not_applicable",
+        "freshness": "not_applicable",
+        "age_days": null,
+        "latest_status": null,
+        "latest_init_utc": null,
+        "selected_init_utc": null,
+        "selected_run_id": null,
+        "retained_fallback": false,
+        "reason": "The current seasonal adapter does not publish snowfall accumulation; snow-water equivalent or precipitation is not interchangeable with snowfall."
       },
       {
         "model": "apcc",
@@ -26321,7 +26526,7 @@
         "comparable": true,
         "health_state": "healthy",
         "freshness": "fresh",
-        "age_days": 10.3,
+        "age_days": 10.5,
         "latest_status": "rendered",
         "latest_init_utc": "2026-08-18T00:00:00Z",
         "selected_init_utc": "2026-08-18T00:00:00Z",
@@ -26339,7 +26544,7 @@
         "comparable": true,
         "health_state": "healthy",
         "freshness": "fresh",
-        "age_days": 10.3,
+        "age_days": 10.5,
         "latest_status": "rendered",
         "latest_init_utc": "2026-08-18T00:00:00Z",
         "selected_init_utc": "2026-08-18T00:00:00Z",
@@ -26393,7 +26598,7 @@
         "comparable": true,
         "health_state": "healthy",
         "freshness": "fresh",
-        "age_days": 20.3,
+        "age_days": 20.5,
         "latest_status": "rendered",
         "latest_init_utc": "2026-08-08T00:00:00Z",
         "selected_init_utc": "2026-08-08T00:00:00Z",
@@ -26418,6 +26623,24 @@
         "selected_run_id": null,
         "retained_fallback": false,
         "reason": "The current NMME adapter does not yet publish this field as a core comparison product."
+      },
+      {
+        "model": "nmme",
+        "model_label": "NOAA NMME",
+        "product": "snowfall_anomaly",
+        "product_label": "CONUS Snowfall Water-Equivalent Departure",
+        "surface_state": "unsupported",
+        "available": false,
+        "comparable": false,
+        "health_state": "not_applicable",
+        "freshness": "not_applicable",
+        "age_days": null,
+        "latest_status": null,
+        "latest_init_utc": null,
+        "selected_init_utc": null,
+        "selected_run_id": null,
+        "retained_fallback": false,
+        "reason": "The current seasonal adapter does not publish snowfall accumulation; snow-water equivalent or precipitation is not interchangeable with snowfall."
       },
       {
         "model": "nmme",
@@ -26465,7 +26688,7 @@
         "comparable": true,
         "health_state": "healthy",
         "freshness": "fresh",
-        "age_days": 0.5,
+        "age_days": 0.7,
         "latest_status": "rendered",
         "latest_init_utc": "2026-08-27T18:00:00Z",
         "selected_init_utc": "2026-08-27T18:00:00Z",
@@ -26501,7 +26724,7 @@
         "comparable": true,
         "health_state": "healthy",
         "freshness": "fresh",
-        "age_days": 0.5,
+        "age_days": 0.7,
         "latest_status": "rendered",
         "latest_init_utc": "2026-08-27T18:00:00Z",
         "selected_init_utc": "2026-08-27T18:00:00Z",
@@ -26519,13 +26742,31 @@
         "comparable": true,
         "health_state": "healthy",
         "freshness": "fresh",
-        "age_days": 0.5,
+        "age_days": 0.7,
         "latest_status": "rendered",
         "latest_init_utc": "2026-08-27T18:00:00Z",
         "selected_init_utc": "2026-08-27T18:00:00Z",
         "selected_run_id": "cfsv2-2026082718-precipitation_anomaly",
         "retained_fallback": false,
         "reason": "Rendered target available."
+      },
+      {
+        "model": "cfsv2",
+        "model_label": "CFSv2",
+        "product": "snowfall_anomaly",
+        "product_label": "CONUS Snowfall Water-Equivalent Departure",
+        "surface_state": "unsupported",
+        "available": false,
+        "comparable": false,
+        "health_state": "not_applicable",
+        "freshness": "not_applicable",
+        "age_days": null,
+        "latest_status": null,
+        "latest_init_utc": null,
+        "selected_init_utc": null,
+        "selected_run_id": null,
+        "retained_fallback": false,
+        "reason": "The current seasonal adapter does not publish snowfall accumulation; snow-water equivalent or precipitation is not interchangeable with snowfall."
       },
       {
         "model": "cfsv2",
@@ -26537,7 +26778,7 @@
         "comparable": true,
         "health_state": "healthy",
         "freshness": "fresh",
-        "age_days": 0.5,
+        "age_days": 0.7,
         "latest_status": "rendered",
         "latest_init_utc": "2026-08-27T18:00:00Z",
         "selected_init_utc": "2026-08-27T18:00:00Z",
@@ -26591,7 +26832,7 @@
         "comparable": true,
         "health_state": "healthy",
         "freshness": "fresh",
-        "age_days": 27.3,
+        "age_days": 27.5,
         "latest_status": "rendered",
         "latest_init_utc": "2026-08-01T00:00:00Z",
         "selected_init_utc": "2026-08-01T00:00:00Z",
@@ -26609,7 +26850,7 @@
         "comparable": true,
         "health_state": "healthy",
         "freshness": "fresh",
-        "age_days": 27.3,
+        "age_days": 27.5,
         "latest_status": "rendered",
         "latest_init_utc": "2026-08-01T00:00:00Z",
         "selected_init_utc": "2026-08-01T00:00:00Z",
@@ -26627,13 +26868,31 @@
         "comparable": true,
         "health_state": "healthy",
         "freshness": "fresh",
-        "age_days": 27.3,
+        "age_days": 27.5,
         "latest_status": "rendered",
         "latest_init_utc": "2026-08-01T00:00:00Z",
         "selected_init_utc": "2026-08-01T00:00:00Z",
         "selected_run_id": "seas5-2026080100-precipitation_anomaly",
         "retained_fallback": false,
         "reason": "Rendered target available."
+      },
+      {
+        "model": "seas5",
+        "model_label": "ECMWF SEAS5",
+        "product": "snowfall_anomaly",
+        "product_label": "CONUS Snowfall Water-Equivalent Departure",
+        "surface_state": "missing",
+        "available": false,
+        "comparable": false,
+        "health_state": "missing",
+        "freshness": "unknown",
+        "age_days": null,
+        "latest_status": null,
+        "latest_init_utc": null,
+        "selected_init_utc": null,
+        "selected_run_id": null,
+        "retained_fallback": false,
+        "reason": "No rendered target is currently published."
       },
       {
         "model": "seas5",
@@ -26645,7 +26904,7 @@
         "comparable": true,
         "health_state": "healthy",
         "freshness": "fresh",
-        "age_days": 27.3,
+        "age_days": 27.5,
         "latest_status": "rendered",
         "latest_init_utc": "2026-08-01T00:00:00Z",
         "selected_init_utc": "2026-08-01T00:00:00Z",
@@ -26663,7 +26922,7 @@
         "comparable": true,
         "health_state": "healthy",
         "freshness": "fresh",
-        "age_days": 27.3,
+        "age_days": 27.5,
         "latest_status": "rendered",
         "latest_init_utc": "2026-08-01T00:00:00Z",
         "selected_init_utc": "2026-08-01T00:00:00Z",
@@ -26681,7 +26940,7 @@
         "comparable": true,
         "health_state": "healthy",
         "freshness": "fresh",
-        "age_days": 27.3,
+        "age_days": 27.5,
         "latest_status": "rendered",
         "latest_init_utc": "2026-08-01T00:00:00Z",
         "selected_init_utc": "2026-08-01T00:00:00Z",
@@ -26699,7 +26958,7 @@
         "comparable": true,
         "health_state": "healthy",
         "freshness": "fresh",
-        "age_days": 27.3,
+        "age_days": 27.5,
         "latest_status": "rendered",
         "latest_init_utc": "2026-08-01T00:00:00Z",
         "selected_init_utc": "2026-08-01T00:00:00Z",
@@ -26717,7 +26976,7 @@
         "comparable": true,
         "health_state": "healthy",
         "freshness": "fresh",
-        "age_days": 27.3,
+        "age_days": 27.5,
         "latest_status": "rendered",
         "latest_init_utc": "2026-08-01T00:00:00Z",
         "selected_init_utc": "2026-08-01T00:00:00Z",
@@ -26735,13 +26994,31 @@
         "comparable": true,
         "health_state": "healthy",
         "freshness": "fresh",
-        "age_days": 27.3,
+        "age_days": 27.5,
         "latest_status": "rendered",
         "latest_init_utc": "2026-08-01T00:00:00Z",
         "selected_init_utc": "2026-08-01T00:00:00Z",
         "selected_run_id": "cansips-2026080100-precipitation_anomaly",
         "retained_fallback": false,
         "reason": "Rendered target available."
+      },
+      {
+        "model": "cansips",
+        "model_label": "CanSIPS v3",
+        "product": "snowfall_anomaly",
+        "product_label": "CONUS Snowfall Water-Equivalent Departure",
+        "surface_state": "unsupported",
+        "available": false,
+        "comparable": false,
+        "health_state": "not_applicable",
+        "freshness": "not_applicable",
+        "age_days": null,
+        "latest_status": null,
+        "latest_init_utc": null,
+        "selected_init_utc": null,
+        "selected_run_id": null,
+        "retained_fallback": false,
+        "reason": "The current seasonal adapter does not publish snowfall accumulation; snow-water equivalent or precipitation is not interchangeable with snowfall."
       },
       {
         "model": "cansips",
@@ -26753,7 +27030,7 @@
         "comparable": true,
         "health_state": "healthy",
         "freshness": "fresh",
-        "age_days": 27.3,
+        "age_days": 27.5,
         "latest_status": "rendered",
         "latest_init_utc": "2026-08-01T00:00:00Z",
         "selected_init_utc": "2026-08-01T00:00:00Z",
@@ -26771,7 +27048,7 @@
         "comparable": true,
         "health_state": "healthy",
         "freshness": "fresh",
-        "age_days": 27.3,
+        "age_days": 27.5,
         "latest_status": "rendered",
         "latest_init_utc": "2026-08-01T00:00:00Z",
         "selected_init_utc": "2026-08-01T00:00:00Z",
@@ -26789,7 +27066,7 @@
         "comparable": true,
         "health_state": "healthy",
         "freshness": "fresh",
-        "age_days": 27.3,
+        "age_days": 27.5,
         "latest_status": "rendered",
         "latest_init_utc": "2026-08-01T00:00:00Z",
         "selected_init_utc": "2026-08-01T00:00:00Z",
@@ -26807,7 +27084,7 @@
         "comparable": true,
         "health_state": "healthy",
         "freshness": "fresh",
-        "age_days": 27.3,
+        "age_days": 27.5,
         "latest_status": "rendered",
         "latest_init_utc": "2026-08-01T00:00:00Z",
         "selected_init_utc": "2026-08-01T00:00:00Z",
@@ -26825,7 +27102,7 @@
         "comparable": true,
         "health_state": "healthy",
         "freshness": "fresh",
-        "age_days": 27.3,
+        "age_days": 27.5,
         "latest_status": "rendered",
         "latest_init_utc": "2026-08-01T00:00:00Z",
         "selected_init_utc": "2026-08-01T00:00:00Z",
@@ -26843,13 +27120,31 @@
         "comparable": true,
         "health_state": "healthy",
         "freshness": "fresh",
-        "age_days": 27.3,
+        "age_days": 27.5,
         "latest_status": "rendered",
         "latest_init_utc": "2026-08-01T00:00:00Z",
         "selected_init_utc": "2026-08-01T00:00:00Z",
         "selected_run_id": "cma-cpsv3-2026080100-precipitation_anomaly",
         "retained_fallback": false,
         "reason": "Rendered target available."
+      },
+      {
+        "model": "cma_cpsv3",
+        "model_label": "CMA CPSv3",
+        "product": "snowfall_anomaly",
+        "product_label": "CONUS Snowfall Water-Equivalent Departure",
+        "surface_state": "unsupported",
+        "available": false,
+        "comparable": false,
+        "health_state": "not_applicable",
+        "freshness": "not_applicable",
+        "age_days": null,
+        "latest_status": null,
+        "latest_init_utc": null,
+        "selected_init_utc": null,
+        "selected_run_id": null,
+        "retained_fallback": false,
+        "reason": "The current seasonal adapter does not publish snowfall accumulation; snow-water equivalent or precipitation is not interchangeable with snowfall."
       },
       {
         "model": "cma_cpsv3",
@@ -26861,7 +27156,7 @@
         "comparable": true,
         "health_state": "healthy",
         "freshness": "fresh",
-        "age_days": 27.3,
+        "age_days": 27.5,
         "latest_status": "rendered",
         "latest_init_utc": "2026-08-01T00:00:00Z",
         "selected_init_utc": "2026-08-01T00:00:00Z",
@@ -26879,7 +27174,7 @@
         "comparable": true,
         "health_state": "healthy",
         "freshness": "fresh",
-        "age_days": 27.3,
+        "age_days": 27.5,
         "latest_status": "rendered",
         "latest_init_utc": "2026-08-01T00:00:00Z",
         "selected_init_utc": "2026-08-01T00:00:00Z",
@@ -26915,7 +27210,7 @@
         "comparable": true,
         "health_state": "healthy",
         "freshness": "fresh",
-        "age_days": 27.3,
+        "age_days": 27.5,
         "latest_status": "rendered",
         "latest_init_utc": "2026-08-01T00:00:00Z",
         "selected_init_utc": "2026-08-01T00:00:00Z",
@@ -26933,7 +27228,7 @@
         "comparable": true,
         "health_state": "healthy",
         "freshness": "fresh",
-        "age_days": 27.3,
+        "age_days": 27.5,
         "latest_status": "rendered",
         "latest_init_utc": "2026-08-01T00:00:00Z",
         "selected_init_utc": "2026-08-01T00:00:00Z",
@@ -26951,13 +27246,31 @@
         "comparable": true,
         "health_state": "healthy",
         "freshness": "fresh",
-        "age_days": 27.3,
+        "age_days": 27.5,
         "latest_status": "rendered",
         "latest_init_utc": "2026-08-01T00:00:00Z",
         "selected_init_utc": "2026-08-01T00:00:00Z",
         "selected_run_id": "geos-s2s3-202608-precipitation_anomaly",
         "retained_fallback": false,
         "reason": "Rendered target available."
+      },
+      {
+        "model": "geos_s2s3",
+        "model_label": "NASA GEOS-S2S-3",
+        "product": "snowfall_anomaly",
+        "product_label": "CONUS Snowfall Water-Equivalent Departure",
+        "surface_state": "unsupported",
+        "available": false,
+        "comparable": false,
+        "health_state": "not_applicable",
+        "freshness": "not_applicable",
+        "age_days": null,
+        "latest_status": null,
+        "latest_init_utc": null,
+        "selected_init_utc": null,
+        "selected_run_id": null,
+        "retained_fallback": false,
+        "reason": "The current seasonal adapter does not publish snowfall accumulation; snow-water equivalent or precipitation is not interchangeable with snowfall."
       },
       {
         "model": "geos_s2s3",
@@ -26969,7 +27282,7 @@
         "comparable": true,
         "health_state": "healthy",
         "freshness": "fresh",
-        "age_days": 27.3,
+        "age_days": 27.5,
         "latest_status": "rendered",
         "latest_init_utc": "2026-08-01T00:00:00Z",
         "selected_init_utc": "2026-08-01T00:00:00Z",
@@ -26987,7 +27300,7 @@
         "comparable": true,
         "health_state": "healthy",
         "freshness": "fresh",
-        "age_days": 27.3,
+        "age_days": 27.5,
         "latest_status": "rendered",
         "latest_init_utc": "2026-08-01T00:00:00Z",
         "selected_init_utc": "2026-08-01T00:00:00Z",
@@ -27005,7 +27318,7 @@
         "comparable": true,
         "health_state": "healthy",
         "freshness": "fresh",
-        "age_days": 27.3,
+        "age_days": 27.5,
         "latest_status": "rendered",
         "latest_init_utc": "2026-08-01T00:00:00Z",
         "selected_init_utc": "2026-08-01T00:00:00Z",
@@ -27023,7 +27336,7 @@
         "comparable": true,
         "health_state": "healthy",
         "freshness": "fresh",
-        "age_days": 27.3,
+        "age_days": 27.5,
         "latest_status": "rendered",
         "latest_init_utc": "2026-08-01T00:00:00Z",
         "selected_init_utc": "2026-08-01T00:00:00Z",
@@ -27041,7 +27354,7 @@
         "comparable": true,
         "health_state": "healthy",
         "freshness": "fresh",
-        "age_days": 27.3,
+        "age_days": 27.5,
         "latest_status": "rendered",
         "latest_init_utc": "2026-08-01T00:00:00Z",
         "selected_init_utc": "2026-08-01T00:00:00Z",
@@ -27066,6 +27379,24 @@
         "selected_run_id": null,
         "retained_fallback": false,
         "reason": "No rendered target is currently published."
+      },
+      {
+        "model": "jma",
+        "model_label": "JMA",
+        "product": "snowfall_anomaly",
+        "product_label": "CONUS Snowfall Water-Equivalent Departure",
+        "surface_state": "unsupported",
+        "available": false,
+        "comparable": false,
+        "health_state": "not_applicable",
+        "freshness": "not_applicable",
+        "age_days": null,
+        "latest_status": null,
+        "latest_init_utc": null,
+        "selected_init_utc": null,
+        "selected_run_id": null,
+        "retained_fallback": false,
+        "reason": "The current seasonal adapter does not publish snowfall accumulation; snow-water equivalent or precipitation is not interchangeable with snowfall."
       },
       {
         "model": "jma",
@@ -27115,7 +27446,7 @@
         "comparable": true,
         "health_state": "partial",
         "freshness": "fresh",
-        "age_days": 27.3,
+        "age_days": 27.5,
         "latest_status": "partial",
         "latest_init_utc": "2026-08-01T00:00:00Z",
         "selected_init_utc": "2026-08-01T00:00:00Z",
@@ -27142,6 +27473,24 @@
         "reason": "No rendered target is currently published."
       },
       {
+        "model": "c3s",
+        "model_label": "C3S multi-system",
+        "product": "snowfall_anomaly",
+        "product_label": "CONUS Snowfall Water-Equivalent Departure",
+        "surface_state": "missing",
+        "available": false,
+        "comparable": false,
+        "health_state": "missing",
+        "freshness": "unknown",
+        "age_days": null,
+        "latest_status": null,
+        "latest_init_utc": null,
+        "selected_init_utc": null,
+        "selected_run_id": null,
+        "retained_fallback": false,
+        "reason": "No rendered target is currently published."
+      },
+      {
         "model": "apcc",
         "model_label": "APCC MME",
         "product": "precipitation_anomaly",
@@ -27151,7 +27500,7 @@
         "comparable": false,
         "health_state": "noncomparable",
         "freshness": "fresh",
-        "age_days": 10.3,
+        "age_days": 10.5,
         "latest_status": "rendered",
         "latest_init_utc": "2026-08-18T00:00:00Z",
         "selected_init_utc": "2026-08-18T00:00:00Z",
@@ -27164,6 +27513,24 @@
         "model_label": "ECMWF SEAS5",
         "product": "500mb_height_anomaly",
         "product_label": "500-mb Height Anomaly",
+        "surface_state": "missing",
+        "available": false,
+        "comparable": false,
+        "health_state": "missing",
+        "freshness": "unknown",
+        "age_days": null,
+        "latest_status": null,
+        "latest_init_utc": null,
+        "selected_init_utc": null,
+        "selected_run_id": null,
+        "retained_fallback": false,
+        "reason": "No rendered target is currently published."
+      },
+      {
+        "model": "seas5",
+        "model_label": "ECMWF SEAS5",
+        "product": "snowfall_anomaly",
+        "product_label": "CONUS Snowfall Water-Equivalent Departure",
         "surface_state": "missing",
         "available": false,
         "comparable": false,
@@ -27236,10 +27603,10 @@
   "summary": {
     "models_expected": 10,
     "models_online": 10,
-    "supported_surfaces": 52,
+    "supported_surfaces": 54,
     "available_surfaces": 47,
     "partial_surfaces": 1,
-    "intentional_unavailable_surfaces": 8
+    "intentional_unavailable_surfaces": 16
   },
   "validation": {
     "status": "passed",
