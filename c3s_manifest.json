@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "kind": "c3s_seasonal_manifest",
-  "generated_utc": "2026-08-28T15:26:02Z",
+  "generated_utc": "2026-08-28T17:58:49Z",
   "source": "Copernicus C3S seasonal forecasts",
   "source_url": "https://climate.copernicus.eu/seasonal-forecasts",
   "source_urls": [
@@ -88,12 +88,12 @@
             "p01": -0.832698,
             "p99": 0.086288,
             "display": {
-              "minimum": -8.0,
-              "maximum": 8.0,
-              "step": 1.0,
-              "below_fraction": 0.0,
+              "minimum": -0.8,
+              "maximum": 0.8,
+              "step": 0.1,
+              "below_fraction": 0.013125,
               "above_fraction": 0.0,
-              "clipped_fraction": 0.0
+              "clipped_fraction": 0.013125
             },
             "issues": [],
             "status": "passed"
@@ -125,12 +125,12 @@
             "p01": -0.797179,
             "p99": 0.377918,
             "display": {
-              "minimum": -8.0,
-              "maximum": 8.0,
-              "step": 1.0,
-              "below_fraction": 0.0,
-              "above_fraction": 0.0,
-              "clipped_fraction": 0.0
+              "minimum": -0.8,
+              "maximum": 0.8,
+              "step": 0.1,
+              "below_fraction": 0.01,
+              "above_fraction": 0.001563,
+              "clipped_fraction": 0.011562
             },
             "issues": [],
             "status": "passed"
@@ -162,12 +162,12 @@
             "p01": -0.809557,
             "p99": 0.380966,
             "display": {
-              "minimum": -8.0,
-              "maximum": 8.0,
-              "step": 1.0,
-              "below_fraction": 0.0,
-              "above_fraction": 0.0,
-              "clipped_fraction": 0.0
+              "minimum": -0.8,
+              "maximum": 0.8,
+              "step": 0.1,
+              "below_fraction": 0.010313,
+              "above_fraction": 0.002188,
+              "clipped_fraction": 0.0125
             },
             "issues": [],
             "status": "passed"
@@ -203,15 +203,21 @@
             "p01": -2.092328,
             "p99": 0.636717,
             "display": {
-              "minimum": -8.0,
-              "maximum": 8.0,
-              "step": 1.0,
-              "below_fraction": 0.0,
-              "above_fraction": 0.0,
-              "clipped_fraction": 0.0
+              "minimum": -0.8,
+              "maximum": 0.8,
+              "step": 0.1,
+              "below_fraction": 0.105313,
+              "above_fraction": 0.004687,
+              "clipped_fraction": 0.11
             },
-            "issues": [],
-            "status": "passed"
+            "issues": [
+              {
+                "code": "display_scale_clipping",
+                "severity": "warning",
+                "message": "11.0% of finite cells exceed the fixed display scale."
+              }
+            ],
+            "status": "warning"
           },
           "image": "public/seasonal/c3s/20260801/c3s_ukmo_sf_202612-202702.jpg"
         }
@@ -1392,12 +1398,12 @@
             "p01": -0.753042,
             "p99": 0.062498,
             "display": {
-              "minimum": -8.0,
-              "maximum": 8.0,
-              "step": 1.0,
-              "below_fraction": 0.0,
+              "minimum": -0.8,
+              "maximum": 0.8,
+              "step": 0.1,
+              "below_fraction": 0.009375,
               "above_fraction": 0.0,
-              "clipped_fraction": 0.0
+              "clipped_fraction": 0.009375
             },
             "issues": [],
             "status": "passed"
@@ -1428,12 +1434,12 @@
             "p01": -0.824092,
             "p99": 0.17749,
             "display": {
-              "minimum": -8.0,
-              "maximum": 8.0,
-              "step": 1.0,
-              "below_fraction": 0.0,
+              "minimum": -0.8,
+              "maximum": 0.8,
+              "step": 0.1,
+              "below_fraction": 0.012188,
               "above_fraction": 0.0,
-              "clipped_fraction": 0.0
+              "clipped_fraction": 0.012188
             },
             "issues": [],
             "status": "passed"
@@ -1464,15 +1470,21 @@
             "p01": -0.956827,
             "p99": 0.269649,
             "display": {
-              "minimum": -8.0,
-              "maximum": 8.0,
-              "step": 1.0,
-              "below_fraction": 0.0,
-              "above_fraction": 0.0,
-              "clipped_fraction": 0.0
+              "minimum": -0.8,
+              "maximum": 0.8,
+              "step": 0.1,
+              "below_fraction": 0.019375,
+              "above_fraction": 0.00125,
+              "clipped_fraction": 0.020625
             },
-            "issues": [],
-            "status": "passed"
+            "issues": [
+              {
+                "code": "display_scale_clipping",
+                "severity": "warning",
+                "message": "2.1% of finite cells exceed the fixed display scale."
+              }
+            ],
+            "status": "warning"
           },
           "image": "public/seasonal/c3s/20260801/c3s_multisystem_sf_202702.jpg"
         },
@@ -1505,15 +1517,21 @@
             "p01": -2.493296,
             "p99": 0.388217,
             "display": {
-              "minimum": -8.0,
-              "maximum": 8.0,
-              "step": 1.0,
-              "below_fraction": 0.0,
-              "above_fraction": 0.0,
-              "clipped_fraction": 0.0
+              "minimum": -0.8,
+              "maximum": 0.8,
+              "step": 0.1,
+              "below_fraction": 0.10125,
+              "above_fraction": 0.00125,
+              "clipped_fraction": 0.1025
             },
-            "issues": [],
-            "status": "passed"
+            "issues": [
+              {
+                "code": "display_scale_clipping",
+                "severity": "warning",
+                "message": "10.2% of finite cells exceed the fixed display scale."
+              }
+            ],
+            "status": "warning"
           },
           "image": "public/seasonal/c3s/20260801/c3s_multisystem_sf_202612-202702.jpg"
         }
@@ -2182,12 +2200,12 @@
             "p01": -0.686847,
             "p99": 0.168314,
             "display": {
-              "minimum": -8.0,
-              "maximum": 8.0,
-              "step": 1.0,
-              "below_fraction": 0.0,
+              "minimum": -0.8,
+              "maximum": 0.8,
+              "step": 0.1,
+              "below_fraction": 0.00625,
               "above_fraction": 0.0,
-              "clipped_fraction": 0.0
+              "clipped_fraction": 0.00625
             },
             "issues": [],
             "status": "passed"
@@ -2219,15 +2237,21 @@
             "p01": -0.91216,
             "p99": 0.256706,
             "display": {
-              "minimum": -8.0,
-              "maximum": 8.0,
-              "step": 1.0,
-              "below_fraction": 0.0,
+              "minimum": -0.8,
+              "maximum": 0.8,
+              "step": 0.1,
+              "below_fraction": 0.0225,
               "above_fraction": 0.0,
-              "clipped_fraction": 0.0
+              "clipped_fraction": 0.0225
             },
-            "issues": [],
-            "status": "passed"
+            "issues": [
+              {
+                "code": "display_scale_clipping",
+                "severity": "warning",
+                "message": "2.2% of finite cells exceed the fixed display scale."
+              }
+            ],
+            "status": "warning"
           },
           "image": "public/seasonal/c3s/20260801/c3s_meteo_france_sf_202701.jpg"
         },
@@ -2256,15 +2280,21 @@
             "p01": -1.127233,
             "p99": 0.398653,
             "display": {
-              "minimum": -8.0,
-              "maximum": 8.0,
-              "step": 1.0,
-              "below_fraction": 0.0,
-              "above_fraction": 0.0,
-              "clipped_fraction": 0.0
+              "minimum": -0.8,
+              "maximum": 0.8,
+              "step": 0.1,
+              "below_fraction": 0.030625,
+              "above_fraction": 0.000313,
+              "clipped_fraction": 0.030937
             },
-            "issues": [],
-            "status": "passed"
+            "issues": [
+              {
+                "code": "display_scale_clipping",
+                "severity": "warning",
+                "message": "3.1% of finite cells exceed the fixed display scale."
+              }
+            ],
+            "status": "warning"
           },
           "image": "public/seasonal/c3s/20260801/c3s_meteo_france_sf_202702.jpg"
         },
@@ -2297,15 +2327,21 @@
             "p01": -2.344136,
             "p99": 0.550306,
             "display": {
-              "minimum": -8.0,
-              "maximum": 8.0,
-              "step": 1.0,
-              "below_fraction": 0.0,
-              "above_fraction": 0.0,
-              "clipped_fraction": 0.0
+              "minimum": -0.8,
+              "maximum": 0.8,
+              "step": 0.1,
+              "below_fraction": 0.105938,
+              "above_fraction": 0.00125,
+              "clipped_fraction": 0.107188
             },
-            "issues": [],
-            "status": "passed"
+            "issues": [
+              {
+                "code": "display_scale_clipping",
+                "severity": "warning",
+                "message": "10.7% of finite cells exceed the fixed display scale."
+              }
+            ],
+            "status": "warning"
           },
           "image": "public/seasonal/c3s/20260801/c3s_meteo_france_sf_202612-202702.jpg"
         }
@@ -3479,12 +3515,12 @@
             "p01": -0.697065,
             "p99": 0.077938,
             "display": {
-              "minimum": -8.0,
-              "maximum": 8.0,
-              "step": 1.0,
-              "below_fraction": 0.0,
-              "above_fraction": 0.0,
-              "clipped_fraction": 0.0
+              "minimum": -0.8,
+              "maximum": 0.8,
+              "step": 0.1,
+              "below_fraction": 0.008125,
+              "above_fraction": 0.000625,
+              "clipped_fraction": 0.00875
             },
             "issues": [],
             "status": "passed"
@@ -3516,12 +3552,12 @@
             "p01": -0.908211,
             "p99": 0.190344,
             "display": {
-              "minimum": -8.0,
-              "maximum": 8.0,
-              "step": 1.0,
-              "below_fraction": 0.0,
-              "above_fraction": 0.0,
-              "clipped_fraction": 0.0
+              "minimum": -0.8,
+              "maximum": 0.8,
+              "step": 0.1,
+              "below_fraction": 0.015938,
+              "above_fraction": 0.000313,
+              "clipped_fraction": 0.01625
             },
             "issues": [],
             "status": "passed"
@@ -3553,15 +3589,21 @@
             "p01": -1.0505,
             "p99": 0.391391,
             "display": {
-              "minimum": -8.0,
-              "maximum": 8.0,
-              "step": 1.0,
-              "below_fraction": 0.0,
-              "above_fraction": 0.0,
-              "clipped_fraction": 0.0
+              "minimum": -0.8,
+              "maximum": 0.8,
+              "step": 0.1,
+              "below_fraction": 0.019688,
+              "above_fraction": 0.002188,
+              "clipped_fraction": 0.021875
             },
-            "issues": [],
-            "status": "passed"
+            "issues": [
+              {
+                "code": "display_scale_clipping",
+                "severity": "warning",
+                "message": "2.2% of finite cells exceed the fixed display scale."
+              }
+            ],
+            "status": "warning"
           },
           "image": "public/seasonal/c3s/20260801/c3s_ecmwf_sf_202702.jpg"
         },
@@ -3594,15 +3636,21 @@
             "p01": -2.407761,
             "p99": 0.34069,
             "display": {
-              "minimum": -8.0,
-              "maximum": 8.0,
-              "step": 1.0,
-              "below_fraction": 0.0,
-              "above_fraction": 0.0,
-              "clipped_fraction": 0.0
+              "minimum": -0.8,
+              "maximum": 0.8,
+              "step": 0.1,
+              "below_fraction": 0.083437,
+              "above_fraction": 0.001563,
+              "clipped_fraction": 0.085
             },
-            "issues": [],
-            "status": "passed"
+            "issues": [
+              {
+                "code": "display_scale_clipping",
+                "severity": "warning",
+                "message": "8.5% of finite cells exceed the fixed display scale."
+              }
+            ],
+            "status": "warning"
           },
           "image": "public/seasonal/c3s/20260801/c3s_ecmwf_sf_202612-202702.jpg"
         }
@@ -4177,12 +4225,12 @@
             "p01": -0.652429,
             "p99": 0.213258,
             "display": {
-              "minimum": -8.0,
-              "maximum": 8.0,
-              "step": 1.0,
-              "below_fraction": 0.0,
+              "minimum": -0.8,
+              "maximum": 0.8,
+              "step": 0.1,
+              "below_fraction": 0.005625,
               "above_fraction": 0.0,
-              "clipped_fraction": 0.0
+              "clipped_fraction": 0.005625
             },
             "issues": [],
             "status": "passed"
@@ -4214,15 +4262,21 @@
             "p01": -0.982729,
             "p99": 0.412438,
             "display": {
-              "minimum": -8.0,
-              "maximum": 8.0,
-              "step": 1.0,
-              "below_fraction": 0.0,
-              "above_fraction": 0.0,
-              "clipped_fraction": 0.0
+              "minimum": -0.8,
+              "maximum": 0.8,
+              "step": 0.1,
+              "below_fraction": 0.02,
+              "above_fraction": 0.000313,
+              "clipped_fraction": 0.020313
             },
-            "issues": [],
-            "status": "passed"
+            "issues": [
+              {
+                "code": "display_scale_clipping",
+                "severity": "warning",
+                "message": "2.0% of finite cells exceed the fixed display scale."
+              }
+            ],
+            "status": "warning"
           },
           "image": "public/seasonal/c3s/20260801/c3s_eccc_sf_202701.jpg"
         },
@@ -4251,12 +4305,12 @@
             "p01": -0.908164,
             "p99": 0.504098,
             "display": {
-              "minimum": -8.0,
-              "maximum": 8.0,
-              "step": 1.0,
-              "below_fraction": 0.0,
-              "above_fraction": 0.0,
-              "clipped_fraction": 0.0
+              "minimum": -0.8,
+              "maximum": 0.8,
+              "step": 0.1,
+              "below_fraction": 0.015625,
+              "above_fraction": 0.00375,
+              "clipped_fraction": 0.019375
             },
             "issues": [],
             "status": "passed"
@@ -4292,15 +4346,21 @@
             "p01": -2.359291,
             "p99": 0.91071,
             "display": {
-              "minimum": -8.0,
-              "maximum": 8.0,
-              "step": 1.0,
-              "below_fraction": 0.0,
-              "above_fraction": 0.0,
-              "clipped_fraction": 0.0
+              "minimum": -0.8,
+              "maximum": 0.8,
+              "step": 0.1,
+              "below_fraction": 0.112187,
+              "above_fraction": 0.015312,
+              "clipped_fraction": 0.1275
             },
-            "issues": [],
-            "status": "passed"
+            "issues": [
+              {
+                "code": "display_scale_clipping",
+                "severity": "warning",
+                "message": "12.8% of finite cells exceed the fixed display scale."
+              }
+            ],
+            "status": "warning"
           },
           "image": "public/seasonal/c3s/20260801/c3s_eccc_sf_202612-202702.jpg"
         }
@@ -4875,15 +4935,21 @@
             "p01": -1.397699,
             "p99": 0.219919,
             "display": {
-              "minimum": -8.0,
-              "maximum": 8.0,
-              "step": 1.0,
-              "below_fraction": 0.0,
+              "minimum": -0.8,
+              "maximum": 0.8,
+              "step": 0.1,
+              "below_fraction": 0.021875,
               "above_fraction": 0.0,
-              "clipped_fraction": 0.0
+              "clipped_fraction": 0.021875
             },
-            "issues": [],
-            "status": "passed"
+            "issues": [
+              {
+                "code": "display_scale_clipping",
+                "severity": "warning",
+                "message": "2.2% of finite cells exceed the fixed display scale."
+              }
+            ],
+            "status": "warning"
           },
           "image": "public/seasonal/c3s/20260801/c3s_dwd_sf_202612.jpg"
         },
@@ -4912,15 +4978,21 @@
             "p01": -1.609041,
             "p99": 0.204138,
             "display": {
-              "minimum": -8.0,
-              "maximum": 8.0,
-              "step": 1.0,
-              "below_fraction": 0.0,
+              "minimum": -0.8,
+              "maximum": 0.8,
+              "step": 0.1,
+              "below_fraction": 0.03625,
               "above_fraction": 0.0,
-              "clipped_fraction": 0.0
+              "clipped_fraction": 0.03625
             },
-            "issues": [],
-            "status": "passed"
+            "issues": [
+              {
+                "code": "display_scale_clipping",
+                "severity": "warning",
+                "message": "3.6% of finite cells exceed the fixed display scale."
+              }
+            ],
+            "status": "warning"
           },
           "image": "public/seasonal/c3s/20260801/c3s_dwd_sf_202701.jpg"
         },
@@ -4949,15 +5021,21 @@
             "p01": -1.565576,
             "p99": 0.207247,
             "display": {
-              "minimum": -8.0,
-              "maximum": 8.0,
-              "step": 1.0,
-              "below_fraction": 0.0,
+              "minimum": -0.8,
+              "maximum": 0.8,
+              "step": 0.1,
+              "below_fraction": 0.030312,
               "above_fraction": 0.0,
-              "clipped_fraction": 0.0
+              "clipped_fraction": 0.030312
             },
-            "issues": [],
-            "status": "passed"
+            "issues": [
+              {
+                "code": "display_scale_clipping",
+                "severity": "warning",
+                "message": "3.0% of finite cells exceed the fixed display scale."
+              }
+            ],
+            "status": "warning"
           },
           "image": "public/seasonal/c3s/20260801/c3s_dwd_sf_202702.jpg"
         },
@@ -4990,15 +5068,21 @@
             "p01": -4.406266,
             "p99": 0.503531,
             "display": {
-              "minimum": -8.0,
-              "maximum": 8.0,
-              "step": 1.0,
-              "below_fraction": 0.0,
-              "above_fraction": 0.0,
-              "clipped_fraction": 0.0
+              "minimum": -0.8,
+              "maximum": 0.8,
+              "step": 0.1,
+              "below_fraction": 0.19375,
+              "above_fraction": 0.000625,
+              "clipped_fraction": 0.194375
             },
-            "issues": [],
-            "status": "passed"
+            "issues": [
+              {
+                "code": "display_scale_clipping",
+                "severity": "warning",
+                "message": "19.4% of finite cells exceed the fixed display scale."
+              }
+            ],
+            "status": "warning"
           },
           "image": "public/seasonal/c3s/20260801/c3s_dwd_sf_202612-202702.jpg"
         }
@@ -5573,12 +5657,12 @@
             "p01": -0.763755,
             "p99": 0.107481,
             "display": {
-              "minimum": -8.0,
-              "maximum": 8.0,
-              "step": 1.0,
-              "below_fraction": 0.0,
+              "minimum": -0.8,
+              "maximum": 0.8,
+              "step": 0.1,
+              "below_fraction": 0.009375,
               "above_fraction": 0.0,
-              "clipped_fraction": 0.0
+              "clipped_fraction": 0.009375
             },
             "issues": [],
             "status": "passed"
@@ -5610,12 +5694,12 @@
             "p01": -0.919199,
             "p99": 0.343352,
             "display": {
-              "minimum": -8.0,
-              "maximum": 8.0,
-              "step": 1.0,
-              "below_fraction": 0.0,
+              "minimum": -0.8,
+              "maximum": 0.8,
+              "step": 0.1,
+              "below_fraction": 0.015312,
               "above_fraction": 0.0,
-              "clipped_fraction": 0.0
+              "clipped_fraction": 0.015312
             },
             "issues": [],
             "status": "passed"
@@ -5647,15 +5731,21 @@
             "p01": -1.054492,
             "p99": 0.470047,
             "display": {
-              "minimum": -8.0,
-              "maximum": 8.0,
-              "step": 1.0,
-              "below_fraction": 0.0,
-              "above_fraction": 0.0,
-              "clipped_fraction": 0.0
+              "minimum": -0.8,
+              "maximum": 0.8,
+              "step": 0.1,
+              "below_fraction": 0.019062,
+              "above_fraction": 0.003438,
+              "clipped_fraction": 0.0225
             },
-            "issues": [],
-            "status": "passed"
+            "issues": [
+              {
+                "code": "display_scale_clipping",
+                "severity": "warning",
+                "message": "2.2% of finite cells exceed the fixed display scale."
+              }
+            ],
+            "status": "warning"
           },
           "image": "public/seasonal/c3s/20260801/c3s_cmcc_sf_202702.jpg"
         },
@@ -5688,15 +5778,21 @@
             "p01": -2.668283,
             "p99": 0.620792,
             "display": {
-              "minimum": -8.0,
-              "maximum": 8.0,
-              "step": 1.0,
-              "below_fraction": 0.0,
-              "above_fraction": 0.0,
-              "clipped_fraction": 0.0
+              "minimum": -0.8,
+              "maximum": 0.8,
+              "step": 0.1,
+              "below_fraction": 0.0675,
+              "above_fraction": 0.00375,
+              "clipped_fraction": 0.07125
             },
-            "issues": [],
-            "status": "passed"
+            "issues": [
+              {
+                "code": "display_scale_clipping",
+                "severity": "warning",
+                "message": "7.1% of finite cells exceed the fixed display scale."
+              }
+            ],
+            "status": "warning"
           },
           "image": "public/seasonal/c3s/20260801/c3s_cmcc_sf_202612-202702.jpg"
         }
