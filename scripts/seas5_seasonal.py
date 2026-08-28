@@ -77,6 +77,9 @@ T2M_ANOMALY = "2m_temperature_anomaly"
 T850_ANOMALY = "850mb_temperature_anomaly"
 PRECIP_ANOMALY = "precipitation_anomaly"
 SNOWFALL_ANOMALY = "snowfall_anomaly"
+SNOWFALL_ANOMALY_MIN_IN = -0.8
+SNOWFALL_ANOMALY_MAX_IN = 0.8
+SNOWFALL_ANOMALY_TICKS = [round(SNOWFALL_ANOMALY_MIN_IN + 0.1 * i, 1) for i in range(17)]
 SNOW_DEPTH_ANOMALY = "snow_depth_anomaly"
 SST_ANOMALY = "sst_anomaly"
 MSLP_ANOMALY = "mslp_anomaly"
@@ -226,9 +229,9 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "region": CONUS_PRECIP_REGION,
         "monthly_reducer": "total",
         "seasonal_reducer": "sum",
-        "anomaly_min": -8.0,
-        "anomaly_max": 8.0,
-        "anomaly_ticks": list(range(-8, 9)),
+        "anomaly_min": SNOWFALL_ANOMALY_MIN_IN,
+        "anomaly_max": SNOWFALL_ANOMALY_MAX_IN,
+        "anomaly_ticks": SNOWFALL_ANOMALY_TICKS,
         "anomaly_palette": SWE_ANOMALY_PALETTE,
         "conversion": "CDS anomalous snowfall water rate multiplied by target-month seconds and converted from metres to inches",
         "header_detail": "{source_label}  •  {baseline_label}  •  Snowfall liquid-water equivalent (in)  •  CONUS domain",

@@ -53,6 +53,9 @@ PRESSURE_SOURCE_URL = "https://cds.climate.copernicus.eu/datasets/seasonal-postp
 SINGLE_SOURCE_URL = "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-single-levels"
 LICENSE_URL = "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-pressure-levels?tab=download#manage-licences"
 NORTH_AMERICA_AREA = [90.0, -170.0, 15.0, 0.0]
+SNOWFALL_ANOMALY_MIN_IN = -0.8
+SNOWFALL_ANOMALY_MAX_IN = 0.8
+SNOWFALL_ANOMALY_TICKS = [round(SNOWFALL_ANOMALY_MIN_IN + 0.1 * i, 1) for i in range(17)]
 CONUS_AREA = [60.0, -135.0, 20.0, -55.0]
 GEOPOTENTIAL_GRAVITY = 9.80665
 M_TO_INCH = 1000.0 / 25.4
@@ -125,8 +128,8 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "raw_units": "m s⁻¹ of water equivalent", "units": "in", "seasonal_units": "in",
         "height_contours": False, "region": CONUS_PRECIP_REGION,
         "monthly_reducer": "total", "seasonal_reducer": "sum",
-        "anomaly_min": SWE_ANOMALY_MIN_IN, "anomaly_max": SWE_ANOMALY_MAX_IN,
-        "anomaly_ticks": SWE_ANOMALY_TICKS, "anomaly_palette": SWE_ANOMALY_PALETTE,
+        "anomaly_min": SNOWFALL_ANOMALY_MIN_IN, "anomaly_max": SNOWFALL_ANOMALY_MAX_IN,
+        "anomaly_ticks": SNOWFALL_ANOMALY_TICKS, "anomaly_palette": SWE_ANOMALY_PALETTE,
         "cds_dataset": SINGLE_DATASET,
         "cds_variable": "snowfall_anomalous_rate_of_accumulation",
     },

@@ -70,7 +70,8 @@ def main() -> int:
     check(len(mslp_spec["anomaly_ticks"]) == len(mslp_spec["anomaly_palette"]) + 1, "C3S MSLP bounds must align with swatches")
     check(module.PRODUCT_SPECS["sea_surface_temperature_anomaly"]["map_domain"] == "ocean", "C3S SST must mask land")
     snowfall_spec = module.PRODUCT_SPECS["snowfall_anomaly"]
-    check((snowfall_spec["anomaly_min"], snowfall_spec["anomaly_max"]) == (-8.0, 8.0), "C3S snowfall should use the shared ±8 inch water-equivalent range")
+    check((snowfall_spec["anomaly_min"], snowfall_spec["anomaly_max"]) == (-0.8, 0.8), "C3S snowfall should use a ±0.8 inch water-equivalent range")
+    check(snowfall_spec["anomaly_ticks"] == [round(-0.8 + 0.1 * i, 1) for i in range(17)], "C3S snowfall should use tenths-of-an-inch labelled bounds")
     check(snowfall_spec["region"] == module.CONUS_PRECIP_REGION, "C3S snowfall must use the CONUS crop")
     check(len(snowfall_spec["anomaly_ticks"]) == len(snowfall_spec["anomaly_palette"]) + 1, "C3S snowfall bounds must align with swatches")
     converted = module.convert_product_grid(

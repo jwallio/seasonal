@@ -22,7 +22,8 @@ The scheduled suite also renders `snowfall_anomaly` for the C3S centres and
 multi-system blend. It is a CONUS monthly total or DJF three-month sum of the
 native C3S snowfall anomalous rate, converted to inches of liquid-water
 equivalent. This is a snowfall water-equivalent departure, not a snow-depth
-estimate; a centre that does not return the field is retained as a failed or
+estimate. The map uses tenths-of-an-inch labelled bins from -0.8 to +0.8 inches
+to resolve the smaller liquid-water-equivalent signal; a centre that does not return the field is retained as a failed or
 partial component rather than being silently substituted with snowpack.
 
 The GitHub workflow is `.github/workflows/c3s.yml`. It requires the existing

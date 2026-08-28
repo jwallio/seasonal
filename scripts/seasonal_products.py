@@ -104,8 +104,8 @@ PRODUCTS: dict[str, dict[str, Any]] = {
         "level": {"type": "surface"},
         "aggregation": {"monthly": "total", "seasonal": "total"},
         "display": {
-            "monthly": {"minimum": -8.0, "maximum": 8.0, "step": 1.0},
-            "seasonal": {"minimum": -8.0, "maximum": 8.0, "step": 1.0},
+            "monthly": {"minimum": -0.8, "maximum": 0.8, "step": 0.1},
+            "seasonal": {"minimum": -0.8, "maximum": 0.8, "step": 0.1},
         },
         "hard_range": {"minimum": -100.0, "maximum": 100.0},
         "minimum_finite_fraction": 0.02,

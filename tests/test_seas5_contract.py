@@ -121,7 +121,8 @@ def main() -> int:
         check(len(temperature_spec["anomaly_ticks"]) == len(temperature_spec["anomaly_palette"]) + 1, f"SEAS5 {product} bounds must align with colors")
     check(module.PRODUCT_SPECS[module.PRECIP_ANOMALY]["anomaly_palette"] == module.SEAS5_PRECIP_ANOMALY_PALETTE, "SEAS5 precipitation should use its darker negative palette")
     snowfall_spec = module.PRODUCT_SPECS[module.SNOWFALL_ANOMALY]
-    check((snowfall_spec["anomaly_min"], snowfall_spec["anomaly_max"]) == (-8.0, 8.0), "SEAS5 snowfall should use the shared ±8 inch water-equivalent range")
+    check((snowfall_spec["anomaly_min"], snowfall_spec["anomaly_max"]) == (-0.8, 0.8), "SEAS5 snowfall should use a ±0.8 inch water-equivalent range")
+    check(snowfall_spec["anomaly_ticks"] == [round(-0.8 + 0.1 * i, 1) for i in range(17)], "SEAS5 snowfall should use tenths-of-an-inch labelled bounds")
     check(len(snowfall_spec["anomaly_ticks"]) == len(snowfall_spec["anomaly_palette"]) + 1, "SEAS5 snowfall bounds must align with swatches")
     sst_spec = module.PRODUCT_SPECS[module.SST_ANOMALY]
     check(sst_spec["map_domain"] == "ocean", "SEAS5 SST must mask land")
