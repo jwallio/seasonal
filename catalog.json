@@ -2,7 +2,7 @@
   "schema_version": 1,
   "registry_version": 1,
   "kind": "seasonal_dashboard_catalog",
-  "generated_utc": "2026-08-28T15:19:11Z",
+  "generated_utc": "2026-08-28T15:26:29Z",
   "source_revision": "00e0efbd5947d3d1b7d1ff7b393df035bf6b935c",
   "model_order": [
     "superensemble",
@@ -2017,6 +2017,211 @@
       },
       "runs": [
         {
+          "id": "c3s-ukmo-2026080100-snowfall_anomaly",
+          "model": "C3S UK Met Office",
+          "component": "ukmo",
+          "component_label": "UK Met Office",
+          "source": "Copernicus C3S / UK Met Office",
+          "source_url": "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-single-levels",
+          "source_urls": [
+            "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-single-levels"
+          ],
+          "product": "snowfall_anomaly",
+          "init_utc": "2026-08-01T00:00:00Z",
+          "status": "rendered",
+          "statistic": "ensemble_mean",
+          "aggregation": "official C3S monthly ensemble-mean anomaly",
+          "ensemble_scope": "UK Met Office/System 610 ensemble",
+          "ensemble_members": 62,
+          "field": "snowfall_anomaly",
+          "units": "in",
+          "raw_field": "snowfall anomalous rate of accumulation",
+          "raw_units": "m s⁻¹ of water equivalent",
+          "climatology": {
+            "status": "not_used",
+            "method": "native C3S postprocessed anomaly"
+          },
+          "baseline": {
+            "status": "official_postprocessed",
+            "source": "C3S native bias-adjusted anomaly"
+          },
+          "targets": [
+            {
+              "id": "c3s-ukmo-2026080100-snowfall_anomaly-lead04",
+              "target_month": "202612",
+              "valid_start_utc": "2026-12-01T00:00:00Z",
+              "valid_end_utc": "2027-01-01T00:00:00Z",
+              "lead_month": 4,
+              "field": "snowfall_anomaly",
+              "units": "in",
+              "status": "rendered",
+              "image": "c3s/20260801/c3s_ukmo_sf_202612.jpg",
+              "statistic": "ensemble_mean",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "snowfall_anomaly",
+                "units": "in",
+                "field": "snowfall_anomaly",
+                "period": "monthly",
+                "total_points": 3200,
+                "finite_points": 3200,
+                "finite_fraction": 1.0,
+                "minimum": -2.399575,
+                "maximum": 0.447465,
+                "p01": -0.832698,
+                "p99": 0.086288,
+                "display": {
+                  "minimum": -8.0,
+                  "maximum": 8.0,
+                  "step": 1.0,
+                  "below_fraction": 0.0,
+                  "above_fraction": 0.0,
+                  "clipped_fraction": 0.0
+                },
+                "issues": [],
+                "status": "passed"
+              },
+              "_catalog": {
+                "canonical_product": "snowfall_anomaly",
+                "comparable": true,
+                "quality_control": "passed"
+              }
+            },
+            {
+              "id": "c3s-ukmo-2026080100-snowfall_anomaly-lead05",
+              "target_month": "202701",
+              "valid_start_utc": "2027-01-01T00:00:00Z",
+              "valid_end_utc": "2027-02-01T00:00:00Z",
+              "lead_month": 5,
+              "field": "snowfall_anomaly",
+              "units": "in",
+              "status": "rendered",
+              "image": "c3s/20260801/c3s_ukmo_sf_202701.jpg",
+              "statistic": "ensemble_mean",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "snowfall_anomaly",
+                "units": "in",
+                "field": "snowfall_anomaly",
+                "period": "monthly",
+                "total_points": 3200,
+                "finite_points": 3200,
+                "finite_fraction": 1.0,
+                "minimum": -1.197147,
+                "maximum": 1.6263,
+                "p01": -0.797179,
+                "p99": 0.377918,
+                "display": {
+                  "minimum": -8.0,
+                  "maximum": 8.0,
+                  "step": 1.0,
+                  "below_fraction": 0.0,
+                  "above_fraction": 0.0,
+                  "clipped_fraction": 0.0
+                },
+                "issues": [],
+                "status": "passed"
+              },
+              "_catalog": {
+                "canonical_product": "snowfall_anomaly",
+                "comparable": true,
+                "quality_control": "passed"
+              }
+            },
+            {
+              "id": "c3s-ukmo-2026080100-snowfall_anomaly-lead06",
+              "target_month": "202702",
+              "valid_start_utc": "2027-02-01T00:00:00Z",
+              "valid_end_utc": "2027-03-01T00:00:00Z",
+              "lead_month": 6,
+              "field": "snowfall_anomaly",
+              "units": "in",
+              "status": "rendered",
+              "image": "c3s/20260801/c3s_ukmo_sf_202702.jpg",
+              "statistic": "ensemble_mean",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "snowfall_anomaly",
+                "units": "in",
+                "field": "snowfall_anomaly",
+                "period": "monthly",
+                "total_points": 3200,
+                "finite_points": 3200,
+                "finite_fraction": 1.0,
+                "minimum": -1.632839,
+                "maximum": 1.433477,
+                "p01": -0.809557,
+                "p99": 0.380966,
+                "display": {
+                  "minimum": -8.0,
+                  "maximum": 8.0,
+                  "step": 1.0,
+                  "below_fraction": 0.0,
+                  "above_fraction": 0.0,
+                  "clipped_fraction": 0.0
+                },
+                "issues": [],
+                "status": "passed"
+              },
+              "_catalog": {
+                "canonical_product": "snowfall_anomaly",
+                "comparable": true,
+                "quality_control": "passed"
+              }
+            },
+            {
+              "id": "c3s-ukmo-2026080100-snowfall_anomaly-202612-202702",
+              "target_month": "202612-202702",
+              "valid_start_utc": "2026-12-01T00:00:00Z",
+              "valid_end_utc": "2027-03-01T00:00:00Z",
+              "lead_month": "4–6",
+              "monthly_leads": [
+                4,
+                5,
+                6
+              ],
+              "field": "snowfall_anomaly",
+              "units": "in",
+              "status": "rendered",
+              "image": "c3s/20260801/c3s_ukmo_sf_202612-202702.jpg",
+              "statistic": "ensemble_mean",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "snowfall_anomaly",
+                "units": "in",
+                "field": "snowfall_anomaly",
+                "period": "seasonal",
+                "total_points": 3200,
+                "finite_points": 3200,
+                "finite_fraction": 1.0,
+                "minimum": -4.476514,
+                "maximum": 3.026616,
+                "p01": -2.092328,
+                "p99": 0.636717,
+                "display": {
+                  "minimum": -8.0,
+                  "maximum": 8.0,
+                  "step": 1.0,
+                  "below_fraction": 0.0,
+                  "above_fraction": 0.0,
+                  "clipped_fraction": 0.0
+                },
+                "issues": [],
+                "status": "passed"
+              },
+              "_catalog": {
+                "canonical_product": "snowfall_anomaly",
+                "comparable": true,
+                "quality_control": "passed"
+              }
+            }
+          ],
+          "_catalog": {
+            "canonical_product": "snowfall_anomaly",
+            "comparable": true
+          }
+        },
+        {
           "id": "c3s-ukmo-2026080100-sea_surface_temperature_anomaly",
           "model": "C3S UK Met Office",
           "component": "ukmo",
@@ -2559,6 +2764,115 @@
           ],
           "_catalog": {
             "canonical_product": "2m_temperature_anomaly",
+            "comparable": true
+          }
+        },
+        {
+          "id": "c3s-ncep-2026080100-snowfall_anomaly",
+          "model": "C3S NCEP",
+          "component": "ncep",
+          "component_label": "NCEP",
+          "source": "Copernicus C3S / NCEP",
+          "source_url": "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-single-levels",
+          "source_urls": [
+            "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-single-levels"
+          ],
+          "product": "snowfall_anomaly",
+          "init_utc": "2026-08-01T00:00:00Z",
+          "status": "failed",
+          "statistic": "ensemble_mean",
+          "aggregation": "official C3S monthly ensemble-mean anomaly",
+          "ensemble_scope": "NCEP/System 2 ensemble",
+          "ensemble_members": 24,
+          "field": "snowfall_anomaly",
+          "units": "in",
+          "raw_field": "snowfall anomalous rate of accumulation",
+          "raw_units": "m s⁻¹ of water equivalent",
+          "climatology": {
+            "status": "not_used",
+            "method": "native C3S postprocessed anomaly"
+          },
+          "baseline": {
+            "status": "official_postprocessed",
+            "source": "C3S native bias-adjusted anomaly"
+          },
+          "targets": [
+            {
+              "id": "c3s-ncep-2026080100-snowfall_anomaly-lead04",
+              "target_month": "202612",
+              "valid_start_utc": "2026-12-01T00:00:00Z",
+              "valid_end_utc": "2027-01-01T00:00:00Z",
+              "lead_month": 4,
+              "field": "snowfall_anomaly",
+              "units": "in",
+              "status": "failed",
+              "error": "C3S request failed for ncep/2 snowfall_anomalous_rate_of_accumulation lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/processes/seasonal-postprocessed-single-levels/execution\ninvalid request\nRequest has not produced a valid combination of values, please check your selection.\n{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'data_format': ['grib'], 'leadtime_month': ['4'], 'month': ['08'], 'originating_centre': ['ncep'], 'product_type': ['ensemble_mean'], 'system': ['2'], 'variable': ['snowfall_anomalous_rate_of_accumulation'], 'year': ['2026']}",
+              "statistic": "ensemble_mean",
+              "_catalog": {
+                "canonical_product": "snowfall_anomaly",
+                "comparable": true,
+                "quality_control": "legacy"
+              }
+            },
+            {
+              "id": "c3s-ncep-2026080100-snowfall_anomaly-lead05",
+              "target_month": "202701",
+              "valid_start_utc": "2027-01-01T00:00:00Z",
+              "valid_end_utc": "2027-02-01T00:00:00Z",
+              "lead_month": 5,
+              "field": "snowfall_anomaly",
+              "units": "in",
+              "status": "failed",
+              "error": "C3S request failed for ncep/2 snowfall_anomalous_rate_of_accumulation lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/processes/seasonal-postprocessed-single-levels/execution\ninvalid request\nRequest has not produced a valid combination of values, please check your selection.\n{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'data_format': ['grib'], 'leadtime_month': ['5'], 'month': ['08'], 'originating_centre': ['ncep'], 'product_type': ['ensemble_mean'], 'system': ['2'], 'variable': ['snowfall_anomalous_rate_of_accumulation'], 'year': ['2026']}",
+              "statistic": "ensemble_mean",
+              "_catalog": {
+                "canonical_product": "snowfall_anomaly",
+                "comparable": true,
+                "quality_control": "legacy"
+              }
+            },
+            {
+              "id": "c3s-ncep-2026080100-snowfall_anomaly-lead06",
+              "target_month": "202702",
+              "valid_start_utc": "2027-02-01T00:00:00Z",
+              "valid_end_utc": "2027-03-01T00:00:00Z",
+              "lead_month": 6,
+              "field": "snowfall_anomaly",
+              "units": "in",
+              "status": "failed",
+              "error": "C3S request failed for ncep/2 snowfall_anomalous_rate_of_accumulation lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/processes/seasonal-postprocessed-single-levels/execution\ninvalid request\nRequest has not produced a valid combination of values, please check your selection.\n{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'data_format': ['grib'], 'leadtime_month': ['6'], 'month': ['08'], 'originating_centre': ['ncep'], 'product_type': ['ensemble_mean'], 'system': ['2'], 'variable': ['snowfall_anomalous_rate_of_accumulation'], 'year': ['2026']}",
+              "statistic": "ensemble_mean",
+              "_catalog": {
+                "canonical_product": "snowfall_anomaly",
+                "comparable": true,
+                "quality_control": "legacy"
+              }
+            },
+            {
+              "id": "c3s-ncep-2026080100-snowfall_anomaly-202612-202702",
+              "target_month": "202612-202702",
+              "valid_start_utc": "2026-12-01T00:00:00Z",
+              "valid_end_utc": "2027-03-01T00:00:00Z",
+              "lead_month": "4–6",
+              "monthly_leads": [
+                4,
+                5,
+                6
+              ],
+              "field": "snowfall_anomaly",
+              "units": "in",
+              "status": "failed",
+              "error": "seasonal window is missing one or more component grids",
+              "statistic": "ensemble_mean",
+              "_catalog": {
+                "canonical_product": "snowfall_anomaly",
+                "comparable": true,
+                "quality_control": "legacy"
+              }
+            }
+          ],
+          "_catalog": {
+            "canonical_product": "snowfall_anomaly",
             "comparable": true
           }
         },
@@ -3109,6 +3423,211 @@
           }
         },
         {
+          "id": "c3s-multisystem-2026080100-snowfall_anomaly",
+          "model": "C3S multi-system",
+          "component": "multisystem",
+          "component_label": "multi-system",
+          "source": "Copernicus C3S / multi-system",
+          "source_url": "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-single-levels",
+          "source_urls": [
+            "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-single-levels"
+          ],
+          "product": "snowfall_anomaly",
+          "init_utc": "2026-08-01T00:00:00Z",
+          "status": "rendered",
+          "statistic": "multi-system mean of native ensemble-mean anomalies",
+          "aggregation": "official C3S monthly ensemble-mean anomaly",
+          "ensemble_scope": "C3S multi-system blend",
+          "ensemble_members": null,
+          "field": "snowfall_anomaly",
+          "units": "in",
+          "raw_field": "snowfall anomalous rate of accumulation",
+          "raw_units": "m s⁻¹ of water equivalent",
+          "climatology": {
+            "status": "not_used",
+            "method": "native C3S postprocessed anomaly"
+          },
+          "baseline": {
+            "status": "official_postprocessed",
+            "source": "C3S native bias-adjusted anomaly"
+          },
+          "targets": [
+            {
+              "id": "c3s-multisystem-2026080100-snowfall_anomaly-lead04",
+              "target_month": "202612",
+              "valid_start_utc": "2026-12-01T00:00:00Z",
+              "valid_end_utc": "2027-01-01T00:00:00Z",
+              "lead_month": 4,
+              "field": "snowfall_anomaly",
+              "units": "in",
+              "status": "rendered",
+              "image": "c3s/20260801/c3s_multisystem_sf_202612.jpg",
+              "statistic": "multi-system mean of native ensemble-mean anomalies",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "snowfall_anomaly",
+                "units": "in",
+                "field": "snowfall_anomaly",
+                "period": "monthly",
+                "total_points": 3200,
+                "finite_points": 3200,
+                "finite_fraction": 1.0,
+                "minimum": -1.482561,
+                "maximum": 0.234926,
+                "p01": -0.753042,
+                "p99": 0.062498,
+                "display": {
+                  "minimum": -8.0,
+                  "maximum": 8.0,
+                  "step": 1.0,
+                  "below_fraction": 0.0,
+                  "above_fraction": 0.0,
+                  "clipped_fraction": 0.0
+                },
+                "issues": [],
+                "status": "passed"
+              },
+              "_catalog": {
+                "canonical_product": "snowfall_anomaly",
+                "comparable": true,
+                "quality_control": "passed"
+              }
+            },
+            {
+              "id": "c3s-multisystem-2026080100-snowfall_anomaly-lead05",
+              "target_month": "202701",
+              "valid_start_utc": "2027-01-01T00:00:00Z",
+              "valid_end_utc": "2027-02-01T00:00:00Z",
+              "lead_month": 5,
+              "field": "snowfall_anomaly",
+              "units": "in",
+              "status": "rendered",
+              "image": "c3s/20260801/c3s_multisystem_sf_202701.jpg",
+              "statistic": "multi-system mean of native ensemble-mean anomalies",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "snowfall_anomaly",
+                "units": "in",
+                "field": "snowfall_anomaly",
+                "period": "monthly",
+                "total_points": 3200,
+                "finite_points": 3200,
+                "finite_fraction": 1.0,
+                "minimum": -1.492806,
+                "maximum": 0.510234,
+                "p01": -0.824092,
+                "p99": 0.17749,
+                "display": {
+                  "minimum": -8.0,
+                  "maximum": 8.0,
+                  "step": 1.0,
+                  "below_fraction": 0.0,
+                  "above_fraction": 0.0,
+                  "clipped_fraction": 0.0
+                },
+                "issues": [],
+                "status": "passed"
+              },
+              "_catalog": {
+                "canonical_product": "snowfall_anomaly",
+                "comparable": true,
+                "quality_control": "passed"
+              }
+            },
+            {
+              "id": "c3s-multisystem-2026080100-snowfall_anomaly-lead06",
+              "target_month": "202702",
+              "valid_start_utc": "2027-02-01T00:00:00Z",
+              "valid_end_utc": "2027-03-01T00:00:00Z",
+              "lead_month": 6,
+              "field": "snowfall_anomaly",
+              "units": "in",
+              "status": "rendered",
+              "image": "c3s/20260801/c3s_multisystem_sf_202702.jpg",
+              "statistic": "multi-system mean of native ensemble-mean anomalies",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "snowfall_anomaly",
+                "units": "in",
+                "field": "snowfall_anomaly",
+                "period": "monthly",
+                "total_points": 3200,
+                "finite_points": 3200,
+                "finite_fraction": 1.0,
+                "minimum": -1.883952,
+                "maximum": 1.042439,
+                "p01": -0.956827,
+                "p99": 0.269649,
+                "display": {
+                  "minimum": -8.0,
+                  "maximum": 8.0,
+                  "step": 1.0,
+                  "below_fraction": 0.0,
+                  "above_fraction": 0.0,
+                  "clipped_fraction": 0.0
+                },
+                "issues": [],
+                "status": "passed"
+              },
+              "_catalog": {
+                "canonical_product": "snowfall_anomaly",
+                "comparable": true,
+                "quality_control": "passed"
+              }
+            },
+            {
+              "id": "c3s-multisystem-2026080100-snowfall_anomaly-202612-202702",
+              "target_month": "202612-202702",
+              "valid_start_utc": "2026-12-01T00:00:00Z",
+              "valid_end_utc": "2027-03-01T00:00:00Z",
+              "lead_month": "4–6",
+              "monthly_leads": [
+                4,
+                5,
+                6
+              ],
+              "field": "snowfall_anomaly",
+              "units": "in",
+              "status": "rendered",
+              "image": "c3s/20260801/c3s_multisystem_sf_202612-202702.jpg",
+              "statistic": "multi-system mean of native ensemble-mean anomalies",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "snowfall_anomaly",
+                "units": "in",
+                "field": "snowfall_anomaly",
+                "period": "seasonal",
+                "total_points": 3200,
+                "finite_points": 3200,
+                "finite_fraction": 1.0,
+                "minimum": -4.703354,
+                "maximum": 1.594775,
+                "p01": -2.493296,
+                "p99": 0.388217,
+                "display": {
+                  "minimum": -8.0,
+                  "maximum": 8.0,
+                  "step": 1.0,
+                  "below_fraction": 0.0,
+                  "above_fraction": 0.0,
+                  "clipped_fraction": 0.0
+                },
+                "issues": [],
+                "status": "passed"
+              },
+              "_catalog": {
+                "canonical_product": "snowfall_anomaly",
+                "comparable": true,
+                "quality_control": "passed"
+              }
+            }
+          ],
+          "_catalog": {
+            "canonical_product": "snowfall_anomaly",
+            "comparable": true
+          }
+        },
+        {
           "id": "c3s-multisystem-2026080100-sea_surface_temperature_anomaly",
           "model": "C3S multi-system",
           "component": "multisystem",
@@ -3651,6 +4170,211 @@
           ],
           "_catalog": {
             "canonical_product": "2m_temperature_anomaly",
+            "comparable": true
+          }
+        },
+        {
+          "id": "c3s-meteo_france-2026080100-snowfall_anomaly",
+          "model": "C3S Météo-France",
+          "component": "meteo_france",
+          "component_label": "Météo-France",
+          "source": "Copernicus C3S / Météo-France",
+          "source_url": "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-single-levels",
+          "source_urls": [
+            "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-single-levels"
+          ],
+          "product": "snowfall_anomaly",
+          "init_utc": "2026-08-01T00:00:00Z",
+          "status": "rendered",
+          "statistic": "ensemble_mean",
+          "aggregation": "official C3S monthly ensemble-mean anomaly",
+          "ensemble_scope": "Météo-France/System 9 ensemble",
+          "ensemble_members": 51,
+          "field": "snowfall_anomaly",
+          "units": "in",
+          "raw_field": "snowfall anomalous rate of accumulation",
+          "raw_units": "m s⁻¹ of water equivalent",
+          "climatology": {
+            "status": "not_used",
+            "method": "native C3S postprocessed anomaly"
+          },
+          "baseline": {
+            "status": "official_postprocessed",
+            "source": "C3S native bias-adjusted anomaly"
+          },
+          "targets": [
+            {
+              "id": "c3s-meteo_france-2026080100-snowfall_anomaly-lead04",
+              "target_month": "202612",
+              "valid_start_utc": "2026-12-01T00:00:00Z",
+              "valid_end_utc": "2027-01-01T00:00:00Z",
+              "lead_month": 4,
+              "field": "snowfall_anomaly",
+              "units": "in",
+              "status": "rendered",
+              "image": "c3s/20260801/c3s_meteo_france_sf_202612.jpg",
+              "statistic": "ensemble_mean",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "snowfall_anomaly",
+                "units": "in",
+                "field": "snowfall_anomaly",
+                "period": "monthly",
+                "total_points": 3200,
+                "finite_points": 3200,
+                "finite_fraction": 1.0,
+                "minimum": -1.289184,
+                "maximum": 0.755034,
+                "p01": -0.686847,
+                "p99": 0.168314,
+                "display": {
+                  "minimum": -8.0,
+                  "maximum": 8.0,
+                  "step": 1.0,
+                  "below_fraction": 0.0,
+                  "above_fraction": 0.0,
+                  "clipped_fraction": 0.0
+                },
+                "issues": [],
+                "status": "passed"
+              },
+              "_catalog": {
+                "canonical_product": "snowfall_anomaly",
+                "comparable": true,
+                "quality_control": "passed"
+              }
+            },
+            {
+              "id": "c3s-meteo_france-2026080100-snowfall_anomaly-lead05",
+              "target_month": "202701",
+              "valid_start_utc": "2027-01-01T00:00:00Z",
+              "valid_end_utc": "2027-02-01T00:00:00Z",
+              "lead_month": 5,
+              "field": "snowfall_anomaly",
+              "units": "in",
+              "status": "rendered",
+              "image": "c3s/20260801/c3s_meteo_france_sf_202701.jpg",
+              "statistic": "ensemble_mean",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "snowfall_anomaly",
+                "units": "in",
+                "field": "snowfall_anomaly",
+                "period": "monthly",
+                "total_points": 3200,
+                "finite_points": 3200,
+                "finite_fraction": 1.0,
+                "minimum": -1.396907,
+                "maximum": 0.612881,
+                "p01": -0.91216,
+                "p99": 0.256706,
+                "display": {
+                  "minimum": -8.0,
+                  "maximum": 8.0,
+                  "step": 1.0,
+                  "below_fraction": 0.0,
+                  "above_fraction": 0.0,
+                  "clipped_fraction": 0.0
+                },
+                "issues": [],
+                "status": "passed"
+              },
+              "_catalog": {
+                "canonical_product": "snowfall_anomaly",
+                "comparable": true,
+                "quality_control": "passed"
+              }
+            },
+            {
+              "id": "c3s-meteo_france-2026080100-snowfall_anomaly-lead06",
+              "target_month": "202702",
+              "valid_start_utc": "2027-02-01T00:00:00Z",
+              "valid_end_utc": "2027-03-01T00:00:00Z",
+              "lead_month": 6,
+              "field": "snowfall_anomaly",
+              "units": "in",
+              "status": "rendered",
+              "image": "c3s/20260801/c3s_meteo_france_sf_202702.jpg",
+              "statistic": "ensemble_mean",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "snowfall_anomaly",
+                "units": "in",
+                "field": "snowfall_anomaly",
+                "period": "monthly",
+                "total_points": 3200,
+                "finite_points": 3200,
+                "finite_fraction": 1.0,
+                "minimum": -2.0934,
+                "maximum": 1.038577,
+                "p01": -1.127233,
+                "p99": 0.398653,
+                "display": {
+                  "minimum": -8.0,
+                  "maximum": 8.0,
+                  "step": 1.0,
+                  "below_fraction": 0.0,
+                  "above_fraction": 0.0,
+                  "clipped_fraction": 0.0
+                },
+                "issues": [],
+                "status": "passed"
+              },
+              "_catalog": {
+                "canonical_product": "snowfall_anomaly",
+                "comparable": true,
+                "quality_control": "passed"
+              }
+            },
+            {
+              "id": "c3s-meteo_france-2026080100-snowfall_anomaly-202612-202702",
+              "target_month": "202612-202702",
+              "valid_start_utc": "2026-12-01T00:00:00Z",
+              "valid_end_utc": "2027-03-01T00:00:00Z",
+              "lead_month": "4–6",
+              "monthly_leads": [
+                4,
+                5,
+                6
+              ],
+              "field": "snowfall_anomaly",
+              "units": "in",
+              "status": "rendered",
+              "image": "c3s/20260801/c3s_meteo_france_sf_202612-202702.jpg",
+              "statistic": "ensemble_mean",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "snowfall_anomaly",
+                "units": "in",
+                "field": "snowfall_anomaly",
+                "period": "seasonal",
+                "total_points": 3200,
+                "finite_points": 3200,
+                "finite_fraction": 1.0,
+                "minimum": -4.65798,
+                "maximum": 1.078268,
+                "p01": -2.344136,
+                "p99": 0.550306,
+                "display": {
+                  "minimum": -8.0,
+                  "maximum": 8.0,
+                  "step": 1.0,
+                  "below_fraction": 0.0,
+                  "above_fraction": 0.0,
+                  "clipped_fraction": 0.0
+                },
+                "issues": [],
+                "status": "passed"
+              },
+              "_catalog": {
+                "canonical_product": "snowfall_anomaly",
+                "comparable": true,
+                "quality_control": "passed"
+              }
+            }
+          ],
+          "_catalog": {
+            "canonical_product": "snowfall_anomaly",
             "comparable": true
           }
         },
@@ -4201,6 +4925,115 @@
           }
         },
         {
+          "id": "c3s-jma-2026080100-snowfall_anomaly",
+          "model": "C3S JMA",
+          "component": "jma",
+          "component_label": "JMA",
+          "source": "Copernicus C3S / JMA",
+          "source_url": "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-single-levels",
+          "source_urls": [
+            "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-single-levels"
+          ],
+          "product": "snowfall_anomaly",
+          "init_utc": "2026-08-01T00:00:00Z",
+          "status": "failed",
+          "statistic": "ensemble_mean",
+          "aggregation": "official C3S monthly ensemble-mean anomaly",
+          "ensemble_scope": "JMA/System 4 ensemble",
+          "ensemble_members": 55,
+          "field": "snowfall_anomaly",
+          "units": "in",
+          "raw_field": "snowfall anomalous rate of accumulation",
+          "raw_units": "m s⁻¹ of water equivalent",
+          "climatology": {
+            "status": "not_used",
+            "method": "native C3S postprocessed anomaly"
+          },
+          "baseline": {
+            "status": "official_postprocessed",
+            "source": "C3S native bias-adjusted anomaly"
+          },
+          "targets": [
+            {
+              "id": "c3s-jma-2026080100-snowfall_anomaly-lead04",
+              "target_month": "202612",
+              "valid_start_utc": "2026-12-01T00:00:00Z",
+              "valid_end_utc": "2027-01-01T00:00:00Z",
+              "lead_month": 4,
+              "field": "snowfall_anomaly",
+              "units": "in",
+              "status": "failed",
+              "error": "C3S request failed for jma/4 snowfall_anomalous_rate_of_accumulation lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/processes/seasonal-postprocessed-single-levels/execution\ninvalid request\nRequest has not produced a valid combination of values, please check your selection.\n{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'data_format': ['grib'], 'leadtime_month': ['4'], 'month': ['08'], 'originating_centre': ['jma'], 'product_type': ['ensemble_mean'], 'system': ['4'], 'variable': ['snowfall_anomalous_rate_of_accumulation'], 'year': ['2026']}",
+              "statistic": "ensemble_mean",
+              "_catalog": {
+                "canonical_product": "snowfall_anomaly",
+                "comparable": true,
+                "quality_control": "legacy"
+              }
+            },
+            {
+              "id": "c3s-jma-2026080100-snowfall_anomaly-lead05",
+              "target_month": "202701",
+              "valid_start_utc": "2027-01-01T00:00:00Z",
+              "valid_end_utc": "2027-02-01T00:00:00Z",
+              "lead_month": 5,
+              "field": "snowfall_anomaly",
+              "units": "in",
+              "status": "failed",
+              "error": "C3S request failed for jma/4 snowfall_anomalous_rate_of_accumulation lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/processes/seasonal-postprocessed-single-levels/execution\ninvalid request\nRequest has not produced a valid combination of values, please check your selection.\n{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'data_format': ['grib'], 'leadtime_month': ['5'], 'month': ['08'], 'originating_centre': ['jma'], 'product_type': ['ensemble_mean'], 'system': ['4'], 'variable': ['snowfall_anomalous_rate_of_accumulation'], 'year': ['2026']}",
+              "statistic": "ensemble_mean",
+              "_catalog": {
+                "canonical_product": "snowfall_anomaly",
+                "comparable": true,
+                "quality_control": "legacy"
+              }
+            },
+            {
+              "id": "c3s-jma-2026080100-snowfall_anomaly-lead06",
+              "target_month": "202702",
+              "valid_start_utc": "2027-02-01T00:00:00Z",
+              "valid_end_utc": "2027-03-01T00:00:00Z",
+              "lead_month": 6,
+              "field": "snowfall_anomaly",
+              "units": "in",
+              "status": "failed",
+              "error": "C3S request failed for jma/4 snowfall_anomalous_rate_of_accumulation lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/processes/seasonal-postprocessed-single-levels/execution\ninvalid request\nRequest has not produced a valid combination of values, please check your selection.\n{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'data_format': ['grib'], 'leadtime_month': ['6'], 'month': ['08'], 'originating_centre': ['jma'], 'product_type': ['ensemble_mean'], 'system': ['4'], 'variable': ['snowfall_anomalous_rate_of_accumulation'], 'year': ['2026']}",
+              "statistic": "ensemble_mean",
+              "_catalog": {
+                "canonical_product": "snowfall_anomaly",
+                "comparable": true,
+                "quality_control": "legacy"
+              }
+            },
+            {
+              "id": "c3s-jma-2026080100-snowfall_anomaly-202612-202702",
+              "target_month": "202612-202702",
+              "valid_start_utc": "2026-12-01T00:00:00Z",
+              "valid_end_utc": "2027-03-01T00:00:00Z",
+              "lead_month": "4–6",
+              "monthly_leads": [
+                4,
+                5,
+                6
+              ],
+              "field": "snowfall_anomaly",
+              "units": "in",
+              "status": "failed",
+              "error": "seasonal window is missing one or more component grids",
+              "statistic": "ensemble_mean",
+              "_catalog": {
+                "canonical_product": "snowfall_anomaly",
+                "comparable": true,
+                "quality_control": "legacy"
+              }
+            }
+          ],
+          "_catalog": {
+            "canonical_product": "snowfall_anomaly",
+            "comparable": true
+          }
+        },
+        {
           "id": "c3s-jma-2026080100-sea_surface_temperature_anomaly",
           "model": "C3S JMA",
           "component": "jma",
@@ -4743,6 +5576,211 @@
           ],
           "_catalog": {
             "canonical_product": "2m_temperature_anomaly",
+            "comparable": true
+          }
+        },
+        {
+          "id": "c3s-ecmwf-2026080100-snowfall_anomaly",
+          "model": "C3S ECMWF",
+          "component": "ecmwf",
+          "component_label": "ECMWF",
+          "source": "Copernicus C3S / ECMWF",
+          "source_url": "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-single-levels",
+          "source_urls": [
+            "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-single-levels"
+          ],
+          "product": "snowfall_anomaly",
+          "init_utc": "2026-08-01T00:00:00Z",
+          "status": "rendered",
+          "statistic": "ensemble_mean",
+          "aggregation": "official C3S monthly ensemble-mean anomaly",
+          "ensemble_scope": "ECMWF/System 51 ensemble",
+          "ensemble_members": 51,
+          "field": "snowfall_anomaly",
+          "units": "in",
+          "raw_field": "snowfall anomalous rate of accumulation",
+          "raw_units": "m s⁻¹ of water equivalent",
+          "climatology": {
+            "status": "not_used",
+            "method": "native C3S postprocessed anomaly"
+          },
+          "baseline": {
+            "status": "official_postprocessed",
+            "source": "C3S native bias-adjusted anomaly"
+          },
+          "targets": [
+            {
+              "id": "c3s-ecmwf-2026080100-snowfall_anomaly-lead04",
+              "target_month": "202612",
+              "valid_start_utc": "2026-12-01T00:00:00Z",
+              "valid_end_utc": "2027-01-01T00:00:00Z",
+              "lead_month": 4,
+              "field": "snowfall_anomaly",
+              "units": "in",
+              "status": "rendered",
+              "image": "c3s/20260801/c3s_ecmwf_sf_202612.jpg",
+              "statistic": "ensemble_mean",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "snowfall_anomaly",
+                "units": "in",
+                "field": "snowfall_anomaly",
+                "period": "monthly",
+                "total_points": 3200,
+                "finite_points": 3200,
+                "finite_fraction": 1.0,
+                "minimum": -1.803576,
+                "maximum": 0.868725,
+                "p01": -0.697065,
+                "p99": 0.077938,
+                "display": {
+                  "minimum": -8.0,
+                  "maximum": 8.0,
+                  "step": 1.0,
+                  "below_fraction": 0.0,
+                  "above_fraction": 0.0,
+                  "clipped_fraction": 0.0
+                },
+                "issues": [],
+                "status": "passed"
+              },
+              "_catalog": {
+                "canonical_product": "snowfall_anomaly",
+                "comparable": true,
+                "quality_control": "passed"
+              }
+            },
+            {
+              "id": "c3s-ecmwf-2026080100-snowfall_anomaly-lead05",
+              "target_month": "202701",
+              "valid_start_utc": "2027-01-01T00:00:00Z",
+              "valid_end_utc": "2027-02-01T00:00:00Z",
+              "lead_month": 5,
+              "field": "snowfall_anomaly",
+              "units": "in",
+              "status": "rendered",
+              "image": "c3s/20260801/c3s_ecmwf_sf_202701.jpg",
+              "statistic": "ensemble_mean",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "snowfall_anomaly",
+                "units": "in",
+                "field": "snowfall_anomaly",
+                "period": "monthly",
+                "total_points": 3200,
+                "finite_points": 3200,
+                "finite_fraction": 1.0,
+                "minimum": -1.645703,
+                "maximum": 0.866628,
+                "p01": -0.908211,
+                "p99": 0.190344,
+                "display": {
+                  "minimum": -8.0,
+                  "maximum": 8.0,
+                  "step": 1.0,
+                  "below_fraction": 0.0,
+                  "above_fraction": 0.0,
+                  "clipped_fraction": 0.0
+                },
+                "issues": [],
+                "status": "passed"
+              },
+              "_catalog": {
+                "canonical_product": "snowfall_anomaly",
+                "comparable": true,
+                "quality_control": "passed"
+              }
+            },
+            {
+              "id": "c3s-ecmwf-2026080100-snowfall_anomaly-lead06",
+              "target_month": "202702",
+              "valid_start_utc": "2027-02-01T00:00:00Z",
+              "valid_end_utc": "2027-03-01T00:00:00Z",
+              "lead_month": 6,
+              "field": "snowfall_anomaly",
+              "units": "in",
+              "status": "rendered",
+              "image": "c3s/20260801/c3s_ecmwf_sf_202702.jpg",
+              "statistic": "ensemble_mean",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "snowfall_anomaly",
+                "units": "in",
+                "field": "snowfall_anomaly",
+                "period": "monthly",
+                "total_points": 3200,
+                "finite_points": 3200,
+                "finite_fraction": 1.0,
+                "minimum": -2.434905,
+                "maximum": 1.437968,
+                "p01": -1.0505,
+                "p99": 0.391391,
+                "display": {
+                  "minimum": -8.0,
+                  "maximum": 8.0,
+                  "step": 1.0,
+                  "below_fraction": 0.0,
+                  "above_fraction": 0.0,
+                  "clipped_fraction": 0.0
+                },
+                "issues": [],
+                "status": "passed"
+              },
+              "_catalog": {
+                "canonical_product": "snowfall_anomaly",
+                "comparable": true,
+                "quality_control": "passed"
+              }
+            },
+            {
+              "id": "c3s-ecmwf-2026080100-snowfall_anomaly-202612-202702",
+              "target_month": "202612-202702",
+              "valid_start_utc": "2026-12-01T00:00:00Z",
+              "valid_end_utc": "2027-03-01T00:00:00Z",
+              "lead_month": "4–6",
+              "monthly_leads": [
+                4,
+                5,
+                6
+              ],
+              "field": "snowfall_anomaly",
+              "units": "in",
+              "status": "rendered",
+              "image": "c3s/20260801/c3s_ecmwf_sf_202612-202702.jpg",
+              "statistic": "ensemble_mean",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "snowfall_anomaly",
+                "units": "in",
+                "field": "snowfall_anomaly",
+                "period": "seasonal",
+                "total_points": 3200,
+                "finite_points": 3200,
+                "finite_fraction": 1.0,
+                "minimum": -5.884183,
+                "maximum": 1.56876,
+                "p01": -2.407761,
+                "p99": 0.34069,
+                "display": {
+                  "minimum": -8.0,
+                  "maximum": 8.0,
+                  "step": 1.0,
+                  "below_fraction": 0.0,
+                  "above_fraction": 0.0,
+                  "clipped_fraction": 0.0
+                },
+                "issues": [],
+                "status": "passed"
+              },
+              "_catalog": {
+                "canonical_product": "snowfall_anomaly",
+                "comparable": true,
+                "quality_control": "passed"
+              }
+            }
+          ],
+          "_catalog": {
+            "canonical_product": "snowfall_anomaly",
             "comparable": true
           }
         },
@@ -5293,6 +6331,211 @@
           }
         },
         {
+          "id": "c3s-eccc-2026080100-snowfall_anomaly",
+          "model": "C3S ECCC",
+          "component": "eccc",
+          "component_label": "ECCC",
+          "source": "Copernicus C3S / ECCC",
+          "source_url": "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-single-levels",
+          "source_urls": [
+            "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-single-levels"
+          ],
+          "product": "snowfall_anomaly",
+          "init_utc": "2026-08-01T00:00:00Z",
+          "status": "rendered",
+          "statistic": "ensemble_mean",
+          "aggregation": "official C3S monthly ensemble-mean anomaly",
+          "ensemble_scope": "ECCC/System 5 ensemble",
+          "ensemble_members": 20,
+          "field": "snowfall_anomaly",
+          "units": "in",
+          "raw_field": "snowfall anomalous rate of accumulation",
+          "raw_units": "m s⁻¹ of water equivalent",
+          "climatology": {
+            "status": "not_used",
+            "method": "native C3S postprocessed anomaly"
+          },
+          "baseline": {
+            "status": "official_postprocessed",
+            "source": "C3S native bias-adjusted anomaly"
+          },
+          "targets": [
+            {
+              "id": "c3s-eccc-2026080100-snowfall_anomaly-lead04",
+              "target_month": "202612",
+              "valid_start_utc": "2026-12-01T00:00:00Z",
+              "valid_end_utc": "2027-01-01T00:00:00Z",
+              "lead_month": 4,
+              "field": "snowfall_anomaly",
+              "units": "in",
+              "status": "rendered",
+              "image": "c3s/20260801/c3s_eccc_sf_202612.jpg",
+              "statistic": "ensemble_mean",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "snowfall_anomaly",
+                "units": "in",
+                "field": "snowfall_anomaly",
+                "period": "monthly",
+                "total_points": 3200,
+                "finite_points": 3200,
+                "finite_fraction": 1.0,
+                "minimum": -1.20837,
+                "maximum": 0.696539,
+                "p01": -0.652429,
+                "p99": 0.213258,
+                "display": {
+                  "minimum": -8.0,
+                  "maximum": 8.0,
+                  "step": 1.0,
+                  "below_fraction": 0.0,
+                  "above_fraction": 0.0,
+                  "clipped_fraction": 0.0
+                },
+                "issues": [],
+                "status": "passed"
+              },
+              "_catalog": {
+                "canonical_product": "snowfall_anomaly",
+                "comparable": true,
+                "quality_control": "passed"
+              }
+            },
+            {
+              "id": "c3s-eccc-2026080100-snowfall_anomaly-lead05",
+              "target_month": "202701",
+              "valid_start_utc": "2027-01-01T00:00:00Z",
+              "valid_end_utc": "2027-02-01T00:00:00Z",
+              "lead_month": 5,
+              "field": "snowfall_anomaly",
+              "units": "in",
+              "status": "rendered",
+              "image": "c3s/20260801/c3s_eccc_sf_202701.jpg",
+              "statistic": "ensemble_mean",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "snowfall_anomaly",
+                "units": "in",
+                "field": "snowfall_anomaly",
+                "period": "monthly",
+                "total_points": 3200,
+                "finite_points": 3200,
+                "finite_fraction": 1.0,
+                "minimum": -1.915189,
+                "maximum": 1.181996,
+                "p01": -0.982729,
+                "p99": 0.412438,
+                "display": {
+                  "minimum": -8.0,
+                  "maximum": 8.0,
+                  "step": 1.0,
+                  "below_fraction": 0.0,
+                  "above_fraction": 0.0,
+                  "clipped_fraction": 0.0
+                },
+                "issues": [],
+                "status": "passed"
+              },
+              "_catalog": {
+                "canonical_product": "snowfall_anomaly",
+                "comparable": true,
+                "quality_control": "passed"
+              }
+            },
+            {
+              "id": "c3s-eccc-2026080100-snowfall_anomaly-lead06",
+              "target_month": "202702",
+              "valid_start_utc": "2027-02-01T00:00:00Z",
+              "valid_end_utc": "2027-03-01T00:00:00Z",
+              "lead_month": 6,
+              "field": "snowfall_anomaly",
+              "units": "in",
+              "status": "rendered",
+              "image": "c3s/20260801/c3s_eccc_sf_202702.jpg",
+              "statistic": "ensemble_mean",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "snowfall_anomaly",
+                "units": "in",
+                "field": "snowfall_anomaly",
+                "period": "monthly",
+                "total_points": 3200,
+                "finite_points": 3200,
+                "finite_fraction": 1.0,
+                "minimum": -1.864119,
+                "maximum": 1.358773,
+                "p01": -0.908164,
+                "p99": 0.504098,
+                "display": {
+                  "minimum": -8.0,
+                  "maximum": 8.0,
+                  "step": 1.0,
+                  "below_fraction": 0.0,
+                  "above_fraction": 0.0,
+                  "clipped_fraction": 0.0
+                },
+                "issues": [],
+                "status": "passed"
+              },
+              "_catalog": {
+                "canonical_product": "snowfall_anomaly",
+                "comparable": true,
+                "quality_control": "passed"
+              }
+            },
+            {
+              "id": "c3s-eccc-2026080100-snowfall_anomaly-202612-202702",
+              "target_month": "202612-202702",
+              "valid_start_utc": "2026-12-01T00:00:00Z",
+              "valid_end_utc": "2027-03-01T00:00:00Z",
+              "lead_month": "4–6",
+              "monthly_leads": [
+                4,
+                5,
+                6
+              ],
+              "field": "snowfall_anomaly",
+              "units": "in",
+              "status": "rendered",
+              "image": "c3s/20260801/c3s_eccc_sf_202612-202702.jpg",
+              "statistic": "ensemble_mean",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "snowfall_anomaly",
+                "units": "in",
+                "field": "snowfall_anomaly",
+                "period": "seasonal",
+                "total_points": 3200,
+                "finite_points": 3200,
+                "finite_fraction": 1.0,
+                "minimum": -3.870466,
+                "maximum": 3.237308,
+                "p01": -2.359291,
+                "p99": 0.91071,
+                "display": {
+                  "minimum": -8.0,
+                  "maximum": 8.0,
+                  "step": 1.0,
+                  "below_fraction": 0.0,
+                  "above_fraction": 0.0,
+                  "clipped_fraction": 0.0
+                },
+                "issues": [],
+                "status": "passed"
+              },
+              "_catalog": {
+                "canonical_product": "snowfall_anomaly",
+                "comparable": true,
+                "quality_control": "passed"
+              }
+            }
+          ],
+          "_catalog": {
+            "canonical_product": "snowfall_anomaly",
+            "comparable": true
+          }
+        },
+        {
           "id": "c3s-eccc-2026080100-sea_surface_temperature_anomaly",
           "model": "C3S ECCC",
           "component": "eccc",
@@ -5835,6 +7078,211 @@
           ],
           "_catalog": {
             "canonical_product": "2m_temperature_anomaly",
+            "comparable": true
+          }
+        },
+        {
+          "id": "c3s-dwd-2026080100-snowfall_anomaly",
+          "model": "C3S DWD",
+          "component": "dwd",
+          "component_label": "DWD",
+          "source": "Copernicus C3S / DWD",
+          "source_url": "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-single-levels",
+          "source_urls": [
+            "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-single-levels"
+          ],
+          "product": "snowfall_anomaly",
+          "init_utc": "2026-08-01T00:00:00Z",
+          "status": "rendered",
+          "statistic": "ensemble_mean",
+          "aggregation": "official C3S monthly ensemble-mean anomaly",
+          "ensemble_scope": "DWD/System 22 ensemble",
+          "ensemble_members": 50,
+          "field": "snowfall_anomaly",
+          "units": "in",
+          "raw_field": "snowfall anomalous rate of accumulation",
+          "raw_units": "m s⁻¹ of water equivalent",
+          "climatology": {
+            "status": "not_used",
+            "method": "native C3S postprocessed anomaly"
+          },
+          "baseline": {
+            "status": "official_postprocessed",
+            "source": "C3S native bias-adjusted anomaly"
+          },
+          "targets": [
+            {
+              "id": "c3s-dwd-2026080100-snowfall_anomaly-lead04",
+              "target_month": "202612",
+              "valid_start_utc": "2026-12-01T00:00:00Z",
+              "valid_end_utc": "2027-01-01T00:00:00Z",
+              "lead_month": 4,
+              "field": "snowfall_anomaly",
+              "units": "in",
+              "status": "rendered",
+              "image": "c3s/20260801/c3s_dwd_sf_202612.jpg",
+              "statistic": "ensemble_mean",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "snowfall_anomaly",
+                "units": "in",
+                "field": "snowfall_anomaly",
+                "period": "monthly",
+                "total_points": 3200,
+                "finite_points": 3200,
+                "finite_fraction": 1.0,
+                "minimum": -2.614412,
+                "maximum": 0.481243,
+                "p01": -1.397699,
+                "p99": 0.219919,
+                "display": {
+                  "minimum": -8.0,
+                  "maximum": 8.0,
+                  "step": 1.0,
+                  "below_fraction": 0.0,
+                  "above_fraction": 0.0,
+                  "clipped_fraction": 0.0
+                },
+                "issues": [],
+                "status": "passed"
+              },
+              "_catalog": {
+                "canonical_product": "snowfall_anomaly",
+                "comparable": true,
+                "quality_control": "passed"
+              }
+            },
+            {
+              "id": "c3s-dwd-2026080100-snowfall_anomaly-lead05",
+              "target_month": "202701",
+              "valid_start_utc": "2027-01-01T00:00:00Z",
+              "valid_end_utc": "2027-02-01T00:00:00Z",
+              "lead_month": 5,
+              "field": "snowfall_anomaly",
+              "units": "in",
+              "status": "rendered",
+              "image": "c3s/20260801/c3s_dwd_sf_202701.jpg",
+              "statistic": "ensemble_mean",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "snowfall_anomaly",
+                "units": "in",
+                "field": "snowfall_anomaly",
+                "period": "monthly",
+                "total_points": 3200,
+                "finite_points": 3200,
+                "finite_fraction": 1.0,
+                "minimum": -2.263475,
+                "maximum": 0.686821,
+                "p01": -1.609041,
+                "p99": 0.204138,
+                "display": {
+                  "minimum": -8.0,
+                  "maximum": 8.0,
+                  "step": 1.0,
+                  "below_fraction": 0.0,
+                  "above_fraction": 0.0,
+                  "clipped_fraction": 0.0
+                },
+                "issues": [],
+                "status": "passed"
+              },
+              "_catalog": {
+                "canonical_product": "snowfall_anomaly",
+                "comparable": true,
+                "quality_control": "passed"
+              }
+            },
+            {
+              "id": "c3s-dwd-2026080100-snowfall_anomaly-lead06",
+              "target_month": "202702",
+              "valid_start_utc": "2027-02-01T00:00:00Z",
+              "valid_end_utc": "2027-03-01T00:00:00Z",
+              "lead_month": 6,
+              "field": "snowfall_anomaly",
+              "units": "in",
+              "status": "rendered",
+              "image": "c3s/20260801/c3s_dwd_sf_202702.jpg",
+              "statistic": "ensemble_mean",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "snowfall_anomaly",
+                "units": "in",
+                "field": "snowfall_anomaly",
+                "period": "monthly",
+                "total_points": 3200,
+                "finite_points": 3200,
+                "finite_fraction": 1.0,
+                "minimum": -2.658801,
+                "maximum": 0.712966,
+                "p01": -1.565576,
+                "p99": 0.207247,
+                "display": {
+                  "minimum": -8.0,
+                  "maximum": 8.0,
+                  "step": 1.0,
+                  "below_fraction": 0.0,
+                  "above_fraction": 0.0,
+                  "clipped_fraction": 0.0
+                },
+                "issues": [],
+                "status": "passed"
+              },
+              "_catalog": {
+                "canonical_product": "snowfall_anomaly",
+                "comparable": true,
+                "quality_control": "passed"
+              }
+            },
+            {
+              "id": "c3s-dwd-2026080100-snowfall_anomaly-202612-202702",
+              "target_month": "202612-202702",
+              "valid_start_utc": "2026-12-01T00:00:00Z",
+              "valid_end_utc": "2027-03-01T00:00:00Z",
+              "lead_month": "4–6",
+              "monthly_leads": [
+                4,
+                5,
+                6
+              ],
+              "field": "snowfall_anomaly",
+              "units": "in",
+              "status": "rendered",
+              "image": "c3s/20260801/c3s_dwd_sf_202612-202702.jpg",
+              "statistic": "ensemble_mean",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "snowfall_anomaly",
+                "units": "in",
+                "field": "snowfall_anomaly",
+                "period": "seasonal",
+                "total_points": 3200,
+                "finite_points": 3200,
+                "finite_fraction": 1.0,
+                "minimum": -7.477358,
+                "maximum": 1.024759,
+                "p01": -4.406266,
+                "p99": 0.503531,
+                "display": {
+                  "minimum": -8.0,
+                  "maximum": 8.0,
+                  "step": 1.0,
+                  "below_fraction": 0.0,
+                  "above_fraction": 0.0,
+                  "clipped_fraction": 0.0
+                },
+                "issues": [],
+                "status": "passed"
+              },
+              "_catalog": {
+                "canonical_product": "snowfall_anomaly",
+                "comparable": true,
+                "quality_control": "passed"
+              }
+            }
+          ],
+          "_catalog": {
+            "canonical_product": "snowfall_anomaly",
             "comparable": true
           }
         },
@@ -6385,6 +7833,211 @@
           }
         },
         {
+          "id": "c3s-cmcc-2026080100-snowfall_anomaly",
+          "model": "C3S CMCC",
+          "component": "cmcc",
+          "component_label": "CMCC",
+          "source": "Copernicus C3S / CMCC",
+          "source_url": "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-single-levels",
+          "source_urls": [
+            "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-single-levels"
+          ],
+          "product": "snowfall_anomaly",
+          "init_utc": "2026-08-01T00:00:00Z",
+          "status": "rendered",
+          "statistic": "ensemble_mean",
+          "aggregation": "official C3S monthly ensemble-mean anomaly",
+          "ensemble_scope": "CMCC/System 4 ensemble",
+          "ensemble_members": 50,
+          "field": "snowfall_anomaly",
+          "units": "in",
+          "raw_field": "snowfall anomalous rate of accumulation",
+          "raw_units": "m s⁻¹ of water equivalent",
+          "climatology": {
+            "status": "not_used",
+            "method": "native C3S postprocessed anomaly"
+          },
+          "baseline": {
+            "status": "official_postprocessed",
+            "source": "C3S native bias-adjusted anomaly"
+          },
+          "targets": [
+            {
+              "id": "c3s-cmcc-2026080100-snowfall_anomaly-lead04",
+              "target_month": "202612",
+              "valid_start_utc": "2026-12-01T00:00:00Z",
+              "valid_end_utc": "2027-01-01T00:00:00Z",
+              "lead_month": 4,
+              "field": "snowfall_anomaly",
+              "units": "in",
+              "status": "rendered",
+              "image": "c3s/20260801/c3s_cmcc_sf_202612.jpg",
+              "statistic": "ensemble_mean",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "snowfall_anomaly",
+                "units": "in",
+                "field": "snowfall_anomaly",
+                "period": "monthly",
+                "total_points": 3200,
+                "finite_points": 3200,
+                "finite_fraction": 1.0,
+                "minimum": -1.804379,
+                "maximum": 0.204013,
+                "p01": -0.763755,
+                "p99": 0.107481,
+                "display": {
+                  "minimum": -8.0,
+                  "maximum": 8.0,
+                  "step": 1.0,
+                  "below_fraction": 0.0,
+                  "above_fraction": 0.0,
+                  "clipped_fraction": 0.0
+                },
+                "issues": [],
+                "status": "passed"
+              },
+              "_catalog": {
+                "canonical_product": "snowfall_anomaly",
+                "comparable": true,
+                "quality_control": "passed"
+              }
+            },
+            {
+              "id": "c3s-cmcc-2026080100-snowfall_anomaly-lead05",
+              "target_month": "202701",
+              "valid_start_utc": "2027-01-01T00:00:00Z",
+              "valid_end_utc": "2027-02-01T00:00:00Z",
+              "lead_month": 5,
+              "field": "snowfall_anomaly",
+              "units": "in",
+              "status": "rendered",
+              "image": "c3s/20260801/c3s_cmcc_sf_202701.jpg",
+              "statistic": "ensemble_mean",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "snowfall_anomaly",
+                "units": "in",
+                "field": "snowfall_anomaly",
+                "period": "monthly",
+                "total_points": 3200,
+                "finite_points": 3200,
+                "finite_fraction": 1.0,
+                "minimum": -1.320524,
+                "maximum": 0.436367,
+                "p01": -0.919199,
+                "p99": 0.343352,
+                "display": {
+                  "minimum": -8.0,
+                  "maximum": 8.0,
+                  "step": 1.0,
+                  "below_fraction": 0.0,
+                  "above_fraction": 0.0,
+                  "clipped_fraction": 0.0
+                },
+                "issues": [],
+                "status": "passed"
+              },
+              "_catalog": {
+                "canonical_product": "snowfall_anomaly",
+                "comparable": true,
+                "quality_control": "passed"
+              }
+            },
+            {
+              "id": "c3s-cmcc-2026080100-snowfall_anomaly-lead06",
+              "target_month": "202702",
+              "valid_start_utc": "2027-02-01T00:00:00Z",
+              "valid_end_utc": "2027-03-01T00:00:00Z",
+              "lead_month": 6,
+              "field": "snowfall_anomaly",
+              "units": "in",
+              "status": "rendered",
+              "image": "c3s/20260801/c3s_cmcc_sf_202702.jpg",
+              "statistic": "ensemble_mean",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "snowfall_anomaly",
+                "units": "in",
+                "field": "snowfall_anomaly",
+                "period": "monthly",
+                "total_points": 3200,
+                "finite_points": 3200,
+                "finite_fraction": 1.0,
+                "minimum": -2.561327,
+                "maximum": 1.836116,
+                "p01": -1.054492,
+                "p99": 0.470047,
+                "display": {
+                  "minimum": -8.0,
+                  "maximum": 8.0,
+                  "step": 1.0,
+                  "below_fraction": 0.0,
+                  "above_fraction": 0.0,
+                  "clipped_fraction": 0.0
+                },
+                "issues": [],
+                "status": "passed"
+              },
+              "_catalog": {
+                "canonical_product": "snowfall_anomaly",
+                "comparable": true,
+                "quality_control": "passed"
+              }
+            },
+            {
+              "id": "c3s-cmcc-2026080100-snowfall_anomaly-202612-202702",
+              "target_month": "202612-202702",
+              "valid_start_utc": "2026-12-01T00:00:00Z",
+              "valid_end_utc": "2027-03-01T00:00:00Z",
+              "lead_month": "4–6",
+              "monthly_leads": [
+                4,
+                5,
+                6
+              ],
+              "field": "snowfall_anomaly",
+              "units": "in",
+              "status": "rendered",
+              "image": "c3s/20260801/c3s_cmcc_sf_202612-202702.jpg",
+              "statistic": "ensemble_mean",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "snowfall_anomaly",
+                "units": "in",
+                "field": "snowfall_anomaly",
+                "period": "seasonal",
+                "total_points": 3200,
+                "finite_points": 3200,
+                "finite_fraction": 1.0,
+                "minimum": -5.362003,
+                "maximum": 2.068443,
+                "p01": -2.668283,
+                "p99": 0.620792,
+                "display": {
+                  "minimum": -8.0,
+                  "maximum": 8.0,
+                  "step": 1.0,
+                  "below_fraction": 0.0,
+                  "above_fraction": 0.0,
+                  "clipped_fraction": 0.0
+                },
+                "issues": [],
+                "status": "passed"
+              },
+              "_catalog": {
+                "canonical_product": "snowfall_anomaly",
+                "comparable": true,
+                "quality_control": "passed"
+              }
+            }
+          ],
+          "_catalog": {
+            "canonical_product": "snowfall_anomaly",
+            "comparable": true
+          }
+        },
+        {
           "id": "c3s-cmcc-2026080100-sea_surface_temperature_anomaly",
           "model": "C3S CMCC",
           "component": "cmcc",
@@ -6927,6 +8580,115 @@
           ],
           "_catalog": {
             "canonical_product": "2m_temperature_anomaly",
+            "comparable": true
+          }
+        },
+        {
+          "id": "c3s-bom-2026080100-snowfall_anomaly",
+          "model": "C3S BOM",
+          "component": "bom",
+          "component_label": "BOM",
+          "source": "Copernicus C3S / BOM",
+          "source_url": "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-single-levels",
+          "source_urls": [
+            "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-single-levels"
+          ],
+          "product": "snowfall_anomaly",
+          "init_utc": "2026-08-01T00:00:00Z",
+          "status": "failed",
+          "statistic": "ensemble_mean",
+          "aggregation": "official C3S monthly ensemble-mean anomaly",
+          "ensemble_scope": "BOM/System 2 ensemble",
+          "ensemble_members": 33,
+          "field": "snowfall_anomaly",
+          "units": "in",
+          "raw_field": "snowfall anomalous rate of accumulation",
+          "raw_units": "m s⁻¹ of water equivalent",
+          "climatology": {
+            "status": "not_used",
+            "method": "native C3S postprocessed anomaly"
+          },
+          "baseline": {
+            "status": "official_postprocessed",
+            "source": "C3S native bias-adjusted anomaly"
+          },
+          "targets": [
+            {
+              "id": "c3s-bom-2026080100-snowfall_anomaly-lead04",
+              "target_month": "202612",
+              "valid_start_utc": "2026-12-01T00:00:00Z",
+              "valid_end_utc": "2027-01-01T00:00:00Z",
+              "lead_month": 4,
+              "field": "snowfall_anomaly",
+              "units": "in",
+              "status": "failed",
+              "error": "C3S request failed for bom/2 snowfall_anomalous_rate_of_accumulation lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/processes/seasonal-postprocessed-single-levels/execution\ninvalid request\nRequest has not produced a valid combination of values, please check your selection.\n{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'data_format': ['grib'], 'leadtime_month': ['4'], 'month': ['08'], 'originating_centre': ['bom'], 'product_type': ['ensemble_mean'], 'system': ['2'], 'variable': ['snowfall_anomalous_rate_of_accumulation'], 'year': ['2026']}",
+              "statistic": "ensemble_mean",
+              "_catalog": {
+                "canonical_product": "snowfall_anomaly",
+                "comparable": true,
+                "quality_control": "legacy"
+              }
+            },
+            {
+              "id": "c3s-bom-2026080100-snowfall_anomaly-lead05",
+              "target_month": "202701",
+              "valid_start_utc": "2027-01-01T00:00:00Z",
+              "valid_end_utc": "2027-02-01T00:00:00Z",
+              "lead_month": 5,
+              "field": "snowfall_anomaly",
+              "units": "in",
+              "status": "failed",
+              "error": "C3S request failed for bom/2 snowfall_anomalous_rate_of_accumulation lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/processes/seasonal-postprocessed-single-levels/execution\ninvalid request\nRequest has not produced a valid combination of values, please check your selection.\n{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'data_format': ['grib'], 'leadtime_month': ['5'], 'month': ['08'], 'originating_centre': ['bom'], 'product_type': ['ensemble_mean'], 'system': ['2'], 'variable': ['snowfall_anomalous_rate_of_accumulation'], 'year': ['2026']}",
+              "statistic": "ensemble_mean",
+              "_catalog": {
+                "canonical_product": "snowfall_anomaly",
+                "comparable": true,
+                "quality_control": "legacy"
+              }
+            },
+            {
+              "id": "c3s-bom-2026080100-snowfall_anomaly-lead06",
+              "target_month": "202702",
+              "valid_start_utc": "2027-02-01T00:00:00Z",
+              "valid_end_utc": "2027-03-01T00:00:00Z",
+              "lead_month": 6,
+              "field": "snowfall_anomaly",
+              "units": "in",
+              "status": "failed",
+              "error": "C3S request failed for bom/2 snowfall_anomalous_rate_of_accumulation lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/processes/seasonal-postprocessed-single-levels/execution\ninvalid request\nRequest has not produced a valid combination of values, please check your selection.\n{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'data_format': ['grib'], 'leadtime_month': ['6'], 'month': ['08'], 'originating_centre': ['bom'], 'product_type': ['ensemble_mean'], 'system': ['2'], 'variable': ['snowfall_anomalous_rate_of_accumulation'], 'year': ['2026']}",
+              "statistic": "ensemble_mean",
+              "_catalog": {
+                "canonical_product": "snowfall_anomaly",
+                "comparable": true,
+                "quality_control": "legacy"
+              }
+            },
+            {
+              "id": "c3s-bom-2026080100-snowfall_anomaly-202612-202702",
+              "target_month": "202612-202702",
+              "valid_start_utc": "2026-12-01T00:00:00Z",
+              "valid_end_utc": "2027-03-01T00:00:00Z",
+              "lead_month": "4–6",
+              "monthly_leads": [
+                4,
+                5,
+                6
+              ],
+              "field": "snowfall_anomaly",
+              "units": "in",
+              "status": "failed",
+              "error": "seasonal window is missing one or more component grids",
+              "statistic": "ensemble_mean",
+              "_catalog": {
+                "canonical_product": "snowfall_anomaly",
+                "comparable": true,
+                "quality_control": "legacy"
+              }
+            }
+          ],
+          "_catalog": {
+            "canonical_product": "snowfall_anomaly",
             "comparable": true
           }
         },
@@ -7480,13 +9242,14 @@
       "status": "degraded",
       "schema_version": 1,
       "manifest_kind": "c3s_seasonal_manifest",
-      "generated_utc": "2026-08-20T01:10:20Z",
+      "generated_utc": "2026-08-28T15:26:02Z",
       "source_url": "https://climate.copernicus.eu/seasonal-forecasts",
       "product_labels": {
         "500mb_height_anomaly": "500-mb Height Anomaly",
         "850mb_temperature_anomaly": "850-mb Temperature Anomaly",
         "2m_temperature_anomaly": "2-m Temperature Anomaly",
         "precipitation_anomaly": "Precipitation Anomaly",
+        "snowfall_anomaly": "snowfall_anomaly",
         "sea_surface_temperature_anomaly": "Sea-Surface Temperature Anomaly",
         "mslp_anomaly": "MSLP Anomaly"
       },
@@ -7506,31 +9269,31 @@
             "code": "legacy_qc_missing:sea_surface_temperature_anomaly",
             "severity": "warning",
             "message": "Retained sea_surface_temperature_anomaly targets predate numerical grid QC; regenerate this product to certify it.",
-            "path": "runs[0].targets[0]"
+            "path": "runs[1].targets[0]"
           },
           {
             "code": "legacy_qc_missing:mslp_anomaly",
             "severity": "warning",
             "message": "Retained mslp_anomaly targets predate numerical grid QC; regenerate this product to certify it.",
-            "path": "runs[1].targets[0]"
+            "path": "runs[2].targets[0]"
           },
           {
             "code": "legacy_qc_missing:850mb_temperature_anomaly",
             "severity": "warning",
             "message": "Retained 850mb_temperature_anomaly targets predate numerical grid QC; regenerate this product to certify it.",
-            "path": "runs[2].targets[0]"
+            "path": "runs[3].targets[0]"
           },
           {
             "code": "legacy_qc_missing:500mb_height_anomaly",
             "severity": "warning",
             "message": "Retained 500mb_height_anomaly targets predate numerical grid QC; regenerate this product to certify it.",
-            "path": "runs[3].targets[0]"
+            "path": "runs[4].targets[0]"
           },
           {
             "code": "legacy_qc_missing:2m_temperature_anomaly",
             "severity": "warning",
             "message": "Retained 2m_temperature_anomaly targets predate numerical grid QC; regenerate this product to certify it.",
-            "path": "runs[4].targets[0]"
+            "path": "runs[5].targets[0]"
           }
         ]
       },
@@ -7586,14 +9349,16 @@
           "retained_fallback": false
         },
         "snowfall_anomaly": {
-          "state": "missing",
-          "reason": "No rendered target is currently published.",
-          "available": false,
-          "comparable": false,
-          "latest_init_utc": null,
-          "latest_run_id": null,
-          "latest_run_status": null,
-          "latest_run_init_utc": null,
+          "state": "available",
+          "reason": "Rendered target available.",
+          "available": true,
+          "comparable": true,
+          "latest_init_utc": "2026-08-01T00:00:00Z",
+          "run_id": "c3s-multisystem-2026080100-snowfall_anomaly",
+          "target_count": 4,
+          "latest_run_id": "c3s-multisystem-2026080100-snowfall_anomaly",
+          "latest_run_status": "rendered",
+          "latest_run_init_utc": "2026-08-01T00:00:00Z",
           "retained_fallback": false
         },
         "mslp_anomaly": {
@@ -26291,7 +28056,7 @@
   },
   "health": {
     "status": "attention",
-    "generated_utc": "2026-08-28T15:19:11Z",
+    "generated_utc": "2026-08-28T15:26:29Z",
     "freshness_policy_days": {
       "default": {
         "fresh_days": 35,
@@ -26304,14 +28069,14 @@
     },
     "summary": {
       "surfaces": 70,
-      "attention_surfaces": 8,
+      "attention_surfaces": 7,
       "by_state": {
-        "healthy": 46,
+        "healthy": 47,
         "aging": 0,
         "stale": 0,
         "partial": 1,
         "failed": 0,
-        "missing": 6,
+        "missing": 5,
         "noncomparable": 1,
         "not_applicable": 16
       }
@@ -26520,18 +28285,18 @@
         "model_label": "C3S multi-system",
         "product": "snowfall_anomaly",
         "product_label": "CONUS Snowfall Water-Equivalent Departure",
-        "surface_state": "missing",
-        "available": false,
-        "comparable": false,
-        "health_state": "missing",
-        "freshness": "unknown",
-        "age_days": null,
-        "latest_status": null,
-        "latest_init_utc": null,
-        "selected_init_utc": null,
-        "selected_run_id": null,
+        "surface_state": "available",
+        "available": true,
+        "comparable": true,
+        "health_state": "healthy",
+        "freshness": "fresh",
+        "age_days": 27.6,
+        "latest_status": "rendered",
+        "latest_init_utc": "2026-08-01T00:00:00Z",
+        "selected_init_utc": "2026-08-01T00:00:00Z",
+        "selected_run_id": "c3s-multisystem-2026080100-snowfall_anomaly",
         "retained_fallback": false,
-        "reason": "No rendered target is currently published."
+        "reason": "Rendered target available."
       },
       {
         "model": "c3s",
@@ -27616,24 +29381,6 @@
         "reason": "No rendered target is currently published."
       },
       {
-        "model": "c3s",
-        "model_label": "C3S multi-system",
-        "product": "snowfall_anomaly",
-        "product_label": "CONUS Snowfall Water-Equivalent Departure",
-        "surface_state": "missing",
-        "available": false,
-        "comparable": false,
-        "health_state": "missing",
-        "freshness": "unknown",
-        "age_days": null,
-        "latest_status": null,
-        "latest_init_utc": null,
-        "selected_init_utc": null,
-        "selected_run_id": null,
-        "retained_fallback": false,
-        "reason": "No rendered target is currently published."
-      },
-      {
         "model": "apcc",
         "model_label": "APCC MME",
         "product": "precipitation_anomaly",
@@ -27729,7 +29476,7 @@
     "models_expected": 10,
     "models_online": 10,
     "supported_surfaces": 54,
-    "available_surfaces": 48,
+    "available_surfaces": 49,
     "partial_surfaces": 1,
     "intentional_unavailable_surfaces": 16
   },
