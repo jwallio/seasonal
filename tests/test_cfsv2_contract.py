@@ -88,7 +88,7 @@ def main() -> int:
         "PRECIP_MONTHLY_ANOMALY_MAX_IN = 4.0",
         "PRECIP_SEASONAL_ANOMALY_MIN_IN = -8.0",
         "PRECIP_SEASONAL_ANOMALY_MAX_IN = 8.0",
-        "CONUS_PRECIP_REGION = (-128.0, -65.0, 22.0, 52.0)",
+        "CONUS_PRECIP_REGION = (-127.0, -65.0, 23.0, 51.0)",
         "CFSv2 CONUS Precipitation Anomaly (in)",
         "CONUS domain",
         "numeric_grid",

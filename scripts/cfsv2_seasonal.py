@@ -167,9 +167,11 @@ MSLP_ANOMALY_PALETTE = ANOMALY_PALETTE
 # keeping the lower field in the subtropics. Border drawing applies a separate
 # 14°N cutoff so South America does not appear in the frame.
 DEFAULT_REGION = (-160.0, -10.0, 22.0, 85.0)
-# Precipitation is a CONUS-only product: the lower 48 states remain the
-# subject of the map, with a small surrounding margin for geographic context.
-CONUS_PRECIP_REGION = (-128.0, -65.0, 22.0, 52.0)
+# CONUS products use a tight lower-48 frame: enough margin to keep the
+# westernmost, easternmost, northernmost, and southernmost states visible,
+# while minimizing unused Canada and Mexico. This is a render crop only; the
+# provider download areas remain deliberately larger for edge-data coverage.
+CONUS_PRECIP_REGION = (-127.0, -65.0, 23.0, 51.0)
 # Shift the projected window slightly west so the CONUS sits at the visual
 # center of the square canvas while preserving Alaska and all of Greenland.
 PROJECTED_X_SHIFT_FRACTION = 0.035
