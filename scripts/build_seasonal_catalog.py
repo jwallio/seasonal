@@ -20,7 +20,7 @@ import sys
 from typing import Any, Iterable
 
 from seasonal_products import (
-    CORE_COMPARISON_PRODUCTS,
+    COMPARISON_PRODUCTS,
     MODELS,
     PRODUCTS,
     REGISTRY_VERSION,
@@ -561,7 +561,7 @@ def _build_health_report(
     }
     for model_key, model_entry in catalog_models.items():
         model_surfaces = model_entry.get("surfaces") or {}
-        for product in CORE_COMPARISON_PRODUCTS:
+        for product in COMPARISON_PRODUCTS:
             surface = model_surfaces.get(product)
             if surface is None:
                 support = dict((model_entry.get("support") or {}).get(product) or {
@@ -684,7 +684,7 @@ def build_catalog(
         runs, validation = validate_manifest(
             model_key, manifest, site_root=site_root, check_assets=check_assets,
         )
-        surfaces = {product: _surface_state(model_key, runs, product) for product in CORE_COMPARISON_PRODUCTS}
+        surfaces = {product: _surface_state(model_key, runs, product) for product in COMPARISON_PRODUCTS}
         for surface in surfaces.values():
             if surface["state"] in {"unsupported", "quarantined"}:
                 intentional_surfaces += 1

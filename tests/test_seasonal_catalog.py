@@ -113,7 +113,7 @@ def main() -> int:
         check(summary["models_online"] == 1, "valid model should be online")
         check(summary["supported_surfaces"] == 4, "CFSv2 should have four supported core surfaces")
         check(summary["available_surfaces"] == 1, "one synthetic CFSv2 surface should be available")
-        check(summary["intentional_unavailable_surfaces"] == 2, "CFSv2 t850 and SST should be intentional N/A")
+        check(summary["intentional_unavailable_surfaces"] == 3, "CFSv2 t850, SST, and snowfall should be intentional N/A")
         check(catalog["models"]["cfsv2"]["surfaces"]["500mb_height_anomaly"]["available"], "z500 surface should be available")
         health_surface = next(
             item for item in catalog["health"]["surfaces"]

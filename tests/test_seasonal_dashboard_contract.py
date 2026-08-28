@@ -206,6 +206,7 @@ def main() -> int:
         "850mb_temperature_anomaly",
         "2m_temperature_anomaly",
         "precipitation_anomaly",
+        "snowfall_anomaly",
         "mslp_anomaly",
         "sea_surface_temperature_anomaly",
     ):

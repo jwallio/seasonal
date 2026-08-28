@@ -19,9 +19,9 @@ EXPECTED = {
 }
 
 SCHEDULED_SUITES = {
-    ".github/workflows/c3s.yml": ("SCHEDULED_C3S_PRODUCTS", {"500mb_height_anomaly", "850mb_temperature_anomaly", "2m_temperature_anomaly", "precipitation_anomaly", "sea_surface_temperature_anomaly", "mslp_anomaly"}),
+    ".github/workflows/c3s.yml": ("SCHEDULED_C3S_PRODUCTS", {"500mb_height_anomaly", "850mb_temperature_anomaly", "2m_temperature_anomaly", "precipitation_anomaly", "snowfall_anomaly", "sea_surface_temperature_anomaly", "mslp_anomaly"}),
     ".github/workflows/jma.yml": ("SCHEDULED_JMA_PRODUCTS", {"500mb_height_anomaly", "850mb_temperature_anomaly", "2m_temperature_anomaly", "precipitation_anomaly", "sea_surface_temperature_anomaly", "mslp_anomaly"}),
-    ".github/workflows/seas5.yml": ("SCHEDULED_SEAS5_PRODUCTS", {"500mb_height_anomaly", "850mb_temperature_anomaly", "2m_temperature_anomaly", "precipitation_anomaly", "sst_anomaly", "mslp_anomaly"}),
+    ".github/workflows/seas5.yml": ("SCHEDULED_SEAS5_PRODUCTS", {"500mb_height_anomaly", "850mb_temperature_anomaly", "2m_temperature_anomaly", "precipitation_anomaly", "snowfall_anomaly", "sst_anomaly", "mslp_anomaly"}),
 }
 
 HISTORY_WORKFLOWS = (

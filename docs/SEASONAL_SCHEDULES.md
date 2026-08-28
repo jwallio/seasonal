@@ -26,6 +26,11 @@ sea-surface temperature, and mean sea-level pressure. Manual dispatches remain
 single-product so a failed or late field can be repaired without rebuilding the
 entire suite. The scheduled super ensemble likewise uses its `all` product mode.
 
+C3S and SEAS5 also publish CONUS snowfall water-equivalent departures when the
+native snowfall field is available: monthly totals and the configured DJF
+three-month sum. Other model rows remain explicitly not applicable because
+their current adapters publish precipitation or snowpack rather than snowfall.
+
 The analog workflow also generates source-backed products for the current rank-1
 analog: PSL NCEP CFSR 500-mb height and 2-metre temperature anomalies, plus MRCC
 station-interpolated snowfall departure for the NWS Eastern Region (`ER`). A

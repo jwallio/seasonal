@@ -33,9 +33,11 @@ def main() -> int:
         site = Path(temporary)
         native_asset = Path("seasonal/cfsv2/2026082306/native.jpg")
         common_asset = Path("seasonal/common_reference/202608/common.jpg")
+        snowfall_asset = Path("seasonal/seas5/2026080100/snowfall.jpg")
         ignored_asset = Path("seasonal/cfsv2/2026082306/ignored.jpg")
         write_image(site / native_asset, (1080, 900), "navy")
         write_image(site / common_asset, (900, 1080), "crimson")
+        write_image(site / snowfall_asset, (1080, 1080), "lightblue")
         write_image(site / ignored_asset, (1080, 1080), "gray")
 
         manifest = {
@@ -50,7 +52,8 @@ def main() -> int:
                         }
                     ],
                 },
-                {"product": "snowfall_anomaly", "targets": [{"image": ignored_asset.as_posix()}]},
+                {"product": "snowfall_anomaly", "targets": [{"image": snowfall_asset.as_posix()}]},
+                {"product": "snow_depth_anomaly", "targets": [{"image": ignored_asset.as_posix()}]},
             ]
         }
         manifest_path = site / "seasonal/cfsv2_manifest.json"
@@ -58,10 +61,11 @@ def main() -> int:
         manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
 
         first = build_thumbnails(site, max_width=560, quality=82)
-        check(first["created"] == 2 and first["missing"] == 0, "expected two Compare thumbnails")
+        check(first["created"] == 3 and first["missing"] == 0, "expected three Compare thumbnails including snowfall")
         native_thumbnail = site / "seasonal/thumbnails/cfsv2/2026082306/native.webp"
         common_thumbnail = site / "seasonal/thumbnails/common_reference/202608/common.webp"
-        check(native_thumbnail.is_file() and common_thumbnail.is_file(), "expected deterministic thumbnail paths")
+        snowfall_thumbnail = site / "seasonal/thumbnails/seas5/2026080100/snowfall.webp"
+        check(native_thumbnail.is_file() and common_thumbnail.is_file() and snowfall_thumbnail.is_file(), "expected deterministic thumbnail paths")
         check(not (site / "seasonal/thumbnails/cfsv2/2026082306/ignored.webp").exists(), "non-Compare products must be ignored")
         with Image.open(native_thumbnail) as image:
             check(image.format == "WEBP", "thumbnail must be WebP")
@@ -69,7 +73,7 @@ def main() -> int:
         check(native_thumbnail.stat().st_size < (site / native_asset).stat().st_size, "thumbnail should reduce transfer size")
 
         second = build_thumbnails(site, max_width=560, quality=82)
-        check(second["created"] == 0 and second["skipped"] == 2, "existing thumbnails should be preserved")
+        check(second["created"] == 0 and second["skipped"] == 3, "existing thumbnails should be preserved")
         normalized = normalize_asset_path("public/seasonal/cfsv2/run/map.jpg")
         check(normalized is not None, "public seasonal path should normalize")
         check(str(thumbnail_asset_path(normalized)) == "seasonal/thumbnails/cfsv2/run/map.webp", "thumbnail path contract changed")

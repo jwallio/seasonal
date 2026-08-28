@@ -18,6 +18,13 @@ is explicitly marked in the manifest with its available component list.
 All component maps, including JMA/MRI-CPS4, and the C3S multi-system mean use
 the shared seasonal 500-mb scale of -100 to +100 m with 10 m intervals.
 
+The scheduled suite also renders `snowfall_anomaly` for the C3S centres and
+multi-system blend. It is a CONUS monthly total or DJF three-month sum of the
+native C3S snowfall anomalous rate, converted to inches of liquid-water
+equivalent. This is a snowfall water-equivalent departure, not a snow-depth
+estimate; a centre that does not return the field is retained as a failed or
+partial component rather than being silently substituted with snowpack.
+
 The GitHub workflow is `.github/workflows/c3s.yml`. It requires the existing
 `CDS_API_KEY` repository secret and publishes `c3s_manifest.json` plus images
 under `seasonal/c3s/`. Accept the current CDS dataset licence before running

@@ -108,6 +108,7 @@ const COMPARE_PRODUCTS = [
   { value: '850mb_temperature_anomaly', label: '850-mb Temperature Anomaly', aliases: ['850mb_temperature_anomaly'] },
   { value: '2m_temperature_anomaly', label: '2-m Temperature Anomaly', aliases: ['2m_temperature_anomaly', 'surface_temperature_anomaly', 'temperature_anomaly'] },
   { value: 'precipitation_anomaly', label: 'Precipitation Anomaly', aliases: ['precipitation_anomaly'] },
+  { value: 'snowfall_anomaly', label: 'CONUS Snowfall Water-Equivalent Departure', aliases: ['snowfall_anomaly'] },
   { value: 'mslp_anomaly', label: 'MSLP Anomaly', aliases: ['mslp_anomaly'] },
   { value: 'sea_surface_temperature_anomaly', label: 'Sea-Surface Temperature Anomaly', aliases: ['sea_surface_temperature_anomaly', 'sst_anomaly'] },
 ];
@@ -119,7 +120,7 @@ const PRODUCT_LABELS = {
   '500mb_height_anomaly': '500-mb Height Anomaly', '500mb_height_absolute': '500-mb Geopotential Height',
   '2m_temperature_anomaly': '2-m Temperature Anomaly', '850mb_temperature_anomaly': '850-mb Temperature Anomaly',
   'precipitation_anomaly': 'CONUS Precipitation Anomaly', 'snow_water_equivalent_anomaly': 'Snow-Water-Equivalent Anomaly',
-  'snow_depth_anomaly': 'CONUS Snow-Depth Anomaly', 'snowfall_anomaly': 'CONUS Snowfall Anomaly',
+  'snow_depth_anomaly': 'CONUS Snow-Depth Anomaly', 'snowfall_anomaly': 'CONUS Snowfall Water-Equivalent Departure',
   'sst_anomaly': 'Sea-Surface Temperature Anomaly', 'mslp_anomaly': 'MSLP Anomaly',
   'sea_surface_temperature_anomaly': 'Sea-Surface Temperature Anomaly', '200mb_height_anomaly': '200-mb Height Anomaly',
   'probability_above_normal': 'Above Normal Probability', 'probability_near_normal': 'Near Normal Probability', 'probability_below_normal': 'Below Normal Probability',

@@ -34,6 +34,10 @@ from cfsv2_seasonal import (
     mean_grids,
     relative_path,
     render_map,
+    SWE_ANOMALY_MAX_IN,
+    SWE_ANOMALY_MIN_IN,
+    SWE_ANOMALY_PALETTE,
+    SWE_ANOMALY_TICKS,
     sum_grids,
 )
 from seas5_seasonal import grid_from_grib
@@ -114,6 +118,17 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "anomaly_max": 8.0, "anomaly_ticks": list(range(-8, 9)), "anomaly_palette": PRECIP_PALETTE,
         "cds_dataset": SINGLE_DATASET,
         "cds_variable": "total_precipitation_anomalous_rate_of_accumulation",
+    },
+    "snowfall_anomaly": {
+        "name": "snowfall_anomaly", "variable": "sf", "field": "snowfall_anomaly",
+        "raw_field": "snowfall anomalous rate of accumulation",
+        "raw_units": "m s⁻¹ of water equivalent", "units": "in", "seasonal_units": "in",
+        "height_contours": False, "region": CONUS_PRECIP_REGION,
+        "monthly_reducer": "total", "seasonal_reducer": "sum",
+        "anomaly_min": SWE_ANOMALY_MIN_IN, "anomaly_max": SWE_ANOMALY_MAX_IN,
+        "anomaly_ticks": SWE_ANOMALY_TICKS, "anomaly_palette": SWE_ANOMALY_PALETTE,
+        "cds_dataset": SINGLE_DATASET,
+        "cds_variable": "snowfall_anomalous_rate_of_accumulation",
     },
     "sea_surface_temperature_anomaly": {
         "name": "sea_surface_temperature_anomaly", "variable": "sst", "field": "sst_anomaly",
@@ -243,6 +258,8 @@ def convert_product_grid(grid: Grid, product: dict[str, Any], target: str) -> Gr
         factor = 1.0 / GEOPOTENTIAL_GRAVITY
     elif variable == "pr":
         factor = month_seconds(target) * M_TO_INCH
+    elif variable == "sf":
+        factor = month_seconds(target) * M_TO_INCH
     elif variable == "slp":
         factor = 0.01
     if factor == 1.0:
@@ -332,15 +349,21 @@ def product_spec(product: str, label: str, *, multisystem: bool = False) -> dict
         "850mb_temperature_anomaly": "850-mb Temperature Anomaly (°C)",
         "2m_temperature_anomaly": "2-m Temperature Anomaly (°C)",
         "precipitation_anomaly": "CONUS Precipitation Anomaly (in)",
+        "snowfall_anomaly": "CONUS Snowfall Water-Equivalent Departure (in)",
         "sea_surface_temperature_anomaly": "Sea-Surface Temperature Anomaly (°C)",
         "mslp_anomaly": "Mean Sea-Level Pressure Anomaly (hPa)",
     }[product]
     base["title"] = f"{prefix} {subject}"
     base["absolute_title"] = base["title"].replace(" & Anomaly", "")
     base["source_label"] = f"Copernicus C3S / {('multi-system' if multisystem else label)}"
-    base["header_detail"] = "{source_label}  •  Native C3S postprocessed anomaly  •  " + (
-        "Height contours in dam" if base["height_contours"] else f"{base['units']} anomaly"
+    detail = (
+        "Height contours in dam"
+        if base["height_contours"]
+        else "Snowfall liquid-water equivalent (in)  •  CONUS domain"
+        if product == "snowfall_anomaly"
+        else f"{base['units']} anomaly"
     )
+    base["header_detail"] = "{source_label}  •  Native C3S postprocessed anomaly  •  " + detail
     return base
 
 

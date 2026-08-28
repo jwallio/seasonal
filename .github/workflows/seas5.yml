@@ -51,7 +51,7 @@ jobs:
     timeout-minutes: 360
     env:
       SEAS5_PRODUCT: ${{ inputs.product || '500mb_height_anomaly' }}
-      SCHEDULED_SEAS5_PRODUCTS: 500mb_height_anomaly,850mb_temperature_anomaly,2m_temperature_anomaly,precipitation_anomaly,sst_anomaly,mslp_anomaly
+      SCHEDULED_SEAS5_PRODUCTS: 500mb_height_anomaly,850mb_temperature_anomaly,2m_temperature_anomaly,precipitation_anomaly,snowfall_anomaly,sst_anomaly,mslp_anomaly
       SEAS5_INIT: ${{ inputs.init || 'latest' }}
       LEAD_MONTHS: ${{ inputs.lead_months || '4,5,6' }}
       SEASONAL_WINDOW: ${{ inputs.seasonal_window || '4,5,6' }}

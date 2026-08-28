@@ -43,6 +43,7 @@ def main() -> int:
         "seasonal-postprocessed-pressure-levels", "seasonal-postprocessed-single-levels",
         "seasonal-monthly-pressure-levels", "originating_centre", "product_type",
         "ensemble_mean", "multi-system", "component", "CDS_API_KEY",
+        "snowfall_anomalous_rate_of_accumulation", "snowfall_anomaly",
         "retain-cycles", "systems", "system",
     ):
         check(term in adapter or term in workflow or term in pages, f"missing C3S term: {term}")
@@ -68,6 +69,14 @@ def main() -> int:
     check((mslp_spec["anomaly_min"], mslp_spec["anomaly_max"]) == (-10.0, 10.0), "C3S and super-ensemble MSLP should use ±10 hPa")
     check(len(mslp_spec["anomaly_ticks"]) == len(mslp_spec["anomaly_palette"]) + 1, "C3S MSLP bounds must align with swatches")
     check(module.PRODUCT_SPECS["sea_surface_temperature_anomaly"]["map_domain"] == "ocean", "C3S SST must mask land")
+    snowfall_spec = module.PRODUCT_SPECS["snowfall_anomaly"]
+    check((snowfall_spec["anomaly_min"], snowfall_spec["anomaly_max"]) == (-8.0, 8.0), "C3S snowfall should use the shared ±8 inch water-equivalent range")
+    check(snowfall_spec["region"] == module.CONUS_PRECIP_REGION, "C3S snowfall must use the CONUS crop")
+    check(len(snowfall_spec["anomaly_ticks"]) == len(snowfall_spec["anomaly_palette"]) + 1, "C3S snowfall bounds must align with swatches")
+    converted = module.convert_product_grid(
+        module.Grid([0.0], [0.0], [[0.001]]), snowfall_spec, "202601"
+    )
+    check(round(converted.values[0][0], 5) == round(0.001 * 31 * 86400 * module.M_TO_INCH, 5), "C3S snowfall conversion should use calendar-month seconds and metres-to-inches")
     with tempfile.TemporaryDirectory() as temporary:
         output = Path(temporary) / "manifest.json"
         previous = Path(temporary) / "previous.json"

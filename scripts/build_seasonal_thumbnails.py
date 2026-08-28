@@ -19,6 +19,7 @@ COMPARE_PRODUCT_ALIASES = frozenset(
         "surface_temperature_anomaly",
         "temperature_anomaly",
         "precipitation_anomaly",
+        "snowfall_anomaly",
         "mslp_anomaly",
         "sea_surface_temperature_anomaly",
         "sst_anomaly",

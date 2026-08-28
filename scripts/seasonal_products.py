@@ -92,6 +92,26 @@ PRODUCTS: dict[str, dict[str, Any]] = {
         "domain": "conus",
         "comparison": True,
     },
+    "snowfall_anomaly": {
+        "label": "CONUS Snowfall Water-Equivalent Departure",
+        "aliases": [],
+        # C3S/SEAS5 expose snowfall as a rate of liquid-water equivalent.  The
+        # public unit is therefore inches of water equivalent, not snow depth.
+        "units": "in",
+        "compatible_units": (),
+        "field_tokens": ("snowfall", "sf"),
+        "forbidden_field_tokens": ("snow_depth", "snow water equivalent", "swe"),
+        "level": {"type": "surface"},
+        "aggregation": {"monthly": "total", "seasonal": "total"},
+        "display": {
+            "monthly": {"minimum": -8.0, "maximum": 8.0, "step": 1.0},
+            "seasonal": {"minimum": -8.0, "maximum": 8.0, "step": 1.0},
+        },
+        "hard_range": {"minimum": -100.0, "maximum": 100.0},
+        "minimum_finite_fraction": 0.02,
+        "domain": "conus",
+        "comparison": True,
+    },
     "mslp_anomaly": {
         "label": "MSLP Anomaly",
         "aliases": [],
@@ -259,9 +279,22 @@ CORE_COMPARISON_PRODUCTS = (
     "sea_surface_temperature_anomaly",
 )
 
+# Products shown in the cross-model overview and Compare view.  Keep the
+# original core tuple stable for provider contracts; snowfall is a supported
+# comparison surface only for providers with a native snowfall field.
+COMPARISON_PRODUCTS = (
+    *CORE_COMPARISON_PRODUCTS[:4],
+    "snowfall_anomaly",
+    *CORE_COMPARISON_PRODUCTS[4:],
+)
+
 
 def _supported() -> dict[str, str]:
-    return {"state": "supported", "reason": "Provider adapter publishes this core product."}
+    return {"state": "supported", "reason": "Provider adapter publishes this comparison product."}
+
+
+def _unsupported(reason: str) -> dict[str, str]:
+    return {"state": "unsupported", "reason": reason}
 
 
 MODELS: dict[str, dict[str, Any]] = {
@@ -336,6 +369,17 @@ MODELS: dict[str, dict[str, Any]] = {
         "support": {key: _supported() for key in CORE_COMPARISON_PRODUCTS},
     },
 }
+
+
+SNOWFALL_SUPPORTED_MODELS = frozenset({"c3s", "seas5"})
+SNOWFALL_UNSUPPORTED_REASON = (
+    "The current seasonal adapter does not publish snowfall accumulation; "
+    "snow-water equivalent or precipitation is not interchangeable with snowfall."
+)
+for _model_key, _model_definition in MODELS.items():
+    _model_definition["support"]["snowfall_anomaly"] = (
+        _supported() if _model_key in SNOWFALL_SUPPORTED_MODELS else _unsupported(SNOWFALL_UNSUPPORTED_REASON)
+    )
 
 
 _ALIASES = {
