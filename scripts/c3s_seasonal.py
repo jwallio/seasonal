@@ -24,6 +24,7 @@ from cfsv2_seasonal import (
     ANOMALY_PALETTE,
     ANOMALY_TICKS,
     CONUS_PRECIP_REGION,
+    CONUS_STATE_NAMES,
     DEFAULT_REGION,
     Grid,
     TEMPERATURE_ANOMALY_MAX_C,
@@ -216,6 +217,8 @@ def period_label(first: str, last: str) -> str:
     end = dt.datetime.strptime(last, "%Y%m")
     season = {(12, 2): "DJF", (3, 5): "MAM", (6, 8): "JJA", (9, 11): "SON"}.get((start.month, end.month))
     if season and ((start.month == 12 and end.year == start.year + 1) or end.year == start.year):
+        if season == "DJF" and end.year == start.year + 1:
+            return f"{season} {start.year}\u2013{end.year % 100:02d}"
         return f"{season} {end.year}"
     return f"{start:%b %Y}–{end:%b %Y}"
 
@@ -352,21 +355,45 @@ def product_spec(product: str, label: str, *, multisystem: bool = False) -> dict
         "850mb_temperature_anomaly": "850-mb Temperature Anomaly (°C)",
         "2m_temperature_anomaly": "2-m Temperature Anomaly (°C)",
         "precipitation_anomaly": "CONUS Precipitation Anomaly (in)",
-        "snowfall_anomaly": "CONUS Snowfall Water-Equivalent Departure (in)",
+        "snowfall_anomaly": "Snowfall Departure (in LWE)",
         "sea_surface_temperature_anomaly": "Sea-Surface Temperature Anomaly (°C)",
         "mslp_anomaly": "Mean Sea-Level Pressure Anomaly (hPa)",
     }[product]
     base["title"] = f"{prefix} {subject}"
+    if product == "snowfall_anomaly":
+        # The long provider name and repeated CONUS/unit wording caused the
+        # valid-period label to collide with the title on the 1080px canvas.
+        # Keep the full centre name in the metadata/detail line, but use the
+        # compact operational abbreviation in the image title.
+        title_label = "multi-system" if multisystem else {
+            "UK Met Office": "UKMO",
+            "Météo-France": "Météo-France",
+        }.get(label, label)
+        base["title"] = f"C3S {title_label} Snowfall Departure (in LWE)"
     base["absolute_title"] = base["title"].replace(" & Anomaly", "")
     base["source_label"] = f"Copernicus C3S / {('multi-system' if multisystem else label)}"
     detail = (
         "Height contours in dam"
         if base["height_contours"]
-        else "Snowfall liquid-water equivalent (in)  •  CONUS domain"
+        else "Official snowfall departure  •  LWE  •  CONUS  •  clipped at \u00b10.8 in"
         if product == "snowfall_anomaly"
         else f"{base['units']} anomaly"
     )
-    base["header_detail"] = "{source_label}  •  Native C3S postprocessed anomaly  •  " + detail
+    if product == "snowfall_anomaly":
+        base["header_detail"] = "{source_label}  •  Official postprocessed snowfall departure  •  " + detail
+    else:
+        base["header_detail"] = "{source_label}  •  Native C3S postprocessed anomaly  •  " + detail
+    if product == "snowfall_anomaly":
+        base.update(
+            {
+                "map_domain": "land",
+                "fit_frame_to_domain": True,
+                "domain_frame_padding_fraction": 0.012,
+                "mask_states": list(CONUS_STATE_NAMES),
+                "border_files": ("us-states.geojson",),
+                "anomaly_endpoint_labels": {"minimum": "\u2264\u22120.8", "maximum": "\u2265+0.8"},
+            }
+        )
     return base
 
 

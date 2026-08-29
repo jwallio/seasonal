@@ -138,7 +138,7 @@ def main() -> int:
         "Init {init_date:%d %b %Y %HZ}",
         "Height contours in dam",
         "seasonal_period_label",
-        "DJF {end.year}",
+        "DJF {start.year}\\u2013{end.year % 100:02d}",
         '"status"',
     ):
         check(term in adapter, f"adapter missing contract term: {term}")

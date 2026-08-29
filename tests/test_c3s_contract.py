@@ -55,7 +55,7 @@ def main() -> int:
     check(module.CENTRES["ukmo"]["system"] == "610", "C3S UKMO must use operational GloSea6-GC5.1 system 610")
     check(module.CENTRES["ukmo"]["model_version"] == "GloSea6-GC5.1", "C3S UKMO model version metadata is stale")
     check(module.target_month("2026080100", 4) == "202612", "C3S lead conversion should produce December")
-    check(module.period_label("202612", "202702") == "DJF 2027", "C3S DJF period label should use the ending year")
+    check(module.period_label("202612", "202702") == "DJF 2026–27", "C3S DJF period label should identify both winter years")
     height_spec = module.PRODUCT_SPECS["500mb_height_anomaly"]
     check((height_spec["anomaly_min"], height_spec["anomaly_max"]) == (-100.0, 100.0), "C3S and JMA 500-mb maps should use the shared ±100 m range")
     check(height_spec["anomaly_ticks"] == list(range(-100, 101, 10)), "C3S and JMA 500-mb maps should use 10-metre labelled bounds")
@@ -74,6 +74,11 @@ def main() -> int:
     check(snowfall_spec["anomaly_ticks"] == [round(-0.8 + 0.1 * i, 1) for i in range(17)], "C3S snowfall should use tenths-of-an-inch labelled bounds")
     check(snowfall_spec["region"] == module.CONUS_PRECIP_REGION, "C3S snowfall must use the CONUS crop")
     check(len(snowfall_spec["anomaly_ticks"]) == len(snowfall_spec["anomaly_palette"]) + 1, "C3S snowfall bounds must align with swatches")
+    ukmo_snowfall = module.product_spec("snowfall_anomaly", "UK Met Office")
+    check(ukmo_snowfall["title"] == "C3S UKMO Snowfall Departure (in LWE)", "C3S snowfall title should fit beside the valid-period label")
+    check(ukmo_snowfall["map_domain"] == "land" and ukmo_snowfall["fit_frame_to_domain"], "C3S snowfall should use a fitted lower-48 land frame")
+    check(len(ukmo_snowfall["mask_states"]) == 48, "C3S snowfall lower-48 mask should include all 48 states")
+    check(ukmo_snowfall["anomaly_endpoint_labels"] == {"minimum": "≤−0.8", "maximum": "≥+0.8"}, "C3S snowfall legend should mark clipped endpoints")
     converted = module.convert_product_grid(
         module.Grid([0.0], [0.0], [[0.001]]), snowfall_spec, "202601"
     )

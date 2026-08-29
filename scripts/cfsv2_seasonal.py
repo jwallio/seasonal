@@ -173,6 +173,19 @@ DEFAULT_REGION = (-160.0, -10.0, 22.0, 85.0)
 # This is a render crop only; provider download areas remain deliberately
 # larger for edge-data coverage.
 CONUS_PRECIP_REGION = (-126.0, -66.0, 24.0, 50.0)
+# The renderer uses these names when a CONUS product requests a land-only
+# frame. Keeping the list here lets every provider share the same lower-48
+# crop instead of relying on a provider-specific lon/lat rectangle.
+CONUS_STATE_NAMES = (
+    "Alabama", "Arizona", "Arkansas", "California", "Colorado", "Connecticut",
+    "Delaware", "Florida", "Georgia", "Idaho", "Illinois", "Indiana", "Iowa",
+    "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts",
+    "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska",
+    "Nevada", "New Hampshire", "New Jersey", "New Mexico", "New York",
+    "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania",
+    "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah",
+    "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming",
+)
 # Shift the projected window slightly west so the CONUS sits at the visual
 # center of the square canvas while preserving Alaska and all of Greenland.
 PROJECTED_X_SHIFT_FRACTION = 0.035
@@ -512,7 +525,7 @@ def seasonal_period_label(first_target: str, last_target: str) -> str:
     start = dt.datetime.strptime(first_target, "%Y%m")
     end = dt.datetime.strptime(last_target, "%Y%m")
     season = {
-        (12, 2): f"DJF {end.year}",
+        (12, 2): f"DJF {start.year}\u2013{end.year % 100:02d}",
         (3, 5): f"MAM {end.year}",
         (6, 8): f"JJA {end.year}",
         (9, 11): f"SON {end.year}",
@@ -1997,6 +2010,10 @@ def render_map(
     init_date = dt.datetime.strptime(init, "%Y%m%d%H")
     target_date = dt.datetime.strptime(target, "%Y%m")
     display_period = period_label or target_date.strftime("%B %Y")
+    if not seasonal and not period_label:
+        # Keep the monthly valid label compact enough to share the header row
+        # with the product title (for example, ``Valid: Dec 2026``).
+        display_period = target_date.strftime("%b %Y")
     mean_label = ensemble_label or f"{len(members)}-member mean"
     title = product_spec["title"] if anomaly else product_spec["absolute_title"]
     title_text = figure.text(
@@ -2117,9 +2134,16 @@ def render_map(
                 return f"{numeric:+.{tick_decimals}f}" if numeric else f"{numeric:.{tick_decimals}f}"
             return f"+{int(round(numeric))}" if numeric > 0 else str(int(round(numeric)))
 
-        colorbar.set_ticklabels(
-            [format_anomaly_tick(tick) for tick in colorbar_ticks]
-        )
+        endpoint_labels = product_spec.get("anomaly_endpoint_labels", {})
+        tick_labels = []
+        for index, tick in enumerate(colorbar_ticks):
+            if index == 0 and endpoint_labels.get("minimum"):
+                tick_labels.append(str(endpoint_labels["minimum"]))
+            elif index == len(colorbar_ticks) - 1 and endpoint_labels.get("maximum"):
+                tick_labels.append(str(endpoint_labels["maximum"]))
+            else:
+                tick_labels.append(format_anomaly_tick(tick))
+        colorbar.set_ticklabels(tick_labels)
     colorbar.ax.tick_params(
         axis="x",
         which="major",

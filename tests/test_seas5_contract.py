@@ -138,7 +138,12 @@ def main() -> int:
     check(module.latest_cds_init(dt.datetime(2026, 8, 6, 11, 59)) == "2026070100", "pre-release init should use the prior ECMWF month")
     check(module.target_month("2025080100", 4) == "202512", "lead-month target conversion should produce December")
     check(module.target_month("2025080100", 5) == "202601", "lead-month target conversion should cross the year boundary")
-    check(module.seasonal_period_label("202512", "202602") == "DJF 2026", "DJF label should use the ending year")
+    check(module.seasonal_period_label("202512", "202602") == "DJF 2025–26", "DJF label should identify both winter years")
+    snowfall_title = module.PRODUCT_SPECS[module.SNOWFALL_ANOMALY]
+    check(snowfall_title["title"] == "SEAS5 CONUS Snowfall Departure (in LWE)", "SEAS5 snowfall title should fit beside the valid-period label")
+    check(snowfall_title["map_domain"] == "land" and snowfall_title["fit_frame_to_domain"], "SEAS5 snowfall should use a fitted lower-48 land frame")
+    check(len(snowfall_title["mask_states"]) == 48, "SEAS5 snowfall lower-48 mask should include all 48 states")
+    check(snowfall_title["anomaly_endpoint_labels"] == {"minimum": "≤−0.8", "maximum": "≥+0.8"}, "SEAS5 snowfall legend should mark clipped endpoints")
     check(round(float(module.convert_values([[module.GEOPOTENTIAL_GRAVITY]], module.PRODUCT_SPECS[module.Z500_ANOMALY], "202512")[0][0]), 5) == 1.0, "z500 conversion should divide by gravity")
     check(round(float(module.convert_values([[0.001]], module.PRODUCT_SPECS[module.PRECIP_ANOMALY], "202601")[0][0]), 5) == round(0.001 * 31 * 86400 * 1000 / 25.4, 5), "precipitation conversion should use calendar-month seconds and metres-to-inches")
     check(round(float(module.convert_values([[2.5]], module.PRODUCT_SPECS[module.T850_ANOMALY], "202601")[0][0]), 5) == 2.5, "850-mb temperature anomaly should preserve Kelvin increments in Celsius")
