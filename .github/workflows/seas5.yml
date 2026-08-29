@@ -1,9 +1,6 @@
 name: ECMWF SEAS5 Seasonal Graphics
 
 on:
-  push:
-    paths:
-      - ".github/workflows/rerender-current-snowfall"
   schedule:
     # ECMWF releases the 7-month SEAS5 forecast on the 5th at 12 UTC.
     # Leave time for CDS indexing before starting the download.
@@ -120,8 +117,6 @@ jobs:
           set -euo pipefail
           if [[ "${{ github.event_name }}" == "schedule" ]]; then
             IFS=',' read -r -a products <<< "$SCHEDULED_SEAS5_PRODUCTS"
-          elif [[ "${{ github.event_name }}" == "push" ]]; then
-            products=("snowfall_anomaly")
           else
             products=("$SEAS5_PRODUCT")
           fi
