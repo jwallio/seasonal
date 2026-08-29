@@ -9,7 +9,8 @@ const ANALOG_PRODUCT_ORDER = ['psl_500mb_height_anomaly', 'psl_2m_temperature_an
 function thumbnailPath(value) {
   const relative = normalizeAssetPath(value);
   const webp = /\.[^/.]+$/.test(relative) ? relative.replace(/\.[^/.]+$/, '.webp') : `${relative}.webp`;
-  return assetPath(`thumbnails/${webp}`);
+  const version = seasonalCatalog?.generated_utc || seasonalCatalog?.source_revision || '';
+  return `${assetPath(`thumbnails/${webp}`)}${version ? `?v=${encodeURIComponent(version)}` : ''}`;
 }
 const el = id => document.getElementById(id);
 const MODEL_CONFIG = {
@@ -213,7 +214,7 @@ function periodLabel(value) {
   const match = /^(\d{4})(\d{2})-(\d{4})(\d{2})$/.exec(text);
   if (!match) return monthCodeLabel(text);
   const months = [Number(match[2]), Number(match[4])];
-  const season = months[0] === 12 && months[1] === 2 ? `DJF ${match[3]}` : months[0] === 3 && months[1] === 5 ? `MAM ${match[3]}` : months[0] === 6 && months[1] === 8 ? `JJA ${match[3]}` : months[0] === 9 && months[1] === 11 ? `SON ${match[3]}` : `${monthCodeLabel(match[1] + match[2])}–${monthCodeLabel(match[3] + match[4])}`;
+  const season = months[0] === 12 && months[1] === 2 ? `DJF ${match[1]}–${match[3].slice(2)}` : months[0] === 3 && months[1] === 5 ? `MAM ${match[3]}` : months[0] === 6 && months[1] === 8 ? `JJA ${match[3]}` : months[0] === 9 && months[1] === 11 ? `SON ${match[3]}` : `${monthCodeLabel(match[1] + match[2])}–${monthCodeLabel(match[3] + match[4])}`;
   return season;
 }
 function populate(select, values, chosen) {
