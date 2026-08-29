@@ -225,6 +225,8 @@ def main() -> int:
     check("table-layout:fixed" in stylesheet, "analog table should keep narrow-screen columns bounded")
     check(".compare-card-head a { max-width:6rem; white-space:normal; text-align:right; }" in stylesheet, "mobile compare links should wrap instead of overflowing")
     check('title="Historical analog month or season"' in dashboard_script and '>Period<' in dashboard_script, "analog table should use compact, explained period labels")
+    check("DJF ${match[1]}–${match[3].slice(2)}" in dashboard_script, "dashboard should identify both years in cross-year DJF labels")
+    check("seasonalCatalog?.generated_utc" in dashboard_script, "Compare thumbnails should bust stale published asset URLs")
     check('aria-label="Copy current dashboard link"' in page_markup, "copy action should retain an accessible label when compacted")
     check("runs[0]" not in page[page.index("function preferredRun"):page.index("function selectedRun")], "failed history must not be used as a default fallback")
     overview_block = page[page.index("function renderOverview()"):page.index("function compareEmpty")]

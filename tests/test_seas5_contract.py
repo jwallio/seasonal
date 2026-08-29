@@ -140,7 +140,8 @@ def main() -> int:
     check(module.target_month("2025080100", 5) == "202601", "lead-month target conversion should cross the year boundary")
     check(module.seasonal_period_label("202512", "202602") == "DJF 2025–26", "DJF label should identify both winter years")
     snowfall_title = module.PRODUCT_SPECS[module.SNOWFALL_ANOMALY]
-    check(snowfall_title["title"] == "SEAS5 CONUS Snowfall Departure (in LWE)", "SEAS5 snowfall title should fit beside the valid-period label")
+    check(snowfall_title["title"] == "SEAS5 CONUS Snowfall Departure", "SEAS5 snowfall image title should omit the parenthetical LWE unit")
+    check("(in LWE)" not in snowfall_title["absolute_title"], "SEAS5 snowfall absolute image title should omit the parenthetical LWE unit")
     check(snowfall_title["map_domain"] == "land" and snowfall_title["fit_frame_to_domain"], "SEAS5 snowfall should use a fitted lower-48 land frame")
     check(len(snowfall_title["mask_states"]) == 48, "SEAS5 snowfall lower-48 mask should include all 48 states")
     check(snowfall_title["anomaly_endpoint_labels"] == {"minimum": "≤−0.8", "maximum": "≥+0.8"}, "SEAS5 snowfall legend should mark clipped endpoints")

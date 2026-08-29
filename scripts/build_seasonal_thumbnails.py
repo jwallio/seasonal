@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build compact WebP thumbnails for seasonal Compare cards."""
+"""Build current compact WebP thumbnails for seasonal Compare cards."""
 
 from __future__ import annotations
 
@@ -120,21 +120,19 @@ def build_thumbnails(site_root: Path, max_width: int = 560, quality: int = 82) -
     if not 1 <= quality <= 100:
         raise ValueError("quality must be between 1 and 100")
 
-    summary: dict[str, Any] = {"created": 0, "skipped": 0, "missing": 0, "missing_assets": []}
+    summary: dict[str, Any] = {"created": 0, "refreshed": 0, "missing": 0, "missing_assets": []}
     for asset_path in sorted(load_compare_assets(site_root), key=str):
         source_path = _published_asset_path(site_root, asset_path)
         source = site_root.joinpath(*source_path.parts)
         destination_path = _published_thumbnail_path(site_root, asset_path)
         destination = site_root.joinpath(*destination_path.parts)
-        if destination.is_file() and destination.stat().st_size > 0:
-            summary["skipped"] += 1
-            continue
         if not source.is_file():
             summary["missing"] += 1
             summary["missing_assets"].append(str(asset_path))
             continue
+        had_thumbnail = destination.is_file() and destination.stat().st_size > 0
         save_webp_thumbnail(source, destination, max_width=max_width, quality=quality)
-        summary["created"] += 1
+        summary["refreshed" if had_thumbnail else "created"] += 1
     return summary
 
 

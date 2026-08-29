@@ -355,7 +355,7 @@ def product_spec(product: str, label: str, *, multisystem: bool = False) -> dict
         "850mb_temperature_anomaly": "850-mb Temperature Anomaly (°C)",
         "2m_temperature_anomaly": "2-m Temperature Anomaly (°C)",
         "precipitation_anomaly": "CONUS Precipitation Anomaly (in)",
-        "snowfall_anomaly": "Snowfall Departure (in LWE)",
+        "snowfall_anomaly": "Snowfall Departure",
         "sea_surface_temperature_anomaly": "Sea-Surface Temperature Anomaly (°C)",
         "mslp_anomaly": "Mean Sea-Level Pressure Anomaly (hPa)",
     }[product]
@@ -369,7 +369,7 @@ def product_spec(product: str, label: str, *, multisystem: bool = False) -> dict
             "UK Met Office": "UKMO",
             "Météo-France": "Météo-France",
         }.get(label, label)
-        base["title"] = f"C3S {title_label} Snowfall Departure (in LWE)"
+        base["title"] = f"C3S {title_label} Snowfall Departure"
     base["absolute_title"] = base["title"].replace(" & Anomaly", "")
     base["source_label"] = f"Copernicus C3S / {('multi-system' if multisystem else label)}"
     detail = (

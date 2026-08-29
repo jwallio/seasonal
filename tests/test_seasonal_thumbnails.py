@@ -72,8 +72,17 @@ def main() -> int:
             check(max(image.size) <= 560, "thumbnail must respect the maximum dimension")
         check(native_thumbnail.stat().st_size < (site / native_asset).stat().st_size, "thumbnail should reduce transfer size")
 
+        previous_snowfall_thumbnail = snowfall_thumbnail.read_bytes()
+        write_image(site / snowfall_asset, (1080, 1080), "lightgreen")
         second = build_thumbnails(site, max_width=560, quality=82)
-        check(second["created"] == 0 and second["skipped"] == 3, "existing thumbnails should be preserved")
+        check(
+            second["created"] == 0 and second["refreshed"] == 3 and second["missing"] == 0,
+            "existing thumbnails should refresh from current source images",
+        )
+        check(
+            snowfall_thumbnail.read_bytes() != previous_snowfall_thumbnail,
+            "thumbnail content should change when its source image changes",
+        )
         normalized = normalize_asset_path("public/seasonal/cfsv2/run/map.jpg")
         check(normalized is not None, "public seasonal path should normalize")
         check(str(thumbnail_asset_path(normalized)) == "seasonal/thumbnails/cfsv2/run/map.webp", "thumbnail path contract changed")
@@ -94,7 +103,7 @@ def main() -> int:
         check(summary["created"] == 1 and summary["missing"] == 0, "flat Pages tree should produce one Compare thumbnail")
         check((flat_site / "thumbnails/cfsv2/2026082306/native.webp").is_file(), "flat thumbnail should be published at the Pages root")
 
-    print("SEASONAL THUMBNAIL CONTRACT OK: compare-only WebP generation, sizing, paths, and preservation")
+    print("SEASONAL THUMBNAIL CONTRACT OK: compare-only WebP generation, sizing, paths, and refresh")
     return 0
 
 
