@@ -169,9 +169,10 @@ MSLP_ANOMALY_PALETTE = ANOMALY_PALETTE
 DEFAULT_REGION = (-160.0, -10.0, 22.0, 85.0)
 # CONUS products use a tight lower-48 frame: enough margin to keep the
 # westernmost, easternmost, northernmost, and southernmost states visible,
-# while minimizing unused Canada and Mexico. This is a render crop only; the
-# provider download areas remain deliberately larger for edge-data coverage.
-CONUS_PRECIP_REGION = (-127.0, -65.0, 23.0, 51.0)
+# while minimizing unused Canada and Mexico in the square projected canvas.
+# This is a render crop only; provider download areas remain deliberately
+# larger for edge-data coverage.
+CONUS_PRECIP_REGION = (-126.0, -66.0, 24.0, 50.0)
 # Shift the projected window slightly west so the CONUS sits at the visual
 # center of the square canvas while preserving Alaska and all of Greenland.
 PROJECTED_X_SHIFT_FRACTION = 0.035
