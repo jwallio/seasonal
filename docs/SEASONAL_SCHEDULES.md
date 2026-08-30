@@ -92,8 +92,13 @@ propagation without repeatedly regenerating unchanged MRCC maps.
 
 The central `publish-pages.yml` workflow already serializes Pages updates with
 `cancel-in-progress: false`, so simultaneous model releases do not overwrite
-one another. A scheduled GitHub event can still be delayed during platform
-load; the times above are release-aligned targets, not provider SLAs.
+one another. SEAS5, C3S, and JMA workers explicitly dispatch that publisher
+after their scoped artifacts upload. This is required because GitHub suppresses
+`workflow_run` chaining for workers launched by another workflow with the
+repository `GITHUB_TOKEN`; the explicit `workflow_dispatch` event remains
+supported. Other model workers continue to use the publisher's `workflow_run`
+trigger. A scheduled GitHub event can still be delayed during platform load;
+the times above are release-aligned targets, not provider SLAs.
 
 Each Pages validation also writes a per-model/per-parameter health report to
 `seasonal/catalog.json` and the GitHub job summary. It distinguishes healthy,
