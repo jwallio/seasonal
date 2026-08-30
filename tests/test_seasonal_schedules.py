@@ -12,10 +12,15 @@ EXPECTED = {
     ".github/workflows/cansips.yml": "30 16 2 * *",
     ".github/workflows/cma-cpsv3.yml": "30 18 21 * *",
     ".github/workflows/nmme.yml": "30 15 9 * *",
-    ".github/workflows/seas5.yml": "30 15 5 * *",
-    ".github/workflows/c3s.yml": "30 15 10 * *",
-    ".github/workflows/jma.yml": "30 15 10 * *",
     ".github/workflows/superensemble.yml": "30 20 22 * *",
+}
+
+RELEASE_CHECK_CRONS = {
+    "*/15 12-18 6 * *",
+    "17 * 7-9 * *",
+    "*/15 12-18 10 * *",
+    "17 * 11-12 * *",
+    "17 12 13-31 * *",
 }
 
 SCHEDULED_SUITES = {
@@ -51,6 +56,22 @@ def main() -> int:
         crons = re.findall(r'^\s*- cron:\s*"([^"]+)"', text, re.MULTILINE)
         check(expected_cron in crons, f"{relative_path} is missing {expected_cron}")
 
+    release_checker = ROOT / ".github/workflows/seasonal-release-check.yml"
+    check(release_checker.exists(), "missing CDS seasonal release checker workflow")
+    release_text = release_checker.read_text(encoding="utf-8")
+    release_crons = set(re.findall(r'^\s*- cron:\s*"([^"]+)"', release_text, re.MULTILINE))
+    check(release_crons == RELEASE_CHECK_CRONS, "CDS seasonal release checker polling windows changed unexpectedly")
+    for term in (
+        "scripts/check_seasonal_releases.py",
+        "actions: write",
+        "product=all",
+        'init="$TARGET"',
+        "Existing run is active",
+        "Current suite is already live",
+        "2700",
+    ):
+        check(term in release_text, f"seasonal release checker is missing its {term!r} contract")
+
     analog_workflow = ROOT / ".github/workflows/seasonal-analogs.yml"
     check(analog_workflow.exists(), "missing seasonal analog workflow")
     analog_crons = re.findall(r'^\s*- cron:\s*"([^"]+)"', analog_workflow.read_text(encoding="utf-8"), re.MULTILINE)
@@ -61,8 +82,10 @@ def main() -> int:
         match = re.search(rf"^\s*{variable}:\s*([^\n]+)$", text, re.MULTILINE)
         check(match is not None, f"{relative_path} is missing {variable}")
         check(set(match.group(1).strip().split(",")) == expected_products, f"{relative_path} scheduled suite is incomplete")
-        check('github.event_name }}" == "schedule"' in text, f"{relative_path} must distinguish scheduled suites from manual product reruns")
+        check(re.search(r"^\s+- all$", text, re.MULTILINE) is not None, f"{relative_path} must expose full-suite dispatch mode")
+        check('== "all"' in text, f"{relative_path} must distinguish full-suite from targeted reruns")
         check('for product in "${products[@]}"' in text, f"{relative_path} must render every scheduled product")
+        check("cancel-in-progress: false" in text, f"{relative_path} must serialize full-suite refreshes")
 
     for relative_path in HISTORY_WORKFLOWS:
         text = (ROOT / relative_path).read_text(encoding="utf-8")

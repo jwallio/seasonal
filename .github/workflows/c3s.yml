@@ -1,10 +1,9 @@
 name: C3S Multi-System Seasonal Graphics
+run-name: "C3S ${{ inputs.init || 'latest' }} · ${{ inputs.product || '500mb_height_anomaly' }}"
 
 on:
-  schedule:
-    # C3S publishes the non-ECMWF centre products on the 10th at 12 UTC.
-    # Start after that release window so the all-centre bundle is available.
-    - cron: "30 15 10 * *"
+  # Automatic release detection and dispatch are owned by
+  # seasonal-release-check.yml. Keep this workflow as the rendering worker.
   workflow_dispatch:
     inputs:
       product:
@@ -13,6 +12,7 @@ on:
         default: "500mb_height_anomaly"
         type: choice
         options:
+          - all
           - 500mb_height_anomaly
           - 850mb_temperature_anomaly
           - 2m_temperature_anomaly
@@ -48,6 +48,10 @@ on:
 
 permissions:
   contents: read
+
+concurrency:
+  group: seasonal-c3s
+  cancel-in-progress: false
 
 jobs:
   render:
@@ -120,7 +124,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if [[ "${{ github.event_name }}" == "schedule" ]]; then
+          if [[ "$C3S_PRODUCT" == "all" ]]; then
             IFS=',' read -r -a products <<< "$SCHEDULED_C3S_PRODUCTS"
           else
             products=("$C3S_PRODUCT")

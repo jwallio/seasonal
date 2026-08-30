@@ -1,7 +1,7 @@
 # Seasonal ECMWF SEAS5 products
 
 WN2 includes a standalone SEAS5 adapter at
-[`scripts/seas5_seasonal.py`](/d:/weather-projects/wn2/scripts/seas5_seasonal.py).
+[`scripts/seas5_seasonal.py`](../scripts/seas5_seasonal.py).
 It uses the current ECMWF/System 51 products distributed by the official
 Copernicus Climate Data Store (CDS) and publishes a separate viewer at
 [`/seasonal/seas5/`](https://jwallio.github.io/seasonal/seas5/).
@@ -20,9 +20,12 @@ North American area from the CDS API:
   absolute-field smoke output.
 
 The request is filtered to originating centre `ecmwf`, system `51`, and the
-`ensemble_mean` product. ECMWF's dissemination schedule releases the 7-month
-SEAS5 forecast on the 5th at 12 UTC. The nominal initialization date is the
-first day of the released month, matching the C3S seasonal data convention.
+`ensemble_mean` product. ECMWF's direct dissemination schedule releases the
+7-month SEAS5 forecast on the 5th at 12 UTC, but this adapter consumes the C3S
+Climate Data Store rather than direct ECMWF member dissemination. The official
+C3S availability table places ECMWF data in CDS on the 6th at 12 UTC. The
+nominal initialization date is the first day of the released month, matching
+the C3S seasonal data convention.
 
 The workflow requires a repository secret named `CDS_API_KEY`. Local runs can
 use the same token through `CDS_API_KEY` or the official `~/.cdsapirc` file.
@@ -89,11 +92,18 @@ images. Use `-NoBorders` for a source-only smoke test. The workflow and local
 wrapper retain the current run plus three prior runs per parameter in the
 manifest.
 
-## Workflow and viewer
+## Release checker, workflow, and viewer
 
-The scheduled/manual workflow is `.github/workflows/seas5.yml`. It restores
-the CDS GRIB cache, retrieves the previous Pages manifest, renders the
-selected parameter, and uploads a scoped Pages payload. The central
+`.github/workflows/seasonal-release-check.yml` polls the three relevant CDS
+catalogue constraints documents from 12 UTC on the 6th. Once ECMWF/System 51,
+all required fields, and leads 4-6 are listed, it compares the target month
+against the live `seas5_manifest.json` and dispatches the full suite only when
+needed. Polling continues hourly through the 9th if CDS indexing is late, and
+the shared daily catch-up continues through month-end for an incomplete suite.
+
+The rendering worker is `.github/workflows/seas5.yml`. It restores the CDS
+GRIB cache, retrieves the previous Pages manifest, renders the selected
+parameter or explicit `all` suite, and uploads a scoped Pages payload. The central
 `.github/workflows/publish-pages.yml` workflow serializes successful WN2,
 CFSv2, and SEAS5 payloads, merges each payload into the existing `gh-pages`
 tree, and performs the only GitHub Pages publish.
@@ -111,3 +121,4 @@ cross-model controls.
 - [C3S seasonal forecast single-level anomalies](https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-single-levels)
 - [CDS API setup](https://cds.climate.copernicus.eu/how-to-api)
 - [ECMWF C3S seasonal forecast service](https://www.ecmwf.int/en/forecasts/datasets/c3s-seasonal-forecasts)
+- [C3S data availability summary](https://confluence.ecmwf.int/pages/viewpage.action?navigatingVersions=true&pageId=638830872)

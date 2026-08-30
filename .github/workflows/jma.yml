@@ -1,9 +1,9 @@
 name: JMA Seasonal Graphics
+run-name: "JMA ${{ inputs.init || 'latest' }} · ${{ inputs.product || '500mb_height_anomaly' }}"
 
 on:
-  schedule:
-    # JMA is a non-ECMWF C3S component; publish after the 10th/12 UTC window.
-    - cron: "30 15 10 * *"
+  # Automatic release detection and dispatch are owned by
+  # seasonal-release-check.yml. Keep this workflow as the rendering worker.
   workflow_dispatch:
     inputs:
       product:
@@ -12,6 +12,7 @@ on:
         default: "500mb_height_anomaly"
         type: choice
         options:
+          - all
           - 500mb_height_anomaly
           - 850mb_temperature_anomaly
           - 2m_temperature_anomaly
@@ -41,6 +42,10 @@ on:
 
 permissions:
   contents: read
+
+concurrency:
+  group: seasonal-jma
+  cancel-in-progress: false
 
 jobs:
   render:
@@ -112,7 +117,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if [[ "${{ github.event_name }}" == "schedule" ]]; then
+          if [[ "$JMA_PRODUCT" == "all" ]]; then
             IFS=',' read -r -a products <<< "$SCHEDULED_JMA_PRODUCTS"
           else
             products=("$JMA_PRODUCT")

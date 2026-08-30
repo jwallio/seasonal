@@ -109,6 +109,12 @@ super-ensemble, seasonal analogs, and the central Pages publisher.
 
 Provider schedules and UTC automation timing are documented in
 [`docs/SEASONAL_SCHEDULES.md`](docs/SEASONAL_SCHEDULES.md).
+CDS-backed SEAS5, C3S, and JMA refreshes are readiness-driven by
+[`seasonal-release-check.yml`](.github/workflows/seasonal-release-check.yml),
+which checks the live CDS inventory and published manifests before dispatching
+a full rendering suite.
+The broader UI, map, workflow, and runner review is recorded in the
+[`2026-08-30 Seasonal product audit`](docs/SEASONAL_PRODUCT_AUDIT_2026-08-30.md).
 
 Model workflows upload scoped payloads. The serialized
 [`publish-pages.yml`](.github/workflows/publish-pages.yml) workflow merges
@@ -191,6 +197,7 @@ output smoke tests.
 python tests/test_pipeline_contract.py
 python tests/test_seasonal_catalog.py
 python tests/test_seasonal_dashboard_contract.py
+python tests/test_seasonal_release_check.py
 python tests/test_seasonal_schedules.py
 python tests/smoke_outputs.py
 ```

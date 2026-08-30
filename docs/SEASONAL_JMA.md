@@ -17,15 +17,19 @@ The system and hindcast metadata follow the [C3S multi-system description](https
 
 ## Workflow
 
-`.github/workflows/jma.yml` runs on the 10th of each month at 15:30 UTC,
-after the C3S release window for non-ECMWF centres. It can also be started
-manually from Actions to choose:
+`.github/workflows/seasonal-release-check.yml` begins checking JMA/System 4 at
+the 10th/12 UTC C3S release window. It dispatches `.github/workflows/jma.yml`
+as soon as every JMA field and lead used by the suite appears in the CDS
+catalogue and the live JMA manifest is incomplete. JMA is evaluated separately
+from the full C3S blend, so another late centre does not hold it back. The
+worker can also be started manually from Actions to choose:
 
 - 500-mb height, 850-mb temperature, 2-m temperature, precipitation, SST, or MSLP anomaly
 - initialization month or `latest`
 - target lead months
 - seasonal lead-month window
 - an optional `jma=system` override for historical troubleshooting
+- the explicit `all` suite for a complete repair
 
 The workflow calls `scripts/c3s_seasonal.py --centres jma --no-blend`, so the
 standalone JMA page contains only the JMA component. The shared C3S workflow

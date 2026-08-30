@@ -1,10 +1,11 @@
 # Seasonal model release schedules
 
 The scheduled workflows use UTC because that is how GitHub Actions interprets
-cron expressions. Each run starts after the provider's normal release window,
-leaving a small buffer for source indexing and mirror propagation. Every
-workflow remains manually runnable from **Actions > Run workflow** when a
-provider is late or a historical cycle needs to be regenerated.
+cron expressions. Fixed-date providers start after their normal release
+windows. CDS-backed monthly providers use a separate inventory checker so a
+late catalogue is retried without guessing a single start time. Every model
+worker remains manually runnable from **Actions > Run workflow** when a
+historical cycle or individual field needs to be regenerated.
 
 | Workflow | Provider release window | Automatic run (UTC) |
 | --- | --- | --- |
@@ -12,19 +13,31 @@ provider is late or a historical cycle needs to be regenerated.
 | CanSIPS v3 | ECCC monthly refresh on the 1st | 2nd of each month at 16:30 |
 | CMA CPSv3 | WMO GPC Beijing exchange window on the 15th-20th | 21st of each month at 18:30 |
 | NOAA NMME | CPC public products update on the 9th | 9th of each month at 15:30 |
-| ECMWF SEAS5 | ECMWF 7-month forecast on the 5th at 12:00 | 5th of each month at 15:30 |
-| C3S multi-system | Non-ECMWF systems on the 10th at 12:00 | 10th of each month at 15:30 |
-| JMA / MRI-CPS4 | JMA is a non-ECMWF C3S component | 10th of each month at 15:30 |
+| ECMWF SEAS5 through CDS | ECMWF member dissemination on the 5th; CDS inventory on the 6th at 12:00 | Every 15 minutes from 12:00-18:59 on the 6th, then hourly on the 7th-9th until live |
+| C3S multi-system | Non-ECMWF systems in CDS on the 10th at 12:00 | Every 15 minutes from 12:00-18:59 on the 10th, then hourly on the 11th-12th until live |
+| JMA / MRI-CPS4 | JMA is a non-ECMWF C3S component | Uses the same 10th-12th inventory checks and can dispatch independently as soon as JMA is ready |
 | APCC MME | APCC seasonal MME around the middle of the month | 20th of each month at 16:30 |
 | NASA GEOS-S2S-3 | Public NCCS numerical APCN archives during the first week | 6th of each month at 16:30 |
 | Deduplicated super ensemble | After APCC, CMA, and the other component source windows | 22nd of each month at 20:30 |
 | 500-mb pattern analogs and top-analog maps | After each successful CFSv2 or super-ensemble release | Source-triggered, with scheduled reconciliation at 02:35 and 14:35 |
 
-Scheduled C3S, JMA, and SEAS5 runs generate the full advertised anomaly suite:
+`seasonal-release-check.yml` reads the current unauthenticated CDS catalogue
+constraints for the postprocessed pressure-level, postprocessed single-level,
+and raw monthly pressure-level datasets. It requires the configured
+centre/system, variables, pressure levels, and leads 4-6 for the target month.
+No test GRIB retrieval is submitted. The checker then reads the live site
+manifest and dispatches `product=all` only when source inventory is complete
+and the current live suite is not. C3S, JMA, and SEAS5 workers have independent
+non-cancelling concurrency groups; an active run suppresses duplicate dispatch,
+and a completed full-suite attempt has a 45-minute retry cooldown while Pages
+publishes. A daily catch-up check continues from the 13th through month-end so
+an unusually late provider or failed render is not abandoned.
+
+Automatically dispatched C3S, JMA, and SEAS5 runs generate the full advertised anomaly suite:
 500-mb height, 850-mb temperature, 2-m temperature, precipitation,
 sea-surface temperature, and mean sea-level pressure. Manual dispatches remain
-single-product so a failed or late field can be repaired without rebuilding the
-entire suite. The scheduled super ensemble likewise uses its `all` product mode.
+single-product by default, with an explicit `all` option for complete repairs.
+The scheduled super ensemble likewise uses its `all` product mode.
 
 C3S and SEAS5 also publish CONUS snowfall water-equivalent departures when the
 native snowfall field is available: monthly totals and the configured DJF
@@ -91,8 +104,10 @@ invalid manifests or missing rendered assets.
 
 ## Official timing references
 
-- [ECMWF dissemination schedule](https://confluence.ecmwf.int/pages/viewpage.action?pageId=685248329)
+- [ECMWF dissemination schedule](https://confluence.ecmwf.int/pages/viewpage.action?navigatingVersions=true&pageId=621030722)
+- [C3S summary of available data](https://confluence.ecmwf.int/pages/viewpage.action?navigatingVersions=true&pageId=638830872)
 - [C3S announcements and publication timing](https://confluence.ecmwf.int/spaces/CKB/pages/135565670/Announcements)
+- [CDS API and catalogue access](https://cds.climate.copernicus.eu/en/how-to-api)
 - [ECCC CanSIPS global forecast service](https://eccc-scenarios.collab.science.gc.ca/?page=cansips-global)
 - [WMO GPC Beijing system configuration](https://www.wmolc.org/contents2/index/Beijing)
 - [WMO seasonal direct data exchange](https://www.wmolc.org/seasonDownload/direct)
