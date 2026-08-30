@@ -29,6 +29,12 @@ SCHEDULED_SUITES = {
     ".github/workflows/seas5.yml": ("SCHEDULED_SEAS5_PRODUCTS", {"500mb_height_anomaly", "850mb_temperature_anomaly", "2m_temperature_anomaly", "precipitation_anomaly", "snowfall_anomaly", "sst_anomaly", "mslp_anomaly"}),
 }
 
+CDS_WORKER_PUBLISHERS = {
+    ".github/workflows/c3s.yml": "C3S Multi-System Seasonal Graphics",
+    ".github/workflows/jma.yml": "JMA Seasonal Graphics",
+    ".github/workflows/seas5.yml": "ECMWF SEAS5 Seasonal Graphics",
+}
+
 HISTORY_WORKFLOWS = (
     ".github/workflows/apcc.yml",
     ".github/workflows/c3s.yml",
@@ -87,6 +93,16 @@ def main() -> int:
         check('for product in "${products[@]}"' in text, f"{relative_path} must render every scheduled product")
         check("cancel-in-progress: false" in text, f"{relative_path} must serialize full-suite refreshes")
 
+    publisher_text = (ROOT / ".github/workflows/publish-pages.yml").read_text(encoding="utf-8")
+    workflow_run_triggers = publisher_text.split("  workflow_dispatch:", 1)[0]
+    for relative_path, workflow_name in CDS_WORKER_PUBLISHERS.items():
+        text = (ROOT / relative_path).read_text(encoding="utf-8")
+        check("actions: write" in text, f"{relative_path} must be allowed to dispatch its Pages publisher")
+        check("gh workflow run publish-pages.yml" in text, f"{relative_path} must explicitly dispatch its Pages publisher")
+        check(f'-f source_workflow="{workflow_name}"' in text, f"{relative_path} must identify its publisher source")
+        check('-f source_run_id="$GITHUB_RUN_ID"' in text, f"{relative_path} must publish its own artifact run")
+        check(workflow_name not in workflow_run_triggers, f"{workflow_name} must not also create a duplicate workflow_run publish")
+
     for relative_path in HISTORY_WORKFLOWS:
         text = (ROOT / relative_path).read_text(encoding="utf-8")
         check('published_manifest=' in text, f"{relative_path} must name the retained manifest")
@@ -109,6 +125,7 @@ def main() -> int:
     check("full advertised anomaly suite" in doc, "schedule documentation must describe the multi-product refresh contract")
     check("two-hour readiness retry" in doc, "schedule documentation must describe the CFSv2 delayed readiness retry")
     check("scheduled reconciliation" in doc, "schedule documentation must describe the analog catch-up")
+    check("explicitly dispatch that publisher" in doc, "schedule documentation must explain CDS worker publication")
 
     print("SEASONAL SCHEDULE CONTRACT OK: release-aligned UTC workflows, full scheduled suites, and documentation")
     return 0
