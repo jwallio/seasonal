@@ -2,7 +2,7 @@
   "schema_version": 1,
   "registry_version": 1,
   "kind": "seasonal_dashboard_catalog",
-  "generated_utc": "2026-08-30T17:06:43Z",
+  "generated_utc": "2026-08-30T17:24:09Z",
   "source_revision": "91e9bb7027b60b0bb220879ce9f7154ea15b737d",
   "model_order": [
     "superensemble",
@@ -17478,6 +17478,204 @@
           }
         },
         {
+          "id": "seas5-2026080100-500mb_height_anomaly",
+          "model": "ECMWF SEAS5",
+          "source": "ECMWF SEAS5 / Copernicus CDS",
+          "source_url": "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-pressure-levels",
+          "source_urls": [
+            "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-pressure-levels",
+            "https://cds.climate.copernicus.eu/datasets/seasonal-monthly-pressure-levels"
+          ],
+          "product": "500mb_height_anomaly",
+          "init_utc": "2026-08-01T00:00:00Z",
+          "status": "rendered",
+          "statistic": "ensemble_mean",
+          "aggregation": "3-month mean of official CDS monthly ensemble-mean anomalies",
+          "ensemble_scope": "ECMWF SEAS5/System 51 forecast ensemble",
+          "ensemble_members": 51,
+          "field": "z500_anomaly",
+          "units": "m",
+          "raw_field": "z500 / geopotential",
+          "raw_units": "m**2 s**-2",
+          "climatology": {
+            "source": "C3S postprocessed anomaly field",
+            "years_requested": "1981-2016",
+            "method": "official CDS bias-adjusted monthly ensemble-mean anomaly; no local hindcast subtraction",
+            "status": "not_used"
+          },
+          "conversion": "geopotential divided by standard gravity to convert m² s⁻² to geopotential meters",
+          "targets": [
+            {
+              "id": "seas5-2026080100-500mb_height_anomaly-lead04",
+              "target_month": "202612",
+              "valid_start_utc": "2026-12-01T00:00:00Z",
+              "valid_end_utc": "2027-01-01T00:00:00Z",
+              "lead_month": 4,
+              "field": "z500_anomaly",
+              "units": "m",
+              "status": "rendered",
+              "image": "seas5/20260801/seas5_z500_202612.jpg",
+              "comparison": {
+                "common_1991_2020": {
+                  "image": "seas5/20260801/seas5_z500_202612_common-1991-2020.jpg",
+                  "status": "rendered",
+                  "baseline": {
+                    "label": "Common 1991-2020 reference (CanSIPS v3 hindcast)",
+                    "years": "1991-2020",
+                    "source": "CanSIPS v3 hindcast climatology",
+                    "file": ".cache/seas5/common-reference/z500_202612.csv.gz",
+                    "url": "https://jwallio.github.io/seasonal/common_reference/1991-2020/z500_202612.csv.gz",
+                    "downloaded": true
+                  }
+                }
+              },
+              "baseline": {
+                "status": "official_postprocessed",
+                "source": "C3S official postprocessed anomaly; ECMWF/System 51",
+                "dataset": "seasonal-postprocessed-pressure-levels"
+              },
+              "ensemble_members": 51,
+              "statistic": "ensemble_mean",
+              "aggregation": "monthly mean",
+              "_catalog": {
+                "canonical_product": "500mb_height_anomaly",
+                "comparable": true,
+                "quality_control": "legacy"
+              }
+            },
+            {
+              "id": "seas5-2026080100-500mb_height_anomaly-lead05",
+              "target_month": "202701",
+              "valid_start_utc": "2027-01-01T00:00:00Z",
+              "valid_end_utc": "2027-02-01T00:00:00Z",
+              "lead_month": 5,
+              "field": "z500_anomaly",
+              "units": "m",
+              "status": "rendered",
+              "image": "seas5/20260801/seas5_z500_202701.jpg",
+              "comparison": {
+                "common_1991_2020": {
+                  "image": "seas5/20260801/seas5_z500_202701_common-1991-2020.jpg",
+                  "status": "rendered",
+                  "baseline": {
+                    "label": "Common 1991-2020 reference (CanSIPS v3 hindcast)",
+                    "years": "1991-2020",
+                    "source": "CanSIPS v3 hindcast climatology",
+                    "file": ".cache/seas5/common-reference/z500_202701.csv.gz",
+                    "url": "https://jwallio.github.io/seasonal/common_reference/1991-2020/z500_202701.csv.gz",
+                    "downloaded": true
+                  }
+                }
+              },
+              "baseline": {
+                "status": "official_postprocessed",
+                "source": "C3S official postprocessed anomaly; ECMWF/System 51",
+                "dataset": "seasonal-postprocessed-pressure-levels"
+              },
+              "ensemble_members": 51,
+              "statistic": "ensemble_mean",
+              "aggregation": "monthly mean",
+              "_catalog": {
+                "canonical_product": "500mb_height_anomaly",
+                "comparable": true,
+                "quality_control": "legacy"
+              }
+            },
+            {
+              "id": "seas5-2026080100-500mb_height_anomaly-lead06",
+              "target_month": "202702",
+              "valid_start_utc": "2027-02-01T00:00:00Z",
+              "valid_end_utc": "2027-03-01T00:00:00Z",
+              "lead_month": 6,
+              "field": "z500_anomaly",
+              "units": "m",
+              "status": "rendered",
+              "image": "seas5/20260801/seas5_z500_202702.jpg",
+              "comparison": {
+                "common_1991_2020": {
+                  "image": "seas5/20260801/seas5_z500_202702_common-1991-2020.jpg",
+                  "status": "rendered",
+                  "baseline": {
+                    "label": "Common 1991-2020 reference (CanSIPS v3 hindcast)",
+                    "years": "1991-2020",
+                    "source": "CanSIPS v3 hindcast climatology",
+                    "file": ".cache/seas5/common-reference/z500_202702.csv.gz",
+                    "url": "https://jwallio.github.io/seasonal/common_reference/1991-2020/z500_202702.csv.gz",
+                    "downloaded": true
+                  }
+                }
+              },
+              "baseline": {
+                "status": "official_postprocessed",
+                "source": "C3S official postprocessed anomaly; ECMWF/System 51",
+                "dataset": "seasonal-postprocessed-pressure-levels"
+              },
+              "ensemble_members": 51,
+              "statistic": "ensemble_mean",
+              "aggregation": "monthly mean",
+              "_catalog": {
+                "canonical_product": "500mb_height_anomaly",
+                "comparable": true,
+                "quality_control": "legacy"
+              }
+            },
+            {
+              "id": "seas5-2026080100-500mb_height_anomaly-202612-202702",
+              "target_month": "202612-202702",
+              "valid_start_utc": "2026-12-01T00:00:00Z",
+              "valid_end_utc": "2027-03-01T00:00:00Z",
+              "lead_month": "4-6",
+              "monthly_leads": [
+                4,
+                5,
+                6
+              ],
+              "field": "z500_anomaly",
+              "units": "m",
+              "status": "rendered",
+              "image": "seas5/20260801/seas5_z500_202612-202702.jpg",
+              "comparison": {
+                "common_1991_2020": {
+                  "image": "seas5/20260801/seas5_z500_202612-202702_common-1991-2020.jpg",
+                  "status": "rendered",
+                  "baseline": {
+                    "label": "Common 1991-2020 reference (CanSIPS v3 hindcast)",
+                    "years": "1991-2020",
+                    "source": "CanSIPS v3 hindcast climatology",
+                    "files": [
+                      ".cache/seas5/common-reference/z500_202612.csv.gz",
+                      ".cache/seas5/common-reference/z500_202701.csv.gz",
+                      ".cache/seas5/common-reference/z500_202702.csv.gz"
+                    ],
+                    "urls": [
+                      "https://jwallio.github.io/seasonal/common_reference/1991-2020/z500_202612.csv.gz",
+                      "https://jwallio.github.io/seasonal/common_reference/1991-2020/z500_202701.csv.gz",
+                      "https://jwallio.github.io/seasonal/common_reference/1991-2020/z500_202702.csv.gz"
+                    ]
+                  }
+                }
+              },
+              "baseline": {
+                "status": "official_postprocessed",
+                "source": "C3S official postprocessed anomaly; ECMWF/System 51",
+                "dataset": "seasonal-postprocessed-pressure-levels"
+              },
+              "ensemble_members": 51,
+              "statistic": "ensemble_mean",
+              "aggregation": "3-month mean",
+              "_catalog": {
+                "canonical_product": "500mb_height_anomaly",
+                "comparable": true,
+                "quality_control": "legacy"
+              }
+            }
+          ],
+          "_catalog": {
+            "canonical_product": "500mb_height_anomaly",
+            "comparable": true
+          }
+        },
+        {
           "id": "seas5-2026080100-2m_temperature_anomaly",
           "model": "ECMWF SEAS5",
           "source": "ECMWF SEAS5 / Copernicus CDS",
@@ -17615,15 +17813,16 @@
       "status": "degraded",
       "schema_version": 1,
       "manifest_kind": "seas5_seasonal_manifest",
-      "generated_utc": "2026-08-29T12:23:32Z",
+      "generated_utc": "2026-08-30T17:22:09Z",
       "source_url": "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-single-levels",
       "product_labels": {},
       "validation": {
         "status": "warning",
         "error_count": 0,
-        "warning_count": 6,
+        "warning_count": 7,
         "issue_codes": [
           "legacy_qc_missing:2m_temperature_anomaly",
+          "legacy_qc_missing:500mb_height_anomaly",
           "legacy_qc_missing:850mb_temperature_anomaly",
           "legacy_qc_missing:mslp_anomaly",
           "legacy_qc_missing:precipitation_anomaly",
@@ -17662,23 +17861,31 @@
             "path": "runs[4].targets[0]"
           },
           {
+            "code": "legacy_qc_missing:500mb_height_anomaly",
+            "severity": "warning",
+            "message": "Retained 500mb_height_anomaly targets predate numerical grid QC; regenerate this product to certify it.",
+            "path": "runs[5].targets[0]"
+          },
+          {
             "code": "legacy_qc_missing:2m_temperature_anomaly",
             "severity": "warning",
             "message": "Retained 2m_temperature_anomaly targets predate numerical grid QC; regenerate this product to certify it.",
-            "path": "runs[5].targets[0]"
+            "path": "runs[6].targets[0]"
           }
         ]
       },
       "surfaces": {
         "500mb_height_anomaly": {
-          "state": "missing",
-          "reason": "No rendered target is currently published.",
-          "available": false,
-          "comparable": false,
-          "latest_init_utc": null,
-          "latest_run_id": null,
-          "latest_run_status": null,
-          "latest_run_init_utc": null,
+          "state": "available",
+          "reason": "Rendered target available.",
+          "available": true,
+          "comparable": true,
+          "latest_init_utc": "2026-08-01T00:00:00Z",
+          "run_id": "seas5-2026080100-500mb_height_anomaly",
+          "target_count": 4,
+          "latest_run_id": "seas5-2026080100-500mb_height_anomaly",
+          "latest_run_status": "rendered",
+          "latest_run_init_utc": "2026-08-01T00:00:00Z",
           "retained_fallback": false
         },
         "850mb_temperature_anomaly": {
@@ -28278,7 +28485,7 @@
   },
   "health": {
     "status": "attention",
-    "generated_utc": "2026-08-30T17:06:43Z",
+    "generated_utc": "2026-08-30T17:24:09Z",
     "freshness_policy_days": {
       "default": {
         "fresh_days": 35,
@@ -28291,14 +28498,14 @@
     },
     "summary": {
       "surfaces": 70,
-      "attention_surfaces": 7,
+      "attention_surfaces": 6,
       "by_state": {
-        "healthy": 47,
+        "healthy": 48,
         "aging": 0,
         "stale": 0,
         "partial": 1,
         "failed": 0,
-        "missing": 5,
+        "missing": 4,
         "noncomparable": 1,
         "not_applicable": 16
       }
@@ -28939,18 +29146,18 @@
         "model_label": "ECMWF SEAS5",
         "product": "500mb_height_anomaly",
         "product_label": "500-mb Height Anomaly",
-        "surface_state": "missing",
-        "available": false,
-        "comparable": false,
-        "health_state": "missing",
-        "freshness": "unknown",
-        "age_days": null,
-        "latest_status": null,
-        "latest_init_utc": null,
-        "selected_init_utc": null,
-        "selected_run_id": null,
+        "surface_state": "available",
+        "available": true,
+        "comparable": true,
+        "health_state": "healthy",
+        "freshness": "fresh",
+        "age_days": 29.7,
+        "latest_status": "rendered",
+        "latest_init_utc": "2026-08-01T00:00:00Z",
+        "selected_init_utc": "2026-08-01T00:00:00Z",
+        "selected_run_id": "seas5-2026080100-500mb_height_anomaly",
         "retained_fallback": false,
-        "reason": "No rendered target is currently published."
+        "reason": "Rendered target available."
       },
       {
         "model": "seas5",
@@ -29621,24 +29828,6 @@
         "reason": "Rendered target uses noncanonical units or field metadata and is excluded from comparison."
       },
       {
-        "model": "seas5",
-        "model_label": "ECMWF SEAS5",
-        "product": "500mb_height_anomaly",
-        "product_label": "500-mb Height Anomaly",
-        "surface_state": "missing",
-        "available": false,
-        "comparable": false,
-        "health_state": "missing",
-        "freshness": "unknown",
-        "age_days": null,
-        "latest_status": null,
-        "latest_init_utc": null,
-        "selected_init_utc": null,
-        "selected_run_id": null,
-        "retained_fallback": false,
-        "reason": "No rendered target is currently published."
-      },
-      {
         "model": "jma",
         "model_label": "JMA",
         "product": "precipitation_anomaly",
@@ -29698,7 +29887,7 @@
     "models_expected": 10,
     "models_online": 10,
     "supported_surfaces": 54,
-    "available_surfaces": 49,
+    "available_surfaces": 50,
     "partial_surfaces": 1,
     "intentional_unavailable_surfaces": 16
   },
