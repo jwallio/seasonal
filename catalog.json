@@ -2,7 +2,7 @@
   "schema_version": 1,
   "registry_version": 1,
   "kind": "seasonal_dashboard_catalog",
-  "generated_utc": "2026-08-30T17:24:09Z",
+  "generated_utc": "2026-08-30T17:25:27Z",
   "source_revision": "91e9bb7027b60b0bb220879ce9f7154ea15b737d",
   "model_order": [
     "superensemble",
@@ -28030,6 +28030,621 @@
       },
       "runs": [
         {
+          "id": "c3s-jma-2026080100-sea_surface_temperature_anomaly",
+          "model": "C3S JMA",
+          "component": "jma",
+          "component_label": "JMA",
+          "source": "Copernicus C3S / JMA",
+          "source_url": "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-single-levels",
+          "source_urls": [
+            "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-single-levels"
+          ],
+          "product": "sea_surface_temperature_anomaly",
+          "init_utc": "2026-08-01T00:00:00Z",
+          "status": "rendered",
+          "statistic": "ensemble_mean",
+          "aggregation": "official C3S monthly ensemble-mean anomaly",
+          "ensemble_scope": "JMA/System 4 ensemble",
+          "ensemble_members": 55,
+          "field": "sst_anomaly",
+          "units": "°C",
+          "raw_field": "sea-surface temperature anomaly",
+          "raw_units": "K",
+          "climatology": {
+            "status": "not_used",
+            "method": "native C3S postprocessed anomaly"
+          },
+          "baseline": {
+            "status": "official_postprocessed",
+            "source": "C3S native bias-adjusted anomaly"
+          },
+          "targets": [
+            {
+              "id": "c3s-jma-2026080100-sea_surface_temperature_anomaly-lead04",
+              "target_month": "202612",
+              "valid_start_utc": "2026-12-01T00:00:00Z",
+              "valid_end_utc": "2027-01-01T00:00:00Z",
+              "lead_month": 4,
+              "field": "sst_anomaly",
+              "units": "°C",
+              "status": "rendered",
+              "image": "jma/20260801/c3s_jma_sst_202612.jpg",
+              "statistic": "ensemble_mean",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "sea_surface_temperature_anomaly",
+                "units": "°C",
+                "field": "sst_anomaly",
+                "period": "monthly",
+                "total_points": 8357,
+                "finite_points": 4784,
+                "finite_fraction": 0.572454,
+                "minimum": -2.025543,
+                "maximum": 3.647308,
+                "p01": -0.8964,
+                "p99": 1.755919,
+                "display": {
+                  "minimum": -3.0,
+                  "maximum": 3.0,
+                  "step": 1.0,
+                  "below_fraction": 0.0,
+                  "above_fraction": 0.001254,
+                  "clipped_fraction": 0.001254
+                },
+                "issues": [],
+                "status": "passed"
+              },
+              "_catalog": {
+                "canonical_product": "sea_surface_temperature_anomaly",
+                "comparable": true,
+                "quality_control": "passed"
+              }
+            },
+            {
+              "id": "c3s-jma-2026080100-sea_surface_temperature_anomaly-lead05",
+              "target_month": "202701",
+              "valid_start_utc": "2027-01-01T00:00:00Z",
+              "valid_end_utc": "2027-02-01T00:00:00Z",
+              "lead_month": 5,
+              "field": "sst_anomaly",
+              "units": "°C",
+              "status": "rendered",
+              "image": "jma/20260801/c3s_jma_sst_202701.jpg",
+              "statistic": "ensemble_mean",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "sea_surface_temperature_anomaly",
+                "units": "°C",
+                "field": "sst_anomaly",
+                "period": "monthly",
+                "total_points": 8357,
+                "finite_points": 4784,
+                "finite_fraction": 0.572454,
+                "minimum": -2.494873,
+                "maximum": 3.498535,
+                "p01": -0.963196,
+                "p99": 1.711025,
+                "display": {
+                  "minimum": -3.0,
+                  "maximum": 3.0,
+                  "step": 1.0,
+                  "below_fraction": 0.0,
+                  "above_fraction": 0.000627,
+                  "clipped_fraction": 0.000627
+                },
+                "issues": [],
+                "status": "passed"
+              },
+              "_catalog": {
+                "canonical_product": "sea_surface_temperature_anomaly",
+                "comparable": true,
+                "quality_control": "passed"
+              }
+            },
+            {
+              "id": "c3s-jma-2026080100-sea_surface_temperature_anomaly-lead06",
+              "target_month": "202702",
+              "valid_start_utc": "2027-02-01T00:00:00Z",
+              "valid_end_utc": "2027-03-01T00:00:00Z",
+              "lead_month": 6,
+              "field": "sst_anomaly",
+              "units": "°C",
+              "status": "rendered",
+              "image": "jma/20260801/c3s_jma_sst_202702.jpg",
+              "statistic": "ensemble_mean",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "sea_surface_temperature_anomaly",
+                "units": "°C",
+                "field": "sst_anomaly",
+                "period": "monthly",
+                "total_points": 8357,
+                "finite_points": 4784,
+                "finite_fraction": 0.572454,
+                "minimum": -1.792877,
+                "maximum": 3.374115,
+                "p01": -0.933793,
+                "p99": 1.679491,
+                "display": {
+                  "minimum": -3.0,
+                  "maximum": 3.0,
+                  "step": 1.0,
+                  "below_fraction": 0.0,
+                  "above_fraction": 0.000418,
+                  "clipped_fraction": 0.000418
+                },
+                "issues": [],
+                "status": "passed"
+              },
+              "_catalog": {
+                "canonical_product": "sea_surface_temperature_anomaly",
+                "comparable": true,
+                "quality_control": "passed"
+              }
+            },
+            {
+              "id": "c3s-jma-2026080100-sea_surface_temperature_anomaly-202612-202702",
+              "target_month": "202612-202702",
+              "valid_start_utc": "2026-12-01T00:00:00Z",
+              "valid_end_utc": "2027-03-01T00:00:00Z",
+              "lead_month": "4–6",
+              "monthly_leads": [
+                4,
+                5,
+                6
+              ],
+              "field": "sst_anomaly",
+              "units": "°C",
+              "status": "rendered",
+              "image": "jma/20260801/c3s_jma_sst_202612-202702.jpg",
+              "statistic": "ensemble_mean",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "sea_surface_temperature_anomaly",
+                "units": "°C",
+                "field": "sst_anomaly",
+                "period": "seasonal",
+                "total_points": 8357,
+                "finite_points": 4784,
+                "finite_fraction": 0.572454,
+                "minimum": -1.887553,
+                "maximum": 3.364889,
+                "p01": -0.902667,
+                "p99": 1.647292,
+                "display": {
+                  "minimum": -3.0,
+                  "maximum": 3.0,
+                  "step": 1.0,
+                  "below_fraction": 0.0,
+                  "above_fraction": 0.000418,
+                  "clipped_fraction": 0.000418
+                },
+                "issues": [],
+                "status": "passed"
+              },
+              "_catalog": {
+                "canonical_product": "sea_surface_temperature_anomaly",
+                "comparable": true,
+                "quality_control": "passed"
+              }
+            }
+          ],
+          "_catalog": {
+            "canonical_product": "sea_surface_temperature_anomaly",
+            "comparable": true
+          }
+        },
+        {
+          "id": "c3s-jma-2026080100-precipitation_anomaly",
+          "model": "C3S JMA",
+          "component": "jma",
+          "component_label": "JMA",
+          "source": "Copernicus C3S / JMA",
+          "source_url": "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-single-levels",
+          "source_urls": [
+            "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-single-levels"
+          ],
+          "product": "precipitation_anomaly",
+          "init_utc": "2026-08-01T00:00:00Z",
+          "status": "rendered",
+          "statistic": "ensemble_mean",
+          "aggregation": "official C3S monthly ensemble-mean anomaly",
+          "ensemble_scope": "JMA/System 4 ensemble",
+          "ensemble_members": 55,
+          "field": "precipitation_anomaly",
+          "units": "in",
+          "raw_field": "total precipitation anomaly",
+          "raw_units": "m s⁻¹",
+          "climatology": {
+            "status": "not_used",
+            "method": "native C3S postprocessed anomaly"
+          },
+          "baseline": {
+            "status": "official_postprocessed",
+            "source": "C3S native bias-adjusted anomaly"
+          },
+          "targets": [
+            {
+              "id": "c3s-jma-2026080100-precipitation_anomaly-lead04",
+              "target_month": "202612",
+              "valid_start_utc": "2026-12-01T00:00:00Z",
+              "valid_end_utc": "2027-01-01T00:00:00Z",
+              "lead_month": 4,
+              "field": "precipitation_anomaly",
+              "units": "in",
+              "status": "rendered",
+              "image": "jma/20260801/c3s_jma_pr_202612.jpg",
+              "statistic": "ensemble_mean",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "precipitation_anomaly",
+                "units": "in",
+                "field": "precipitation_anomaly",
+                "period": "monthly",
+                "total_points": 2145,
+                "finite_points": 2145,
+                "finite_fraction": 1.0,
+                "minimum": -1.630298,
+                "maximum": 3.135804,
+                "p01": -0.841328,
+                "p99": 2.251666,
+                "display": {
+                  "minimum": -4.0,
+                  "maximum": 4.0,
+                  "step": 0.5,
+                  "below_fraction": 0.0,
+                  "above_fraction": 0.0,
+                  "clipped_fraction": 0.0
+                },
+                "issues": [],
+                "status": "passed"
+              },
+              "_catalog": {
+                "canonical_product": "precipitation_anomaly",
+                "comparable": true,
+                "quality_control": "passed"
+              }
+            },
+            {
+              "id": "c3s-jma-2026080100-precipitation_anomaly-lead05",
+              "target_month": "202701",
+              "valid_start_utc": "2027-01-01T00:00:00Z",
+              "valid_end_utc": "2027-02-01T00:00:00Z",
+              "lead_month": 5,
+              "field": "precipitation_anomaly",
+              "units": "in",
+              "status": "rendered",
+              "image": "jma/20260801/c3s_jma_pr_202701.jpg",
+              "statistic": "ensemble_mean",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "precipitation_anomaly",
+                "units": "in",
+                "field": "precipitation_anomaly",
+                "period": "monthly",
+                "total_points": 2145,
+                "finite_points": 2145,
+                "finite_fraction": 1.0,
+                "minimum": -1.057348,
+                "maximum": 3.433314,
+                "p01": -0.668909,
+                "p99": 3.010902,
+                "display": {
+                  "minimum": -4.0,
+                  "maximum": 4.0,
+                  "step": 0.5,
+                  "below_fraction": 0.0,
+                  "above_fraction": 0.0,
+                  "clipped_fraction": 0.0
+                },
+                "issues": [],
+                "status": "passed"
+              },
+              "_catalog": {
+                "canonical_product": "precipitation_anomaly",
+                "comparable": true,
+                "quality_control": "passed"
+              }
+            },
+            {
+              "id": "c3s-jma-2026080100-precipitation_anomaly-lead06",
+              "target_month": "202702",
+              "valid_start_utc": "2027-02-01T00:00:00Z",
+              "valid_end_utc": "2027-03-01T00:00:00Z",
+              "lead_month": 6,
+              "field": "precipitation_anomaly",
+              "units": "in",
+              "status": "rendered",
+              "image": "jma/20260801/c3s_jma_pr_202702.jpg",
+              "statistic": "ensemble_mean",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "precipitation_anomaly",
+                "units": "in",
+                "field": "precipitation_anomaly",
+                "period": "monthly",
+                "total_points": 2145,
+                "finite_points": 2145,
+                "finite_fraction": 1.0,
+                "minimum": -1.5218,
+                "maximum": 4.011048,
+                "p01": -0.98024,
+                "p99": 3.226582,
+                "display": {
+                  "minimum": -4.0,
+                  "maximum": 4.0,
+                  "step": 0.5,
+                  "below_fraction": 0.0,
+                  "above_fraction": 0.000466,
+                  "clipped_fraction": 0.000466
+                },
+                "issues": [],
+                "status": "passed"
+              },
+              "_catalog": {
+                "canonical_product": "precipitation_anomaly",
+                "comparable": true,
+                "quality_control": "passed"
+              }
+            },
+            {
+              "id": "c3s-jma-2026080100-precipitation_anomaly-202612-202702",
+              "target_month": "202612-202702",
+              "valid_start_utc": "2026-12-01T00:00:00Z",
+              "valid_end_utc": "2027-03-01T00:00:00Z",
+              "lead_month": "4–6",
+              "monthly_leads": [
+                4,
+                5,
+                6
+              ],
+              "field": "precipitation_anomaly",
+              "units": "in",
+              "status": "rendered",
+              "image": "jma/20260801/c3s_jma_pr_202612-202702.jpg",
+              "statistic": "ensemble_mean",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "precipitation_anomaly",
+                "units": "in",
+                "field": "precipitation_anomaly",
+                "period": "seasonal",
+                "total_points": 2145,
+                "finite_points": 2145,
+                "finite_fraction": 1.0,
+                "minimum": -3.563379,
+                "maximum": 9.82884,
+                "p01": -1.925692,
+                "p99": 8.200921,
+                "display": {
+                  "minimum": -8.0,
+                  "maximum": 8.0,
+                  "step": 1.0,
+                  "below_fraction": 0.0,
+                  "above_fraction": 0.012587,
+                  "clipped_fraction": 0.012587
+                },
+                "issues": [],
+                "status": "passed"
+              },
+              "_catalog": {
+                "canonical_product": "precipitation_anomaly",
+                "comparable": true,
+                "quality_control": "passed"
+              }
+            }
+          ],
+          "_catalog": {
+            "canonical_product": "precipitation_anomaly",
+            "comparable": true
+          }
+        },
+        {
+          "id": "c3s-jma-2026080100-mslp_anomaly",
+          "model": "C3S JMA",
+          "component": "jma",
+          "component_label": "JMA",
+          "source": "Copernicus C3S / JMA",
+          "source_url": "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-single-levels",
+          "source_urls": [
+            "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-single-levels"
+          ],
+          "product": "mslp_anomaly",
+          "init_utc": "2026-08-01T00:00:00Z",
+          "status": "rendered",
+          "statistic": "ensemble_mean",
+          "aggregation": "official C3S monthly ensemble-mean anomaly",
+          "ensemble_scope": "JMA/System 4 ensemble",
+          "ensemble_members": 55,
+          "field": "mslp_anomaly",
+          "units": "hPa",
+          "raw_field": "mean sea-level pressure anomaly",
+          "raw_units": "Pa",
+          "climatology": {
+            "status": "not_used",
+            "method": "native C3S postprocessed anomaly"
+          },
+          "baseline": {
+            "status": "official_postprocessed",
+            "source": "C3S native bias-adjusted anomaly"
+          },
+          "targets": [
+            {
+              "id": "c3s-jma-2026080100-mslp_anomaly-lead04",
+              "target_month": "202612",
+              "valid_start_utc": "2026-12-01T00:00:00Z",
+              "valid_end_utc": "2027-01-01T00:00:00Z",
+              "lead_month": 4,
+              "field": "mslp_anomaly",
+              "units": "hPa",
+              "status": "rendered",
+              "image": "jma/20260801/c3s_jma_slp_202612.jpg",
+              "statistic": "ensemble_mean",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "mslp_anomaly",
+                "units": "hPa",
+                "field": "mslp_anomaly",
+                "period": "monthly",
+                "total_points": 8357,
+                "finite_points": 8357,
+                "finite_fraction": 1.0,
+                "minimum": -5.290312,
+                "maximum": 1.801875,
+                "p01": -4.867763,
+                "p99": 1.244675,
+                "display": {
+                  "minimum": -10.0,
+                  "maximum": 10.0,
+                  "step": 1.0,
+                  "below_fraction": 0.0,
+                  "above_fraction": 0.0,
+                  "clipped_fraction": 0.0
+                },
+                "issues": [],
+                "status": "passed"
+              },
+              "_catalog": {
+                "canonical_product": "mslp_anomaly",
+                "comparable": true,
+                "quality_control": "passed"
+              }
+            },
+            {
+              "id": "c3s-jma-2026080100-mslp_anomaly-lead05",
+              "target_month": "202701",
+              "valid_start_utc": "2027-01-01T00:00:00Z",
+              "valid_end_utc": "2027-02-01T00:00:00Z",
+              "lead_month": 5,
+              "field": "mslp_anomaly",
+              "units": "hPa",
+              "status": "rendered",
+              "image": "jma/20260801/c3s_jma_slp_202701.jpg",
+              "statistic": "ensemble_mean",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "mslp_anomaly",
+                "units": "hPa",
+                "field": "mslp_anomaly",
+                "period": "monthly",
+                "total_points": 8357,
+                "finite_points": 8357,
+                "finite_fraction": 1.0,
+                "minimum": -6.306094,
+                "maximum": 3.038281,
+                "p01": -5.989294,
+                "p99": 2.349781,
+                "display": {
+                  "minimum": -10.0,
+                  "maximum": 10.0,
+                  "step": 1.0,
+                  "below_fraction": 0.0,
+                  "above_fraction": 0.0,
+                  "clipped_fraction": 0.0
+                },
+                "issues": [],
+                "status": "passed"
+              },
+              "_catalog": {
+                "canonical_product": "mslp_anomaly",
+                "comparable": true,
+                "quality_control": "passed"
+              }
+            },
+            {
+              "id": "c3s-jma-2026080100-mslp_anomaly-lead06",
+              "target_month": "202702",
+              "valid_start_utc": "2027-02-01T00:00:00Z",
+              "valid_end_utc": "2027-03-01T00:00:00Z",
+              "lead_month": 6,
+              "field": "mslp_anomaly",
+              "units": "hPa",
+              "status": "rendered",
+              "image": "jma/20260801/c3s_jma_slp_202702.jpg",
+              "statistic": "ensemble_mean",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "mslp_anomaly",
+                "units": "hPa",
+                "field": "mslp_anomaly",
+                "period": "monthly",
+                "total_points": 8357,
+                "finite_points": 8357,
+                "finite_fraction": 1.0,
+                "minimum": -9.499922,
+                "maximum": 2.952266,
+                "p01": -8.889034,
+                "p99": 2.462191,
+                "display": {
+                  "minimum": -10.0,
+                  "maximum": 10.0,
+                  "step": 1.0,
+                  "below_fraction": 0.0,
+                  "above_fraction": 0.0,
+                  "clipped_fraction": 0.0
+                },
+                "issues": [],
+                "status": "passed"
+              },
+              "_catalog": {
+                "canonical_product": "mslp_anomaly",
+                "comparable": true,
+                "quality_control": "passed"
+              }
+            },
+            {
+              "id": "c3s-jma-2026080100-mslp_anomaly-202612-202702",
+              "target_month": "202612-202702",
+              "valid_start_utc": "2026-12-01T00:00:00Z",
+              "valid_end_utc": "2027-03-01T00:00:00Z",
+              "lead_month": "4–6",
+              "monthly_leads": [
+                4,
+                5,
+                6
+              ],
+              "field": "mslp_anomaly",
+              "units": "hPa",
+              "status": "rendered",
+              "image": "jma/20260801/c3s_jma_slp_202612-202702.jpg",
+              "statistic": "ensemble_mean",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "mslp_anomaly",
+                "units": "hPa",
+                "field": "mslp_anomaly",
+                "period": "seasonal",
+                "total_points": 8357,
+                "finite_points": 8357,
+                "finite_fraction": 1.0,
+                "minimum": -5.983255,
+                "maximum": 2.389245,
+                "p01": -5.708572,
+                "p99": 1.779761,
+                "display": {
+                  "minimum": -10.0,
+                  "maximum": 10.0,
+                  "step": 1.0,
+                  "below_fraction": 0.0,
+                  "above_fraction": 0.0,
+                  "clipped_fraction": 0.0
+                },
+                "issues": [],
+                "status": "passed"
+              },
+              "_catalog": {
+                "canonical_product": "mslp_anomaly",
+                "comparable": true,
+                "quality_control": "passed"
+              }
+            }
+          ],
+          "_catalog": {
+            "canonical_product": "mslp_anomaly",
+            "comparable": true
+          }
+        },
+        {
           "id": "c3s-jma-2026080100-850mb_temperature_anomaly",
           "model": "C3S JMA",
           "component": "jma",
@@ -28070,10 +28685,34 @@
               "status": "rendered",
               "image": "jma/20260801/c3s_jma_t850_202612.jpg",
               "statistic": "ensemble_mean",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "850mb_temperature_anomaly",
+                "units": "°C",
+                "field": "t850_anomaly",
+                "period": "monthly",
+                "total_points": 8357,
+                "finite_points": 8357,
+                "finite_fraction": 1.0,
+                "minimum": -0.482788,
+                "maximum": 3.286865,
+                "p01": -0.397026,
+                "p99": 3.147686,
+                "display": {
+                  "minimum": -7.0,
+                  "maximum": 7.0,
+                  "step": 1.0,
+                  "below_fraction": 0.0,
+                  "above_fraction": 0.0,
+                  "clipped_fraction": 0.0
+                },
+                "issues": [],
+                "status": "passed"
+              },
               "_catalog": {
                 "canonical_product": "850mb_temperature_anomaly",
                 "comparable": true,
-                "quality_control": "legacy"
+                "quality_control": "passed"
               }
             },
             {
@@ -28087,10 +28726,34 @@
               "status": "rendered",
               "image": "jma/20260801/c3s_jma_t850_202701.jpg",
               "statistic": "ensemble_mean",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "850mb_temperature_anomaly",
+                "units": "°C",
+                "field": "t850_anomaly",
+                "period": "monthly",
+                "total_points": 8357,
+                "finite_points": 8357,
+                "finite_fraction": 1.0,
+                "minimum": -0.7034,
+                "maximum": 4.227509,
+                "p01": -0.547013,
+                "p99": 4.043344,
+                "display": {
+                  "minimum": -7.0,
+                  "maximum": 7.0,
+                  "step": 1.0,
+                  "below_fraction": 0.0,
+                  "above_fraction": 0.0,
+                  "clipped_fraction": 0.0
+                },
+                "issues": [],
+                "status": "passed"
+              },
               "_catalog": {
                 "canonical_product": "850mb_temperature_anomaly",
                 "comparable": true,
-                "quality_control": "legacy"
+                "quality_control": "passed"
               }
             },
             {
@@ -28104,10 +28767,34 @@
               "status": "rendered",
               "image": "jma/20260801/c3s_jma_t850_202702.jpg",
               "statistic": "ensemble_mean",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "850mb_temperature_anomaly",
+                "units": "°C",
+                "field": "t850_anomaly",
+                "period": "monthly",
+                "total_points": 8357,
+                "finite_points": 8357,
+                "finite_fraction": 1.0,
+                "minimum": -1.125488,
+                "maximum": 4.688599,
+                "p01": -0.971216,
+                "p99": 4.30188,
+                "display": {
+                  "minimum": -7.0,
+                  "maximum": 7.0,
+                  "step": 1.0,
+                  "below_fraction": 0.0,
+                  "above_fraction": 0.0,
+                  "clipped_fraction": 0.0
+                },
+                "issues": [],
+                "status": "passed"
+              },
               "_catalog": {
                 "canonical_product": "850mb_temperature_anomaly",
                 "comparable": true,
-                "quality_control": "legacy"
+                "quality_control": "passed"
               }
             },
             {
@@ -28126,10 +28813,34 @@
               "status": "rendered",
               "image": "jma/20260801/c3s_jma_t850_202612-202702.jpg",
               "statistic": "ensemble_mean",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "850mb_temperature_anomaly",
+                "units": "°C",
+                "field": "t850_anomaly",
+                "period": "seasonal",
+                "total_points": 8357,
+                "finite_points": 8357,
+                "finite_fraction": 1.0,
+                "minimum": -0.655446,
+                "maximum": 3.875397,
+                "p01": -0.507385,
+                "p99": 3.739855,
+                "display": {
+                  "minimum": -7.0,
+                  "maximum": 7.0,
+                  "step": 1.0,
+                  "below_fraction": 0.0,
+                  "above_fraction": 0.0,
+                  "clipped_fraction": 0.0
+                },
+                "issues": [],
+                "status": "passed"
+              },
               "_catalog": {
                 "canonical_product": "850mb_temperature_anomaly",
                 "comparable": true,
-                "quality_control": "legacy"
+                "quality_control": "passed"
               }
             }
           ],
@@ -28180,10 +28891,34 @@
               "status": "rendered",
               "image": "jma/20260801/c3s_jma_z500_202612.jpg",
               "statistic": "ensemble_mean",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "500mb_height_anomaly",
+                "units": "m",
+                "field": "z500_anomaly",
+                "period": "monthly",
+                "total_points": 8357,
+                "finite_points": 8357,
+                "finite_fraction": 1.0,
+                "minimum": -29.029249,
+                "maximum": 61.986796,
+                "p01": -23.293346,
+                "p99": 58.034631,
+                "display": {
+                  "minimum": -100.0,
+                  "maximum": 100.0,
+                  "step": 10.0,
+                  "below_fraction": 0.0,
+                  "above_fraction": 0.0,
+                  "clipped_fraction": 0.0
+                },
+                "issues": [],
+                "status": "passed"
+              },
               "_catalog": {
                 "canonical_product": "500mb_height_anomaly",
                 "comparable": true,
-                "quality_control": "legacy"
+                "quality_control": "passed"
               }
             },
             {
@@ -28197,10 +28932,34 @@
               "status": "rendered",
               "image": "jma/20260801/c3s_jma_z500_202701.jpg",
               "statistic": "ensemble_mean",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "500mb_height_anomaly",
+                "units": "m",
+                "field": "z500_anomaly",
+                "period": "monthly",
+                "total_points": 8357,
+                "finite_points": 8357,
+                "finite_fraction": 1.0,
+                "minimum": -58.351667,
+                "maximum": 78.099109,
+                "p01": -55.216804,
+                "p99": 73.312051,
+                "display": {
+                  "minimum": -100.0,
+                  "maximum": 100.0,
+                  "step": 10.0,
+                  "below_fraction": 0.0,
+                  "above_fraction": 0.0,
+                  "clipped_fraction": 0.0
+                },
+                "issues": [],
+                "status": "passed"
+              },
               "_catalog": {
                 "canonical_product": "500mb_height_anomaly",
                 "comparable": true,
-                "quality_control": "legacy"
+                "quality_control": "passed"
               }
             },
             {
@@ -28214,10 +28973,34 @@
               "status": "rendered",
               "image": "jma/20260801/c3s_jma_z500_202702.jpg",
               "statistic": "ensemble_mean",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "500mb_height_anomaly",
+                "units": "m",
+                "field": "z500_anomaly",
+                "period": "monthly",
+                "total_points": 8357,
+                "finite_points": 8357,
+                "finite_fraction": 1.0,
+                "minimum": -91.340283,
+                "maximum": 76.364795,
+                "p01": -83.429197,
+                "p99": 73.622395,
+                "display": {
+                  "minimum": -100.0,
+                  "maximum": 100.0,
+                  "step": 10.0,
+                  "below_fraction": 0.0,
+                  "above_fraction": 0.0,
+                  "clipped_fraction": 0.0
+                },
+                "issues": [],
+                "status": "passed"
+              },
               "_catalog": {
                 "canonical_product": "500mb_height_anomaly",
                 "comparable": true,
-                "quality_control": "legacy"
+                "quality_control": "passed"
               }
             },
             {
@@ -28236,10 +29019,34 @@
               "status": "rendered",
               "image": "jma/20260801/c3s_jma_z500_202612-202702.jpg",
               "statistic": "ensemble_mean",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "500mb_height_anomaly",
+                "units": "m",
+                "field": "z500_anomaly",
+                "period": "seasonal",
+                "total_points": 8357,
+                "finite_points": 8357,
+                "finite_fraction": 1.0,
+                "minimum": -51.163199,
+                "maximum": 71.7296,
+                "p01": -47.827112,
+                "p99": 67.854211,
+                "display": {
+                  "minimum": -100.0,
+                  "maximum": 100.0,
+                  "step": 10.0,
+                  "below_fraction": 0.0,
+                  "above_fraction": 0.0,
+                  "clipped_fraction": 0.0
+                },
+                "issues": [],
+                "status": "passed"
+              },
               "_catalog": {
                 "canonical_product": "500mb_height_anomaly",
                 "comparable": true,
-                "quality_control": "legacy"
+                "quality_control": "passed"
               }
             }
           ],
@@ -28289,10 +29096,40 @@
               "status": "rendered",
               "image": "jma/20260801/c3s_jma_t2m_202612.jpg",
               "statistic": "ensemble_mean",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "2m_temperature_anomaly",
+                "units": "°C",
+                "field": "t2m_anomaly",
+                "period": "monthly",
+                "total_points": 8357,
+                "finite_points": 8357,
+                "finite_fraction": 1.0,
+                "minimum": -0.841949,
+                "maximum": 12.806,
+                "p01": -0.30361,
+                "p99": 11.507347,
+                "display": {
+                  "minimum": -7.0,
+                  "maximum": 7.0,
+                  "step": 1.0,
+                  "below_fraction": 0.0,
+                  "above_fraction": 0.034821,
+                  "clipped_fraction": 0.034821
+                },
+                "issues": [
+                  {
+                    "code": "display_scale_clipping",
+                    "severity": "warning",
+                    "message": "3.5% of finite cells exceed the fixed display scale."
+                  }
+                ],
+                "status": "warning"
+              },
               "_catalog": {
                 "canonical_product": "2m_temperature_anomaly",
                 "comparable": true,
-                "quality_control": "legacy"
+                "quality_control": "warning"
               }
             },
             {
@@ -28306,10 +29143,40 @@
               "status": "rendered",
               "image": "jma/20260801/c3s_jma_t2m_202701.jpg",
               "statistic": "ensemble_mean",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "2m_temperature_anomaly",
+                "units": "°C",
+                "field": "t2m_anomaly",
+                "period": "monthly",
+                "total_points": 8357,
+                "finite_points": 8357,
+                "finite_fraction": 1.0,
+                "minimum": -0.660461,
+                "maximum": 11.543884,
+                "p01": -0.241497,
+                "p99": 10.320535,
+                "display": {
+                  "minimum": -7.0,
+                  "maximum": 7.0,
+                  "step": 1.0,
+                  "below_fraction": 0.0,
+                  "above_fraction": 0.03159,
+                  "clipped_fraction": 0.03159
+                },
+                "issues": [
+                  {
+                    "code": "display_scale_clipping",
+                    "severity": "warning",
+                    "message": "3.2% of finite cells exceed the fixed display scale."
+                  }
+                ],
+                "status": "warning"
+              },
               "_catalog": {
                 "canonical_product": "2m_temperature_anomaly",
                 "comparable": true,
-                "quality_control": "legacy"
+                "quality_control": "warning"
               }
             },
             {
@@ -28323,10 +29190,34 @@
               "status": "rendered",
               "image": "jma/20260801/c3s_jma_t2m_202702.jpg",
               "statistic": "ensemble_mean",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "2m_temperature_anomaly",
+                "units": "°C",
+                "field": "t2m_anomaly",
+                "period": "monthly",
+                "total_points": 8357,
+                "finite_points": 8357,
+                "finite_fraction": 1.0,
+                "minimum": -1.086319,
+                "maximum": 9.560654,
+                "p01": -0.374317,
+                "p99": 7.489443,
+                "display": {
+                  "minimum": -7.0,
+                  "maximum": 7.0,
+                  "step": 1.0,
+                  "below_fraction": 0.0,
+                  "above_fraction": 0.018667,
+                  "clipped_fraction": 0.018667
+                },
+                "issues": [],
+                "status": "passed"
+              },
               "_catalog": {
                 "canonical_product": "2m_temperature_anomaly",
                 "comparable": true,
-                "quality_control": "legacy"
+                "quality_control": "passed"
               }
             },
             {
@@ -28345,10 +29236,40 @@
               "status": "rendered",
               "image": "jma/20260801/c3s_jma_t2m_202612-202702.jpg",
               "statistic": "ensemble_mean",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "2m_temperature_anomaly",
+                "units": "°C",
+                "field": "t2m_anomaly",
+                "period": "seasonal",
+                "total_points": 8357,
+                "finite_points": 8357,
+                "finite_fraction": 1.0,
+                "minimum": -0.627558,
+                "maximum": 10.461553,
+                "p01": -0.207555,
+                "p99": 9.524629,
+                "display": {
+                  "minimum": -7.0,
+                  "maximum": 7.0,
+                  "step": 1.0,
+                  "below_fraction": 0.0,
+                  "above_fraction": 0.026206,
+                  "clipped_fraction": 0.026206
+                },
+                "issues": [
+                  {
+                    "code": "display_scale_clipping",
+                    "severity": "warning",
+                    "message": "2.6% of finite cells exceed the fixed display scale."
+                  }
+                ],
+                "status": "warning"
+              },
               "_catalog": {
                 "canonical_product": "2m_temperature_anomaly",
                 "comparable": true,
-                "quality_control": "legacy"
+                "quality_control": "warning"
               }
             }
           ],
@@ -28358,48 +29279,26 @@
           }
         }
       ],
-      "status": "degraded",
+      "status": "online",
       "schema_version": 1,
       "manifest_kind": "c3s_seasonal_manifest",
-      "generated_utc": "2026-08-20T00:37:12Z",
+      "generated_utc": "2026-08-30T17:21:02Z",
       "source_url": "https://climate.copernicus.eu/seasonal-forecasts",
       "product_labels": {
         "500mb_height_anomaly": "500-mb Height Anomaly",
         "850mb_temperature_anomaly": "850-mb Temperature Anomaly",
         "2m_temperature_anomaly": "2-m Temperature Anomaly",
         "precipitation_anomaly": "Precipitation Anomaly",
+        "snowfall_anomaly": "snowfall_anomaly",
         "sea_surface_temperature_anomaly": "Sea-Surface Temperature Anomaly",
         "mslp_anomaly": "MSLP Anomaly"
       },
       "validation": {
-        "status": "warning",
+        "status": "passed",
         "error_count": 0,
-        "warning_count": 3,
-        "issue_codes": [
-          "legacy_qc_missing:2m_temperature_anomaly",
-          "legacy_qc_missing:500mb_height_anomaly",
-          "legacy_qc_missing:850mb_temperature_anomaly"
-        ],
-        "issues": [
-          {
-            "code": "legacy_qc_missing:850mb_temperature_anomaly",
-            "severity": "warning",
-            "message": "Retained 850mb_temperature_anomaly targets predate numerical grid QC; regenerate this product to certify it.",
-            "path": "runs[0].targets[0]"
-          },
-          {
-            "code": "legacy_qc_missing:500mb_height_anomaly",
-            "severity": "warning",
-            "message": "Retained 500mb_height_anomaly targets predate numerical grid QC; regenerate this product to certify it.",
-            "path": "runs[1].targets[0]"
-          },
-          {
-            "code": "legacy_qc_missing:2m_temperature_anomaly",
-            "severity": "warning",
-            "message": "Retained 2m_temperature_anomaly targets predate numerical grid QC; regenerate this product to certify it.",
-            "path": "runs[2].targets[0]"
-          }
-        ]
+        "warning_count": 0,
+        "issue_codes": [],
+        "issues": []
       },
       "surfaces": {
         "500mb_height_anomaly": {
@@ -28442,14 +29341,16 @@
           "retained_fallback": false
         },
         "precipitation_anomaly": {
-          "state": "missing",
-          "reason": "No rendered target is currently published.",
-          "available": false,
-          "comparable": false,
-          "latest_init_utc": null,
-          "latest_run_id": null,
-          "latest_run_status": null,
-          "latest_run_init_utc": null,
+          "state": "available",
+          "reason": "Rendered target available.",
+          "available": true,
+          "comparable": true,
+          "latest_init_utc": "2026-08-01T00:00:00Z",
+          "run_id": "c3s-jma-2026080100-precipitation_anomaly",
+          "target_count": 4,
+          "latest_run_id": "c3s-jma-2026080100-precipitation_anomaly",
+          "latest_run_status": "rendered",
+          "latest_run_init_utc": "2026-08-01T00:00:00Z",
           "retained_fallback": false
         },
         "snowfall_anomaly": {
@@ -28459,25 +29360,29 @@
           "comparable": false
         },
         "mslp_anomaly": {
-          "state": "missing",
-          "reason": "No rendered target is currently published.",
-          "available": false,
-          "comparable": false,
-          "latest_init_utc": null,
-          "latest_run_id": null,
-          "latest_run_status": null,
-          "latest_run_init_utc": null,
+          "state": "available",
+          "reason": "Rendered target available.",
+          "available": true,
+          "comparable": true,
+          "latest_init_utc": "2026-08-01T00:00:00Z",
+          "run_id": "c3s-jma-2026080100-mslp_anomaly",
+          "target_count": 4,
+          "latest_run_id": "c3s-jma-2026080100-mslp_anomaly",
+          "latest_run_status": "rendered",
+          "latest_run_init_utc": "2026-08-01T00:00:00Z",
           "retained_fallback": false
         },
         "sea_surface_temperature_anomaly": {
-          "state": "missing",
-          "reason": "No rendered target is currently published.",
-          "available": false,
-          "comparable": false,
-          "latest_init_utc": null,
-          "latest_run_id": null,
-          "latest_run_status": null,
-          "latest_run_init_utc": null,
+          "state": "available",
+          "reason": "Rendered target available.",
+          "available": true,
+          "comparable": true,
+          "latest_init_utc": "2026-08-01T00:00:00Z",
+          "run_id": "c3s-jma-2026080100-sea_surface_temperature_anomaly",
+          "target_count": 4,
+          "latest_run_id": "c3s-jma-2026080100-sea_surface_temperature_anomaly",
+          "latest_run_status": "rendered",
+          "latest_run_init_utc": "2026-08-01T00:00:00Z",
           "retained_fallback": false
         }
       }
@@ -28485,7 +29390,7 @@
   },
   "health": {
     "status": "attention",
-    "generated_utc": "2026-08-30T17:24:09Z",
+    "generated_utc": "2026-08-30T17:25:27Z",
     "freshness_policy_days": {
       "default": {
         "fresh_days": 35,
@@ -28498,14 +29403,14 @@
     },
     "summary": {
       "surfaces": 70,
-      "attention_surfaces": 6,
+      "attention_surfaces": 3,
       "by_state": {
-        "healthy": 48,
+        "healthy": 51,
         "aging": 0,
         "stale": 0,
         "partial": 1,
         "failed": 0,
-        "missing": 4,
+        "missing": 1,
         "noncomparable": 1,
         "not_applicable": 16
       }
@@ -29704,18 +30609,18 @@
         "model_label": "JMA",
         "product": "precipitation_anomaly",
         "product_label": "Precipitation Anomaly",
-        "surface_state": "missing",
-        "available": false,
-        "comparable": false,
-        "health_state": "missing",
-        "freshness": "unknown",
-        "age_days": null,
-        "latest_status": null,
-        "latest_init_utc": null,
-        "selected_init_utc": null,
-        "selected_run_id": null,
+        "surface_state": "available",
+        "available": true,
+        "comparable": true,
+        "health_state": "healthy",
+        "freshness": "fresh",
+        "age_days": 29.7,
+        "latest_status": "rendered",
+        "latest_init_utc": "2026-08-01T00:00:00Z",
+        "selected_init_utc": "2026-08-01T00:00:00Z",
+        "selected_run_id": "c3s-jma-2026080100-precipitation_anomaly",
         "retained_fallback": false,
-        "reason": "No rendered target is currently published."
+        "reason": "Rendered target available."
       },
       {
         "model": "jma",
@@ -29740,36 +30645,36 @@
         "model_label": "JMA",
         "product": "mslp_anomaly",
         "product_label": "MSLP Anomaly",
-        "surface_state": "missing",
-        "available": false,
-        "comparable": false,
-        "health_state": "missing",
-        "freshness": "unknown",
-        "age_days": null,
-        "latest_status": null,
-        "latest_init_utc": null,
-        "selected_init_utc": null,
-        "selected_run_id": null,
+        "surface_state": "available",
+        "available": true,
+        "comparable": true,
+        "health_state": "healthy",
+        "freshness": "fresh",
+        "age_days": 29.7,
+        "latest_status": "rendered",
+        "latest_init_utc": "2026-08-01T00:00:00Z",
+        "selected_init_utc": "2026-08-01T00:00:00Z",
+        "selected_run_id": "c3s-jma-2026080100-mslp_anomaly",
         "retained_fallback": false,
-        "reason": "No rendered target is currently published."
+        "reason": "Rendered target available."
       },
       {
         "model": "jma",
         "model_label": "JMA",
         "product": "sea_surface_temperature_anomaly",
         "product_label": "Sea-Surface Temperature Anomaly",
-        "surface_state": "missing",
-        "available": false,
-        "comparable": false,
-        "health_state": "missing",
-        "freshness": "unknown",
-        "age_days": null,
-        "latest_status": null,
-        "latest_init_utc": null,
-        "selected_init_utc": null,
-        "selected_run_id": null,
+        "surface_state": "available",
+        "available": true,
+        "comparable": true,
+        "health_state": "healthy",
+        "freshness": "fresh",
+        "age_days": 29.7,
+        "latest_status": "rendered",
+        "latest_init_utc": "2026-08-01T00:00:00Z",
+        "selected_init_utc": "2026-08-01T00:00:00Z",
+        "selected_run_id": "c3s-jma-2026080100-sea_surface_temperature_anomaly",
         "retained_fallback": false,
-        "reason": "No rendered target is currently published."
+        "reason": "Rendered target available."
       }
     ],
     "attention": [
@@ -29826,60 +30731,6 @@
         "selected_run_id": "apcc-202609-precipitation_anomaly",
         "retained_fallback": false,
         "reason": "Rendered target uses noncanonical units or field metadata and is excluded from comparison."
-      },
-      {
-        "model": "jma",
-        "model_label": "JMA",
-        "product": "precipitation_anomaly",
-        "product_label": "Precipitation Anomaly",
-        "surface_state": "missing",
-        "available": false,
-        "comparable": false,
-        "health_state": "missing",
-        "freshness": "unknown",
-        "age_days": null,
-        "latest_status": null,
-        "latest_init_utc": null,
-        "selected_init_utc": null,
-        "selected_run_id": null,
-        "retained_fallback": false,
-        "reason": "No rendered target is currently published."
-      },
-      {
-        "model": "jma",
-        "model_label": "JMA",
-        "product": "mslp_anomaly",
-        "product_label": "MSLP Anomaly",
-        "surface_state": "missing",
-        "available": false,
-        "comparable": false,
-        "health_state": "missing",
-        "freshness": "unknown",
-        "age_days": null,
-        "latest_status": null,
-        "latest_init_utc": null,
-        "selected_init_utc": null,
-        "selected_run_id": null,
-        "retained_fallback": false,
-        "reason": "No rendered target is currently published."
-      },
-      {
-        "model": "jma",
-        "model_label": "JMA",
-        "product": "sea_surface_temperature_anomaly",
-        "product_label": "Sea-Surface Temperature Anomaly",
-        "surface_state": "missing",
-        "available": false,
-        "comparable": false,
-        "health_state": "missing",
-        "freshness": "unknown",
-        "age_days": null,
-        "latest_status": null,
-        "latest_init_utc": null,
-        "selected_init_utc": null,
-        "selected_run_id": null,
-        "retained_fallback": false,
-        "reason": "No rendered target is currently published."
       }
     ]
   },
@@ -29887,7 +30738,7 @@
     "models_expected": 10,
     "models_online": 10,
     "supported_surfaces": 54,
-    "available_surfaces": 50,
+    "available_surfaces": 53,
     "partial_surfaces": 1,
     "intentional_unavailable_surfaces": 16
   },
