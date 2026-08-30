@@ -26,13 +26,21 @@ estimate. The map uses tenths-of-an-inch labelled bins from -0.8 to +0.8 inches
 to resolve the smaller liquid-water-equivalent signal; a centre that does not return the field is retained as a failed or
 partial component rather than being silently substituted with snowpack.
 
-The GitHub workflow is `.github/workflows/c3s.yml`. It requires the existing
+The release monitor is `.github/workflows/seasonal-release-check.yml`. Starting
+at the official 10th/12 UTC C3S window, it polls the CDS catalogue constraints
+until all configured centre/system pairs and the full core field suite are
+queryable. It also requires native snowfall for the six centres that currently
+contribute to the snowfall blend. It dispatches the complete worker only when
+the live multi-system manifest is missing a current product.
+
+The rendering worker is `.github/workflows/c3s.yml`. It requires the existing
 `CDS_API_KEY` repository secret and publishes `c3s_manifest.json` plus images
-under `seasonal/c3s/`. Accept the current CDS dataset licence before running
-the workflow.
+under `seasonal/c3s/`. Manual runs can select one parameter or the explicit
+`all` suite. Accept the current CDS dataset licence before running the workflow.
 
 Official sources:
 
 - [C3S seasonal forecasts](https://climate.copernicus.eu/seasonal-forecasts)
 - [C3S pressure-level postprocessed dataset](https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-pressure-levels)
 - [C3S single-level postprocessed dataset](https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-single-levels)
+- [C3S data availability summary](https://confluence.ecmwf.int/pages/viewpage.action?navigatingVersions=true&pageId=638830872)

@@ -1,0 +1,197 @@
+name: Check Seasonal CDS Releases
+run-name: "CDS release check · ${{ inputs.target || 'current UTC month' }}"
+
+on:
+  schedule:
+    # Poll quickly around the documented CDS release windows, then hourly for
+    # several days if indexing or an individual centre is delayed.
+    - cron: "*/15 12-18 6 * *"
+    - cron: "17 * 7-9 * *"
+    - cron: "*/15 12-18 10 * *"
+    - cron: "17 * 11-12 * *"
+    - cron: "17 12 13-31 * *"
+  workflow_dispatch:
+    inputs:
+      worker:
+        description: "Release worker to evaluate and dispatch"
+        required: false
+        default: "all"
+        type: choice
+        options:
+          - all
+          - seas5
+          - c3s
+          - jma
+      target:
+        description: "Nominal initialization month as YYYYMM (blank = current UTC month)"
+        required: false
+        default: ""
+        type: string
+      force:
+        description: "Dispatch even when the live manifest is already complete"
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  actions: write
+  contents: read
+
+concurrency:
+  group: seasonal-cds-release-check
+  cancel-in-progress: false
+
+jobs:
+  check-and-dispatch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Resolve check target
+        id: plan
+        shell: bash
+        env:
+          REQUESTED_TARGET: ${{ inputs.target }}
+          REQUESTED_WORKER: ${{ inputs.worker }}
+          REQUESTED_FORCE: ${{ inputs.force }}
+        run: |
+          set -euo pipefail
+          target="${REQUESTED_TARGET:-$(date -u +%Y%m)}"
+          if [[ ! "$target" =~ ^[0-9]{6}$ ]]; then
+            echo "::error::Target must use YYYYMM."
+            exit 1
+          fi
+          worker="${REQUESTED_WORKER:-all}"
+          force="${REQUESTED_FORCE:-false}"
+          echo "target=$target" >> "$GITHUB_OUTPUT"
+          echo "worker=$worker" >> "$GITHUB_OUTPUT"
+          echo "force=$force" >> "$GITHUB_OUTPUT"
+
+      - name: Check CDS inventory and live manifests
+        id: release
+        shell: bash
+        env:
+          TARGET: ${{ steps.plan.outputs.target }}
+        run: |
+          set -euo pipefail
+          python scripts/check_seasonal_releases.py \
+            --target "$TARGET" \
+            --site-base "https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}" \
+            --json-output seasonal-release-status.json \
+            --github-output "$GITHUB_OUTPUT"
+
+      - name: Summarize release state
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          import os
+
+          with open("seasonal-release-status.json", encoding="utf-8") as handle:
+              report = json.load(handle)
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as summary:
+              summary.write(f"## CDS seasonal release check — {report['target']}\n\n")
+              summary.write("| Worker | Window open | Source ready | Live suite complete | Missing live products |\n")
+              summary.write("| --- | --- | --- | --- | --- |\n")
+              for worker, status in report["workers"].items():
+                  missing = ", ".join(status["missing_products"]) or "—"
+                  summary.write(
+                      f"| {worker.upper()} | {status['window_open']} | {status['source_ready']} "
+                      f"| {status['published']} | {missing} |\n"
+                  )
+              summary.write("\nThe check reads the current CDS catalogue constraints; it does not submit a data retrieval job.\n")
+          PY
+
+      - name: Dispatch ready, unpublished suites
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TARGET: ${{ steps.plan.outputs.target }}
+          REQUESTED_WORKER: ${{ steps.plan.outputs.worker }}
+          FORCE: ${{ steps.plan.outputs.force }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+          SEAS5_WINDOW_OPEN: ${{ steps.release.outputs.seas5_window_open }}
+          SEAS5_SOURCE_READY: ${{ steps.release.outputs.seas5_source_ready }}
+          SEAS5_PUBLISHED: ${{ steps.release.outputs.seas5_published }}
+          SEAS5_MISSING_SOURCE_COUNT: ${{ steps.release.outputs.seas5_missing_source_count }}
+          C3S_WINDOW_OPEN: ${{ steps.release.outputs.c3s_window_open }}
+          C3S_SOURCE_READY: ${{ steps.release.outputs.c3s_source_ready }}
+          C3S_PUBLISHED: ${{ steps.release.outputs.c3s_published }}
+          C3S_MISSING_SOURCE_COUNT: ${{ steps.release.outputs.c3s_missing_source_count }}
+          JMA_WINDOW_OPEN: ${{ steps.release.outputs.jma_window_open }}
+          JMA_SOURCE_READY: ${{ steps.release.outputs.jma_source_ready }}
+          JMA_PUBLISHED: ${{ steps.release.outputs.jma_published }}
+          JMA_MISSING_SOURCE_COUNT: ${{ steps.release.outputs.jma_missing_source_count }}
+        run: |
+          set -euo pipefail
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "### Dispatch decisions" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Worker | Decision |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| --- | --- |" >> "$GITHUB_STEP_SUMMARY"
+
+          dispatch_worker() {
+            local worker="$1"
+            local workflow="$2"
+            local window_open="$3"
+            local source_ready="$4"
+            local published="$5"
+            local missing_source_count="$6"
+
+            if [[ "$REQUESTED_WORKER" != "all" && "$REQUESTED_WORKER" != "$worker" ]]; then
+              echo "| ${worker^^} | Not selected |" >> "$GITHUB_STEP_SUMMARY"
+              return
+            fi
+            if [[ "$window_open" != "true" ]]; then
+              echo "| ${worker^^} | Waiting for documented release window |" >> "$GITHUB_STEP_SUMMARY"
+              return
+            fi
+            if [[ "$source_ready" != "true" ]]; then
+              echo "| ${worker^^} | Waiting for $missing_source_count CDS inventory selections |" >> "$GITHUB_STEP_SUMMARY"
+              return
+            fi
+            if [[ "$published" == "true" && "$FORCE" != "true" ]]; then
+              echo "| ${worker^^} | Current suite is already live |" >> "$GITHUB_STEP_SUMMARY"
+              return
+            fi
+
+            local active
+            active="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/$workflow/runs?per_page=20" \
+              --jq '[.workflow_runs[] | select(.status != "completed")] | length')"
+            if [[ "$active" -gt 0 ]]; then
+              echo "| ${worker^^} | Existing run is active; no duplicate dispatched |" >> "$GITHUB_STEP_SUMMARY"
+              return
+            fi
+
+            if [[ "$FORCE" != "true" ]]; then
+              local recent updated_epoch now_epoch age
+              recent="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/$workflow/runs?per_page=20" \
+                --jq "[.workflow_runs[] | select(((.display_title // \"\") | contains(\"$TARGET · all\"))) | select(.status == \"completed\")][0].updated_at // \"\"")"
+              if [[ -n "$recent" ]]; then
+                updated_epoch="$(date -u -d "$recent" +%s)"
+                now_epoch="$(date -u +%s)"
+                age="$((now_epoch - updated_epoch))"
+                if [[ "$age" -lt 2700 ]]; then
+                  echo "| ${worker^^} | Recent full-suite attempt is cooling down before retry |" >> "$GITHUB_STEP_SUMMARY"
+                  return
+                fi
+              fi
+            fi
+
+            gh workflow run "$workflow" \
+              --ref "$DEFAULT_BRANCH" \
+              -f product=all \
+              -f init="$TARGET"
+            echo "| ${worker^^} | Dispatched full $TARGET suite |" >> "$GITHUB_STEP_SUMMARY"
+          }
+
+          dispatch_worker "seas5" "seas5.yml" "$SEAS5_WINDOW_OPEN" "$SEAS5_SOURCE_READY" "$SEAS5_PUBLISHED" "$SEAS5_MISSING_SOURCE_COUNT"
+          dispatch_worker "c3s" "c3s.yml" "$C3S_WINDOW_OPEN" "$C3S_SOURCE_READY" "$C3S_PUBLISHED" "$C3S_MISSING_SOURCE_COUNT"
+          dispatch_worker "jma" "jma.yml" "$JMA_WINDOW_OPEN" "$JMA_SOURCE_READY" "$JMA_PUBLISHED" "$JMA_MISSING_SOURCE_COUNT"

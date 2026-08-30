@@ -1,10 +1,9 @@
 name: ECMWF SEAS5 Seasonal Graphics
+run-name: "SEAS5 ${{ inputs.init || 'latest' }} · ${{ inputs.product || '500mb_height_anomaly' }}"
 
 on:
-  schedule:
-    # ECMWF releases the 7-month SEAS5 forecast on the 5th at 12 UTC.
-    # Leave time for CDS indexing before starting the download.
-    - cron: "30 15 5 * *"
+  # Automatic release detection and dispatch are owned by
+  # seasonal-release-check.yml. Keep this workflow as the rendering worker.
   workflow_dispatch:
     inputs:
       product:
@@ -13,6 +12,7 @@ on:
         default: "500mb_height_anomaly"
         type: choice
         options:
+          - all
           - 500mb_height_anomaly
           - 2m_temperature_anomaly
           - 850mb_temperature_anomaly
@@ -43,7 +43,11 @@ on:
         type: string
 
 permissions:
-  contents: write
+  contents: read
+
+concurrency:
+  group: seasonal-seas5
+  cancel-in-progress: false
 
 jobs:
   render:
@@ -115,7 +119,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if [[ "${{ github.event_name }}" == "schedule" ]]; then
+          if [[ "$SEAS5_PRODUCT" == "all" ]]; then
             IFS=',' read -r -a products <<< "$SCHEDULED_SEAS5_PRODUCTS"
           else
             products=("$SEAS5_PRODUCT")
