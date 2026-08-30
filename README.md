@@ -74,6 +74,7 @@ They support:
 - Centered, domain-fitted eastern-U.S. snowfall maps through the Great Lakes
   and Southeast
 - Inverse similarity-distance weighting using pattern and amplitude similarity
+- Bicubic display resampling with light sub-grid filtering for coarse WRIT data
 - 0.25-degree snowfall interpolation with recorded SciPy/NumPy fallback
 - Retained last-good products and stale-source status when a provider fails
 

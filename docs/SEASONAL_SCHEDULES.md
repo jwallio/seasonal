@@ -61,7 +61,12 @@ NCEP/CFSR using its native 1981-2010 climatology; pre-1979 analog dates use
 WRIT 20CRv3, which has the same native climatology period. Both are re-rendered
 through the shared seasonal Lambert Conformal Conic renderer. The 500-mb maps
 retain the North America frame; 2-metre temperature uses the shared CONUS
-frame. Both retain the provider image/data URLs in the product manifest.
+frame. WRIT's coarse native grids are lightly filtered at 0.85 grid cells and
+bicubically resampled only for display; the decoded grids and weighted analog
+composites remain unchanged. The renderer version, interpolation method, and
+filter strength are recorded in the product manifest, and a renderer-version
+change forces cached composites to rebuild. Both products retain the provider
+image/data URLs in the product manifest.
 Analog ranking remains ordered by centered pattern correlation, with a separate
 cosine-latitude-weighted RMS anomaly amplitude similarity. The top five ranked
 analogs are combined into PSL 500-mb, 2-metre, and snowfall-departure maps using

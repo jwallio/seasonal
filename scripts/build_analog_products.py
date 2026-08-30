@@ -138,8 +138,9 @@ WRIT_CLIMATOLOGY_YEARS = "1981-2010"
 WRIT_CLIMATOLOGY_LABEL = "NCEP/CFSR native climatology; 1981-2010"
 WRIT_NORTH_AMERICA_REGION = "North America"
 WRIT_CONUS_REGION = "USA(CONUS)"
-WRIT_RENDERER_ID = "wn2-seasonal-lcc-v1"
-WRIT_RENDERER_LABEL = "WN2 shared seasonal Lambert Conformal Conic renderer"
+WRIT_SOURCE_SMOOTHING_SIGMA = 0.85
+WRIT_RENDERER_ID = "wn2-seasonal-lcc-v2"
+WRIT_RENDERER_LABEL = "WN2 seasonal Lambert Conformal Conic renderer with bicubic WRIT resampling"
 COMPOSITE_PRODUCT_KEYS = (
     "psl_500mb_height_anomaly",
     "psl_2m_temperature_anomaly",
@@ -804,6 +805,12 @@ def _writ_rendering_metadata(
         metadata["border_files"] = [Path(str(item)).name for item in product_spec["border_files"]]
     if product_spec.get("map_extent"):
         metadata["map_extent"] = str(product_spec["map_extent"])
+    if product_spec.get("resampling_method"):
+        metadata["resampling_method"] = str(product_spec["resampling_method"])
+    if product_spec.get("source_smoothing_sigma") is not None:
+        metadata["source_smoothing_sigma_grid_cells"] = float(
+            product_spec["source_smoothing_sigma"]
+        )
     return metadata
 
 
@@ -835,6 +842,8 @@ def _writ_render_product_spec(product_key: str, seasonal: Any, dataset: str) -> 
             ),
             "lead_label": "Historical analog",
             "region": region,
+            "resampling_method": "bicubic",
+            "source_smoothing_sigma": WRIT_SOURCE_SMOOTHING_SIGMA,
         }
     )
     return spec
@@ -1289,6 +1298,8 @@ def _build_composite_product(
         old
         and old.get("composite_key") == composite_key
         and old.get("composite_method") == analogs.COMPOSITE_METHOD
+        and isinstance(old.get("rendering"), dict)
+        and old["rendering"].get("id") == WRIT_RENDERER_ID
         and old.get("status") == "ready"
         and old.get("image")
         and _resolve_rooted(root, str(old.get("image", ""))).exists()

@@ -9,6 +9,8 @@ import tempfile
 from types import SimpleNamespace
 from urllib.parse import parse_qs, urlsplit
 
+import numpy as np
+
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPTS = ROOT / "scripts"
@@ -33,6 +35,7 @@ def check(condition: bool, message: str) -> None:
 
 def main() -> int:
     module = load_module()
+    import cfsv2_seasonal as seasonal
 
     december = module._period_for_result("202612", {"label": "December 1940", "winter_year": 1941})
     check(december["start_date"] == "1940-12-01", "December analog start date is wrong")
@@ -57,6 +60,58 @@ def main() -> int:
     check(temperature_query["dataset1"] == [module.WRIT_DATASET], "PSL temperature maps must use the CFSR archive family")
     check(temperature_query["proj"] == ["USA(CONUS)"], "PSL 2-m temperature maps should use the CONUS region")
     check(temperature_query["colortable"] == ["testcmap"], "PSL 2-m temperature maps should use testcmap")
+    writ_render_spec = module._writ_render_product_spec(
+        "psl_500mb_height_anomaly",
+        seasonal,
+        module.WRIT_DATASET,
+    )
+    check(
+        writ_render_spec["resampling_method"] == "bicubic",
+        "WRIT maps should smooth coarse-grid contour geometry with bicubic resampling",
+    )
+    check(
+        writ_render_spec["source_smoothing_sigma"] == module.WRIT_SOURCE_SMOOTHING_SIGMA,
+        "WRIT maps should use the configured sub-cell source smoothing",
+    )
+    rendering_metadata = module._writ_rendering_metadata(
+        seasonal,
+        region=tuple(writ_render_spec["region"]),
+        map_region=module.WRIT_NORTH_AMERICA_REGION,
+        product_spec=writ_render_spec,
+    )
+    check(rendering_metadata["id"] == module.WRIT_RENDERER_ID, "WRIT renderer version is stale")
+    check(
+        rendering_metadata["resampling_method"] == "bicubic"
+        and rendering_metadata["source_smoothing_sigma_grid_cells"]
+        == module.WRIT_SOURCE_SMOOTHING_SIGMA,
+        "WRIT rendering metadata should disclose its display interpolation",
+    )
+
+    source_lons = np.arange(-180.0, 180.0, 30.0)
+    source_lats = np.arange(-90.0, 91.0, 30.0)
+    source_values = (
+        np.sin(np.deg2rad(source_lats))[:, None]
+        + np.cos(np.deg2rad(source_lons))[None, :]
+    )
+    source_copy = source_values.copy()
+    sample_lons = np.asarray([[-179.9, -45.0, 45.0, 180.1]])
+    sample_lats = np.asarray([[0.0, 15.0, -15.0, 0.0]])
+    sampled = seasonal._bicubic_sample_grid(
+        source_lons,
+        source_lats,
+        source_values,
+        sample_lons,
+        sample_lats,
+        smoothing_sigma=module.WRIT_SOURCE_SMOOTHING_SIGMA,
+    )
+    check(sampled.shape == sample_lons.shape and np.isfinite(sampled).all(), "bicubic WRIT sampling failed")
+    check(abs(float(sampled[0, 0] - sampled[0, 3])) < 0.000001, "bicubic WRIT sampling has a dateline seam")
+    check(np.array_equal(source_values, source_copy), "display smoothing must not modify the source grid")
+    check(
+        float(np.min(sampled)) >= float(np.min(source_values))
+        and float(np.max(sampled)) <= float(np.max(source_values)),
+        "bicubic WRIT sampling should not invent extrema",
+    )
     psl_image_url = module._extract_psl_image_url(
         b'<img src="/img/icons/us_flag_small.png"><IMG src="/tmp/generated_map.png">'
     )
@@ -424,6 +479,25 @@ def main() -> int:
                 grid_cache={},
             )
             check(retained is composite, "unchanged WRIT composite should be reused")
+            old_renderer = {**composite, "rendering": {"id": "wn2-seasonal-lcc-v1"}}
+            refreshed_renderer = module._build_composite_product(
+                root=root,
+                output_dir=root / "seasonal" / "analog_products",
+                model="cfsv2",
+                target="202612",
+                target_label="December 2026",
+                members=members,
+                product_key="psl_500mb_height_anomaly",
+                old=old_renderer,
+                fetcher=lambda _url, _timeout: b"unused",
+                timeout=1,
+                grid_cache={},
+            )
+            check(
+                refreshed_renderer is not old_renderer
+                and refreshed_renderer["rendering"]["id"] == module.WRIT_RENDERER_ID,
+                "WRIT composites should rebuild when the display renderer changes",
+            )
             analog_path = root / "seasonal" / "analog_z500_manifest.json"
             analog_path.parent.mkdir(parents=True, exist_ok=True)
             analog_path.write_text(

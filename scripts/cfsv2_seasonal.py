@@ -406,6 +406,143 @@ class Grid:
             raise CFSv2Error(f"{label} grid does not match the forecast grid")
 
 
+def _bicubic_sample_grid(
+    source_lons,
+    source_lats,
+    field,
+    longitude_values,
+    latitude_values,
+    smoothing_sigma: float = 0.0,
+):
+    """Smoothly sample a complete global grid for display rendering."""
+
+    try:
+        import numpy as np
+    except ImportError as exc:  # pragma: no cover - target installs requirements.txt
+        raise CFSv2Error("bicubic map resampling requires numpy") from exc
+
+    longitude_axis = np.asarray(source_lons, dtype=float)
+    latitude_axis = np.asarray(source_lats, dtype=float)
+    source_field = np.asarray(field, dtype=float)
+    if source_field.shape != (latitude_axis.size, longitude_axis.size):
+        raise CFSv2Error("bicubic source field does not match its coordinate axes")
+    if latitude_axis.size < 4 or longitude_axis.size < 4:
+        raise CFSv2Error("bicubic map resampling requires at least four grid points per axis")
+    if not np.isfinite(source_field).all():
+        raise CFSv2Error("bicubic map resampling requires a complete finite source grid")
+    if not math.isfinite(smoothing_sigma) or smoothing_sigma < 0.0:
+        raise CFSv2Error("bicubic source smoothing must be a finite non-negative value")
+
+    render_field = source_field
+    if smoothing_sigma > 0.0:
+        # Smooth a rendering copy, not the decoded or averaged Grid. Longitude
+        # wraps at the dateline; latitude stops at the poles. A sub-cell sigma
+        # suppresses coarse-grid contour facets while retaining the synoptic
+        # anomaly centers and the original value range.
+        radius = max(1, int(math.ceil(3.0 * smoothing_sigma)))
+        offsets = np.arange(-radius, radius + 1, dtype=int)
+        kernel = np.exp(-0.5 * (offsets / smoothing_sigma) ** 2)
+        kernel /= np.sum(kernel)
+        longitude_smoothed = sum(
+            weight * np.roll(source_field, int(offset), axis=1)
+            for offset, weight in zip(offsets, kernel, strict=True)
+        )
+        latitude_padded = np.pad(
+            longitude_smoothed,
+            ((radius, radius), (0, 0)),
+            mode="edge",
+        )
+        render_field = sum(
+            weight
+            * latitude_padded[
+                radius + int(offset):radius + int(offset) + latitude_axis.size,
+                :,
+            ]
+            for offset, weight in zip(offsets, kernel, strict=True)
+        )
+
+    def cubic(p0, p1, p2, p3, fraction):
+        fraction_squared = fraction * fraction
+        return 0.5 * (
+            2.0 * p1
+            + (-p0 + p2) * fraction
+            + (2.0 * p0 - 5.0 * p1 + 4.0 * p2 - p3) * fraction_squared
+            + (-p0 + 3.0 * p1 - 3.0 * p2 + p3)
+            * fraction_squared
+            * fraction
+        )
+
+    # WRIT grids are global. Cyclic longitude indices keep the cubic stencil
+    # continuous across the dateline without copying or altering the grid.
+    wrapped_longitudes = (
+        np.mod(np.asarray(longitude_values, dtype=float) - longitude_axis[0], 360.0)
+        + longitude_axis[0]
+    )
+    clipped_latitudes = np.clip(
+        np.asarray(latitude_values, dtype=float),
+        latitude_axis[0],
+        latitude_axis[-1],
+    )
+    longitude_right = np.searchsorted(longitude_axis, wrapped_longitudes, side="right")
+    longitude_wrap = longitude_right >= longitude_axis.size
+    lon_index_1 = np.where(
+        longitude_wrap,
+        longitude_axis.size - 1,
+        np.maximum(longitude_right - 1, 0),
+    )
+    lon_index_2 = np.where(longitude_wrap, 0, longitude_right)
+    lon_index_0 = np.mod(lon_index_1 - 1, longitude_axis.size)
+    lon_index_3 = np.mod(lon_index_2 + 1, longitude_axis.size)
+    left_longitude = longitude_axis[lon_index_1]
+    right_longitude = np.where(
+        longitude_wrap,
+        longitude_axis[0] + 360.0,
+        longitude_axis[lon_index_2],
+    )
+    longitude_fraction = np.divide(
+        wrapped_longitudes - left_longitude,
+        right_longitude - left_longitude,
+        out=np.zeros_like(wrapped_longitudes),
+        where=(right_longitude - left_longitude) != 0.0,
+    )
+
+    latitude_right = np.searchsorted(latitude_axis, clipped_latitudes, side="right")
+    latitude_right = np.clip(latitude_right, 1, latitude_axis.size - 1)
+    lat_index_1 = latitude_right - 1
+    lat_index_2 = latitude_right
+    lat_index_0 = np.maximum(lat_index_1 - 1, 0)
+    lat_index_3 = np.minimum(lat_index_2 + 1, latitude_axis.size - 1)
+    left_latitude = latitude_axis[lat_index_1]
+    right_latitude = latitude_axis[lat_index_2]
+    latitude_fraction = np.divide(
+        clipped_latitudes - left_latitude,
+        right_latitude - left_latitude,
+        out=np.zeros_like(clipped_latitudes),
+        where=(right_latitude - left_latitude) != 0.0,
+    )
+
+    longitude_rows = [
+        cubic(
+            render_field[lat_index, lon_index_0],
+            render_field[lat_index, lon_index_1],
+            render_field[lat_index, lon_index_2],
+            render_field[lat_index, lon_index_3],
+            longitude_fraction,
+        )
+        for lat_index in (lat_index_0, lat_index_1, lat_index_2, lat_index_3)
+    ]
+    sampled = cubic(
+        longitude_rows[0],
+        longitude_rows[1],
+        longitude_rows[2],
+        longitude_rows[3],
+        latitude_fraction,
+    )
+    # Cubic interpolation can overshoot around a sharp local gradient. Keep
+    # the display interpolation inside the observed source-grid extrema.
+    return np.clip(sampled, float(np.min(source_field)), float(np.max(source_field)))
+
+
 def get_product_spec(product: str) -> dict:
     try:
         return PRODUCT_SPECS[product]
@@ -1687,6 +1824,14 @@ def render_map(
     canvas_x = np.linspace(x_min, x_max, canvas_columns)
     canvas_y = np.linspace(y_min, y_max, canvas_rows)
     canvas_x_mesh, canvas_y_mesh = np.meshgrid(canvas_x, canvas_y)
+    resampling_method = str(product_spec.get("resampling_method", "bilinear")).lower()
+    if resampling_method not in {"bilinear", "bicubic"}:
+        raise CFSv2Error(f"unsupported map resampling method {resampling_method!r}")
+    source_smoothing_sigma = float(product_spec.get("source_smoothing_sigma", 0.0))
+    if not math.isfinite(source_smoothing_sigma) or source_smoothing_sigma < 0.0:
+        raise CFSv2Error("map source smoothing must be a finite non-negative value")
+    if source_smoothing_sigma > 0.0 and resampling_method != "bicubic":
+        raise CFSv2Error("map source smoothing requires bicubic resampling")
 
     def lcc_inverse(x_values, y_values):
         x_array = np.asarray(x_values, dtype=float)
@@ -1699,9 +1844,20 @@ def render_map(
         return np.rad2deg(longitude), np.rad2deg(latitude)
 
     def sample_source(field, longitude_values, latitude_values):
+        if resampling_method == "bicubic" and np.isfinite(field).all():
+            return _bicubic_sample_grid(
+                source_lons,
+                source_lats,
+                field,
+                longitude_values,
+                latitude_values,
+                smoothing_sigma=source_smoothing_sigma,
+            )
         # CFSv2 pressure-level files are regular 1-degree grids, while FLXF
         # files use Gaussian latitudes.  Bracket coordinates directly so both
         # grids can be resampled without inventing a regular-latitude grid.
+        # Incomplete fields also use this finite-safe fallback because cubic
+        # interpolation cannot preserve interior missing-data masks.
         wrapped_longitudes = np.mod(longitude_values - source_lons[0], 360.0) + source_lons[0]
         longitude_right = np.searchsorted(source_lons, wrapped_longitudes, side="right")
         longitude_wrap = longitude_right >= source_lons.size
