@@ -1,7 +1,7 @@
 {
   "schema_version": "seasonal_analog_products_v1",
   "kind": "seasonal_analog_products_manifest",
-  "generated_utc": "2026-08-30T18:35:16Z",
+  "generated_utc": "2026-08-30T21:26:41Z",
   "source": {
     "analog_manifest": "analog_z500_manifest.json",
     "climatology_years": "1981-2010",
@@ -72,7 +72,7 @@
           "label": "500-mb Geopotential Height Anomaly",
           "provider": "NOAA PSL WRIT",
           "status": "ready",
-          "image": "seasonal/analog_products/superensemble/202702/1983/psl_500mb_height_anomaly.png",
+          "image": "analog_products/superensemble/202702/1983/psl_500mb_height_anomaly.png",
           "top_analog_key": "superensemble:202702:1983",
           "period": {
             "period_type": "month",
@@ -85,14 +85,14 @@
             "winter_year": 1983
           },
           "source_url": "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=Geopotential+Height&level=500mb&iy=1983&fmonth=1&fmonth2=1&type=1&map=0&mapt=6&proj=North+America&colortable=default&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
-          "provider_asset_url": "https://psl.noaa.gov/tmp/nclyNrcjeFe5W.nc",
+          "provider_asset_url": "https://psl.noaa.gov/tmp/nclAvq3oltQD5.nc",
           "dataset": "NCEP/CFSR",
           "climatology_years": "1981-2010",
-          "generated_utc": "2026-08-26T18:00:59Z",
-          "provider_image_url": "https://psl.noaa.gov/tmp/nclyNrcjeFe5W.tmpqq.png",
+          "generated_utc": "2026-08-30T21:24:02Z",
+          "provider_image_url": "https://psl.noaa.gov/tmp/nclAvq3oltQD5.tmpqq.png",
           "rendering": {
-            "id": "wn2-seasonal-lcc-v1",
-            "label": "WN2 shared seasonal Lambert Conformal Conic renderer",
+            "id": "wn2-seasonal-lcc-v2",
+            "label": "WN2 seasonal Lambert Conformal Conic renderer with bicubic WRIT resampling",
             "projection": "Lambert Conformal Conic",
             "standard_parallels": [
               30.0,
@@ -100,6 +100,7 @@
             ],
             "latitude_origin": 45.0,
             "central_longitude": -100.0,
+            "projected_x_shift_fraction": 0.035,
             "map_region": "North America",
             "region": [
               -160.0,
@@ -107,7 +108,9 @@
               22.0,
               85.0
             ],
-            "canvas": "1080x1080"
+            "canvas": "1080x1080",
+            "resampling_method": "bicubic",
+            "source_smoothing_sigma_grid_cells": 0.85
           },
           "climatology_label": "NCEP/CFSR native climatology; 1981-2010",
           "map_region": "North America"
@@ -117,7 +120,7 @@
           "label": "2-m Temperature Anomaly",
           "provider": "NOAA PSL WRIT",
           "status": "ready",
-          "image": "seasonal/analog_products/superensemble/202702/1983/psl_2m_temperature_anomaly.png",
+          "image": "analog_products/superensemble/202702/1983/psl_2m_temperature_anomaly.png",
           "top_analog_key": "superensemble:202702:1983",
           "period": {
             "period_type": "month",
@@ -130,14 +133,14 @@
             "winter_year": 1983
           },
           "source_url": "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=2m+Air+Temperature&level=1000mb&iy=1983&fmonth=1&fmonth2=1&type=1&map=0&mapt=6&proj=USA%28CONUS%29&colortable=testcmap&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
-          "provider_asset_url": "https://psl.noaa.gov/tmp/ncl1l1X84Qsga.nc",
+          "provider_asset_url": "https://psl.noaa.gov/tmp/nclYLeRIt46u9.nc",
           "dataset": "NCEP/CFSR",
           "climatology_years": "1981-2010",
-          "generated_utc": "2026-08-26T18:01:01Z",
-          "provider_image_url": "https://psl.noaa.gov/tmp/ncl1l1X84Qsga.tmpqq.png",
+          "generated_utc": "2026-08-30T21:24:04Z",
+          "provider_image_url": "https://psl.noaa.gov/tmp/nclYLeRIt46u9.tmpqq.png",
           "rendering": {
-            "id": "wn2-seasonal-lcc-v1",
-            "label": "WN2 shared seasonal Lambert Conformal Conic renderer",
+            "id": "wn2-seasonal-lcc-v2",
+            "label": "WN2 seasonal Lambert Conformal Conic renderer with bicubic WRIT resampling",
             "projection": "Lambert Conformal Conic",
             "standard_parallels": [
               30.0,
@@ -145,14 +148,17 @@
             ],
             "latitude_origin": 45.0,
             "central_longitude": -100.0,
+            "projected_x_shift_fraction": 0.035,
             "map_region": "USA(CONUS)",
             "region": [
-              -128.0,
-              -65.0,
-              22.0,
-              52.0
+              -126.0,
+              -66.0,
+              24.0,
+              50.0
             ],
-            "canvas": "1080x1080"
+            "canvas": "1080x1080",
+            "resampling_method": "bicubic",
+            "source_smoothing_sigma_grid_cells": 0.85
           },
           "climatology_label": "NCEP/CFSR native climatology; 1981-2010",
           "map_region": "USA(CONUS)"
@@ -240,7 +246,7 @@
           "label": "Weighted Top 5-Analog Composite \u00b7 500-mb Geopotential Height Anomaly",
           "provider": "NOAA PSL WRIT",
           "status": "ready",
-          "image": "seasonal/analog_products/superensemble/202702/composite/psl_500mb_height_anomaly.png",
+          "image": "analog_products/superensemble/202702/composite/psl_500mb_height_anomaly.png",
           "composite_key": "superensemble:202702:top5:composite-eccc0bd038ab",
           "composite_method": "inverse similarity-distance weighting over the top analogs",
           "composite_pattern_weight": 0.8,
@@ -299,18 +305,18 @@
             "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=Geopotential+Height&level=500mb&iy=2010&fmonth=1&fmonth2=1&type=1&map=0&mapt=6&proj=North+America&colortable=default&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot"
           ],
           "provider_asset_urls": [
-            "https://psl.noaa.gov/tmp/ncllbbI2PxAp2.nc",
-            "https://psl.noaa.gov/tmp/ncl340hkad_m5.nc",
-            "https://psl.noaa.gov/tmp/nclxdE_GKnB74.nc",
-            "https://psl.noaa.gov/tmp/nclIqrcGx96BD.nc",
-            "https://psl.noaa.gov/tmp/nclnEnDKj4fXu.nc"
+            "https://psl.noaa.gov/tmp/nclzxr4aTvCoy.nc",
+            "https://psl.noaa.gov/tmp/nclff2j55RacW.nc",
+            "https://psl.noaa.gov/tmp/nclmyS4hMmM3P.nc",
+            "https://psl.noaa.gov/tmp/nclkeuf5QyDsr.nc",
+            "https://psl.noaa.gov/tmp/nclaIuZ4xb3eh.nc"
           ],
           "provider_image_urls": [
-            "https://psl.noaa.gov/tmp/ncllbbI2PxAp2.tmpqq.png",
-            "https://psl.noaa.gov/tmp/ncl340hkad_m5.tmpqq.png",
-            "https://psl.noaa.gov/tmp/nclxdE_GKnB74.tmpqq.png",
-            "https://psl.noaa.gov/tmp/nclIqrcGx96BD.tmpqq.png",
-            "https://psl.noaa.gov/tmp/nclnEnDKj4fXu.tmpqq.png"
+            "https://psl.noaa.gov/tmp/nclzxr4aTvCoy.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclff2j55RacW.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclmyS4hMmM3P.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclkeuf5QyDsr.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclaIuZ4xb3eh.tmpqq.png"
           ],
           "dataset": "20CRv3 + NCEP CFSR",
           "datasets": [
@@ -320,8 +326,8 @@
           "climatology_years": "1981-2010",
           "climatology_label": "WRIT native climatologies; 1981-2010",
           "rendering": {
-            "id": "wn2-seasonal-lcc-v1",
-            "label": "WN2 shared seasonal Lambert Conformal Conic renderer",
+            "id": "wn2-seasonal-lcc-v2",
+            "label": "WN2 seasonal Lambert Conformal Conic renderer with bicubic WRIT resampling",
             "projection": "Lambert Conformal Conic",
             "standard_parallels": [
               30.0,
@@ -329,6 +335,7 @@
             ],
             "latitude_origin": 45.0,
             "central_longitude": -100.0,
+            "projected_x_shift_fraction": 0.035,
             "map_region": "North America",
             "region": [
               -160.0,
@@ -336,17 +343,19 @@
               22.0,
               85.0
             ],
-            "canvas": "1080x1080"
+            "canvas": "1080x1080",
+            "resampling_method": "bicubic",
+            "source_smoothing_sigma_grid_cells": 0.85
           },
           "map_region": "North America",
-          "generated_utc": "2026-08-26T19:43:46Z"
+          "generated_utc": "2026-08-30T21:24:25Z"
         },
         "psl_2m_temperature_anomaly": {
           "product": "psl_2m_temperature_anomaly",
           "label": "Weighted Top 5-Analog Composite \u00b7 2-m Temperature Anomaly",
           "provider": "NOAA PSL WRIT",
           "status": "ready",
-          "image": "seasonal/analog_products/superensemble/202702/composite/psl_2m_temperature_anomaly.png",
+          "image": "analog_products/superensemble/202702/composite/psl_2m_temperature_anomaly.png",
           "composite_key": "superensemble:202702:top5:composite-eccc0bd038ab",
           "composite_method": "inverse similarity-distance weighting over the top analogs",
           "composite_pattern_weight": 0.8,
@@ -405,18 +414,18 @@
             "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=2m+Air+Temperature&level=1000mb&iy=2010&fmonth=1&fmonth2=1&type=1&map=0&mapt=6&proj=USA%28CONUS%29&colortable=testcmap&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot"
           ],
           "provider_asset_urls": [
-            "https://psl.noaa.gov/tmp/ncldDjs_UsdAf.nc",
-            "https://psl.noaa.gov/tmp/ncljqcpgntvNQ.nc",
-            "https://psl.noaa.gov/tmp/nclTodbdAUfF5.nc",
-            "https://psl.noaa.gov/tmp/nclO2ob7SWM_y.nc",
-            "https://psl.noaa.gov/tmp/ncl6dXmtSabub.nc"
+            "https://psl.noaa.gov/tmp/ncl8OuWuwPLdz.nc",
+            "https://psl.noaa.gov/tmp/nclGuFOt0Y6lf.nc",
+            "https://psl.noaa.gov/tmp/nclB4NTigtU6w.nc",
+            "https://psl.noaa.gov/tmp/ncldO7OxtMG1b.nc",
+            "https://psl.noaa.gov/tmp/nclisYqr7XAnc.nc"
           ],
           "provider_image_urls": [
-            "https://psl.noaa.gov/tmp/ncldDjs_UsdAf.tmpqq.png",
-            "https://psl.noaa.gov/tmp/ncljqcpgntvNQ.tmpqq.png",
-            "https://psl.noaa.gov/tmp/nclTodbdAUfF5.tmpqq.png",
-            "https://psl.noaa.gov/tmp/nclO2ob7SWM_y.tmpqq.png",
-            "https://psl.noaa.gov/tmp/ncl6dXmtSabub.tmpqq.png"
+            "https://psl.noaa.gov/tmp/ncl8OuWuwPLdz.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclGuFOt0Y6lf.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclB4NTigtU6w.tmpqq.png",
+            "https://psl.noaa.gov/tmp/ncldO7OxtMG1b.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclisYqr7XAnc.tmpqq.png"
           ],
           "dataset": "20CRv3 + NCEP CFSR",
           "datasets": [
@@ -426,8 +435,8 @@
           "climatology_years": "1981-2010",
           "climatology_label": "WRIT native climatologies; 1981-2010",
           "rendering": {
-            "id": "wn2-seasonal-lcc-v1",
-            "label": "WN2 shared seasonal Lambert Conformal Conic renderer",
+            "id": "wn2-seasonal-lcc-v2",
+            "label": "WN2 seasonal Lambert Conformal Conic renderer with bicubic WRIT resampling",
             "projection": "Lambert Conformal Conic",
             "standard_parallels": [
               30.0,
@@ -435,17 +444,20 @@
             ],
             "latitude_origin": 45.0,
             "central_longitude": -100.0,
+            "projected_x_shift_fraction": 0.035,
             "map_region": "USA(CONUS)",
             "region": [
-              -128.0,
-              -65.0,
-              22.0,
-              52.0
+              -126.0,
+              -66.0,
+              24.0,
+              50.0
             ],
-            "canvas": "1080x1080"
+            "canvas": "1080x1080",
+            "resampling_method": "bicubic",
+            "source_smoothing_sigma_grid_cells": 0.85
           },
           "map_region": "USA(CONUS)",
-          "generated_utc": "2026-08-26T19:43:55Z"
+          "generated_utc": "2026-08-30T21:24:34Z"
         },
         "mrcc_snowfall_departure_composite": {
           "product": "mrcc_snowfall_departure_composite",
@@ -675,7 +687,7 @@
           "label": "500-mb Geopotential Height Anomaly",
           "provider": "NOAA PSL WRIT",
           "status": "ready",
-          "image": "seasonal/analog_products/superensemble/202701/1958/psl_500mb_height_anomaly.png",
+          "image": "analog_products/superensemble/202701/1958/psl_500mb_height_anomaly.png",
           "top_analog_key": "superensemble:202701:1958",
           "period": {
             "period_type": "month",
@@ -688,14 +700,14 @@
             "winter_year": 1958
           },
           "source_url": "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=20th+Century+Reanalysis+V3&var=Geopotential+Height&level=500mb&iy=1958&fmonth=0&fmonth2=0&type=1&map=0&mapt=6&proj=North+America&colortable=default&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
-          "provider_asset_url": "https://psl.noaa.gov/tmp/ncljAvL4lh5sQ.nc",
+          "provider_asset_url": "https://psl.noaa.gov/tmp/nclwbQFalDuFi.nc",
           "dataset": "20th Century Reanalysis V3",
           "climatology_years": "1981-2010",
-          "generated_utc": "2026-08-26T18:01:03Z",
-          "provider_image_url": "https://psl.noaa.gov/tmp/ncljAvL4lh5sQ.tmpqq.png",
+          "generated_utc": "2026-08-30T21:24:37Z",
+          "provider_image_url": "https://psl.noaa.gov/tmp/nclwbQFalDuFi.tmpqq.png",
           "rendering": {
-            "id": "wn2-seasonal-lcc-v1",
-            "label": "WN2 shared seasonal Lambert Conformal Conic renderer",
+            "id": "wn2-seasonal-lcc-v2",
+            "label": "WN2 seasonal Lambert Conformal Conic renderer with bicubic WRIT resampling",
             "projection": "Lambert Conformal Conic",
             "standard_parallels": [
               30.0,
@@ -703,6 +715,7 @@
             ],
             "latitude_origin": 45.0,
             "central_longitude": -100.0,
+            "projected_x_shift_fraction": 0.035,
             "map_region": "North America",
             "region": [
               -160.0,
@@ -710,7 +723,9 @@
               22.0,
               85.0
             ],
-            "canvas": "1080x1080"
+            "canvas": "1080x1080",
+            "resampling_method": "bicubic",
+            "source_smoothing_sigma_grid_cells": 0.85
           },
           "climatology_label": "20th Century Reanalysis V3 native climatology; 1981-2010",
           "map_region": "North America"
@@ -720,7 +735,7 @@
           "label": "2-m Temperature Anomaly",
           "provider": "NOAA PSL WRIT",
           "status": "ready",
-          "image": "seasonal/analog_products/superensemble/202701/1958/psl_2m_temperature_anomaly.png",
+          "image": "analog_products/superensemble/202701/1958/psl_2m_temperature_anomaly.png",
           "top_analog_key": "superensemble:202701:1958",
           "period": {
             "period_type": "month",
@@ -733,14 +748,14 @@
             "winter_year": 1958
           },
           "source_url": "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=20th+Century+Reanalysis+V3&var=2m+Air+Temperature&level=1000mb&iy=1958&fmonth=0&fmonth2=0&type=1&map=0&mapt=6&proj=USA%28CONUS%29&colortable=testcmap&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
-          "provider_asset_url": "https://psl.noaa.gov/tmp/nclcBOxSqvcej.nc",
+          "provider_asset_url": "https://psl.noaa.gov/tmp/nclnwEXfRkpEo.nc",
           "dataset": "20th Century Reanalysis V3",
           "climatology_years": "1981-2010",
-          "generated_utc": "2026-08-26T18:01:05Z",
-          "provider_image_url": "https://psl.noaa.gov/tmp/nclcBOxSqvcej.tmpqq.png",
+          "generated_utc": "2026-08-30T21:24:39Z",
+          "provider_image_url": "https://psl.noaa.gov/tmp/nclnwEXfRkpEo.tmpqq.png",
           "rendering": {
-            "id": "wn2-seasonal-lcc-v1",
-            "label": "WN2 shared seasonal Lambert Conformal Conic renderer",
+            "id": "wn2-seasonal-lcc-v2",
+            "label": "WN2 seasonal Lambert Conformal Conic renderer with bicubic WRIT resampling",
             "projection": "Lambert Conformal Conic",
             "standard_parallels": [
               30.0,
@@ -748,14 +763,17 @@
             ],
             "latitude_origin": 45.0,
             "central_longitude": -100.0,
+            "projected_x_shift_fraction": 0.035,
             "map_region": "USA(CONUS)",
             "region": [
-              -128.0,
-              -65.0,
-              22.0,
-              52.0
+              -126.0,
+              -66.0,
+              24.0,
+              50.0
             ],
-            "canvas": "1080x1080"
+            "canvas": "1080x1080",
+            "resampling_method": "bicubic",
+            "source_smoothing_sigma_grid_cells": 0.85
           },
           "climatology_label": "20th Century Reanalysis V3 native climatology; 1981-2010",
           "map_region": "USA(CONUS)"
@@ -843,7 +861,7 @@
           "label": "Weighted Top 5-Analog Composite \u00b7 500-mb Geopotential Height Anomaly",
           "provider": "NOAA PSL WRIT",
           "status": "ready",
-          "image": "seasonal/analog_products/superensemble/202701/composite/psl_500mb_height_anomaly.png",
+          "image": "analog_products/superensemble/202701/composite/psl_500mb_height_anomaly.png",
           "composite_key": "superensemble:202701:top5:composite-9179de055e4b",
           "composite_method": "inverse similarity-distance weighting over the top analogs",
           "composite_pattern_weight": 0.8,
@@ -902,18 +920,18 @@
             "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=Geopotential+Height&level=500mb&iy=2010&fmonth=0&fmonth2=0&type=1&map=0&mapt=6&proj=North+America&colortable=default&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot"
           ],
           "provider_asset_urls": [
-            "https://psl.noaa.gov/tmp/ncl1j01qFy2CH.nc",
-            "https://psl.noaa.gov/tmp/nclTp4oz2arZM.nc",
-            "https://psl.noaa.gov/tmp/nclSMbtCdt58H.nc",
-            "https://psl.noaa.gov/tmp/nclflK4uw4KDD.nc",
-            "https://psl.noaa.gov/tmp/nclJfzbGCqV9T.nc"
+            "https://psl.noaa.gov/tmp/nclOkMviKQfg7.nc",
+            "https://psl.noaa.gov/tmp/ncl2vIerALhLI.nc",
+            "https://psl.noaa.gov/tmp/nclsNLNruSrq4.nc",
+            "https://psl.noaa.gov/tmp/nclueVD73dyZA.nc",
+            "https://psl.noaa.gov/tmp/ncl6wrNrz1fdU.nc"
           ],
           "provider_image_urls": [
-            "https://psl.noaa.gov/tmp/ncl1j01qFy2CH.tmpqq.png",
-            "https://psl.noaa.gov/tmp/nclTp4oz2arZM.tmpqq.png",
-            "https://psl.noaa.gov/tmp/nclSMbtCdt58H.tmpqq.png",
-            "https://psl.noaa.gov/tmp/nclflK4uw4KDD.tmpqq.png",
-            "https://psl.noaa.gov/tmp/nclJfzbGCqV9T.tmpqq.png"
+            "https://psl.noaa.gov/tmp/nclOkMviKQfg7.tmpqq.png",
+            "https://psl.noaa.gov/tmp/ncl2vIerALhLI.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclsNLNruSrq4.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclueVD73dyZA.tmpqq.png",
+            "https://psl.noaa.gov/tmp/ncl6wrNrz1fdU.tmpqq.png"
           ],
           "dataset": "20CRv3 + NCEP CFSR",
           "datasets": [
@@ -923,8 +941,8 @@
           "climatology_years": "1981-2010",
           "climatology_label": "WRIT native climatologies; 1981-2010",
           "rendering": {
-            "id": "wn2-seasonal-lcc-v1",
-            "label": "WN2 shared seasonal Lambert Conformal Conic renderer",
+            "id": "wn2-seasonal-lcc-v2",
+            "label": "WN2 seasonal Lambert Conformal Conic renderer with bicubic WRIT resampling",
             "projection": "Lambert Conformal Conic",
             "standard_parallels": [
               30.0,
@@ -932,6 +950,7 @@
             ],
             "latitude_origin": 45.0,
             "central_longitude": -100.0,
+            "projected_x_shift_fraction": 0.035,
             "map_region": "North America",
             "region": [
               -160.0,
@@ -939,17 +958,19 @@
               22.0,
               85.0
             ],
-            "canvas": "1080x1080"
+            "canvas": "1080x1080",
+            "resampling_method": "bicubic",
+            "source_smoothing_sigma_grid_cells": 0.85
           },
           "map_region": "North America",
-          "generated_utc": "2026-08-26T19:44:04Z"
+          "generated_utc": "2026-08-30T21:24:48Z"
         },
         "psl_2m_temperature_anomaly": {
           "product": "psl_2m_temperature_anomaly",
           "label": "Weighted Top 5-Analog Composite \u00b7 2-m Temperature Anomaly",
           "provider": "NOAA PSL WRIT",
           "status": "ready",
-          "image": "seasonal/analog_products/superensemble/202701/composite/psl_2m_temperature_anomaly.png",
+          "image": "analog_products/superensemble/202701/composite/psl_2m_temperature_anomaly.png",
           "composite_key": "superensemble:202701:top5:composite-9179de055e4b",
           "composite_method": "inverse similarity-distance weighting over the top analogs",
           "composite_pattern_weight": 0.8,
@@ -1008,18 +1029,18 @@
             "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=2m+Air+Temperature&level=1000mb&iy=2010&fmonth=0&fmonth2=0&type=1&map=0&mapt=6&proj=USA%28CONUS%29&colortable=testcmap&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot"
           ],
           "provider_asset_urls": [
-            "https://psl.noaa.gov/tmp/nclflzbMHPVWj.nc",
-            "https://psl.noaa.gov/tmp/nclp5kjTTgRj2.nc",
-            "https://psl.noaa.gov/tmp/nclPatDs1Palj.nc",
-            "https://psl.noaa.gov/tmp/nclLTHln61Y5t.nc",
-            "https://psl.noaa.gov/tmp/nclbzOooJdUV8.nc"
+            "https://psl.noaa.gov/tmp/nclMd5nhOCq4Z.nc",
+            "https://psl.noaa.gov/tmp/nclZyLGGJIr4r.nc",
+            "https://psl.noaa.gov/tmp/nclyTzevXcwOB.nc",
+            "https://psl.noaa.gov/tmp/ncllh7NctHbdC.nc",
+            "https://psl.noaa.gov/tmp/nclAognUZWyq6.nc"
           ],
           "provider_image_urls": [
-            "https://psl.noaa.gov/tmp/nclflzbMHPVWj.tmpqq.png",
-            "https://psl.noaa.gov/tmp/nclp5kjTTgRj2.tmpqq.png",
-            "https://psl.noaa.gov/tmp/nclPatDs1Palj.tmpqq.png",
-            "https://psl.noaa.gov/tmp/nclLTHln61Y5t.tmpqq.png",
-            "https://psl.noaa.gov/tmp/nclbzOooJdUV8.tmpqq.png"
+            "https://psl.noaa.gov/tmp/nclMd5nhOCq4Z.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclZyLGGJIr4r.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclyTzevXcwOB.tmpqq.png",
+            "https://psl.noaa.gov/tmp/ncllh7NctHbdC.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclAognUZWyq6.tmpqq.png"
           ],
           "dataset": "20CRv3 + NCEP CFSR",
           "datasets": [
@@ -1029,8 +1050,8 @@
           "climatology_years": "1981-2010",
           "climatology_label": "WRIT native climatologies; 1981-2010",
           "rendering": {
-            "id": "wn2-seasonal-lcc-v1",
-            "label": "WN2 shared seasonal Lambert Conformal Conic renderer",
+            "id": "wn2-seasonal-lcc-v2",
+            "label": "WN2 seasonal Lambert Conformal Conic renderer with bicubic WRIT resampling",
             "projection": "Lambert Conformal Conic",
             "standard_parallels": [
               30.0,
@@ -1038,17 +1059,20 @@
             ],
             "latitude_origin": 45.0,
             "central_longitude": -100.0,
+            "projected_x_shift_fraction": 0.035,
             "map_region": "USA(CONUS)",
             "region": [
-              -128.0,
-              -65.0,
-              22.0,
-              52.0
+              -126.0,
+              -66.0,
+              24.0,
+              50.0
             ],
-            "canvas": "1080x1080"
+            "canvas": "1080x1080",
+            "resampling_method": "bicubic",
+            "source_smoothing_sigma_grid_cells": 0.85
           },
           "map_region": "USA(CONUS)",
-          "generated_utc": "2026-08-26T19:44:12Z"
+          "generated_utc": "2026-08-30T21:24:56Z"
         },
         "mrcc_snowfall_departure_composite": {
           "product": "mrcc_snowfall_departure_composite",
@@ -1278,7 +1302,7 @@
           "label": "500-mb Geopotential Height Anomaly",
           "provider": "NOAA PSL WRIT",
           "status": "ready",
-          "image": "seasonal/analog_products/superensemble/202612-202702/1998/psl_500mb_height_anomaly.png",
+          "image": "analog_products/superensemble/202612-202702/1998/psl_500mb_height_anomaly.png",
           "top_analog_key": "superensemble:202612-202702:1998",
           "period": {
             "period_type": "djf",
@@ -1291,14 +1315,14 @@
             "winter_year": 1998
           },
           "source_url": "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=Geopotential+Height&level=500mb&iy=1998&fmonth=11&fmonth2=1&type=1&map=0&mapt=6&proj=North+America&colortable=default&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
-          "provider_asset_url": "https://psl.noaa.gov/tmp/nclYHFX1UnnkG.nc",
+          "provider_asset_url": "https://psl.noaa.gov/tmp/nclnIIzxo8tun.nc",
           "dataset": "NCEP/CFSR",
           "climatology_years": "1981-2010",
-          "generated_utc": "2026-08-26T18:01:08Z",
-          "provider_image_url": "https://psl.noaa.gov/tmp/nclYHFX1UnnkG.tmpqq.png",
+          "generated_utc": "2026-08-30T21:24:58Z",
+          "provider_image_url": "https://psl.noaa.gov/tmp/nclnIIzxo8tun.tmpqq.png",
           "rendering": {
-            "id": "wn2-seasonal-lcc-v1",
-            "label": "WN2 shared seasonal Lambert Conformal Conic renderer",
+            "id": "wn2-seasonal-lcc-v2",
+            "label": "WN2 seasonal Lambert Conformal Conic renderer with bicubic WRIT resampling",
             "projection": "Lambert Conformal Conic",
             "standard_parallels": [
               30.0,
@@ -1306,6 +1330,7 @@
             ],
             "latitude_origin": 45.0,
             "central_longitude": -100.0,
+            "projected_x_shift_fraction": 0.035,
             "map_region": "North America",
             "region": [
               -160.0,
@@ -1313,7 +1338,9 @@
               22.0,
               85.0
             ],
-            "canvas": "1080x1080"
+            "canvas": "1080x1080",
+            "resampling_method": "bicubic",
+            "source_smoothing_sigma_grid_cells": 0.85
           },
           "climatology_label": "NCEP/CFSR native climatology; 1981-2010",
           "map_region": "North America"
@@ -1323,7 +1350,7 @@
           "label": "2-m Temperature Anomaly",
           "provider": "NOAA PSL WRIT",
           "status": "ready",
-          "image": "seasonal/analog_products/superensemble/202612-202702/1998/psl_2m_temperature_anomaly.png",
+          "image": "analog_products/superensemble/202612-202702/1998/psl_2m_temperature_anomaly.png",
           "top_analog_key": "superensemble:202612-202702:1998",
           "period": {
             "period_type": "djf",
@@ -1336,14 +1363,14 @@
             "winter_year": 1998
           },
           "source_url": "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=2m+Air+Temperature&level=1000mb&iy=1998&fmonth=11&fmonth2=1&type=1&map=0&mapt=6&proj=USA%28CONUS%29&colortable=testcmap&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
-          "provider_asset_url": "https://psl.noaa.gov/tmp/ncl5K9Qkm5uhV.nc",
+          "provider_asset_url": "https://psl.noaa.gov/tmp/nclbFNZGuyB9T.nc",
           "dataset": "NCEP/CFSR",
           "climatology_years": "1981-2010",
-          "generated_utc": "2026-08-26T18:01:09Z",
-          "provider_image_url": "https://psl.noaa.gov/tmp/ncl5K9Qkm5uhV.tmpqq.png",
+          "generated_utc": "2026-08-30T21:25:00Z",
+          "provider_image_url": "https://psl.noaa.gov/tmp/nclbFNZGuyB9T.tmpqq.png",
           "rendering": {
-            "id": "wn2-seasonal-lcc-v1",
-            "label": "WN2 shared seasonal Lambert Conformal Conic renderer",
+            "id": "wn2-seasonal-lcc-v2",
+            "label": "WN2 seasonal Lambert Conformal Conic renderer with bicubic WRIT resampling",
             "projection": "Lambert Conformal Conic",
             "standard_parallels": [
               30.0,
@@ -1351,14 +1378,17 @@
             ],
             "latitude_origin": 45.0,
             "central_longitude": -100.0,
+            "projected_x_shift_fraction": 0.035,
             "map_region": "USA(CONUS)",
             "region": [
-              -128.0,
-              -65.0,
-              22.0,
-              52.0
+              -126.0,
+              -66.0,
+              24.0,
+              50.0
             ],
-            "canvas": "1080x1080"
+            "canvas": "1080x1080",
+            "resampling_method": "bicubic",
+            "source_smoothing_sigma_grid_cells": 0.85
           },
           "climatology_label": "NCEP/CFSR native climatology; 1981-2010",
           "map_region": "USA(CONUS)"
@@ -1446,7 +1476,7 @@
           "label": "Weighted Top 5-Analog Composite \u00b7 500-mb Geopotential Height Anomaly",
           "provider": "NOAA PSL WRIT",
           "status": "ready",
-          "image": "seasonal/analog_products/superensemble/202612-202702/composite/psl_500mb_height_anomaly.png",
+          "image": "analog_products/superensemble/202612-202702/composite/psl_500mb_height_anomaly.png",
           "composite_key": "superensemble:202612-202702:top5:composite-496730458e25",
           "composite_method": "inverse similarity-distance weighting over the top analogs",
           "composite_pattern_weight": 0.8,
@@ -1505,18 +1535,18 @@
             "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=Geopotential+Height&level=500mb&iy=2010&fmonth=11&fmonth2=1&type=1&map=0&mapt=6&proj=North+America&colortable=default&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot"
           ],
           "provider_asset_urls": [
-            "https://psl.noaa.gov/tmp/ncl5T5ob1lymc.nc",
-            "https://psl.noaa.gov/tmp/nclVlHEcbbG0z.nc",
-            "https://psl.noaa.gov/tmp/nclkaKCMVux59.nc",
-            "https://psl.noaa.gov/tmp/nclu574_3vHkY.nc",
-            "https://psl.noaa.gov/tmp/nclNqJi4JO2g_.nc"
+            "https://psl.noaa.gov/tmp/nclda3AJol92R.nc",
+            "https://psl.noaa.gov/tmp/nclvxe1TOKQ4U.nc",
+            "https://psl.noaa.gov/tmp/nclf99RXE7nT5.nc",
+            "https://psl.noaa.gov/tmp/nclW4arALOkOo.nc",
+            "https://psl.noaa.gov/tmp/ncllPw79DstJ8.nc"
           ],
           "provider_image_urls": [
-            "https://psl.noaa.gov/tmp/ncl5T5ob1lymc.tmpqq.png",
-            "https://psl.noaa.gov/tmp/nclVlHEcbbG0z.tmpqq.png",
-            "https://psl.noaa.gov/tmp/nclkaKCMVux59.tmpqq.png",
-            "https://psl.noaa.gov/tmp/nclu574_3vHkY.tmpqq.png",
-            "https://psl.noaa.gov/tmp/nclNqJi4JO2g_.tmpqq.png"
+            "https://psl.noaa.gov/tmp/nclda3AJol92R.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclvxe1TOKQ4U.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclf99RXE7nT5.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclW4arALOkOo.tmpqq.png",
+            "https://psl.noaa.gov/tmp/ncllPw79DstJ8.tmpqq.png"
           ],
           "dataset": "20CRv3 + NCEP CFSR",
           "datasets": [
@@ -1526,8 +1556,8 @@
           "climatology_years": "1981-2010",
           "climatology_label": "WRIT native climatologies; 1981-2010",
           "rendering": {
-            "id": "wn2-seasonal-lcc-v1",
-            "label": "WN2 shared seasonal Lambert Conformal Conic renderer",
+            "id": "wn2-seasonal-lcc-v2",
+            "label": "WN2 seasonal Lambert Conformal Conic renderer with bicubic WRIT resampling",
             "projection": "Lambert Conformal Conic",
             "standard_parallels": [
               30.0,
@@ -1535,6 +1565,7 @@
             ],
             "latitude_origin": 45.0,
             "central_longitude": -100.0,
+            "projected_x_shift_fraction": 0.035,
             "map_region": "North America",
             "region": [
               -160.0,
@@ -1542,17 +1573,19 @@
               22.0,
               85.0
             ],
-            "canvas": "1080x1080"
+            "canvas": "1080x1080",
+            "resampling_method": "bicubic",
+            "source_smoothing_sigma_grid_cells": 0.85
           },
           "map_region": "North America",
-          "generated_utc": "2026-08-26T19:44:21Z"
+          "generated_utc": "2026-08-30T21:25:08Z"
         },
         "psl_2m_temperature_anomaly": {
           "product": "psl_2m_temperature_anomaly",
           "label": "Weighted Top 5-Analog Composite \u00b7 2-m Temperature Anomaly",
           "provider": "NOAA PSL WRIT",
           "status": "ready",
-          "image": "seasonal/analog_products/superensemble/202612-202702/composite/psl_2m_temperature_anomaly.png",
+          "image": "analog_products/superensemble/202612-202702/composite/psl_2m_temperature_anomaly.png",
           "composite_key": "superensemble:202612-202702:top5:composite-496730458e25",
           "composite_method": "inverse similarity-distance weighting over the top analogs",
           "composite_pattern_weight": 0.8,
@@ -1611,18 +1644,18 @@
             "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=2m+Air+Temperature&level=1000mb&iy=2010&fmonth=11&fmonth2=1&type=1&map=0&mapt=6&proj=USA%28CONUS%29&colortable=testcmap&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot"
           ],
           "provider_asset_urls": [
-            "https://psl.noaa.gov/tmp/nclpy2QGoVSJ5.nc",
-            "https://psl.noaa.gov/tmp/nclqRWD5hcmPk.nc",
-            "https://psl.noaa.gov/tmp/nclezc4zkrqrf.nc",
-            "https://psl.noaa.gov/tmp/ncl4CKXiDVLyx.nc",
-            "https://psl.noaa.gov/tmp/ncl2VymEEnS2o.nc"
+            "https://psl.noaa.gov/tmp/nclDzzBsDU0Jo.nc",
+            "https://psl.noaa.gov/tmp/nclRnYjDpPC5h.nc",
+            "https://psl.noaa.gov/tmp/nclLQtgxIXgRW.nc",
+            "https://psl.noaa.gov/tmp/nclcw8BP0ZegE.nc",
+            "https://psl.noaa.gov/tmp/nclcNkstBUB4n.nc"
           ],
           "provider_image_urls": [
-            "https://psl.noaa.gov/tmp/nclpy2QGoVSJ5.tmpqq.png",
-            "https://psl.noaa.gov/tmp/nclqRWD5hcmPk.tmpqq.png",
-            "https://psl.noaa.gov/tmp/nclezc4zkrqrf.tmpqq.png",
-            "https://psl.noaa.gov/tmp/ncl4CKXiDVLyx.tmpqq.png",
-            "https://psl.noaa.gov/tmp/ncl2VymEEnS2o.tmpqq.png"
+            "https://psl.noaa.gov/tmp/nclDzzBsDU0Jo.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclRnYjDpPC5h.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclLQtgxIXgRW.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclcw8BP0ZegE.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclcNkstBUB4n.tmpqq.png"
           ],
           "dataset": "20CRv3 + NCEP CFSR",
           "datasets": [
@@ -1632,8 +1665,8 @@
           "climatology_years": "1981-2010",
           "climatology_label": "WRIT native climatologies; 1981-2010",
           "rendering": {
-            "id": "wn2-seasonal-lcc-v1",
-            "label": "WN2 shared seasonal Lambert Conformal Conic renderer",
+            "id": "wn2-seasonal-lcc-v2",
+            "label": "WN2 seasonal Lambert Conformal Conic renderer with bicubic WRIT resampling",
             "projection": "Lambert Conformal Conic",
             "standard_parallels": [
               30.0,
@@ -1641,17 +1674,20 @@
             ],
             "latitude_origin": 45.0,
             "central_longitude": -100.0,
+            "projected_x_shift_fraction": 0.035,
             "map_region": "USA(CONUS)",
             "region": [
-              -128.0,
-              -65.0,
-              22.0,
-              52.0
+              -126.0,
+              -66.0,
+              24.0,
+              50.0
             ],
-            "canvas": "1080x1080"
+            "canvas": "1080x1080",
+            "resampling_method": "bicubic",
+            "source_smoothing_sigma_grid_cells": 0.85
           },
           "map_region": "USA(CONUS)",
-          "generated_utc": "2026-08-26T19:44:29Z"
+          "generated_utc": "2026-08-30T21:25:17Z"
         },
         "mrcc_snowfall_departure_composite": {
           "product": "mrcc_snowfall_departure_composite",
@@ -1881,7 +1917,7 @@
           "label": "500-mb Geopotential Height Anomaly",
           "provider": "NOAA PSL WRIT",
           "status": "ready",
-          "image": "seasonal/analog_products/superensemble/202612/2024/psl_500mb_height_anomaly.png",
+          "image": "analog_products/superensemble/202612/2024/psl_500mb_height_anomaly.png",
           "top_analog_key": "superensemble:202612:2024",
           "period": {
             "period_type": "month",
@@ -1894,14 +1930,14 @@
             "winter_year": 2024
           },
           "source_url": "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=Geopotential+Height&level=500mb&iy=2023&fmonth=11&fmonth2=11&type=1&map=0&mapt=6&proj=North+America&colortable=default&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
-          "provider_asset_url": "https://psl.noaa.gov/tmp/nclsxKBnU62HC.nc",
+          "provider_asset_url": "https://psl.noaa.gov/tmp/nclXFi3Ofd8FC.nc",
           "dataset": "NCEP/CFSR",
           "climatology_years": "1981-2010",
-          "generated_utc": "2026-08-26T18:01:11Z",
-          "provider_image_url": "https://psl.noaa.gov/tmp/nclsxKBnU62HC.tmpqq.png",
+          "generated_utc": "2026-08-30T21:25:19Z",
+          "provider_image_url": "https://psl.noaa.gov/tmp/nclXFi3Ofd8FC.tmpqq.png",
           "rendering": {
-            "id": "wn2-seasonal-lcc-v1",
-            "label": "WN2 shared seasonal Lambert Conformal Conic renderer",
+            "id": "wn2-seasonal-lcc-v2",
+            "label": "WN2 seasonal Lambert Conformal Conic renderer with bicubic WRIT resampling",
             "projection": "Lambert Conformal Conic",
             "standard_parallels": [
               30.0,
@@ -1909,6 +1945,7 @@
             ],
             "latitude_origin": 45.0,
             "central_longitude": -100.0,
+            "projected_x_shift_fraction": 0.035,
             "map_region": "North America",
             "region": [
               -160.0,
@@ -1916,7 +1953,9 @@
               22.0,
               85.0
             ],
-            "canvas": "1080x1080"
+            "canvas": "1080x1080",
+            "resampling_method": "bicubic",
+            "source_smoothing_sigma_grid_cells": 0.85
           },
           "climatology_label": "NCEP/CFSR native climatology; 1981-2010",
           "map_region": "North America"
@@ -1926,7 +1965,7 @@
           "label": "2-m Temperature Anomaly",
           "provider": "NOAA PSL WRIT",
           "status": "ready",
-          "image": "seasonal/analog_products/superensemble/202612/2024/psl_2m_temperature_anomaly.png",
+          "image": "analog_products/superensemble/202612/2024/psl_2m_temperature_anomaly.png",
           "top_analog_key": "superensemble:202612:2024",
           "period": {
             "period_type": "month",
@@ -1939,14 +1978,14 @@
             "winter_year": 2024
           },
           "source_url": "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=2m+Air+Temperature&level=1000mb&iy=2023&fmonth=11&fmonth2=11&type=1&map=0&mapt=6&proj=USA%28CONUS%29&colortable=testcmap&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
-          "provider_asset_url": "https://psl.noaa.gov/tmp/nclAKCPbUktCO.nc",
+          "provider_asset_url": "https://psl.noaa.gov/tmp/ncliM2Qr6wSjP.nc",
           "dataset": "NCEP/CFSR",
           "climatology_years": "1981-2010",
-          "generated_utc": "2026-08-26T18:01:13Z",
-          "provider_image_url": "https://psl.noaa.gov/tmp/nclAKCPbUktCO.tmpqq.png",
+          "generated_utc": "2026-08-30T21:25:21Z",
+          "provider_image_url": "https://psl.noaa.gov/tmp/ncliM2Qr6wSjP.tmpqq.png",
           "rendering": {
-            "id": "wn2-seasonal-lcc-v1",
-            "label": "WN2 shared seasonal Lambert Conformal Conic renderer",
+            "id": "wn2-seasonal-lcc-v2",
+            "label": "WN2 seasonal Lambert Conformal Conic renderer with bicubic WRIT resampling",
             "projection": "Lambert Conformal Conic",
             "standard_parallels": [
               30.0,
@@ -1954,14 +1993,17 @@
             ],
             "latitude_origin": 45.0,
             "central_longitude": -100.0,
+            "projected_x_shift_fraction": 0.035,
             "map_region": "USA(CONUS)",
             "region": [
-              -128.0,
-              -65.0,
-              22.0,
-              52.0
+              -126.0,
+              -66.0,
+              24.0,
+              50.0
             ],
-            "canvas": "1080x1080"
+            "canvas": "1080x1080",
+            "resampling_method": "bicubic",
+            "source_smoothing_sigma_grid_cells": 0.85
           },
           "climatology_label": "NCEP/CFSR native climatology; 1981-2010",
           "map_region": "USA(CONUS)"
@@ -2049,7 +2091,7 @@
           "label": "Weighted Top 5-Analog Composite \u00b7 500-mb Geopotential Height Anomaly",
           "provider": "NOAA PSL WRIT",
           "status": "ready",
-          "image": "seasonal/analog_products/superensemble/202612/composite/psl_500mb_height_anomaly.png",
+          "image": "analog_products/superensemble/202612/composite/psl_500mb_height_anomaly.png",
           "composite_key": "superensemble:202612:top5:composite-49d4825b8b33",
           "composite_method": "inverse similarity-distance weighting over the top analogs",
           "composite_pattern_weight": 0.8,
@@ -2108,18 +2150,18 @@
             "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=Geopotential+Height&level=500mb&iy=1986&fmonth=11&fmonth2=11&type=1&map=0&mapt=6&proj=North+America&colortable=default&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot"
           ],
           "provider_asset_urls": [
-            "https://psl.noaa.gov/tmp/ncllBp_ysZzKK.nc",
-            "https://psl.noaa.gov/tmp/nclw5ZISzfmlu.nc",
-            "https://psl.noaa.gov/tmp/nclZvUwtyazc9.nc",
-            "https://psl.noaa.gov/tmp/nclDQ8iberX0o.nc",
-            "https://psl.noaa.gov/tmp/nclZW3hcy2F90.nc"
+            "https://psl.noaa.gov/tmp/nclU4Rk5hVrA0.nc",
+            "https://psl.noaa.gov/tmp/nclBuSuBkqUaC.nc",
+            "https://psl.noaa.gov/tmp/nclD3bh8xKn06.nc",
+            "https://psl.noaa.gov/tmp/nclQlew9YjEeK.nc",
+            "https://psl.noaa.gov/tmp/nclmpmDOPslMV.nc"
           ],
           "provider_image_urls": [
-            "https://psl.noaa.gov/tmp/ncllBp_ysZzKK.tmpqq.png",
-            "https://psl.noaa.gov/tmp/nclw5ZISzfmlu.tmpqq.png",
-            "https://psl.noaa.gov/tmp/nclZvUwtyazc9.tmpqq.png",
-            "https://psl.noaa.gov/tmp/nclDQ8iberX0o.tmpqq.png",
-            "https://psl.noaa.gov/tmp/nclZW3hcy2F90.tmpqq.png"
+            "https://psl.noaa.gov/tmp/nclU4Rk5hVrA0.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclBuSuBkqUaC.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclD3bh8xKn06.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclQlew9YjEeK.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclmpmDOPslMV.tmpqq.png"
           ],
           "dataset": "20CRv3 + NCEP CFSR",
           "datasets": [
@@ -2129,8 +2171,8 @@
           "climatology_years": "1981-2010",
           "climatology_label": "WRIT native climatologies; 1981-2010",
           "rendering": {
-            "id": "wn2-seasonal-lcc-v1",
-            "label": "WN2 shared seasonal Lambert Conformal Conic renderer",
+            "id": "wn2-seasonal-lcc-v2",
+            "label": "WN2 seasonal Lambert Conformal Conic renderer with bicubic WRIT resampling",
             "projection": "Lambert Conformal Conic",
             "standard_parallels": [
               30.0,
@@ -2138,6 +2180,7 @@
             ],
             "latitude_origin": 45.0,
             "central_longitude": -100.0,
+            "projected_x_shift_fraction": 0.035,
             "map_region": "North America",
             "region": [
               -160.0,
@@ -2145,17 +2188,19 @@
               22.0,
               85.0
             ],
-            "canvas": "1080x1080"
+            "canvas": "1080x1080",
+            "resampling_method": "bicubic",
+            "source_smoothing_sigma_grid_cells": 0.85
           },
           "map_region": "North America",
-          "generated_utc": "2026-08-26T19:44:37Z"
+          "generated_utc": "2026-08-30T21:25:30Z"
         },
         "psl_2m_temperature_anomaly": {
           "product": "psl_2m_temperature_anomaly",
           "label": "Weighted Top 5-Analog Composite \u00b7 2-m Temperature Anomaly",
           "provider": "NOAA PSL WRIT",
           "status": "ready",
-          "image": "seasonal/analog_products/superensemble/202612/composite/psl_2m_temperature_anomaly.png",
+          "image": "analog_products/superensemble/202612/composite/psl_2m_temperature_anomaly.png",
           "composite_key": "superensemble:202612:top5:composite-49d4825b8b33",
           "composite_method": "inverse similarity-distance weighting over the top analogs",
           "composite_pattern_weight": 0.8,
@@ -2214,18 +2259,18 @@
             "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=2m+Air+Temperature&level=1000mb&iy=1986&fmonth=11&fmonth2=11&type=1&map=0&mapt=6&proj=USA%28CONUS%29&colortable=testcmap&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot"
           ],
           "provider_asset_urls": [
-            "https://psl.noaa.gov/tmp/nclQLwxxFYgaf.nc",
-            "https://psl.noaa.gov/tmp/ncl8hxT6KZA55.nc",
-            "https://psl.noaa.gov/tmp/nclp_che9N0ze.nc",
-            "https://psl.noaa.gov/tmp/ncl9X4n29ANHG.nc",
-            "https://psl.noaa.gov/tmp/ncl5Grj_T0hDt.nc"
+            "https://psl.noaa.gov/tmp/nclw70koGu3lX.nc",
+            "https://psl.noaa.gov/tmp/nclGV7VXlSCRS.nc",
+            "https://psl.noaa.gov/tmp/nclnMyz9HvTRW.nc",
+            "https://psl.noaa.gov/tmp/nclW5I1wHCgfk.nc",
+            "https://psl.noaa.gov/tmp/ncl2_SnFd9CzT.nc"
           ],
           "provider_image_urls": [
-            "https://psl.noaa.gov/tmp/nclQLwxxFYgaf.tmpqq.png",
-            "https://psl.noaa.gov/tmp/ncl8hxT6KZA55.tmpqq.png",
-            "https://psl.noaa.gov/tmp/nclp_che9N0ze.tmpqq.png",
-            "https://psl.noaa.gov/tmp/ncl9X4n29ANHG.tmpqq.png",
-            "https://psl.noaa.gov/tmp/ncl5Grj_T0hDt.tmpqq.png"
+            "https://psl.noaa.gov/tmp/nclw70koGu3lX.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclGV7VXlSCRS.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclnMyz9HvTRW.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclW5I1wHCgfk.tmpqq.png",
+            "https://psl.noaa.gov/tmp/ncl2_SnFd9CzT.tmpqq.png"
           ],
           "dataset": "20CRv3 + NCEP CFSR",
           "datasets": [
@@ -2235,8 +2280,8 @@
           "climatology_years": "1981-2010",
           "climatology_label": "WRIT native climatologies; 1981-2010",
           "rendering": {
-            "id": "wn2-seasonal-lcc-v1",
-            "label": "WN2 shared seasonal Lambert Conformal Conic renderer",
+            "id": "wn2-seasonal-lcc-v2",
+            "label": "WN2 seasonal Lambert Conformal Conic renderer with bicubic WRIT resampling",
             "projection": "Lambert Conformal Conic",
             "standard_parallels": [
               30.0,
@@ -2244,17 +2289,20 @@
             ],
             "latitude_origin": 45.0,
             "central_longitude": -100.0,
+            "projected_x_shift_fraction": 0.035,
             "map_region": "USA(CONUS)",
             "region": [
-              -128.0,
-              -65.0,
-              22.0,
-              52.0
+              -126.0,
+              -66.0,
+              24.0,
+              50.0
             ],
-            "canvas": "1080x1080"
+            "canvas": "1080x1080",
+            "resampling_method": "bicubic",
+            "source_smoothing_sigma_grid_cells": 0.85
           },
           "map_region": "USA(CONUS)",
-          "generated_utc": "2026-08-26T19:44:46Z"
+          "generated_utc": "2026-08-30T21:25:38Z"
         },
         "mrcc_snowfall_departure_composite": {
           "product": "mrcc_snowfall_departure_composite",
@@ -2497,14 +2545,14 @@
             "winter_year": 1960
           },
           "source_url": "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=20th+Century+Reanalysis+V3&var=Geopotential+Height&level=500mb&iy=1960&fmonth=1&fmonth2=1&type=1&map=0&mapt=6&proj=North+America&colortable=default&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
-          "provider_asset_url": "https://psl.noaa.gov/tmp/nclUAI3F2QuZV.nc",
+          "provider_asset_url": "https://psl.noaa.gov/tmp/nclnmd_UCYoqV.nc",
           "dataset": "20th Century Reanalysis V3",
           "climatology_years": "1981-2010",
-          "generated_utc": "2026-08-27T15:39:46Z",
-          "provider_image_url": "https://psl.noaa.gov/tmp/nclUAI3F2QuZV.tmpqq.png",
+          "generated_utc": "2026-08-30T21:25:41Z",
+          "provider_image_url": "https://psl.noaa.gov/tmp/nclnmd_UCYoqV.tmpqq.png",
           "rendering": {
-            "id": "wn2-seasonal-lcc-v1",
-            "label": "WN2 shared seasonal Lambert Conformal Conic renderer",
+            "id": "wn2-seasonal-lcc-v2",
+            "label": "WN2 seasonal Lambert Conformal Conic renderer with bicubic WRIT resampling",
             "projection": "Lambert Conformal Conic",
             "standard_parallels": [
               30.0,
@@ -2520,7 +2568,9 @@
               22.0,
               85.0
             ],
-            "canvas": "1080x1080"
+            "canvas": "1080x1080",
+            "resampling_method": "bicubic",
+            "source_smoothing_sigma_grid_cells": 0.85
           },
           "climatology_label": "20th Century Reanalysis V3 native climatology; 1981-2010",
           "map_region": "North America"
@@ -2543,14 +2593,14 @@
             "winter_year": 1960
           },
           "source_url": "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=20th+Century+Reanalysis+V3&var=2m+Air+Temperature&level=1000mb&iy=1960&fmonth=1&fmonth2=1&type=1&map=0&mapt=6&proj=USA%28CONUS%29&colortable=testcmap&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
-          "provider_asset_url": "https://psl.noaa.gov/tmp/ncly0W0DL2CzB.nc",
+          "provider_asset_url": "https://psl.noaa.gov/tmp/nclFsbg24Fm4H.nc",
           "dataset": "20th Century Reanalysis V3",
           "climatology_years": "1981-2010",
-          "generated_utc": "2026-08-27T15:39:49Z",
-          "provider_image_url": "https://psl.noaa.gov/tmp/ncly0W0DL2CzB.tmpqq.png",
+          "generated_utc": "2026-08-30T21:25:43Z",
+          "provider_image_url": "https://psl.noaa.gov/tmp/nclFsbg24Fm4H.tmpqq.png",
           "rendering": {
-            "id": "wn2-seasonal-lcc-v1",
-            "label": "WN2 shared seasonal Lambert Conformal Conic renderer",
+            "id": "wn2-seasonal-lcc-v2",
+            "label": "WN2 seasonal Lambert Conformal Conic renderer with bicubic WRIT resampling",
             "projection": "Lambert Conformal Conic",
             "standard_parallels": [
               30.0,
@@ -2561,12 +2611,14 @@
             "projected_x_shift_fraction": 0.035,
             "map_region": "USA(CONUS)",
             "region": [
-              -128.0,
-              -65.0,
-              22.0,
-              52.0
+              -126.0,
+              -66.0,
+              24.0,
+              50.0
             ],
-            "canvas": "1080x1080"
+            "canvas": "1080x1080",
+            "resampling_method": "bicubic",
+            "source_smoothing_sigma_grid_cells": 0.85
           },
           "climatology_label": "20th Century Reanalysis V3 native climatology; 1981-2010",
           "map_region": "USA(CONUS)"
@@ -2713,18 +2765,18 @@
             "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=20th+Century+Reanalysis+V3&var=Geopotential+Height&level=500mb&iy=1958&fmonth=1&fmonth2=1&type=1&map=0&mapt=6&proj=North+America&colortable=default&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot"
           ],
           "provider_asset_urls": [
-            "https://psl.noaa.gov/tmp/ncl8a87PyIgaA.nc",
-            "https://psl.noaa.gov/tmp/nclW_1Rf_eBA4.nc",
-            "https://psl.noaa.gov/tmp/nclVqD5GFI_4v.nc",
-            "https://psl.noaa.gov/tmp/nclyPVebYnQTK.nc",
-            "https://psl.noaa.gov/tmp/nclez_MaLb2o_.nc"
+            "https://psl.noaa.gov/tmp/nclDWFk3LqPQ0.nc",
+            "https://psl.noaa.gov/tmp/nclaIuZ4xb3eh.nc",
+            "https://psl.noaa.gov/tmp/nclff2j55RacW.nc",
+            "https://psl.noaa.gov/tmp/nclrCIWyyh7U3.nc",
+            "https://psl.noaa.gov/tmp/nclFs8ICgq0uI.nc"
           ],
           "provider_image_urls": [
-            "https://psl.noaa.gov/tmp/ncl8a87PyIgaA.tmpqq.png",
-            "https://psl.noaa.gov/tmp/nclW_1Rf_eBA4.tmpqq.png",
-            "https://psl.noaa.gov/tmp/nclVqD5GFI_4v.tmpqq.png",
-            "https://psl.noaa.gov/tmp/nclyPVebYnQTK.tmpqq.png",
-            "https://psl.noaa.gov/tmp/nclez_MaLb2o_.tmpqq.png"
+            "https://psl.noaa.gov/tmp/nclDWFk3LqPQ0.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclaIuZ4xb3eh.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclff2j55RacW.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclrCIWyyh7U3.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclFs8ICgq0uI.tmpqq.png"
           ],
           "dataset": "20CRv3 + NCEP CFSR",
           "datasets": [
@@ -2734,8 +2786,8 @@
           "climatology_years": "1981-2010",
           "climatology_label": "WRIT native climatologies; 1981-2010",
           "rendering": {
-            "id": "wn2-seasonal-lcc-v1",
-            "label": "WN2 shared seasonal Lambert Conformal Conic renderer",
+            "id": "wn2-seasonal-lcc-v2",
+            "label": "WN2 seasonal Lambert Conformal Conic renderer with bicubic WRIT resampling",
             "projection": "Lambert Conformal Conic",
             "standard_parallels": [
               30.0,
@@ -2751,10 +2803,12 @@
               22.0,
               85.0
             ],
-            "canvas": "1080x1080"
+            "canvas": "1080x1080",
+            "resampling_method": "bicubic",
+            "source_smoothing_sigma_grid_cells": 0.85
           },
           "map_region": "North America",
-          "generated_utc": "2026-08-30T18:22:15Z"
+          "generated_utc": "2026-08-30T21:25:50Z"
         },
         "psl_2m_temperature_anomaly": {
           "product": "psl_2m_temperature_anomaly",
@@ -2820,18 +2874,18 @@
             "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=20th+Century+Reanalysis+V3&var=2m+Air+Temperature&level=1000mb&iy=1958&fmonth=1&fmonth2=1&type=1&map=0&mapt=6&proj=USA%28CONUS%29&colortable=testcmap&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot"
           ],
           "provider_asset_urls": [
-            "https://psl.noaa.gov/tmp/nclJtfWRBXkqv.nc",
-            "https://psl.noaa.gov/tmp/nclSwHPvg2R3Z.nc",
-            "https://psl.noaa.gov/tmp/nclwW_thgfOba.nc",
-            "https://psl.noaa.gov/tmp/nclDTDWEjmbyc.nc",
-            "https://psl.noaa.gov/tmp/nclc1liLsFUbU.nc"
+            "https://psl.noaa.gov/tmp/nclx2LV7QjsI7.nc",
+            "https://psl.noaa.gov/tmp/nclisYqr7XAnc.nc",
+            "https://psl.noaa.gov/tmp/nclGuFOt0Y6lf.nc",
+            "https://psl.noaa.gov/tmp/nclsSTrdLuYez.nc",
+            "https://psl.noaa.gov/tmp/ncliIZj917BzC.nc"
           ],
           "provider_image_urls": [
-            "https://psl.noaa.gov/tmp/nclJtfWRBXkqv.tmpqq.png",
-            "https://psl.noaa.gov/tmp/nclSwHPvg2R3Z.tmpqq.png",
-            "https://psl.noaa.gov/tmp/nclwW_thgfOba.tmpqq.png",
-            "https://psl.noaa.gov/tmp/nclDTDWEjmbyc.tmpqq.png",
-            "https://psl.noaa.gov/tmp/nclc1liLsFUbU.tmpqq.png"
+            "https://psl.noaa.gov/tmp/nclx2LV7QjsI7.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclisYqr7XAnc.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclGuFOt0Y6lf.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclsSTrdLuYez.tmpqq.png",
+            "https://psl.noaa.gov/tmp/ncliIZj917BzC.tmpqq.png"
           ],
           "dataset": "20CRv3 + NCEP CFSR",
           "datasets": [
@@ -2841,8 +2895,8 @@
           "climatology_years": "1981-2010",
           "climatology_label": "WRIT native climatologies; 1981-2010",
           "rendering": {
-            "id": "wn2-seasonal-lcc-v1",
-            "label": "WN2 shared seasonal Lambert Conformal Conic renderer",
+            "id": "wn2-seasonal-lcc-v2",
+            "label": "WN2 seasonal Lambert Conformal Conic renderer with bicubic WRIT resampling",
             "projection": "Lambert Conformal Conic",
             "standard_parallels": [
               30.0,
@@ -2858,10 +2912,12 @@
               24.0,
               50.0
             ],
-            "canvas": "1080x1080"
+            "canvas": "1080x1080",
+            "resampling_method": "bicubic",
+            "source_smoothing_sigma_grid_cells": 0.85
           },
           "map_region": "USA(CONUS)",
-          "generated_utc": "2026-08-30T18:22:25Z"
+          "generated_utc": "2026-08-30T21:25:56Z"
         },
         "mrcc_snowfall_departure_composite": {
           "product": "mrcc_snowfall_departure_composite",
@@ -3104,14 +3160,14 @@
             "winter_year": 1995
           },
           "source_url": "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=Geopotential+Height&level=500mb&iy=1995&fmonth=0&fmonth2=0&type=1&map=0&mapt=6&proj=North+America&colortable=default&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
-          "provider_asset_url": "https://psl.noaa.gov/tmp/nclOVMc1Q3oWL.nc",
+          "provider_asset_url": "https://psl.noaa.gov/tmp/ncl1g6DiSIesM.nc",
           "dataset": "NCEP/CFSR",
           "climatology_years": "1981-2010",
-          "generated_utc": "2026-08-27T15:53:36Z",
-          "provider_image_url": "https://psl.noaa.gov/tmp/nclOVMc1Q3oWL.tmpqq.png",
+          "generated_utc": "2026-08-30T21:25:58Z",
+          "provider_image_url": "https://psl.noaa.gov/tmp/ncl1g6DiSIesM.tmpqq.png",
           "rendering": {
-            "id": "wn2-seasonal-lcc-v1",
-            "label": "WN2 shared seasonal Lambert Conformal Conic renderer",
+            "id": "wn2-seasonal-lcc-v2",
+            "label": "WN2 seasonal Lambert Conformal Conic renderer with bicubic WRIT resampling",
             "projection": "Lambert Conformal Conic",
             "standard_parallels": [
               30.0,
@@ -3127,7 +3183,9 @@
               22.0,
               85.0
             ],
-            "canvas": "1080x1080"
+            "canvas": "1080x1080",
+            "resampling_method": "bicubic",
+            "source_smoothing_sigma_grid_cells": 0.85
           },
           "climatology_label": "NCEP/CFSR native climatology; 1981-2010",
           "map_region": "North America"
@@ -3150,14 +3208,14 @@
             "winter_year": 1995
           },
           "source_url": "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=2m+Air+Temperature&level=1000mb&iy=1995&fmonth=0&fmonth2=0&type=1&map=0&mapt=6&proj=USA%28CONUS%29&colortable=testcmap&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
-          "provider_asset_url": "https://psl.noaa.gov/tmp/nclYODA6J7i2W.nc",
+          "provider_asset_url": "https://psl.noaa.gov/tmp/ncl5GYRRN104n.nc",
           "dataset": "NCEP/CFSR",
           "climatology_years": "1981-2010",
-          "generated_utc": "2026-08-27T15:53:38Z",
-          "provider_image_url": "https://psl.noaa.gov/tmp/nclYODA6J7i2W.tmpqq.png",
+          "generated_utc": "2026-08-30T21:26:00Z",
+          "provider_image_url": "https://psl.noaa.gov/tmp/ncl5GYRRN104n.tmpqq.png",
           "rendering": {
-            "id": "wn2-seasonal-lcc-v1",
-            "label": "WN2 shared seasonal Lambert Conformal Conic renderer",
+            "id": "wn2-seasonal-lcc-v2",
+            "label": "WN2 seasonal Lambert Conformal Conic renderer with bicubic WRIT resampling",
             "projection": "Lambert Conformal Conic",
             "standard_parallels": [
               30.0,
@@ -3168,12 +3226,14 @@
             "projected_x_shift_fraction": 0.035,
             "map_region": "USA(CONUS)",
             "region": [
-              -128.0,
-              -65.0,
-              22.0,
-              52.0
+              -126.0,
+              -66.0,
+              24.0,
+              50.0
             ],
-            "canvas": "1080x1080"
+            "canvas": "1080x1080",
+            "resampling_method": "bicubic",
+            "source_smoothing_sigma_grid_cells": 0.85
           },
           "climatology_label": "NCEP/CFSR native climatology; 1981-2010",
           "map_region": "USA(CONUS)"
@@ -3320,18 +3380,18 @@
             "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=20th+Century+Reanalysis+V3&var=Geopotential+Height&level=500mb&iy=1958&fmonth=0&fmonth2=0&type=1&map=0&mapt=6&proj=North+America&colortable=default&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot"
           ],
           "provider_asset_urls": [
-            "https://psl.noaa.gov/tmp/nclaZmLxgFfww.nc",
-            "https://psl.noaa.gov/tmp/nclRFfR9YkcIM.nc",
-            "https://psl.noaa.gov/tmp/nclgZGHcYt0eb.nc",
-            "https://psl.noaa.gov/tmp/nclPd4fjhoasn.nc",
-            "https://psl.noaa.gov/tmp/nclt7cEaLzd5M.nc"
+            "https://psl.noaa.gov/tmp/nclueVD73dyZA.nc",
+            "https://psl.noaa.gov/tmp/nclwW0hEauPwb.nc",
+            "https://psl.noaa.gov/tmp/nclSpo373qus6.nc",
+            "https://psl.noaa.gov/tmp/nclxjyR8KEBwb.nc",
+            "https://psl.noaa.gov/tmp/nclOkMviKQfg7.nc"
           ],
           "provider_image_urls": [
-            "https://psl.noaa.gov/tmp/nclaZmLxgFfww.tmpqq.png",
-            "https://psl.noaa.gov/tmp/nclRFfR9YkcIM.tmpqq.png",
-            "https://psl.noaa.gov/tmp/nclgZGHcYt0eb.tmpqq.png",
-            "https://psl.noaa.gov/tmp/nclPd4fjhoasn.tmpqq.png",
-            "https://psl.noaa.gov/tmp/nclt7cEaLzd5M.tmpqq.png"
+            "https://psl.noaa.gov/tmp/nclueVD73dyZA.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclwW0hEauPwb.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclSpo373qus6.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclxjyR8KEBwb.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclOkMviKQfg7.tmpqq.png"
           ],
           "dataset": "20CRv3 + NCEP CFSR",
           "datasets": [
@@ -3341,8 +3401,8 @@
           "climatology_years": "1981-2010",
           "climatology_label": "WRIT native climatologies; 1981-2010",
           "rendering": {
-            "id": "wn2-seasonal-lcc-v1",
-            "label": "WN2 shared seasonal Lambert Conformal Conic renderer",
+            "id": "wn2-seasonal-lcc-v2",
+            "label": "WN2 seasonal Lambert Conformal Conic renderer with bicubic WRIT resampling",
             "projection": "Lambert Conformal Conic",
             "standard_parallels": [
               30.0,
@@ -3358,10 +3418,12 @@
               22.0,
               85.0
             ],
-            "canvas": "1080x1080"
+            "canvas": "1080x1080",
+            "resampling_method": "bicubic",
+            "source_smoothing_sigma_grid_cells": 0.85
           },
           "map_region": "North America",
-          "generated_utc": "2026-08-30T18:25:17Z"
+          "generated_utc": "2026-08-30T21:26:05Z"
         },
         "psl_2m_temperature_anomaly": {
           "product": "psl_2m_temperature_anomaly",
@@ -3427,18 +3489,18 @@
             "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=20th+Century+Reanalysis+V3&var=2m+Air+Temperature&level=1000mb&iy=1958&fmonth=0&fmonth2=0&type=1&map=0&mapt=6&proj=USA%28CONUS%29&colortable=testcmap&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot"
           ],
           "provider_asset_urls": [
-            "https://psl.noaa.gov/tmp/nclTXg8m4dGd2.nc",
-            "https://psl.noaa.gov/tmp/nclHnQbmuKsFT.nc",
-            "https://psl.noaa.gov/tmp/nclCRR5JAweN3.nc",
-            "https://psl.noaa.gov/tmp/ncliNzJtONHh1.nc",
-            "https://psl.noaa.gov/tmp/nclyPN3wOq2gf.nc"
+            "https://psl.noaa.gov/tmp/ncllh7NctHbdC.nc",
+            "https://psl.noaa.gov/tmp/ncl9ezH42n0_4.nc",
+            "https://psl.noaa.gov/tmp/nclnabkPE5j9m.nc",
+            "https://psl.noaa.gov/tmp/nclEqVvQBWTNK.nc",
+            "https://psl.noaa.gov/tmp/nclMd5nhOCq4Z.nc"
           ],
           "provider_image_urls": [
-            "https://psl.noaa.gov/tmp/nclTXg8m4dGd2.tmpqq.png",
-            "https://psl.noaa.gov/tmp/nclHnQbmuKsFT.tmpqq.png",
-            "https://psl.noaa.gov/tmp/nclCRR5JAweN3.tmpqq.png",
-            "https://psl.noaa.gov/tmp/ncliNzJtONHh1.tmpqq.png",
-            "https://psl.noaa.gov/tmp/nclyPN3wOq2gf.tmpqq.png"
+            "https://psl.noaa.gov/tmp/ncllh7NctHbdC.tmpqq.png",
+            "https://psl.noaa.gov/tmp/ncl9ezH42n0_4.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclnabkPE5j9m.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclEqVvQBWTNK.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclMd5nhOCq4Z.tmpqq.png"
           ],
           "dataset": "20CRv3 + NCEP CFSR",
           "datasets": [
@@ -3448,8 +3510,8 @@
           "climatology_years": "1981-2010",
           "climatology_label": "WRIT native climatologies; 1981-2010",
           "rendering": {
-            "id": "wn2-seasonal-lcc-v1",
-            "label": "WN2 shared seasonal Lambert Conformal Conic renderer",
+            "id": "wn2-seasonal-lcc-v2",
+            "label": "WN2 seasonal Lambert Conformal Conic renderer with bicubic WRIT resampling",
             "projection": "Lambert Conformal Conic",
             "standard_parallels": [
               30.0,
@@ -3465,10 +3527,12 @@
               24.0,
               50.0
             ],
-            "canvas": "1080x1080"
+            "canvas": "1080x1080",
+            "resampling_method": "bicubic",
+            "source_smoothing_sigma_grid_cells": 0.85
           },
           "map_region": "USA(CONUS)",
-          "generated_utc": "2026-08-30T18:25:26Z"
+          "generated_utc": "2026-08-30T21:26:10Z"
         },
         "mrcc_snowfall_departure_composite": {
           "product": "mrcc_snowfall_departure_composite",
@@ -3711,14 +3775,14 @@
             "winter_year": 1998
           },
           "source_url": "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=Geopotential+Height&level=500mb&iy=1998&fmonth=11&fmonth2=1&type=1&map=0&mapt=6&proj=North+America&colortable=default&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
-          "provider_asset_url": "https://psl.noaa.gov/tmp/nclPgc5sUehDL.nc",
+          "provider_asset_url": "https://psl.noaa.gov/tmp/nclzziT1fK7Mb.nc",
           "dataset": "NCEP/CFSR",
           "climatology_years": "1981-2010",
-          "generated_utc": "2026-08-27T23:15:37Z",
-          "provider_image_url": "https://psl.noaa.gov/tmp/nclPgc5sUehDL.tmpqq.png",
+          "generated_utc": "2026-08-30T21:26:12Z",
+          "provider_image_url": "https://psl.noaa.gov/tmp/nclzziT1fK7Mb.tmpqq.png",
           "rendering": {
-            "id": "wn2-seasonal-lcc-v1",
-            "label": "WN2 shared seasonal Lambert Conformal Conic renderer",
+            "id": "wn2-seasonal-lcc-v2",
+            "label": "WN2 seasonal Lambert Conformal Conic renderer with bicubic WRIT resampling",
             "projection": "Lambert Conformal Conic",
             "standard_parallels": [
               30.0,
@@ -3734,7 +3798,9 @@
               22.0,
               85.0
             ],
-            "canvas": "1080x1080"
+            "canvas": "1080x1080",
+            "resampling_method": "bicubic",
+            "source_smoothing_sigma_grid_cells": 0.85
           },
           "climatology_label": "NCEP/CFSR native climatology; 1981-2010",
           "map_region": "North America"
@@ -3757,14 +3823,14 @@
             "winter_year": 1998
           },
           "source_url": "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=2m+Air+Temperature&level=1000mb&iy=1998&fmonth=11&fmonth2=1&type=1&map=0&mapt=6&proj=USA%28CONUS%29&colortable=testcmap&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
-          "provider_asset_url": "https://psl.noaa.gov/tmp/nclZJEwDUJp7l.nc",
+          "provider_asset_url": "https://psl.noaa.gov/tmp/nclk0i_pQJhUt.nc",
           "dataset": "NCEP/CFSR",
           "climatology_years": "1981-2010",
-          "generated_utc": "2026-08-27T23:15:38Z",
-          "provider_image_url": "https://psl.noaa.gov/tmp/nclZJEwDUJp7l.tmpqq.png",
+          "generated_utc": "2026-08-30T21:26:14Z",
+          "provider_image_url": "https://psl.noaa.gov/tmp/nclk0i_pQJhUt.tmpqq.png",
           "rendering": {
-            "id": "wn2-seasonal-lcc-v1",
-            "label": "WN2 shared seasonal Lambert Conformal Conic renderer",
+            "id": "wn2-seasonal-lcc-v2",
+            "label": "WN2 seasonal Lambert Conformal Conic renderer with bicubic WRIT resampling",
             "projection": "Lambert Conformal Conic",
             "standard_parallels": [
               30.0,
@@ -3775,12 +3841,14 @@
             "projected_x_shift_fraction": 0.035,
             "map_region": "USA(CONUS)",
             "region": [
-              -128.0,
-              -65.0,
-              22.0,
-              52.0
+              -126.0,
+              -66.0,
+              24.0,
+              50.0
             ],
-            "canvas": "1080x1080"
+            "canvas": "1080x1080",
+            "resampling_method": "bicubic",
+            "source_smoothing_sigma_grid_cells": 0.85
           },
           "climatology_label": "NCEP/CFSR native climatology; 1981-2010",
           "map_region": "USA(CONUS)"
@@ -3927,18 +3995,18 @@
             "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=20th+Century+Reanalysis+V3&var=Geopotential+Height&level=500mb&iy=1966&fmonth=11&fmonth2=1&type=1&map=0&mapt=6&proj=North+America&colortable=default&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot"
           ],
           "provider_asset_urls": [
-            "https://psl.noaa.gov/tmp/nclDHI8nsJWyx.nc",
-            "https://psl.noaa.gov/tmp/nclpXFYQbL4Fg.nc",
-            "https://psl.noaa.gov/tmp/ncl3GUV2ygG63.nc",
-            "https://psl.noaa.gov/tmp/nclLMg0xpgPi2.nc",
-            "https://psl.noaa.gov/tmp/nclRsa__zQXJ_.nc"
+            "https://psl.noaa.gov/tmp/nclda3AJol92R.nc",
+            "https://psl.noaa.gov/tmp/nclf99RXE7nT5.nc",
+            "https://psl.noaa.gov/tmp/nclvxe1TOKQ4U.nc",
+            "https://psl.noaa.gov/tmp/nclFwV7ns5v5M.nc",
+            "https://psl.noaa.gov/tmp/ncl9VvdbmGKTC.nc"
           ],
           "provider_image_urls": [
-            "https://psl.noaa.gov/tmp/nclDHI8nsJWyx.tmpqq.png",
-            "https://psl.noaa.gov/tmp/nclpXFYQbL4Fg.tmpqq.png",
-            "https://psl.noaa.gov/tmp/ncl3GUV2ygG63.tmpqq.png",
-            "https://psl.noaa.gov/tmp/nclLMg0xpgPi2.tmpqq.png",
-            "https://psl.noaa.gov/tmp/nclRsa__zQXJ_.tmpqq.png"
+            "https://psl.noaa.gov/tmp/nclda3AJol92R.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclf99RXE7nT5.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclvxe1TOKQ4U.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclFwV7ns5v5M.tmpqq.png",
+            "https://psl.noaa.gov/tmp/ncl9VvdbmGKTC.tmpqq.png"
           ],
           "dataset": "20CRv3 + NCEP CFSR",
           "datasets": [
@@ -3948,8 +4016,8 @@
           "climatology_years": "1981-2010",
           "climatology_label": "WRIT native climatologies; 1981-2010",
           "rendering": {
-            "id": "wn2-seasonal-lcc-v1",
-            "label": "WN2 shared seasonal Lambert Conformal Conic renderer",
+            "id": "wn2-seasonal-lcc-v2",
+            "label": "WN2 seasonal Lambert Conformal Conic renderer with bicubic WRIT resampling",
             "projection": "Lambert Conformal Conic",
             "standard_parallels": [
               30.0,
@@ -3965,10 +4033,12 @@
               22.0,
               85.0
             ],
-            "canvas": "1080x1080"
+            "canvas": "1080x1080",
+            "resampling_method": "bicubic",
+            "source_smoothing_sigma_grid_cells": 0.85
           },
           "map_region": "North America",
-          "generated_utc": "2026-08-30T18:28:19Z"
+          "generated_utc": "2026-08-30T21:26:21Z"
         },
         "psl_2m_temperature_anomaly": {
           "product": "psl_2m_temperature_anomaly",
@@ -4034,18 +4104,18 @@
             "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=20th+Century+Reanalysis+V3&var=2m+Air+Temperature&level=1000mb&iy=1966&fmonth=11&fmonth2=1&type=1&map=0&mapt=6&proj=USA%28CONUS%29&colortable=testcmap&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot"
           ],
           "provider_asset_urls": [
-            "https://psl.noaa.gov/tmp/nclkKcIRfMsFH.nc",
-            "https://psl.noaa.gov/tmp/ncl8eftP0W0vV.nc",
-            "https://psl.noaa.gov/tmp/nclTgQjOHHwiY.nc",
-            "https://psl.noaa.gov/tmp/ncldwfJW4D0RK.nc",
-            "https://psl.noaa.gov/tmp/nclmNZl8UTxEe.nc"
+            "https://psl.noaa.gov/tmp/nclDzzBsDU0Jo.nc",
+            "https://psl.noaa.gov/tmp/nclLQtgxIXgRW.nc",
+            "https://psl.noaa.gov/tmp/nclRnYjDpPC5h.nc",
+            "https://psl.noaa.gov/tmp/nclW5bVYDM4ci.nc",
+            "https://psl.noaa.gov/tmp/ncl940fjg2ips.nc"
           ],
           "provider_image_urls": [
-            "https://psl.noaa.gov/tmp/nclkKcIRfMsFH.tmpqq.png",
-            "https://psl.noaa.gov/tmp/ncl8eftP0W0vV.tmpqq.png",
-            "https://psl.noaa.gov/tmp/nclTgQjOHHwiY.tmpqq.png",
-            "https://psl.noaa.gov/tmp/ncldwfJW4D0RK.tmpqq.png",
-            "https://psl.noaa.gov/tmp/nclmNZl8UTxEe.tmpqq.png"
+            "https://psl.noaa.gov/tmp/nclDzzBsDU0Jo.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclLQtgxIXgRW.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclRnYjDpPC5h.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclW5bVYDM4ci.tmpqq.png",
+            "https://psl.noaa.gov/tmp/ncl940fjg2ips.tmpqq.png"
           ],
           "dataset": "20CRv3 + NCEP CFSR",
           "datasets": [
@@ -4055,8 +4125,8 @@
           "climatology_years": "1981-2010",
           "climatology_label": "WRIT native climatologies; 1981-2010",
           "rendering": {
-            "id": "wn2-seasonal-lcc-v1",
-            "label": "WN2 shared seasonal Lambert Conformal Conic renderer",
+            "id": "wn2-seasonal-lcc-v2",
+            "label": "WN2 seasonal Lambert Conformal Conic renderer with bicubic WRIT resampling",
             "projection": "Lambert Conformal Conic",
             "standard_parallels": [
               30.0,
@@ -4072,10 +4142,12 @@
               24.0,
               50.0
             ],
-            "canvas": "1080x1080"
+            "canvas": "1080x1080",
+            "resampling_method": "bicubic",
+            "source_smoothing_sigma_grid_cells": 0.85
           },
           "map_region": "USA(CONUS)",
-          "generated_utc": "2026-08-30T18:28:31Z"
+          "generated_utc": "2026-08-30T21:26:27Z"
         },
         "mrcc_snowfall_departure_composite": {
           "product": "mrcc_snowfall_departure_composite",
@@ -4318,14 +4390,14 @@
             "winter_year": 2024
           },
           "source_url": "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=Geopotential+Height&level=500mb&iy=2023&fmonth=11&fmonth2=11&type=1&map=0&mapt=6&proj=North+America&colortable=default&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
-          "provider_asset_url": "https://psl.noaa.gov/tmp/ncl584yNhVyHt.nc",
+          "provider_asset_url": "https://psl.noaa.gov/tmp/ncl6YszMjafh3.nc",
           "dataset": "NCEP/CFSR",
           "climatology_years": "1981-2010",
-          "generated_utc": "2026-08-27T16:01:51Z",
-          "provider_image_url": "https://psl.noaa.gov/tmp/ncl584yNhVyHt.tmpqq.png",
+          "generated_utc": "2026-08-30T21:26:29Z",
+          "provider_image_url": "https://psl.noaa.gov/tmp/ncl6YszMjafh3.tmpqq.png",
           "rendering": {
-            "id": "wn2-seasonal-lcc-v1",
-            "label": "WN2 shared seasonal Lambert Conformal Conic renderer",
+            "id": "wn2-seasonal-lcc-v2",
+            "label": "WN2 seasonal Lambert Conformal Conic renderer with bicubic WRIT resampling",
             "projection": "Lambert Conformal Conic",
             "standard_parallels": [
               30.0,
@@ -4341,7 +4413,9 @@
               22.0,
               85.0
             ],
-            "canvas": "1080x1080"
+            "canvas": "1080x1080",
+            "resampling_method": "bicubic",
+            "source_smoothing_sigma_grid_cells": 0.85
           },
           "climatology_label": "NCEP/CFSR native climatology; 1981-2010",
           "map_region": "North America"
@@ -4364,14 +4438,14 @@
             "winter_year": 2024
           },
           "source_url": "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=2m+Air+Temperature&level=1000mb&iy=2023&fmonth=11&fmonth2=11&type=1&map=0&mapt=6&proj=USA%28CONUS%29&colortable=testcmap&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
-          "provider_asset_url": "https://psl.noaa.gov/tmp/nclIX_3akKQFg.nc",
+          "provider_asset_url": "https://psl.noaa.gov/tmp/nclA0cOT7at6y.nc",
           "dataset": "NCEP/CFSR",
           "climatology_years": "1981-2010",
-          "generated_utc": "2026-08-27T16:01:53Z",
-          "provider_image_url": "https://psl.noaa.gov/tmp/nclIX_3akKQFg.tmpqq.png",
+          "generated_utc": "2026-08-30T21:26:31Z",
+          "provider_image_url": "https://psl.noaa.gov/tmp/nclA0cOT7at6y.tmpqq.png",
           "rendering": {
-            "id": "wn2-seasonal-lcc-v1",
-            "label": "WN2 shared seasonal Lambert Conformal Conic renderer",
+            "id": "wn2-seasonal-lcc-v2",
+            "label": "WN2 seasonal Lambert Conformal Conic renderer with bicubic WRIT resampling",
             "projection": "Lambert Conformal Conic",
             "standard_parallels": [
               30.0,
@@ -4382,12 +4456,14 @@
             "projected_x_shift_fraction": 0.035,
             "map_region": "USA(CONUS)",
             "region": [
-              -128.0,
-              -65.0,
-              22.0,
-              52.0
+              -126.0,
+              -66.0,
+              24.0,
+              50.0
             ],
-            "canvas": "1080x1080"
+            "canvas": "1080x1080",
+            "resampling_method": "bicubic",
+            "source_smoothing_sigma_grid_cells": 0.85
           },
           "climatology_label": "NCEP/CFSR native climatology; 1981-2010",
           "map_region": "USA(CONUS)"
@@ -4534,18 +4610,18 @@
             "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=20th+Century+Reanalysis+V3&var=Geopotential+Height&level=500mb&iy=1952&fmonth=11&fmonth2=11&type=1&map=0&mapt=6&proj=North+America&colortable=default&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot"
           ],
           "provider_asset_urls": [
-            "https://psl.noaa.gov/tmp/nclshPIwOx96e.nc",
-            "https://psl.noaa.gov/tmp/nclGKf_qndBcG.nc",
-            "https://psl.noaa.gov/tmp/ncleJXNVs2nDZ.nc",
-            "https://psl.noaa.gov/tmp/nclnKSpsIHvDY.nc",
-            "https://psl.noaa.gov/tmp/nclrTD71np_A5.nc"
+            "https://psl.noaa.gov/tmp/nclU4Rk5hVrA0.nc",
+            "https://psl.noaa.gov/tmp/ncl8P3lv8qK2U.nc",
+            "https://psl.noaa.gov/tmp/ncl9zl21bcwVC.nc",
+            "https://psl.noaa.gov/tmp/nclUh6KbkrmCk.nc",
+            "https://psl.noaa.gov/tmp/nclBuSuBkqUaC.nc"
           ],
           "provider_image_urls": [
-            "https://psl.noaa.gov/tmp/nclshPIwOx96e.tmpqq.png",
-            "https://psl.noaa.gov/tmp/nclGKf_qndBcG.tmpqq.png",
-            "https://psl.noaa.gov/tmp/ncleJXNVs2nDZ.tmpqq.png",
-            "https://psl.noaa.gov/tmp/nclnKSpsIHvDY.tmpqq.png",
-            "https://psl.noaa.gov/tmp/nclrTD71np_A5.tmpqq.png"
+            "https://psl.noaa.gov/tmp/nclU4Rk5hVrA0.tmpqq.png",
+            "https://psl.noaa.gov/tmp/ncl8P3lv8qK2U.tmpqq.png",
+            "https://psl.noaa.gov/tmp/ncl9zl21bcwVC.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclUh6KbkrmCk.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclBuSuBkqUaC.tmpqq.png"
           ],
           "dataset": "20CRv3 + NCEP CFSR",
           "datasets": [
@@ -4555,8 +4631,8 @@
           "climatology_years": "1981-2010",
           "climatology_label": "WRIT native climatologies; 1981-2010",
           "rendering": {
-            "id": "wn2-seasonal-lcc-v1",
-            "label": "WN2 shared seasonal Lambert Conformal Conic renderer",
+            "id": "wn2-seasonal-lcc-v2",
+            "label": "WN2 seasonal Lambert Conformal Conic renderer with bicubic WRIT resampling",
             "projection": "Lambert Conformal Conic",
             "standard_parallels": [
               30.0,
@@ -4572,10 +4648,12 @@
               22.0,
               85.0
             ],
-            "canvas": "1080x1080"
+            "canvas": "1080x1080",
+            "resampling_method": "bicubic",
+            "source_smoothing_sigma_grid_cells": 0.85
           },
           "map_region": "North America",
-          "generated_utc": "2026-08-30T18:32:18Z"
+          "generated_utc": "2026-08-30T21:26:36Z"
         },
         "psl_2m_temperature_anomaly": {
           "product": "psl_2m_temperature_anomaly",
@@ -4641,18 +4719,18 @@
             "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=20th+Century+Reanalysis+V3&var=2m+Air+Temperature&level=1000mb&iy=1952&fmonth=11&fmonth2=11&type=1&map=0&mapt=6&proj=USA%28CONUS%29&colortable=testcmap&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot"
           ],
           "provider_asset_urls": [
-            "https://psl.noaa.gov/tmp/nclAtf15UP_Sd.nc",
-            "https://psl.noaa.gov/tmp/nclMOvQx5uYkQ.nc",
-            "https://psl.noaa.gov/tmp/nclVVqfG1TEld.nc",
-            "https://psl.noaa.gov/tmp/nclrQ10_Vjhdu.nc",
-            "https://psl.noaa.gov/tmp/nclyK5J7htQjF.nc"
+            "https://psl.noaa.gov/tmp/nclw70koGu3lX.nc",
+            "https://psl.noaa.gov/tmp/nclNbwf_N7FWs.nc",
+            "https://psl.noaa.gov/tmp/nclm9Caxi_C_b.nc",
+            "https://psl.noaa.gov/tmp/ncl37jDjSXdeK.nc",
+            "https://psl.noaa.gov/tmp/nclGV7VXlSCRS.nc"
           ],
           "provider_image_urls": [
-            "https://psl.noaa.gov/tmp/nclAtf15UP_Sd.tmpqq.png",
-            "https://psl.noaa.gov/tmp/nclMOvQx5uYkQ.tmpqq.png",
-            "https://psl.noaa.gov/tmp/nclVVqfG1TEld.tmpqq.png",
-            "https://psl.noaa.gov/tmp/nclrQ10_Vjhdu.tmpqq.png",
-            "https://psl.noaa.gov/tmp/nclyK5J7htQjF.tmpqq.png"
+            "https://psl.noaa.gov/tmp/nclw70koGu3lX.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclNbwf_N7FWs.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclm9Caxi_C_b.tmpqq.png",
+            "https://psl.noaa.gov/tmp/ncl37jDjSXdeK.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclGV7VXlSCRS.tmpqq.png"
           ],
           "dataset": "20CRv3 + NCEP CFSR",
           "datasets": [
@@ -4662,8 +4740,8 @@
           "climatology_years": "1981-2010",
           "climatology_label": "WRIT native climatologies; 1981-2010",
           "rendering": {
-            "id": "wn2-seasonal-lcc-v1",
-            "label": "WN2 shared seasonal Lambert Conformal Conic renderer",
+            "id": "wn2-seasonal-lcc-v2",
+            "label": "WN2 seasonal Lambert Conformal Conic renderer with bicubic WRIT resampling",
             "projection": "Lambert Conformal Conic",
             "standard_parallels": [
               30.0,
@@ -4679,10 +4757,12 @@
               24.0,
               50.0
             ],
-            "canvas": "1080x1080"
+            "canvas": "1080x1080",
+            "resampling_method": "bicubic",
+            "source_smoothing_sigma_grid_cells": 0.85
           },
           "map_region": "USA(CONUS)",
-          "generated_utc": "2026-08-30T18:32:27Z"
+          "generated_utc": "2026-08-30T21:26:41Z"
         },
         "mrcc_snowfall_departure_composite": {
           "product": "mrcc_snowfall_departure_composite",
