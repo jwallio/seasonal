@@ -89,7 +89,7 @@ def main() -> int:
         "PRECIP_SEASONAL_ANOMALY_MIN_IN = -8.0",
         "PRECIP_SEASONAL_ANOMALY_MAX_IN = 8.0",
         "CONUS_PRECIP_REGION = (-126.0, -66.0, 24.0, 50.0)",
-        "CFSv2 CONUS Precipitation Anomaly (in)",
+        "CFSv2 Precipitation Anomaly (in)",
         "CONUS domain",
         "numeric_grid",
         "numeric_grid_format",
@@ -446,3 +446,4 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+

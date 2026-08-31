@@ -61,6 +61,13 @@ def _published_thumbnail_path(site_root: Path, asset_path: PurePosixPath) -> Pur
     return PurePosixPath("thumbnails", relative)
 
 
+def _published_share_source(site_root: Path, asset_path: PurePosixPath) -> PurePosixPath:
+    relative = PurePosixPath(*asset_path.parts[1:])
+    if (site_root / "seasonal").is_dir():
+        return PurePosixPath("seasonal", "share", relative)
+    return PurePosixPath("share", relative)
+
+
 def iter_target_images(target: dict[str, Any]) -> Iterable[Any]:
     if str(target.get("status", "")).lower() not in {"failed", "error"}:
         yield target.get("image")
@@ -124,6 +131,10 @@ def build_thumbnails(site_root: Path, max_width: int = 560, quality: int = 82) -
     for asset_path in sorted(load_compare_assets(site_root), key=str):
         source_path = _published_asset_path(site_root, asset_path)
         source = site_root.joinpath(*source_path.parts)
+        share_source_path = _published_share_source(site_root, asset_path)
+        share_source = site_root.joinpath(*share_source_path.parts)
+        if share_source.is_file():
+            source = share_source
         destination_path = _published_thumbnail_path(site_root, asset_path)
         destination = site_root.joinpath(*destination_path.parts)
         if not source.is_file():
@@ -153,3 +164,4 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+

@@ -74,7 +74,7 @@
     const siteMatch = location.pathname.match(/^(.*\/seasonal)(?:\/|$)/);
     const base = siteMatch ? siteMatch[1] : '';
     const manifestUrl = `${base}/cansips_manifest.json`;
-    const cleanPath = value => `${base}/${String(value || '').replace(/^\/+/, '').replace(/^public\//, '').replace(/^seasonal\//, '')}`;
+    const cleanPath = value => `${base}/share/${String(value || '').replace(/^\/+/, '').replace(/^public\//, '').replace(/^seasonal\//, '')}`;
     const el = id => document.getElementById(id);
     const labels = {
       '500mb_height_anomaly':'500-mb Height Anomaly',
@@ -101,3 +101,4 @@
   </script>
 </body>
 </html>
+

@@ -198,6 +198,8 @@ output smoke tests.
 python tests/test_pipeline_contract.py
 python tests/test_seasonal_catalog.py
 python tests/test_seasonal_dashboard_contract.py
+python tests/test_seasonal_share_images.py
+python tests/test_seasonal_thumbnails.py
 python tests/test_seasonal_release_check.py
 python tests/test_seasonal_schedules.py
 python tests/smoke_outputs.py
@@ -210,3 +212,4 @@ definitions, and conversion notes in its manifests and documentation. Source
 data remains subject to each provider's terms and licences. Generated maps,
 analysis logic, composites, metadata, and site presentation should not be
 redistributed or used to create a competing service without permission.
+

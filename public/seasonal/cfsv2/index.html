@@ -82,7 +82,7 @@
     const siteMatch = location.pathname.match(/^(.*\/seasonal)(?:\/|$)/);
     const base = siteMatch ? siteMatch[1] : '';
     const manifestUrl = `${base}/cfsv2_manifest.json`;
-    const cleanPath = value => `${base}/${String(value || '').replace(/^\/+/, '').replace(/^public\//, '').replace(/^seasonal\//, '')}`;
+    const cleanPath = value => `${base}/share/${String(value || '').replace(/^\/+/, '').replace(/^public\//, '').replace(/^seasonal\//, '')}`;
     const el = id => document.getElementById(id);
     let targets = [];
     let runs = [];
@@ -188,3 +188,4 @@
   </script>
 </body>
 </html>
+

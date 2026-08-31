@@ -346,8 +346,8 @@ PRODUCT_SPECS = {
         "state_tag": "prate_in",
         "id_token": "prate-anomaly",
         "file_token": "pratea",
-        "title": "CFSv2 CONUS Precipitation Anomaly (in)",
-        "absolute_title": "CFSv2 CONUS Precipitation (in)",
+        "title": "CFSv2 Precipitation Anomaly (in)",
+        "absolute_title": "CFSv2 Precipitation (in)",
         "region": CONUS_PRECIP_REGION,
         "height_contours": False,
         "baseline_root": NCEI_FLUX_CALIBRATION_ROOT,
@@ -2204,12 +2204,36 @@ def render_map(
     if title_box.width > available_title_width:
         title_text.set_fontsize(max(12.5, 15.5 * available_title_width / title_box.width))
     source_label = product_spec.get("source_label", "NOAA CFSv2 / NOMADS")
+    display_baseline_label = re.sub(
+        r"\s*\(cached\s+[^)]*fallback\)\s*$",
+        "",
+        str(baseline_label),
+        flags=re.IGNORECASE,
+    ).strip()
+
+    def fit_header_artist(artist: object, minimum_fontsize: float) -> None:
+        """Keep one-line image metadata inside the right figure margin."""
+
+        figure.canvas.draw()
+        artist_box = artist.get_window_extent(renderer=figure.canvas.get_renderer())
+        available_width = max(
+            1.0,
+            (0.965 - float(artist.get_position()[0])) * figure.bbox.width,
+        )
+        if artist_box.width > available_width:
+            artist.set_fontsize(
+                max(
+                    minimum_fontsize,
+                    float(artist.get_fontsize()) * available_width / artist_box.width,
+                )
+            )
+
     configured_header_summary = product_spec.get("header_summary")
     if configured_header_summary:
         header_summary = str(configured_header_summary).format(
             source_label=source_label,
             baseline_label=(
-                "Absolute field smoke output" if not anomaly else baseline_label
+                "Absolute field smoke output" if not anomaly else display_baseline_label
             ),
             period_label=display_period,
         )
@@ -2217,7 +2241,7 @@ def render_map(
         init_text = initialization_label or f"Init {init_date:%d %b %Y %HZ}"
         lead_label = str(product_spec.get("lead_label", f"Lead {lead}"))
         header_summary = f"{init_text}  •  {lead_label}  •  {mean_label}"
-    figure.text(
+    header_summary_text = figure.text(
         0.035,
         0.925,
         header_summary,
@@ -2226,30 +2250,31 @@ def render_map(
         fontsize=10.5,
         color="#42515d",
     )
+    fit_header_artist(header_summary_text, 8.4)
     if not product_spec.get("suppress_header_detail"):
         configured_header_detail = product_spec.get("header_detail", "")
         if configured_header_detail:
             header_detail = configured_header_detail.format(
                 source_label=source_label,
                 baseline_label=(
-                    "Absolute field smoke output" if not anomaly else baseline_label
+                    "Absolute field smoke output" if not anomaly else display_baseline_label
                 ),
             )
         elif product_spec["height_contours"]:
             header_detail = (
-                f"{source_label}  •  {baseline_label}  •  Height contours in dam"
+                f"{source_label}  •  {display_baseline_label}  •  Height contours in dam"
                 if anomaly
                 else f"{source_label}  •  Absolute field smoke output  •  Height contours in dam"
             )
         else:
             header_detail = (
-                f"{source_label}  •  {baseline_label}  •  Precipitation accumulation (in)  •  CONUS domain"
+                f"{source_label}  •  {display_baseline_label}  •  Precipitation accumulation (in)  •  CONUS domain"
             )
         if product_spec["name"] == PRODUCT_SWE_ANOMALY:
             header_detail = (
-                f"{source_label}  •  {baseline_label}  •  Snow-water equivalent (in)  •  CONUS domain"
+                f"{source_label}  •  {display_baseline_label}  •  Snow-water equivalent (in)  •  CONUS domain"
             )
-        figure.text(
+        header_detail_text = figure.text(
             0.035,
             0.899,
             header_detail,
@@ -2258,6 +2283,7 @@ def render_map(
             fontsize=8.2,
             color="#5d6b75",
         )
+        fit_header_artist(header_detail_text, 6.4)
     colorbar_bottom = max(colorbar_floor, map_bottom - colorbar_gap - colorbar_height)
     colorbar_axes = figure.add_axes([map_left, colorbar_bottom, map_width, colorbar_height])
     colorbar_options = {"ticks": colorbar_ticks}
@@ -3090,3 +3116,4 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+

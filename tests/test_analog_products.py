@@ -183,7 +183,7 @@ def main() -> int:
     )
     check(
         snow_spec["header_summary"]
-        == "MRCC / ACIS  •  5-member inverse-distance analog blend  •  NWS Eastern Region"
+        == "MRCC / ACIS  •  Top-5 weighted analog blend  •  NWS Eastern Region"
         and snow_spec["suppress_header_detail"] is True,
         "snowfall map should use one concise subtitle without duplicate provider text",
     )
@@ -561,4 +561,5 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
 

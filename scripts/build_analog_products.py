@@ -87,7 +87,7 @@ MRCC_SNOWFALL_COMPOSITE_KEY = "mrcc_snowfall_departure_composite"
 MRCC_SNOWFALL_COMPOSITE_VERSION = "mrcc-acis-snow-v6-eastern-domain-fit"
 MRCC_SNOWFALL_PROVIDER_LABEL = "MRCC / ACIS station-interpolated snowfall departure"
 MRCC_SNOWFALL_BASELINE_LABEL = "MRCC / ACIS provider snowfall departure (normal supplied by ACIS)"
-MRCC_SNOWFALL_RENDERER_ID = "wn2-seasonal-eastern-snow-v6"
+MRCC_SNOWFALL_RENDERER_ID = "wn2-seasonal-eastern-snow-v7"
 MRCC_SNOWFALL_RENDERER_LABEL = "WN2 centered domain-fitted eastern U.S. snowfall departure renderer"
 # Signed departures use the requested warm-below-normal and cool-above-normal
 # sequence, with a dedicated white neutral interval around zero. Keeping the
@@ -139,7 +139,7 @@ WRIT_CLIMATOLOGY_LABEL = "NCEP/CFSR native climatology; 1981-2010"
 WRIT_NORTH_AMERICA_REGION = "North America"
 WRIT_CONUS_REGION = "USA(CONUS)"
 WRIT_SOURCE_SMOOTHING_SIGMA = 0.85
-WRIT_RENDERER_ID = "wn2-seasonal-lcc-v2"
+WRIT_RENDERER_ID = "wn2-seasonal-lcc-v3"
 WRIT_RENDERER_LABEL = "WN2 seasonal Lambert Conformal Conic renderer with bicubic WRIT resampling"
 COMPOSITE_PRODUCT_KEYS = (
     "psl_500mb_height_anomaly",
@@ -939,7 +939,7 @@ def _mrcc_snowfall_render_product_spec(seasonal: Any, period: dict[str, Any], me
             + list(range(4, int(anomaly_max) + 1, tick_step))
         )
     product_spec = dict(seasonal.PRODUCT_SPECS[seasonal.PRODUCT_PRECIPITATION_ANOMALY])
-    title = f"Weighted Top {member_count}-Analog Snowfall Departure (in)"
+    title = f"Top {member_count} Analog Snowfall Departure (in)"
     product_spec.update(
         {
             "title": title,
@@ -947,12 +947,12 @@ def _mrcc_snowfall_render_product_spec(seasonal: Any, period: dict[str, Any], me
             "height_contours": False,
             "source_label": "MRCC / ACIS",
             "header_summary": (
-                f"MRCC / ACIS  •  {member_count}-member inverse-distance analog blend  •  "
+                f"MRCC / ACIS  •  Top-{member_count} weighted analog blend  •  "
                 f"{MRCC_SNOWFALL_MAP_REGION}"
             ),
             "suppress_header_detail": True,
             "map_extent": MRCC_SNOWFALL_MAP_EXTENT,
-            "lead_label": "Inverse-distance analog composite",
+            "lead_label": "Weighted analog blend",
             "region": MRCC_SNOWFALL_REGION,
             "anomaly_min": anomaly_min,
             "anomaly_max": anomaly_max,
@@ -1006,9 +1006,9 @@ def _render_mrcc_snowfall_grid(
         border_paths=_writ_border_paths(root, seasonal),
         period_label=target_label,
         seasonal=period["period_type"] == "djf",
-        ensemble_label=f"{member_count}-analog weighted composite",
+        ensemble_label=f"Top {member_count} blend",
         product_spec=product_spec,
-        initialization_label=f"Historical analog composite · {target_label}",
+        initialization_label=f"Historical analogs · {target_label}",
         footer_text=footer_text,
     )
     return _writ_rendering_metadata(
@@ -1262,7 +1262,7 @@ def _retained_composite_or_unavailable(
         }
     return {
         "product": product_key,
-        "label": f"Weighted Top {member_count}-Analog Composite · {_product_spec(product_key)['label']}",
+        "label": f"Top {member_count} analog blend · {_product_spec(product_key)['label']}",
         "provider": _product_spec(product_key)["provider"],
         "status": "unavailable",
         "composite_key": composite_key,
@@ -1322,13 +1322,13 @@ def _build_composite_product(
         )
         dataset_labels = [_writ_dataset_label(dataset) for dataset in datasets]
         dataset_label = " + ".join(dataset_labels)
-        product_label = f"Weighted Top {len(members)}-Analog Composite · {spec['label']}"
+        product_label = f"Top {len(members)} analog blend · {spec['label']}"
         if product_key == "psl_500mb_height_anomaly":
-            title = f"Weighted Top {len(members)}-Analog 500-mb Height Anomaly (m)"
+            title = f"Top {len(members)} Analog 500-mb Height Anomaly (m)"
         else:
-            title = f"Weighted Top {len(members)}-Analog 2-m Temperature Anomaly (°C)"
+            title = f"Top {len(members)} Analog 2-m Temperature Anomaly (°C)"
         footer_lines = [
-            "Weighted analog members: "
+            "Analog members: "
             + "  •  ".join(
                 f"{member['rank']} {member['label']} ({member['weight'] * 100:.1f}%)"
                 for member in members[:3]
@@ -1352,9 +1352,9 @@ def _build_composite_product(
             baseline_label=f"WRIT native climatologies; {WRIT_CLIMATOLOGY_YEARS}",
             title=title,
             source_label=f"NOAA PSL WRIT / {dataset_label}",
-            lead_label="Inverse-distance analog composite",
-            ensemble_label=f"{len(members)}-analog weighted composite",
-            initialization_label=f"Historical analog composite · {target_label}",
+            lead_label="80/20 pattern-amplitude weights",
+            ensemble_label=f"Top {len(members)} blend",
+            initialization_label=f"Historical analogs · {target_label}",
             footer_text="\n".join(footer_lines),
         )
         return {
@@ -1443,7 +1443,7 @@ def _build_snowfall_composite_product(
             else "mixed: " + "; ".join(interpolation_methods)
         )
         footer_lines = [
-            "Weighted analog members: "
+            "Analog members: "
             + "  •  ".join(
                 f"{member['rank']} {member['label']} ({member['weight'] * 100:.1f}%)"
                 for member in members[:3]
@@ -1467,7 +1467,7 @@ def _build_snowfall_composite_product(
         )
         return {
             "product": product_key,
-            "label": f"Weighted Top {len(members)}-Analog Composite · {spec['label']}",
+            "label": f"Top {len(members)} analog blend · {spec['label']}",
             "provider": spec["provider"],
             "status": "ready",
             "image": _relative_asset(root, image_path),
@@ -1789,4 +1789,5 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
 

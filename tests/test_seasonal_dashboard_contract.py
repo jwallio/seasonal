@@ -11,6 +11,7 @@ STYLESHEET = ROOT / "public" / "seasonal" / "dashboard.css"
 DASHBOARD_SCRIPT = ROOT / "public" / "seasonal" / "dashboard.js"
 PUBLISH_WORKFLOW = ROOT / ".github" / "workflows" / "publish-pages.yml"
 THUMBNAIL_SCRIPT = ROOT / "scripts" / "build_seasonal_thumbnails.py"
+SHARE_IMAGE_SCRIPT = ROOT / "scripts" / "build_seasonal_share_images.py"
 CATALOG_SCRIPT = ROOT / "scripts" / "build_seasonal_catalog.py"
 PRODUCT_REGISTRY = ROOT / "scripts" / "seasonal_products.py"
 
@@ -26,6 +27,7 @@ def main() -> int:
     check(DASHBOARD_SCRIPT.exists(), "seasonal dashboard script is missing")
     check(PUBLISH_WORKFLOW.exists(), "central Pages workflow is missing")
     check(THUMBNAIL_SCRIPT.exists(), "seasonal thumbnail builder is missing")
+    check(SHARE_IMAGE_SCRIPT.exists(), "seasonal share-image builder is missing")
     check(CATALOG_SCRIPT.exists(), "seasonal catalog builder is missing")
     check(PRODUCT_REGISTRY.exists(), "canonical seasonal product registry is missing")
     page_markup = PAGE.read_text(encoding="utf-8")
@@ -44,8 +46,8 @@ def main() -> int:
     check("<style>" not in page_markup and "<script>" not in page_markup, "dashboard must not restore large inline assets")
 
     for term in (
-        "<title>Seasonal Model Dashboard</title>",
-        "<h1>Seasonal Model Dashboard</h1>",
+        "<title>Seasonal | wall.cloud</title>",
+        "<h1>Seasonal</h1>",
         "CFSv2",
         "ECMWF SEAS5",
         "CanSIPS v3",
@@ -90,6 +92,8 @@ def main() -> int:
         'id="copy-link"',
         'id="download-link"',
         'id="map-dialog"',
+        'id="map-dialog-share"',
+        'id="page-menu"',
         'id="provenance-details"',
         'role="tablist"',
         'role="tabpanel"',
@@ -123,11 +127,13 @@ def main() -> int:
         "history.replaceState",
         "navigator.clipboard.writeText",
         "function openMapDialog(src, title)",
+        "function shareImagePath(value)",
+        "function setImageFallbacks(image, sources, onFailure)",
+        "async function shareCurrentMap()",
         "function thumbnailPath(value)",
         "thumbnails/",
-        "image.src = thumbnailPath(asset.image)",
+        "setImageFallbacks(image, [thumbnailPath(asset.image), fullImage, originalImage]",
         "openMapDialog(fullImage, image.alt)",
-        "usedFullImageFallback",
         "window.matchMedia('(min-width: 901px)')",
         "function syncProvenanceDisclosure",
         "const compareControlsMedia = window.matchMedia('(max-width: 600px)');",
@@ -142,7 +148,7 @@ def main() -> int:
         "function renderAnalogProductGrid(section, products, entry, analogLabel)",
         "amplitude_similarity",
         "composite_weight",
-        "Weighted top-",
+        "Top-",
         "analog-composite-products",
         "function loadAnalogManifest()",
         "function loadAnalogProductsManifest()",
@@ -152,7 +158,7 @@ def main() -> int:
         "psl_2m_temperature_anomaly",
         "mrcc_snowfall_departure",
         "mrcc_snowfall_departure_composite",
-        "MRCC/ACIS station departures",
+        "MRCC/ACIS departures",
         "selection.compareProduct = event.target.value",
         "product_hours",
         "target_month",
@@ -170,7 +176,7 @@ def main() -> int:
         "if (!usable.length) return null;",
         "&& !isFailedRun(run)",
         "document.createElement('optgroup')",
-        "forecast surfaces available",
+        "models available",
         "Not published for this selection:",
         "probability_above_normal",
         "multi_model_consensus",
@@ -219,11 +225,12 @@ def main() -> int:
     check(".toolbar{position:static" in stylesheet, "Explore selectors must not stay pinned over maps on phones")
     check(".compare-toolbar{position:static" in stylesheet, "Compare options must not stay pinned over maps on phones")
     check(".compare-toolbar.is-collapsed .compare-control-fields{display:none}" in stylesheet, "mobile Compare options must collapse to expose the maps")
-    check(".page-actions { display:none; }" in stylesheet, "mobile header should hide the space-consuming copy action")
+    check(".page-menu-popover" in stylesheet, "compact page actions menu is missing")
+    check(".view-bar{align-items:center}" in stylesheet, "mobile navigation and page actions should share one compact row")
     check(".compare-control-fields .selector, .compare-filter { grid-column:1 / -1; }" in stylesheet, "mobile Compare controls should use readable full-width fields")
     check(".analog-product-grid { grid-template-columns:1fr; }" in stylesheet, "mobile analog maps should use the available screen width")
     check("table-layout:fixed" in stylesheet, "analog table should keep narrow-screen columns bounded")
-    check(".compare-card-head a { max-width:6rem; white-space:normal; text-align:right; }" in stylesheet, "mobile compare links should wrap instead of overflowing")
+    check(".compare-card-head a { max-width:5rem; white-space:normal; text-align:right; }" in stylesheet, "mobile compare links should wrap instead of overflowing")
     check('title="Historical analog month or season"' in dashboard_script and '>Period<' in dashboard_script, "analog table should use compact, explained period labels")
     check("DJF ${match[1]}–${match[3].slice(2)}" in dashboard_script, "dashboard should identify both years in cross-year DJF labels")
     check("seasonalCatalog?.generated_utc" in dashboard_script, "Compare thumbnails should bust stale published asset URLs")
@@ -239,7 +246,7 @@ def main() -> int:
     compare_baseline_block = page[page.index("function compareBaselineOptions"):page.index("function compareRunForTarget")]
     check("productKey === DEFAULT_COMPARE_PRODUCT" in compare_baseline_block, "common-reference comparison must remain limited to 500-mb height")
     compare_card_block = page[page.index("function renderCompareCard"):page.index("function renderCompare()")]
-    check("image.src = thumbnailPath(asset.image)" in compare_card_block, "Compare cards must load compact WebP thumbnails")
+    check("setImageFallbacks(image, [thumbnailPath(asset.image), fullImage, originalImage]" in compare_card_block, "Compare cards must load compact WebP thumbnails before full images")
     check("openMapDialog(fullImage, image.alt)" in compare_card_block, "Compare lightbox must retain the full-resolution image")
 
     check("WN2 /" not in page, "unified dashboard should use a generic dashboard title")
@@ -282,12 +289,15 @@ def main() -> int:
         "cp dashboard-source/public/seasonal/cfsv2/index.html site/cfsv2/index.html",
         "cp dashboard-source/public/seasonal/seas5/index.html site/seas5/index.html",
         "scripts/build_seasonal_thumbnails.py",
+        "scripts/build_seasonal_share_images.py",
         "scripts/seasonal_products.py",
         "scripts/build_seasonal_catalog.py",
         "name: Validate seasonal manifests and build catalog",
         "--strict",
         "--source-revision \"${GITHUB_SHA}\"",
         "name: Build seasonal Compare thumbnails",
+        "name: Build wall.cloud share images",
+        "build_seasonal_share_images.py --site-root site --strict",
         "--site-root site --max-width 560 --quality 82",
         "pip install --disable-pip-version-check --quiet Pillow",
     ):
@@ -295,6 +305,7 @@ def main() -> int:
 
     check(
         workflow.index("name: Validate seasonal manifests and build catalog")
+        < workflow.index("name: Build wall.cloud share images")
         < workflow.index("name: Build seasonal Compare thumbnails")
         < workflow.index("name: Publish the merged Pages tree"),
         "catalog validation must block thumbnail generation and publication",
@@ -306,5 +317,6 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
 
 

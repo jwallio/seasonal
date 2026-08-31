@@ -6,11 +6,25 @@ const CATALOG_URL = assetPath('seasonal/catalog.json');
 const ANALOG_MANIFEST_URL = assetPath('seasonal/analog_z500_manifest.json');
 const ANALOG_PRODUCTS_MANIFEST_URL = assetPath('seasonal/analog_products_manifest.json');
 const ANALOG_PRODUCT_ORDER = ['psl_500mb_height_anomaly', 'psl_2m_temperature_anomaly', 'mrcc_snowfall_departure'];
+function shareImagePath(value) {
+  const relative = normalizeAssetPath(value);
+  return assetPath(relative.startsWith('share/') ? relative : `share/${relative}`);
+}
 function thumbnailPath(value) {
   const relative = normalizeAssetPath(value);
   const webp = /\.[^/.]+$/.test(relative) ? relative.replace(/\.[^/.]+$/, '.webp') : `${relative}.webp`;
   const version = seasonalCatalog?.generated_utc || seasonalCatalog?.source_revision || '';
   return `${assetPath(`thumbnails/${webp}`)}${version ? `?v=${encodeURIComponent(version)}` : ''}`;
+}
+function setImageFallbacks(image, sources, onFailure) {
+  const queue = [...new Set(sources.filter(Boolean))];
+  const loadNext = () => {
+    const next = queue.shift();
+    if (next) image.src = next;
+    else if (onFailure) onFailure();
+  };
+  image.onerror = loadNext;
+  loadNext();
 }
 const el = id => document.getElementById(id);
 const MODEL_CONFIG = {
@@ -463,14 +477,40 @@ function downloadFileName(src) {
   try { return decodeURIComponent(new URL(src, location.href).pathname.split('/').pop() || 'seasonal-map.png'); }
   catch (_) { return 'seasonal-map.png'; }
 }
+let dialogMap = { src: '', title: '' };
 function openMapDialog(src, title) {
   const dialog = el('map-dialog');
+  dialogMap = { src, title };
   el('map-dialog-title').textContent = title;
-  el('map-dialog-image').src = src;
+  setImageFallbacks(el('map-dialog-image'), [src]);
   el('map-dialog-image').alt = title;
   el('map-dialog-download').href = src;
   el('map-dialog-download').download = downloadFileName(src);
+  el('map-dialog-status').textContent = '';
   if (typeof dialog.showModal === 'function') dialog.showModal();
+}
+async function shareCurrentMap() {
+  const status = el('map-dialog-status');
+  if (!dialogMap.src) return;
+  status.textContent = '';
+  try {
+    const response = await fetch(dialogMap.src);
+    if (!response.ok) throw new Error(`Image returned ${response.status}`);
+    const blob = await response.blob();
+    const file = new File([blob], downloadFileName(dialogMap.src), { type: blob.type || 'image/png' });
+    if (navigator.canShare?.({ files: [file] })) {
+      await navigator.share({ title: dialogMap.title, files: [file] });
+      status.textContent = 'Shared';
+    } else if (navigator.share) {
+      await navigator.share({ title: dialogMap.title, url: dialogMap.src });
+      status.textContent = 'Shared';
+    } else {
+      await navigator.clipboard.writeText(dialogMap.src);
+      status.textContent = 'Image link copied';
+    }
+  } catch (error) {
+    if (error?.name !== 'AbortError') status.textContent = 'Unable to share this image';
+  }
 }
 function renderModelOptions() {
   const select = el('model-select');
@@ -557,7 +597,7 @@ function renderOverview() {
   if (staleCount) notices.push(`${staleCount} surface${staleCount === 1 ? '' : 's'} are beyond the expected refresh window`);
   if (notApplicableCount) notices.push(`${notApplicableCount} intentionally unsupported or quarantined surface${notApplicableCount === 1 ? ' is' : 's are'} excluded from coverage`);
   el('overview-notices').textContent = notices.length ? notices.join('. ') + '.' : 'All loaded guidance is within its expected refresh window and no partial products are present.';
-  el('footer-copy').textContent = 'Seasonal model operations overview · Select any available matrix cell to inspect its source run and valid periods.';
+  el('footer-copy').textContent = seasonalCatalog?.generated_utc ? `Catalog updated ${initLabel(seasonalCatalog.generated_utc)}` : 'Seasonal catalog loaded';
   syncUrlState();
 }
 function compareEmpty(message) {
@@ -613,7 +653,7 @@ function renderCompareCard(modelKey, targetKey) {
   const title = document.createElement('h2'); title.textContent = model.label; heading.appendChild(title);
   const role = document.createElement('span'); role.className = 'model-role'; role.textContent = MODEL_ROLE_LABELS[model.role] || pretty(model.role); heading.appendChild(role);
   header.appendChild(heading);
-  const direct = document.createElement('a'); direct.href = model.direct; direct.textContent = 'Direct page'; header.appendChild(direct);
+  const direct = document.createElement('a'); direct.href = model.direct; direct.textContent = 'Model page'; header.appendChild(direct);
   card.appendChild(header);
   const imageWrap = document.createElement('div'); imageWrap.className = 'compare-image-wrap';
   const baseline = selection.compareBaseline || 'native';
@@ -631,14 +671,12 @@ function renderCompareCard(modelKey, targetKey) {
     imageWrap.appendChild(compareEmpty(targetKey ? `No ${reference} published for ${periodLabel(targetKey)}.` : `No ${reference} is available.`));
   } else {
     const image = document.createElement('img');
-    const fullImage = assetPath(asset.image);
-    image.src = thumbnailPath(asset.image);
+    const originalImage = assetPath(asset.image);
+    const fullImage = shareImagePath(asset.image);
     image.alt = `${runDisplayName(model, run)} ${product} ${periodLabel(target.target_month)} · ${compareBaselineLabel(baseline)}`;
     image.loading = 'lazy';
     image.decoding = 'async';
-    let usedFullImageFallback = false;
-    image.addEventListener('error', () => {
-      if (!usedFullImageFallback) { usedFullImageFallback = true; image.src = fullImage; return; }
+    setImageFallbacks(image, [thumbnailPath(asset.image), fullImage, originalImage], () => {
       imageWrap.replaceChildren(compareEmpty('The manifest target exists, but its image is not in the published Pages tree.'));
     });
     const imageButton = document.createElement('button'); imageButton.type = 'button'; imageButton.className = 'image-button'; imageButton.setAttribute('aria-label', `Open full-size ${image.alt}`);
@@ -647,8 +685,10 @@ function renderCompareCard(modelKey, targetKey) {
   }
   card.appendChild(imageWrap);
   const metadata = document.createElement('p'); metadata.className = 'compare-meta';
+  const runIdentity = run ? runDisplayName(model, run) : '';
+  const identityPrefix = runIdentity && runIdentity !== model.label ? `${runIdentity} · ` : '';
   metadata.textContent = target && asset && run
-    ? `${runDisplayName(model, run)} · Valid: ${periodLabel(target.target_month)} · Init: ${initLabel(run.init_utc)} · ${compareBaselineLabel(baseline)} · ${asset.status || target.status || run.status || 'available'}`
+    ? `${identityPrefix}Init ${initLabel(run.init_utc)} · ${asset.status || target.status || run.status || 'available'}`
     : (support && support.state !== 'supported' ? `${support.state === 'quarantined' ? 'QC blocked' : 'Not supported'} · ${support.reason || product}` : (surface?.available && surface.comparable === false ? `Excluded from comparison · ${surface.reason || product}` : (state.manifest ? `No matching ${product} target for this period.` : `Unavailable: ${state.error || 'manifest not published'}`)));
   card.appendChild(metadata);
   return card;
@@ -668,17 +708,17 @@ function renderAnalogProductGrid(section, products, entry, analogLabel) {
     const title = document.createElement('h5');
     title.textContent = product.label || product.product || 'Analog product';
     tile.appendChild(title);
-    const image = product.image && ['ready', 'stale'].includes(String(product.status || '').toLowerCase()) ? assetPath(product.image) : '';
+    const originalImage = product.image && ['ready', 'stale'].includes(String(product.status || '').toLowerCase()) ? assetPath(product.image) : '';
+    const image = originalImage ? shareImagePath(product.image) : '';
     if (image) {
       const button = document.createElement('button');
       button.type = 'button';
       button.className = 'image-button';
       button.setAttribute('aria-label', `Open full-size ${title.textContent}`);
       const img = document.createElement('img');
-      img.src = image;
       img.alt = `${title.textContent} for ${analogLabel || entry.top_analog?.label || entry.period?.label || 'the selected period'}`;
       img.loading = 'lazy';
-      img.addEventListener('error', () => { tile.replaceChildren(title, Object.assign(document.createElement('p'), { className: 'analog-product-note', textContent: 'The generated image is not in the published tree.' })); });
+      setImageFallbacks(img, [image, originalImage], () => { tile.replaceChildren(title, Object.assign(document.createElement('p'), { className: 'analog-product-note', textContent: 'The generated image is not in the published tree.' })); });
       button.addEventListener('click', () => openMapDialog(image, img.alt));
       button.appendChild(img);
       tile.appendChild(button);
@@ -745,11 +785,11 @@ function renderAnalogProducts(card, modelKey, targetKey) {
     compositeSection.className = 'analog-products analog-composite-products';
     const compositeHeading = document.createElement('h4');
     const compositeCount = entry.composite?.count || compositeProducts[0]?.composite_count || 5;
-    compositeHeading.textContent = `Weighted top-${compositeCount} analog composite`;
+    compositeHeading.textContent = `Top-${compositeCount} weighted blend`;
     compositeSection.appendChild(compositeHeading);
     const compositeNote = document.createElement('p');
     compositeNote.className = 'analog-product-note';
-    compositeNote.textContent = 'Inverse-distance weights use 80% pattern similarity and 20% amplitude similarity. Snowfall uses the same weights applied to MRCC/ACIS station departures; the rendered MRCC map remains below.';
+    compositeNote.textContent = 'Weights use 80% pattern similarity and 20% amplitude similarity. Snowfall applies the same weights to MRCC/ACIS departures.';
     compositeSection.appendChild(compositeNote);
     renderAnalogProductGrid(compositeSection, compositeProducts, entry, `${compositeCount}-analog composite`);
     section.appendChild(compositeSection);
@@ -758,7 +798,7 @@ function renderAnalogProducts(card, modelKey, targetKey) {
   const topSection = document.createElement('div');
   topSection.className = 'analog-products';
   const heading = document.createElement('h4');
-  heading.textContent = `Maps from ${entry.top_analog?.label || entry.period?.label || 'the top analog'}`;
+  heading.textContent = `Top analog: ${entry.top_analog?.label || entry.period?.label || 'not available'}`;
   topSection.appendChild(heading);
   renderAnalogProductGrid(topSection, ANALOG_PRODUCT_ORDER.map(key => entry.products?.[key]), entry, entry.top_analog?.label || entry.period?.label || targetKey);
   section.appendChild(topSection);
@@ -782,7 +822,7 @@ function renderAnalogPanel(targetKey) {
     return;
   }
   const compositeCount = seasonalAnalogs.source?.composite?.count || 5;
-  summary.textContent = `${periodLabel(targetKey)} · AnalogWX ERA5 · normalized 500-mb pattern + amplitude similarity · weighted top-${compositeCount} PSL 500-mb, 2-m, and snowfall departure composites`;
+  summary.textContent = `${periodLabel(targetKey)} · AnalogWX ERA5 · top-${compositeCount} weighted blends`;
   if (!entries.length) {
     grid.replaceChildren(compareEmpty(`No historical analog result is published for ${periodLabel(targetKey)}.`));
     return;
@@ -808,12 +848,15 @@ function renderAnalogPanel(targetKey) {
       const rank = document.createElement('th'); rank.scope = 'row'; rank.textContent = String(result.rank ?? '—');
       const label = document.createElement('td'); label.textContent = result.label || '—';
       const score = document.createElement('td'); score.textContent = Number.isFinite(Number(result.pattern_correlation)) ? Number(result.pattern_correlation).toFixed(3) : '—';
+      score.dataset.label = 'Pattern';
       score.title = 'Centered spatial correlation; higher values indicate a more similar pattern.';
       const amplitude = document.createElement('td');
       amplitude.textContent = Number.isFinite(Number(result.amplitude_similarity)) ? `${(Number(result.amplitude_similarity) * 100).toFixed(0)}%` : '—';
+      amplitude.dataset.label = 'Amp';
       amplitude.title = 'Area-weighted RMS anomaly amplitude similarity; 100% means equal amplitude.';
       const weight = document.createElement('td');
       weight.textContent = Number.isFinite(Number(result.composite_weight)) && Number(result.composite_weight) > 0 ? `${(Number(result.composite_weight) * 100).toFixed(1)}%` : '—';
+      weight.dataset.label = 'Weight';
       weight.title = 'Inverse similarity-distance weight in the displayed top-analog composite.';
       row.append(rank, label, score, amplitude, weight); body.appendChild(row);
     });
@@ -843,7 +886,7 @@ function renderCompare() {
     el('compare-summary').textContent = 'No comparable anomaly products have been published across the model manifests';
     renderAnalogPanel('');
     renderCompareGrid('');
-    el('footer-copy').textContent = `Seasonal model comparison · ${compareModelListLabel()}`;
+    el('footer-copy').textContent = seasonalCatalog?.generated_utc ? `Catalog updated ${initLabel(seasonalCatalog.generated_utc)}` : 'Seasonal comparison';
     syncUrlState();
     return;
   }
@@ -866,7 +909,7 @@ function renderCompare() {
     el('compare-summary').textContent = `${product} · no matching target has been published across the model manifests`;
     renderAnalogPanel('');
     renderCompareGrid('');
-    el('footer-copy').textContent = `${product} comparison · ${compareModelListLabel()}`;
+    el('footer-copy').textContent = seasonalCatalog?.generated_utc ? `Catalog updated ${initLabel(seasonalCatalog.generated_utc)}` : 'Seasonal comparison';
     syncUrlState();
     return;
   }
@@ -876,8 +919,8 @@ function renderCompare() {
   selection.compareTarget = select.value || preferred.value;
   const availableCount = renderCompareGrid(selection.compareTarget);
   renderAnalogPanel(selection.compareTarget);
-  el('compare-summary').textContent = `${product} · ${periodLabel(selection.compareTarget)} · ${compareBaselineLabel(selection.compareBaseline)} · ${availableCount}/${compareFilteredModels().length} forecast surfaces available`;
-  el('footer-copy').textContent = `${product} comparison · ${compareBaselineLabel(selection.compareBaseline)} · ${compareModelListLabel()}`;
+  el('compare-summary').textContent = `${periodLabel(selection.compareTarget)} · ${compareBaselineLabel(selection.compareBaseline)} · ${availableCount}/${compareFilteredModels().length} models available`;
+  el('footer-copy').textContent = seasonalCatalog?.generated_utc ? `Catalog updated ${initLabel(seasonalCatalog.generated_utc)}` : 'Seasonal comparison';
   syncUrlState();
 }
 function renderControls(model, run, targets) {
@@ -957,11 +1000,13 @@ function renderAll() {
   }
   el('source-detail').textContent = `Source: ${run.source || run.source_label || model.source}`;
   el('source-link').href = run.source_url || model.direct; el('direct-link').href = model.direct;
-  const image = imagePath(model, run, target); setMessage('');
+  const originalImage = imagePath(model, run, target);
+  const image = targetValue?.image ? shareImagePath(targetValue.image) : originalImage;
+  setMessage('');
   el('map-wrap').replaceChildren();
   if (image) {
-    const imageElement = document.createElement('img'); imageElement.src = image; imageElement.alt = `${runDisplayName(model, run)} ${label} ${targetText(model, target)}`; imageElement.loading = 'eager';
-    imageElement.addEventListener('error', () => { el('download-link').hidden = true; setMessage('The manifest is available, but this image is not present in the published Pages tree.'); });
+    const imageElement = document.createElement('img'); imageElement.alt = `${runDisplayName(model, run)} ${label} ${targetText(model, target)}`; imageElement.loading = 'eager';
+    setImageFallbacks(imageElement, [image, originalImage], () => { el('download-link').hidden = true; setMessage('The manifest is available, but this image is not present in the published Pages tree.'); });
     const imageButton = document.createElement('button'); imageButton.type = 'button'; imageButton.className = 'image-button'; imageButton.setAttribute('aria-label', `Open full-size ${imageElement.alt}`); imageButton.addEventListener('click', () => openMapDialog(imageElement.src, imageElement.alt)); imageButton.appendChild(imageElement); el('map-wrap').appendChild(imageButton);
     el('download-link').href = image; el('download-link').download = downloadFileName(image); el('download-link').hidden = false;
   } else setMessage('No rendered image is available for this target.');
@@ -970,7 +1015,7 @@ function renderAll() {
   else if (targetValue?.status === 'partial' || run.status === 'partial') { const counts = runCoverageCounts(run, targetValue); const coverage = counts ? ` (${counts.available}/${counts.expected} ${run.ensemble_scope === 'rolling_initial_conditions' ? 'cycles' : 'members'})` : ''; warning.style.display = 'block'; warning.textContent = `This run is partial${coverage}; retained history remains selectable.`; }
   else if (run.source_warning) { warning.style.display = 'block'; warning.textContent = run.source_warning; }
   else warning.style.display = 'none';
-  el('footer-copy').textContent = `${model.source} · ${modelState.manifest.generated_utc ? `Manifest generated ${initLabel(modelState.manifest.generated_utc)}` : 'Published manifest loaded'} · Direct model pages remain available.`;
+  el('footer-copy').textContent = modelState.manifest.generated_utc ? `Updated ${initLabel(modelState.manifest.generated_utc)} · ${model.source}` : model.source;
   syncUrlState();
 }
 function renderCurrentView() {
@@ -998,6 +1043,7 @@ async function copyCurrentLink() {
     const field = document.createElement('textarea'); field.value = location.href; field.setAttribute('readonly', ''); field.style.position = 'fixed'; field.style.opacity = '0'; document.body.appendChild(field); field.select();
     const copied = document.execCommand('copy'); field.remove(); status.textContent = copied ? 'Link copied' : 'Copy failed';
   }
+  window.setTimeout(() => { el('page-menu').open = false; }, 700);
   window.setTimeout(() => { status.textContent = ''; }, 2200);
 }
 el('model-select').addEventListener('change', event => { selection.model = event.target.value; selection.product = ''; selection.run = ''; selection.target = ''; renderAll(); });
@@ -1016,6 +1062,7 @@ el('compare-baseline-select').addEventListener('change', event => { selection.co
 el('compare-role-select').addEventListener('change', event => { selection.compareRole = event.target.value; renderCompare(); });
 el('compare-available-only').addEventListener('change', event => { selection.compareAvailableOnly = event.target.checked; renderCompare(); });
 el('copy-link').addEventListener('click', copyCurrentLink);
+el('map-dialog-share').addEventListener('click', shareCurrentMap);
 el('map-dialog-close').addEventListener('click', () => el('map-dialog').close());
 el('map-dialog').addEventListener('click', event => { if (event.target === el('map-dialog')) el('map-dialog').close(); });
 document.querySelector('.view-tabs').addEventListener('keydown', event => {
@@ -1112,4 +1159,5 @@ loadDashboardData().then(() => {
   if (!modelStates[selection.model].manifest) selection.model = Object.keys(MODEL_CONFIG).find(key => modelStates[key].manifest) || selection.model;
   setView(selection.view);
 });
+
 
