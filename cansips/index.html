@@ -64,16 +64,17 @@
           <div class="fact"><small>Ensemble</small><strong id="ensemble">—</strong></div><div class="fact"><small>Field</small><strong id="field">—</strong></div>
         </div></article>
         <article class="card"><div class="card-head"><h2>Run metadata</h2></div><div class="copy"><p id="scope">The manifest will identify the CanSIPS initialization, member blend, target, and hindcast baseline.</p></div>
-          <div class="links"><a href="../">Seasonal dashboard</a><a href="https://eccc-msc.github.io/open-data/msc-data/nwp_cansips/readme_cansips-datamart_en/">ECCC Datamart</a><a href="https://github.com/jwallio/wn2/actions/workflows/cansips.yml">Workflow</a></div>
+          <div class="links"><a href="../">Seasonal dashboard</a><a href="https://eccc-msc.github.io/open-data/msc-data/nwp_cansips/readme_cansips-datamart_en/">ECCC Datamart</a><a href="https://github.com/jwallio/seasonal/actions/workflows/cansips.yml">Workflow</a></div>
         </article>
       </aside>
     </section>
     <div class="footer" id="footer">Source: ECCC MSC CanSIPS v3 / Datamart · Loading provenance…</div>
   </main>
   <script>
-    const base = location.pathname.split('/seasonal/')[0] || '';
-    const manifestUrl = `${base}/seasonal/cansips_manifest.json`;
-    const cleanPath = value => `${base}/${String(value || '').replace(/^\/+/, '').replace(/^public\//, '')}`;
+    const siteMatch = location.pathname.match(/^(.*\/seasonal)(?:\/|$)/);
+    const base = siteMatch ? siteMatch[1] : '';
+    const manifestUrl = `${base}/cansips_manifest.json`;
+    const cleanPath = value => `${base}/share/${String(value || '').replace(/^\/+/, '').replace(/^public\//, '').replace(/^seasonal\//, '')}`;
     const el = id => document.getElementById(id);
     const labels = {
       '500mb_height_anomaly':'500-mb Height Anomaly',
@@ -100,3 +101,4 @@
   </script>
 </body>
 </html>
+
