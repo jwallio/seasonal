@@ -58,9 +58,10 @@ CONUS monthly totals and DJF three-month sums. CanSIPS v3 adds a transparent
 derived estimate from its paired 2-m temperature and precipitation members;
 the super ensemble can include that CanSIPS-derived family vote alongside
 native snowfall fields. CanSIPS also uses the paired 850-hPa temperature as a
-warm-layer gate with its 2-m temperature. The display scale uses
-nonlinear bins from -4.0 to +4.0 inches—finer near zero and wider in the
-tails—to reduce clipping while preserving the smaller LWE signal. Models without a
+warm-layer gate with its 2-m temperature. Monthly snowfall maps use nonlinear
+bins from -2.0 to +2.0 inches, while seasonal/DJF maps use -4.0 to +4.0
+inches—finer near zero and wider in the tails—to reduce clipping while
+preserving the smaller LWE signal. Models without a
 native or explicitly derived snowfall field remain explicitly not applicable.
 
 ## Historical analog guidance

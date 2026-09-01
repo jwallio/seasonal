@@ -57,6 +57,8 @@ def main() -> int:
     check((snowfall_spec["anomaly_min"], snowfall_spec["anomaly_max"]) == (-4.0, 4.0), "super-ensemble snowfall should use a nonlinear ±4.0 inch water-equivalent range")
     check(snowfall_spec["anomaly_ticks"] == module.c3s.SNOWFALL_ANOMALY_TICKS, "super-ensemble snowfall should use the approved nonlinear labelled breakpoints")
     check(snowfall_spec["anomaly_tick_format"] == "signed_trimmed" and snowfall_spec["anomaly_tick_decimals"] == 2, "super-ensemble snowfall labels should preserve quarter-inch breakpoints")
+    check((snowfall_spec["monthly_anomaly_min"], snowfall_spec["monthly_anomaly_max"]) == (-2.0, 2.0), "super-ensemble monthly snowfall should use the tighter ±2.0 inch range")
+    check(snowfall_spec["monthly_anomaly_endpoint_labels"] == {"minimum": "≤−2.0", "maximum": "≥+2.0"}, "super-ensemble monthly snowfall legend should mark clipped endpoints")
     check("(in LWE)" not in snowfall_spec["title"], "super-ensemble snowfall title must not use the obsolete in-LWE wording")
     mslp_spec = module.product_spec("mslp_anomaly")
     check((mslp_spec["anomaly_min"], mslp_spec["anomaly_max"]) == (-10.0, 10.0), "super-ensemble MSLP should use ±10 hPa")

@@ -102,6 +102,9 @@ def main() -> int:
     check((snowfall_spec["anomaly_min"], snowfall_spec["anomaly_max"]) == (-4.0, 4.0), "CanSIPS snowfall should use a nonlinear ±4.0 inch water-equivalent range")
     check(snowfall_spec["anomaly_ticks"] == module.SNOWFALL_ANOMALY_TICKS, "CanSIPS snowfall should use the approved nonlinear labelled breakpoints")
     check(snowfall_spec["anomaly_tick_format"] == "signed_trimmed" and snowfall_spec["anomaly_tick_decimals"] == 2, "CanSIPS snowfall labels should preserve quarter-inch breakpoints")
+    check((snowfall_spec["monthly_anomaly_min"], snowfall_spec["monthly_anomaly_max"]) == (-2.0, 2.0), "CanSIPS monthly snowfall should use the tighter ±2.0 inch range")
+    check(len(snowfall_spec["monthly_anomaly_ticks"]) == len(snowfall_spec["monthly_anomaly_palette"]) + 1, "CanSIPS monthly snowfall bounds must align with colors")
+    check(snowfall_spec["monthly_anomaly_endpoint_labels"] == {"minimum": "≤−2.0", "maximum": "≥+2.0"}, "CanSIPS monthly snowfall legend should mark clipped endpoints")
     check(len(snowfall_spec["anomaly_ticks"]) == len(snowfall_spec["anomaly_palette"]) + 1, "CanSIPS snowfall bounds must align with colors")
     check("(in LWE)" not in snowfall_spec["title"], "CanSIPS snowfall title must not use the obsolete in-LWE wording")
     dai_expected = -48.2372 * (math.tanh(0.7449 * (1.0 - 1.0919)) - 1.0209) / 100.0

@@ -356,7 +356,7 @@ def product_spec(product: str, *, synthetic: bool = False) -> dict[str, Any]:
         )
         spec["header_detail"] = (
             "{source_label}  •  Native/derived snowfall liquid-water equivalent  •  "
-            "CONUS  •  clipped at ±4.0 in"
+            "CONUS  •  {snowfall_scale_label}"
         )
     else:
         field_detail = "Height contours in dam" if spec["height_contours"] else f"{spec['units']} anomaly"
@@ -993,6 +993,7 @@ def render_product_run(
                     height_grid=height,
                     product_spec=render_spec,
                     footer_text=included_models_footer(keys, definitions),
+                    seasonal=True,
                 )
                 entry["image"] = relative_path(output, root)
                 if product == "500mb_height_anomaly":

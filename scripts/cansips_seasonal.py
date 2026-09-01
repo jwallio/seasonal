@@ -39,6 +39,10 @@ from cfsv2_seasonal import (
     SNOWFALL_ANOMALY_TICK_DECIMALS,
     SNOWFALL_ANOMALY_TICK_FORMAT,
     SNOWFALL_ANOMALY_TICKS,
+    SNOWFALL_MONTHLY_ANOMALY_MAX_IN,
+    SNOWFALL_MONTHLY_ANOMALY_MIN_IN,
+    SNOWFALL_MONTHLY_ANOMALY_PALETTE,
+    SNOWFALL_MONTHLY_ANOMALY_TICKS,
     TEMPERATURE_ANOMALY_MAX_C,
     TEMPERATURE_ANOMALY_MIN_C,
     TEMPERATURE_ANOMALY_PALETTE,
@@ -229,6 +233,11 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "anomaly_palette": SNOWFALL_ANOMALY_PALETTE,
         "anomaly_tick_decimals": SNOWFALL_ANOMALY_TICK_DECIMALS,
         "anomaly_tick_format": SNOWFALL_ANOMALY_TICK_FORMAT,
+        "monthly_anomaly_min": SNOWFALL_MONTHLY_ANOMALY_MIN_IN,
+        "monthly_anomaly_max": SNOWFALL_MONTHLY_ANOMALY_MAX_IN,
+        "monthly_anomaly_ticks": SNOWFALL_MONTHLY_ANOMALY_TICKS,
+        "monthly_anomaly_palette": SNOWFALL_MONTHLY_ANOMALY_PALETTE,
+        "monthly_anomaly_endpoint_labels": {"minimum": "≤−2.0", "maximum": "≥+2.0"},
         "map_domain": "land",
         "fit_frame_to_domain": True,
         "domain_frame_padding_fraction": 0.012,
@@ -1514,6 +1523,7 @@ def render_product_run(
                 ensemble_label="40-member blend",
                 height_grid=seasonal_height,
                 product_spec=product,
+                seasonal=True,
             )
             seasonal_entry["image"] = relative_path(output_path, repo_root)
             seasonal_entry["status"] = "rendered"

@@ -33,6 +33,10 @@ from cfsv2_seasonal import (
     SNOWFALL_ANOMALY_TICK_DECIMALS,
     SNOWFALL_ANOMALY_TICK_FORMAT,
     SNOWFALL_ANOMALY_TICKS,
+    SNOWFALL_MONTHLY_ANOMALY_MAX_IN,
+    SNOWFALL_MONTHLY_ANOMALY_MIN_IN,
+    SNOWFALL_MONTHLY_ANOMALY_PALETTE,
+    SNOWFALL_MONTHLY_ANOMALY_TICKS,
     TEMPERATURE_ANOMALY_MAX_C,
     TEMPERATURE_ANOMALY_MIN_C,
     TEMPERATURE_ANOMALY_PALETTE,
@@ -132,6 +136,11 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "anomaly_ticks": SNOWFALL_ANOMALY_TICKS, "anomaly_palette": SNOWFALL_ANOMALY_PALETTE,
         "anomaly_tick_decimals": SNOWFALL_ANOMALY_TICK_DECIMALS,
         "anomaly_tick_format": SNOWFALL_ANOMALY_TICK_FORMAT,
+        "monthly_anomaly_min": SNOWFALL_MONTHLY_ANOMALY_MIN_IN,
+        "monthly_anomaly_max": SNOWFALL_MONTHLY_ANOMALY_MAX_IN,
+        "monthly_anomaly_ticks": SNOWFALL_MONTHLY_ANOMALY_TICKS,
+        "monthly_anomaly_palette": SNOWFALL_MONTHLY_ANOMALY_PALETTE,
+        "monthly_anomaly_endpoint_labels": {"minimum": "≤−2.0", "maximum": "≥+2.0"},
         "cds_dataset": SINGLE_DATASET,
         "cds_variable": "snowfall_anomalous_rate_of_accumulation",
     },
@@ -376,7 +385,7 @@ def product_spec(product: str, label: str, *, multisystem: bool = False) -> dict
     detail = (
         "Height contours in dam"
         if base["height_contours"]
-        else "Official snowfall departure  •  LWE  •  CONUS  •  clipped at \u00b14.0 in"
+        else "Official snowfall departure  •  LWE  •  CONUS  •  {snowfall_scale_label}"
         if product == "snowfall_anomaly"
         else f"{base['units']} anomaly"
     )
@@ -409,12 +418,13 @@ def render_target(
     height: Grid | None,
     ensemble_label: str,
     period: str = "",
+    seasonal: bool = False,
 ) -> None:
     render_map(
         grid, init, target, lead, list(range(max(1, int(str(lead).split("–")[0])))), output,
         anomaly=True, baseline_label="C3S native postprocessed anomaly", border_paths=borders,
         period_label=period, height_grid=height, ensemble_label=ensemble_label,
-        product_spec=product,
+        product_spec=product, seasonal=seasonal,
     )
 
 
@@ -534,7 +544,7 @@ def build_run(
             require_quality_control(target_entry["quality_control"], C3SError)
             seasonal_height = combine([lead_heights[lead] for lead in seasonal_leads]) if product["height_contours"] and all(lead in lead_heights for lead in seasonal_leads) else None
             output = output_dir / init[:8] / f"c3s_{component}_{product['variable']}_{first_target}-{last_target}.jpg"
-            render_target(seasonal_grid, product, init, first_target, f"{first}–{last}", output, borders, seasonal_height, f"{members or len(centres)}-member mean" if not multisystem else f"{len(centres)}-system mean", period_label(first_target, last_target))
+            render_target(seasonal_grid, product, init, first_target, f"{first}–{last}", output, borders, seasonal_height, f"{members or len(centres)}-member mean" if not multisystem else f"{len(centres)}-system mean", period_label(first_target, last_target), seasonal=True)
             target_entry["image"] = relative_path(output, Path(__file__).resolve().parents[1])
             target_entry["status"] = "rendered"
         except Exception as exc:

@@ -16,7 +16,11 @@ from typing import Any, Iterable
 
 REGISTRY_VERSION = 1
 
-SNOWFALL_DISPLAY_BREAKPOINTS = [
+SNOWFALL_MONTHLY_DISPLAY_BREAKPOINTS = [
+    -2.0, -1.75, -1.5, -1.25, -1.0, -0.75, -0.5, 0.0, 0.5, 0.75, 1.0,
+    1.25, 1.5, 1.75, 2.0,
+]
+SNOWFALL_SEASONAL_DISPLAY_BREAKPOINTS = [
     -4.0, -3.5, -3.0, -2.5, -2.0, -1.75, -1.5, -1.25, -1.0, -0.75,
     -0.5, 0.0, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 2.5, 3.0, 3.5,
     4.0,
@@ -111,14 +115,14 @@ PRODUCTS: dict[str, dict[str, Any]] = {
         "aggregation": {"monthly": "total", "seasonal": "total"},
         "display": {
             "monthly": {
-                "minimum": -4.0,
-                "maximum": 4.0,
-                "breakpoints": SNOWFALL_DISPLAY_BREAKPOINTS,
+                "minimum": -2.0,
+                "maximum": 2.0,
+                "breakpoints": SNOWFALL_MONTHLY_DISPLAY_BREAKPOINTS,
             },
             "seasonal": {
                 "minimum": -4.0,
                 "maximum": 4.0,
-                "breakpoints": SNOWFALL_DISPLAY_BREAKPOINTS,
+                "breakpoints": SNOWFALL_SEASONAL_DISPLAY_BREAKPOINTS,
             },
         },
         "hard_range": {"minimum": -100.0, "maximum": 100.0},

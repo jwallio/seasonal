@@ -82,10 +82,11 @@ The 40 member estimates are averaged before the matching 1991-2020 hindcast
 climatology is subtracted. Seasonal values sum the monthly departures, so the
 result is liquid-water equivalent in inches, not snow depth and not a
 snow-to-liquid-ratio product. The map uses the same tight CONUS crop and
-lower-48 land mask as the site's other snowfall maps, with nonlinear bins from
--4.0 to +4.0 inches; endpoint values are clipped at that
-display range. The labelled breakpoints are 0.5, 0.75, 1.0, 1.25, 1.5, 1.75,
-2.0, 2.5, 3.0, 3.5, and 4.0 inches on either side of zero.
+lower-48 land mask as the site's other snowfall maps. Monthly maps use
+nonlinear bins from -2.0 to +2.0 inches; seasonal/DJF maps use -4.0 to +4.0
+inches, with endpoint values clipped at the active range. The labelled
+breakpoints are 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 2.5, 3.0, 3.5, and
+4.0 inches on either side of zero; monthly maps stop at 2.0 inches.
 
 The phase relationship is based on [Dai (2008), “Temperature and pressure
 dependences of the rain-snow phase transition over land and ocean”](https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2008GL033295).
@@ -111,9 +112,9 @@ footer is added. The
 10-metre intervals;
 850-mb and 2-m temperature products use the shared ±7 °C scale, sea-surface
 temperature uses ±3 °C, MSLP uses ±10 hPa, precipitation uses the operational
-brown/green ±8-inch scale, snowfall uses the nonlinear blue/brown ±4.0-inch
-scale with the documented breakpoints, and SSH uses a ±0.50-metre scale with
-two-decimal labels.
+brown/green ±8-inch scale, snowfall uses nonlinear blue/brown ±2.0-inch
+monthly or ±4.0-inch seasonal scales with the documented breakpoints, and SSH
+uses a ±0.50-metre scale with two-decimal labels.
 
 When the production climatology window is `1991-2020`, the 500-mb hindcast
 means are also written as compact reference grids under

@@ -194,6 +194,45 @@ SNOWFALL_ANOMALY_PALETTE = [
     "#1b496e",
     "#123856",
 ]
+# A single month has a smaller liquid-water-equivalent departure amplitude
+# than a three-month total. Use the approved fine breakpoints through 2 inches
+# for monthly maps, while the generic snowfall constants above remain the
+# wider seasonal/DJF scale for existing callers.
+SNOWFALL_MONTHLY_ANOMALY_MIN_IN = -2.0
+SNOWFALL_MONTHLY_ANOMALY_MAX_IN = 2.0
+SNOWFALL_MONTHLY_ANOMALY_TICKS = [
+    -2.0,
+    -1.75,
+    -1.5,
+    -1.25,
+    -1.0,
+    -0.75,
+    -0.5,
+    0.0,
+    0.5,
+    0.75,
+    1.0,
+    1.25,
+    1.5,
+    1.75,
+    2.0,
+]
+SNOWFALL_MONTHLY_ANOMALY_PALETTE = [
+    "#572308",
+    "#7b370d",
+    "#9d5517",
+    "#bd7d34",
+    "#d7a875",
+    "#e3c99a",
+    "#ffffff",
+    "#ffffff",
+    "#b9dce8",
+    "#75b8cc",
+    "#4a93b2",
+    "#2e6d93",
+    "#1b496e",
+    "#123856",
+]
 # Shared fixed scale for seasonal 850-mb and 2-m temperature anomalies.
 # Model-specific narrower ranges clipped stronger signals and made the same
 # anomaly look different in comparison views.
@@ -626,6 +665,15 @@ def anomaly_style(
 ) -> tuple[float, float, Sequence[float], Sequence[str]]:
     """Return the fixed comparable scale for one anomaly product and period."""
 
+    period_prefix = "seasonal" if seasonal else "monthly"
+    period_min_key = f"{period_prefix}_anomaly_min"
+    if period_min_key in product_spec:
+        return (
+            float(product_spec[period_min_key]),
+            float(product_spec[f"{period_prefix}_anomaly_max"]),
+            product_spec.get(f"{period_prefix}_anomaly_ticks", []),
+            product_spec.get(f"{period_prefix}_anomaly_palette", ANOMALY_PALETTE),
+        )
     if "anomaly_min" in product_spec:
         return (
             float(product_spec["anomaly_min"]),
@@ -2057,10 +2105,16 @@ def render_map(
             # domain rather than reusing padding from the full CONUS window.
             x_pad = max(0.01, (x_max - x_min) * frame_padding_fraction)
             y_pad = max(0.01, (y_max - y_min) * frame_padding_fraction)
+    snowfall_scale_label = ""
     if anomaly:
         anomaly_min, anomaly_max, colorbar_ticks, palette = anomaly_style(
             product_spec,
             seasonal=seasonal,
+        )
+        snowfall_scale_label = (
+            f"clipped at ±{max(abs(anomaly_min), abs(anomaly_max)):.1f} in"
+            if is_snowfall
+            else ""
         )
         # Most products use their labelled ticks as color transitions. A
         # regional product may provide separate boundaries when a labelled
@@ -2328,6 +2382,7 @@ def render_map(
                 baseline_label=(
                     "Absolute field smoke output" if not anomaly else display_baseline_label
                 ),
+                snowfall_scale_label=snowfall_scale_label,
             )
         elif product_spec["height_contours"]:
             header_detail = (
@@ -2390,7 +2445,10 @@ def render_map(
                 return f"{numeric:+.{tick_decimals}f}" if numeric else f"{numeric:.{tick_decimals}f}"
             return f"+{int(round(numeric))}" if numeric > 0 else str(int(round(numeric)))
 
-        endpoint_labels = product_spec.get("anomaly_endpoint_labels", {})
+        endpoint_labels = product_spec.get(
+            f"{'seasonal' if seasonal else 'monthly'}_anomaly_endpoint_labels",
+            product_spec.get("anomaly_endpoint_labels", {}),
+        )
         tick_labels = []
         for index, tick in enumerate(colorbar_ticks):
             if index == 0 and endpoint_labels.get("minimum"):
