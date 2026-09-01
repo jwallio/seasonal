@@ -38,7 +38,7 @@ is needed:
 | `850mb_temperature_anomaly` | `AirTemp` at `ISBL-0850` | 850-mb temperature anomaly in °C | monthly mean; seasonal mean |
 | `2m_temperature_anomaly` | `AirTemp` at `AGL-2m` | 2-m temperature anomaly in °C | monthly mean; seasonal mean |
 | `precipitation_anomaly` | `PrecipRate` at `Sfc` | precipitation anomaly in inches | calendar-month total; seasonal total |
-| `snowfall_anomaly` | derived from `AirTemp` at `AGL-2m` + `PrecipRate` at `Sfc` | CanSIPS-derived snowfall liquid-water-equivalent departure in inches over the CONUS | member-level monthly estimate; seasonal total |
+| `snowfall_anomaly` | derived from `AirTemp` at `AGL-2m` + `AirTemp` at `ISBL-0850` + `PrecipRate` at `Sfc` | CanSIPS-derived snowfall liquid-water-equivalent departure in inches over the CONUS | member-level monthly estimate; seasonal total |
 | `mslp_anomaly` | `Pressure` at `MSL` | mean sea-level pressure anomaly in hPa | monthly mean; seasonal mean |
 | `sst_anomaly` | `WaterTemp` at `Sfc` | sea-surface temperature anomaly in °C | monthly mean; seasonal mean |
 | `sea_surface_height_anomaly` | `SeaSfcHeight-Geoid` | sea-surface height anomaly in metres | monthly mean; seasonal mean |
@@ -53,37 +53,64 @@ difference has the same numerical magnitude in kelvin and Celsius.
 
 CanSIPS v3 does not publish a native snowfall field in the raw Datamart
 bundle. The `snowfall_anomaly` product therefore derives a monthly liquid-water
-equivalent estimate member by member from the paired 2-m temperature and
-surface precipitation-rate files:
+equivalent estimate member by member from the 2-m temperature, 850-hPa
+temperature, and surface precipitation-rate files:
 
 ```text
 precipitation rate × calendar-month seconds ÷ 25.4 × snow fraction
 ```
 
-The snow fraction is 1.0 at or below -1 °C, 0.0 at or above +2 °C, and varies
-linearly between those thresholds. The 40 member estimates are averaged before
-the matching 1991-2020 hindcast climatology is subtracted. Seasonal values sum
-the monthly departures, so the result is liquid-water equivalent in inches,
-not snow depth and not a snow-to-liquid-ratio product. The map uses the same
-tight CONUS crop and lower-48 land mask as the site's other snowfall maps, with
-tenths-of-an-inch bins from -0.8 to +0.8 inches.
+The snow fraction uses the season-appropriate land hyperbolic-tangent fit from
+Dai (2008)—the DJF fit for December through February—and applies it to the
+warmer of the monthly mean 2-m and 850-hPa temperatures. Using the warmer level
+is a conservative warm-layer gate: it keeps the surface temperature signal in
+ordinary winter profiles while reducing an all-snow bias when a warm layer is
+present aloft. The source files provide monthly means, so
+this remains a monthly phase estimate rather than an event-by-event sounding
+diagnostic; it does not distinguish sleet from freezing rain or reconstruct a
+full vertical temperature profile. At high terrain, 850 hPa can be below the
+surface, which is another reason to treat this as a transparent estimate rather
+than a native snowfall analysis.
 
-The manifest records both input URLs, decoded variable names, calendar-month
-conversion, temperature thresholds, member completeness, and the retained
-derived grid path. The raw paired GRIB2 inputs are intermediate files and are
-removed after successful decoding.
+For the DJF implementation, the fitted percentage is evaluated as
+`clip(-48.2372 * (tanh(0.7449 * (T - 1.0919)) - 1.0209) / 100, 0, 1)`,
+where `T` is the warmer temperature in °C. This is the complete fitted curve,
+not the earlier piecewise -1/+2 °C approximation. MAM, JJA, and SON monthly
+requests use the corresponding land coefficients from Dai's seasonal table.
+
+The 40 member estimates are averaged before the matching 1991-2020 hindcast
+climatology is subtracted. Seasonal values sum the monthly departures, so the
+result is liquid-water equivalent in inches, not snow depth and not a
+snow-to-liquid-ratio product. The map uses the same tight CONUS crop and
+lower-48 land mask as the site's other snowfall maps, with tenth-of-an-inch
+bins from -1.2 to +1.2 inches; endpoint values are clipped at that display
+range.
+
+The phase relationship is based on [Dai (2008), “Temperature and pressure
+dependences of the rain-snow phase transition over land and ocean”](https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2008GL033295).
+That study describes the land transition as a smooth function of surface
+temperature rather than a hard -1/+2 °C cutoff; the 850-hPa field is an
+additional warm-layer safeguard used here because CanSIPS publishes it for the
+same members and target months.
+
+The manifest records all three input URLs, decoded variable names,
+calendar-month conversion, Dai parameters, phase-level choice, member
+completeness, and the retained derived-grid path. The raw three-file GRIB2
+inputs are intermediate files and are removed after successful decoding.
 
 CanSIPS uses `P00M` through `P11M`. Lead 0 is the initialization month. For
 example, an August 2026 initialization uses leads 4, 5, and 6 for December
 2026, January 2027, and February 2027; the seasonal aggregate is labelled
 `DJF 2027`.
 
-The maps use the shared operational 1080x1080 North American renderer. The
+The maps use the shared operational renderer at 1080 pixels wide. Snowfall
+sources are tightly cropped below the legend before the optional branding
+footer is added. The
 500-mb product uses the blue-neutral-red scale from -100 to +100 metres with
 10-metre intervals;
 850-mb and 2-m temperature products use the shared ±7 °C scale, sea-surface
 temperature uses ±3 °C, MSLP uses ±10 hPa, precipitation uses the operational
-brown/green ±8-inch scale, snowfall uses the blue/brown ±0.8-inch scale with
+brown/green ±8-inch scale, snowfall uses a blue/brown ±1.2-inch scale with
 0.1-inch labels, and SSH uses a ±0.50-metre scale with two-decimal labels.
 
 When the production climatology window is `1991-2020`, the 500-mb hindcast

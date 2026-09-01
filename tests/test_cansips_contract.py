@@ -3,6 +3,7 @@
 
 import importlib.util
 import json
+import math
 from pathlib import Path
 import sys
 import tempfile
@@ -62,8 +63,8 @@ def main() -> int:
         "--climo-start", "--climo-end", "--previous-manifest", "--retain-runs",
         "CANSIPS_DOWNLOAD_ATTEMPTS", "CANSIPS_DOWNLOAD_TIMEOUT",
         "--common-reference-dir", "common_reference", "write_grid_state", "common_1991_2020",
-        "snowfall_anomaly", "SNOWFALL_COLD_THRESHOLD_C", "SNOWFALL_WARM_THRESHOLD_C",
-        "derived_snowfall_lwe", "snowfall_fraction_from_temperature_c",
+        "snowfall_anomaly", "SNOWFALL_DAI_LAND_DJF_PARAMS", "SNOWFALL_ANOMALY_PALETTE",
+        "derived_snowfall_lwe", "snowfall_fraction_from_temperature_c", "850-hPa temperature",
         "load_snowfall_estimate", "snowfall_hindcast_climatology", "cfgrib", "eccodes",
         "sum_grids", "snowfall_estimate",
     ):
@@ -100,11 +101,20 @@ def main() -> int:
     check(snowfall_spec["seasonal_reducer"] == "sum", "CanSIPS snowfall seasons must sum monthly LWE departures")
     check(len(snowfall_spec["anomaly_ticks"]) == len(snowfall_spec["anomaly_palette"]) + 1, "CanSIPS snowfall bounds must align with colors")
     check("(in LWE)" not in snowfall_spec["title"], "CanSIPS snowfall title must not use the obsolete in-LWE wording")
-    check(module.snowfall_fraction_from_temperature_c(-2.0) == 1.0, "cold snowfall threshold should be all snow")
-    check(module.snowfall_fraction_from_temperature_c(-1.0) == 1.0, "cold snowfall boundary should be all snow")
-    check(module.snowfall_fraction_from_temperature_c(0.5) == 0.5, "snowfall transition should be linear")
-    check(module.snowfall_fraction_from_temperature_c(2.0) == 0.0, "warm snowfall boundary should be no snow")
-    check(module.snowfall_fraction_from_temperature_c(3.0) == 0.0, "warm snowfall threshold should be no snow")
+    dai_expected = -48.2372 * (math.tanh(0.7449 * (1.0 - 1.0919)) - 1.0209) / 100.0
+    check(math.isclose(module.snowfall_fraction_from_temperature_c(1.0), dai_expected, rel_tol=1e-12), "snowfall fraction should use the Dai 2008 land-DJF curve")
+    check(module.snowfall_phase_season("202612") == "DJF" and module.snowfall_phase_season("202603") == "MAM", "snowfall monthly targets should select the matching Dai seasonal fit")
+    check(module.snowfall_fraction_from_temperature_c(-5.0) > module.snowfall_fraction_from_temperature_c(2.0), "snowfall fraction should decline smoothly with warming")
+    check(module.snowfall_fraction_from_temperature_c(float("nan")) != module.snowfall_fraction_from_temperature_c(float("nan")), "non-finite snowfall temperature should remain NaN")
+    t2m = [[[268.15]]] * module.CANSIPS_ENSEMBLE_MEMBERS
+    t850_cold = [[[268.15]]] * module.CANSIPS_ENSEMBLE_MEMBERS
+    t850_warm = [[[275.15]]] * module.CANSIPS_ENSEMBLE_MEMBERS
+    precipitation = [[[0.001]]] * module.CANSIPS_ENSEMBLE_MEMBERS
+    cold_grid, cold_diagnostics = module.derive_snowfall_lwe_grid(t2m, precipitation, [0.0], [0.0], "202601", temperature_850_members=t850_cold)
+    warm_grid, warm_diagnostics = module.derive_snowfall_lwe_grid(t2m, precipitation, [0.0], [0.0], "202601", temperature_850_members=t850_warm)
+    check(warm_grid.values[0][0] < cold_grid.values[0][0], "a warmer 850-hPa layer should reduce derived snowfall")
+    check(warm_diagnostics["snow_fraction"]["phase_temperature"] == "max(2-m, 850-hPa)", "snowfall diagnostics should record the two-level phase gate")
+    check(len(cold_diagnostics["snow_fraction"]["parameters"]) == 4, "snowfall diagnostics should record all Dai parameters")
     check([product["name"] for product in module.selected_products(module.PRODUCT_ALL)] == list(module.PRODUCT_SPECS), "all-product selection should include every CanSIPS scalar product")
     height_spec = module.PRODUCT_SPECS[module.PRODUCT_Z500_ANOMALY]
     check((height_spec["anomaly_min"], height_spec["anomaly_max"]) == (-100.0, 100.0), "CanSIPS 500-mb should use the shared ±100 m range")

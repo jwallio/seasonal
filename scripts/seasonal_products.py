@@ -104,8 +104,8 @@ PRODUCTS: dict[str, dict[str, Any]] = {
         "level": {"type": "surface"},
         "aggregation": {"monthly": "total", "seasonal": "total"},
         "display": {
-            "monthly": {"minimum": -0.8, "maximum": 0.8, "step": 0.1},
-            "seasonal": {"minimum": -0.8, "maximum": 0.8, "step": 0.1},
+            "monthly": {"minimum": -1.2, "maximum": 1.2, "step": 0.1},
+            "seasonal": {"minimum": -1.2, "maximum": 1.2, "step": 0.1},
         },
         "hard_range": {"minimum": -100.0, "maximum": 100.0},
         "minimum_finite_fraction": 0.02,
@@ -376,7 +376,7 @@ SNOWFALL_SUPPORTED_MODELS = frozenset({"c3s", "seas5", "cansips", "superensemble
 SNOWFALL_SUPPORT_REASONS = {
     "c3s": "C3S publishes native snowfall liquid-water-equivalent accumulation.",
     "seas5": "SEAS5 publishes native snowfall liquid-water-equivalent accumulation.",
-    "cansips": "CanSIPS derives member-level snowfall liquid-water equivalent from 2-m temperature and precipitation.",
+    "cansips": "CanSIPS derives member-level snowfall liquid-water equivalent from 2-m/850-hPa temperature and total precipitation using the season-appropriate Dai (2008) land phase curve (DJF for winter).",
     "superensemble": "The super ensemble blends eligible native and CanSIPS-derived snowfall fields in common LWE units.",
 }
 SNOWFALL_UNSUPPORTED_REASON = (

@@ -70,8 +70,8 @@ def main() -> int:
     check(len(mslp_spec["anomaly_ticks"]) == len(mslp_spec["anomaly_palette"]) + 1, "C3S MSLP bounds must align with swatches")
     check(module.PRODUCT_SPECS["sea_surface_temperature_anomaly"]["map_domain"] == "ocean", "C3S SST must mask land")
     snowfall_spec = module.PRODUCT_SPECS["snowfall_anomaly"]
-    check((snowfall_spec["anomaly_min"], snowfall_spec["anomaly_max"]) == (-0.8, 0.8), "C3S snowfall should use a ±0.8 inch water-equivalent range")
-    check(snowfall_spec["anomaly_ticks"] == [round(-0.8 + 0.1 * i, 1) for i in range(17)], "C3S snowfall should use tenths-of-an-inch labelled bounds")
+    check((snowfall_spec["anomaly_min"], snowfall_spec["anomaly_max"]) == (-1.2, 1.2), "C3S snowfall should use a ±1.2 inch water-equivalent range")
+    check(snowfall_spec["anomaly_ticks"] == [round(-1.2 + 0.1 * i, 1) for i in range(25)], "C3S snowfall should use tenths-of-an-inch labelled bounds")
     check(snowfall_spec["region"] == module.CONUS_PRECIP_REGION, "C3S snowfall must use the CONUS crop")
     check(len(snowfall_spec["anomaly_ticks"]) == len(snowfall_spec["anomaly_palette"]) + 1, "C3S snowfall bounds must align with swatches")
     ukmo_snowfall = module.product_spec("snowfall_anomaly", "UK Met Office")
@@ -79,7 +79,7 @@ def main() -> int:
     check("(in LWE)" not in ukmo_snowfall["absolute_title"], "C3S snowfall absolute image title should omit the parenthetical LWE unit")
     check(ukmo_snowfall["map_domain"] == "land" and ukmo_snowfall["fit_frame_to_domain"], "C3S snowfall should use a fitted lower-48 land frame")
     check(len(ukmo_snowfall["mask_states"]) == 48, "C3S snowfall lower-48 mask should include all 48 states")
-    check(ukmo_snowfall["anomaly_endpoint_labels"] == {"minimum": "≤−0.8", "maximum": "≥+0.8"}, "C3S snowfall legend should mark clipped endpoints")
+    check(ukmo_snowfall["anomaly_endpoint_labels"] == {"minimum": "≤−1.2", "maximum": "≥+1.2"}, "C3S snowfall legend should mark clipped endpoints")
     converted = module.convert_product_grid(
         module.Grid([0.0], [0.0], [[0.001]]), snowfall_spec, "202601"
     )

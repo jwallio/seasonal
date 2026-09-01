@@ -135,6 +135,42 @@ SWE_ANOMALY_PALETTE = [
     "#1d496f",
     "#143b5f",
 ]
+# Shared snowfall liquid-water-equivalent departure scale.  Snowfall is a
+# smaller signal than total precipitation, but the old ±0.8-inch range clipped
+# too much of the CanSIPS-derived field.  Keep tenth-of-an-inch labels while allowing a
+# little more headroom for strong monthly and DJF departures.
+SNOWFALL_ANOMALY_MIN_IN = -1.2
+SNOWFALL_ANOMALY_MAX_IN = 1.2
+SNOWFALL_ANOMALY_TICKS = [
+    round(SNOWFALL_ANOMALY_MIN_IN + 0.1 * index, 1)
+    for index in range(25)
+]
+SNOWFALL_ANOMALY_PALETTE = [
+    "#572308",
+    "#6b2d0c",
+    "#7b370d",
+    "#8c4712",
+    "#9d5517",
+    "#ae691f",
+    "#bd7d34",
+    "#ca9156",
+    "#d7a875",
+    "#e3c99a",
+    "#eee5d5",
+    "#ffffff",
+    "#ffffff",
+    "#d7edf2",
+    "#b9dce8",
+    "#96c9d7",
+    "#75b8cc",
+    "#5ca5bd",
+    "#4a93b2",
+    "#3a80a5",
+    "#2e6d93",
+    "#245b83",
+    "#1b496e",
+    "#123856",
+]
 # Shared fixed scale for seasonal 850-mb and 2-m temperature anomalies.
 # Model-specific narrower ranges clipped stronger signals and made the same
 # anomaly look different in comparison views.
@@ -1904,10 +1940,15 @@ def render_map(
 
     # Match a 1080x1080 social-media footprint. Size the map box from the
     # projected bounds so the LCC geometry remains undistorted at square size.
-    figure = plt.figure(figsize=(9.0, 9.0), facecolor="#f7f9fb")
+    # Snowfall maps use a tighter legend gap and are cropped after rendering so
+    # the branded share image does not carry a large unused lower panel.
+    figure = plt.figure(figsize=(9.0, 9.0), dpi=120, facecolor="#f7f9fb")
     has_footer = bool(footer_text.strip())
+    is_snowfall = product_spec.get("name") == "snowfall_anomaly"
     colorbar_height = 0.032
-    colorbar_gap = 0.025
+    colorbar_gap = float(product_spec.get("colorbar_gap", 0.012 if is_snowfall else 0.025))
+    if not math.isfinite(colorbar_gap) or colorbar_gap < 0.0:
+        raise CFSv2Error("colorbar_gap must be a finite non-negative number")
     footer_line_count = footer_text.count("\n") + 1 if has_footer else 0
     colorbar_floor = 0.055 + 0.012 * footer_line_count
     map_left = 0.05 if has_footer else 0.035
@@ -1988,6 +2029,11 @@ def render_map(
                 map_left = (1.0 - map_width) / 2.0
             map_bottom = map_top - map_height
             axes.set_position([map_left, map_bottom, map_width, map_height])
+            # The fitted lower-48 frame replaces the original regional bounds;
+            # keep its visible border padding proportional to the fitted
+            # domain rather than reusing padding from the full CONUS window.
+            x_pad = max(0.01, (x_max - x_min) * frame_padding_fraction)
+            y_pad = max(0.01, (y_max - y_min) * frame_padding_fraction)
     if anomaly:
         anomaly_min, anomaly_max, colorbar_ticks, palette = anomaly_style(
             product_spec,
@@ -2326,20 +2372,22 @@ def render_map(
             else:
                 tick_labels.append(format_anomaly_tick(tick))
         colorbar.set_ticklabels(tick_labels)
+    dense_tick_labels = len(colorbar_ticks) > 20
     colorbar.ax.tick_params(
         axis="x",
         which="major",
-        labelsize=10.0,
+        labelsize=8.2 if dense_tick_labels else 10.0,
         length=5.0,
         width=0.85,
-        pad=1.8,
+        pad=1.2 if dense_tick_labels else 1.8,
         colors="#263640",
         direction="out",
     )
     colorbar.outline.set_edgecolor("#52636c")
     colorbar.outline.set_linewidth(0.65)
+    footer_artist = None
     if has_footer:
-        figure.text(
+        footer_artist = figure.text(
             0.5,
             0.012,
             footer_text,
@@ -2351,8 +2399,46 @@ def render_map(
             color="#52616b",
         )
     output_path.parent.mkdir(parents=True, exist_ok=True)
+    crop_bottom_to_legend = bool(
+        product_spec.get("crop_bottom_to_legend", is_snowfall)
+    )
+    crop_bottom_px = None
+    if crop_bottom_to_legend:
+        # Draw once so Matplotlib resolves the tick-label extents.  The saved
+        # source map is then cropped only below the lowest relevant artist;
+        # the top/header and all legend labels remain unchanged.
+        figure.canvas.draw()
+        renderer = figure.canvas.get_renderer()
+        bottom_boxes = [colorbar.ax.get_tightbbox(renderer)]
+        if footer_artist is not None:
+            bottom_boxes.append(footer_artist.get_window_extent(renderer=renderer))
+        bottom_y = min(box.y0 for box in bottom_boxes if box is not None)
+        padding_px = float(product_spec.get("crop_bottom_padding_px", 10.0))
+        if not math.isfinite(padding_px) or padding_px < 0.0:
+            raise CFSv2Error("crop_bottom_padding_px must be a finite non-negative number")
+        figure_height_px = float(figure.canvas.get_width_height()[1])
+        crop_bottom_px = max(
+            1,
+            min(
+                int(round(figure_height_px)),
+                int(math.ceil(figure_height_px - bottom_y + padding_px)),
+            ),
+        )
     figure.savefig(output_path, dpi=120, facecolor=figure.get_facecolor())
     plt.close(figure)
+    if crop_bottom_px is not None:
+        from PIL import Image
+
+        temporary_path = output_path.with_name(
+            output_path.stem + ".crop.tmp" + output_path.suffix
+        )
+        with Image.open(output_path) as saved:
+            cropped = saved.crop((0, 0, saved.width, min(saved.height, crop_bottom_px)))
+            if output_path.suffix.lower() in {".jpg", ".jpeg"}:
+                cropped.save(temporary_path, format="JPEG", quality=95, subsampling=0)
+            else:
+                cropped.save(temporary_path)
+        temporary_path.replace(output_path)
 
 
 def relative_path(path: Path, repo_root: Path) -> str:

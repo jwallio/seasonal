@@ -57,8 +57,10 @@ converted to inches of liquid-water equivalent—not snow depth—and provide
 CONUS monthly totals and DJF three-month sums. CanSIPS v3 adds a transparent
 derived estimate from its paired 2-m temperature and precipitation members;
 the super ensemble can include that CanSIPS-derived family vote alongside
-native snowfall fields. The display scale uses tenths-of-an-inch bins from
--0.8 to +0.8 inches to resolve the smaller LWE signal. Models without a
+native snowfall fields. CanSIPS also uses the paired 850-hPa temperature as a
+warm-layer gate with its 2-m temperature. The display scale uses
+tenths-of-an-inch bins from -1.2 to +1.2 inches to reduce clipping while
+preserving the smaller LWE signal. Models without a
 native or explicitly derived snowfall field remain explicitly not applicable.
 
 ## Historical analog guidance

@@ -27,6 +27,10 @@ from cfsv2_seasonal import (
     CONUS_STATE_NAMES,
     DEFAULT_REGION,
     Grid,
+    SNOWFALL_ANOMALY_MAX_IN,
+    SNOWFALL_ANOMALY_MIN_IN,
+    SNOWFALL_ANOMALY_PALETTE,
+    SNOWFALL_ANOMALY_TICKS,
     TEMPERATURE_ANOMALY_MAX_C,
     TEMPERATURE_ANOMALY_MIN_C,
     TEMPERATURE_ANOMALY_PALETTE,
@@ -35,10 +39,6 @@ from cfsv2_seasonal import (
     mean_grids,
     relative_path,
     render_map,
-    SWE_ANOMALY_MAX_IN,
-    SWE_ANOMALY_MIN_IN,
-    SWE_ANOMALY_PALETTE,
-    SWE_ANOMALY_TICKS,
     sum_grids,
 )
 from seas5_seasonal import grid_from_grib
@@ -54,9 +54,6 @@ PRESSURE_SOURCE_URL = "https://cds.climate.copernicus.eu/datasets/seasonal-postp
 SINGLE_SOURCE_URL = "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-single-levels"
 LICENSE_URL = "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-pressure-levels?tab=download#manage-licences"
 NORTH_AMERICA_AREA = [90.0, -170.0, 15.0, 0.0]
-SNOWFALL_ANOMALY_MIN_IN = -0.8
-SNOWFALL_ANOMALY_MAX_IN = 0.8
-SNOWFALL_ANOMALY_TICKS = [round(SNOWFALL_ANOMALY_MIN_IN + 0.1 * i, 1) for i in range(17)]
 CONUS_AREA = [60.0, -135.0, 20.0, -55.0]
 GEOPOTENTIAL_GRAVITY = 9.80665
 M_TO_INCH = 1000.0 / 25.4
@@ -130,7 +127,7 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "height_contours": False, "region": CONUS_PRECIP_REGION,
         "monthly_reducer": "total", "seasonal_reducer": "sum",
         "anomaly_min": SNOWFALL_ANOMALY_MIN_IN, "anomaly_max": SNOWFALL_ANOMALY_MAX_IN,
-        "anomaly_ticks": SNOWFALL_ANOMALY_TICKS, "anomaly_palette": SWE_ANOMALY_PALETTE,
+        "anomaly_ticks": SNOWFALL_ANOMALY_TICKS, "anomaly_palette": SNOWFALL_ANOMALY_PALETTE,
         "cds_dataset": SINGLE_DATASET,
         "cds_variable": "snowfall_anomalous_rate_of_accumulation",
     },
@@ -375,7 +372,7 @@ def product_spec(product: str, label: str, *, multisystem: bool = False) -> dict
     detail = (
         "Height contours in dam"
         if base["height_contours"]
-        else "Official snowfall departure  •  LWE  •  CONUS  •  clipped at \u00b10.8 in"
+        else "Official snowfall departure  •  LWE  •  CONUS  •  clipped at \u00b11.2 in"
         if product == "snowfall_anomaly"
         else f"{base['units']} anomaly"
     )
@@ -391,7 +388,7 @@ def product_spec(product: str, label: str, *, multisystem: bool = False) -> dict
                 "domain_frame_padding_fraction": 0.012,
                 "mask_states": list(CONUS_STATE_NAMES),
                 "border_files": ("us-states.geojson",),
-                "anomaly_endpoint_labels": {"minimum": "\u2264\u22120.8", "maximum": "\u2265+0.8"},
+                "anomaly_endpoint_labels": {"minimum": "\u2264\u22121.2", "maximum": "\u2265+1.2"},
             }
         )
     return base

@@ -288,7 +288,8 @@ def canonical_members(product: str, *, include_cma: bool = False) -> list[Member
             internal_members=cansips.CANSIPS_ENSEMBLE_MEMBERS,
             notes=(
                 "One ECCC family vote; CanSIPS snowfall is derived from member 2-m "
-                "temperature and precipitation; C3S ECCC and NMME ECCC copies are excluded"
+                "+ 850-hPa temperature and total precipitation; C3S ECCC and NMME "
+                "ECCC copies are excluded"
                 if product == "snowfall_anomaly"
                 else "One ECCC family vote; C3S ECCC and NMME ECCC copies are excluded"
             ),
@@ -350,12 +351,12 @@ def product_spec(product: str, *, synthetic: bool = False) -> dict[str, Any]:
                 "domain_frame_padding_fraction": 0.012,
                 "mask_states": list(c3s.CONUS_STATE_NAMES),
                 "border_files": ("us-states.geojson",),
-                "anomaly_endpoint_labels": {"minimum": "≤−0.8", "maximum": "≥+0.8"},
+                "anomaly_endpoint_labels": {"minimum": "≤−1.2", "maximum": "≥+1.2"},
             }
         )
         spec["header_detail"] = (
             "{source_label}  •  Native/derived snowfall liquid-water equivalent  •  "
-            "CONUS  •  clipped at ±0.8 in"
+            "CONUS  •  clipped at ±1.2 in"
         )
     else:
         field_detail = "Height contours in dam" if spec["height_contours"] else f"{spec['units']} anomaly"

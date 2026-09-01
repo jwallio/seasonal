@@ -33,7 +33,10 @@ from cfsv2_seasonal import (
     DEFAULT_REGION,
     PRECIP_ANOMALY_PALETTE,
     PRECIP_ANOMALY_TICKS,
-    SWE_ANOMALY_PALETTE,
+    SNOWFALL_ANOMALY_MAX_IN,
+    SNOWFALL_ANOMALY_MIN_IN,
+    SNOWFALL_ANOMALY_PALETTE,
+    SNOWFALL_ANOMALY_TICKS,
     TEMPERATURE_ANOMALY_MAX_C,
     TEMPERATURE_ANOMALY_MIN_C,
     TEMPERATURE_ANOMALY_PALETTE,
@@ -69,16 +72,18 @@ CANSIPS_DOWNLOAD_TIMEOUT = (60, 600)
 CANSIPS_REQUEST_DELAY = 1.0
 
 # CanSIPS does not publish a native snowfall field. The derived product uses
-# the model's monthly 2-m temperature and precipitation-rate members to
-# estimate the fraction of precipitation falling as snow. These thresholds
-# intentionally describe a transition zone rather than a snow-depth ratio:
-# below -1 C all precipitation is treated as snow, above +2 C none is, and
-# values in between are linearly blended.
-SNOWFALL_COLD_THRESHOLD_C = -1.0
-SNOWFALL_WARM_THRESHOLD_C = 2.0
-SNOWFALL_ANOMALY_MIN_IN = -0.8
-SNOWFALL_ANOMALY_MAX_IN = 0.8
-SNOWFALL_ANOMALY_TICKS = [round(SNOWFALL_ANOMALY_MIN_IN + 0.1 * index, 1) for index in range(17)]
+# member-level total precipitation and a two-level temperature phase gate.
+# Dai (2008) land snow-frequency fits, expressed as (a, b, c, d) in
+# F(T) = a * [tanh(b * (T - c)) - d], with F in percent.  The monthly
+# product selects the appropriate season; DJF is the production winter fit.
+SNOWFALL_DAI_LAND_PARAMS_BY_SEASON = {
+    "ANN": (-48.2292, 0.7205, 1.1662, 1.0223),
+    "DJF": (-48.2372, 0.7449, 1.0919, 1.0209),
+    "MAM": (-48.2493, 0.6634, 1.3388, 1.0270),
+    "JJA": (-46.4000, 0.7013, 0.8362, 1.0217),
+    "SON": (-48.3251, 0.7798, 1.1502, 1.0180),
+}
+SNOWFALL_DAI_LAND_DJF_PARAMS = SNOWFALL_DAI_LAND_PARAMS_BY_SEASON["DJF"]
 
 MSLP_ANOMALY_TICKS = list(range(-10, 11))
 SST_ANOMALY_TICKS = list(range(-3, 4))
@@ -203,13 +208,13 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "name": PRODUCT_SNOWFALL_ANOMALY,
         "source_var": "derived",
         "level": "",
-        "state_tag": "snowfall_estimate",
+        "state_tag": "snowfall_estimate_dai_t850",
         "id_token": "snowfalla",
-        "title": "CanSIPS v3 Derived Snowfall Departure (in)",
-        "absolute_title": "CanSIPS v3 Derived Snowfall Estimate (in)",
+        "title": "CanSIPS v3 Derived Snowfall Departure",
+        "absolute_title": "CanSIPS v3 Derived Snowfall Estimate",
         "field": "snowfall_anomaly",
-        "raw_field": "Derived from 2-m AirTemp and surface PrecipRate",
-        "raw_units": "K; kg m-2 s-1",
+        "raw_field": "Derived from 2-m/850-hPa AirTemp and surface PrecipRate",
+        "raw_units": "K; K; kg m-2 s-1",
         "units": "in",
         "seasonal_units": "in",
         "height_contours": False,
@@ -219,25 +224,27 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "anomaly_min": SNOWFALL_ANOMALY_MIN_IN,
         "anomaly_max": SNOWFALL_ANOMALY_MAX_IN,
         "anomaly_ticks": SNOWFALL_ANOMALY_TICKS,
-        "anomaly_palette": SWE_ANOMALY_PALETTE,
+        "anomaly_palette": SNOWFALL_ANOMALY_PALETTE,
         "map_domain": "land",
         "fit_frame_to_domain": True,
         "domain_frame_padding_fraction": 0.012,
         "mask_states": list(CONUS_STATE_NAMES),
         "border_files": ("us-states.geojson",),
-        "anomaly_endpoint_labels": {"minimum": "≤−0.8", "maximum": "≥+0.8"},
+        "anomaly_endpoint_labels": {"minimum": "≤−1.2", "maximum": "≥+1.2"},
         "derived_product": True,
-        "source_variables": ["AirTemp at AGL-2m", "PrecipRate at Sfc"],
+        "source_variables": ["AirTemp at AGL-2m", "AirTemp at ISBL-0850", "PrecipRate at Sfc"],
         "conversion_kind": "derived_snowfall_lwe",
         "conversion": (
-            "For each of 40 members, convert PrecipRate to the calendar-month "
-            "precipitation total, multiply by a piecewise-linear snow fraction "
-            "from 2-m temperature (-1 °C to +2 °C), then average members; "
-            "seasonal values sum the monthly LWE estimates"
+            "For each of 40 members, convert total PrecipRate to the "
+            "calendar-month liquid-water total, apply the season-appropriate "
+            "Dai (2008) land snow-frequency curve (DJF for December-February) "
+            "to the warmer of monthly mean 2-m and 850-hPa "
+            "temperature, then average members; seasonal values sum the monthly "
+            "liquid-water-equivalent estimates"
         ),
         "header_detail": (
             "{source_label}  •  Derived snowfall liquid-water equivalent (in)  •  "
-            "2-m temperature + precipitation  •  CONUS domain"
+            "2-m + 850-hPa temperature phase gate + precipitation  •  CONUS domain"
         ),
         "source_label": "ECCC MSC CanSIPS v3 / Datamart",
     },
@@ -488,18 +495,47 @@ def prepare_product_grid(grid: Grid, product_spec: dict[str, Any], target: str) 
     return grid
 
 
-def snowfall_fraction_from_temperature_c(temperature_c: float) -> float:
-    """Return a bounded precipitation-as-snow fraction for a monthly mean T2m."""
+def snowfall_fraction_from_temperature_c(temperature_c: float, season: str = "DJF") -> float:
+    """Return the Dai (2008) land snow fraction for mean temperature.
+
+    Dai's fitted snow-frequency curve is expressed as a percentage.  It is a
+    precipitation-phase estimate, not a snow-depth or snow-to-liquid ratio.
+    The requested seasonal land parameters retain a small snow fraction above
+    freezing instead of imposing an artificial hard cutoff.  The default is
+    DJF for compatibility with callers that only pass a temperature.
+    """
 
     if not math.isfinite(temperature_c):
         return math.nan
-    if temperature_c <= SNOWFALL_COLD_THRESHOLD_C:
-        return 1.0
-    if temperature_c >= SNOWFALL_WARM_THRESHOLD_C:
-        return 0.0
-    return (SNOWFALL_WARM_THRESHOLD_C - temperature_c) / (
-        SNOWFALL_WARM_THRESHOLD_C - SNOWFALL_COLD_THRESHOLD_C
-    )
+    try:
+        coefficient, slope, midpoint, offset = SNOWFALL_DAI_LAND_PARAMS_BY_SEASON[season]
+    except KeyError as exc:
+        raise CanSIPSError(
+            f"unsupported snowfall phase season {season!r}; choose from "
+            f"{', '.join(SNOWFALL_DAI_LAND_PARAMS_BY_SEASON)}"
+        ) from exc
+    fraction = coefficient * (math.tanh(slope * (temperature_c - midpoint)) - offset) / 100.0
+    return max(0.0, min(1.0, fraction))
+
+
+def snowfall_phase_season(target: str) -> str:
+    """Return the Dai seasonal fit name for a YYYYMM target month."""
+
+    month = dt.datetime.strptime(target, "%Y%m").month
+    return {
+        12: "DJF",
+        1: "DJF",
+        2: "DJF",
+        3: "MAM",
+        4: "MAM",
+        5: "MAM",
+        6: "JJA",
+        7: "JJA",
+        8: "JJA",
+        9: "SON",
+        10: "SON",
+        11: "SON",
+    }[month]
 
 
 def _decode_cfgrib_members(
@@ -604,8 +640,16 @@ def derive_snowfall_lwe_grid(
     lons: list[float],
     lats: list[float],
     target: str,
+    temperature_850_members: Any | None = None,
 ) -> tuple[Grid, dict[str, Any]]:
-    """Derive member-mean monthly snowfall liquid-water equivalent in inches."""
+    """Derive member-mean monthly snowfall liquid-water equivalent in inches.
+
+    The production path supplies paired 2-m and 850-hPa temperatures.  The
+    warmer level is used as a conservative warm-layer gate before applying the
+    target-month's Dai (2008) land phase curve.  ``temperature_850_members`` remains
+    optional only for compatibility with older callers; those calls use the
+    2-m field alone and are explicitly marked in diagnostics.
+    """
 
     try:
         import numpy as np
@@ -613,22 +657,39 @@ def derive_snowfall_lwe_grid(
         raise CanSIPSError("CanSIPS snowfall derivation requires numpy") from exc
 
     temperatures = np.asarray(temperature_members, dtype=float)
+    temperatures_850 = (
+        temperatures
+        if temperature_850_members is None
+        else np.asarray(temperature_850_members, dtype=float)
+    )
     precipitation = np.asarray(precipitation_members, dtype=float)
     expected_shape = (CANSIPS_ENSEMBLE_MEMBERS, len(lats), len(lons))
-    if temperatures.shape != expected_shape or precipitation.shape != expected_shape:
+    if (
+        temperatures.shape != expected_shape
+        or temperatures_850.shape != expected_shape
+        or precipitation.shape != expected_shape
+    ):
         raise CanSIPSError(
-            "CanSIPS snowfall inputs must both have shape "
-            f"{expected_shape}; got {temperatures.shape} and {precipitation.shape}"
+            "CanSIPS snowfall inputs must all have shape "
+            f"{expected_shape}; got 2-m {temperatures.shape}, "
+            f"850-hPa {temperatures_850.shape}, precipitation {precipitation.shape}"
         )
 
     start = dt.datetime.strptime(target, "%Y%m")
     next_year, next_month = month_after(start.year, start.month, 1)
     seconds = (dt.datetime(next_year, next_month, 1) - start).total_seconds()
-    valid = np.isfinite(temperatures) & np.isfinite(precipitation)
-    temperature_c = temperatures - 273.15
+    phase_season = snowfall_phase_season(target)
+    valid = (
+        np.isfinite(temperatures)
+        & np.isfinite(temperatures_850)
+        & np.isfinite(precipitation)
+    )
+    temperature_2m_c = temperatures - 273.15
+    temperature_850_c = temperatures_850 - 273.15
+    phase_temperature_c = np.maximum(temperature_2m_c, temperature_850_c)
+    coefficient, slope, midpoint, offset = SNOWFALL_DAI_LAND_PARAMS_BY_SEASON[phase_season]
     snow_fraction = np.clip(
-        (SNOWFALL_WARM_THRESHOLD_C - temperature_c)
-        / (SNOWFALL_WARM_THRESHOLD_C - SNOWFALL_COLD_THRESHOLD_C),
+        coefficient * (np.tanh(slope * (phase_temperature_c - midpoint)) - offset) / 100.0,
         0.0,
         1.0,
     )
@@ -647,9 +708,19 @@ def derive_snowfall_lwe_grid(
         "valid_member_count_max": int(valid_counts.max()),
         "valid_member_fraction_min": round(float(valid_counts.min() / CANSIPS_ENSEMBLE_MEMBERS), 4),
         "snow_fraction": {
-            "method": "piecewise_linear_2m_temperature",
-            "all_snow_at_or_below_c": SNOWFALL_COLD_THRESHOLD_C,
-            "no_snow_at_or_above_c": SNOWFALL_WARM_THRESHOLD_C,
+            "method": "Dai_2008_land_seasonal_hyperbolic_tangent",
+            "season": phase_season,
+            "parameters": {
+                "a_percent": coefficient,
+                "b_per_c": slope,
+                "c_c": midpoint,
+                "d": offset,
+            },
+            "phase_temperature": (
+                "max(2-m, 850-hPa)"
+                if temperature_850_members is not None
+                else "2-m legacy fallback"
+            ),
         },
         "calendar_month_seconds": int(seconds),
     }
@@ -661,13 +732,20 @@ def snowfall_input_paths(
     init: str,
     lead: int,
     hindcast: bool,
-) -> tuple[Path, Path, Path]:
-    temperature_raw, _ = cache_paths(
+) -> tuple[Path, Path, Path, Path]:
+    temperature_2m_raw, _ = cache_paths(
         cache_dir,
         init,
         lead,
         hindcast,
         PRODUCT_SPECS[PRODUCT_2M_TEMPERATURE_ANOMALY],
+    )
+    temperature_850_raw, _ = cache_paths(
+        cache_dir,
+        init,
+        lead,
+        hindcast,
+        PRODUCT_SPECS[PRODUCT_850MB_TEMPERATURE_ANOMALY],
     )
     precipitation_raw, _ = cache_paths(
         cache_dir,
@@ -682,18 +760,26 @@ def snowfall_input_paths(
         / "means"
         / kind
         / init[:6]
-        / f"snowfall_estimate_lead{lead:02d}.csv.gz"
+        # Version the retained grid because the prior implementation used a
+        # different phase curve and did not include the 850-hPa field.
+        / f"snowfall_estimate_dai_t850_lead{lead:02d}.csv.gz"
     )
-    return temperature_raw, precipitation_raw, state_path
+    return temperature_2m_raw, temperature_850_raw, precipitation_raw, state_path
 
 
-def snowfall_input_urls(init: str, lead: int, hindcast: bool) -> tuple[str, str]:
+def snowfall_input_urls(init: str, lead: int, hindcast: bool) -> tuple[str, str, str]:
     return (
         source_url(
             init,
             lead,
             hindcast,
             PRODUCT_SPECS[PRODUCT_2M_TEMPERATURE_ANOMALY],
+        ),
+        source_url(
+            init,
+            lead,
+            hindcast,
+            PRODUCT_SPECS[PRODUCT_850MB_TEMPERATURE_ANOMALY],
         ),
         source_url(
             init,
@@ -720,19 +806,30 @@ def load_snowfall_estimate(
 
     product = PRODUCT_SPECS[PRODUCT_SNOWFALL_ANOMALY]
     target = target or target_month(init, lead)
-    temperature_raw, precipitation_raw, state_path = snowfall_input_paths(
+    temperature_2m_raw, temperature_850_raw, precipitation_raw, state_path = snowfall_input_paths(
         cache_dir, init, lead, hindcast
     )
-    temperature_url, precipitation_url = snowfall_input_urls(init, lead, hindcast)
+    temperature_2m_url, temperature_850_url, precipitation_url = snowfall_input_urls(
+        init, lead, hindcast
+    )
     source_files = [
         {
             "initialization": init,
             "lead_month": lead,
             "product": PRODUCT_SNOWFALL_ANOMALY,
             "source_field": PRODUCT_SPECS[PRODUCT_2M_TEMPERATURE_ANOMALY]["raw_field"],
-            "url": temperature_url,
-            "cache_file": relative_path(temperature_raw, repo_root),
+            "url": temperature_2m_url,
+            "cache_file": relative_path(temperature_2m_raw, repo_root),
             "raw_units": PRODUCT_SPECS[PRODUCT_2M_TEMPERATURE_ANOMALY]["raw_units"],
+        },
+        {
+            "initialization": init,
+            "lead_month": lead,
+            "product": PRODUCT_SNOWFALL_ANOMALY,
+            "source_field": PRODUCT_SPECS[PRODUCT_850MB_TEMPERATURE_ANOMALY]["raw_field"],
+            "url": temperature_850_url,
+            "cache_file": relative_path(temperature_850_raw, repo_root),
+            "raw_units": PRODUCT_SPECS[PRODUCT_850MB_TEMPERATURE_ANOMALY]["raw_units"],
         },
         {
             "initialization": init,
@@ -750,7 +847,7 @@ def load_snowfall_estimate(
         "product": PRODUCT_SNOWFALL_ANOMALY,
         "source_field": product["raw_field"],
         "source_variables": product["source_variables"],
-        "source_urls": [temperature_url, precipitation_url],
+        "source_urls": [temperature_2m_url, temperature_850_url, precipitation_url],
         "cache_file": relative_path(state_path, repo_root),
         "storage": "retained_40_member_derived_grid",
         "ensemble_members": CANSIPS_ENSEMBLE_MEMBERS,
@@ -759,15 +856,24 @@ def load_snowfall_estimate(
     }
     if state_path.exists() and state_path.stat().st_size > 0 and not force:
         if cleanup_inputs:
-            temperature_raw.unlink(missing_ok=True)
+            temperature_2m_raw.unlink(missing_ok=True)
+            temperature_850_raw.unlink(missing_ok=True)
             precipitation_raw.unlink(missing_ok=True)
         metadata["downloaded"] = False
         metadata["storage"] = "retained_40_member_derived_grid"
         return read_grid_state(state_path), metadata, last_request
 
     temperature_downloaded, last_request = download_file(
-        temperature_url,
-        temperature_raw,
+        temperature_2m_url,
+        temperature_2m_raw,
+        max(CANSIPS_REQUEST_DELAY, request_delay),
+        last_request,
+        attempts=CANSIPS_DOWNLOAD_ATTEMPTS,
+        timeout=CANSIPS_DOWNLOAD_TIMEOUT,
+    )
+    temperature_850_downloaded, last_request = download_file(
+        temperature_850_url,
+        temperature_850_raw,
         max(CANSIPS_REQUEST_DELAY, request_delay),
         last_request,
         attempts=CANSIPS_DOWNLOAD_ATTEMPTS,
@@ -782,16 +888,26 @@ def load_snowfall_estimate(
         timeout=CANSIPS_DOWNLOAD_TIMEOUT,
     )
     temperature_lons, temperature_lats, temperature_members, temperature_variable = _decode_cfgrib_members(
-        temperature_raw,
+        temperature_2m_raw,
         ("avg_2t", "t2m", "2t"),
         "2-m temperature",
+    )
+    temperature_850_lons, temperature_850_lats, temperature_850_members, temperature_850_variable = _decode_cfgrib_members(
+        temperature_850_raw,
+        ("avg_t", "t850", "t"),
+        "850-hPa temperature",
     )
     precipitation_lons, precipitation_lats, precipitation_members, precipitation_variable = _decode_cfgrib_members(
         precipitation_raw,
         ("prate", "precipitation_rate"),
         "precipitation rate",
     )
-    if temperature_lons != precipitation_lons or temperature_lats != precipitation_lats:
+    if (
+        temperature_lons != temperature_850_lons
+        or temperature_lats != temperature_850_lats
+        or temperature_lons != precipitation_lons
+        or temperature_lats != precipitation_lats
+    ):
         raise CanSIPSError("CanSIPS snowfall input grids do not share coordinates")
     grid, diagnostics = derive_snowfall_lwe_grid(
         temperature_members,
@@ -799,25 +915,34 @@ def load_snowfall_estimate(
         temperature_lons,
         temperature_lats,
         target,
+        temperature_850_members=temperature_850_members,
     )
     write_grid_state(grid, state_path)
     metadata.update(
         {
-            "downloaded": bool(temperature_downloaded or precipitation_downloaded),
+            "downloaded": bool(
+                temperature_downloaded or temperature_850_downloaded or precipitation_downloaded
+            ),
             "storage": "decoded_40_member_derived_grid",
-            "decoded_variables": [temperature_variable, precipitation_variable],
+            "decoded_variables": [
+                temperature_variable,
+                temperature_850_variable,
+                precipitation_variable,
+            ],
             "diagnostics": diagnostics,
         }
     )
     for source_file, downloaded in zip(
         metadata["source_files"],
-        (temperature_downloaded, precipitation_downloaded),
+        (temperature_downloaded, temperature_850_downloaded, precipitation_downloaded),
     ):
         source_file["downloaded"] = bool(downloaded)
     if cleanup_inputs:
-        temperature_raw.unlink(missing_ok=True)
+        temperature_2m_raw.unlink(missing_ok=True)
+        temperature_850_raw.unlink(missing_ok=True)
         precipitation_raw.unlink(missing_ok=True)
-        temperature_raw.with_name(temperature_raw.name + ".part").unlink(missing_ok=True)
+        temperature_2m_raw.with_name(temperature_2m_raw.name + ".part").unlink(missing_ok=True)
+        temperature_850_raw.with_name(temperature_850_raw.name + ".part").unlink(missing_ok=True)
         precipitation_raw.with_name(precipitation_raw.name + ".part").unlink(missing_ok=True)
     return grid, metadata, last_request
 
