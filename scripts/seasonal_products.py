@@ -16,6 +16,12 @@ from typing import Any, Iterable
 
 REGISTRY_VERSION = 1
 
+SNOWFALL_DISPLAY_BREAKPOINTS = [
+    -4.0, -3.5, -3.0, -2.5, -2.0, -1.75, -1.5, -1.25, -1.0, -0.75,
+    -0.5, 0.0, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 2.5, 3.0, 3.5,
+    4.0,
+]
+
 
 PRODUCTS: dict[str, dict[str, Any]] = {
     "500mb_height_anomaly": {
@@ -104,8 +110,16 @@ PRODUCTS: dict[str, dict[str, Any]] = {
         "level": {"type": "surface"},
         "aggregation": {"monthly": "total", "seasonal": "total"},
         "display": {
-            "monthly": {"minimum": -1.2, "maximum": 1.2, "step": 0.1},
-            "seasonal": {"minimum": -1.2, "maximum": 1.2, "step": 0.1},
+            "monthly": {
+                "minimum": -4.0,
+                "maximum": 4.0,
+                "breakpoints": SNOWFALL_DISPLAY_BREAKPOINTS,
+            },
+            "seasonal": {
+                "minimum": -4.0,
+                "maximum": 4.0,
+                "breakpoints": SNOWFALL_DISPLAY_BREAKPOINTS,
+            },
         },
         "hard_range": {"minimum": -100.0, "maximum": 100.0},
         "minimum_finite_fraction": 0.02,

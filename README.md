@@ -59,8 +59,8 @@ derived estimate from its paired 2-m temperature and precipitation members;
 the super ensemble can include that CanSIPS-derived family vote alongside
 native snowfall fields. CanSIPS also uses the paired 850-hPa temperature as a
 warm-layer gate with its 2-m temperature. The display scale uses
-tenths-of-an-inch bins from -1.2 to +1.2 inches to reduce clipping while
-preserving the smaller LWE signal. Models without a
+nonlinear bins from -4.0 to +4.0 inches—finer near zero and wider in the
+tails—to reduce clipping while preserving the smaller LWE signal. Models without a
 native or explicitly derived snowfall field remain explicitly not applicable.
 
 ## Historical analog guidance

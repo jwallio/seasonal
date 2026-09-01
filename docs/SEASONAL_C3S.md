@@ -22,9 +22,10 @@ The scheduled suite also renders `snowfall_anomaly` for the C3S centres and
 multi-system blend. It is a CONUS monthly total or DJF three-month sum of the
 native C3S snowfall anomalous rate, converted to inches of liquid-water
 equivalent. This is a snowfall water-equivalent departure, not a snow-depth
-estimate. The map uses tenths-of-an-inch labelled bins from -1.2 to +1.2 inches
-to resolve the smaller liquid-water-equivalent signal; a centre that does not return the field is retained as a failed or
-partial component rather than being silently substituted with snowpack.
+estimate. The map uses nonlinear labelled bins from -4.0 to +4.0 inches,
+with finer breakpoints near zero and wider tail bins. A centre that does not
+return the field is retained as a failed or partial component rather than being
+silently substituted with snowpack.
 
 The release monitor is `.github/workflows/seasonal-release-check.yml`. Starting
 at the official 10th/12 UTC C3S window, it polls the CDS catalogue constraints

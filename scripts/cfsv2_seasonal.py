@@ -135,15 +135,40 @@ SWE_ANOMALY_PALETTE = [
     "#1d496f",
     "#143b5f",
 ]
-# Shared snowfall liquid-water-equivalent departure scale.  Snowfall is a
-# smaller signal than total precipitation, but the old ±0.8-inch range clipped
-# too much of the CanSIPS-derived field.  Keep tenth-of-an-inch labels while allowing a
-# little more headroom for strong monthly and DJF departures.
-SNOWFALL_ANOMALY_MIN_IN = -1.2
-SNOWFALL_ANOMALY_MAX_IN = 1.2
+# Shared snowfall liquid-water-equivalent departure scale.  The previous ±1.2
+# range clips broad areas of the DJF CanSIPS field, so use a symmetric,
+# nonlinear set of bins: finer near zero and progressively wider toward the
+# tails.  The bins are intentionally categorical (uniform visual widths), so
+# the strong departures retain contrast without turning ordinary departures
+# into a mostly white map.
+SNOWFALL_ANOMALY_MIN_IN = -4.0
+SNOWFALL_ANOMALY_MAX_IN = 4.0
+SNOWFALL_ANOMALY_TICK_DECIMALS = 2
+SNOWFALL_ANOMALY_TICK_FORMAT = "signed_trimmed"
 SNOWFALL_ANOMALY_TICKS = [
-    round(SNOWFALL_ANOMALY_MIN_IN + 0.1 * index, 1)
-    for index in range(25)
+    -4.0,
+    -3.5,
+    -3.0,
+    -2.5,
+    -2.0,
+    -1.75,
+    -1.5,
+    -1.25,
+    -1.0,
+    -0.75,
+    -0.5,
+    0.0,
+    0.5,
+    0.75,
+    1.0,
+    1.25,
+    1.5,
+    1.75,
+    2.0,
+    2.5,
+    3.0,
+    3.5,
+    4.0,
 ]
 SNOWFALL_ANOMALY_PALETTE = [
     "#572308",
@@ -156,10 +181,8 @@ SNOWFALL_ANOMALY_PALETTE = [
     "#ca9156",
     "#d7a875",
     "#e3c99a",
-    "#eee5d5",
     "#ffffff",
     "#ffffff",
-    "#d7edf2",
     "#b9dce8",
     "#96c9d7",
     "#75b8cc",
@@ -2358,6 +2381,11 @@ def render_map(
                 numeric = 0.0
             if tick_format == "plain":
                 return f"{numeric:.{tick_decimals}f}"
+            if tick_format == "signed_trimmed":
+                if numeric == 0.0:
+                    return "0"
+                formatted = f"{abs(numeric):.{tick_decimals}f}".rstrip("0").rstrip(".")
+                return f"+{formatted}" if numeric > 0.0 else f"−{formatted}"
             if tick_decimals:
                 return f"{numeric:+.{tick_decimals}f}" if numeric else f"{numeric:.{tick_decimals}f}"
             return f"+{int(round(numeric))}" if numeric > 0 else str(int(round(numeric)))

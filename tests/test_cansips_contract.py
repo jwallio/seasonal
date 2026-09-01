@@ -99,6 +99,9 @@ def main() -> int:
     check(snowfall_spec["region"] == module.CONUS_PRECIP_REGION, "CanSIPS snowfall must use the tight CONUS crop")
     check(snowfall_spec["map_domain"] == "land" and snowfall_spec["fit_frame_to_domain"], "CanSIPS snowfall must use a fitted lower-48 land frame")
     check(snowfall_spec["seasonal_reducer"] == "sum", "CanSIPS snowfall seasons must sum monthly LWE departures")
+    check((snowfall_spec["anomaly_min"], snowfall_spec["anomaly_max"]) == (-4.0, 4.0), "CanSIPS snowfall should use a nonlinear ±4.0 inch water-equivalent range")
+    check(snowfall_spec["anomaly_ticks"] == module.SNOWFALL_ANOMALY_TICKS, "CanSIPS snowfall should use the approved nonlinear labelled breakpoints")
+    check(snowfall_spec["anomaly_tick_format"] == "signed_trimmed" and snowfall_spec["anomaly_tick_decimals"] == 2, "CanSIPS snowfall labels should preserve quarter-inch breakpoints")
     check(len(snowfall_spec["anomaly_ticks"]) == len(snowfall_spec["anomaly_palette"]) + 1, "CanSIPS snowfall bounds must align with colors")
     check("(in LWE)" not in snowfall_spec["title"], "CanSIPS snowfall title must not use the obsolete in-LWE wording")
     dai_expected = -48.2372 * (math.tanh(0.7449 * (1.0 - 1.0919)) - 1.0209) / 100.0

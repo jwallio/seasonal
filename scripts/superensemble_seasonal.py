@@ -351,12 +351,12 @@ def product_spec(product: str, *, synthetic: bool = False) -> dict[str, Any]:
                 "domain_frame_padding_fraction": 0.012,
                 "mask_states": list(c3s.CONUS_STATE_NAMES),
                 "border_files": ("us-states.geojson",),
-                "anomaly_endpoint_labels": {"minimum": "≤−1.2", "maximum": "≥+1.2"},
+                "anomaly_endpoint_labels": {"minimum": "≤−4.0", "maximum": "≥+4.0"},
             }
         )
         spec["header_detail"] = (
             "{source_label}  •  Native/derived snowfall liquid-water equivalent  •  "
-            "CONUS  •  clipped at ±1.2 in"
+            "CONUS  •  clipped at ±4.0 in"
         )
     else:
         field_detail = "Height contours in dam" if spec["height_contours"] else f"{spec['units']} anomaly"

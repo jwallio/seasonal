@@ -30,6 +30,8 @@ from cfsv2_seasonal import (
     SNOWFALL_ANOMALY_MAX_IN,
     SNOWFALL_ANOMALY_MIN_IN,
     SNOWFALL_ANOMALY_PALETTE,
+    SNOWFALL_ANOMALY_TICK_DECIMALS,
+    SNOWFALL_ANOMALY_TICK_FORMAT,
     SNOWFALL_ANOMALY_TICKS,
     TEMPERATURE_ANOMALY_MAX_C,
     TEMPERATURE_ANOMALY_MIN_C,
@@ -128,6 +130,8 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "monthly_reducer": "total", "seasonal_reducer": "sum",
         "anomaly_min": SNOWFALL_ANOMALY_MIN_IN, "anomaly_max": SNOWFALL_ANOMALY_MAX_IN,
         "anomaly_ticks": SNOWFALL_ANOMALY_TICKS, "anomaly_palette": SNOWFALL_ANOMALY_PALETTE,
+        "anomaly_tick_decimals": SNOWFALL_ANOMALY_TICK_DECIMALS,
+        "anomaly_tick_format": SNOWFALL_ANOMALY_TICK_FORMAT,
         "cds_dataset": SINGLE_DATASET,
         "cds_variable": "snowfall_anomalous_rate_of_accumulation",
     },
@@ -372,7 +376,7 @@ def product_spec(product: str, label: str, *, multisystem: bool = False) -> dict
     detail = (
         "Height contours in dam"
         if base["height_contours"]
-        else "Official snowfall departure  •  LWE  •  CONUS  •  clipped at \u00b11.2 in"
+        else "Official snowfall departure  •  LWE  •  CONUS  •  clipped at \u00b14.0 in"
         if product == "snowfall_anomaly"
         else f"{base['units']} anomaly"
     )
@@ -388,7 +392,7 @@ def product_spec(product: str, label: str, *, multisystem: bool = False) -> dict
                 "domain_frame_padding_fraction": 0.012,
                 "mask_states": list(CONUS_STATE_NAMES),
                 "border_files": ("us-states.geojson",),
-                "anomaly_endpoint_labels": {"minimum": "\u2264\u22121.2", "maximum": "\u2265+1.2"},
+                "anomaly_endpoint_labels": {"minimum": "\u2264\u22124.0", "maximum": "\u2265+4.0"},
             }
         )
     return base
