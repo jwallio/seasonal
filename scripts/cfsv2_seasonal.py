@@ -2387,9 +2387,23 @@ def render_map(
     colorbar.outline.set_linewidth(0.65)
     footer_artist = None
     if has_footer:
+        footer_y = 0.012
+        if is_snowfall:
+            # Snowfall maps are cropped to their legend.  Keep the optional
+            # multi-system provenance footer inside that compact footprint
+            # instead of leaving it at the old square-canvas baseline.
+            figure.canvas.draw()
+            renderer = figure.canvas.get_renderer()
+            colorbar_bbox = colorbar.ax.get_tightbbox(renderer)
+            figure_height_px = float(figure.canvas.get_width_height()[1])
+            if colorbar_bbox is not None and figure_height_px > 0.0:
+                footer_y = max(
+                    footer_y,
+                    (colorbar_bbox.y0 - 24.0) / figure_height_px,
+                )
         footer_artist = figure.text(
             0.5,
-            0.012,
+            footer_y,
             footer_text,
             ha="center",
             va="bottom",
