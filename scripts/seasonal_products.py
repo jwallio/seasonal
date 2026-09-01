@@ -281,7 +281,8 @@ CORE_COMPARISON_PRODUCTS = (
 
 # Products shown in the cross-model overview and Compare view.  Keep the
 # original core tuple stable for provider contracts; snowfall is a supported
-# comparison surface only for providers with a native snowfall field.
+# comparison surface only for providers with a native or explicitly derived
+# snowfall liquid-water-equivalent field.
 COMPARISON_PRODUCTS = (
     *CORE_COMPARISON_PRODUCTS[:4],
     "snowfall_anomaly",
@@ -371,14 +372,26 @@ MODELS: dict[str, dict[str, Any]] = {
 }
 
 
-SNOWFALL_SUPPORTED_MODELS = frozenset({"c3s", "seas5"})
+SNOWFALL_SUPPORTED_MODELS = frozenset({"c3s", "seas5", "cansips", "superensemble"})
+SNOWFALL_SUPPORT_REASONS = {
+    "c3s": "C3S publishes native snowfall liquid-water-equivalent accumulation.",
+    "seas5": "SEAS5 publishes native snowfall liquid-water-equivalent accumulation.",
+    "cansips": "CanSIPS derives member-level snowfall liquid-water equivalent from 2-m temperature and precipitation.",
+    "superensemble": "The super ensemble blends eligible native and CanSIPS-derived snowfall fields in common LWE units.",
+}
 SNOWFALL_UNSUPPORTED_REASON = (
-    "The current seasonal adapter does not publish snowfall accumulation; "
-    "snow-water equivalent or precipitation is not interchangeable with snowfall."
+    "The current seasonal adapter does not publish a native or explicitly derived "
+    "snowfall accumulation field; snow-water equivalent or precipitation is not "
+    "interchangeable with snowfall."
 )
 for _model_key, _model_definition in MODELS.items():
     _model_definition["support"]["snowfall_anomaly"] = (
-        _supported() if _model_key in SNOWFALL_SUPPORTED_MODELS else _unsupported(SNOWFALL_UNSUPPORTED_REASON)
+        {
+            "state": "supported",
+            "reason": SNOWFALL_SUPPORT_REASONS[_model_key],
+        }
+        if _model_key in SNOWFALL_SUPPORTED_MODELS
+        else _unsupported(SNOWFALL_UNSUPPORTED_REASON)
     )
 
 

@@ -54,10 +54,12 @@ Shared comparison conventions include fixed cross-provider scales for 500-mb
 height and temperature. Precipitation is rendered in accumulated inches.
 Snowfall maps from C3S and SEAS5 use native snowfall accumulation rates,
 converted to inches of liquid-water equivalent—not snow depth—and provide
-CONUS monthly totals and DJF three-month sums. Their display scale uses
-tenths-of-an-inch bins from -0.8 to +0.8 inches to resolve the smaller LWE
-signal. Models without a native snowfall accumulation field remain explicitly
-not applicable.
+CONUS monthly totals and DJF three-month sums. CanSIPS v3 adds a transparent
+derived estimate from its paired 2-m temperature and precipitation members;
+the super ensemble can include that CanSIPS-derived family vote alongside
+native snowfall fields. The display scale uses tenths-of-an-inch bins from
+-0.8 to +0.8 inches to resolve the smaller LWE signal. Models without a
+native or explicitly derived snowfall field remain explicitly not applicable.
 
 ## Historical analog guidance
 

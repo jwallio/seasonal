@@ -62,12 +62,17 @@ def main() -> int:
         "--climo-start", "--climo-end", "--previous-manifest", "--retain-runs",
         "CANSIPS_DOWNLOAD_ATTEMPTS", "CANSIPS_DOWNLOAD_TIMEOUT",
         "--common-reference-dir", "common_reference", "write_grid_state", "common_1991_2020",
+        "snowfall_anomaly", "SNOWFALL_COLD_THRESHOLD_C", "SNOWFALL_WARM_THRESHOLD_C",
+        "derived_snowfall_lwe", "snowfall_fraction_from_temperature_c",
+        "load_snowfall_estimate", "snowfall_hindcast_climatology", "cfgrib", "eccodes",
+        "sum_grids", "snowfall_estimate",
     ):
         check(term in adapter or term in workflow or term in documentation, f"missing CanSIPS contract term: {term}")
     for term in (
         "CanSIPS v3 Seasonal Graphics", "cansips-pages-${{ github.run_id }}", 'default: "all"',
         "Restore CanSIPS decoded-grid cache", "Restore published CanSIPS run history",
         "--climo-start", "--climo-end", "--retain-runs 4", "--common-reference-dir", "CANSIPS_WGRIB2",
+        "snowfall_anomaly", "xarray", "cfgrib", "eccodes", "-v2",
     ):
         check(term in workflow, f"workflow missing CanSIPS term: {term}")
     for term in (
@@ -89,6 +94,17 @@ def main() -> int:
     check(module.source_url("2026080100", 4, False).endswith("forecast/2026/08/202608_MSC_CanSIPS_GeopotentialHeight_ISBL-0500_LatLon1.0_P04M.grib2"), "forecast source URL is incorrect")
     check(module.file_name("2026080100", 4, False, module.PRODUCT_SPECS[module.PRODUCT_2M_TEMPERATURE_ANOMALY]).endswith("AirTemp_AGL-2m_LatLon1.0_P04M.grib2"), "2-m temperature filename is incorrect")
     check(module.file_name("2026080100", 4, False, module.PRODUCT_SPECS[module.PRODUCT_SEA_SURFACE_HEIGHT_ANOMALY]).endswith("SeaSfcHeight-Geoid_LatLon1.0_P04M.grib2"), "sea-surface height filename is incorrect")
+    snowfall_spec = module.PRODUCT_SPECS[module.PRODUCT_SNOWFALL_ANOMALY]
+    check(snowfall_spec["region"] == module.CONUS_PRECIP_REGION, "CanSIPS snowfall must use the tight CONUS crop")
+    check(snowfall_spec["map_domain"] == "land" and snowfall_spec["fit_frame_to_domain"], "CanSIPS snowfall must use a fitted lower-48 land frame")
+    check(snowfall_spec["seasonal_reducer"] == "sum", "CanSIPS snowfall seasons must sum monthly LWE departures")
+    check(len(snowfall_spec["anomaly_ticks"]) == len(snowfall_spec["anomaly_palette"]) + 1, "CanSIPS snowfall bounds must align with colors")
+    check("(in LWE)" not in snowfall_spec["title"], "CanSIPS snowfall title must not use the obsolete in-LWE wording")
+    check(module.snowfall_fraction_from_temperature_c(-2.0) == 1.0, "cold snowfall threshold should be all snow")
+    check(module.snowfall_fraction_from_temperature_c(-1.0) == 1.0, "cold snowfall boundary should be all snow")
+    check(module.snowfall_fraction_from_temperature_c(0.5) == 0.5, "snowfall transition should be linear")
+    check(module.snowfall_fraction_from_temperature_c(2.0) == 0.0, "warm snowfall boundary should be no snow")
+    check(module.snowfall_fraction_from_temperature_c(3.0) == 0.0, "warm snowfall threshold should be no snow")
     check([product["name"] for product in module.selected_products(module.PRODUCT_ALL)] == list(module.PRODUCT_SPECS), "all-product selection should include every CanSIPS scalar product")
     height_spec = module.PRODUCT_SPECS[module.PRODUCT_Z500_ANOMALY]
     check((height_spec["anomaly_min"], height_spec["anomaly_max"]) == (-100.0, 100.0), "CanSIPS 500-mb should use the shared ±100 m range")

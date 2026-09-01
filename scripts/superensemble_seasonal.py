@@ -86,6 +86,7 @@ PRODUCT_LABELS = {
     "850mb_temperature_anomaly": "850-mb Temperature Anomaly",
     "2m_temperature_anomaly": "2-m Temperature Anomaly",
     "precipitation_anomaly": "CONUS Precipitation Anomaly",
+    "snowfall_anomaly": "CONUS Snowfall Water-Equivalent Departure",
     "sea_surface_temperature_anomaly": "Sea-Surface Temperature Anomaly",
     "mslp_anomaly": "MSLP Anomaly",
 }
@@ -95,6 +96,7 @@ PRODUCT_TITLES = {
     "850mb_temperature_anomaly": "Super Ensemble 850-mb Temperature Anomaly (°C)",
     "2m_temperature_anomaly": "Super Ensemble 2-m Temperature Anomaly (°C)",
     "precipitation_anomaly": "Super Ensemble CONUS Precipitation Anomaly (in)",
+    "snowfall_anomaly": "Super Ensemble CONUS Snowfall Departure (in)",
     "sea_surface_temperature_anomaly": "Super Ensemble Sea-Surface Temperature Anomaly (°C)",
     "mslp_anomaly": "Super Ensemble Mean Sea-Level Pressure Anomaly (hPa)",
 }
@@ -284,7 +286,12 @@ def canonical_members(product: str, *, include_cma: bool = False) -> list[Member
             system="20 GEM5.2-NEMO + 20 CanESM5 members",
             footer_label="ECCC CanSIPS v3",
             internal_members=cansips.CANSIPS_ENSEMBLE_MEMBERS,
-            notes="One ECCC family vote; C3S ECCC and NMME ECCC copies are excluded",
+            notes=(
+                "One ECCC family vote; CanSIPS snowfall is derived from member 2-m "
+                "temperature and precipitation; C3S ECCC and NMME ECCC copies are excluded"
+                if product == "snowfall_anomaly"
+                else "One ECCC family vote; C3S ECCC and NMME ECCC copies are excluded"
+            ),
         )
     )
     if product in geos.SUPERENSEMBLE_PRODUCTS:
@@ -335,8 +342,24 @@ def product_spec(product: str, *, synthetic: bool = False) -> dict[str, Any]:
     spec["absolute_title"] = PRODUCT_TITLES[product]
     spec["source_label"] = "wall.cloud seasonal super ensemble"
     detail = "Synthetic style preview — not forecast data" if synthetic else "Deduplicated equal-weight forecast families"
-    field_detail = "Height contours in dam" if spec["height_contours"] else f"{spec['units']} anomaly"
-    spec["header_detail"] = f"{{source_label}}  •  {detail}  •  Native-model anomaly baselines  •  {field_detail}"
+    if product == "snowfall_anomaly":
+        spec.update(
+            {
+                "map_domain": "land",
+                "fit_frame_to_domain": True,
+                "domain_frame_padding_fraction": 0.012,
+                "mask_states": list(c3s.CONUS_STATE_NAMES),
+                "border_files": ("us-states.geojson",),
+                "anomaly_endpoint_labels": {"minimum": "≤−0.8", "maximum": "≥+0.8"},
+            }
+        )
+        spec["header_detail"] = (
+            "{source_label}  •  Native/derived snowfall liquid-water equivalent  •  "
+            "CONUS  •  clipped at ±0.8 in"
+        )
+    else:
+        field_detail = "Height contours in dam" if spec["height_contours"] else f"{spec['units']} anomaly"
+        spec["header_detail"] = f"{{source_label}}  •  {detail}  •  Native-model anomaly baselines  •  {field_detail}"
     return spec
 
 
@@ -584,32 +607,58 @@ def load_cansips_member(
     for lead in leads:
         target = c3s.target_month(init, lead)
         try:
-            forecast, forecast_source, last_request = cansips.load_ensemble_mean(
-                init,
-                lead,
-                False,
-                cache_dir,
-                root,
-                wgrib2,
-                args.request_delay,
-                last_request,
-                spec,
-                target,
-                args.force_decode,
-            )
-            climatology, hindcast_sources, last_request = cansips.hindcast_climatology(
-                init,
-                lead,
-                args.climo_start,
-                args.climo_end,
-                cache_dir,
-                root,
-                wgrib2,
-                args.request_delay,
-                last_request,
-                spec,
-                args.force_decode,
-            )
+            if product_name == cansips.PRODUCT_SNOWFALL_ANOMALY:
+                forecast, forecast_source, last_request = cansips.load_snowfall_estimate(
+                    init,
+                    lead,
+                    False,
+                    cache_dir,
+                    root,
+                    args.request_delay,
+                    last_request,
+                    target,
+                    args.force_decode,
+                    True,
+                )
+                climatology, hindcast_sources, last_request = cansips.snowfall_hindcast_climatology(
+                    init,
+                    lead,
+                    args.climo_start,
+                    args.climo_end,
+                    cache_dir,
+                    root,
+                    args.request_delay,
+                    last_request,
+                    args.force_decode,
+                    True,
+                )
+            else:
+                forecast, forecast_source, last_request = cansips.load_ensemble_mean(
+                    init,
+                    lead,
+                    False,
+                    cache_dir,
+                    root,
+                    wgrib2,
+                    args.request_delay,
+                    last_request,
+                    spec,
+                    target,
+                    args.force_decode,
+                )
+                climatology, hindcast_sources, last_request = cansips.hindcast_climatology(
+                    init,
+                    lead,
+                    args.climo_start,
+                    args.climo_end,
+                    cache_dir,
+                    root,
+                    wgrib2,
+                    args.request_delay,
+                    last_request,
+                    spec,
+                    args.force_decode,
+                )
             member_grids[lead][key] = subtract_grids(forecast, climatology)
             if spec["height_contours"] and not args.decode_only:
                 height_grids[lead][key] = forecast
@@ -620,6 +669,7 @@ def load_cansips_member(
                 "baseline": f"CanSIPS v3 hindcast climatology {args.climo_start}-{args.climo_end}",
                 "internal_members": cansips.CANSIPS_ENSEMBLE_MEMBERS,
                 "internal_groups": ["GEM5.2-NEMO", "CanESM5"],
+                "derivation": spec.get("conversion") if product_name == cansips.PRODUCT_SNOWFALL_ANOMALY else None,
             }
         except Exception as exc:
             errors[lead][key] = str(exc)
@@ -778,6 +828,7 @@ def synthetic_members(
         "850mb_temperature_anomaly": 0.045,
         "2m_temperature_anomaly": 0.045,
         "precipitation_anomaly": 0.025,
+        "snowfall_anomaly": 0.025,
         "sea_surface_temperature_anomaly": 0.025,
         "mslp_anomaly": 0.09,
     }[product]
@@ -1203,7 +1254,11 @@ def run(args: argparse.Namespace) -> int:
     needs_borders = not args.decode_only or "sea_surface_temperature_anomaly" in products
     borders = ensure_border_files(args, border_cache, root) if needs_borders else []
     systems = c3s.parse_system_overrides(args.systems)
-    wgrib2 = "" if args.synthetic_preview else cansips.find_wgrib2(args.wgrib2)
+    wgrib2 = (
+        ""
+        if args.synthetic_preview or not any(product != "snowfall_anomaly" for product in products)
+        else cansips.find_wgrib2(args.wgrib2)
+    )
 
     entries: list[dict[str, Any]] = []
     total_failures = 0

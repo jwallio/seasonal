@@ -16,6 +16,7 @@ on:
           - 850mb_temperature_anomaly
           - 2m_temperature_anomaly
           - precipitation_anomaly
+          - snowfall_anomaly
           - sea_surface_temperature_anomaly
           - mslp_anomaly
           - all
@@ -58,6 +59,7 @@ jobs:
       LEAD_MONTHS: ${{ inputs.lead_months || '4,5,6' }}
       SEASONAL_WINDOW: ${{ inputs.seasonal_window || '4,5,6' }}
       MINIMUM_MEMBERS: ${{ inputs.minimum_members || '6' }}
+      CANSIPS_WGRIB2: ""
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -169,6 +171,7 @@ jobs:
           fi
 
       - name: Build wgrib2
+        if: env.SUPER_PRODUCT != 'snowfall_anomaly' || github.event_name == 'schedule'
         shell: bash
         run: |
           set -euo pipefail
