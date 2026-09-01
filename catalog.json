@@ -2,8 +2,8 @@
   "schema_version": 1,
   "registry_version": 1,
   "kind": "seasonal_dashboard_catalog",
-  "generated_utc": "2026-09-01T13:22:50Z",
-  "source_revision": "f7e3cd37dbcb976b9f4060968c480db616160c3c",
+  "generated_utc": "2026-09-01T15:33:39Z",
+  "source_revision": "fda8d324fa24d3183da6d1f6e66432cb4999c9b2",
   "model_order": [
     "superensemble",
     "c3s",
@@ -611,8 +611,8 @@
           "reason": "Provider adapter publishes this comparison product."
         },
         "snowfall_anomaly": {
-          "state": "unsupported",
-          "reason": "The current seasonal adapter does not publish snowfall accumulation; snow-water equivalent or precipitation is not interchangeable with snowfall."
+          "state": "supported",
+          "reason": "The super ensemble blends eligible native and CanSIPS-derived snowfall fields in common LWE units."
         }
       },
       "runs": [
@@ -1944,10 +1944,15 @@
           "retained_fallback": false
         },
         "snowfall_anomaly": {
-          "state": "unsupported",
-          "reason": "The current seasonal adapter does not publish snowfall accumulation; snow-water equivalent or precipitation is not interchangeable with snowfall.",
+          "state": "missing",
+          "reason": "No rendered target is currently published.",
           "available": false,
-          "comparable": false
+          "comparable": false,
+          "latest_init_utc": null,
+          "latest_run_id": null,
+          "latest_run_status": null,
+          "latest_run_init_utc": null,
+          "retained_fallback": false
         },
         "mslp_anomaly": {
           "state": "available",
@@ -2012,7 +2017,7 @@
         },
         "snowfall_anomaly": {
           "state": "supported",
-          "reason": "Provider adapter publishes this comparison product."
+          "reason": "C3S publishes native snowfall liquid-water-equivalent accumulation."
         }
       },
       "runs": [
@@ -16419,7 +16424,7 @@
         },
         "snowfall_anomaly": {
           "state": "unsupported",
-          "reason": "The current seasonal adapter does not publish snowfall accumulation; snow-water equivalent or precipitation is not interchangeable with snowfall."
+          "reason": "The current seasonal adapter does not publish a native or explicitly derived snowfall accumulation field; snow-water equivalent or precipitation is not interchangeable with snowfall."
         }
       },
       "runs": [
@@ -17006,7 +17011,7 @@
         },
         "snowfall_anomaly": {
           "state": "unsupported",
-          "reason": "The current seasonal adapter does not publish snowfall accumulation; snow-water equivalent or precipitation is not interchangeable with snowfall.",
+          "reason": "The current seasonal adapter does not publish a native or explicitly derived snowfall accumulation field; snow-water equivalent or precipitation is not interchangeable with snowfall.",
           "available": false,
           "comparable": false
         },
@@ -17073,7 +17078,7 @@
         },
         "snowfall_anomaly": {
           "state": "unsupported",
-          "reason": "The current seasonal adapter does not publish snowfall accumulation; snow-water equivalent or precipitation is not interchangeable with snowfall."
+          "reason": "The current seasonal adapter does not publish a native or explicitly derived snowfall accumulation field; snow-water equivalent or precipitation is not interchangeable with snowfall."
         }
       },
       "runs": [
@@ -18151,7 +18156,7 @@
         },
         "snowfall_anomaly": {
           "state": "unsupported",
-          "reason": "The current seasonal adapter does not publish snowfall accumulation; snow-water equivalent or precipitation is not interchangeable with snowfall.",
+          "reason": "The current seasonal adapter does not publish a native or explicitly derived snowfall accumulation field; snow-water equivalent or precipitation is not interchangeable with snowfall.",
           "available": false,
           "comparable": false
         },
@@ -18204,7 +18209,7 @@
         },
         "snowfall_anomaly": {
           "state": "unsupported",
-          "reason": "The current seasonal adapter does not publish snowfall accumulation; snow-water equivalent or precipitation is not interchangeable with snowfall."
+          "reason": "The current seasonal adapter does not publish a native or explicitly derived snowfall accumulation field; snow-water equivalent or precipitation is not interchangeable with snowfall."
         }
       },
       "runs": [
@@ -23794,7 +23799,7 @@
         },
         "snowfall_anomaly": {
           "state": "unsupported",
-          "reason": "The current seasonal adapter does not publish snowfall accumulation; snow-water equivalent or precipitation is not interchangeable with snowfall.",
+          "reason": "The current seasonal adapter does not publish a native or explicitly derived snowfall accumulation field; snow-water equivalent or precipitation is not interchangeable with snowfall.",
           "available": false,
           "comparable": false
         },
@@ -23854,7 +23859,7 @@
         },
         "snowfall_anomaly": {
           "state": "supported",
-          "reason": "Provider adapter publishes this comparison product."
+          "reason": "SEAS5 publishes native snowfall liquid-water-equivalent accumulation."
         }
       },
       "runs": [
@@ -25053,8 +25058,8 @@
           "reason": "Provider adapter publishes this comparison product."
         },
         "snowfall_anomaly": {
-          "state": "unsupported",
-          "reason": "The current seasonal adapter does not publish snowfall accumulation; snow-water equivalent or precipitation is not interchangeable with snowfall."
+          "state": "supported",
+          "reason": "CanSIPS derives member-level snowfall liquid-water equivalent from 2-m temperature and precipitation."
         }
       },
       "runs": [
@@ -41333,10 +41338,15 @@
           "retained_fallback": false
         },
         "snowfall_anomaly": {
-          "state": "unsupported",
-          "reason": "The current seasonal adapter does not publish snowfall accumulation; snow-water equivalent or precipitation is not interchangeable with snowfall.",
+          "state": "missing",
+          "reason": "No rendered target is currently published.",
           "available": false,
-          "comparable": false
+          "comparable": false,
+          "latest_init_utc": null,
+          "latest_run_id": null,
+          "latest_run_status": null,
+          "latest_run_init_utc": null,
+          "retained_fallback": false
         },
         "mslp_anomaly": {
           "state": "available",
@@ -41401,7 +41411,7 @@
         },
         "snowfall_anomaly": {
           "state": "unsupported",
-          "reason": "The current seasonal adapter does not publish snowfall accumulation; snow-water equivalent or precipitation is not interchangeable with snowfall."
+          "reason": "The current seasonal adapter does not publish a native or explicitly derived snowfall accumulation field; snow-water equivalent or precipitation is not interchangeable with snowfall."
         }
       },
       "runs": [
@@ -42191,7 +42201,7 @@
         },
         "snowfall_anomaly": {
           "state": "unsupported",
-          "reason": "The current seasonal adapter does not publish snowfall accumulation; snow-water equivalent or precipitation is not interchangeable with snowfall.",
+          "reason": "The current seasonal adapter does not publish a native or explicitly derived snowfall accumulation field; snow-water equivalent or precipitation is not interchangeable with snowfall.",
           "available": false,
           "comparable": false
         },
@@ -42258,7 +42268,7 @@
         },
         "snowfall_anomaly": {
           "state": "unsupported",
-          "reason": "The current seasonal adapter does not publish snowfall accumulation; snow-water equivalent or precipitation is not interchangeable with snowfall."
+          "reason": "The current seasonal adapter does not publish a native or explicitly derived snowfall accumulation field; snow-water equivalent or precipitation is not interchangeable with snowfall."
         }
       },
       "runs": [
@@ -43083,7 +43093,7 @@
         },
         "snowfall_anomaly": {
           "state": "unsupported",
-          "reason": "The current seasonal adapter does not publish snowfall accumulation; snow-water equivalent or precipitation is not interchangeable with snowfall.",
+          "reason": "The current seasonal adapter does not publish a native or explicitly derived snowfall accumulation field; snow-water equivalent or precipitation is not interchangeable with snowfall.",
           "available": false,
           "comparable": false
         },
@@ -43150,7 +43160,7 @@
         },
         "snowfall_anomaly": {
           "state": "unsupported",
-          "reason": "The current seasonal adapter does not publish snowfall accumulation; snow-water equivalent or precipitation is not interchangeable with snowfall."
+          "reason": "The current seasonal adapter does not publish a native or explicitly derived snowfall accumulation field; snow-water equivalent or precipitation is not interchangeable with snowfall."
         }
       },
       "runs": [
@@ -44480,7 +44490,7 @@
         },
         "snowfall_anomaly": {
           "state": "unsupported",
-          "reason": "The current seasonal adapter does not publish snowfall accumulation; snow-water equivalent or precipitation is not interchangeable with snowfall.",
+          "reason": "The current seasonal adapter does not publish a native or explicitly derived snowfall accumulation field; snow-water equivalent or precipitation is not interchangeable with snowfall.",
           "available": false,
           "comparable": false
         },
@@ -44515,7 +44525,7 @@
   },
   "health": {
     "status": "attention",
-    "generated_utc": "2026-09-01T13:22:50Z",
+    "generated_utc": "2026-09-01T15:33:39Z",
     "freshness_policy_days": {
       "default": {
         "fresh_days": 35,
@@ -44528,16 +44538,16 @@
     },
     "summary": {
       "surfaces": 70,
-      "attention_surfaces": 2,
+      "attention_surfaces": 4,
       "by_state": {
         "healthy": 52,
         "aging": 0,
         "stale": 0,
         "partial": 1,
         "failed": 0,
-        "missing": 0,
+        "missing": 2,
         "noncomparable": 1,
-        "not_applicable": 16
+        "not_applicable": 14
       }
     },
     "surfaces": [
@@ -44618,18 +44628,18 @@
         "model_label": "Super Ensemble",
         "product": "snowfall_anomaly",
         "product_label": "CONUS Snowfall Water-Equivalent Departure",
-        "surface_state": "unsupported",
+        "surface_state": "missing",
         "available": false,
         "comparable": false,
-        "health_state": "not_applicable",
-        "freshness": "not_applicable",
+        "health_state": "missing",
+        "freshness": "unknown",
         "age_days": null,
         "latest_status": null,
         "latest_init_utc": null,
         "selected_init_utc": null,
         "selected_run_id": null,
         "retained_fallback": false,
-        "reason": "The current seasonal adapter does not publish snowfall accumulation; snow-water equivalent or precipitation is not interchangeable with snowfall."
+        "reason": "No rendered target is currently published."
       },
       {
         "model": "superensemble",
@@ -44881,7 +44891,7 @@
         "selected_init_utc": null,
         "selected_run_id": null,
         "retained_fallback": false,
-        "reason": "The current seasonal adapter does not publish snowfall accumulation; snow-water equivalent or precipitation is not interchangeable with snowfall."
+        "reason": "The current seasonal adapter does not publish a native or explicitly derived snowfall accumulation field; snow-water equivalent or precipitation is not interchangeable with snowfall."
       },
       {
         "model": "apcc",
@@ -45007,7 +45017,7 @@
         "selected_init_utc": null,
         "selected_run_id": null,
         "retained_fallback": false,
-        "reason": "The current seasonal adapter does not publish snowfall accumulation; snow-water equivalent or precipitation is not interchangeable with snowfall."
+        "reason": "The current seasonal adapter does not publish a native or explicitly derived snowfall accumulation field; snow-water equivalent or precipitation is not interchangeable with snowfall."
       },
       {
         "model": "nmme",
@@ -45055,7 +45065,7 @@
         "comparable": true,
         "health_state": "healthy",
         "freshness": "fresh",
-        "age_days": 1.3,
+        "age_days": 1.4,
         "latest_status": "rendered",
         "latest_init_utc": "2026-08-31T06:00:00Z",
         "selected_init_utc": "2026-08-31T06:00:00Z",
@@ -45091,7 +45101,7 @@
         "comparable": true,
         "health_state": "healthy",
         "freshness": "fresh",
-        "age_days": 1.3,
+        "age_days": 1.4,
         "latest_status": "rendered",
         "latest_init_utc": "2026-08-31T06:00:00Z",
         "selected_init_utc": "2026-08-31T06:00:00Z",
@@ -45109,7 +45119,7 @@
         "comparable": true,
         "health_state": "healthy",
         "freshness": "fresh",
-        "age_days": 1.3,
+        "age_days": 1.4,
         "latest_status": "rendered",
         "latest_init_utc": "2026-08-31T06:00:00Z",
         "selected_init_utc": "2026-08-31T06:00:00Z",
@@ -45133,7 +45143,7 @@
         "selected_init_utc": null,
         "selected_run_id": null,
         "retained_fallback": false,
-        "reason": "The current seasonal adapter does not publish snowfall accumulation; snow-water equivalent or precipitation is not interchangeable with snowfall."
+        "reason": "The current seasonal adapter does not publish a native or explicitly derived snowfall accumulation field; snow-water equivalent or precipitation is not interchangeable with snowfall."
       },
       {
         "model": "cfsv2",
@@ -45145,7 +45155,7 @@
         "comparable": true,
         "health_state": "healthy",
         "freshness": "fresh",
-        "age_days": 1.3,
+        "age_days": 1.4,
         "latest_status": "rendered",
         "latest_init_utc": "2026-08-31T06:00:00Z",
         "selected_init_utc": "2026-08-31T06:00:00Z",
@@ -45374,18 +45384,18 @@
         "model_label": "CanSIPS v3",
         "product": "snowfall_anomaly",
         "product_label": "CONUS Snowfall Water-Equivalent Departure",
-        "surface_state": "unsupported",
+        "surface_state": "missing",
         "available": false,
         "comparable": false,
-        "health_state": "not_applicable",
-        "freshness": "not_applicable",
+        "health_state": "missing",
+        "freshness": "unknown",
         "age_days": null,
         "latest_status": null,
         "latest_init_utc": null,
         "selected_init_utc": null,
         "selected_run_id": null,
         "retained_fallback": false,
-        "reason": "The current seasonal adapter does not publish snowfall accumulation; snow-water equivalent or precipitation is not interchangeable with snowfall."
+        "reason": "No rendered target is currently published."
       },
       {
         "model": "cansips",
@@ -45511,7 +45521,7 @@
         "selected_init_utc": null,
         "selected_run_id": null,
         "retained_fallback": false,
-        "reason": "The current seasonal adapter does not publish snowfall accumulation; snow-water equivalent or precipitation is not interchangeable with snowfall."
+        "reason": "The current seasonal adapter does not publish a native or explicitly derived snowfall accumulation field; snow-water equivalent or precipitation is not interchangeable with snowfall."
       },
       {
         "model": "cma_cpsv3",
@@ -45637,7 +45647,7 @@
         "selected_init_utc": null,
         "selected_run_id": null,
         "retained_fallback": false,
-        "reason": "The current seasonal adapter does not publish snowfall accumulation; snow-water equivalent or precipitation is not interchangeable with snowfall."
+        "reason": "The current seasonal adapter does not publish a native or explicitly derived snowfall accumulation field; snow-water equivalent or precipitation is not interchangeable with snowfall."
       },
       {
         "model": "geos_s2s3",
@@ -45763,7 +45773,7 @@
         "selected_init_utc": null,
         "selected_run_id": null,
         "retained_fallback": false,
-        "reason": "The current seasonal adapter does not publish snowfall accumulation; snow-water equivalent or precipitation is not interchangeable with snowfall."
+        "reason": "The current seasonal adapter does not publish a native or explicitly derived snowfall accumulation field; snow-water equivalent or precipitation is not interchangeable with snowfall."
       },
       {
         "model": "jma",
@@ -45822,6 +45832,24 @@
         "reason": "Rendered with partial ensemble coverage."
       },
       {
+        "model": "superensemble",
+        "model_label": "Super Ensemble",
+        "product": "snowfall_anomaly",
+        "product_label": "CONUS Snowfall Water-Equivalent Departure",
+        "surface_state": "missing",
+        "available": false,
+        "comparable": false,
+        "health_state": "missing",
+        "freshness": "unknown",
+        "age_days": null,
+        "latest_status": null,
+        "latest_init_utc": null,
+        "selected_init_utc": null,
+        "selected_run_id": null,
+        "retained_fallback": false,
+        "reason": "No rendered target is currently published."
+      },
+      {
         "model": "apcc",
         "model_label": "APCC MME",
         "product": "precipitation_anomaly",
@@ -45838,16 +45866,34 @@
         "selected_run_id": "apcc-202609-precipitation_anomaly",
         "retained_fallback": false,
         "reason": "Rendered target uses noncanonical units or field metadata and is excluded from comparison."
+      },
+      {
+        "model": "cansips",
+        "model_label": "CanSIPS v3",
+        "product": "snowfall_anomaly",
+        "product_label": "CONUS Snowfall Water-Equivalent Departure",
+        "surface_state": "missing",
+        "available": false,
+        "comparable": false,
+        "health_state": "missing",
+        "freshness": "unknown",
+        "age_days": null,
+        "latest_status": null,
+        "latest_init_utc": null,
+        "selected_init_utc": null,
+        "selected_run_id": null,
+        "retained_fallback": false,
+        "reason": "No rendered target is currently published."
       }
     ]
   },
   "summary": {
     "models_expected": 10,
     "models_online": 10,
-    "supported_surfaces": 54,
+    "supported_surfaces": 56,
     "available_surfaces": 54,
     "partial_surfaces": 1,
-    "intentional_unavailable_surfaces": 16
+    "intentional_unavailable_surfaces": 14
   },
   "validation": {
     "status": "passed",
