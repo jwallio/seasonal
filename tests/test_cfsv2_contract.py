@@ -402,11 +402,8 @@ def main() -> int:
     for term in (
         "concurrency:",
         "cancel-in-progress: true",
-        "Restore wgrib2 tool cache",
-        "actions/cache/restore@v4",
-        "actions/cache/save@v4",
-        "steps.wgrib2-cache.outputs.cache-hit",
-        "make -C \"$makefile_dir\" -j\"$(nproc)\"",
+        "Set up wgrib2",
+        "./.github/actions/setup-wgrib2",
         "readiness_wait_minutes=30",
         "readiness_retry_seconds=180",
     ):

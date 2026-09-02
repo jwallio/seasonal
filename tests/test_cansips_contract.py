@@ -72,7 +72,7 @@ def main() -> int:
     for term in (
         "CanSIPS v3 Seasonal Graphics", "cansips-pages-${{ github.run_id }}", 'default: "all"',
         "Restore CanSIPS decoded-grid cache", "Restore published CanSIPS run history",
-        "Restore wgrib2 tool cache", "actions/cache/restore@v4", "actions/cache/save@v4",
+        "Set up wgrib2", "./.github/actions/setup-wgrib2",
         "--climo-start", "--climo-end", "--retain-runs 4", "--common-reference-dir", "CANSIPS_WGRIB2",
         "snowfall_anomaly", "xarray", "cfgrib", "eccodes", "-v2",
     ):

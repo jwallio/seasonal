@@ -143,7 +143,7 @@ def main() -> int:
         "SCHEDULED_SUPER_PRODUCT: all", "max-parallel: 4", "matrix:",
         "SUPER_PRODUCT: ${{ matrix.product }}", "superensemble-product-",
         "actions/download-artifact@v4", "merge_seasonal_payloads.py", "write_seasonal_fragment.py",
-        "Restore wgrib2 tool cache", "actions/cache/save@v4",
+        "Set up wgrib2 once for the product matrix", "Restore wgrib2 for this product",
     ):
         check(term in workflow, f"workflow is missing term: {term}")
     for term in ("Deduplicated Seasonal Super Ensemble", "superensemble_manifest.json", "incoming/superensemble"):

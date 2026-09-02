@@ -1,0 +1,50 @@
+name: Seasonal Workflow Contracts
+
+on:
+  pull_request:
+    paths:
+      - ".github/**"
+      - "scripts/**"
+      - "tests/**"
+      - "requirements.txt"
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/**"
+      - "scripts/**"
+      - "tests/**"
+      - "requirements.txt"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: seasonal-contracts-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  contracts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Compile Python sources
+        run: python -m compileall -q scripts tests
+
+      - name: Run repository contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          for test in tests/test_*.py; do
+            echo "Running $test"
+            python "$test"
+          done

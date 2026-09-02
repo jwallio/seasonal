@@ -48,6 +48,11 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  # A retry for the same CPC issue month replaces the older attempt.
+  group: seasonal-nmme-${{ inputs.init || 'latest' }}
+  cancel-in-progress: true
+
 jobs:
   render:
     runs-on: ubuntu-latest

@@ -50,6 +50,12 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  # Keep one attempt per APCC initialization; a retry should replace a stale
+  # run instead of downloading the same CLIK package twice.
+  group: seasonal-apcc-${{ inputs.init || 'latest' }}
+  cancel-in-progress: true
+
 jobs:
   render:
     runs-on: ubuntu-latest
