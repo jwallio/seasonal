@@ -75,23 +75,21 @@ uses the total across the selected months and corresponding total baseline;
 snow-water equivalent uses the mean state across the selected months and
 corresponding mean baseline.
 
-The adapter also supports the CPC-style lagged initial-condition window with
-`--rolling-days 10`. CFSv2 is run four times per day, so this produces 40
-six-hourly initial-condition members using `monthly_grib_01` from each cycle.
-The current anchor cycle is included and the oldest cycle is 39 six-hourly
-steps earlier. This follows CPC's description of 40 members from a 10-day
-initial-condition period, while remaining explicit that this is a model-based
-product and not CPC's official outlook.
+The scheduled site workflow uses a six-day lagged initial-condition window.
+CFSv2 is run four times per day, so this produces 24 six-hourly members using
+`monthly_grib_01` from each cycle. Six days leaves practical margin inside the
+seven-day NOMADS real-time archive when the latest usable anchor is delayed.
+The workflow still records and retains decoded grids, and explicitly saves the
+rolling cache after failed attempts so a transient source problem does not
+discard useful state. It probes the required monthly GRIB2 files for every
+selected product and lead, chooses the newest ready anchor, runs every
+scheduled product, and fails closed without publishing an incomplete blend.
 
-The NOMADS real-time archive rotates after seven days. Each rolling run writes
-the decoded product grids to `--rolling-state-dir` so the scheduled job can
-carry the older members forward. A full 40-member product therefore requires
-the state cache to be retained between runs. The scheduled workflow probes the
-required monthly GRIB2 files for every selected product and lead, chooses the
-newest ready anchor, and fails closed if the retained rolling window is still
-missing a cycle; it never publishes a partial scheduled blend. The
-`--allow-partial-rolling` option remains available only for explicitly marked
-incomplete smoke products.
+The adapter also supports the CPC-style `--rolling-days 10` window, which
+produces 40 cycles, for callers that maintain a durable rolling-state archive
+outside the seven-day NOMADS rotation. It is not the automated site default.
+The `--allow-partial-rolling` option remains available only for explicitly
+marked incomplete smoke products.
 
 The original single-cycle mode remains available when `--rolling-days` is zero
 and records its scope as `single_initial_condition_cycle`.
@@ -238,7 +236,7 @@ as the height maps:
   -Init "2026081000" `
   -LeadMonths "4,5,6" `
   -SeasonalWindow "4,5,6" `
-  -RollingDays 10 `
+  -RollingDays 6 `
   -RollingMember 1 `
   -UseNceiCalibration
 ```
@@ -251,7 +249,7 @@ Generate 2-m temperature anomalies:
   -Init "2026081000" `
   -LeadMonths "4,5,6" `
   -SeasonalWindow "4,5,6" `
-  -RollingDays 10 `
+  -RollingDays 6 `
   -RollingMember 1 `
   -UseNceiCalibration
 ```
@@ -264,14 +262,14 @@ Generate mean-sea-level pressure anomalies:
   -Init "2026081000" `
   -LeadMonths "4,5,6" `
   -SeasonalWindow "4,5,6" `
-  -RollingDays 10 `
+  -RollingDays 6 `
   -RollingMember 1 `
   -UseNceiCalibration
 ```
 
-Build the CPC-style rolling 40-member blend. Persist `RollingStateDir` between
-daily runs using a GitHub Actions cache, private artifact store, or equivalent
-local directory:
+Build the optional CPC-style rolling 40-member blend. This requires
+`RollingStateDir` to be persisted between runs using a private artifact store
+or equivalent durable local directory because it exceeds the live archive:
 
 ```powershell
 .\scripts\render_cfsv2.ps1 `
@@ -292,7 +290,7 @@ workflow:
   -Init "2026081000" `
   -LeadMonths "4,5,6" `
   -SeasonalWindow "4,5,6" `
-  -RollingDays 10 `
+  -RollingDays 6 `
   -RollingMember 1 `
   -UseNceiCalibration
 ```
