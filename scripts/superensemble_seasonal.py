@@ -179,7 +179,7 @@ def canonical_exclusions(product: str) -> list[dict[str, Any]]:
             [
                 {
                     "package": "CFSv2 standalone",
-                    "reason": "standalone rolling adapter does not currently expose this parameter",
+                    "reason": "standalone CFSv2 exposes this parameter separately but is not currently included in this super-ensemble product",
                     "represented_by": "c3s_ncep_system2",
                 },
                 {

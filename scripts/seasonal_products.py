@@ -473,7 +473,8 @@ MODELS: dict[str, dict[str, Any]] = {
         "source": "NOAA CFSv2 NOMADS", "preferred_component": "",
         "support": {
             key: (_supported() if key in {
-                "500mb_height_anomaly", "2m_temperature_anomaly", "precipitation_anomaly", "mslp_anomaly",
+                "500mb_height_anomaly", "850mb_temperature_anomaly", "2m_temperature_anomaly",
+                "precipitation_anomaly", "mslp_anomaly",
             } else {
                 "state": "unsupported",
                 "reason": "The standalone rolling CFSv2 adapter does not expose this field.",
@@ -515,11 +516,12 @@ MODELS: dict[str, dict[str, Any]] = {
 }
 
 
-SNOWFALL_SUPPORTED_MODELS = frozenset({"c3s", "seas5", "cansips", "superensemble"})
+SNOWFALL_SUPPORTED_MODELS = frozenset({"c3s", "seas5", "cansips", "cfsv2", "superensemble"})
 SNOWFALL_SUPPORT_REASONS = {
     "c3s": "C3S publishes native snowfall liquid-water-equivalent accumulation.",
     "seas5": "SEAS5 publishes native snowfall liquid-water-equivalent accumulation.",
     "cansips": "CanSIPS derives member-level snowfall liquid-water equivalent from 2-m/850-hPa temperature and total precipitation using the season-appropriate Dai (2008) land phase curve (DJF for winter).",
+    "cfsv2": "CFSv2 derives member/cycle-level snowfall liquid-water equivalent from 2-m/850-hPa temperature and monthly precipitation using the season-appropriate Dai (2008) land phase curve (DJF for winter).",
     "superensemble": "The super ensemble blends eligible native and CanSIPS-derived snowfall fields in common LWE units.",
 }
 SNOWFALL_UNSUPPORTED_REASON = (

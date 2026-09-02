@@ -312,10 +312,12 @@ DEFAULT_BORDER_URLS = (
 PRODUCT_HEIGHT_ANOMALY = "500mb_height_anomaly"
 PRODUCT_HEIGHT_ANOMALY_NH = "500mb_height_anomaly_nh"
 PRODUCT_HEIGHT_ABSOLUTE = "500mb_height_absolute"
+PRODUCT_850_TEMPERATURE_ANOMALY = "850mb_temperature_anomaly"
 PRODUCT_2M_TEMPERATURE_ANOMALY = "2m_temperature_anomaly"
 PRODUCT_MSLP_ANOMALY = "mslp_anomaly"
 PRODUCT_PRECIPITATION_ANOMALY = "precipitation_anomaly"
 PRODUCT_SWE_ANOMALY = "snow_water_equivalent_anomaly"
+PRODUCT_SNOWFALL_ANOMALY = "snowfall_anomaly"
 
 # The NOMADS filenames retain the ``pgbf.`` and ``flxf.`` product prefixes.
 # The FLXF monthly files are on the native CFSv2 Gaussian grid. Keep the
@@ -372,6 +374,36 @@ PRODUCT_SPECS = {
         "seasonal_aggregation": "seasonal mean",
         "seasonal_units": "m",
         "monthly_aggregation": "monthly forecast average",
+    },
+    PRODUCT_850_TEMPERATURE_ANOMALY: {
+        "name": PRODUCT_850_TEMPERATURE_ANOMALY,
+        "source_kind": "pgbf",
+        "match": ":TMP:850 mb:",
+        "raw_field": "TMP:850 mb",
+        "raw_units": "K",
+        "field": "t850_anomaly",
+        "units": "°C",
+        "grid_shape": (GRID_LON_COUNT, GRID_LAT_COUNT),
+        "cache_tag": "tmp850",
+        "state_tag": "tmp850",
+        "id_token": "t850a",
+        "file_token": "t850a",
+        "title": "CFSv2 850-mb Temperature Anomaly (°C)",
+        "absolute_title": "CFSv2 850-mb Temperature (°C)",
+        "region": CONUS_REGION,
+        "height_contours": False,
+        "baseline_root": NCEI_CALIBRATION_ROOT,
+        "baseline_label": NCEI_CALIBRATION_LABEL,
+        "seasonal_reducer": "mean",
+        "seasonal_aggregation": "seasonal mean",
+        "seasonal_units": "°C",
+        "monthly_aggregation": "monthly mean 850-mb temperature",
+        "anomaly_min": TEMPERATURE_ANOMALY_MIN_C,
+        "anomaly_max": TEMPERATURE_ANOMALY_MAX_C,
+        "anomaly_ticks": CFSV2_TEMPERATURE_ANOMALY_TICKS,
+        "anomaly_palette": TEMPERATURE_ANOMALY_PALETTE,
+        "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in °C",
+        "header_detail": "{source_label}  •  {baseline_label}  •  850-mb temperature anomaly (°C)",
     },
     PRODUCT_2M_TEMPERATURE_ANOMALY: {
         "name": PRODUCT_2M_TEMPERATURE_ANOMALY,
@@ -489,6 +521,45 @@ PRODUCT_SPECS = {
         "conversion": "WEASD divided by 25.4 to convert kg m-2/mm of liquid water equivalent to inches",
         "map_domain": "land",
     },
+    PRODUCT_SNOWFALL_ANOMALY: {
+        "name": PRODUCT_SNOWFALL_ANOMALY,
+        "source_kind": "derived",
+        "dependencies": (
+            PRODUCT_2M_TEMPERATURE_ANOMALY,
+            PRODUCT_850_TEMPERATURE_ANOMALY,
+            PRODUCT_PRECIPITATION_ANOMALY,
+        ),
+        "raw_field": "Derived from TMP:2 m above ground, TMP:850 mb, and PRATE:surface",
+        "raw_units": "K; K; kg m-2 s-1",
+        "field": "snowfall_lwe",
+        "units": "in",
+        "grid_shape": (FLUX_GRID_LON_COUNT, FLUX_GRID_LAT_COUNT),
+        "id_token": "snowfall-anomaly",
+        "file_token": "snowfalla",
+        "title": "CFSv2 Snowfall Departure (in)",
+        "absolute_title": "CFSv2 Derived Snowfall Liquid-Water Equivalent (in)",
+        "region": CONUS_PRECIP_REGION,
+        "height_contours": False,
+        "baseline_label": "NCEI CFSR/CFSv2 1982-2010 derived snowfall climatology",
+        "seasonal_reducer": "sum",
+        "seasonal_aggregation": "seasonal snowfall departure total",
+        "seasonal_units": "in",
+        "monthly_aggregation": "monthly derived snowfall departure",
+        "anomaly_min": SNOWFALL_ANOMALY_MIN_IN,
+        "anomaly_max": SNOWFALL_ANOMALY_MAX_IN,
+        "anomaly_ticks": SNOWFALL_ANOMALY_TICKS,
+        "anomaly_palette": SNOWFALL_ANOMALY_PALETTE,
+        "monthly_anomaly_min": SNOWFALL_MONTHLY_ANOMALY_MIN_IN,
+        "monthly_anomaly_max": SNOWFALL_MONTHLY_ANOMALY_MAX_IN,
+        "monthly_anomaly_ticks": SNOWFALL_MONTHLY_ANOMALY_TICKS,
+        "monthly_anomaly_palette": SNOWFALL_MONTHLY_ANOMALY_PALETTE,
+        "conversion": "Dai 2008 snow fraction applied member-by-member to monthly precipitation LWE using max(2-m, 850-mb) temperature",
+        "map_domain": "land",
+        "fit_frame_to_domain": True,
+        "domain_frame_padding_fraction": 0.0,
+        "mask_states": list(CONUS_STATE_NAMES),
+        "border_files": ("us-states.geojson",),
+    },
 }
 
 
@@ -525,6 +596,152 @@ class Grid:
     def assert_compatible(self, other: "Grid", label: str) -> None:
         if self.lons != other.lons or self.lats != other.lats:
             raise CFSv2Error(f"{label} grid does not match the forecast grid")
+
+
+# CFSv2 does not provide a directly comparable monthly snowfall field. Keep
+# the derivation explicit and aligned with the CanSIPS implementation: use
+# Dai (2008) land snow-frequency fits and the warmer of the 2-m and 850-hPa
+# monthly mean temperatures as a conservative phase gate.
+SNOWFALL_DAI_LAND_PARAMS_BY_SEASON = {
+    "ANN": (-48.2292, 0.7205, 1.1662, 1.0223),
+    "DJF": (-48.2372, 0.7449, 1.0919, 1.0209),
+    "MAM": (-48.2493, 0.6634, 1.3388, 1.0270),
+    "JJA": (-46.4000, 0.7013, 0.8362, 1.0217),
+    "SON": (-48.3251, 0.7798, 1.1502, 1.0180),
+}
+
+
+def snowfall_fraction_from_temperature_c(temperature_c: float, season: str = "DJF") -> float:
+    """Return the Dai (2008) land snow fraction for a mean temperature."""
+
+    if not math.isfinite(temperature_c):
+        return math.nan
+    try:
+        coefficient, slope, midpoint, offset = SNOWFALL_DAI_LAND_PARAMS_BY_SEASON[season]
+    except KeyError as exc:
+        raise CFSv2Error(
+            f"unsupported snowfall phase season {season!r}; choose from "
+            f"{', '.join(SNOWFALL_DAI_LAND_PARAMS_BY_SEASON)}"
+        ) from exc
+    fraction = coefficient * (math.tanh(slope * (temperature_c - midpoint)) - offset) / 100.0
+    return max(0.0, min(1.0, fraction))
+
+
+def snowfall_phase_season(target: str) -> str:
+    """Return the Dai seasonal fit name for a YYYYMM target month."""
+
+    month = dt.datetime.strptime(target, "%Y%m").month
+    if month in (12, 1, 2):
+        return "DJF"
+    if month in (3, 4, 5):
+        return "MAM"
+    if month in (6, 7, 8):
+        return "JJA"
+    return "SON"
+
+
+def derive_snowfall_lwe_grid(
+    temperature_2m_grids: dict[str, Grid],
+    temperature_850_grids: dict[str, Grid],
+    precipitation_grids: dict[str, Grid],
+    target: str,
+) -> tuple[Grid, dict[str, object]]:
+    """Derive a member/cycle-mean monthly snowfall LWE grid in inches.
+
+    The inputs are already decoded and converted to the output grid. This
+    function deliberately requires the same successful member/cycle keys for
+    all three fields so a missing dependency cannot silently turn into a SWE
+    or precipitation substitute.
+    """
+
+    try:
+        import numpy as np
+    except ImportError as exc:  # pragma: no cover - requirements install numpy
+        raise CFSv2Error("CFSv2 snowfall derivation requires numpy") from exc
+
+    key_sets = {
+        "2-m temperature": set(temperature_2m_grids),
+        "850-mb temperature": set(temperature_850_grids),
+        "precipitation": set(precipitation_grids),
+    }
+    keys = key_sets["2-m temperature"]
+    if not keys:
+        raise CFSv2Error("CFSv2 snowfall derivation received no complete members or cycles")
+    if any(candidate != keys for candidate in key_sets.values()):
+        details = "; ".join(
+            f"{label}: {len(candidate)}" for label, candidate in key_sets.items()
+        )
+        raise CFSv2Error(
+            "CFSv2 snowfall dependencies do not contain the same successful members/cycles "
+            f"({details})"
+        )
+
+    first_key = sorted(keys)[0]
+    reference = temperature_2m_grids[first_key]
+    reference.assert_compatible(precipitation_grids[first_key], "snowfall precipitation")
+    reference.assert_compatible(temperature_850_grids[first_key], "snowfall 850-mb temperature")
+    shape = (len(reference.lats), len(reference.lons))
+    member_lwe = []
+    for key in sorted(keys):
+        temperature_2m = temperature_2m_grids[key]
+        temperature_850 = temperature_850_grids[key]
+        precipitation = precipitation_grids[key]
+        reference.assert_compatible(temperature_2m, f"snowfall 2-m temperature {key}")
+        reference.assert_compatible(temperature_850, f"snowfall 850-mb temperature {key}")
+        reference.assert_compatible(precipitation, f"snowfall precipitation {key}")
+        t2m = np.asarray(temperature_2m.values, dtype=float)
+        t850 = np.asarray(temperature_850.values, dtype=float)
+        prate_inches = np.asarray(precipitation.values, dtype=float)
+        if t2m.shape != shape or t850.shape != shape or prate_inches.shape != shape:
+            raise CFSv2Error(f"CFSv2 snowfall dependency {key} has an inconsistent grid shape")
+        valid = np.isfinite(t2m) & np.isfinite(t850) & np.isfinite(prate_inches)
+        phase_temperature_c = np.maximum(t2m - 273.15, t850 - 273.15)
+        coefficient, slope, midpoint, offset = SNOWFALL_DAI_LAND_PARAMS_BY_SEASON[
+            snowfall_phase_season(target)
+        ]
+        snow_fraction = np.clip(
+            coefficient * (np.tanh(slope * (phase_temperature_c - midpoint)) - offset) / 100.0,
+            0.0,
+            1.0,
+        )
+        member_lwe.append(
+            np.where(valid, np.maximum(prate_inches, 0.0) * snow_fraction, np.nan)
+        )
+
+    member_values = np.asarray(member_lwe, dtype=float)
+    valid_counts = np.sum(np.isfinite(member_values), axis=0)
+    totals = np.nansum(member_values, axis=0)
+    means = np.divide(
+        totals,
+        valid_counts,
+        out=np.full(valid_counts.shape, np.nan, dtype=float),
+        where=valid_counts > 0,
+    )
+    if not np.isfinite(means).any():
+        raise CFSv2Error("CFSv2 snowfall derivation produced no finite values")
+    phase_season = snowfall_phase_season(target)
+    coefficient, slope, midpoint, offset = SNOWFALL_DAI_LAND_PARAMS_BY_SEASON[phase_season]
+    diagnostics = {
+        "member_or_cycle_count": len(keys),
+        "valid_member_count_min": int(valid_counts.min()),
+        "valid_member_count_max": int(valid_counts.max()),
+        "valid_member_fraction_min": round(float(valid_counts.min() / len(keys)), 4),
+        "snow_fraction": {
+            "method": "Dai_2008_land_seasonal_hyperbolic_tangent",
+            "season": phase_season,
+            "parameters": {
+                "a_percent": coefficient,
+                "b_per_c": slope,
+                "c_c": midpoint,
+                "d": offset,
+            },
+            "phase_temperature": "max(2-m, 850-hPa)",
+        },
+        "precipitation_input": "monthly total liquid-water equivalent in inches",
+        "temperature_input": "absolute monthly mean Kelvin fields",
+        "regridding": "850-mb pressure grid nearest-neighbor regridded to the FLXF Gaussian grid",
+    }
+    return Grid(reference.lons[:], reference.lats[:], means.tolist()), diagnostics
 
 
 def _bicubic_sample_grid(
@@ -670,6 +887,14 @@ def get_product_spec(product: str) -> dict:
     except KeyError as exc:
         available = ", ".join(sorted(PRODUCT_SPECS))
         raise CFSv2Error(f"unsupported CFSv2 product {product!r}; choose from {available}") from exc
+
+
+def product_dependency_names(product: str) -> tuple[str, ...]:
+    """Return the raw CFSv2 products required to build ``product``."""
+
+    spec = get_product_spec(product)
+    dependencies = spec.get("dependencies") or (product,)
+    return tuple(dict.fromkeys(str(dependency) for dependency in dependencies))
 
 
 def selected_product(args: argparse.Namespace) -> tuple[str, dict, bool]:
@@ -877,7 +1102,12 @@ def discover_latest_ready_init(
     normalized_products = list(dict.fromkeys(product_names))
     if not normalized_products:
         raise CFSv2Error("at least one CFSv2 product is required for readiness checks")
-    product_specs = [get_product_spec(product_name) for product_name in normalized_products]
+    dependency_names = []
+    for product_name in normalized_products:
+        for dependency_name in product_dependency_names(product_name):
+            if dependency_name not in dependency_names:
+                dependency_names.append(dependency_name)
+    product_specs = [get_product_spec(product_name) for product_name in dependency_names]
 
     if isinstance(leads, str):
         leads = [value.strip() for value in leads.split(",") if value.strip()]
@@ -1444,7 +1674,8 @@ def decode_target_ensemble(
     repo_root: Path,
     last_request: float,
     product_spec: dict,
-) -> tuple[Grid, list[dict], int, int, str, float]:
+    return_member_grids: bool = False,
+) -> tuple:
     """Decode either the original single-cycle ensemble or a rolling blend."""
 
     source_kind = product_spec["source_kind"]
@@ -1465,6 +1696,7 @@ def decode_target_ensemble(
         return metadata
 
     grids: list[Grid] = []
+    member_keys: list[str] = []
     source_files: list[dict] = []
     if rolling_inits:
         expected_count = len(rolling_inits)
@@ -1507,7 +1739,7 @@ def decode_target_ensemble(
                     )
                 )
                 write_grid_state(grid, state_path)
-                if rolling_inits:
+                if rolling_inits and not getattr(args, "keep_source_cache", False):
                     # The compressed decoded state is the durable rolling input;
                     # do not grow the CI cache with dozens of 25-MB GRIB2 files.
                     decoded_csv = cache_path.with_name(
@@ -1549,6 +1781,7 @@ def decode_target_ensemble(
             source_file["status"] = "available"
             source_files.append(source_file)
             grids.append(grid)
+            member_keys.append(cycle)
         if not grids:
             raise CFSv2Error("rolling CFSv2 window produced no usable member grids")
         if len(grids) < expected_count and not args.allow_partial_rolling:
@@ -1557,7 +1790,10 @@ def decode_target_ensemble(
                 "use --allow-partial-rolling only for an explicitly incomplete product"
             )
         label = f"{len(grids)}/{expected_count}-cycle rolling mean"
-        return mean_grids(grids), source_files, len(grids), expected_count, label, last_request
+        result = mean_grids(grids), source_files, len(grids), expected_count, label, last_request
+        if return_member_grids:
+            return (*result, dict(zip(member_keys, grids, strict=True)))
+        return result
 
     for member in members:
         url = cfs_file_url(init, member, target, source_kind)
@@ -1579,6 +1815,7 @@ def decode_target_ensemble(
             )
         )
         grids.append(grid)
+        member_keys.append(f"{init}:{member}")
         source_file = {
             "initialization": init,
             "initialization_utc": iso_utc(dt.datetime.strptime(init, "%Y%m%d%H").replace(tzinfo=dt.timezone.utc)),
@@ -1591,7 +1828,95 @@ def decode_target_ensemble(
         }
         source_file.update(source_metadata())
         source_files.append(source_file)
-    return mean_grids(grids), source_files, len(grids), len(grids), f"{len(grids)}-member mean", last_request
+    result = mean_grids(grids), source_files, len(grids), len(grids), f"{len(grids)}-member mean", last_request
+    if return_member_grids:
+        return (*result, dict(zip(member_keys, grids, strict=True)))
+    return result
+
+
+def decode_snowfall_target_ensemble(
+    args: argparse.Namespace,
+    init: str,
+    target: str,
+    members: Sequence[int],
+    rolling_inits: Sequence[str],
+    cache_dir: Path,
+    state_dir: Path,
+    wgrib2: str,
+    repo_root: Path,
+    last_request: float,
+) -> tuple[Grid, list[dict], int, int, str, float, dict[str, object]]:
+    """Decode the three CFSv2 fields needed for derived snowfall."""
+
+    dependencies = PRODUCT_SPECS[PRODUCT_SNOWFALL_ANOMALY]["dependencies"]
+    member_grids: dict[str, dict[str, Grid]] = {}
+    source_files: list[dict] = []
+    counts: list[tuple[int, int]] = []
+    labels: list[str] = []
+    for dependency in dependencies:
+        product_spec = get_product_spec(dependency)
+        result = decode_target_ensemble(
+            args,
+            init,
+            target,
+            members,
+            rolling_inits,
+            cache_dir,
+            state_dir,
+            wgrib2,
+            repo_root,
+            last_request,
+            product_spec,
+            return_member_grids=True,
+        )
+        _, dependency_sources, available_count, expected_count, label, last_request, grids = result
+        labels.append(label)
+        counts.append((available_count, expected_count))
+        for source_file in dependency_sources:
+            tagged_source = dict(source_file)
+            tagged_source["derived_dependency"] = dependency
+            source_files.append(tagged_source)
+        for key, grid in grids.items():
+            member_grids.setdefault(key, {})[dependency] = grid
+
+    required_keys = set(member_grids)
+    if not required_keys:
+        raise CFSv2Error("CFSv2 snowfall derivation received no complete members or cycles")
+    incomplete = [key for key, fields in member_grids.items() if len(fields) != len(dependencies)]
+    if incomplete:
+        raise CFSv2Error(
+            "CFSv2 snowfall dependencies do not share the same successful members/cycles; "
+            f"missing fields for {', '.join(sorted(incomplete)[:5])}"
+        )
+    snowfall_inputs = {
+        dependency: {key: fields[dependency] for key, fields in member_grids.items()}
+        for dependency in dependencies
+    }
+    t850_regridded = {
+        key: regrid_nearest(
+            grid,
+            snowfall_inputs[PRODUCT_2M_TEMPERATURE_ANOMALY][key].lons,
+            snowfall_inputs[PRODUCT_2M_TEMPERATURE_ANOMALY][key].lats,
+            f"CFSv2 850-mb temperature {key}",
+        )
+        for key, grid in snowfall_inputs[PRODUCT_850_TEMPERATURE_ANOMALY].items()
+    }
+    snowfall_grid, diagnostics = derive_snowfall_lwe_grid(
+        snowfall_inputs[PRODUCT_2M_TEMPERATURE_ANOMALY],
+        t850_regridded,
+        snowfall_inputs[PRODUCT_PRECIPITATION_ANOMALY],
+        target,
+    )
+    diagnostics["dependencies"] = list(dependencies)
+    diagnostics["regridded_dependency"] = PRODUCT_850_TEMPERATURE_ANOMALY
+    available_count = min(count for count, _ in counts)
+    expected_count = max(expected for _, expected in counts)
+    label = labels[0] if labels and all(candidate == labels[0] for candidate in labels) else (
+        f"{available_count}/{expected_count}-cycle derived snowfall mean"
+        if rolling_inits
+        else f"{available_count}-member derived snowfall mean"
+    )
+    return snowfall_grid, source_files, available_count, expected_count, label, last_request, diagnostics
 
 
 def subtract_grids(left: Grid, right: Grid) -> Grid:
@@ -1623,6 +1948,11 @@ def load_baseline(path: Path, wgrib2: str, product_spec: dict, target: str) -> G
 
 def baseline_for_target(args: argparse.Namespace, target: str, repo_root: Path) -> tuple[Path, str]:
     if args.baseline_file:
+        if getattr(args, "product", "") == PRODUCT_SNOWFALL_ANOMALY:
+            raise CFSv2Error(
+                "CFSv2 snowfall derivation needs three matching baseline fields; "
+                "use --ncei-calibration or --baseline-dir with tmp2m, tmp850, and prate grids"
+            )
         path = resolve_repo_path(args.baseline_file, repo_root)
         if not path.exists():
             raise CFSv2Error(f"baseline file does not exist: {path}")
@@ -1637,6 +1967,8 @@ def baseline_for_target(args: argparse.Namespace, target: str, repo_root: Path) 
             if product_name == PRODUCT_SWE_ANOMALY
             else "tmp2m"
             if product_name == PRODUCT_2M_TEMPERATURE_ANOMALY
+            else "tmp850"
+            if product_name == PRODUCT_850_TEMPERATURE_ANOMALY
             else "mslp"
             if product_name == PRODUCT_MSLP_ANOMALY
             else "z500"
@@ -1659,6 +1991,132 @@ def baseline_for_target(args: argparse.Namespace, target: str, repo_root: Path) 
         "anomaly rendering requires --baseline-file or --baseline-dir; "
         "use --ncei-calibration or --absolute for a clearly labelled alternative"
     )
+
+
+def load_snowfall_baseline(
+    args: argparse.Namespace,
+    init: str,
+    target: str,
+    lead: int,
+    cache_dir: Path,
+    repo_root: Path,
+    wgrib2: str,
+    last_request: float,
+) -> tuple[Grid, dict[str, object], float]:
+    """Load and derive a matching snowfall baseline from all three fields."""
+
+    if args.baseline_file:
+        raise CFSv2Error(
+            "CFSv2 snowfall derivation cannot use one baseline file; provide "
+            "--ncei-calibration or --baseline-dir with tmp2m, tmp850, and prate grids"
+        )
+    dependencies = PRODUCT_SPECS[PRODUCT_SNOWFALL_ANOMALY]["dependencies"]
+    baseline_grids: dict[str, Grid] = {}
+    dependency_metadata: list[dict[str, object]] = []
+    for dependency in dependencies:
+        product_spec = get_product_spec(dependency)
+        fallback_error = None
+        represented_init = init
+        downloaded = False
+        requested_url = None
+        if args.ncei_calibration:
+            requested_url = ncei_calibration_url(init, lead, product_spec["source_kind"])
+            (
+                baseline_path,
+                represented_init,
+                downloaded,
+                last_request,
+                fallback_error,
+            ) = load_ncei_calibration(
+                cache_dir=cache_dir,
+                init=init,
+                lead=lead,
+                source_kind=product_spec["source_kind"],
+                request_delay=max(0.0, args.request_delay),
+                last_request=last_request,
+                allow_stale=getattr(args, "allow_stale_calibration", False),
+            )
+            label = configured_baseline_label(args)
+            if fallback_error:
+                label = f"{label} (cached {represented_init} fallback)"
+        else:
+            if not args.baseline_dir:
+                raise CFSv2Error(
+                    "CFSv2 snowfall derivation needs --ncei-calibration or --baseline-dir "
+                    "with tmp2m, tmp850, and prate grids"
+                )
+            directory = resolve_repo_path(args.baseline_dir, repo_root)
+            prefix = {
+                PRODUCT_2M_TEMPERATURE_ANOMALY: "tmp2m",
+                PRODUCT_850_TEMPERATURE_ANOMALY: "tmp850",
+                PRODUCT_PRECIPITATION_ANOMALY: "prate",
+            }[dependency]
+            baseline_path = next(
+                (
+                    directory / filename
+                    for filename in (
+                        f"{prefix}_{target}.csv",
+                        f"{prefix}_{target}.grb2",
+                        f"{prefix}_{target}.grib2",
+                    )
+                    if (directory / filename).exists()
+                ),
+                None,
+            )
+            if baseline_path is None:
+                raise CFSv2Error(
+                    f"no {dependency} baseline grid for target month {target} in {directory}; "
+                    f"expected {prefix}_{target}.csv or matching GRIB2"
+                )
+            label = args.baseline_label or baseline_path.name
+        baseline_grids[dependency] = load_baseline(baseline_path, wgrib2, product_spec, target)
+        dependency_metadata.append(
+            {
+                "product": dependency,
+                "file": relative_path(baseline_path, repo_root),
+                "label": label,
+                "url": requested_url,
+                "requested_initialization": init if args.ncei_calibration else None,
+                "used_initialization": represented_init if args.ncei_calibration else None,
+                "downloaded": downloaded if args.ncei_calibration else None,
+                "fallback": "cached_prior_initialization" if fallback_error else None,
+                "fallback_error": fallback_error,
+            }
+        )
+
+    temperature_2m = baseline_grids[PRODUCT_2M_TEMPERATURE_ANOMALY]
+    temperature_850 = regrid_nearest(
+        baseline_grids[PRODUCT_850_TEMPERATURE_ANOMALY],
+        temperature_2m.lons,
+        temperature_2m.lats,
+        "CFSv2 snowfall baseline 850-mb temperature",
+    )
+    derived, diagnostics = derive_snowfall_lwe_grid(
+        {"baseline": temperature_2m},
+        {"baseline": temperature_850},
+        {"baseline": baseline_grids[PRODUCT_PRECIPITATION_ANOMALY]},
+        target,
+    )
+    info = {
+        "source": "NCEI CFSR/CFSv2 1982-2010 derived snowfall climatology"
+        if args.ncei_calibration
+        else (args.baseline_label or "user-supplied CFSv2/reforecast derived snowfall climatology"),
+        "label": (
+            configured_baseline_label(args)
+            if args.ncei_calibration and not any(item["fallback"] for item in dependency_metadata)
+            else (
+                f"{configured_baseline_label(args)} (cached prior-cycle fallback)"
+                if args.ncei_calibration
+                else (args.baseline_label or "user-supplied CFSv2/reforecast derived snowfall climatology")
+            )
+        ),
+        "years": NCEI_CALIBRATION_YEARS if args.ncei_calibration else (args.baseline_years or None),
+        "required": True,
+        "status": "applied",
+        "dependencies": dependency_metadata,
+        "derivation": diagnostics,
+    }
+    return derived, info, last_request
 
 
 def configured_baseline_label(args: argparse.Namespace) -> str:
@@ -2472,6 +2930,10 @@ def render_map(
             header_detail = (
                 f"{source_label}  •  {display_baseline_label}  •  Snow-water equivalent (in)  •  CONUS domain"
             )
+        if product_spec["name"] == PRODUCT_SNOWFALL_ANOMALY:
+            header_detail = (
+                f"{source_label}  •  {display_baseline_label}  •  Derived snowfall liquid-water equivalent (in)  •  CONUS domain"
+            )
         header_detail_text = figure.text(
             0.035,
             0.899,
@@ -2493,7 +2955,11 @@ def render_map(
         orientation="horizontal",
         extend="neither",
         spacing="uniform",
-        drawedges=product_spec["name"] in {PRODUCT_PRECIPITATION_ANOMALY, PRODUCT_SWE_ANOMALY},
+        drawedges=product_spec["name"] in {
+            PRODUCT_PRECIPITATION_ANOMALY,
+            PRODUCT_SWE_ANOMALY,
+            PRODUCT_SNOWFALL_ANOMALY,
+        },
         **colorbar_options,
     )
     colorbar.set_ticks(colorbar_ticks)
@@ -2632,10 +3098,12 @@ def manifest_product_key(run: dict) -> str:
         "z500_anomaly": PRODUCT_HEIGHT_ANOMALY,
         "z500_anomaly_nh": PRODUCT_HEIGHT_ANOMALY_NH,
         "z500": PRODUCT_HEIGHT_ABSOLUTE,
+        "t850_anomaly": PRODUCT_850_TEMPERATURE_ANOMALY,
         "t2m_anomaly": PRODUCT_2M_TEMPERATURE_ANOMALY,
         "mslp_anomaly": PRODUCT_MSLP_ANOMALY,
         "precipitation_anomaly": PRODUCT_PRECIPITATION_ANOMALY,
         "snow_water_equivalent_anomaly": PRODUCT_SWE_ANOMALY,
+        "snowfall_anomaly": PRODUCT_SNOWFALL_ANOMALY,
     }.get(str(run.get("field", "")), PRODUCT_HEIGHT_ANOMALY)
 
 
@@ -2763,6 +3231,11 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--decode-only", action="store_true", help="download/decode/average but do not render")
     parser.add_argument("--absolute", action="store_true", help="render absolute heights; never label them as anomalies")
     parser.add_argument("--force-decode", action="store_true", help="rerun wgrib2 even when a decoded CSV is cached")
+    parser.add_argument(
+        "--keep-source-cache",
+        action="store_true",
+        help="retain raw and decoded cycle files for other products in the same workflow invocation",
+    )
     return parser
 
 
@@ -2891,9 +3364,19 @@ def run(args: argparse.Namespace) -> int:
         run_entry["baseline"] = {
             "source": product["baseline_label"],
             "years": NCEI_CALIBRATION_YEARS,
-            "url_root": product["baseline_root"],
             "required": True,
         }
+        if product.get("dependencies"):
+            run_entry["baseline"]["dependencies"] = [
+                {
+                    "product": dependency,
+                    "source_kind": get_product_spec(dependency)["source_kind"],
+                    "url_root": get_product_spec(dependency)["baseline_root"],
+                }
+                for dependency in product["dependencies"]
+            ]
+        else:
+            run_entry["baseline"]["url_root"] = product["baseline_root"]
     else:
         run_entry["baseline"] = {
             "source": configured_baseline_label(args),
@@ -2930,19 +3413,42 @@ def run(args: argparse.Namespace) -> int:
             "status": "planned",
         }
         try:
-            ensemble, source_files, ensemble_count, ensemble_expected_for_target, ensemble_label, last_request = decode_target_ensemble(
-                args,
-                init,
-                target,
-                members,
-                rolling_inits,
-                cache_dir,
-                state_dir,
-                wgrib2,
-                repo_root,
-                last_request,
-                product,
-            )
+            if product_name == PRODUCT_SNOWFALL_ANOMALY:
+                (
+                    ensemble,
+                    source_files,
+                    ensemble_count,
+                    ensemble_expected_for_target,
+                    ensemble_label,
+                    last_request,
+                    derivation_diagnostics,
+                ) = decode_snowfall_target_ensemble(
+                    args,
+                    init,
+                    target,
+                    members,
+                    rolling_inits,
+                    cache_dir,
+                    state_dir,
+                    wgrib2,
+                    repo_root,
+                    last_request,
+                )
+                target_entry["derivation"] = derivation_diagnostics
+            else:
+                ensemble, source_files, ensemble_count, ensemble_expected_for_target, ensemble_label, last_request = decode_target_ensemble(
+                    args,
+                    init,
+                    target,
+                    members,
+                    rolling_inits,
+                    cache_dir,
+                    state_dir,
+                    wgrib2,
+                    repo_root,
+                    last_request,
+                    product,
+                )
             target_entry["source_files"] = source_files
             target_entry["ensemble_members"] = ensemble_count
             target_entry["ensemble_expected_members"] = ensemble_expected_for_target
@@ -2959,60 +3465,84 @@ def run(args: argparse.Namespace) -> int:
             baseline_label = "absolute field smoke output"
             anomaly_grid = ensemble
             if not absolute:
-                baseline_url = None
-                baseline_downloaded = False
-                baseline_init = init
-                baseline_fallback_error = None
-                if args.ncei_calibration:
-                    baseline_url = ncei_calibration_url(init, lead, product["source_kind"])
-                    (
-                        baseline_path,
-                        baseline_init,
-                        baseline_downloaded,
-                        last_request,
-                        baseline_fallback_error,
-                    ) = load_ncei_calibration(
-                        cache_dir=cache_dir,
-                        init=init,
-                        lead=lead,
-                        source_kind=product["source_kind"],
-                        request_delay=max(0.0, args.request_delay),
-                        last_request=last_request,
-                        allow_stale=getattr(args, "allow_stale_calibration", False),
-                    )
-                    baseline_label = configured_baseline_label(args)
-                    if baseline_fallback_error:
-                        baseline_label = f"{baseline_label} (cached {baseline_init} fallback)"
-                else:
-                    baseline_path, baseline_label = baseline_for_target(args, target, repo_root)
-                baseline_grid = load_baseline(baseline_path, wgrib2, product, target)
-                baseline_grids[lead] = baseline_grid
-                anomaly_grid = subtract_grids(ensemble, baseline_grid)
-                target_entry["baseline"] = {
-                    "file": relative_path(baseline_path, repo_root),
-                    "label": baseline_label,
-                    "years": NCEI_CALIBRATION_YEARS if args.ncei_calibration else (args.baseline_years or None),
-                }
-                if rolling_mode:
-                    target_entry["baseline"]["rolling_policy"] = "anchor_initialization"
-                    target_entry["baseline"]["anchor_init"] = init
-                if baseline_url:
-                    target_entry["baseline"]["url"] = ncei_calibration_url(
-                        baseline_init,
+                if product_name == PRODUCT_SNOWFALL_ANOMALY:
+                    baseline_grid, baseline_info, last_request = load_snowfall_baseline(
+                        args,
+                        init,
+                        target,
                         lead,
-                        product["source_kind"],
+                        cache_dir,
+                        repo_root,
+                        wgrib2,
+                        last_request,
                     )
-                    if baseline_fallback_error:
-                        target_entry["baseline"].update(
-                            {
-                                "requested_url": baseline_url,
-                                "requested_initialization": init,
-                                "used_initialization": baseline_init,
-                                "fallback": "cached_prior_initialization",
-                                "fallback_error": baseline_fallback_error,
-                            }
+                    baseline_grids[lead] = baseline_grid
+                    anomaly_grid = subtract_grids(ensemble, baseline_grid)
+                    baseline_label = str(baseline_info["label"])
+                    target_entry["baseline"] = baseline_info
+                    if rolling_mode:
+                        target_entry["baseline"]["rolling_policy"] = "anchor_initialization"
+                        target_entry["baseline"]["anchor_init"] = init
+                    baseline_url = None
+                    baseline_downloaded = False
+                    baseline_fallback_error = None
+                    baseline_init = init
+                else:
+                    baseline_url = None
+                    baseline_downloaded = False
+                    baseline_init = init
+                    baseline_fallback_error = None
+                if product_name != PRODUCT_SNOWFALL_ANOMALY:
+                    if args.ncei_calibration:
+                        baseline_url = ncei_calibration_url(init, lead, product["source_kind"])
+                        (
+                            baseline_path,
+                            baseline_init,
+                            baseline_downloaded,
+                            last_request,
+                            baseline_fallback_error,
+                        ) = load_ncei_calibration(
+                            cache_dir=cache_dir,
+                            init=init,
+                            lead=lead,
+                            source_kind=product["source_kind"],
+                            request_delay=max(0.0, args.request_delay),
+                            last_request=last_request,
+                            allow_stale=getattr(args, "allow_stale_calibration", False),
                         )
-                    target_entry["baseline"]["downloaded"] = baseline_downloaded
+                        baseline_label = configured_baseline_label(args)
+                        if baseline_fallback_error:
+                            baseline_label = f"{baseline_label} (cached {baseline_init} fallback)"
+                    else:
+                        baseline_path, baseline_label = baseline_for_target(args, target, repo_root)
+                    baseline_grid = load_baseline(baseline_path, wgrib2, product, target)
+                    baseline_grids[lead] = baseline_grid
+                    anomaly_grid = subtract_grids(ensemble, baseline_grid)
+                    target_entry["baseline"] = {
+                        "file": relative_path(baseline_path, repo_root),
+                        "label": baseline_label,
+                        "years": NCEI_CALIBRATION_YEARS if args.ncei_calibration else (args.baseline_years or None),
+                    }
+                    if rolling_mode:
+                        target_entry["baseline"]["rolling_policy"] = "anchor_initialization"
+                        target_entry["baseline"]["anchor_init"] = init
+                    if baseline_url:
+                        target_entry["baseline"]["url"] = ncei_calibration_url(
+                            baseline_init,
+                            lead,
+                            product["source_kind"],
+                        )
+                        if baseline_fallback_error:
+                            target_entry["baseline"].update(
+                                {
+                                    "requested_url": baseline_url,
+                                    "requested_initialization": init,
+                                    "used_initialization": baseline_init,
+                                    "fallback": "cached_prior_initialization",
+                                    "fallback_error": baseline_fallback_error,
+                                }
+                            )
+                        target_entry["baseline"]["downloaded"] = baseline_downloaded
 
             output_path = output_dir / init / f"cfsv2_{product['file_token']}_{target}.jpg"
             target_entry["quality_control"] = grid_quality_control(

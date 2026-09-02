@@ -3,6 +3,7 @@
 
 import importlib.util
 import json
+import math
 from pathlib import Path
 import sys
 import tempfile
@@ -65,6 +66,16 @@ def main() -> int:
         "2m_temperature_anomaly",
         "TMP:2 m above ground",
         "tmp2m",
+        "PRODUCT_850_TEMPERATURE_ANOMALY",
+        "850mb_temperature_anomaly",
+        "TMP:850 mb",
+        "tmp850",
+        "PRODUCT_SNOWFALL_ANOMALY",
+        "snowfall_anomaly",
+        "derive_snowfall_lwe_grid",
+        "Dai_2008_land_seasonal_hyperbolic_tangent",
+        "max(2-m, 850-hPa)",
+        "dependencies",
         "TEMPERATURE_ANOMALY_PALETTE",
         "Kelvin offset cancels in forecast-minus-calibration anomalies",
         "PRODUCT_MSLP_ANOMALY",
@@ -104,7 +115,7 @@ def main() -> int:
         "SWE_ANOMALY_MAX_IN = 8.0",
         "monthly snow-water-equivalent average",
         "Snow-water equivalent (in)",
-        "drawedges=product_spec[\"name\"] in {PRODUCT_PRECIPITATION_ANOMALY, PRODUCT_SWE_ANOMALY}",
+        "PRODUCT_SNOWFALL_ANOMALY",
         "sum_grids",
         "--product",
         "--baseline-file",
@@ -121,6 +132,7 @@ def main() -> int:
         "--retain-runs",
         "--seasonal-window",
         "--absolute",
+        "--keep-source-cache",
         "cfsv2_manifest",
         "seasonal mean",
         "contourf",
@@ -201,7 +213,9 @@ def main() -> int:
     check('id="product-select"' in page, "Pages viewer missing parameter selector")
     check('id="run-select"' in page, "Pages viewer missing run-history selector")
     check("'2m_temperature_anomaly': '2-m Temperature Anomaly'" in page, "Pages viewer missing 2-m temperature label")
+    check("'850mb_temperature_anomaly': '850-mb Temperature Anomaly'" in page, "Pages viewer missing 850-mb temperature label")
     check("'mslp_anomaly': 'Mean Sea-Level Pressure Anomaly'" in page, "Pages viewer missing MSLP label")
+    check("'snowfall_anomaly': 'CONUS Snowfall Departure'" in page, "Pages viewer missing snowfall label")
     check("Retaining ${history} prior run${history === 1 ? '' : 's'} per parameter" in page, "Pages viewer should report per-parameter run history")
     check("available.find(run => !isFailedRun(run))" in page, "Pages viewer should default to the latest non-failed run")
     adapter_module = load_adapter()
@@ -266,11 +280,13 @@ def main() -> int:
     check(len(adapter_module.PRECIP_ANOMALY_PALETTE) == len(adapter_module.PRECIP_SEASONAL_ANOMALY_TICKS) - 1, "seasonal precipitation colors should align with labelled transitions")
     check(len(adapter_module.SWE_ANOMALY_PALETTE) == len(adapter_module.SWE_ANOMALY_TICKS) - 1, "SWE colors should align with labelled transitions")
     t2m_spec = adapter_module.PRODUCT_SPECS[adapter_module.PRODUCT_2M_TEMPERATURE_ANOMALY]
+    t850_spec = adapter_module.PRODUCT_SPECS[adapter_module.PRODUCT_850_TEMPERATURE_ANOMALY]
     mslp_spec = adapter_module.PRODUCT_SPECS[adapter_module.PRODUCT_MSLP_ANOMALY]
     precip_spec = adapter_module.PRODUCT_SPECS[adapter_module.PRODUCT_PRECIPITATION_ANOMALY]
     height_spec = adapter_module.PRODUCT_SPECS[adapter_module.PRODUCT_HEIGHT_ANOMALY]
     northern_height_spec = adapter_module.PRODUCT_SPECS[adapter_module.PRODUCT_HEIGHT_ANOMALY_NH]
     swe_spec = adapter_module.PRODUCT_SPECS[adapter_module.PRODUCT_SWE_ANOMALY]
+    snowfall_spec = adapter_module.PRODUCT_SPECS[adapter_module.PRODUCT_SNOWFALL_ANOMALY]
     check(height_spec["region"] == adapter_module.DEFAULT_REGION, "the established 500-mb view must retain its North America frame")
     check(northern_height_spec["region"] == adapter_module.NORTHERN_HEMISPHERE_REGION, "the Northern Hemisphere 500-mb view must use the hemisphere frame")
     check(northern_height_spec["projection"] == "north_polar_stereographic", "the Northern Hemisphere 500-mb view must use the polar projection")
@@ -285,7 +301,17 @@ def main() -> int:
     check(swe_spec["map_domain"] == "land", "SWE must retain a land-only render domain")
     check(adapter_module.manifest_product_key({"field": "z500_anomaly"}) == adapter_module.PRODUCT_HEIGHT_ANOMALY, "legacy manifests should map height fields to the current product key")
     check(t2m_spec["source_kind"] == "flxf" and t2m_spec["grid_shape"] == (384, 190), "2-m temperature should use the FLXF flux grid")
+    check(t850_spec["source_kind"] == "pgbf" and t850_spec["grid_shape"] == (360, 181), "850-mb temperature should use the PGBF pressure grid")
+    check(t850_spec["match"] == ":TMP:850 mb:", "850-mb temperature should decode the pressure-level TMP field")
     check(mslp_spec["source_kind"] == "pgbf" and mslp_spec["grid_shape"] == (360, 181), "MSLP should use the PGBF pressure grid")
+    check(snowfall_spec["source_kind"] == "derived", "CFSv2 snowfall should be explicitly derived")
+    check(snowfall_spec["dependencies"] == (
+        adapter_module.PRODUCT_2M_TEMPERATURE_ANOMALY,
+        adapter_module.PRODUCT_850_TEMPERATURE_ANOMALY,
+        adapter_module.PRODUCT_PRECIPITATION_ANOMALY,
+    ), "CFSv2 snowfall should require 2-m temperature, 850-mb temperature, and precipitation")
+    check(snowfall_spec["map_domain"] == "land" and snowfall_spec["region"] == adapter_module.CONUS_PRECIP_REGION, "CFSv2 snowfall should use a CONUS land-only map")
+    check(adapter_module.product_dependency_names(adapter_module.PRODUCT_SNOWFALL_ANOMALY) == snowfall_spec["dependencies"], "readiness should expand snowfall to its raw dependencies")
     converted_mslp = adapter_module.prepare_product_grid(
         adapter_module.Grid([0.0], [0.0], [[101325.0]]), mslp_spec, "202608"
     )
@@ -294,6 +320,28 @@ def main() -> int:
         adapter_module.Grid([0.0], [0.0], [[25.4]])
     )
     check(converted.values == [[1.0]], "WEASD should convert from kg m-2 to inches")
+    snowfall_inputs = {
+        "member-1": adapter_module.Grid([0.0, 1.0], [0.0, 1.0], [[271.15, 271.15], [271.15, 271.15]]),
+        "member-2": adapter_module.Grid([0.0, 1.0], [0.0, 1.0], [[271.15, 271.15], [271.15, 271.15]]),
+    }
+    snowfall_850 = {
+        key: adapter_module.Grid([0.0, 1.0], [0.0, 1.0], [[270.15, 270.15], [270.15, 270.15]])
+        for key in snowfall_inputs
+    }
+    snowfall_precip = {
+        key: adapter_module.Grid([0.0, 1.0], [0.0, 1.0], [[1.0, 1.0], [1.0, 1.0]])
+        for key in snowfall_inputs
+    }
+    derived_snowfall, snowfall_diagnostics = adapter_module.derive_snowfall_lwe_grid(
+        snowfall_inputs,
+        snowfall_850,
+        snowfall_precip,
+        "202612",
+    )
+    expected_snowfall = adapter_module.snowfall_fraction_from_temperature_c(-2.0, "DJF")
+    check(math.isclose(derived_snowfall.values[0][0], expected_snowfall, rel_tol=1e-9), "CFSv2 snowfall should apply the warmer-level Dai phase fraction to monthly precipitation")
+    check(snowfall_diagnostics["member_or_cycle_count"] == 2, "snowfall diagnostics should record the contributing members")
+    check("regridded" in snowfall_diagnostics["regridding"], "snowfall diagnostics should disclose the 850-mb regrid")
     reference = adapter_module.Grid([0.0, 1.0], [0.0, 1.0], [[500.0, 501.0], [502.0, 503.0]])
     regridded = adapter_module.regrid_nearest(reference, [0.1, 0.9], [0.1, 0.9], "test")
     check(regridded.values == [[500.0, 501.0], [502.0, 503.0]], "common reference regrid should preserve nearest source values")
@@ -377,10 +425,12 @@ def main() -> int:
         "product:",
         "500mb_height_anomaly",
         "500mb_height_absolute",
+        "850mb_temperature_anomaly",
         "2m_temperature_anomaly",
         "mslp_anomaly",
         "precipitation_anomaly",
         "snow_water_equivalent_anomaly",
+        "snowfall_anomaly",
         "CFSV2_PRODUCT",
     ):
         check(term in workflow, f"workflow missing product selector term: {term}")
@@ -409,10 +459,11 @@ def main() -> int:
     ):
         check(term in workflow, f"workflow missing speed-up term: {term}")
     check("--allow-partial-rolling" not in workflow, "scheduled CFSv2 workflow must not publish an incomplete rolling blend")
-    check("SCHEDULED_CFSV2_PRODUCTS: 500mb_height_anomaly,500mb_height_anomaly_nh,2m_temperature_anomaly,mslp_anomaly,precipitation_anomaly" in workflow, "twice-daily workflow should refresh the complete core anomaly suite")
+    check("SCHEDULED_CFSV2_PRODUCTS: 500mb_height_anomaly,500mb_height_anomaly_nh,850mb_temperature_anomaly,2m_temperature_anomaly,mslp_anomaly,precipitation_anomaly,snowfall_anomaly" in workflow, "twice-daily workflow should refresh the complete CFSv2 anomaly suite")
     check('description: "Lagged initial-condition window; 6 means 24 cycles"' in workflow, "scheduled CFSv2 workflow should stay inside the live archive")
     check("ROLLING_DAYS: ${{ inputs.rolling_days || '6' }}" in workflow, "scheduled CFSv2 workflow should default to six rolling days")
     check("actions/cache/save@v4" in workflow and "if: always()" in workflow, "CFSv2 workflow should retain warmed rolling state after failed attempts")
+    check("--keep-source-cache" in workflow and "Trim transient CFSv2 source cache" in workflow, "scheduled CFSv2 products should reuse and then trim source downloads")
     check('if [[ "${{ github.event_name }}" == "schedule" ]]' in workflow, "scheduled suite should remain distinct from manual single-product dispatch")
     for term in ("Restore published CFSv2 run history", "previous_manifest.json", "--previous-manifest", "--retain-runs 4"):
         check(term in workflow, f"workflow missing history-retention term: {term}")

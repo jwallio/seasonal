@@ -19,10 +19,12 @@ on:
           - 500mb_height_anomaly
           - 500mb_height_anomaly_nh
           - 500mb_height_absolute
+          - 850mb_temperature_anomaly
           - 2m_temperature_anomaly
           - mslp_anomaly
           - precipitation_anomaly
           - snow_water_equivalent_anomaly
+          - snowfall_anomaly
       lead_months:
         description: "Target leads, comma-separated (DJF default: 4,5,6)"
         required: false
@@ -54,7 +56,7 @@ jobs:
     timeout-minutes: 240
     env:
       CFSV2_PRODUCT: ${{ inputs.product || '500mb_height_anomaly' }}
-      SCHEDULED_CFSV2_PRODUCTS: 500mb_height_anomaly,500mb_height_anomaly_nh,2m_temperature_anomaly,mslp_anomaly,precipitation_anomaly
+      SCHEDULED_CFSV2_PRODUCTS: 500mb_height_anomaly,500mb_height_anomaly_nh,850mb_temperature_anomaly,2m_temperature_anomaly,mslp_anomaly,precipitation_anomaly,snowfall_anomaly
       LEAD_MONTHS: ${{ inputs.lead_months || '4,5,6' }}
       SEASONAL_WINDOW: ${{ inputs.seasonal_window || '4,5,6' }}
       ROLLING_DAYS: ${{ inputs.rolling_days || '6' }}
@@ -161,6 +163,7 @@ jobs:
               --common-reference-dir .cache/cfsv2/common-reference
               --common-reference-url "https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/common_reference/1991-2020/"
               --request-delay 2
+              --keep-source-cache
             )
             if [[ "$product" == "500mb_height_absolute" ]]; then
               args+=(--product "$product" --absolute)
@@ -173,6 +176,15 @@ jobs:
             fi
           done
           exit "$overall_status"
+
+      - name: Trim transient CFSv2 source cache
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -d .cache/cfsv2 ]]; then
+            find .cache/cfsv2 -mindepth 1 -maxdepth 1 -type d -regextype posix-extended -regex '.*/[0-9]{10}' -prune -exec rm -rf -- {} +
+          fi
 
       - name: Save rolling state after every attempt
         if: always()

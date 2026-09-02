@@ -120,10 +120,12 @@ def main() -> int:
         )
         summary = catalog["summary"]
         check(summary["models_online"] == 1, "valid model should be online")
-        check(summary["supported_surfaces"] == 4, "CFSv2 should have four supported core surfaces")
+        check(summary["supported_surfaces"] == 6, "CFSv2 should have five core surfaces plus derived snowfall")
         check(summary["available_surfaces"] == 1, "one synthetic CFSv2 surface should be available")
-        check(summary["intentional_unavailable_surfaces"] == 2, "CFSv2 t850 and snowfall should be intentional N/A")
+        check(summary["intentional_unavailable_surfaces"] == 0, "CFSv2 850-mb temperature and snowfall should be supported surfaces")
         check(catalog["models"]["cfsv2"]["surfaces"]["500mb_height_anomaly"]["available"], "z500 surface should be available")
+        check(catalog["models"]["cfsv2"]["support"]["snowfall_anomaly"]["state"] == "supported", "CFSv2 snowfall should be supported in the public catalog")
+        check(catalog["models"]["cfsv2"]["support"]["850mb_temperature_anomaly"]["state"] == "supported", "CFSv2 850-mb temperature should be supported in the public catalog")
         check(catalog["models"]["cfsv2"]["schedule"]["cadence_group"] == "frequent", "catalog should expose the CFSv2 cadence")
         health_surface = next(
             item for item in catalog["health"]["surfaces"]
