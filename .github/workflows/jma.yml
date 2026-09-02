@@ -14,10 +14,10 @@ on:
         options:
           - all
           - 500mb_height_anomaly
+          - 500mb_height_anomaly_nh
           - 850mb_temperature_anomaly
           - 2m_temperature_anomaly
           - precipitation_anomaly
-          - sea_surface_temperature_anomaly
           - mslp_anomaly
       systems:
         description: "Optional JMA centre=system override"
@@ -54,7 +54,7 @@ jobs:
     timeout-minutes: 360
     env:
       JMA_PRODUCT: ${{ inputs.product || '500mb_height_anomaly' }}
-      SCHEDULED_JMA_PRODUCTS: 500mb_height_anomaly,850mb_temperature_anomaly,2m_temperature_anomaly,precipitation_anomaly,sea_surface_temperature_anomaly,mslp_anomaly
+      SCHEDULED_JMA_PRODUCTS: 500mb_height_anomaly,500mb_height_anomaly_nh,850mb_temperature_anomaly,2m_temperature_anomaly,precipitation_anomaly,mslp_anomaly
       JMA_SYSTEMS: ${{ inputs.systems || '' }}
       JMA_INIT: ${{ inputs.init || 'latest' }}
       LEAD_MONTHS: ${{ inputs.lead_months || '4,5,6' }}

@@ -86,12 +86,11 @@ def main() -> int:
         np.array([25.4]), precipitation_spec, {"units": "mm/day"}, precip_days=3
     )
     check(np.allclose(converted, np.array([3.0])), "APCC precipitation conversion should accumulate and convert mm to inches")
-    sst_spec = module.PRODUCT_SPECS["sea_surface_temperature_anomaly"]
-    check((sst_spec["anomaly_min"], sst_spec["anomaly_max"]) == (-3.0, 3.0), "APCC SST should use the shared ±3 °C range")
+    northern_height = module.PRODUCT_SPECS["500mb_height_anomaly_nh"]
+    check(northern_height["region"] == module.NORTHERN_HEMISPHERE_REGION, "APCC Northern Hemisphere 500-mb view must use the polar region")
     mslp_spec = module.PRODUCT_SPECS["mslp_anomaly"]
     check((mslp_spec["anomaly_min"], mslp_spec["anomaly_max"]) == (-10.0, 10.0), "APCC MSLP should use the shared ±10 hPa range")
     check("6-MON" in module.dataset_url("MME_6MONTH"), "APCC 6-month provenance URL is incorrect")
-    check(module.PRODUCT_SPECS["sea_surface_temperature_anomaly"]["map_domain"] == "ocean", "APCC SST must be ocean-only")
     parser_defaults = module.build_parser().parse_args([])
     check(parser_defaults.dataset == "MME_6MONTH" and parser_defaults.target_window == "", "APCC defaults should derive the far 6-month season")
     check("default: \"MME_6MONTH\"" in workflow and "default: \"3,4,5\"" in workflow, "APCC workflow should request the far 6-month window")

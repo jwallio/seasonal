@@ -30,11 +30,13 @@ from urllib.parse import urljoin
 from cfsv2_seasonal import (
     ANOMALY_PALETTE,
     ANOMALY_TICKS,
+    CONUS_REGION,
     CONUS_PRECIP_REGION,
     DEFAULT_REGION,
     Grid,
     MSLP_ANOMALY_PALETTE,
     MSLP_ANOMALY_TICKS,
+    NORTHERN_HEMISPHERE_REGION,
     PRECIP_ANOMALY_PALETTE,
     PRECIP_ANOMALY_TICKS,
     TEMPERATURE_ANOMALY_MAX_C,
@@ -43,7 +45,6 @@ from cfsv2_seasonal import (
     TEMPERATURE_ANOMALY_TICKS,
     download_file,
     ensure_border_files,
-    land_mask_from_borders,
     mean_grids,
     prepare_product_grid,
     relative_path,
@@ -52,6 +53,7 @@ from cfsv2_seasonal import (
     subtract_grids,
     sum_grids,
 )
+from seasonal_products import is_retired_product
 
 
 NASA_DATA_ROOT = "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/"
@@ -69,17 +71,12 @@ EXPECTED_LONG_RANGE_MEMBERS = 10
 MAX_LEAD = 8
 DRIFT_LABEL = "NASA GEOS-S2S-3 provider drift climatology"
 
-SST_ANOMALY_TICKS = list(range(-3, 4))
-SST_ANOMALY_PALETTE = [
-    "#28567f", "#5b9fba", "#b4d6dc", "#ffffff", "#efb6b5", "#b84c5a",
-]
-
 PRODUCT_Z500_ANOMALY = "500mb_height_anomaly"
+PRODUCT_Z500_ANOMALY_NH = "500mb_height_anomaly_nh"
 PRODUCT_T850_ANOMALY = "850mb_temperature_anomaly"
 PRODUCT_T2M_ANOMALY = "2m_temperature_anomaly"
 PRODUCT_PRECIPITATION_ANOMALY = "precipitation_anomaly"
 PRODUCT_MSLP_ANOMALY = "mslp_anomaly"
-PRODUCT_SST_ANOMALY = "sea_surface_temperature_anomaly"
 
 PRODUCT_SPECS: dict[str, dict[str, Any]] = {
     PRODUCT_Z500_ANOMALY: {
@@ -122,7 +119,7 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "raw_units": "K",
         "units": "°C",
         "height_contours": False,
-        "region": DEFAULT_REGION,
+        "region": CONUS_REGION,
         "seasonal_reducer": "mean",
         "anomaly_min": TEMPERATURE_ANOMALY_MIN_C,
         "anomaly_max": TEMPERATURE_ANOMALY_MAX_C,
@@ -147,7 +144,7 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "raw_units": "K",
         "units": "°C",
         "height_contours": False,
-        "region": DEFAULT_REGION,
+        "region": CONUS_REGION,
         "seasonal_reducer": "mean",
         "anomaly_min": TEMPERATURE_ANOMALY_MIN_C,
         "anomaly_max": TEMPERATURE_ANOMALY_MAX_C,
@@ -199,7 +196,7 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "raw_units": "Pa",
         "units": "hPa",
         "height_contours": False,
-        "region": DEFAULT_REGION,
+        "region": CONUS_REGION,
         "seasonal_reducer": "mean",
         "conversion_kind": "pascals_to_hectopascals",
         "conversion": "Sea-level pressure divided by 100 after anomaly calculation",
@@ -211,44 +208,29 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "header_detail": "{source_label}  •  {baseline_label}  •  Mean sea-level pressure anomaly (hPa)",
         "scheduled": True,
     },
-    PRODUCT_SST_ANOMALY: {
-        "name": PRODUCT_SST_ANOMALY,
-        "archive_token": "sst",
-        "forecast_variable": "TS",
-        "drift_variable": "sst",
-        "expected_units": ("K",),
-        "expected_level": None,
-        "id_token": "ssta",
-        "title": "GEOS-S2S-3 Sea-Surface Temperature Anomaly (°C)",
-        "absolute_title": "GEOS-S2S-3 Sea-Surface Temperature (°C)",
-        "field": "sea_surface_temperature_anomaly",
-        "raw_field": "TS surface skin temperature, ocean cells retained",
-        "raw_units": "K",
-        "units": "°C",
-        "height_contours": False,
-        "region": DEFAULT_REGION,
-        "seasonal_reducer": "mean",
-        "anomaly_min": -3.0,
-        "anomaly_max": 3.0,
-        "anomaly_ticks": SST_ANOMALY_TICKS,
-        "anomaly_palette": SST_ANOMALY_PALETTE,
-        "map_domain": "ocean",
-        "source_label": "NASA GEOS-S2S-3 / NCCS",
-        "header_detail": "{source_label}  •  {baseline_label}  •  Sea-surface temperature anomaly (°C)",
-        "mask_land": True,
-        "scheduled": True,
-    },
+}
+
+PRODUCT_SPECS[PRODUCT_Z500_ANOMALY_NH] = {
+    **PRODUCT_SPECS[PRODUCT_Z500_ANOMALY],
+    "name": PRODUCT_Z500_ANOMALY_NH,
+    "id_token": "z500a-nh",
+    "region": NORTHERN_HEMISPHERE_REGION,
+    "projection": "north_polar_stereographic",
+    "projection_central_longitude": 0.0,
+    "title": "GEOS-S2S-3 Northern Hemisphere 500-mb Geopotential Height & Anomaly (m)",
+    "absolute_title": "GEOS-S2S-3 Northern Hemisphere 500-mb Geopotential Height (m)",
+    "header_detail": "{source_label}  •  {baseline_label}  •  Height contours in dam  •  Northern Hemisphere",
 }
 
 DEFAULT_PRODUCTS = tuple(name for name, spec in PRODUCT_SPECS.items() if spec["scheduled"])
 SUPERENSEMBLE_PRODUCTS = frozenset(DEFAULT_PRODUCTS)
 PRODUCT_LABELS = {
     PRODUCT_Z500_ANOMALY: "500-mb Height Anomaly",
+    PRODUCT_Z500_ANOMALY_NH: "500-mb Height Anomaly · Northern Hemisphere",
     PRODUCT_T850_ANOMALY: "850-mb Temperature Anomaly",
     PRODUCT_T2M_ANOMALY: "2-m Temperature Anomaly",
     PRODUCT_PRECIPITATION_ANOMALY: "CONUS Precipitation Anomaly",
     PRODUCT_MSLP_ANOMALY: "MSLP Anomaly",
-    PRODUCT_SST_ANOMALY: "Sea-Surface Temperature Anomaly",
 }
 
 
@@ -595,21 +577,6 @@ def _decode_drift(path: Path, target: str, spec: dict[str, Any]) -> tuple[Grid, 
     return grid, years
 
 
-def _mask_land(grid: Grid, border_paths: Sequence[Path]) -> Grid:
-    try:
-        import numpy as np
-    except ImportError as exc:  # pragma: no cover
-        raise GEOSS2S3Error("NASA SST masking requires numpy") from exc
-    if not any(path.name == "countries.geojson" for path in border_paths):
-        raise GEOSS2S3Error("NASA SST requires the countries GeoJSON so land cells cannot be mislabeled as SST")
-    lon_mesh, lat_mesh = np.meshgrid(np.asarray(grid.lons), np.asarray(grid.lats))
-    land = land_mask_from_borders(border_paths, lon_mesh, lat_mesh)
-    if land is None or not np.any(land):
-        raise GEOSS2S3Error("NASA SST land mask could not be constructed")
-    values = np.asarray(grid.values, dtype=float)
-    return Grid(grid.lons[:], grid.lats[:], np.where(land, np.nan, values).tolist())
-
-
 def load_anomaly_bundle(
     *,
     product: str,
@@ -636,9 +603,6 @@ def load_anomaly_bundle(
         baseline, years = _decode_drift(baseline_path, forecast.target, spec)
         anomaly = prepare_product_grid(subtract_grids(forecast.grid, baseline), spec, forecast.target)
         prepared_forecast = prepare_product_grid(forecast.grid, spec, forecast.target)
-        if spec.get("mask_land"):
-            anomaly = _mask_land(anomaly, border_paths)
-            prepared_forecast = _mask_land(prepared_forecast, border_paths)
         result[lead] = GEOSMonth(
             anomaly=anomaly,
             forecast=prepared_forecast,
@@ -738,10 +702,16 @@ def write_manifest(path: Path, entries: Iterable[dict[str, Any]], previous: Path
             continue
         try:
             payload = json.loads(existing_path.read_text(encoding="utf-8"))
-            all_entries.extend(run for run in payload.get("runs", []) if isinstance(run, dict))
+            all_entries.extend(
+                run for run in payload.get("runs", [])
+                if isinstance(run, dict) and not is_retired_product(run.get("product"))
+            )
         except (OSError, ValueError) as exc:
             raise GEOSS2S3Error(f"could not read previous NASA manifest {existing_path}: {exc}") from exc
-    all_entries.extend(entries)
+    all_entries.extend(
+        run for run in entries
+        if isinstance(run, dict) and not is_retired_product(run.get("product"))
+    )
     unique = {str(run.get("id")): run for run in all_entries if run.get("id")}
     ordered = sorted(unique.values(), key=lambda item: (str(item.get("init_utc", "")), str(item.get("id", ""))), reverse=True)
     cycles: list[str] = []
@@ -773,7 +743,6 @@ def write_manifest(path: Path, entries: Iterable[dict[str, Any]], previous: Path
         "retention": {"max_cycles": retain_cycles, "history_cycles": max(0, retain_cycles - 1)},
         "source_quality": {
             "z500": "strict 500-hPa coordinate validation; current 200-hPa APCN extraction is rejected",
-            "sst": "NASA TS field with Natural Earth land cells masked before rendering or blending",
         },
         "runs": retained,
     }
@@ -824,9 +793,6 @@ def run(args: argparse.Namespace) -> int:
     manifest_path = _resolve(args.manifest, root)
     previous = _resolve(args.previous_manifest, root) if args.previous_manifest else None
     borders = ensure_border_files(args, border_cache, root)
-    if PRODUCT_SST_ANOMALY in products and not any(path.name == "countries.geojson" for path in borders):
-        raise GEOSS2S3Error("sea-surface temperature cannot run without the countries land mask")
-
     entries: list[dict[str, Any]] = []
     usable_products = 0
     issue_utc = f"{init[:4]}-{init[4:]}-01T00:00:00Z"

@@ -19,14 +19,14 @@ weight after that source has formed its own ensemble mean. The current core is:
 - one 21-member CMA CPSv3 family mean from the WMO GPC Beijing package when
   every requested target is within redistributed forecast months 1-3;
 - one NASA GEOS-S2S-3 lag/burst family mean for its validated temperature,
-  precipitation, MSLP, and SST products;
+  precipitation, and MSLP products;
 - for 2-m temperature and precipitation only, the two remaining unique NMME
   component fields: NCAR CCSM4 and NCAR CESM1.
 
 For products supported by the standalone CFSv2 adapter, C3S NCEP System 2 and
 NMME CFSv2 are excluded so the rolling blend receives the family's only vote.
-For 850-mb temperature and SST, the current standalone adapter has no numeric
-product, so C3S NCEP remains the single CFSv2-family source. Standalone SEAS5
+For 850-mb temperature, the current standalone adapter has no numeric product,
+so C3S NCEP remains the single CFSv2-family source. Standalone SEAS5
 and JMA are excluded because those systems are supplied by C3S. C3S ECCC and
 the ECCC components in NMME are excluded because CanSIPS represents that
 family. The NMME NASA_GEOS5v2 copy is excluded because the standalone

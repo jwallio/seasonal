@@ -38,7 +38,7 @@ from cfsv2_seasonal import (
     sum_grids,
     write_grid_state,
 )
-from seasonal_products import grid_quality_control, require_quality_control
+from seasonal_products import grid_quality_control, is_retired_product, require_quality_control
 
 
 SOURCE_URLS = [
@@ -70,6 +70,7 @@ NMME_PRODUCTS = frozenset({"2m_temperature_anomaly", "precipitation_anomaly"})
 CFSV2_STANDALONE_PRODUCTS = frozenset(
     {
         "500mb_height_anomaly",
+        "500mb_height_anomaly_nh",
         "2m_temperature_anomaly",
         "precipitation_anomaly",
         "mslp_anomaly",
@@ -83,19 +84,19 @@ PRODUCTS = tuple(c3s.PRODUCT_SPECS)
 
 PRODUCT_LABELS = {
     "500mb_height_anomaly": "500-mb Height Anomaly",
+    "500mb_height_anomaly_nh": "500-mb Height Anomaly · Northern Hemisphere",
     "850mb_temperature_anomaly": "850-mb Temperature Anomaly",
     "2m_temperature_anomaly": "2-m Temperature Anomaly",
     "precipitation_anomaly": "CONUS Precipitation Anomaly",
-    "sea_surface_temperature_anomaly": "Sea-Surface Temperature Anomaly",
     "mslp_anomaly": "MSLP Anomaly",
 }
 
 PRODUCT_TITLES = {
     "500mb_height_anomaly": "Super Ensemble 500-mb Geopotential Height & Anomaly (m)",
+    "500mb_height_anomaly_nh": "Super Ensemble Northern Hemisphere 500-mb Geopotential Height & Anomaly (m)",
     "850mb_temperature_anomaly": "Super Ensemble 850-mb Temperature Anomaly (°C)",
     "2m_temperature_anomaly": "Super Ensemble 2-m Temperature Anomaly (°C)",
     "precipitation_anomaly": "Super Ensemble CONUS Precipitation Anomaly (in)",
-    "sea_surface_temperature_anomaly": "Super Ensemble Sea-Surface Temperature Anomaly (°C)",
     "mslp_anomaly": "Super Ensemble Mean Sea-Level Pressure Anomaly (hPa)",
 }
 
@@ -148,7 +149,7 @@ def canonical_exclusions(product: str) -> list[dict[str, Any]]:
                 "represented_by": GEOS_MEMBER_KEY,
             }
         )
-    if product == "500mb_height_anomaly":
+    if product in {"500mb_height_anomaly", "500mb_height_anomaly_nh"}:
         exclusions.append(
             {
                 "package": "NASA GEOS-S2S-3 APCN z500 archive",
@@ -577,8 +578,7 @@ def load_cansips_member(
     provenance: dict[int, dict[str, dict[str, Any]]],
     errors: dict[int, dict[str, str]],
 ) -> None:
-    product_name = "sst_anomaly" if product == "sea_surface_temperature_anomaly" else product
-    spec = cansips.PRODUCT_SPECS[product_name]
+    spec = cansips.PRODUCT_SPECS[product]
     key = "eccc_cansips_v3"
     last_request = 0.0
     for lead in leads:
@@ -778,7 +778,8 @@ def synthetic_members(
         "850mb_temperature_anomaly": 0.045,
         "2m_temperature_anomaly": 0.045,
         "precipitation_anomaly": 0.025,
-        "sea_surface_temperature_anomaly": 0.025,
+        "snowfall_anomaly": 0.025,
+        "500mb_height_anomaly_nh": 1.0,
         "mslp_anomaly": 0.09,
     }[product]
     for lead in leads:
@@ -798,7 +799,7 @@ def synthetic_members(
                 values.append(value_row)
                 heights.append(height_row)
             member_grids[lead][member.key] = Grid(lons[:], lats[:], values)
-            if product == "500mb_height_anomaly":
+            if product in {"500mb_height_anomaly", "500mb_height_anomaly_nh"}:
                 height_grids[lead][member.key] = Grid(lons[:], lats[:], heights)
             provenance[lead][member.key] = {
                 "source_package": "synthetic style preview",
@@ -943,7 +944,7 @@ def render_product_run(
                     footer_text=included_models_footer(keys, definitions),
                 )
                 entry["image"] = relative_path(output, root)
-                if product == "500mb_height_anomaly":
+                if product in {"500mb_height_anomaly", "500mb_height_anomaly_nh"}:
                     numeric_grid_path = output_dir / init[:8] / f"superensemble_{c3s.PRODUCT_SPECS[product]['variable']}_{target}.csv.gz"
                     write_grid_state(anomaly, numeric_grid_path)
                     entry["numeric_grid"] = relative_path(numeric_grid_path, root)
@@ -1050,7 +1051,7 @@ def render_product_run(
                         footer_text=included_models_footer(keys, definitions),
                     )
                     entry["image"] = relative_path(output, root)
-                    if product == "500mb_height_anomaly":
+                    if product in {"500mb_height_anomaly", "500mb_height_anomaly_nh"}:
                         numeric_grid_path = output_dir / init[:8] / f"superensemble_{c3s.PRODUCT_SPECS[product]['variable']}_{target}.csv.gz"
                         write_grid_state(anomaly, numeric_grid_path)
                         entry["numeric_grid"] = relative_path(numeric_grid_path, root)
@@ -1084,10 +1085,16 @@ def write_manifest(
             continue
         try:
             payload = json.loads(candidate.read_text(encoding="utf-8"))
-            all_entries.extend(run for run in payload.get("runs", []) if isinstance(run, dict))
+            all_entries.extend(
+                run for run in payload.get("runs", [])
+                if isinstance(run, dict) and not is_retired_product(run.get("product"))
+            )
         except (OSError, ValueError) as exc:
             raise SuperEnsembleError(f"could not read prior super-ensemble manifest {candidate}: {exc}") from exc
-    all_entries.extend(entries)
+    all_entries.extend(
+        run for run in entries
+        if isinstance(run, dict) and not is_retired_product(run.get("product"))
+    )
     unique = {str(run["id"]): run for run in all_entries if run.get("id")}
     ordered = sorted(
         unique.values(),
@@ -1200,7 +1207,7 @@ def run(args: argparse.Namespace) -> int:
     output_dir = resolve_path(args.output_dir, root)
     manifest = resolve_path(args.manifest, root)
     previous = resolve_path(args.previous_manifest, root) if args.previous_manifest else None
-    needs_borders = not args.decode_only or "sea_surface_temperature_anomaly" in products
+    needs_borders = not args.decode_only
     borders = ensure_border_files(args, border_cache, root) if needs_borders else []
     systems = c3s.parse_system_overrides(args.systems)
     wgrib2 = "" if args.synthetic_preview else cansips.find_wgrib2(args.wgrib2)

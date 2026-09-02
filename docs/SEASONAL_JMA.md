@@ -24,7 +24,7 @@ catalogue and the live JMA manifest is incomplete. JMA is evaluated separately
 from the full C3S blend, so another late centre does not hold it back. The
 worker can also be started manually from Actions to choose:
 
-- 500-mb height, 850-mb temperature, 2-m temperature, precipitation, SST, or MSLP anomaly
+- 500-mb height, 850-mb temperature, 2-m temperature, precipitation, or MSLP anomaly
 - initialization month or `latest`
 - target lead months
 - seasonal lead-month window

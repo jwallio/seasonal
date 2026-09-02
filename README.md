@@ -44,11 +44,12 @@ The common comparison suite includes:
 - CONUS precipitation anomalies
 - CONUS snowfall liquid-water-equivalent departures
 - Mean sea-level pressure anomalies
-- Sea-surface temperature anomalies
 
-Additional provider-specific products include snow depth, absolute fields,
-sea-surface height, 200-mb fields, probability categories, and other native
-parameters where the source supports them.
+The 500-mb height field keeps its established North America view and also has
+an optional Northern Hemisphere view. Other seasonal map fields use a CONUS
+frame. Additional provider-specific products include snow depth, absolute
+fields, sea-surface height, 200-mb fields, probability categories, and other
+native parameters where the source supports them.
 
 Shared comparison conventions include fixed cross-provider scales for 500-mb
 height and temperature. Precipitation is rendered in accumulated inches.
@@ -198,6 +199,8 @@ output smoke tests.
 python tests/test_pipeline_contract.py
 python tests/test_seasonal_catalog.py
 python tests/test_seasonal_dashboard_contract.py
+python tests/test_seasonal_share_images.py
+python tests/test_seasonal_thumbnails.py
 python tests/test_seasonal_release_check.py
 python tests/test_seasonal_schedules.py
 python tests/smoke_outputs.py

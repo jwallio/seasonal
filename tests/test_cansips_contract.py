@@ -55,9 +55,9 @@ def main() -> int:
         "GEM5.2-NEMO", "CanESM5", "CANSIPS_HINDCAST_START = 1991",
         "CANSIPS_HINDCAST_END = 2020", "ens_processing", "forecast mean",
         "matching-initialization-month", "500mb_height_anomaly", "850mb_temperature_anomaly",
-        "2m_temperature_anomaly", "precipitation_anomaly", "mslp_anomaly", "sst_anomaly",
+        "2m_temperature_anomaly", "precipitation_anomaly", "mslp_anomaly", "500mb_height_anomaly_nh",
         "sea_surface_height_anomaly", "AirTemp", "AGL-2m", "ISBL-0850", "PrecipRate",
-        "Pressure", "WaterTemp", "SeaSfcHeight-Geoid", "PRODUCT_ALL", "ANOMALY_PALETTE",
+        "Pressure", "SeaSfcHeight-Geoid", "PRODUCT_ALL", "ANOMALY_PALETTE",
         "ANOMALY_TICKS", "seasonal_period_label", "DJF", "write_manifest",
         "--climo-start", "--climo-end", "--previous-manifest", "--retain-runs",
         "CANSIPS_DOWNLOAD_ATTEMPTS", "CANSIPS_DOWNLOAD_TIMEOUT",
@@ -94,6 +94,8 @@ def main() -> int:
     check((height_spec["anomaly_min"], height_spec["anomaly_max"]) == (-100.0, 100.0), "CanSIPS 500-mb should use the shared ±100 m range")
     check(height_spec["anomaly_ticks"] == list(range(-100, 101, 10)), "CanSIPS 500-mb should use 10-metre labelled bounds")
     check(len(module.ANOMALY_PALETTE) == len(module.ANOMALY_TICKS) - 1, "CanSIPS height anomaly colors must align with labelled bounds")
+    northern_height = module.PRODUCT_SPECS[module.PRODUCT_Z500_ANOMALY_NH]
+    check(northern_height["projection"] == "north_polar_stereographic", "CanSIPS Northern Hemisphere 500-mb view must use the polar projection")
     check(len(module.SSH_ANOMALY_PALETTE) == len(module.SSH_ANOMALY_TICKS) - 1, "CanSIPS sea-surface height colors must align with labelled bounds")
     for product in (module.PRODUCT_850MB_TEMPERATURE_ANOMALY, module.PRODUCT_2M_TEMPERATURE_ANOMALY):
         temperature_spec = module.PRODUCT_SPECS[product]
@@ -101,8 +103,7 @@ def main() -> int:
         check(temperature_spec["anomaly_ticks"] == list(range(-7, 8)), f"CanSIPS {product} should use 1 °C labelled bounds")
         check(len(temperature_spec["anomaly_ticks"]) == len(temperature_spec["anomaly_palette"]) + 1, f"CanSIPS {product} bounds must align with colors")
     check((module.PRODUCT_SPECS[module.PRODUCT_MSLP_ANOMALY]["anomaly_min"], module.PRODUCT_SPECS[module.PRODUCT_MSLP_ANOMALY]["anomaly_max"]) == (-10.0, 10.0), "CanSIPS MSLP should use the readable shared ±10 hPa range")
-    check((module.PRODUCT_SPECS[module.PRODUCT_SST_ANOMALY]["anomaly_min"], module.PRODUCT_SPECS[module.PRODUCT_SST_ANOMALY]["anomaly_max"]) == (-3.0, 3.0), "CanSIPS SST should use a seasonal-scale ±3°C range")
-    for ocean_product in (module.PRODUCT_SST_ANOMALY, module.PRODUCT_SEA_SURFACE_HEIGHT_ANOMALY):
+    for ocean_product in (module.PRODUCT_SEA_SURFACE_HEIGHT_ANOMALY,):
         check(module.PRODUCT_SPECS[ocean_product]["map_domain"] == "ocean", f"CanSIPS {ocean_product} must mask land")
         check(len(module.PRODUCT_SPECS[ocean_product]["anomaly_ticks"]) == len(module.PRODUCT_SPECS[ocean_product]["anomaly_palette"]) + 1, f"CanSIPS {ocean_product} bounds must align with colors")
     with tempfile.TemporaryDirectory() as temporary:

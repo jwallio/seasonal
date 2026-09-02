@@ -173,6 +173,13 @@ DEFAULT_REGION = (-160.0, -10.0, 22.0, 85.0)
 # This is a render crop only; provider download areas remain deliberately
 # larger for edge-data coverage.
 CONUS_PRECIP_REGION = (-126.0, -66.0, 24.0, 50.0)
+# Shared alias for all lower-48 seasonal fields, including non-precipitation
+# parameters.  Keep the historical constant above for compatibility with
+# provider adapters and cached manifests.
+CONUS_REGION = CONUS_PRECIP_REGION
+# A separate polar view keeps the existing North America 500-mb frame intact
+# while making the complete Northern Hemisphere available from the same data.
+NORTHERN_HEMISPHERE_REGION = (-180.0, 180.0, 0.0, 90.0)
 # The renderer uses these names when a CONUS product requests a land-only
 # frame. Keeping the list here lets every provider share the same lower-48
 # crop instead of relying on a provider-specific lon/lat rectangle.
@@ -197,6 +204,7 @@ SEASONAL_LCC_STANDARD_PARALLEL_1 = 30.0
 SEASONAL_LCC_STANDARD_PARALLEL_2 = 60.0
 SEASONAL_LCC_LATITUDE_ORIGIN = 45.0
 SEASONAL_LCC_CENTRAL_LONGITUDE = -100.0
+SEASONAL_NORTH_POLAR_STEREOGRAPHIC_PROJECTION_NAME = "North Polar Stereographic"
 DEFAULT_BORDER_URLS = (
     (
         "countries.geojson",
@@ -209,6 +217,7 @@ DEFAULT_BORDER_URLS = (
 )
 
 PRODUCT_HEIGHT_ANOMALY = "500mb_height_anomaly"
+PRODUCT_HEIGHT_ANOMALY_NH = "500mb_height_anomaly_nh"
 PRODUCT_HEIGHT_ABSOLUTE = "500mb_height_absolute"
 PRODUCT_2M_TEMPERATURE_ANOMALY = "2m_temperature_anomaly"
 PRODUCT_MSLP_ANOMALY = "mslp_anomaly"
@@ -236,6 +245,7 @@ PRODUCT_SPECS = {
         "title": "CFSv2 500-mb Geopotential Height & Anomaly (m)",
         "absolute_title": "CFSv2 500-mb Geopotential Height (m)",
         "height_contours": True,
+        "region": DEFAULT_REGION,
         "baseline_root": NCEI_CALIBRATION_ROOT,
         "baseline_label": NCEI_CALIBRATION_LABEL,
         "seasonal_reducer": "mean",
@@ -263,6 +273,7 @@ PRODUCT_SPECS = {
         "title": "CFSv2 500-mb Geopotential Height & Anomaly (m)",
         "absolute_title": "CFSv2 500-mb Geopotential Height (m)",
         "height_contours": True,
+        "region": DEFAULT_REGION,
         "baseline_root": NCEI_CALIBRATION_ROOT,
         "baseline_label": NCEI_CALIBRATION_LABEL,
         "seasonal_reducer": "mean",
@@ -285,7 +296,7 @@ PRODUCT_SPECS = {
         "file_token": "t2ma",
         "title": "CFSv2 2-m Temperature Anomaly (°C)",
         "absolute_title": "CFSv2 2-m Temperature (°C)",
-        "region": DEFAULT_REGION,
+        "region": CONUS_REGION,
         "height_contours": False,
         "baseline_root": NCEI_FLUX_CALIBRATION_ROOT,
         "baseline_label": NCEI_FLUX_CALIBRATION_LABEL,
@@ -315,7 +326,7 @@ PRODUCT_SPECS = {
         "file_token": "mslpa",
         "title": "CFSv2 Mean Sea-Level Pressure Anomaly (hPa)",
         "absolute_title": "CFSv2 Mean Sea-Level Pressure (hPa)",
-        "region": DEFAULT_REGION,
+        "region": CONUS_REGION,
         "height_contours": False,
         "baseline_root": NCEI_CALIBRATION_ROOT,
         "baseline_label": NCEI_CALIBRATION_LABEL,
@@ -346,8 +357,8 @@ PRODUCT_SPECS = {
         "state_tag": "prate_in",
         "id_token": "prate-anomaly",
         "file_token": "pratea",
-        "title": "CFSv2 CONUS Precipitation Anomaly (in)",
-        "absolute_title": "CFSv2 CONUS Precipitation (in)",
+        "title": "CFSv2 Precipitation Anomaly (in)",
+        "absolute_title": "CFSv2 Precipitation (in)",
         "region": CONUS_PRECIP_REGION,
         "height_contours": False,
         "baseline_root": NCEI_FLUX_CALIBRATION_ROOT,
@@ -387,6 +398,23 @@ PRODUCT_SPECS = {
         "map_domain": "land",
     },
 }
+
+# Both 500-mb views decode the same NOMADS field and share the rolling cache;
+# only the published image framing and output token differ.
+PRODUCT_SPECS[PRODUCT_HEIGHT_ANOMALY_NH] = {
+    **PRODUCT_SPECS[PRODUCT_HEIGHT_ANOMALY],
+    "name": PRODUCT_HEIGHT_ANOMALY_NH,
+    "id_token": "z500a-nh",
+    "file_token": "z500a-nh",
+    "region": NORTHERN_HEMISPHERE_REGION,
+    "projection": "north_polar_stereographic",
+    "projection_central_longitude": 0.0,
+    "title": "CFSv2 Northern Hemisphere 500-mb Geopotential Height & Anomaly (m)",
+    "absolute_title": "CFSv2 Northern Hemisphere 500-mb Geopotential Height (m)",
+    "header_detail": "{source_label}  •  {baseline_label}  •  Height contours in dam  •  Northern Hemisphere",
+}
+
+HEIGHT_ANOMALY_PRODUCTS = frozenset({PRODUCT_HEIGHT_ANOMALY, PRODUCT_HEIGHT_ANOMALY_NH})
 
 
 class CFSv2Error(RuntimeError):
@@ -1759,55 +1787,89 @@ def render_map(
     if np.any(np.diff(source_lons) <= 0.0) or np.any(np.diff(source_lats) <= 0.0):
         raise CFSv2Error("decoded CFSv2 grid longitude/latitude coordinates must be sorted")
 
-    # Match the shared North America Lambert Conformal Conic defaults unless
-    # a regional product supplies its own center and framing parameters.
-    standard_parallel_1 = np.deg2rad(
-        float(product_spec.get("projection_standard_parallel_1", SEASONAL_LCC_STANDARD_PARALLEL_1))
-    )
-    standard_parallel_2 = np.deg2rad(
-        float(product_spec.get("projection_standard_parallel_2", SEASONAL_LCC_STANDARD_PARALLEL_2))
-    )
-    latitude_origin = np.deg2rad(
-        float(product_spec.get("projection_latitude_origin", SEASONAL_LCC_LATITUDE_ORIGIN))
-    )
-    central_longitude = np.deg2rad(
-        float(product_spec.get("projection_central_longitude", SEASONAL_LCC_CENTRAL_LONGITUDE))
-    )
-    n_coefficient = np.log(np.cos(standard_parallel_1) / np.cos(standard_parallel_2)) / np.log(
-            np.tan(np.pi / 4.0 + standard_parallel_2 / 2.0)
-            / np.tan(np.pi / 4.0 + standard_parallel_1 / 2.0)
-    )
-    scale = (
-        np.cos(standard_parallel_1)
-        * np.tan(np.pi / 4.0 + standard_parallel_1 / 2.0) ** n_coefficient
-        / n_coefficient
-    )
-    origin_radius = scale / np.tan(np.pi / 4.0 + latitude_origin / 2.0) ** n_coefficient
+    projection_kind = str(product_spec.get("projection", "lambert_conformal_conic")).strip().lower()
+    if projection_kind == "north_polar_stereographic":
+        # Normalized north-polar stereographic coordinates put the pole at
+        # the origin and the equator at radius two.  The square canvas is
+        # masked outside the requested hemisphere, so no southern-hemisphere
+        # interpolation or border bleed can appear in the corners.
+        polar_central_longitude = np.deg2rad(
+            float(product_spec.get("projection_central_longitude", 0.0))
+        )
 
-    def lcc_project(lon_values, lat_values):
-        longitude = np.deg2rad(np.asarray(lon_values, dtype=float))
-        latitude = np.deg2rad(np.clip(np.asarray(lat_values, dtype=float), -89.5, 89.5))
-        radius = scale / np.tan(np.pi / 4.0 + latitude / 2.0) ** n_coefficient
-        angle = n_coefficient * (longitude - central_longitude)
-        return radius * np.sin(angle), origin_radius - radius * np.cos(angle)
+        def map_project(lon_values, lat_values):
+            longitude = np.deg2rad(np.asarray(lon_values, dtype=float))
+            latitude = np.deg2rad(np.clip(np.asarray(lat_values, dtype=float), -89.5, 89.5))
+            radius = 2.0 * np.tan(np.pi / 4.0 - latitude / 2.0)
+            angle = longitude - polar_central_longitude
+            return radius * np.sin(angle), -radius * np.cos(angle)
 
-    # Operational map frames use a rectangular projected window rather than
-    # the bounding box of a lon/lat rectangle. Anchor the horizontal edges at
-    # the projection origin and the vertical edges on the requested latitude
-    # span; this keeps the map filled in all four corners and centers Greenland
-    # over North America without exposing South America.
-    horizontal_x, _ = lcc_project(
-        np.asarray([lon_min, lon_max]),
-        np.full(2, np.rad2deg(latitude_origin)),
-    )
-    _, bottom_y = lcc_project(
-        np.asarray([np.rad2deg(central_longitude)]),
-        np.asarray([lat_min]),
-    )
-    top_edge_lons = np.linspace(lon_min, lon_max, 240)
-    _, top_edge_y = lcc_project(top_edge_lons, np.full(top_edge_lons.shape, lat_max))
-    x_min, x_max = float(np.nanmin(horizontal_x)), float(np.nanmax(horizontal_x))
-    y_min, y_max = float(np.nanmin(bottom_y)), float(np.nanmax(top_edge_y))
+        def map_inverse(x_values, y_values):
+            x_array = np.asarray(x_values, dtype=float)
+            y_array = np.asarray(y_values, dtype=float)
+            radius = np.hypot(x_array, y_array)
+            latitude = np.pi / 2.0 - 2.0 * np.arctan(radius / 2.0)
+            longitude = polar_central_longitude + np.arctan2(x_array, -y_array)
+            return np.rad2deg(longitude), np.rad2deg(latitude)
+
+        polar_equator_radius = 2.0 * np.tan(
+            np.pi / 4.0 - np.deg2rad(max(0.0, min(90.0, lat_min))) / 2.0
+        )
+        x_min, x_max = -float(polar_equator_radius), float(polar_equator_radius)
+        y_min, y_max = -float(polar_equator_radius), float(polar_equator_radius)
+    elif projection_kind == "lambert_conformal_conic":
+        # Match the shared North America Lambert Conformal Conic defaults
+        # unless a regional product supplies its own center and framing.
+        standard_parallel_1 = np.deg2rad(
+            float(product_spec.get("projection_standard_parallel_1", SEASONAL_LCC_STANDARD_PARALLEL_1))
+        )
+        standard_parallel_2 = np.deg2rad(
+            float(product_spec.get("projection_standard_parallel_2", SEASONAL_LCC_STANDARD_PARALLEL_2))
+        )
+        latitude_origin = np.deg2rad(
+            float(product_spec.get("projection_latitude_origin", SEASONAL_LCC_LATITUDE_ORIGIN))
+        )
+        central_longitude = np.deg2rad(
+            float(product_spec.get("projection_central_longitude", SEASONAL_LCC_CENTRAL_LONGITUDE))
+        )
+        n_coefficient = np.log(np.cos(standard_parallel_1) / np.cos(standard_parallel_2)) / np.log(
+                np.tan(np.pi / 4.0 + standard_parallel_2 / 2.0)
+                / np.tan(np.pi / 4.0 + standard_parallel_1 / 2.0)
+        )
+        scale = (
+            np.cos(standard_parallel_1)
+            * np.tan(np.pi / 4.0 + standard_parallel_1 / 2.0) ** n_coefficient
+            / n_coefficient
+        )
+        origin_radius = scale / np.tan(np.pi / 4.0 + latitude_origin / 2.0) ** n_coefficient
+
+        def map_project(lon_values, lat_values):
+            longitude = np.deg2rad(np.asarray(lon_values, dtype=float))
+            latitude = np.deg2rad(np.clip(np.asarray(lat_values, dtype=float), -89.5, 89.5))
+            radius = scale / np.tan(np.pi / 4.0 + latitude / 2.0) ** n_coefficient
+            angle = n_coefficient * (longitude - central_longitude)
+            return radius * np.sin(angle), origin_radius - radius * np.cos(angle)
+
+        # Operational map frames use a rectangular projected window rather
+        # than the bounding box of a lon/lat rectangle. Anchor the horizontal
+        # edges at the projection origin and the vertical edges on the
+        # requested latitude span; this keeps the map filled in all four
+        # corners and centers Greenland over North America.
+        horizontal_x, _ = map_project(
+            np.asarray([lon_min, lon_max]),
+            np.full(2, np.rad2deg(latitude_origin)),
+        )
+        _, bottom_y = map_project(
+            np.asarray([np.rad2deg(central_longitude)]),
+            np.asarray([lat_min]),
+        )
+        top_edge_lons = np.linspace(lon_min, lon_max, 240)
+        _, top_edge_y = map_project(top_edge_lons, np.full(top_edge_lons.shape, lat_max))
+        x_min, x_max = float(np.nanmin(horizontal_x)), float(np.nanmax(horizontal_x))
+        y_min, y_max = float(np.nanmin(bottom_y)), float(np.nanmax(top_edge_y))
+    else:
+        raise CFSv2Error(f"unsupported seasonal map projection {projection_kind!r}")
+
     projected_x_shift = (x_max - x_min) * float(
         product_spec.get("projected_x_shift_fraction", PROJECTED_X_SHIFT_FRACTION)
     )
@@ -1833,15 +1895,16 @@ def render_map(
     if source_smoothing_sigma > 0.0 and resampling_method != "bicubic":
         raise CFSv2Error("map source smoothing requires bicubic resampling")
 
-    def lcc_inverse(x_values, y_values):
-        x_array = np.asarray(x_values, dtype=float)
-        y_array = np.asarray(y_values, dtype=float)
-        rho = np.hypot(x_array, origin_radius - y_array)
-        rho = np.where(rho == 0.0, np.finfo(float).eps, rho)
-        angle = np.arctan2(x_array, origin_radius - y_array)
-        latitude = 2.0 * np.arctan((scale / rho) ** (1.0 / n_coefficient)) - np.pi / 2.0
-        longitude = central_longitude + angle / n_coefficient
-        return np.rad2deg(longitude), np.rad2deg(latitude)
+    if projection_kind == "lambert_conformal_conic":
+        def map_inverse(x_values, y_values):
+            x_array = np.asarray(x_values, dtype=float)
+            y_array = np.asarray(y_values, dtype=float)
+            rho = np.hypot(x_array, origin_radius - y_array)
+            rho = np.where(rho == 0.0, np.finfo(float).eps, rho)
+            angle = np.arctan2(x_array, origin_radius - y_array)
+            latitude = 2.0 * np.arctan((scale / rho) ** (1.0 / n_coefficient)) - np.pi / 2.0
+            longitude = central_longitude + angle / n_coefficient
+            return np.rad2deg(longitude), np.rad2deg(latitude)
 
     def sample_source(field, longitude_values, latitude_values):
         if resampling_method == "bicubic" and np.isfinite(field).all():
@@ -1894,13 +1957,18 @@ def render_map(
         )
         return values
 
-    canvas_lons, canvas_lats = lcc_inverse(canvas_x_mesh, canvas_y_mesh)
+    canvas_lons, canvas_lats = map_inverse(canvas_x_mesh, canvas_y_mesh)
     data = sample_source(source_data, canvas_lons, canvas_lats)
     height_data = (
         sample_source(source_height, canvas_lons, canvas_lats)
         if source_height is not None
         else None
     )
+    if projection_kind == "north_polar_stereographic":
+        polar_valid = (canvas_lats >= lat_min) & (canvas_lats <= lat_max)
+        data = np.ma.masked_where(~polar_valid, data)
+        if height_data is not None:
+            height_data = np.ma.masked_where(~polar_valid, height_data)
 
     # Match a 1080x1080 social-media footprint. Size the map box from the
     # projected bounds so the LCC geometry remains undistorted at square size.
@@ -1930,11 +1998,11 @@ def render_map(
     # height field. The map remains intentionally free of axis tick clutter.
     for longitude_line in range(math.ceil(lon_min / 20.0) * 20, math.floor(lon_max / 20.0) * 20 + 1, 20):
         line_lats = np.linspace(lat_min, lat_max, 240)
-        line_x, line_y = lcc_project(np.full(line_lats.shape, longitude_line), line_lats)
+        line_x, line_y = map_project(np.full(line_lats.shape, longitude_line), line_lats)
         axes.plot(line_x, line_y, color="#70808a", linewidth=0.35, alpha=0.34, linestyle=(0, (1, 3)), zorder=1)
     for latitude_line in range(math.ceil(lat_min / 10.0) * 10, math.floor(lat_max / 10.0) * 10 + 1, 10):
         line_lons = np.linspace(lon_min, lon_max, 300)
-        line_x, line_y = lcc_project(line_lons, np.full(line_lons.shape, latitude_line))
+        line_x, line_y = map_project(line_lons, np.full(line_lons.shape, latitude_line))
         axes.plot(line_x, line_y, color="#70808a", linewidth=0.35, alpha=0.34, linestyle=(0, (1, 3)), zorder=1)
 
     masked = np.ma.masked_invalid(data)
@@ -1955,9 +2023,9 @@ def render_map(
                 f"{product_spec['name']} requires the {mask_label} land mask to render its {map_domain}-only domain"
             )
         # Domain-specific products must not display model fill or extrapolated
-        # values where the parameter is undefined.  In particular, several
-        # seasonal archives encode SST and sea-surface height at every grid
-        # point even though their land values are not geophysical ocean data.
+        # values where the parameter is undefined.  Some seasonal archives
+        # encode ocean-only fields at every grid point even though their land
+        # values are not geophysical ocean data.
         masked = np.ma.masked_where(
             ~land_mask if map_domain == "land" else land_mask,
             masked,
@@ -2087,7 +2155,7 @@ def render_map(
         segments = []
         current = []
         previous_lon = None
-        border_lat_min = 14.0
+        border_lat_min = max(0.0, min(14.0, lat_min))
         for point in ring:
             if len(point) < 2:
                 continue
@@ -2108,7 +2176,7 @@ def render_map(
                 if len(current) > 1:
                     segments.append(current)
                 current = []
-            point_x, point_y = lcc_project(np.array([longitude]), np.array([latitude]))
+            point_x, point_y = map_project(np.array([longitude]), np.array([latitude]))
             current.append((float(point_x[0]), float(point_y[0])))
             previous_lon = longitude
         if len(current) > 1:
@@ -2204,12 +2272,36 @@ def render_map(
     if title_box.width > available_title_width:
         title_text.set_fontsize(max(12.5, 15.5 * available_title_width / title_box.width))
     source_label = product_spec.get("source_label", "NOAA CFSv2 / NOMADS")
+    display_baseline_label = re.sub(
+        r"\s*\(cached\s+[^)]*fallback\)\s*$",
+        "",
+        str(baseline_label),
+        flags=re.IGNORECASE,
+    ).strip()
+
+    def fit_header_artist(artist: object, minimum_fontsize: float) -> None:
+        """Keep one-line image metadata inside the right figure margin."""
+
+        figure.canvas.draw()
+        artist_box = artist.get_window_extent(renderer=figure.canvas.get_renderer())
+        available_width = max(
+            1.0,
+            (0.965 - float(artist.get_position()[0])) * figure.bbox.width,
+        )
+        if artist_box.width > available_width:
+            artist.set_fontsize(
+                max(
+                    minimum_fontsize,
+                    float(artist.get_fontsize()) * available_width / artist_box.width,
+                )
+            )
+
     configured_header_summary = product_spec.get("header_summary")
     if configured_header_summary:
         header_summary = str(configured_header_summary).format(
             source_label=source_label,
             baseline_label=(
-                "Absolute field smoke output" if not anomaly else baseline_label
+                "Absolute field smoke output" if not anomaly else display_baseline_label
             ),
             period_label=display_period,
         )
@@ -2217,7 +2309,7 @@ def render_map(
         init_text = initialization_label or f"Init {init_date:%d %b %Y %HZ}"
         lead_label = str(product_spec.get("lead_label", f"Lead {lead}"))
         header_summary = f"{init_text}  •  {lead_label}  •  {mean_label}"
-    figure.text(
+    header_summary_text = figure.text(
         0.035,
         0.925,
         header_summary,
@@ -2226,30 +2318,31 @@ def render_map(
         fontsize=10.5,
         color="#42515d",
     )
+    fit_header_artist(header_summary_text, 8.4)
     if not product_spec.get("suppress_header_detail"):
         configured_header_detail = product_spec.get("header_detail", "")
         if configured_header_detail:
             header_detail = configured_header_detail.format(
                 source_label=source_label,
                 baseline_label=(
-                    "Absolute field smoke output" if not anomaly else baseline_label
+                    "Absolute field smoke output" if not anomaly else display_baseline_label
                 ),
             )
         elif product_spec["height_contours"]:
             header_detail = (
-                f"{source_label}  •  {baseline_label}  •  Height contours in dam"
+                f"{source_label}  •  {display_baseline_label}  •  Height contours in dam"
                 if anomaly
                 else f"{source_label}  •  Absolute field smoke output  •  Height contours in dam"
             )
         else:
             header_detail = (
-                f"{source_label}  •  {baseline_label}  •  Precipitation accumulation (in)  •  CONUS domain"
+                f"{source_label}  •  {display_baseline_label}  •  Precipitation accumulation (in)  •  CONUS domain"
             )
         if product_spec["name"] == PRODUCT_SWE_ANOMALY:
             header_detail = (
-                f"{source_label}  •  {baseline_label}  •  Snow-water equivalent (in)  •  CONUS domain"
+                f"{source_label}  •  {display_baseline_label}  •  Snow-water equivalent (in)  •  CONUS domain"
             )
-        figure.text(
+        header_detail_text = figure.text(
             0.035,
             0.899,
             header_detail,
@@ -2258,6 +2351,7 @@ def render_map(
             fontsize=8.2,
             color="#5d6b75",
         )
+        fit_header_artist(header_detail_text, 6.4)
     colorbar_bottom = max(colorbar_floor, map_bottom - colorbar_gap - colorbar_height)
     colorbar_axes = figure.add_axes([map_left, colorbar_bottom, map_width, colorbar_height])
     colorbar_options = {"ticks": colorbar_ticks}
@@ -2561,7 +2655,7 @@ def run(args: argparse.Namespace) -> int:
         "status": "planned",
         "targets": [],
     }
-    common_reference_enabled = bool(common_reference_dir or args.common_reference_url) and product_name == PRODUCT_HEIGHT_ANOMALY
+    common_reference_enabled = bool(common_reference_dir or args.common_reference_url) and product_name in HEIGHT_ANOMALY_PRODUCTS
     if common_reference_enabled:
         run_entry["comparison_reference"] = {
             "id": "common_1991_2020",
@@ -2742,7 +2836,7 @@ def run(args: argparse.Namespace) -> int:
                 product_spec=product,
             )
             target_entry["image"] = relative_path(output_path, repo_root)
-            if product_name == PRODUCT_HEIGHT_ANOMALY:
+            if product_name in HEIGHT_ANOMALY_PRODUCTS:
                 numeric_grid_path = output_dir / init / f"cfsv2_{product['file_token']}_{target}.csv.gz"
                 write_grid_state(anomaly_grid, numeric_grid_path)
                 target_entry["numeric_grid"] = relative_path(numeric_grid_path, repo_root)
@@ -2961,7 +3055,7 @@ def run(args: argparse.Namespace) -> int:
                 product_spec=product,
             )
             seasonal_entry["image"] = relative_path(output_path, repo_root)
-            if product_name == PRODUCT_HEIGHT_ANOMALY:
+            if product_name in HEIGHT_ANOMALY_PRODUCTS:
                 numeric_grid_path = output_dir / init / f"cfsv2_{product['file_token']}_{first_target}-{last_target}.csv.gz"
                 write_grid_state(seasonal_grid, numeric_grid_path)
                 seasonal_entry["numeric_grid"] = relative_path(numeric_grid_path, repo_root)

@@ -63,7 +63,6 @@ def main() -> int:
         "precipitation_anomaly",
         "snowfall_anomaly",
         "snow_depth_anomaly",
-        "sst_anomaly",
         "mslp_anomaly",
         "CDS_API_KEY",
         "CDS_LICENSE_URL",
@@ -114,6 +113,9 @@ def main() -> int:
     check(height_spec["anomaly_palette"] == module.ANOMALY_PALETTE, "SEAS5 500-mb should use the shared 500-mb anomaly palette")
     check((height_spec["anomaly_min"], height_spec["anomaly_max"]) == (-100.0, 100.0), "SEAS5 500-mb should use the shared ±100 m range")
     check(height_spec["anomaly_ticks"] == list(range(-100, 101, 10)), "SEAS5 500-mb should use 10-metre labelled bounds")
+    northern_height = module.PRODUCT_SPECS["500mb_height_anomaly_nh"]
+    check(northern_height["region"] == module.NORTHERN_HEMISPHERE_REGION, "SEAS5 Northern Hemisphere 500-mb view must use the polar region")
+    check(northern_height["projection"] == "north_polar_stereographic", "SEAS5 Northern Hemisphere 500-mb view must use the polar projection")
     for product in (module.T850_ANOMALY, module.T2M_ANOMALY):
         temperature_spec = module.PRODUCT_SPECS[product]
         check((temperature_spec["anomaly_min"], temperature_spec["anomaly_max"]) == (-7.0, 7.0), f"SEAS5 {product} should use the shared ±7 °C range")
@@ -124,9 +126,6 @@ def main() -> int:
     check((snowfall_spec["anomaly_min"], snowfall_spec["anomaly_max"]) == (-0.8, 0.8), "SEAS5 snowfall should use a ±0.8 inch water-equivalent range")
     check(snowfall_spec["anomaly_ticks"] == [round(-0.8 + 0.1 * i, 1) for i in range(17)], "SEAS5 snowfall should use tenths-of-an-inch labelled bounds")
     check(len(snowfall_spec["anomaly_ticks"]) == len(snowfall_spec["anomaly_palette"]) + 1, "SEAS5 snowfall bounds must align with swatches")
-    sst_spec = module.PRODUCT_SPECS[module.SST_ANOMALY]
-    check(sst_spec["map_domain"] == "ocean", "SEAS5 SST must mask land")
-    check(len(sst_spec["anomaly_ticks"]) == len(sst_spec["anomaly_palette"]) + 1, "SEAS5 SST bounds must align with swatches")
     mslp_spec = module.PRODUCT_SPECS[module.MSLP_ANOMALY]
     check((mslp_spec["anomaly_min"], mslp_spec["anomaly_max"]) == (-10.0, 10.0), "SEAS5 MSLP should use ±10 hPa")
     check(len(mslp_spec["anomaly_ticks"]) == len(mslp_spec["anomaly_palette"]) + 1, "SEAS5 MSLP bounds must align with swatches")

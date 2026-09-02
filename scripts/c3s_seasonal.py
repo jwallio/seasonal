@@ -23,10 +23,12 @@ import numpy as np
 from cfsv2_seasonal import (
     ANOMALY_PALETTE,
     ANOMALY_TICKS,
+    CONUS_REGION,
     CONUS_PRECIP_REGION,
     CONUS_STATE_NAMES,
     DEFAULT_REGION,
     Grid,
+    NORTHERN_HEMISPHERE_REGION,
     TEMPERATURE_ANOMALY_MAX_C,
     TEMPERATURE_ANOMALY_MIN_C,
     TEMPERATURE_ANOMALY_PALETTE,
@@ -42,7 +44,7 @@ from cfsv2_seasonal import (
     sum_grids,
 )
 from seas5_seasonal import grid_from_grib
-from seasonal_products import grid_quality_control, require_quality_control
+from seasonal_products import grid_quality_control, is_retired_product, require_quality_control
 
 
 CDS_API_ROOT = "https://cds.climate.copernicus.eu/api"
@@ -54,6 +56,7 @@ PRESSURE_SOURCE_URL = "https://cds.climate.copernicus.eu/datasets/seasonal-postp
 SINGLE_SOURCE_URL = "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-single-levels"
 LICENSE_URL = "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-pressure-levels?tab=download#manage-licences"
 NORTH_AMERICA_AREA = [90.0, -170.0, 15.0, 0.0]
+NORTHERN_HEMISPHERE_AREA = [90.0, -180.0, 0.0, 180.0]
 SNOWFALL_ANOMALY_MIN_IN = -0.8
 SNOWFALL_ANOMALY_MAX_IN = 0.8
 SNOWFALL_ANOMALY_TICKS = [round(SNOWFALL_ANOMALY_MIN_IN + 0.1 * i, 1) for i in range(17)]
@@ -79,7 +82,6 @@ CENTRES: dict[str, dict[str, Any]] = {
 }
 
 MSLP_PALETTE = ANOMALY_PALETTE
-SST_PALETTE = ["#28567f", "#5b9fba", "#b4d6dc", "#ffffff", "#efb6b5", "#b84c5a"]
 PRECIP_PALETTE = [
     "#7f3b08", "#914b0d", "#a6611a", "#bd7a2d", "#d0a052", "#dfbd7d",
     "#ead8b3", "#ffffff", "#e5f1dc", "#c8e4bf", "#aad89f", "#86c879",
@@ -100,7 +102,7 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
     "850mb_temperature_anomaly": {
         "name": "850mb_temperature_anomaly", "variable": "t850", "field": "t850_anomaly",
         "raw_field": "temperature anomaly", "raw_units": "K", "units": "°C",
-        "seasonal_units": "°C", "height_contours": False, "region": DEFAULT_REGION,
+        "seasonal_units": "°C", "height_contours": False, "region": CONUS_REGION,
         "monthly_reducer": "mean", "seasonal_reducer": "mean", "anomaly_min": TEMPERATURE_ANOMALY_MIN_C,
         "anomaly_max": TEMPERATURE_ANOMALY_MAX_C, "anomaly_ticks": TEMPERATURE_ANOMALY_TICKS, "anomaly_palette": TEMPERATURE_ANOMALY_PALETTE,
         "cds_dataset": PRESSURE_DATASET, "cds_variable": "temperature_anomaly",
@@ -109,7 +111,7 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
     "2m_temperature_anomaly": {
         "name": "2m_temperature_anomaly", "variable": "t2m", "field": "t2m_anomaly",
         "raw_field": "2-m temperature anomaly", "raw_units": "K", "units": "°C",
-        "seasonal_units": "°C", "height_contours": False, "region": DEFAULT_REGION,
+        "seasonal_units": "°C", "height_contours": False, "region": CONUS_REGION,
         "monthly_reducer": "mean", "seasonal_reducer": "mean", "anomaly_min": TEMPERATURE_ANOMALY_MIN_C,
         "anomaly_max": TEMPERATURE_ANOMALY_MAX_C, "anomaly_ticks": TEMPERATURE_ANOMALY_TICKS, "anomaly_palette": TEMPERATURE_ANOMALY_PALETTE,
         "cds_dataset": SINGLE_DATASET, "cds_variable": "2m_temperature_anomaly",
@@ -134,23 +136,22 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "cds_dataset": SINGLE_DATASET,
         "cds_variable": "snowfall_anomalous_rate_of_accumulation",
     },
-    "sea_surface_temperature_anomaly": {
-        "name": "sea_surface_temperature_anomaly", "variable": "sst", "field": "sst_anomaly",
-        "raw_field": "sea-surface temperature anomaly", "raw_units": "K", "units": "°C",
-        "seasonal_units": "°C", "height_contours": False, "region": DEFAULT_REGION,
-        "monthly_reducer": "mean", "seasonal_reducer": "mean", "anomaly_min": -3.0,
-        "anomaly_max": 3.0, "anomaly_ticks": list(range(-3, 4)), "anomaly_palette": SST_PALETTE,
-        "map_domain": "ocean",
-        "cds_dataset": SINGLE_DATASET, "cds_variable": "sea_surface_temperature_anomaly",
-    },
     "mslp_anomaly": {
         "name": "mslp_anomaly", "variable": "slp", "field": "mslp_anomaly",
         "raw_field": "mean sea-level pressure anomaly", "raw_units": "Pa", "units": "hPa",
-        "seasonal_units": "hPa", "height_contours": False, "region": DEFAULT_REGION,
+        "seasonal_units": "hPa", "height_contours": False, "region": CONUS_REGION,
         "monthly_reducer": "mean", "seasonal_reducer": "mean", "anomaly_min": -10.0,
         "anomaly_max": 10.0, "anomaly_ticks": list(range(-10, 11)), "anomaly_palette": MSLP_PALETTE,
         "cds_dataset": SINGLE_DATASET, "cds_variable": "mean_sea_level_pressure_anomaly",
     },
+}
+
+PRODUCT_SPECS["500mb_height_anomaly_nh"] = {
+    **PRODUCT_SPECS["500mb_height_anomaly"],
+    "name": "500mb_height_anomaly_nh",
+    "region": NORTHERN_HEMISPHERE_REGION,
+    "projection": "north_polar_stereographic",
+    "projection_central_longitude": 0.0,
 }
 
 
@@ -250,7 +251,9 @@ def parse_system_overrides(value: str) -> dict[str, str]:
 
 
 def cds_area(product: dict[str, Any]) -> list[float]:
-    return list(CONUS_AREA if product["region"] == CONUS_PRECIP_REGION else NORTH_AMERICA_AREA)
+    if product.get("projection") == "north_polar_stereographic":
+        return list(NORTHERN_HEMISPHERE_AREA)
+    return list(CONUS_AREA if product["region"] == CONUS_REGION else NORTH_AMERICA_AREA)
 
 
 def dataset_url(dataset: str) -> str:
@@ -352,11 +355,11 @@ def product_spec(product: str, label: str, *, multisystem: bool = False) -> dict
     prefix = "C3S multi-system" if multisystem else f"C3S {label}"
     subject = {
         "500mb_height_anomaly": "500-mb Geopotential Height & Anomaly (m)",
+        "500mb_height_anomaly_nh": "Northern Hemisphere 500-mb Geopotential Height & Anomaly (m)",
         "850mb_temperature_anomaly": "850-mb Temperature Anomaly (°C)",
         "2m_temperature_anomaly": "2-m Temperature Anomaly (°C)",
         "precipitation_anomaly": "CONUS Precipitation Anomaly (in)",
         "snowfall_anomaly": "Snowfall Departure",
-        "sea_surface_temperature_anomaly": "Sea-Surface Temperature Anomaly (°C)",
         "mslp_anomaly": "Mean Sea-Level Pressure Anomaly (hPa)",
     }[product]
     base["title"] = f"{prefix} {subject}"
@@ -560,10 +563,16 @@ def write_manifest(path: Path, entries: Iterable[dict[str, Any]], previous: Path
         seen_manifests.add(resolved)
         try:
             old = json.loads(candidate.read_text(encoding="utf-8"))
-            all_entries.extend(run for run in old.get("runs", []) if isinstance(run, dict))
+            all_entries.extend(
+                run for run in old.get("runs", [])
+                if isinstance(run, dict) and not is_retired_product(run.get("product"))
+            )
         except (OSError, ValueError) as exc:
             raise C3SError(f"could not read C3S manifest {candidate}: {exc}") from exc
-    all_entries.extend(entries)
+    all_entries.extend(
+        run for run in entries
+        if isinstance(run, dict) and not is_retired_product(run.get("product"))
+    )
     unique: dict[str, dict[str, Any]] = {str(run.get("id")): run for run in all_entries if run.get("id")}
     ordered = sorted(unique.values(), key=lambda run: (str(run.get("init_utc", "")), str(run.get("id", ""))), reverse=True)
     cycles: list[str] = []
@@ -577,7 +586,14 @@ def write_manifest(path: Path, entries: Iterable[dict[str, Any]], previous: Path
         "generated_utc": iso_utc(dt.datetime.now(dt.timezone.utc)), "source": "Copernicus C3S seasonal forecasts",
         "source_url": SOURCE_URL, "source_urls": [SOURCE_URL, PRESSURE_SOURCE_URL, SINGLE_SOURCE_URL],
         "product_labels": {
-            key: {"500mb_height_anomaly": "500-mb Height Anomaly", "850mb_temperature_anomaly": "850-mb Temperature Anomaly", "2m_temperature_anomaly": "2-m Temperature Anomaly", "precipitation_anomaly": "Precipitation Anomaly", "sea_surface_temperature_anomaly": "Sea-Surface Temperature Anomaly", "mslp_anomaly": "MSLP Anomaly"}.get(key, key)
+            key: {
+                "500mb_height_anomaly": "500-mb Height Anomaly",
+                "500mb_height_anomaly_nh": "500-mb Height Anomaly · Northern Hemisphere",
+                "850mb_temperature_anomaly": "850-mb Temperature Anomaly",
+                "2m_temperature_anomaly": "2-m Temperature Anomaly",
+                "precipitation_anomaly": "Precipitation Anomaly",
+                "mslp_anomaly": "MSLP Anomaly",
+            }.get(key, key)
             for key in PRODUCT_SPECS
         },
         "retention": {"max_cycles": max(1, retain_cycles), "history_cycles": max(0, retain_cycles - 1)},

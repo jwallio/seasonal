@@ -86,11 +86,11 @@ def main() -> int:
     token = "beijing_202608_202609_202611.nc|12345"
     listing = f'<input name="fnames[]" value="{token}">'
     check(module.listing_entries(listing) == {module.bundle_name("202608"): token}, "WMO listing token parsing failed")
-    check(set(module.selected_products("all")) == set(module.PRODUCT_SPECS), "all must select all six CMA products")
+    check(set(module.selected_products("all")) == set(module.PRODUCT_SPECS), "all must select every CMA product")
     check(set(module.PRODUCT_SPECS) == {
-        "500mb_height_anomaly", "850mb_temperature_anomaly", "2m_temperature_anomaly",
-        "precipitation_anomaly", "sea_surface_temperature_anomaly", "mslp_anomaly",
-    }, "CMA product suite must contain the six shared anomaly fields")
+        "500mb_height_anomaly", "500mb_height_anomaly_nh", "850mb_temperature_anomaly", "2m_temperature_anomaly",
+        "precipitation_anomaly", "mslp_anomaly",
+    }, "CMA product suite must contain the five shared anomaly fields plus the Northern Hemisphere height view")
 
     height = module.PRODUCT_SPECS["500mb_height_anomaly"]
     check((height["anomaly_min"], height["anomaly_max"]) == (-100.0, 100.0), "CMA 500-mb height must use the shared ±100 m scale")
@@ -101,7 +101,8 @@ def main() -> int:
         check((temperature_spec["anomaly_min"], temperature_spec["anomaly_max"]) == (-7.0, 7.0), f"CMA {product} should inherit the shared ±7 °C range")
         check(temperature_spec["anomaly_ticks"] == list(range(-7, 8)), f"CMA {product} should inherit 1 °C labelled bounds")
         check(len(temperature_spec["anomaly_ticks"]) == len(temperature_spec["anomaly_palette"]) + 1, f"CMA {product} bounds must align with colors")
-    check(module.PRODUCT_SPECS["sea_surface_temperature_anomaly"]["map_domain"] == "ocean", "CMA SST must remain ocean-only")
+    northern_height = module.PRODUCT_SPECS["500mb_height_anomaly_nh"]
+    check(northern_height["projection"] == "north_polar_stereographic", "CMA Northern Hemisphere 500-mb view must use the polar projection")
     mslp = module.PRODUCT_SPECS["mslp_anomaly"]
     check((mslp["anomaly_min"], mslp["anomaly_max"]) == (-10.0, 10.0), "CMA MSLP must use the shared ±10 hPa scale")
     monthly_precip = module.render_product_spec("precipitation_anomaly", seasonal=False)
@@ -162,7 +163,7 @@ def main() -> int:
     for term in ("CMA CPSv3", "cma_cpsv3_manifest.json", "WMO LC-SPMME / GPC Beijing"):
         check(term in page or term in dashboard, f"CMA page/dashboard is missing term: {term}")
 
-    print("CMA CPSV3 CONTRACT OK: WMO source, six products, units, lead horizon, workflow, Pages, and retention")
+    print("CMA CPSV3 CONTRACT OK: WMO source, products, units, lead horizon, workflow, Pages, and retention")
     return 0
 
 

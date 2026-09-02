@@ -3,15 +3,15 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Seasonal Model Dashboard</title>
-  <meta name="description" content="Operational seasonal model dashboard with a deduplicated super ensemble and individual-model guidance.">
+  <title>Seasonal | wall.cloud</title>
+  <meta name="description" content="Seasonal forecast maps, model comparisons, and historical analogs from wall.cloud.">
   <link rel="stylesheet" href="dashboard.css">
 </head>
 <body>
   <main class="shell">
     <header class="hero">
       <a class="brand" href="https://wall.cloud/" aria-label="wall.cloud">wall<span class="brand-dot">.</span>cloud</a>
-      <h1>Seasonal Model Dashboard</h1>
+      <h1>Seasonal</h1>
     </header>
 
     <div class="view-bar">
@@ -20,27 +20,31 @@
         <button id="single-tab" type="button" role="tab" aria-selected="false" aria-controls="single-toolbar single-view" tabindex="-1">Explore</button>
         <button id="compare-tab" type="button" role="tab" aria-selected="false" aria-controls="compare-view" tabindex="-1">Compare</button>
       </nav>
-      <div class="page-actions"><button id="copy-link" type="button" aria-label="Copy current dashboard link" title="Copy link">Copy link</button><span class="copy-status" id="copy-status" role="status" aria-live="polite"></span></div>
+      <details class="page-menu" id="page-menu">
+        <summary aria-label="Page actions" title="Page actions"><span aria-hidden="true">•••</span><span class="sr-only">Page actions</span></summary>
+        <div class="page-menu-popover"><button id="copy-link" type="button" aria-label="Copy current dashboard link">Copy link</button><span class="copy-status" id="copy-status" role="status" aria-live="polite"></span></div>
+      </details>
     </div>
 
     <section class="overview-view" id="overview-view" role="tabpanel" aria-labelledby="overview-tab">
       <div class="overview-actions" aria-label="Forecast shortcuts">
-          <button type="button" data-overview-model="superensemble">Explore Super Ensemble</button>
+          <button type="button" data-overview-model="superensemble">Open Super Ensemble</button>
       </div>
       <div class="overview-stats" id="overview-stats" aria-label="Dashboard summary"></div>
       <p class="overview-notices" id="overview-notices" role="status">Loading published model manifests…</p>
       <article class="card">
         <div class="card-head matrix-head">
-          <h2>Model × parameter freshness</h2>
-          <p>Blends combine forecast systems; forecast families are independent forecast sources; component models are retained for diagnostic comparison.</p>
+          <h2>Availability</h2>
+          <p>One row per model, with the last usable run and next wall.cloud update.</p>
         </div>
-        <div class="matrix-wrap">
+        <div class="matrix-wrap" role="region" aria-label="Model and parameter availability" tabindex="0">
           <table class="overview-matrix" id="overview-matrix">
-            <thead><tr><th scope="col">Model</th><th scope="col">500-mb height</th><th scope="col">850-mb temp</th><th scope="col">2-m temp</th><th scope="col">Precipitation</th><th scope="col">Snowfall</th><th scope="col">MSLP</th><th scope="col">SST</th></tr></thead>
+            <thead><tr><th scope="col">Model</th><th scope="col">Cadence</th><th scope="col">Last run (UTC)</th><th scope="col">Next update (ET)</th><th scope="col">500-mb height</th><th scope="col">850-mb temp</th><th scope="col">2-m temp</th><th scope="col">Precipitation</th><th scope="col">Snowfall</th><th scope="col">MSLP</th></tr></thead>
             <tbody id="overview-matrix-body"></tbody>
           </table>
         </div>
-        <p class="matrix-note">Freshness thresholds: CFSv2 is fresh through 2 days and aging through 4 days; monthly systems are fresh through 35 days and aging through 50 days. Snowfall departures are liquid-water-equivalent totals, not snow-depth estimates. Partial coverage is always identified separately.</p>
+        <p class="scroll-cue" aria-hidden="true">Tap a status to open its map.</p>
+        <details class="matrix-guide"><summary>Refresh timing and product notes</summary><p>Last run is the latest usable model initialization, so a rebuilt image cannot make an old forecast look new. “Overdue” appears after the expected wall.cloud publication window and its grace period; “Due / processing” means that window is still open. Next update is an estimate in America/New_York based on the current download and render schedule, not a provider SLA. Cadence links open the official release reference. Snowfall departures are liquid-water-equivalent totals, not snow depth. Partial coverage is identified separately.</p></details>
       </article>
     </section>
 
@@ -59,7 +63,7 @@
 
       <aside class="side">
         <article class="card">
-          <div class="card-head"><h2>Forecast readout</h2></div>
+          <div class="card-head"><h2>Forecast</h2></div>
           <div class="facts">
             <div class="fact"><small>Model</small><strong id="fact-model">—</strong></div>
             <div class="fact"><small>Valid period</small><strong id="fact-target">—</strong></div>
@@ -70,16 +74,16 @@
           </div>
         </article>
         <details class="card provenance" id="provenance-details">
-          <summary><span>Run metadata</span><small>Source, baseline, and links</small></summary>
+          <summary><span>Metadata</span><small>Source, baseline, links</small></summary>
           <div class="copy"><p id="scope">The selected manifest will identify its initialization, aggregation, and data lineage.</p><p id="source-detail">Source: —</p></div>
-          <div class="links"><a id="source-link" href="#">Source</a><a id="direct-link" href="../">Direct viewer</a><a id="download-link" href="#" download hidden>Download image</a><a href="https://github.com/jwallio/seasonal/actions">Actions</a></div>
+          <div class="links"><a id="source-link" href="#">Source</a><a id="direct-link" href="../">Model page</a><a id="download-link" href="#" download hidden>Download</a><a href="https://github.com/jwallio/seasonal/actions">Workflows</a></div>
         </details>
       </aside>
     </section>
 
     <section class="compare-view" id="compare-view" role="tabpanel" aria-labelledby="compare-tab" hidden>
       <div class="compare-toolbar card is-collapsed">
-        <button class="compare-controls-toggle" id="compare-controls-toggle" type="button" aria-expanded="false" aria-controls="compare-control-fields"><span>Compare options</span><span class="compare-controls-toggle-state" id="compare-controls-toggle-state">Show</span></button>
+        <button class="compare-controls-toggle" id="compare-controls-toggle" type="button" aria-expanded="false" aria-controls="compare-control-fields"><span>Filters</span><span class="compare-controls-toggle-state" id="compare-controls-toggle-state">Show</span></button>
         <div class="compare-control-fields" id="compare-control-fields">
           <div class="selector"><label for="compare-product-select">Parameter</label><select id="compare-product-select" disabled><option>Loading…</option></select></div>
           <div class="selector"><label for="compare-target-select">Valid period</label><select id="compare-target-select" disabled><option>Loading…</option></select></div>
@@ -87,22 +91,21 @@
           <div class="selector"><label for="compare-role-select">Model type</label><select id="compare-role-select"><option value="all">All model types</option><option value="blend">Blends</option><option value="family">Forecast families</option><option value="component">Component models</option></select></div>
           <label class="compare-filter" for="compare-available-only"><input id="compare-available-only" type="checkbox" checked>Available only</label>
         </div>
-        <p class="compare-summary" id="compare-summary">Seasonal anomaly · matching published target across models</p>
+        <p class="compare-summary" id="compare-summary">Matching published model maps</p>
         <p class="compare-missing" id="compare-missing"></p>
       </div>
-      <article class="card analog-panel" id="analog-panel" hidden>
-        <div class="card-head">
-          <div><h2>Historical 500-mb pattern analogs</h2><p class="card-subtitle" id="analog-summary">Matching the selected month or DJF pattern and comparing anomaly amplitude against AnalogWX ERA5.</p></div>
-        </div>
-        <div class="analog-grid" id="analog-grid"></div>
-      </article>
       <div class="compare-grid" id="compare-grid"></div>
+      <details class="card analog-panel" id="analog-panel" hidden>
+        <summary class="analog-panel-summary"><div><h2>500-mb analogs</h2><p class="card-subtitle" id="analog-summary">Historical pattern matches for the selected period.</p></div></summary>
+        <div class="analog-grid" id="analog-grid"></div>
+      </details>
     </section>
     <dialog id="map-dialog" aria-labelledby="map-dialog-title">
-      <div class="dialog-head"><h2 id="map-dialog-title">Forecast map</h2><div class="dialog-actions"><a id="map-dialog-download" href="#" download>Download</a><button id="map-dialog-close" type="button">Close</button></div></div>
+      <div class="dialog-head"><h2 id="map-dialog-title">Forecast map</h2><div class="dialog-actions"><button id="map-dialog-share" type="button">Share</button><a id="map-dialog-download" href="#" download>Download</a><button id="map-dialog-close" type="button">Close</button></div></div>
       <div class="dialog-body"><img id="map-dialog-image" alt=""></div>
+      <p class="dialog-status" id="map-dialog-status" role="status" aria-live="polite"></p>
     </dialog>
-    <div class="footer" id="footer"><span class="footer-copy" id="footer-copy">Operational dashboard · Model-specific direct viewers remain available for focused review.</span><a class="footer-brand" href="https://wall.cloud/" aria-label="wall.cloud">wall<span class="brand-dot">.</span>cloud</a></div>
+    <div class="footer" id="footer"><span class="footer-copy" id="footer-copy">Loading catalog…</span><a class="footer-brand" href="https://wall.cloud/" aria-label="wall.cloud">wall<span class="brand-dot">.</span>cloud</a></div>
   </main>
 
   <script src="dashboard.js" defer></script>

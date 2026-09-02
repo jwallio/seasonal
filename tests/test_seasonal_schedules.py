@@ -3,9 +3,13 @@
 
 import re
 from pathlib import Path
+import sys
 
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "scripts"))
+
+from seasonal_products import MODEL_SCHEDULES  # noqa: E402
 
 EXPECTED = {
     ".github/workflows/cfsv2.yml": "35 10,22 * * *",
@@ -24,9 +28,9 @@ RELEASE_CHECK_CRONS = {
 }
 
 SCHEDULED_SUITES = {
-    ".github/workflows/c3s.yml": ("SCHEDULED_C3S_PRODUCTS", {"500mb_height_anomaly", "850mb_temperature_anomaly", "2m_temperature_anomaly", "precipitation_anomaly", "snowfall_anomaly", "sea_surface_temperature_anomaly", "mslp_anomaly"}),
-    ".github/workflows/jma.yml": ("SCHEDULED_JMA_PRODUCTS", {"500mb_height_anomaly", "850mb_temperature_anomaly", "2m_temperature_anomaly", "precipitation_anomaly", "sea_surface_temperature_anomaly", "mslp_anomaly"}),
-    ".github/workflows/seas5.yml": ("SCHEDULED_SEAS5_PRODUCTS", {"500mb_height_anomaly", "850mb_temperature_anomaly", "2m_temperature_anomaly", "precipitation_anomaly", "snowfall_anomaly", "sst_anomaly", "mslp_anomaly"}),
+    ".github/workflows/c3s.yml": ("SCHEDULED_C3S_PRODUCTS", {"500mb_height_anomaly", "500mb_height_anomaly_nh", "850mb_temperature_anomaly", "2m_temperature_anomaly", "precipitation_anomaly", "snowfall_anomaly", "mslp_anomaly"}),
+    ".github/workflows/jma.yml": ("SCHEDULED_JMA_PRODUCTS", {"500mb_height_anomaly", "500mb_height_anomaly_nh", "850mb_temperature_anomaly", "2m_temperature_anomaly", "precipitation_anomaly", "mslp_anomaly"}),
+    ".github/workflows/seas5.yml": ("SCHEDULED_SEAS5_PRODUCTS", {"500mb_height_anomaly", "500mb_height_anomaly_nh", "850mb_temperature_anomaly", "2m_temperature_anomaly", "precipitation_anomaly", "snowfall_anomaly", "mslp_anomaly"}),
 }
 
 CDS_WORKER_PUBLISHERS = {
@@ -55,6 +59,18 @@ def check(condition: bool, message: str) -> None:
 
 
 def main() -> int:
+    check(set(MODEL_SCHEDULES) == {
+        "superensemble", "c3s", "apcc", "nmme", "cfsv2", "seas5",
+        "cansips", "cma_cpsv3", "geos_s2s3", "jma",
+    }, "every dashboard model must have an availability schedule")
+    for model_key, schedule in MODEL_SCHEDULES.items():
+        check(schedule.get("cadence_group") in {"frequent", "monthly"}, f"{model_key} schedule is missing its cadence group")
+        check(schedule.get("official_url", "").startswith("https://"), f"{model_key} schedule is missing an official timing reference")
+        cycle = schedule.get("expected_cycle") or {}
+        check(cycle.get("kind") in {"daily_times", "monthly_day"}, f"{model_key} schedule has an unsupported cycle rule")
+        check(int(cycle.get("publish_lag_minutes", -1)) >= 0, f"{model_key} schedule is missing its publish buffer")
+        check(int(cycle.get("late_after_minutes", -1)) > 0, f"{model_key} schedule is missing its grace period")
+
     for relative_path, expected_cron in EXPECTED.items():
         path = ROOT / relative_path
         check(path.exists(), f"missing scheduled workflow: {relative_path}")
@@ -88,6 +104,7 @@ def main() -> int:
         match = re.search(rf"^\s*{variable}:\s*([^\n]+)$", text, re.MULTILINE)
         check(match is not None, f"{relative_path} is missing {variable}")
         check(set(match.group(1).strip().split(",")) == expected_products, f"{relative_path} scheduled suite is incomplete")
+        check("sst" not in match.group(1).lower(), f"{relative_path} must not schedule SST")
         check(re.search(r"^\s+- all$", text, re.MULTILINE) is not None, f"{relative_path} must expose full-suite dispatch mode")
         check('== "all"' in text, f"{relative_path} must distinguish full-suite from targeted reruns")
         check('for product in "${products[@]}"' in text, f"{relative_path} must render every scheduled product")

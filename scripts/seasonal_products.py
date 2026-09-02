@@ -51,7 +51,7 @@ PRODUCTS: dict[str, dict[str, Any]] = {
         },
         "hard_range": {"minimum": -50.0, "maximum": 50.0},
         "minimum_finite_fraction": 0.2,
-        "domain": "north_america",
+        "domain": "conus",
         "comparison": True,
     },
     "2m_temperature_anomaly": {
@@ -69,7 +69,7 @@ PRODUCTS: dict[str, dict[str, Any]] = {
         },
         "hard_range": {"minimum": -50.0, "maximum": 50.0},
         "minimum_finite_fraction": 0.2,
-        "domain": "north_america",
+        "domain": "conus",
         "comparison": True,
     },
     "precipitation_anomaly": {
@@ -127,25 +127,7 @@ PRODUCTS: dict[str, dict[str, Any]] = {
         },
         "hard_range": {"minimum": -100.0, "maximum": 100.0},
         "minimum_finite_fraction": 0.2,
-        "domain": "north_america",
-        "comparison": True,
-    },
-    "sea_surface_temperature_anomaly": {
-        "label": "Sea-Surface Temperature Anomaly",
-        "aliases": ("sst_anomaly",),
-        "units": "°C",
-        "compatible_units": ("C", "degC"),
-        "field_tokens": ("sst", "sea_surface_temperature"),
-        "forbidden_field_tokens": ("t2m", "t850"),
-        "level": {"type": "sea_surface"},
-        "aggregation": {"monthly": "mean", "seasonal": "mean"},
-        "display": {
-            "monthly": {"minimum": -3.0, "maximum": 3.0, "step": 1.0},
-            "seasonal": {"minimum": -3.0, "maximum": 3.0, "step": 1.0},
-        },
-        "hard_range": {"minimum": -20.0, "maximum": 20.0},
-        "minimum_finite_fraction": 0.02,
-        "domain": "ocean",
+        "domain": "conus",
         "comparison": True,
     },
     "500mb_height_absolute": {
@@ -270,18 +252,43 @@ PRODUCTS: dict[str, dict[str, Any]] = {
 }
 
 
+# Keep the established North America 500-mb product and expose a separate
+# Northern Hemisphere rendering so consumers can opt into the wider view
+# without changing existing image URLs or comparison columns.
+PRODUCTS["500mb_height_anomaly_nh"] = {
+    **deepcopy(PRODUCTS["500mb_height_anomaly"]),
+    "label": "500-mb Height Anomaly · Northern Hemisphere",
+    "aliases": (),
+    "domain": "northern_hemisphere",
+    "comparison": False,
+}
+
+
+# These keys may still occur in retained manifests from earlier releases. They
+# are retired from the seasonal product surface and must never be regenerated
+# or surfaced by the dashboard.
+RETIRED_SEASONAL_PRODUCTS = frozenset({
+    "sea_surface_temperature_anomaly",
+    "sst_anomaly",
+})
+
+
+def is_retired_product(product: str | None) -> bool:
+    return str(product or "").strip() in RETIRED_SEASONAL_PRODUCTS
+
+
 CORE_COMPARISON_PRODUCTS = (
     "500mb_height_anomaly",
     "850mb_temperature_anomaly",
     "2m_temperature_anomaly",
     "precipitation_anomaly",
     "mslp_anomaly",
-    "sea_surface_temperature_anomaly",
 )
 
-# Products shown in the cross-model overview and Compare view.  Keep the
-# original core tuple stable for provider contracts; snowfall is a supported
-# comparison surface only for providers with a native snowfall field.
+# Products shown in the cross-model overview and Compare view.  Snowfall is a
+# supported comparison surface only for providers with a native snowfall
+# field; the Northern Hemisphere 500-mb view is an opt-in detail product and
+# is intentionally not a duplicate comparison column.
 COMPARISON_PRODUCTS = (
     *CORE_COMPARISON_PRODUCTS[:4],
     "snowfall_anomaly",
@@ -295,6 +302,125 @@ def _supported() -> dict[str, str]:
 
 def _unsupported(reason: str) -> dict[str, str]:
     return {"state": "unsupported", "reason": reason}
+
+
+# The dashboard uses two clocks for each provider: the expected model cycle
+# (used to decide whether the forecast itself is old) and the expected
+# wall.cloud publication window (used for the next-update display).  The
+# publication times include the current workflow's download/render buffer;
+# they are operational estimates, not provider SLAs.
+MODEL_SCHEDULES: dict[str, dict[str, Any]] = {
+    "superensemble": {
+        "cadence_group": "monthly",
+        "cadence_label": "Monthly · derived",
+        "official_schedule": "Derived after the monthly component releases; wall.cloud targets the 22nd.",
+        "official_url": "https://www.wmolc.org/seasonalDownload/direct",
+        "expected_cycle": {
+            "kind": "monthly_day", "run_day": 1, "run_time_utc": "00:00",
+            "publish_day": 22, "publish_time_utc": "20:30",
+            "publish_lag_minutes": 45, "late_after_minutes": 180,
+        },
+    },
+    "c3s": {
+        "cadence_group": "monthly",
+        "cadence_label": "Monthly · release window",
+        "official_schedule": "C3S seasonal data are released monthly; this multi-system suite uses the 10th-day window.",
+        "official_url": "https://climate.copernicus.eu/seasonal-forecasts",
+        "expected_cycle": {
+            "kind": "monthly_day", "run_day": 1, "run_time_utc": "00:00",
+            "publish_day": 10, "publish_time_utc": "12:00",
+            "publish_lag_minutes": 90, "late_after_minutes": 360,
+        },
+    },
+    "apcc": {
+        "cadence_group": "monthly",
+        "cadence_label": "Monthly · mid-month",
+        "official_schedule": "APCC seasonal forecasts are issued around the 15th; wall.cloud targets the post-collection window on the 20th.",
+        "official_url": "https://www.apcc21.org/prediction/global/outlook?lang=eng",
+        "expected_cycle": {
+            "kind": "monthly_day", "run_day": 15, "run_time_utc": "00:00",
+            "publish_day": 20, "publish_time_utc": "16:30",
+            "publish_lag_minutes": 60, "late_after_minutes": 360,
+        },
+    },
+    "nmme": {
+        "cadence_group": "monthly",
+        "cadence_label": "Monthly · CPC",
+        "official_schedule": "NMME inputs are delivered by 17:00 ET on the 8th; CPC publishes the graphics and data on the 9th.",
+        "official_url": "https://www.cpc.ncep.noaa.gov/products/NMME/users_guide.html",
+        "expected_cycle": {
+            "kind": "monthly_day", "run_day": 8, "run_time_utc": "00:00",
+            "publish_day": 9, "publish_time_utc": "15:30",
+            "publish_lag_minutes": 60, "late_after_minutes": 360,
+        },
+    },
+    "cfsv2": {
+        "cadence_group": "frequent",
+        "cadence_label": "Twice daily",
+        "official_schedule": "CFSv2 runs four times daily at 00, 06, 12, and 18 UTC; wall.cloud harvests the 06Z and 18Z cycles.",
+        "official_url": "https://www.ncei.noaa.gov/products/weather-climate-models/climate-forecast-system",
+        "expected_cycle": {
+            "kind": "daily_times", "run_times_utc": ["06:00", "18:00"],
+            "publish_times_utc": ["10:35", "22:35"],
+            "publish_lag_minutes": 45, "late_after_minutes": 90,
+        },
+    },
+    "seas5": {
+        "cadence_group": "monthly",
+        "cadence_label": "Monthly · release window",
+        "official_schedule": "SEAS5 is disseminated on the 5th at 12 UTC; the CDS-backed suite is checked from the 6th.",
+        "official_url": "https://www.ecmwf.int/en/forecasts/datasets/set-v",
+        "expected_cycle": {
+            "kind": "monthly_day", "run_day": 1, "run_time_utc": "00:00",
+            "publish_day": 6, "publish_time_utc": "12:00",
+            "publish_lag_minutes": 90, "late_after_minutes": 360,
+        },
+    },
+    "cansips": {
+        "cadence_group": "monthly",
+        "cadence_label": "Monthly · ECCC",
+        "official_schedule": "ECCC global seasonal forecasts are produced on the first day at 00 UTC; wall.cloud publishes after the Datamart window.",
+        "official_url": "https://weather.gc.ca/saisons/GPC_Montreal_e.html",
+        "expected_cycle": {
+            "kind": "monthly_day", "run_day": 1, "run_time_utc": "00:00",
+            "publish_day": 2, "publish_time_utc": "16:30",
+            "publish_lag_minutes": 60, "late_after_minutes": 360,
+        },
+    },
+    "cma_cpsv3": {
+        "cadence_group": "monthly",
+        "cadence_label": "Monthly · WMO window",
+        "official_schedule": "CMA CPSv3 is a monthly seasonal system; wall.cloud waits for the WMO GPC Beijing exchange window and targets the 21st.",
+        "official_url": "https://www.wmolc.org/contents2/index/Beijing",
+        "expected_cycle": {
+            "kind": "monthly_day", "run_day": 1, "run_time_utc": "00:00",
+            "publish_day": 21, "publish_time_utc": "18:30",
+            "publish_lag_minutes": 60, "late_after_minutes": 360,
+        },
+    },
+    "geos_s2s3": {
+        "cadence_group": "monthly",
+        "cadence_label": "Monthly · NASA",
+        "official_schedule": "NASA produces GEOS seasonal forecasts monthly; wall.cloud checks the public archive during the first week.",
+        "official_url": "https://gmao.gsfc.nasa.gov/seasonal-decadal-analysis_prediction/",
+        "expected_cycle": {
+            "kind": "monthly_day", "run_day": 1, "run_time_utc": "00:00",
+            "publish_day": 6, "publish_time_utc": "16:30",
+            "publish_lag_minutes": 60, "late_after_minutes": 360,
+        },
+    },
+    "jma": {
+        "cadence_group": "monthly",
+        "cadence_label": "Monthly · JMA/C3S",
+        "official_schedule": "JMA seasonal guidance is monthly; the C3S component is checked in the 10th-day release window.",
+        "official_url": "https://www.data.jma.go.jp/wmc/products/model/",
+        "expected_cycle": {
+            "kind": "monthly_day", "run_day": 1, "run_time_utc": "00:00",
+            "publish_day": 10, "publish_time_utc": "12:00",
+            "publish_lag_minutes": 90, "late_after_minutes": 360,
+        },
+    },
+}
 
 
 MODELS: dict[str, dict[str, Any]] = {
@@ -377,6 +503,7 @@ SNOWFALL_UNSUPPORTED_REASON = (
     "snow-water equivalent or precipitation is not interchangeable with snowfall."
 )
 for _model_key, _model_definition in MODELS.items():
+    _model_definition["schedule"] = deepcopy(MODEL_SCHEDULES[_model_key])
     _model_definition["support"]["snowfall_anomaly"] = (
         _supported() if _model_key in SNOWFALL_SUPPORTED_MODELS else _unsupported(SNOWFALL_UNSUPPORTED_REASON)
     )

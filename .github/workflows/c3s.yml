@@ -14,11 +14,11 @@ on:
         options:
           - all
           - 500mb_height_anomaly
+          - 500mb_height_anomaly_nh
           - 850mb_temperature_anomaly
           - 2m_temperature_anomaly
           - precipitation_anomaly
           - snowfall_anomaly
-          - sea_surface_temperature_anomaly
           - mslp_anomaly
       centres:
         description: "C3S centre IDs, or all"
@@ -60,7 +60,7 @@ jobs:
     timeout-minutes: 360
     env:
       C3S_PRODUCT: ${{ inputs.product || '500mb_height_anomaly' }}
-      SCHEDULED_C3S_PRODUCTS: 500mb_height_anomaly,850mb_temperature_anomaly,2m_temperature_anomaly,precipitation_anomaly,snowfall_anomaly,sea_surface_temperature_anomaly,mslp_anomaly
+      SCHEDULED_C3S_PRODUCTS: 500mb_height_anomaly,500mb_height_anomaly_nh,850mb_temperature_anomaly,2m_temperature_anomaly,precipitation_anomaly,snowfall_anomaly,mslp_anomaly
       C3S_CENTRES: ${{ inputs.centres || 'all' }}
       C3S_SYSTEMS: ${{ inputs.systems || '' }}
       C3S_INIT: ${{ inputs.init || 'latest' }}

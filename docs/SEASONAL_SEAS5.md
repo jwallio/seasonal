@@ -43,7 +43,6 @@ Download tab: [manage CDS licences](https://cds.climate.copernicus.eu/datasets/s
 | `precipitation_anomaly` | `total_precipitation_anomalous_rate_of_accumulation` | CONUS total anomaly in inches | monthly/seasonal total |
 | `snowfall_anomaly` | `snowfall_anomalous_rate_of_accumulation` | CONUS liquid-water-equivalent anomaly in inches | monthly/seasonal total |
 | `snow_depth_anomaly` | `snow_depth_anomaly` | CONUS snow-depth water-equivalent anomaly in inches | monthly/seasonal mean |
-| `sst_anomaly` | `sea_surface_temperature_anomaly` | anomaly in °C | monthly/seasonal mean |
 | `mslp_anomaly` | `mean_sea_level_pressure_anomaly` | anomaly in hPa | monthly/seasonal mean |
 
 The CDS anomaly datasets are already bias-adjusted monthly ensemble-mean

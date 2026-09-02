@@ -83,7 +83,9 @@ jobs:
             public/seasonal/superensemble/index.html
             scripts/seasonal_products.py
             scripts/build_seasonal_catalog.py
+            scripts/build_seasonal_share_images.py
             scripts/build_seasonal_thumbnails.py
+            scripts/purge_retired_seasonal_products.py
           sparse-checkout-cone-mode: false
 
       - name: Set up thumbnail runtime
@@ -439,12 +441,18 @@ jobs:
 
           rm -rf site/.git
 
+      - name: Remove retired seasonal products
+        run: python dashboard-source/scripts/purge_retired_seasonal_products.py --site-root site
+
       - name: Validate seasonal manifests and build catalog
         run: |
           python dashboard-source/scripts/build_seasonal_catalog.py \
             --site-root site \
             --strict \
             --source-revision "${GITHUB_SHA}"
+
+      - name: Build wall.cloud share images
+        run: python dashboard-source/scripts/build_seasonal_share_images.py --site-root site --strict
 
       - name: Build seasonal Compare thumbnails
         run: python dashboard-source/scripts/build_seasonal_thumbnails.py --site-root site --max-width 560 --quality 82

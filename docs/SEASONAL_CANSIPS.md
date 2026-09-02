@@ -39,7 +39,6 @@ is needed:
 | `2m_temperature_anomaly` | `AirTemp` at `AGL-2m` | 2-m temperature anomaly in °C | monthly mean; seasonal mean |
 | `precipitation_anomaly` | `PrecipRate` at `Sfc` | precipitation anomaly in inches | calendar-month total; seasonal mean |
 | `mslp_anomaly` | `Pressure` at `MSL` | mean sea-level pressure anomaly in hPa | monthly mean; seasonal mean |
-| `sst_anomaly` | `WaterTemp` at `Sfc` | sea-surface temperature anomaly in °C | monthly mean; seasonal mean |
 | `sea_surface_height_anomaly` | `SeaSfcHeight-Geoid` | sea-surface height anomaly in metres | monthly mean; seasonal mean |
 
 The Datamart provides precipitation as a rate in kg m-2 s-1; the adapter

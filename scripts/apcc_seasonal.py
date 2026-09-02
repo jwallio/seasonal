@@ -24,8 +24,10 @@ import numpy as np
 
 from cfsv2_seasonal import (
     ANOMALY_PALETTE,
+    CONUS_REGION,
     DEFAULT_REGION,
     Grid,
+    NORTHERN_HEMISPHERE_REGION,
     TEMPERATURE_ANOMALY_MAX_C,
     TEMPERATURE_ANOMALY_MIN_C,
     TEMPERATURE_ANOMALY_PALETTE,
@@ -34,7 +36,7 @@ from cfsv2_seasonal import (
     relative_path,
     render_map,
 )
-from seasonal_products import grid_quality_control, require_quality_control
+from seasonal_products import grid_quality_control, is_retired_product, require_quality_control
 
 
 APCC_SOURCE_URL = "https://apcc21.org/clik/processing/prediction"
@@ -57,10 +59,6 @@ APCC_PRECIP_PALETTE = [
     "#7f3b08", "#914b0d", "#a6611a", "#bd7a2d", "#d0a052", "#dfbd7d",
     "#ead8b3", "#ffffff", "#ffffff", "#e5f1dc", "#c8e4bf", "#aad89f",
     "#86c879", "#5fba6b", "#3aa55b", "#006d2c",
-]
-APCC_SST_TICKS = list(range(-3, 4))
-APCC_SST_PALETTE = [
-    "#28567f", "#5b9fba", "#b4d6dc", "#ffffff", "#efb6b5", "#b84c5a",
 ]
 APCC_PRESSURE_TICKS = list(range(-10, 11))
 APCC_PRESSURE_PALETTE = ANOMALY_PALETTE
@@ -86,7 +84,7 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "api_variable": "t850", "field": "t850_anomaly", "raw_field": "850-mb temperature anomaly",
         "raw_units": "K", "units": "°C", "title": "APCC MME 850-mb Temperature Anomaly (°C)",
         "absolute_title": "APCC MME 850-mb Temperature (°C)", "height_contours": False,
-        "region": DEFAULT_REGION, "anomaly_min": TEMPERATURE_ANOMALY_MIN_C, "anomaly_max": TEMPERATURE_ANOMALY_MAX_C,
+        "region": CONUS_REGION, "anomaly_min": TEMPERATURE_ANOMALY_MIN_C, "anomaly_max": TEMPERATURE_ANOMALY_MAX_C,
         "anomaly_ticks": TEMPERATURE_ANOMALY_TICKS, "anomaly_palette": TEMPERATURE_ANOMALY_PALETTE,
         "header_detail": "{source_label}  •  {baseline_label}  •  Native APCC seasonal MME anomaly",
         "id_token": "t850a",
@@ -95,7 +93,7 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "api_variable": "t2m", "field": "t2m_anomaly", "raw_field": "2-m temperature anomaly",
         "raw_units": "K", "units": "°C", "title": "APCC MME 2-m Temperature Anomaly (°C)",
         "absolute_title": "APCC MME 2-m Temperature (°C)", "height_contours": False,
-        "region": DEFAULT_REGION, "anomaly_min": TEMPERATURE_ANOMALY_MIN_C, "anomaly_max": TEMPERATURE_ANOMALY_MAX_C,
+        "region": CONUS_REGION, "anomaly_min": TEMPERATURE_ANOMALY_MIN_C, "anomaly_max": TEMPERATURE_ANOMALY_MAX_C,
         "anomaly_ticks": TEMPERATURE_ANOMALY_TICKS, "anomaly_palette": TEMPERATURE_ANOMALY_PALETTE,
         "header_detail": "{source_label}  •  {baseline_label}  •  Native APCC seasonal MME anomaly",
         "id_token": "t2ma",
@@ -104,31 +102,33 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "api_variable": "prec", "field": "precipitation_anomaly", "raw_field": "precipitation anomaly",
         "raw_units": "mm/day", "units": "in", "title": "APCC MME Seasonal Precipitation Anomaly (in)",
         "absolute_title": "APCC MME Precipitation (in)", "height_contours": False,
-        "region": DEFAULT_REGION, "anomaly_min": -8.0, "anomaly_max": 8.0,
+        "region": CONUS_REGION, "anomaly_min": -8.0, "anomaly_max": 8.0,
         "anomaly_ticks": APCC_PRECIP_TICKS, "anomaly_palette": APCC_PRECIP_PALETTE,
         "precipitation_conversion": "seasonal mean mm/day × valid-season days ÷ 25.4 = seasonal accumulation inches",
         "header_detail": "{source_label}  •  {baseline_label}  •  Native APCC seasonal MME anomaly",
         "id_token": "preca",
     },
-    "sea_surface_temperature_anomaly": {
-        "api_variable": "sst", "field": "sst_anomaly", "raw_field": "sea-surface temperature anomaly",
-        "raw_units": "K", "units": "°C", "title": "APCC MME Sea-Surface Temperature Anomaly (°C)",
-        "absolute_title": "APCC MME Sea-Surface Temperature (°C)", "height_contours": False,
-        "region": DEFAULT_REGION, "anomaly_min": -3.0, "anomaly_max": 3.0,
-        "anomaly_ticks": APCC_SST_TICKS, "anomaly_palette": APCC_SST_PALETTE,
-        "map_domain": "ocean",
-        "header_detail": "{source_label}  •  {baseline_label}  •  Native APCC seasonal MME anomaly",
-        "id_token": "ssta",
-    },
     "mslp_anomaly": {
         "api_variable": "slp", "field": "mslp_anomaly", "raw_field": "mean sea-level pressure anomaly",
         "raw_units": "mb", "units": "hPa", "title": "APCC MME Mean Sea-Level Pressure Anomaly (hPa)",
         "absolute_title": "APCC MME Mean Sea-Level Pressure (hPa)", "height_contours": False,
-        "region": DEFAULT_REGION, "anomaly_min": -10.0, "anomaly_max": 10.0,
+        "region": CONUS_REGION, "anomaly_min": -10.0, "anomaly_max": 10.0,
         "anomaly_ticks": APCC_PRESSURE_TICKS, "anomaly_palette": APCC_PRESSURE_PALETTE,
         "header_detail": "{source_label}  •  {baseline_label}  •  Native APCC seasonal MME anomaly",
         "id_token": "slpa",
     },
+}
+
+PRODUCT_SPECS["500mb_height_anomaly_nh"] = {
+    **PRODUCT_SPECS["500mb_height_anomaly"],
+    "name": "500mb_height_anomaly_nh",
+    "region": NORTHERN_HEMISPHERE_REGION,
+    "projection": "north_polar_stereographic",
+    "projection_central_longitude": 0.0,
+    "title": "APCC MME Northern Hemisphere 500-mb Geopotential Height Anomaly (m)",
+    "absolute_title": "APCC MME Northern Hemisphere 500-mb Geopotential Height (m)",
+    "header_detail": "{source_label}  •  {baseline_label}  •  Native APCC seasonal MME anomaly  •  Northern Hemisphere",
+    "id_token": "z500a-nh",
 }
 
 
@@ -541,10 +541,16 @@ def write_manifest(
             continue
         try:
             payload = json.loads(existing_path.read_text(encoding="utf-8"))
-            all_entries.extend(run for run in payload.get("runs", []) if isinstance(run, dict))
+            all_entries.extend(
+                run for run in payload.get("runs", [])
+                if isinstance(run, dict) and not is_retired_product(run.get("product"))
+            )
         except (OSError, ValueError) as exc:
             raise APCCError(f"could not read previous APCC manifest {existing_path}: {exc}") from exc
-    all_entries.extend(entries)
+    all_entries.extend(
+        run for run in entries
+        if isinstance(run, dict) and not is_retired_product(run.get("product"))
+    )
     unique = {str(run.get("id")): run for run in all_entries if run.get("id")}
     ordered = sorted(unique.values(), key=lambda item: (str(item.get("init_utc", "")), str(item.get("id", ""))), reverse=True)
     cycles: list[str] = []
@@ -563,10 +569,10 @@ def write_manifest(
         "acknowledgement": APCC_ACKNOWLEDGEMENT,
         "product_labels": {
             "500mb_height_anomaly": "500-mb Height Anomaly",
+            "500mb_height_anomaly_nh": "500-mb Height Anomaly · Northern Hemisphere",
             "850mb_temperature_anomaly": "850-mb Temperature Anomaly",
             "2m_temperature_anomaly": "2-m Temperature Anomaly",
             "precipitation_anomaly": "Precipitation Anomaly",
-            "sea_surface_temperature_anomaly": "Sea-Surface Temperature Anomaly",
             "mslp_anomaly": "MSLP Anomaly",
         },
         "retention": {"max_cycles": max(1, retain_cycles), "history_cycles": max(0, retain_cycles - 1)},

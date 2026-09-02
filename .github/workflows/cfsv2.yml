@@ -15,6 +15,7 @@ on:
         type: choice
         options:
           - 500mb_height_anomaly
+          - 500mb_height_anomaly_nh
           - 500mb_height_absolute
           - 2m_temperature_anomaly
           - mslp_anomaly
@@ -45,7 +46,7 @@ jobs:
     timeout-minutes: 240
     env:
       CFSV2_PRODUCT: ${{ inputs.product || '500mb_height_anomaly' }}
-      SCHEDULED_CFSV2_PRODUCTS: 500mb_height_anomaly,2m_temperature_anomaly,mslp_anomaly,precipitation_anomaly
+      SCHEDULED_CFSV2_PRODUCTS: 500mb_height_anomaly,500mb_height_anomaly_nh,2m_temperature_anomaly,mslp_anomaly,precipitation_anomaly
       LEAD_MONTHS: ${{ inputs.lead_months || '4,5,6' }}
       SEASONAL_WINDOW: ${{ inputs.seasonal_window || '4,5,6' }}
       ROLLING_DAYS: ${{ inputs.rolling_days || '10' }}

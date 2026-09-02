@@ -20,6 +20,7 @@ from urllib.parse import urljoin
 import numpy as np
 
 from cfsv2_seasonal import (
+    CONUS_REGION,
     DEFAULT_REGION,
     Grid,
     TEMPERATURE_ANOMALY_MAX_C,
@@ -84,20 +85,20 @@ BASE_PRODUCTS: dict[str, dict[str, Any]] = {
         "file_var": "tmp2m", "field": "tmp2m_anomaly", "raw_field": "2-m temperature anomaly",
         "units": "°C", "seasonal_units": "°C", "min": TEMPERATURE_ANOMALY_MIN_C, "max": TEMPERATURE_ANOMALY_MAX_C,
         "ticks": TEMPERATURE_ANOMALY_TICKS, "palette": TEMPERATURE_ANOMALY_PALETTE, "title": "2-m Temperature Anomaly (°C)",
-        "conversion": "Kelvin anomaly increments are displayed in °C", "reducer": "mean",
+        "conversion": "Kelvin anomaly increments are displayed in °C", "reducer": "mean", "region": CONUS_REGION,
     },
     "precipitation_anomaly": {
         "file_var": "prate", "field": "precipitation_anomaly", "raw_field": "precipitation anomaly",
         "units": "in", "seasonal_units": "in", "min": -8.0, "max": 8.0,
         "ticks": list(range(-8, 9)), "palette": PRECIP_PALETTE, "title": "CONUS Precipitation Anomaly (in)",
         "conversion": "NMME precipitation-rate anomaly multiplied by target-month seconds and converted to inches", "reducer": "sum",
-        "region": (-128.0, -65.0, 22.0, 52.0),
+        "region": CONUS_REGION,
     },
     "200mb_height_anomaly": {
         "file_var": "z200", "field": "z200_anomaly", "raw_field": "200-mb geopotential height anomaly",
         "units": "m", "seasonal_units": "m", "min": -200.0, "max": 200.0,
         "ticks": list(range(-200, 201, 20)), "palette": HEIGHT_PALETTE, "title": "200-mb Geopotential Height Anomaly (m)",
-        "conversion": "NMME z200 anomaly field displayed in metres", "reducer": "mean",
+        "conversion": "NMME z200 anomaly field displayed in metres", "reducer": "mean", "region": CONUS_REGION,
     },
 }
 
@@ -346,7 +347,7 @@ def spec_for(product_name: str, base_name: str) -> dict[str, Any]:
             "name": product_name, "variable": "probability", "field": product_name,
             "raw_field": f"{subject} {label.lower()}", "raw_units": "fraction", "units": "%", "seasonal_units": "%",
             "title": f"NMME {subject} · {label} (%)", "absolute_title": f"NMME {subject} · {label} (%)", "height_contours": False,
-            "region": base.get("region", DEFAULT_REGION), "anomaly_min": 0.0, "anomaly_max": 100.0,
+            "region": base.get("region", CONUS_REGION), "anomaly_min": 0.0, "anomaly_max": 100.0,
             "anomaly_ticks": PROBABILITY_TICKS, "anomaly_palette": PROBABILITY_PALETTES[product_name], "anomaly_tick_format": "plain",
             "conversion": "official CPC NMME probability fraction converted to percent; category triplet validated to sum to 100%",
             "header_detail": "{source_label}  •  Official CPC NMME probability product  •  Category triplet validated to 100%",

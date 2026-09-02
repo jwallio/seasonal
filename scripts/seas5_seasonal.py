@@ -28,10 +28,12 @@ from cfsv2_seasonal import (
     ANOMALY_TICKS,
     COMMON_REFERENCE_LABEL,
     COMMON_REFERENCE_YEARS,
+    CONUS_REGION,
     CONUS_PRECIP_REGION,
     CONUS_STATE_NAMES,
     CFSv2Error,
     DEFAULT_REGION,
+    NORTHERN_HEMISPHERE_REGION,
     PRECIP_ANOMALY_PALETTE,
     SWE_ANOMALY_PALETTE,
     TEMPERATURE_ANOMALY_MAX_C,
@@ -48,6 +50,7 @@ from cfsv2_seasonal import (
     subtract_grids,
     sum_grids,
 )
+from seasonal_products import is_retired_product
 
 
 # The CDS catalogue currently identifies ECMWF SEAS5 as originating centre
@@ -63,6 +66,7 @@ CDS_SYSTEM = "51"
 CDS_ECMWF_RELEASE_DAY = 6
 CDS_ECMWF_RELEASE_HOUR = 12
 CDS_NORTH_AMERICA_AREA = [90.0, -170.0, 15.0, 0.0]
+CDS_NORTHERN_HEMISPHERE_AREA = [90.0, -180.0, 0.0, 180.0]
 CDS_CONUS_AREA = [60.0, -135.0, 20.0, -55.0]
 CDS_ENSEMBLE_MEMBERS = 51
 HINDCAST_START = 1981
@@ -82,10 +86,8 @@ SNOWFALL_ANOMALY_MIN_IN = -0.8
 SNOWFALL_ANOMALY_MAX_IN = 0.8
 SNOWFALL_ANOMALY_TICKS = [round(SNOWFALL_ANOMALY_MIN_IN + 0.1 * i, 1) for i in range(17)]
 SNOW_DEPTH_ANOMALY = "snow_depth_anomaly"
-SST_ANOMALY = "sst_anomaly"
 MSLP_ANOMALY = "mslp_anomaly"
 
-SST_PALETTE = ["#28567f", "#5b9fba", "#b4d6dc", "#ffffff", "#efb6b5", "#b84c5a"]
 MSLP_PALETTE = [
     "#315f85",
     "#4e83a3",
@@ -157,7 +159,7 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "title": "SEAS5 2-m Temperature Anomaly (°C)",
         "absolute_title": "SEAS5 2-m Temperature (°C)",
         "height_contours": False,
-        "region": DEFAULT_REGION,
+        "region": CONUS_REGION,
         "monthly_reducer": "mean",
         "seasonal_reducer": "mean",
         "anomaly_min": TEMPERATURE_ANOMALY_MIN_C,
@@ -180,7 +182,7 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "title": "SEAS5 850-mb Temperature Anomaly (°C)",
         "absolute_title": "SEAS5 850-mb Temperature (°C)",
         "height_contours": False,
-        "region": DEFAULT_REGION,
+        "region": CONUS_REGION,
         "monthly_reducer": "mean",
         "seasonal_reducer": "mean",
         "anomaly_min": TEMPERATURE_ANOMALY_MIN_C,
@@ -268,30 +270,6 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "cds_dataset": CDS_SINGLE_ANOMALY_DATASET,
         "cds_variable": "snow_depth_anomaly",
     },
-    SST_ANOMALY: {
-        "name": SST_ANOMALY,
-        "variable": "sst",
-        "field": "sst_anomaly",
-        "raw_field": "sst",
-        "raw_units": "K",
-        "units": "°C",
-        "seasonal_units": "°C",
-        "title": "SEAS5 Sea-Surface Temperature Anomaly (°C)",
-        "absolute_title": "SEAS5 Sea-Surface Temperature (°C)",
-        "height_contours": False,
-        "region": DEFAULT_REGION,
-        "monthly_reducer": "mean",
-        "seasonal_reducer": "mean",
-        "anomaly_min": -3.0,
-        "anomaly_max": 3.0,
-        "anomaly_ticks": [-3, -2, -1, 0, 1, 2, 3],
-        "anomaly_palette": SST_PALETTE,
-        "map_domain": "ocean",
-        "conversion": "Kelvin-to-Celsius offset cancels in anomaly differences",
-        "header_detail": "{source_label}  •  {baseline_label}  •  Sea-surface temperature anomaly (°C)",
-        "cds_dataset": CDS_SINGLE_ANOMALY_DATASET,
-        "cds_variable": "sea_surface_temperature_anomaly",
-    },
     MSLP_ANOMALY: {
         "name": MSLP_ANOMALY,
         "variable": "slp",
@@ -303,7 +281,7 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "title": "SEAS5 Mean Sea-Level Pressure Anomaly (hPa)",
         "absolute_title": "SEAS5 Mean Sea-Level Pressure (hPa)",
         "height_contours": False,
-        "region": DEFAULT_REGION,
+        "region": CONUS_REGION,
         "monthly_reducer": "mean",
         "seasonal_reducer": "mean",
         "anomaly_min": -10.0,
@@ -316,6 +294,19 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "cds_variable": "mean_sea_level_pressure_anomaly",
     },
 }
+
+
+PRODUCT_SPECS["500mb_height_anomaly_nh"] = {
+    **PRODUCT_SPECS[Z500_ANOMALY],
+    "name": "500mb_height_anomaly_nh",
+    "region": NORTHERN_HEMISPHERE_REGION,
+    "projection": "north_polar_stereographic",
+    "projection_central_longitude": 0.0,
+    "title": "SEAS5 Northern Hemisphere 500-mb Geopotential Height & Anomaly (m)",
+    "absolute_title": "SEAS5 Northern Hemisphere 500-mb Geopotential Height (m)",
+    "header_detail": "{source_label}  •  {baseline_label}  •  Height contours in dam  •  Northern Hemisphere",
+}
+Z500_PRODUCTS = frozenset({Z500_ANOMALY, "500mb_height_anomaly_nh"})
 
 
 class SEAS5Error(CFSv2Error):
@@ -430,7 +421,7 @@ def convert_values(values: np.ndarray, product: dict[str, Any], target: str) -> 
     converted = np.asarray(values, dtype=float)
     if variable == "z500":
         return converted / GEOPOTENTIAL_GRAVITY
-    if variable in {"t2m", "t850", "sst"}:
+    if variable in {"t2m", "t850"}:
         # Anomaly fields have the same numerical increment in K and °C.
         return converted
     if variable == "pr":
@@ -454,7 +445,9 @@ def latest_cds_init(now: dt.datetime | None = None) -> str:
 
 
 def cds_area(product: dict[str, Any]) -> list[float]:
-    return list(CDS_CONUS_AREA if product["region"] == CONUS_PRECIP_REGION else CDS_NORTH_AMERICA_AREA)
+    if product.get("projection") == "north_polar_stereographic":
+        return list(CDS_NORTHERN_HEMISPHERE_AREA)
+    return list(CDS_CONUS_AREA if product["region"] == CONUS_REGION else CDS_NORTH_AMERICA_AREA)
 
 
 def cds_dataset_url(dataset: str) -> str:
@@ -598,7 +591,11 @@ class CDSArchive:
         return self._client
 
     def _cache_path(self, dataset: str, variable: str, product: dict[str, Any], init: str, lead: int) -> Path:
-        area_name = "conus" if product["region"] == CONUS_PRECIP_REGION else "north-america"
+        area_name = (
+            "northern-hemisphere"
+            if product.get("projection") == "north_polar_stereographic"
+            else "conus" if product["region"] == CONUS_REGION else "north-america"
+        )
         safe_dataset = dataset.replace("-", "_")
         safe_variable = variable.replace("-", "_")
         return self.cache_dir / "cds" / area_name / (
@@ -665,7 +662,7 @@ class CDSArchive:
         return grid_from_grib(path, product, target, lead), path
 
     def height_grid(self, product: dict[str, Any], init: str, target: str, lead: int) -> tuple[Grid, Path]:
-        if product["name"] != Z500_ANOMALY:
+        if product["name"] not in Z500_PRODUCTS:
             raise SEAS5Error("raw geopotential contours are only available for the 500-mb product")
         path = self._retrieve(
             product["cds_raw_dataset"],
@@ -715,12 +712,16 @@ def write_manifest(
         except (OSError, ValueError) as exc:
             raise SEAS5Error(f"could not read existing SEAS5 manifest {existing_path}: {exc}") from exc
         if isinstance(existing, dict) and isinstance(existing.get("runs"), list):
-            payload["runs"].extend(existing["runs"])
+            payload["runs"].extend(
+                run for run in existing["runs"]
+                if isinstance(run, dict) and not is_retired_product(run.get("product"))
+            )
     unique_runs: dict[str, dict[str, Any]] = {}
     for run in payload["runs"]:
         if isinstance(run, dict) and run.get("id"):
             unique_runs[str(run["id"])] = run
-    unique_runs[str(run_entry["id"])] = run_entry
+    if not is_retired_product(run_entry.get("product")):
+        unique_runs[str(run_entry["id"])] = run_entry
     grouped: dict[str, list[dict[str, Any]]] = {}
     for entry in unique_runs.values():
         grouped.setdefault(str(entry.get("product") or entry.get("field") or "unknown"), []).append(entry)
@@ -793,7 +794,7 @@ def run(args: argparse.Namespace) -> int:
     # Retain the option for workflow compatibility, but the official CDS
     # anomaly fields already contain the matched model post-processing.
     climo_years = parse_years(args.climo_years)
-    if args.absolute and args.product != Z500_ANOMALY:
+    if args.absolute and args.product not in Z500_PRODUCTS:
         raise SEAS5Error("--absolute is only supported for the 500-mb field")
 
     output_dir = resolve_repo_path(args.output_dir, repo_root)
@@ -846,7 +847,7 @@ def run(args: argparse.Namespace) -> int:
         "targets": [],
         "status": "planned",
     }
-    common_reference_enabled = bool(common_reference_dir or args.common_reference_url) and args.product == Z500_ANOMALY
+    common_reference_enabled = bool(common_reference_dir or args.common_reference_url) and args.product in Z500_PRODUCTS
     if common_reference_enabled:
         run_entry["comparison_reference"] = {
             "id": "common_1991_2020",

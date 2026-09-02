@@ -89,7 +89,7 @@ def main() -> int:
         "PRECIP_SEASONAL_ANOMALY_MIN_IN = -8.0",
         "PRECIP_SEASONAL_ANOMALY_MAX_IN = 8.0",
         "CONUS_PRECIP_REGION = (-126.0, -66.0, 24.0, 50.0)",
-        "CFSv2 CONUS Precipitation Anomaly (in)",
+        "CFSv2 Precipitation Anomaly (in)",
         "CONUS domain",
         "numeric_grid",
         "numeric_grid_format",
@@ -131,7 +131,9 @@ def main() -> int:
         "Lambert Conformal Conic",
         "standard_parallel_1",
         "graticules",
-        "lcc_inverse",
+        "map_inverse",
+        "north_polar_stereographic",
+        "PRODUCT_HEIGHT_ANOMALY_NH",
         "sample_source",
         "full global field",
         "header_detail",
@@ -187,9 +189,9 @@ def main() -> int:
     check("x_min -= projected_x_shift" in adapter and "x_max -= projected_x_shift" in adapter, "projected map window should shift west to move the CONUS right")
     check("figsize=(9.0, 9.0)" in adapter, "seasonal graphic should use the 1080x1080 social canvas")
     check("map_height = map_width * (y_max - y_min) / (x_max - x_min)" in adapter, "seasonal map box should preserve projection aspect")
-    check("horizontal_x, _ = lcc_project" in adapter, "projected map window should be centered from projection coordinates")
+    check("horizontal_x, _ = map_project" in adapter, "projected map window should be centered from projection coordinates")
     check("top_edge_lons = np.linspace(lon_min, lon_max, 240)" in adapter, "projected map window should retain the full Greenland edge")
-    check("border_lat_min = 14.0" in adapter, "border rendering should exclude South America")
+    check("border_lat_min = max(0.0, min(14.0, lat_min))" in adapter, "border rendering should respect the selected map latitude floor")
     check("if not (lon_min <= longitude <= lon_max) or latitude < border_lat_min:" in adapter, "border rendering should stay inside the North America/Greenland window")
     check("timeZone:'UTC'" in page, "Pages month labels should remain aligned with UTC map validity dates")
     check('<title>CFSv2 Model Viewer</title>' in page, "Pages title should use generic CFSv2 model-viewer branding")
@@ -267,7 +269,13 @@ def main() -> int:
     mslp_spec = adapter_module.PRODUCT_SPECS[adapter_module.PRODUCT_MSLP_ANOMALY]
     precip_spec = adapter_module.PRODUCT_SPECS[adapter_module.PRODUCT_PRECIPITATION_ANOMALY]
     height_spec = adapter_module.PRODUCT_SPECS[adapter_module.PRODUCT_HEIGHT_ANOMALY]
+    northern_height_spec = adapter_module.PRODUCT_SPECS[adapter_module.PRODUCT_HEIGHT_ANOMALY_NH]
     swe_spec = adapter_module.PRODUCT_SPECS[adapter_module.PRODUCT_SWE_ANOMALY]
+    check(height_spec["region"] == adapter_module.DEFAULT_REGION, "the established 500-mb view must retain its North America frame")
+    check(northern_height_spec["region"] == adapter_module.NORTHERN_HEMISPHERE_REGION, "the Northern Hemisphere 500-mb view must use the hemisphere frame")
+    check(northern_height_spec["projection"] == "north_polar_stereographic", "the Northern Hemisphere 500-mb view must use the polar projection")
+    check(t2m_spec["region"] == adapter_module.CONUS_REGION, "non-height CFSv2 maps must use the CONUS frame")
+    check(mslp_spec["region"] == adapter_module.CONUS_REGION, "non-height CFSv2 maps must use the CONUS frame")
     check(adapter_module.anomaly_style(height_spec)[:2] == (-100.0, 100.0), "height anomaly style should use the tighter ±100 m range")
     check(adapter_module.anomaly_style(t2m_spec)[:2] == (-7.0, 7.0), "temperature anomaly style should use the shared ±7 °C range")
     check(t2m_spec["anomaly_ticks"] == list(range(-7, 8)), "temperature anomaly style should use 1 °C labelled bounds")
@@ -392,7 +400,7 @@ def main() -> int:
     ):
         check(term in workflow, f"workflow missing CFSv2 readiness term: {term}")
     check("--allow-partial-rolling" not in workflow, "scheduled CFSv2 workflow must not publish an incomplete rolling blend")
-    check("SCHEDULED_CFSV2_PRODUCTS: 500mb_height_anomaly,2m_temperature_anomaly,mslp_anomaly,precipitation_anomaly" in workflow, "twice-daily workflow should refresh the complete core anomaly suite")
+    check("SCHEDULED_CFSV2_PRODUCTS: 500mb_height_anomaly,500mb_height_anomaly_nh,2m_temperature_anomaly,mslp_anomaly,precipitation_anomaly" in workflow, "twice-daily workflow should refresh the complete core anomaly suite")
     check('if [[ "${{ github.event_name }}" == "schedule" ]]' in workflow, "scheduled suite should remain distinct from manual single-product dispatch")
     for term in ("Restore published CFSv2 run history", "previous_manifest.json", "--previous-manifest", "--retain-runs 4"):
         check(term in workflow, f"workflow missing history-retention term: {term}")

@@ -28,6 +28,7 @@ import numpy as np
 import c3s_seasonal as c3s
 import cfsv2_seasonal as cfsv2
 from cfsv2_seasonal import Grid, ensure_border_files, mean_grids, relative_path, render_map, sum_grids
+from seasonal_products import is_retired_product
 
 
 WMOLC_ROOT = "https://www.wmolc.org"
@@ -52,15 +53,14 @@ SOURCE_UNIT_ALIASES = {
     # the per-second suffix in its units attribute even though its magnitude
     # and policy contract are rate-valued.
     "prec": frozenset({"kg/m^2", "kg m-2 s-1", "kg m^-2 s^-1"}),
-    "sst": frozenset({"k"}),
     "mslp": frozenset({"pa"}),
 }
 PRODUCT_LABELS = {
     "500mb_height_anomaly": "500-mb Height Anomaly",
+    "500mb_height_anomaly_nh": "500-mb Height Anomaly · Northern Hemisphere",
     "850mb_temperature_anomaly": "850-mb Temperature Anomaly",
     "2m_temperature_anomaly": "2-m Temperature Anomaly",
     "precipitation_anomaly": "CONUS Precipitation Anomaly",
-    "sea_surface_temperature_anomaly": "Sea-Surface Temperature Anomaly",
     "mslp_anomaly": "MSLP Anomaly",
 }
 
@@ -102,6 +102,14 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "CMA CPSv3 500-mb Geopotential Height Anomaly (m)",
         "1 gpm anomaly is treated as 1 m geopotential-height anomaly",
     ),
+    "500mb_height_anomaly_nh": _product_spec(
+        "500mb_height_anomaly_nh",
+        "h500",
+        "500-hPa geopotential-height anomaly",
+        "gpm",
+        "CMA CPSv3 Northern Hemisphere 500-mb Geopotential Height Anomaly (m)",
+        "1 gpm anomaly is treated as 1 m geopotential-height anomaly",
+    ),
     "850mb_temperature_anomaly": _product_spec(
         "850mb_temperature_anomaly",
         "t850",
@@ -125,14 +133,6 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "kg m-2 s-1",
         "CMA CPSv3 CONUS Precipitation Anomaly (in)",
         "kg m-2 s-1 × calendar-month seconds ÷ 25.4 = monthly inches",
-    ),
-    "sea_surface_temperature_anomaly": _product_spec(
-        "sea_surface_temperature_anomaly",
-        "sst",
-        "sea-surface-temperature anomaly",
-        "K",
-        "CMA CPSv3 Sea-Surface Temperature Anomaly (°C)",
-        "Kelvin and Celsius anomaly increments are identical",
     ),
     "mslp_anomaly": _product_spec(
         "mslp_anomaly",
@@ -688,10 +688,16 @@ def write_manifest(
             continue
         try:
             payload = json.loads(candidate.read_text(encoding="utf-8"))
-            all_entries.extend(run for run in payload.get("runs", []) if isinstance(run, dict))
+            all_entries.extend(
+                run for run in payload.get("runs", [])
+                if isinstance(run, dict) and not is_retired_product(run.get("product"))
+            )
         except (OSError, ValueError) as exc:
             raise CMACPSv3Error(f"could not read prior CMA CPSv3 manifest {candidate}: {exc}") from exc
-    all_entries.extend(entries)
+    all_entries.extend(
+        run for run in entries
+        if isinstance(run, dict) and not is_retired_product(run.get("product"))
+    )
     unique = {str(run["id"]): run for run in all_entries if run.get("id")}
     ordered = sorted(unique.values(), key=lambda run: (str(run.get("init_utc", "")), str(run.get("id", ""))), reverse=True)
     cycles: list[str] = []

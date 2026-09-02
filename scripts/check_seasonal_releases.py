@@ -69,34 +69,33 @@ SINGLE_LEVEL_CORE_VARIABLES = (
     "2m_temperature_anomaly",
     "total_precipitation_anomalous_rate_of_accumulation",
     "mean_sea_level_pressure_anomaly",
-    "sea_surface_temperature_anomaly",
 )
 
 EXPECTED_PRODUCTS: dict[str, tuple[str, ...]] = {
     "seas5": (
         "500mb_height_anomaly",
+        "500mb_height_anomaly_nh",
         "850mb_temperature_anomaly",
         "2m_temperature_anomaly",
         "precipitation_anomaly",
         "snowfall_anomaly",
-        "sst_anomaly",
         "mslp_anomaly",
     ),
     "c3s": (
         "500mb_height_anomaly",
+        "500mb_height_anomaly_nh",
         "850mb_temperature_anomaly",
         "2m_temperature_anomaly",
         "precipitation_anomaly",
         "snowfall_anomaly",
-        "sea_surface_temperature_anomaly",
         "mslp_anomaly",
     ),
     "jma": (
         "500mb_height_anomaly",
+        "500mb_height_anomaly_nh",
         "850mb_temperature_anomaly",
         "2m_temperature_anomaly",
         "precipitation_anomaly",
-        "sea_surface_temperature_anomaly",
         "mslp_anomaly",
     ),
 }

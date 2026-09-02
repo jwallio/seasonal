@@ -54,15 +54,13 @@ def main() -> int:
         check(len(temperature_spec["anomaly_ticks"]) == len(temperature_spec["anomaly_palette"]) + 1, f"NASA {product} bounds must align with colors")
     mslp_spec = module.PRODUCT_SPECS[module.PRODUCT_MSLP_ANOMALY]
     check((mslp_spec["anomaly_min"], mslp_spec["anomaly_max"]) == (-10.0, 10.0), "NASA MSLP should use ±10 hPa")
-    sst_spec = module.PRODUCT_SPECS[module.PRODUCT_SST_ANOMALY]
-    check((sst_spec["anomaly_min"], sst_spec["anomaly_max"]) == (-3.0, 3.0), "NASA SST should use ±3°C")
-    check(sst_spec["map_domain"] == "ocean", "NASA SST must retain an ocean-only render mask")
+    northern_height = module.PRODUCT_SPECS[module.PRODUCT_Z500_ANOMALY_NH]
+    check(northern_height["projection"] == "north_polar_stereographic", "NASA Northern Hemisphere 500-mb view must use the polar projection")
     for product in (
         module.PRODUCT_T850_ANOMALY,
         module.PRODUCT_T2M_ANOMALY,
         module.PRODUCT_PRECIPITATION_ANOMALY,
         module.PRODUCT_MSLP_ANOMALY,
-        module.PRODUCT_SST_ANOMALY,
     ):
         check(product in module.DEFAULT_PRODUCTS, f"validated NASA product missing: {product}")
     check(module.target_month("202608", 4) == "202612", "NASA offset 4 should align to December")
@@ -72,7 +70,7 @@ def main() -> int:
     for term in (
         "NRT/APCN/", "Drift/for_APCN/", "provider drift climatology", "refusing to publish",
         "200 hPa", "500 hPa", "xarray", "netCDF4", "geos_s2s3_manifest.json",
-        "geos-s2s3-pages-", "850mb_temperature_anomaly", "sea_surface_temperature_anomaly",
+        "geos-s2s3-pages-", "850mb_temperature_anomaly",
     ):
         check(term in adapter or term in workflow or term in page or term in doc, f"missing NASA term: {term}")
     check("pre-rendered" not in page, "NASA page must not describe the numerical adapter as pre-rendered")

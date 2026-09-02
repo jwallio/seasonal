@@ -24,6 +24,7 @@ from cfsv2_seasonal import (
     ANOMALY_PALETTE,
     ANOMALY_TICKS,
     CFSv2Error,
+    CONUS_REGION,
     DEFAULT_REGION,
     PRECIP_ANOMALY_PALETTE,
     PRECIP_ANOMALY_TICKS,
@@ -32,6 +33,7 @@ from cfsv2_seasonal import (
     TEMPERATURE_ANOMALY_PALETTE,
     TEMPERATURE_ANOMALY_TICKS,
     Grid,
+    NORTHERN_HEMISPHERE_REGION,
     download_file,
     ensure_border_files,
     mean_grids,
@@ -44,6 +46,7 @@ from cfsv2_seasonal import (
     target_period,
     write_grid_state,
 )
+from seasonal_products import is_retired_product
 
 
 CANSIPS_ROOT = "https://dd.weather.gc.ca/today/model_cansips/100km/"
@@ -61,10 +64,6 @@ CANSIPS_DOWNLOAD_TIMEOUT = (60, 600)
 CANSIPS_REQUEST_DELAY = 1.0
 
 MSLP_ANOMALY_TICKS = list(range(-10, 11))
-SST_ANOMALY_TICKS = list(range(-3, 4))
-SST_ANOMALY_PALETTE = [
-    "#28567f", "#5b9fba", "#b4d6dc", "#ffffff", "#efb6b5", "#b84c5a",
-]
 SSH_ANOMALY_TICKS = [round(-0.50 + index * 0.10, 2) for index in range(11)]
 SSH_ANOMALY_PALETTE = [
     "#24527a", "#3d83a6", "#539cb8", "#70b2c6", "#95c4d3",
@@ -72,11 +71,11 @@ SSH_ANOMALY_PALETTE = [
 ]
 
 PRODUCT_Z500_ANOMALY = "500mb_height_anomaly"
+PRODUCT_Z500_ANOMALY_NH = "500mb_height_anomaly_nh"
 PRODUCT_850MB_TEMPERATURE_ANOMALY = "850mb_temperature_anomaly"
 PRODUCT_2M_TEMPERATURE_ANOMALY = "2m_temperature_anomaly"
 PRODUCT_PRECIPITATION_ANOMALY = "precipitation_anomaly"
 PRODUCT_MSLP_ANOMALY = "mslp_anomaly"
-PRODUCT_SST_ANOMALY = "sst_anomaly"
 PRODUCT_SEA_SURFACE_HEIGHT_ANOMALY = "sea_surface_height_anomaly"
 PRODUCT_ALL = "all"
 PRODUCT_SPECS: dict[str, dict[str, Any]] = {
@@ -118,7 +117,7 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "units": "°C",
         "seasonal_units": "°C",
         "height_contours": False,
-        "region": CANSIPS_DEFAULT_REGION,
+        "region": CONUS_REGION,
         "monthly_reducer": "mean",
         "seasonal_reducer": "mean",
         "anomaly_min": TEMPERATURE_ANOMALY_MIN_C,
@@ -142,7 +141,7 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "units": "°C",
         "seasonal_units": "°C",
         "height_contours": False,
-        "region": CANSIPS_DEFAULT_REGION,
+        "region": CONUS_REGION,
         "monthly_reducer": "mean",
         "seasonal_reducer": "mean",
         "anomaly_min": TEMPERATURE_ANOMALY_MIN_C,
@@ -166,7 +165,7 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "units": "in",
         "seasonal_units": "in",
         "height_contours": False,
-        "region": CANSIPS_DEFAULT_REGION,
+        "region": CONUS_REGION,
         "monthly_reducer": "mean",
         "seasonal_reducer": "sum",
         "anomaly_min": -8.0,
@@ -192,7 +191,7 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "units": "hPa",
         "seasonal_units": "hPa",
         "height_contours": False,
-        "region": CANSIPS_DEFAULT_REGION,
+        "region": CONUS_REGION,
         "monthly_reducer": "mean",
         "seasonal_reducer": "mean",
         "anomaly_min": -10.0,
@@ -203,31 +202,6 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "conversion": "Pressure divided by 100 to convert Pa to hPa",
         "source_label": "ECCC MSC CanSIPS v3 / Datamart",
         "header_detail": "{source_label}  •  {baseline_label}  •  Mean sea-level pressure anomaly (hPa)",
-    },
-    PRODUCT_SST_ANOMALY: {
-        "name": PRODUCT_SST_ANOMALY,
-        "source_var": "WaterTemp",
-        "level": "Sfc",
-        "state_tag": "sst",
-        "id_token": "ssta",
-        "title": "CanSIPS v3 Sea-Surface Temperature Anomaly (°C)",
-        "absolute_title": "CanSIPS v3 Sea-Surface Temperature (°C)",
-        "field": "sst_anomaly",
-        "raw_field": "WaterTemp at the surface",
-        "raw_units": "K",
-        "units": "°C",
-        "seasonal_units": "°C",
-        "height_contours": False,
-        "region": CANSIPS_DEFAULT_REGION,
-        "monthly_reducer": "mean",
-        "seasonal_reducer": "mean",
-        "anomaly_min": -3.0,
-        "anomaly_max": 3.0,
-        "anomaly_ticks": SST_ANOMALY_TICKS,
-        "anomaly_palette": SST_ANOMALY_PALETTE,
-        "map_domain": "ocean",
-        "source_label": "ECCC MSC CanSIPS v3 / Datamart",
-        "header_detail": "{source_label}  •  {baseline_label}  •  Sea-surface temperature anomaly (°C)",
     },
     PRODUCT_SEA_SURFACE_HEIGHT_ANOMALY: {
         "name": PRODUCT_SEA_SURFACE_HEIGHT_ANOMALY,
@@ -243,7 +217,7 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "units": "m",
         "seasonal_units": "m",
         "height_contours": False,
-        "region": CANSIPS_DEFAULT_REGION,
+        "region": CONUS_REGION,
         "monthly_reducer": "mean",
         "seasonal_reducer": "mean",
         "anomaly_min": -0.50,
@@ -256,13 +230,28 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "header_detail": "{source_label}  •  {baseline_label}  •  Sea-surface height anomaly (m)",
     },
 }
+
+PRODUCT_SPECS[PRODUCT_Z500_ANOMALY_NH] = {
+    **PRODUCT_SPECS[PRODUCT_Z500_ANOMALY],
+    "name": PRODUCT_Z500_ANOMALY_NH,
+    "id_token": "z500a-nh",
+    "region": NORTHERN_HEMISPHERE_REGION,
+    "projection": "north_polar_stereographic",
+    "projection_central_longitude": 0.0,
+    "title": "CanSIPS v3 Northern Hemisphere 500-mb Geopotential Height & Anomaly (m)",
+    "absolute_title": "CanSIPS v3 Northern Hemisphere 500-mb Geopotential Height (m)",
+    "header_detail": "{source_label}  •  {baseline_label}  •  Height contours in dam  •  Northern Hemisphere",
+}
+
+Z500_PRODUCTS = frozenset({PRODUCT_Z500_ANOMALY, PRODUCT_Z500_ANOMALY_NH})
+
 PRODUCT_LABELS = {
     PRODUCT_Z500_ANOMALY: "500-mb Height Anomaly",
+    PRODUCT_Z500_ANOMALY_NH: "500-mb Height Anomaly · Northern Hemisphere",
     PRODUCT_850MB_TEMPERATURE_ANOMALY: "850-mb Temperature Anomaly",
     PRODUCT_2M_TEMPERATURE_ANOMALY: "2-m Temperature Anomaly",
     PRODUCT_PRECIPITATION_ANOMALY: "Precipitation Anomaly",
     PRODUCT_MSLP_ANOMALY: "MSLP Anomaly",
-    PRODUCT_SST_ANOMALY: "Sea-Surface Temperature Anomaly",
     PRODUCT_SEA_SURFACE_HEIGHT_ANOMALY: "Sea-Surface Height Anomaly",
 }
 
@@ -586,8 +575,15 @@ def write_manifest(
         except (OSError, ValueError) as exc:
             raise CanSIPSError(f"could not read existing CanSIPS manifest {existing_path}: {exc}") from exc
         if isinstance(existing, dict) and isinstance(existing.get("runs"), list):
-            payload["runs"].extend(existing["runs"])
+            payload["runs"].extend(
+                run for run in existing["runs"]
+                if isinstance(run, dict) and not is_retired_product(run.get("product"))
+            )
     new_entries = run_entries if isinstance(run_entries, list) else [run_entries]
+    new_entries = [
+        run for run in new_entries
+        if isinstance(run, dict) and not is_retired_product(run.get("product"))
+    ]
     incoming_ids = {str(run_entry["id"]) for run_entry in new_entries}
 
     # The first CanSIPS implementation used a z500-only run id. Replace that
@@ -693,7 +689,7 @@ def render_product_run(
     run_id = f"cansips-{init}-{product['name']}"
     baseline_label = f"CanSIPS v3 hindcast climatology; {args.climo_start}-{args.climo_end}"
     common_reference_enabled = (
-        product["name"] == PRODUCT_Z500_ANOMALY
+        product["name"] in Z500_PRODUCTS
         and args.climo_start == CANSIPS_HINDCAST_START
         and args.climo_end == CANSIPS_HINDCAST_END
         and common_reference_dir is not None

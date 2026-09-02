@@ -39,7 +39,6 @@ the same WMO-available forecast months 1-3.
 | `850mb_temperature_anomaly` | `t850` | °C | K anomaly increment equals °C anomaly increment |
 | `2m_temperature_anomaly` | `t02m` | °C | K anomaly increment equals °C anomaly increment |
 | `precipitation_anomaly` | `prec` | in | rate × calendar-month seconds ÷ 25.4 |
-| `sea_surface_temperature_anomaly` | `sst` | °C | K anomaly increment equals °C anomaly increment; land remains masked |
 | `mslp_anomaly` | `mslp` | hPa | Pa ÷ 100 |
 
 The WMO data policy defines precipitation as total precipitation rate in

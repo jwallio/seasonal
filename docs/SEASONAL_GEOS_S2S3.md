@@ -16,8 +16,7 @@ Validated numerical products are:
 - 850-mb temperature anomaly;
 - 2-m temperature anomaly;
 - CONUS precipitation anomaly in inches;
-- mean sea-level pressure anomaly in hPa;
-- sea-surface temperature anomaly, with land cells masked.
+- mean sea-level pressure anomaly in hPa.
 
 The NASA archive named `z500` is not scheduled. Its current long-range files
 declare a 200-hPa pressure coordinate, and the adapter refuses to label or

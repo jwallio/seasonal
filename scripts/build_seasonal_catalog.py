@@ -25,6 +25,7 @@ from seasonal_products import (
     PRODUCTS,
     REGISTRY_VERSION,
     canonical_product,
+    is_retired_product,
     issue_codes,
     metadata_issues,
     public_model_registry,
@@ -44,7 +45,7 @@ FRESHNESS_WINDOWS = {
 
 RUN_FIELDS = (
     "id", "model", "component", "component_label", "model_role", "source", "source_url", "source_urls",
-    "product", "base_product", "init_utc", "status", "statistic", "aggregation", "ensemble_scope",
+    "product", "base_product", "init_utc", "generated_utc", "status", "statistic", "aggregation", "ensemble_scope",
     "ensemble_members", "field", "units", "raw_field", "raw_units", "climatology", "baseline",
     "source_warning", "conversion",
 )
@@ -323,7 +324,10 @@ def validate_manifest(
         collector.add("runs_missing", "error", "Manifest must contain a runs array.", "runs")
         runs: list[Any] = []
     else:
-        runs = manifest["runs"]
+        runs = [
+            raw_run for raw_run in manifest["runs"]
+            if not isinstance(raw_run, dict) or not is_retired_product(raw_run.get("product"))
+        ]
     if not _valid_utc(manifest.get("generated_utc")):
         collector.add(
             "manifest_time_invalid", "error",
@@ -653,6 +657,7 @@ def build_catalog(
             "manifest": manifest_relative,
             "direct": _published_model_dir(site_root, model_key),
             "support": definition["support"],
+            "schedule": definition.get("schedule") or {},
             "runs": [],
         }
         if not manifest_path.is_file():
@@ -708,7 +713,11 @@ def build_catalog(
             "manifest_kind": manifest.get("kind"),
             "generated_utc": manifest.get("generated_utc"),
             "source_url": manifest.get("source_url"),
-            "product_labels": manifest.get("product_labels") if isinstance(manifest.get("product_labels"), dict) else {},
+            "product_labels": {
+                key: value
+                for key, value in (manifest.get("product_labels") or {}).items()
+                if not is_retired_product(key)
+            } if isinstance(manifest.get("product_labels"), dict) else {},
             "validation": validation,
             "surfaces": surfaces,
             "runs": runs,

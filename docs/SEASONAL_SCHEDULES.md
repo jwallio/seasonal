@@ -21,6 +21,15 @@ historical cycle or individual field needs to be regenerated.
 | Deduplicated super ensemble | After APCC, CMA, and the other component source windows | 22nd of each month at 20:30 |
 | 500-mb pattern analogs and top-analog maps | After each successful CFSv2 or super-ensemble release | Source-triggered, with scheduled reconciliation at 02:35 and 14:35 |
 
+The Overview availability matrix exposes both clocks. **Last run** is the
+latest usable model initialization, while **Next update (ET)** is the current
+wall.cloud download/render estimate after the workflow's expected buffer. A
+model row becomes **Overdue** only after its expected publication time plus a
+provider-appropriate grace period; a regenerated image therefore cannot hide
+an old initialization. The cadence label links to the official provider
+release reference used for that row. “ET” is rendered as EDT or EST according
+to the date being displayed.
+
 `seasonal-release-check.yml` reads the current unauthenticated CDS catalogue
 constraints for the postprocessed pressure-level, postprocessed single-level,
 and raw monthly pressure-level datasets. It requires the configured
@@ -35,8 +44,10 @@ an unusually late provider or failed render is not abandoned.
 
 Automatically dispatched C3S, JMA, and SEAS5 runs generate the full advertised anomaly suite:
 500-mb height, 850-mb temperature, 2-m temperature, precipitation,
-sea-surface temperature, and mean sea-level pressure. Manual dispatches remain
-single-product by default, with an explicit `all` option for complete repairs.
+snowfall, and mean sea-level pressure. Manual dispatches remain single-product
+by default, with an explicit `all` option for complete repairs. The established
+500-mb map remains North America and also has an optional Northern Hemisphere
+view; all other seasonal maps use the CONUS frame.
 The scheduled super ensemble likewise uses its `all` product mode.
 
 C3S and SEAS5 also publish CONUS snowfall water-equivalent departures when the
