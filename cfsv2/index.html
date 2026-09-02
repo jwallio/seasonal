@@ -89,12 +89,14 @@
     let selectedRun = null;
     const PRODUCT_LABELS = {
       '500mb_height_anomaly': '500-mb Height Anomaly',
+      '500mb_height_anomaly_nh': '500-mb Height Anomaly · Northern Hemisphere',
       '500mb_height_absolute': '500-mb Geopotential Height',
       '2m_temperature_anomaly': '2-m Temperature Anomaly',
       'mslp_anomaly': 'Mean Sea-Level Pressure Anomaly',
       'precipitation_anomaly': 'CONUS Precipitation Anomaly',
       'snow_water_equivalent_anomaly': 'Snow-Water-Equivalent Anomaly',
     };
+    const RETIRED_PRODUCTS = new Set(['sea_surface_temperature_anomaly', 'sst_anomaly']);
     function productLabel(run, target) {
       return PRODUCT_LABELS[run?.product] || target?.field || run?.product || 'Seasonal Guidance';
     }
@@ -177,7 +179,7 @@
     el('product-select').addEventListener('change', () => { renderRunSelector(); pick(preferredTargetIndex()); });
     el('run-select').addEventListener('change', () => { renderRunSelector(el('run-select').value); pick(preferredTargetIndex()); });
     fetch(manifestUrl).then(response => { if (!response.ok) throw new Error(`Manifest returned ${response.status}`); return response.json(); }).then(manifest => {
-      runs = (manifest.runs || []).filter(run => run && Array.isArray(run.targets)).sort((left,right) => String(right.init_utc || '').localeCompare(String(left.init_utc || '')));
+      runs = (manifest.runs || []).filter(run => run && Array.isArray(run.targets) && !RETIRED_PRODUCTS.has(run.product)).sort((left,right) => String(right.init_utc || '').localeCompare(String(left.init_utc || '')));
       if (!runs.length) throw new Error('No CFSv2 run is present yet.');
       renderProductSelector();
       renderRunSelector();

@@ -33,12 +33,29 @@ h1 { margin:0; font-size:clamp(28px,4vw,46px); line-height:1; letter-spacing:-.0
 .matrix-head { align-items:flex-start; }
 .matrix-head p { max-width:650px; margin:0; color:var(--muted); font-size:12px; text-align:right; }
 .matrix-wrap { overflow-x:auto; overscroll-behavior-inline:contain; scrollbar-color:#456572 #0b1b23; }
-.overview-matrix { width:100%; min-width:900px; border-collapse:collapse; }
-.overview-matrix th, .overview-matrix td { padding:11px 10px; border-bottom:1px solid #213d49; text-align:center; }
+.overview-matrix { width:100%; min-width:1180px; border-collapse:collapse; }
+.overview-matrix th, .overview-matrix td { padding:11px 10px; border-bottom:1px solid #213d49; text-align:center; vertical-align:top; }
 .overview-matrix th { color:var(--muted); font-size:10px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; }
 .overview-matrix th:first-child, .overview-matrix td:first-child { position:sticky; left:0; z-index:1; width:190px; background:#102630; text-align:left; }
+.overview-matrix th:nth-child(2), .overview-matrix td:nth-child(2) { width:155px; text-align:left; }
+.overview-matrix th:nth-child(3), .overview-matrix td:nth-child(3), .overview-matrix th:nth-child(4), .overview-matrix td:nth-child(4) { width:190px; text-align:left; }
+.overview-matrix .availability-group-row th { position:static; width:auto; padding:10px 12px 8px; background:#0c1d25; text-align:left; }
+.availability-group-row th span, .availability-group-row th small { display:block; }
+.availability-group-row th span { color:var(--ink); font-size:10px; letter-spacing:.08em; }
+.availability-group-row th small { margin-top:2px; color:var(--muted); font-size:10px; font-weight:500; letter-spacing:0; text-transform:none; }
+.availability-row.availability-overdue > th:first-child { box-shadow:inset 3px 0 var(--coral); }
+.overview-model-cell { min-width:180px; }
 .overview-model { display:block; color:var(--ink); font-size:13px; }
 .overview-role { display:block; color:var(--muted); font-size:10px; font-weight:500; }
+.overview-cadence, .overview-last, .overview-next { color:var(--ink); }
+.availability-cadence-label, .availability-last-time, .availability-next-time { display:block; font-size:11px; line-height:1.3; }
+.availability-schedule { display:inline-block; margin-top:5px; border:1px solid; border-radius:999px; padding:2px 6px; font-size:9px; font-weight:800; letter-spacing:.05em; text-transform:uppercase; }
+.schedule-on-time { border-color:#3ba88f; background:#123e39; color:#c9fff2; }
+.schedule-due, .schedule-processing { border-color:#c39a42; background:#3c3118; color:#ffe2a0; }
+.schedule-overdue { border-color:#bf6555; background:#43251f; color:#ffd1c8; }
+.schedule-unknown { border-color:#40535c; background:#17242a; color:#9aabb3; }
+.availability-detail { display:block; margin-top:4px; color:var(--muted); font-size:10px; line-height:1.3; }
+.availability-source { display:block; margin-top:5px; font-size:10px; line-height:1.2; }
 .status-pill { min-width:76px; border-radius:9px; padding:6px 8px; font-size:10px; font-weight:800; letter-spacing:.03em; }
 .status-fresh { border-color:#3ba88f; background:#123e39; color:#c9fff2; }
 .status-aging { border-color:#c39a42; background:#3c3118; color:#ffe2a0; }
@@ -222,6 +239,92 @@ dialog::backdrop { background:#02080dcc; backdrop-filter:blur(5px); }
   .dialog-head { align-items:flex-start; flex-direction:column; gap:8px; }
   .dialog-actions { width:100%; align-items:center; justify-content:flex-end; }
   .dialog-body img { max-height:calc(100vh - 220px); }
+}
+
+@media (max-width:600px) {
+  .matrix-wrap { overflow:visible; }
+  .overview-matrix { display:block; min-width:0; }
+  .overview-matrix thead { display:none; }
+  .overview-matrix tbody { display:grid; gap:10px; padding:10px; }
+  .overview-matrix tr.availability-row {
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    grid-template-areas:
+      "model model"
+      "cadence last"
+      "next next"
+      "p1 p2"
+      "p3 p4"
+      "p5 p6"
+      "p7 p7";
+    gap:8px;
+    padding:10px;
+    border:1px solid #213d49;
+    border-radius:14px;
+    background:#102630;
+  }
+  .availability-row > th.overview-model-cell {
+    grid-area:model;
+    position:static;
+    width:auto;
+    padding:0 0 2px;
+    background:transparent;
+    text-align:left;
+  }
+  .availability-row > td:nth-child(2) { grid-area:cadence; }
+  .availability-row > td:nth-child(3) { grid-area:last; }
+  .availability-row > td:nth-child(4) { grid-area:next; }
+  .availability-row > td:nth-child(n+5) {
+    display:grid;
+    gap:3px;
+    align-content:start;
+    width:auto;
+    padding:6px 0 0;
+    border:0;
+    text-align:center;
+  }
+  .availability-row > td:nth-child(n+5)::before {
+    content:attr(data-parameter);
+    color:var(--muted);
+    font-size:9px;
+    line-height:1.15;
+  }
+  .availability-row > td:nth-child(n+5) button { width:100%; }
+  .availability-row > td:nth-child(2),
+  .availability-row > td:nth-child(3),
+  .availability-row > td:nth-child(4) {
+    border:1px solid #24414d;
+    border-radius:10px;
+    padding:7px;
+    text-align:left;
+  }
+  .availability-row > td:nth-child(2)::before { content:'Cadence'; }
+  .availability-row > td:nth-child(3)::before { content:'Last run'; }
+  .availability-row > td:nth-child(4)::before { content:'Next update'; }
+  .availability-row > td:nth-child(2)::before,
+  .availability-row > td:nth-child(3)::before,
+  .availability-row > td:nth-child(4)::before {
+    display:block;
+    margin-bottom:3px;
+    color:var(--muted);
+    font-size:9px;
+    font-weight:800;
+    letter-spacing:.06em;
+    line-height:1.15;
+    text-transform:uppercase;
+  }
+  .availability-cadence-label, .availability-last-time, .availability-next-time { font-size:10px; }
+  .availability-detail, .availability-source { font-size:9px; }
+  .availability-schedule { font-size:8px; }
+  .overview-matrix .availability-group-row { display:block; margin:0; }
+  .overview-matrix .availability-group-row th {
+    display:block;
+    position:static;
+    width:auto;
+    padding:10px 4px 2px;
+    background:transparent;
+    text-align:left;
+  }
 }
 
 

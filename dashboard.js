@@ -39,6 +39,20 @@ const MODEL_CONFIG = {
   geos_s2s3: { label: 'NASA GEOS-S2S-3', role: 'family', kind: 'seasonal', manifest: assetPath('seasonal/geos_s2s3_manifest.json'), direct: assetPath('seasonal/geos_s2s3/'), source: 'NASA GEOS-S2S-3 NCCS numerical forecasts' },
   nmme: { label: 'NOAA NMME', role: 'blend', preferredComponent: 'ENSMEAN', kind: 'seasonal', manifest: assetPath('seasonal/nmme_manifest.json'), direct: assetPath('seasonal/nmme/'), source: 'NOAA CPC NMME' },
 };
+// Kept as a client fallback while an older published catalog is being
+// replaced. The catalog builder is the source of truth for new releases.
+const MODEL_SCHEDULE_FALLBACKS = {
+  superensemble: { cadenceGroup: 'monthly', cadenceLabel: 'Monthly · derived', officialSchedule: 'Derived after the monthly component releases; wall.cloud targets the 22nd.', officialUrl: 'https://www.wmolc.org/seasonalDownload/direct', expectedCycle: { kind: 'monthly_day', runDay: 1, runTimeUtc: '00:00', publishDay: 22, publishTimeUtc: '20:30', publishLagMinutes: 45, lateAfterMinutes: 180 } },
+  c3s: { cadenceGroup: 'monthly', cadenceLabel: 'Monthly · release window', officialSchedule: 'C3S seasonal data are released monthly; this multi-system suite uses the 10th-day window.', officialUrl: 'https://climate.copernicus.eu/seasonal-forecasts', expectedCycle: { kind: 'monthly_day', runDay: 1, runTimeUtc: '00:00', publishDay: 10, publishTimeUtc: '12:00', publishLagMinutes: 90, lateAfterMinutes: 360 } },
+  apcc: { cadenceGroup: 'monthly', cadenceLabel: 'Monthly · mid-month', officialSchedule: 'APCC seasonal forecasts are issued around the 15th; wall.cloud targets the post-collection window on the 20th.', officialUrl: 'https://www.apcc21.org/prediction/global/outlook?lang=eng', expectedCycle: { kind: 'monthly_day', runDay: 15, runTimeUtc: '00:00', publishDay: 20, publishTimeUtc: '16:30', publishLagMinutes: 60, lateAfterMinutes: 360 } },
+  nmme: { cadenceGroup: 'monthly', cadenceLabel: 'Monthly · CPC', officialSchedule: 'NMME inputs are delivered by 17:00 ET on the 8th; CPC publishes the graphics and data on the 9th.', officialUrl: 'https://www.cpc.ncep.noaa.gov/products/NMME/users_guide.html', expectedCycle: { kind: 'monthly_day', runDay: 8, runTimeUtc: '00:00', publishDay: 9, publishTimeUtc: '15:30', publishLagMinutes: 60, lateAfterMinutes: 360 } },
+  cfsv2: { cadenceGroup: 'frequent', cadenceLabel: 'Twice daily', officialSchedule: 'CFSv2 runs four times daily at 00, 06, 12, and 18 UTC; wall.cloud harvests the 06Z and 18Z cycles.', officialUrl: 'https://www.ncei.noaa.gov/products/weather-climate-models/climate-forecast-system', expectedCycle: { kind: 'daily_times', runTimesUtc: ['06:00', '18:00'], publishTimesUtc: ['10:35', '22:35'], publishLagMinutes: 45, lateAfterMinutes: 90 } },
+  seas5: { cadenceGroup: 'monthly', cadenceLabel: 'Monthly · release window', officialSchedule: 'SEAS5 is disseminated on the 5th at 12 UTC; the CDS-backed suite is checked from the 6th.', officialUrl: 'https://www.ecmwf.int/en/forecasts/datasets/set-v', expectedCycle: { kind: 'monthly_day', runDay: 1, runTimeUtc: '00:00', publishDay: 6, publishTimeUtc: '12:00', publishLagMinutes: 90, lateAfterMinutes: 360 } },
+  cansips: { cadenceGroup: 'monthly', cadenceLabel: 'Monthly · ECCC', officialSchedule: 'ECCC global seasonal forecasts are produced on the first day at 00 UTC; wall.cloud publishes after the Datamart window.', officialUrl: 'https://weather.gc.ca/saisons/GPC_Montreal_e.html', expectedCycle: { kind: 'monthly_day', runDay: 1, runTimeUtc: '00:00', publishDay: 2, publishTimeUtc: '16:30', publishLagMinutes: 60, lateAfterMinutes: 360 } },
+  cma_cpsv3: { cadenceGroup: 'monthly', cadenceLabel: 'Monthly · WMO window', officialSchedule: 'CMA CPSv3 is a monthly seasonal system; wall.cloud targets the 21st after the WMO GPC Beijing exchange window.', officialUrl: 'https://www.wmolc.org/contents2/index/Beijing', expectedCycle: { kind: 'monthly_day', runDay: 1, runTimeUtc: '00:00', publishDay: 21, publishTimeUtc: '18:30', publishLagMinutes: 60, lateAfterMinutes: 360 } },
+  geos_s2s3: { cadenceGroup: 'monthly', cadenceLabel: 'Monthly · NASA', officialSchedule: 'NASA produces GEOS seasonal forecasts monthly; wall.cloud checks the public archive during the first week.', officialUrl: 'https://gmao.gsfc.nasa.gov/seasonal-decadal-analysis_prediction/', expectedCycle: { kind: 'monthly_day', runDay: 1, runTimeUtc: '00:00', publishDay: 6, publishTimeUtc: '16:30', publishLagMinutes: 60, lateAfterMinutes: 360 } },
+  jma: { cadenceGroup: 'monthly', cadenceLabel: 'Monthly · JMA/C3S', officialSchedule: 'JMA seasonal guidance is monthly; the C3S component is checked in the 10th-day release window.', officialUrl: 'https://www.data.jma.go.jp/wmc/products/model/', expectedCycle: { kind: 'monthly_day', runDay: 1, runTimeUtc: '00:00', publishDay: 10, publishTimeUtc: '12:00', publishLagMinutes: 90, lateAfterMinutes: 360 } },
+};
 const MODEL_ROLE_LABELS = { blend: 'Blend', family: 'Forecast family', component: 'Component model' };
 const MODEL_ROLE_GROUPS = [
   { role: 'blend', label: 'Multi-model blends' },
@@ -125,7 +139,6 @@ const COMPARE_PRODUCTS = [
   { value: 'precipitation_anomaly', label: 'Precipitation Anomaly', aliases: ['precipitation_anomaly'] },
   { value: 'snowfall_anomaly', label: 'CONUS Snowfall Water-Equivalent Departure', aliases: ['snowfall_anomaly'] },
   { value: 'mslp_anomaly', label: 'MSLP Anomaly', aliases: ['mslp_anomaly'] },
-  { value: 'sea_surface_temperature_anomaly', label: 'Sea-Surface Temperature Anomaly', aliases: ['sea_surface_temperature_anomaly', 'sst_anomaly'] },
 ];
 const COMPARE_BASELINES = [
   { value: 'native', label: 'Native model reference' },
@@ -133,11 +146,11 @@ const COMPARE_BASELINES = [
 ];
 const PRODUCT_LABELS = {
   '500mb_height_anomaly': '500-mb Height Anomaly', '500mb_height_absolute': '500-mb Geopotential Height',
+  '500mb_height_anomaly_nh': '500-mb Height Anomaly · Northern Hemisphere',
   '2m_temperature_anomaly': '2-m Temperature Anomaly', '850mb_temperature_anomaly': '850-mb Temperature Anomaly',
   'precipitation_anomaly': 'CONUS Precipitation Anomaly', 'snow_water_equivalent_anomaly': 'Snow-Water-Equivalent Anomaly',
   'snow_depth_anomaly': 'CONUS Snow-Depth Anomaly', 'snowfall_anomaly': 'CONUS Snowfall Water-Equivalent Departure',
-  'sst_anomaly': 'Sea-Surface Temperature Anomaly', 'mslp_anomaly': 'MSLP Anomaly',
-  'sea_surface_temperature_anomaly': 'Sea-Surface Temperature Anomaly', '200mb_height_anomaly': '200-mb Height Anomaly',
+  'mslp_anomaly': 'CONUS MSLP Anomaly', '200mb_height_anomaly': '200-mb Height Anomaly',
   'probability_above_normal': 'Above Normal Probability', 'probability_near_normal': 'Near Normal Probability', 'probability_below_normal': 'Below Normal Probability',
   'multi_model_consensus': 'Multi-Model Consensus',
 };
@@ -221,6 +234,144 @@ function defaultEligibleRun(run) {
   return String(run?.status || '').toLowerCase() !== 'partial' || coverage === null || coverage >= 0.8;
 }
 const initLabel = value => { if (!value) return '—'; const date = new Date(value); return Number.isNaN(date.valueOf()) ? value : new Intl.DateTimeFormat(undefined, {day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit', hour12:false, timeZone:'UTC'}).format(date).replace(',', '') + 'Z'; };
+function scheduleFor(modelKey) {
+  const fallback = MODEL_SCHEDULE_FALLBACKS[modelKey] || {};
+  const published = modelStates[modelKey]?.catalog?.schedule;
+  if (!published) return fallback;
+  const cycle = published.expected_cycle || {};
+  return {
+    cadenceGroup: published.cadence_group || fallback.cadenceGroup,
+    cadenceLabel: published.cadence_label || fallback.cadenceLabel,
+    officialSchedule: published.official_schedule || fallback.officialSchedule,
+    officialUrl: published.official_url || fallback.officialUrl,
+    expectedCycle: {
+      ...(fallback.expectedCycle || {}),
+      kind: cycle.kind || fallback.expectedCycle?.kind,
+      runDay: cycle.run_day ?? fallback.expectedCycle?.runDay,
+      runTimeUtc: cycle.run_time_utc || fallback.expectedCycle?.runTimeUtc,
+      runTimesUtc: cycle.run_times_utc || fallback.expectedCycle?.runTimesUtc,
+      publishDay: cycle.publish_day ?? fallback.expectedCycle?.publishDay,
+      publishTimeUtc: cycle.publish_time_utc || fallback.expectedCycle?.publishTimeUtc,
+      publishTimesUtc: cycle.publish_times_utc || fallback.expectedCycle?.publishTimesUtc,
+      publishLagMinutes: Number(cycle.publish_lag_minutes ?? fallback.expectedCycle?.publishLagMinutes ?? 0),
+      lateAfterMinutes: Number(cycle.late_after_minutes ?? fallback.expectedCycle?.lateAfterMinutes ?? 0),
+    },
+  };
+}
+function utcClock(value) {
+  const match = /^(\d{1,2}):(\d{2})$/.exec(String(value || ''));
+  return match ? [Number(match[1]), Number(match[2])] : [0, 0];
+}
+function utcAt(day, clock) {
+  const [hour, minute] = utcClock(clock);
+  return new Date(Date.UTC(day.getUTCFullYear(), day.getUTCMonth(), day.getUTCDate(), hour, minute));
+}
+function addMinutes(date, minutes) { return new Date(date.valueOf() + Number(minutes || 0) * 60000); }
+function scheduledCycles(modelKey, anchor = new Date()) {
+  const cycle = scheduleFor(modelKey).expectedCycle || {};
+  const candidates = [];
+  if (cycle.kind === 'daily_times') {
+    const publishTimes = cycle.publishTimesUtc || [];
+    const runTimes = cycle.runTimesUtc || [];
+    for (let offset = -2; offset <= 2; offset += 1) {
+      const day = new Date(Date.UTC(anchor.getUTCFullYear(), anchor.getUTCMonth(), anchor.getUTCDate() + offset));
+      publishTimes.forEach((clock, index) => candidates.push({
+        publish: addMinutes(utcAt(day, clock), cycle.publishLagMinutes),
+        run: utcAt(day, runTimes[index] || clock),
+      }));
+    }
+  } else if (cycle.kind === 'monthly_day') {
+    for (let offset = -2; offset <= 2; offset += 1) {
+      const month = new Date(Date.UTC(anchor.getUTCFullYear(), anchor.getUTCMonth() + offset, 1));
+      const publishDay = Number(cycle.publishDay || 1);
+      const runDay = Number(cycle.runDay || 1);
+      const publishBase = new Date(Date.UTC(month.getUTCFullYear(), month.getUTCMonth(), publishDay, ...utcClock(cycle.publishTimeUtc)));
+      const run = new Date(Date.UTC(month.getUTCFullYear(), month.getUTCMonth(), runDay, ...utcClock(cycle.runTimeUtc)));
+      candidates.push({ publish: addMinutes(publishBase, cycle.publishLagMinutes), run });
+    }
+  }
+  return candidates.sort((left, right) => left.publish - right.publish);
+}
+function scheduleCycle(modelKey, direction, now = new Date()) {
+  const cycles = scheduledCycles(modelKey, now);
+  const matches = direction === 'previous'
+    ? cycles.filter(item => item.publish.valueOf() <= now.valueOf())
+    : cycles.filter(item => item.publish.valueOf() > now.valueOf());
+  return direction === 'previous' ? matches.at(-1) || null : matches[0] || null;
+}
+function formatInZone(value, timeZone) {
+  const date = new Date(value || '');
+  if (Number.isNaN(date.valueOf())) return '—';
+  const parts = Object.fromEntries(new Intl.DateTimeFormat('en-US', {
+    day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit',
+    hour12: false, timeZone, timeZoneName: 'short',
+  }).formatToParts(date).map(part => [part.type, part.value]));
+  return `${parts.month} ${parts.day}, ${parts.year} · ${parts.hour}:${parts.minute} ${parts.timeZoneName}`;
+}
+function formatEdt(value) { return formatInZone(value, 'America/New_York'); }
+function compactUtc(value) { return formatInZone(value, 'UTC'); }
+function compactRunUtc(value) {
+  const date = new Date(value || '');
+  if (Number.isNaN(date.valueOf())) return '—';
+  const parts = Object.fromEntries(new Intl.DateTimeFormat('en-US', {
+    day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'UTC',
+  }).formatToParts(date).map(part => [part.type, part.value]));
+  return `${parts.month} ${parts.day} · ${parts.hour}:${parts.minute}Z`;
+}
+function compactEdt(value) {
+  const date = new Date(value || '');
+  if (Number.isNaN(date.valueOf())) return '—';
+  const parts = Object.fromEntries(new Intl.DateTimeFormat('en-US', {
+    day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hour12: false,
+    timeZone: 'America/New_York', timeZoneName: 'short',
+  }).formatToParts(date).map(part => [part.type, part.value]));
+  return `${parts.month} ${parts.day} · ${parts.hour}:${parts.minute} ${parts.timeZoneName}`;
+}
+function ageLabel(value, now = new Date()) {
+  const date = new Date(value || '');
+  if (Number.isNaN(date.valueOf())) return 'Age unavailable';
+  const minutes = Math.max(0, Math.floor((now.valueOf() - date.valueOf()) / 60000));
+  if (minutes < 60) return `${minutes}m old`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 48) return `${hours}h old`;
+  return `${Math.floor(hours / 24)}d old`;
+}
+function hasUsableTarget(run) {
+  return (Array.isArray(run?.targets) ? run.targets : []).some(target =>
+    !['failed', 'error'].includes(String(target?.status || '').toLowerCase()) && Boolean(target?.image));
+}
+function latestUsableModelRun(modelKey) {
+  return [...(modelStates[modelKey]?.runs || [])]
+    .filter(run => !isFailedRun(run) && hasUsableTarget(run))
+    .sort((left, right) => String(right.init_utc || '').localeCompare(String(left.init_utc || '')) || String(right.id || '').localeCompare(String(left.id || '')))[0] || null;
+}
+function availabilityScheduleState(modelKey, lastRun, now = new Date()) {
+  const schedule = scheduleFor(modelKey);
+  const previous = scheduleCycle(modelKey, 'previous', now);
+  const next = scheduleCycle(modelKey, 'next', now);
+  if (!previous || !next) return { key: 'unknown', label: 'Timing unavailable', className: 'schedule-unknown', previous, next, title: 'No expected release rule is configured for this model.' };
+  const lastInit = new Date(lastRun?.init_utc || '');
+  const cycleMissing = Number.isNaN(lastInit.valueOf()) || lastInit.valueOf() < previous.run.valueOf();
+  const lateAfter = Number(schedule.expectedCycle?.lateAfterMinutes || 0) * 60000;
+  const overdue = cycleMissing && now.valueOf() >= previous.publish.valueOf() + lateAfter;
+  const dueSoon = next.publish.valueOf() - now.valueOf() <= 36 * 3600000;
+  if (overdue) return {
+    key: 'overdue', label: 'Overdue', className: 'schedule-overdue', previous, next,
+    title: `Expected availability was ${formatEdt(previous.publish)}; the latest usable initialization is ${lastRun ? compactUtc(lastRun.init_utc) : 'unavailable'}.`,
+  };
+  if (cycleMissing) return {
+    key: 'processing', label: 'Due / processing', className: 'schedule-processing', previous, next,
+    title: `The expected release window is open; the latest usable initialization is ${lastRun ? compactUtc(lastRun.init_utc) : 'unavailable'}.`,
+  };
+  if (dueSoon) return {
+    key: 'due', label: 'Due soon', className: 'schedule-due', previous, next,
+    title: `Next expected availability is ${formatEdt(next.publish)}.`,
+  };
+  return {
+    key: 'on_time', label: 'On schedule', className: 'schedule-on-time', previous, next,
+    title: `Next expected availability is ${formatEdt(next.publish)}.`,
+  };
+}
 const monthLabel = value => { if (!value) return '—'; const date = new Date(value); return Number.isNaN(date.valueOf()) ? value : new Intl.DateTimeFormat(undefined, {month:'short', year:'numeric', timeZone:'UTC'}).format(date); };
 const monthCodeLabel = code => /^\d{6}$/.test(String(code || '')) ? monthLabel(`${String(code).slice(0,4)}-${String(code).slice(4,6)}-01T00:00:00Z`) : String(code || '—');
 function periodLabel(value) {
@@ -328,7 +479,8 @@ function manifestProducts(model) {
       (Array.isArray(run.products) ? run.products : Object.keys(run.product_hours || {})).forEach(key => keys.add(String(key)));
     } else if (run.product) keys.add(String(run.product));
   });
-  const retired = selection.model === 'nmme' ? new Set(['model_spread']) : new Set();
+  const retired = new Set(['sea_surface_temperature_anomaly', 'sst_anomaly']);
+  if (selection.model === 'nmme') retired.add('model_spread');
   return [...keys].filter(key => !retired.has(key));
 }
 function productLabel(model, key) {
@@ -547,18 +699,45 @@ function renderUnavailable(model) {
 function renderOverview() {
   const body = el('overview-matrix-body');
   const states = [];
+  const scheduleRows = [];
   const rows = COMPARE_MODELS.map(modelKey => {
     const model = MODEL_CONFIG[modelKey];
+    const lastRun = latestUsableModelRun(modelKey);
+    const schedule = scheduleFor(modelKey);
+    const scheduleState = availabilityScheduleState(modelKey, lastRun);
     const row = document.createElement('tr');
-    const heading = document.createElement('th'); heading.scope = 'row';
+    row.className = `availability-row availability-${scheduleState.key}`;
+    const heading = document.createElement('th'); heading.scope = 'row'; heading.className = 'overview-model-cell';
     const name = document.createElement('span'); name.className = 'overview-model'; name.textContent = model.label; heading.appendChild(name);
     const role = document.createElement('span'); role.className = 'overview-role'; role.textContent = MODEL_ROLE_LABELS[model.role] || pretty(model.role); heading.appendChild(role);
     row.appendChild(heading);
+    const cadenceCell = document.createElement('td'); cadenceCell.className = 'overview-cadence';
+    const cadence = document.createElement('strong'); cadence.className = 'availability-cadence-label'; cadence.textContent = schedule.cadenceLabel || 'Schedule not set'; cadenceCell.appendChild(cadence);
+    const scheduleBadge = document.createElement('span'); scheduleBadge.className = `availability-schedule ${scheduleState.className}`; scheduleBadge.textContent = scheduleState.label; scheduleBadge.title = scheduleState.title; cadenceCell.appendChild(scheduleBadge);
+    if (schedule.officialUrl) {
+      const source = document.createElement('a'); source.className = 'availability-source'; source.href = schedule.officialUrl; source.target = '_blank'; source.rel = 'noopener'; source.textContent = 'Official timing'; source.title = schedule.officialSchedule || 'Open the official timing reference'; cadenceCell.appendChild(source);
+    }
+    row.appendChild(cadenceCell);
+    const lastCell = document.createElement('td'); lastCell.className = 'overview-last';
+    if (lastRun) {
+      const last = document.createElement('strong'); last.className = 'availability-last-time'; last.textContent = `Init ${compactRunUtc(lastRun.init_utc)}`; lastCell.appendChild(last);
+      const age = document.createElement('span'); age.className = 'availability-detail'; age.textContent = ageLabel(lastRun.init_utc); lastCell.appendChild(age);
+      lastCell.title = `Latest usable initialization: ${initLabel(lastRun.init_utc)}.`;
+    } else {
+      const missing = document.createElement('strong'); missing.className = 'availability-last-time'; missing.textContent = 'No usable run'; lastCell.appendChild(missing);
+      lastCell.title = 'No usable rendered run is currently published.';
+    }
+    row.appendChild(lastCell);
+    const nextCell = document.createElement('td'); nextCell.className = 'overview-next';
+    const next = document.createElement('strong'); next.className = 'availability-next-time'; next.textContent = scheduleState.next ? compactEdt(scheduleState.next.publish) : '—'; nextCell.appendChild(next);
+    const nextDetail = document.createElement('span'); nextDetail.className = 'availability-detail'; nextDetail.textContent = 'Expected wall.cloud availability'; nextCell.appendChild(nextDetail);
+    nextCell.title = scheduleState.next ? `Expected wall.cloud availability: ${formatEdt(scheduleState.next.publish)}. ${schedule.officialSchedule || ''}` : scheduleState.title;
+    row.appendChild(nextCell);
     COMPARE_PRODUCTS.forEach(productConfig => {
       const state = freshnessState(modelKey, productConfig.value); states.push({ ...state, modelKey, productKey: productConfig.value });
-      const cell = document.createElement('td');
+      const cell = document.createElement('td'); cell.className = 'availability-status-cell'; cell.dataset.parameter = productConfig.label;
       const button = document.createElement('button'); button.type = 'button'; button.className = `status-pill ${state.className}`; button.textContent = state.label; button.title = state.title;
-      button.setAttribute('aria-label', `${model.label} ${productConfig.label}: ${state.label}`);
+      button.setAttribute('aria-label', `${model.label} ${productConfig.label}: ${state.label}; refresh ${scheduleState.label}`);
       if (!state.available) button.disabled = true;
       else button.addEventListener('click', () => {
         selection.model = modelKey; selection.product = state.product; selection.run = String(state.run.id); selection.target = '';
@@ -566,19 +745,35 @@ function renderOverview() {
       });
       cell.appendChild(button); row.appendChild(cell);
     });
+    scheduleRows.push({ modelKey, row, schedule, scheduleState });
     return row;
   });
-  body.replaceChildren(...rows);
+  const groupedRows = [];
+  [
+    { key: 'frequent', label: 'Frequent refresh', detail: 'High-frequency source cycles' },
+    { key: 'monthly', label: 'Monthly and release-window models', detail: 'One forecast family per row' },
+  ].forEach(group => {
+    const members = scheduleRows.filter(item => (item.schedule.cadenceGroup || 'monthly') === group.key);
+    if (!members.length) return;
+    const divider = document.createElement('tr'); divider.className = 'availability-group-row';
+    const cell = document.createElement('th'); cell.scope = 'rowgroup'; cell.colSpan = COMPARE_PRODUCTS.length + 4;
+    const label = document.createElement('span'); label.textContent = group.label;
+    const detail = document.createElement('small'); detail.textContent = group.detail;
+    cell.append(label, detail); divider.appendChild(cell); groupedRows.push(divider, ...members.map(item => item.row));
+  });
+  body.replaceChildren(...groupedRows);
   const online = COMPARE_MODELS.filter(modelKey => Boolean(modelStates[modelKey].manifest)).length;
   const applicable = states.filter(state => state.applicable !== false);
   const available = applicable.filter(state => state.available).length;
-  const fresh = applicable.filter(state => state.className === 'status-fresh').length;
+  const overdueModels = scheduleRows.filter(item => item.scheduleState.key === 'overdue');
+  const processingModels = scheduleRows.filter(item => item.scheduleState.key === 'processing');
+  const fresh = applicable.filter(state => state.className === 'status-fresh' && !overdueModels.some(item => item.modelKey === state.modelKey)).length;
   const attention = applicable.filter(state => ['status-aging', 'status-stale', 'status-partial', 'status-failed'].includes(state.className)).length;
   const stats = [
     { label: 'Models online', value: `${online}/${COMPARE_MODELS.length}`, detail: 'published manifests loaded' },
     { label: 'Map coverage', value: `${available}/${applicable.length}`, detail: 'supported model-parameter surfaces' },
-    { label: 'Fresh guidance', value: String(fresh), detail: 'within source cadence' },
-    { label: 'Needs attention', value: String(attention), detail: 'aging, stale, partial, or failed' },
+    { label: 'On schedule', value: `${COMPARE_MODELS.length - overdueModels.length}/${COMPARE_MODELS.length}`, detail: 'provider windows' },
+    { label: 'Needs attention', value: String(attention + overdueModels.length), detail: 'aging, stale, partial, failed, or late' },
   ];
   el('overview-stats').replaceChildren(...stats.map(stat => {
     const card = document.createElement('article'); card.className = 'card overview-stat';
@@ -595,8 +790,10 @@ function renderOverview() {
   if (unavailableModels.length) notices.push(`Manifest unavailable: ${unavailableModels.join(' · ')}`);
   if (partialCount) notices.push(`${partialCount} surface${partialCount === 1 ? '' : 's'} have partial ensemble coverage`);
   if (staleCount) notices.push(`${staleCount} surface${staleCount === 1 ? '' : 's'} are beyond the expected refresh window`);
+  if (overdueModels.length) notices.push(`Old run: ${overdueModels.map(item => MODEL_CONFIG[item.modelKey].label).join(' · ')} is past its expected publication window`);
+  if (processingModels.length) notices.push(`${processingModels.map(item => MODEL_CONFIG[item.modelKey].label).join(' · ')} is inside its expected publication grace window`);
   if (notApplicableCount) notices.push(`${notApplicableCount} intentionally unsupported or quarantined surface${notApplicableCount === 1 ? ' is' : 's are'} excluded from coverage`);
-  el('overview-notices').textContent = notices.length ? notices.join('. ') + '.' : 'All loaded guidance is within its expected refresh window and no partial products are present.';
+  el('overview-notices').textContent = notices.length ? notices.join('. ') + '.' : `${fresh} map surfaces are fresh and all model rows are within their expected publication windows.`;
   el('footer-copy').textContent = seasonalCatalog?.generated_utc ? `Catalog updated ${initLabel(seasonalCatalog.generated_utc)}` : 'Seasonal catalog loaded';
   syncUrlState();
 }
