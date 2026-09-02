@@ -103,6 +103,13 @@ the 850-mb and snowfall products reuse the same CFSv2 downloads as the other
 fields. A cleanup step removes only the temporary per-cycle source directories
 before the durable rolling-state cache is saved.
 
+The Actions `workflow_dispatch` menu also provides an `all` choice. Selecting
+it uses the same ready-anchor and six-day rolling window, then renders every
+manual menu field in one run: both 500-mb views, absolute 500-mb height,
+850-mb temperature, 2-m temperature, MSLP, precipitation, SWE, and derived
+snowfall. The twice-daily scheduled suite remains limited to the operational
+anomaly products listed above.
+
 The adapter also supports the CPC-style `--rolling-days 10` window, which
 produces 40 cycles, for callers that maintain a durable rolling-state archive
 outside the seven-day NOMADS rotation. It is not the automated site default.

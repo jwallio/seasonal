@@ -16,6 +16,7 @@ on:
         default: "500mb_height_anomaly"
         type: choice
         options:
+          - all
           - 500mb_height_anomaly
           - 500mb_height_anomaly_nh
           - 500mb_height_absolute
@@ -57,6 +58,7 @@ jobs:
     env:
       CFSV2_PRODUCT: ${{ inputs.product || '500mb_height_anomaly' }}
       SCHEDULED_CFSV2_PRODUCTS: 500mb_height_anomaly,500mb_height_anomaly_nh,850mb_temperature_anomaly,2m_temperature_anomaly,mslp_anomaly,precipitation_anomaly,snowfall_anomaly
+      ALL_CFSV2_PRODUCTS: 500mb_height_anomaly,500mb_height_anomaly_nh,500mb_height_absolute,850mb_temperature_anomaly,2m_temperature_anomaly,mslp_anomaly,precipitation_anomaly,snow_water_equivalent_anomaly,snowfall_anomaly
       LEAD_MONTHS: ${{ inputs.lead_months || '4,5,6' }}
       SEASONAL_WINDOW: ${{ inputs.seasonal_window || '4,5,6' }}
       ROLLING_DAYS: ${{ inputs.rolling_days || '6' }}
@@ -112,6 +114,9 @@ jobs:
           if [[ "${{ github.event_name }}" == "schedule" ]]; then
             IFS=',' read -r -a products <<< "$SCHEDULED_CFSV2_PRODUCTS"
             readiness_products="$SCHEDULED_CFSV2_PRODUCTS"
+          elif [[ "$CFSV2_PRODUCT" == "all" ]]; then
+            IFS=',' read -r -a products <<< "$ALL_CFSV2_PRODUCTS"
+            readiness_products="$ALL_CFSV2_PRODUCTS"
           else
             products=("$CFSV2_PRODUCT")
             readiness_products="$CFSV2_PRODUCT"
@@ -119,7 +124,7 @@ jobs:
           readiness_leads="${LEAD_MONTHS},${SEASONAL_WINDOW}"
           readiness_wait_minutes=0
           readiness_retry_seconds=60
-          if [[ "${{ github.event_name }}" == "schedule" ]]; then
+          if [[ "${{ github.event_name }}" == "schedule" || "$CFSV2_PRODUCT" == "all" ]]; then
             readiness_wait_minutes=30
             readiness_retry_seconds=180
           fi
