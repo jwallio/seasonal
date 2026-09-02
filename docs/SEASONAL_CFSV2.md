@@ -15,7 +15,8 @@ For each requested lead month, the adapter:
    month. Height and mean-sea-level pressure products use `pgbf`; 2-m
    temperature, precipitation, and snow-water-equivalent products use the
    matching `flxf` monthly file.
-2. Caches the raw GRIB2 file and runs a product-specific `wgrib2` field filter.
+2. Caches the raw GRIB2 file, reuses compact decoded grids when available, and
+   runs a product-specific `wgrib2` field filter only when a decode is needed.
 3. Validates the decoded global grid and averages the selected
    `monthly_grib_01` through `monthly_grib_04` member streams.
 4. Subtracts a caller-supplied or official month-matched CFSv2/reforecast
@@ -119,8 +120,9 @@ The twice-daily scheduled workflow runs at 10:35 and 22:35 UTC, after the
 nominal 06Z and 18Z source cycles. It downloads the previously published
 manifest before each render and readiness-checks the newest listed monthly
 files. If that newest cycle is listed before its files finish propagating, the
-check retries it for two hours before selecting the newest complete prior
-cycle. The workflow refreshes the height, 2-m temperature, MSLP, and
+check retries it for 30 minutes before selecting the newest complete prior
+cycle. The workflow reuses a cached `wgrib2` binary and refreshes the height,
+2-m temperature, MSLP, and
 precipitation anomaly suite and retains the current run plus three prior runs
 for each parameter. It uploads a scoped Pages payload;
 `.github/workflows/publish-pages.yml` serializes that payload with WN2 and

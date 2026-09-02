@@ -46,7 +46,8 @@ permissions:
 
 concurrency:
   group: seasonal-jma
-  cancel-in-progress: false
+  # A newer release-check dispatch supersedes an older delayed full-suite run.
+  cancel-in-progress: true
 
 jobs:
   render:

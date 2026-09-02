@@ -39,7 +39,8 @@ permissions:
 
 concurrency:
   group: seasonal-cds-release-check
-  cancel-in-progress: false
+  # The newest catalogue check is the only one that can make a useful dispatch.
+  cancel-in-progress: true
 
 jobs:
   check-and-dispatch:

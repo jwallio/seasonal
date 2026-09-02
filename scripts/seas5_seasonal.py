@@ -23,6 +23,7 @@ from typing import Any
 
 import numpy as np
 
+from cds_client import client_options
 from cfsv2_seasonal import (
     ANOMALY_PALETTE,
     ANOMALY_TICKS,
@@ -592,11 +593,12 @@ class CDSArchive:
         url = os.environ.get("CDS_API_URL", CDS_API_ROOT)
         key = os.environ.get("CDS_API_KEY", "").strip()
         try:
+            options = client_options()
             if key:
-                self._client = cdsapi.Client(url=url, key=key, quiet=True)
+                self._client = cdsapi.Client(url=url, key=key, quiet=True, **options)
             else:
                 # Local users can keep the official token in ~/.cdsapirc.
-                self._client = cdsapi.Client(quiet=True)
+                self._client = cdsapi.Client(quiet=True, **options)
         except Exception as exc:
             raise SEAS5Error(
                 "could not initialize the CDS API client; configure CDS_API_KEY "

@@ -38,7 +38,11 @@ the live multi-system manifest is missing a current product.
 The rendering worker is `.github/workflows/c3s.yml`. It requires the existing
 `CDS_API_KEY` repository secret and publishes `c3s_manifest.json` plus images
 under `seasonal/c3s/`. Manual runs can select one parameter or the explicit
-`all` suite. Accept the current CDS dataset licence before running the workflow.
+`all` suite. The full suite uses a four-wide product matrix and one merge/publish
+step, while compact decoded grids are cached for the later super-ensemble run.
+CDS client retries are bounded so a transient 5xx response cannot stall a
+worker for hours. Accept the current CDS dataset licence before running the
+workflow.
 
 Official sources:
 

@@ -11,6 +11,7 @@ import tempfile
 ROOT = Path(__file__).resolve().parents[1]
 ADAPTER = ROOT / "scripts" / "c3s_seasonal.py"
 GRIB_ADAPTER = ROOT / "scripts" / "seas5_seasonal.py"
+CDS_CLIENT = ROOT / "scripts" / "cds_client.py"
 WORKFLOW = ROOT / ".github" / "workflows" / "c3s.yml"
 PAGES = ROOT / ".github" / "workflows" / "publish-pages.yml"
 PAGE = ROOT / "public" / "seasonal" / "c3s" / "index.html"
@@ -33,20 +34,31 @@ def load_adapter():
 
 
 def main() -> int:
-    for path in (ADAPTER, GRIB_ADAPTER, WORKFLOW, PAGES, PAGE):
+    for path in (ADAPTER, GRIB_ADAPTER, CDS_CLIENT, WORKFLOW, PAGES, PAGE):
         check(path.exists(), f"missing C3S contract file: {path.name}")
     adapter = ADAPTER.read_text(encoding="utf-8")
     grib_adapter = GRIB_ADAPTER.read_text(encoding="utf-8")
+    cds_client = CDS_CLIENT.read_text(encoding="utf-8")
     workflow = WORKFLOW.read_text(encoding="utf-8")
     pages = PAGES.read_text(encoding="utf-8")
+    for term in (
+        "max-parallel: 4",
+        "matrix:",
+        "c3s-product-",
+        "actions/download-artifact@v4",
+        "merge_seasonal_payloads.py",
+        "write_seasonal_fragment.py",
+        "cds-v2",
+    ):
+        check(term in workflow, f"C3S workflow missing speed-up term: {term}")
     for term in (
         "seasonal-postprocessed-pressure-levels", "seasonal-postprocessed-single-levels",
         "seasonal-monthly-pressure-levels", "originating_centre", "product_type",
         "ensemble_mean", "multi-system", "component", "CDS_API_KEY",
         "snowfall_anomalous_rate_of_accumulation", "snowfall_anomaly",
-        "retain-cycles", "systems", "system",
+        "retain-cycles", "systems", "system", "cds_client", "retry_max", "sleep_max",
     ):
-        check(term in adapter or term in workflow or term in pages, f"missing C3S term: {term}")
+        check(term in adapter or term in workflow or term in pages or term in cds_client, f"missing C3S term: {term}")
     check("cfgrib.open_datasets" in grib_adapter, "C3S/JMA GRIB decoder should discover heterogeneous raw pressure-level groups")
     check('"seasonal-monthly-pressure-levels"' in adapter, "C3S 500-mb product should retain the raw geopotential source")
     check("height_grid=height" in adapter, "C3S renderer should pass decoded absolute heights to the map renderer")

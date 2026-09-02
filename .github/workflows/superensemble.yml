@@ -45,15 +45,28 @@ permissions:
   contents: read
 
 concurrency:
-  group: seasonal-superensemble-${{ github.ref }}
-  cancel-in-progress: false
+  group: seasonal-superensemble-${{ github.ref }}-${{ inputs.init || 'latest' }}
+  cancel-in-progress: true
 
 jobs:
   render:
+    if: ${{ github.event_name == 'schedule' || inputs.product == 'all' || inputs.product == matrix.product || (inputs.product == '' && matrix.product == '500mb_height_anomaly') }}
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        product:
+          - 500mb_height_anomaly
+          - 500mb_height_anomaly_nh
+          - 850mb_temperature_anomaly
+          - 2m_temperature_anomaly
+          - precipitation_anomaly
+          - snowfall_anomaly
+          - mslp_anomaly
     runs-on: ubuntu-latest
-    timeout-minutes: 360
+    timeout-minutes: 180
     env:
-      SUPER_PRODUCT: ${{ inputs.product || '500mb_height_anomaly' }}
+      SUPER_PRODUCT: ${{ matrix.product }}
       SCHEDULED_SUPER_PRODUCT: all
       SUPER_INIT: ${{ inputs.init || 'latest' }}
       LEAD_MONTHS: ${{ inputs.lead_months || '4,5,6' }}
@@ -94,6 +107,7 @@ jobs:
           key: superensemble-c3s-${{ runner.os }}-${{ env.SUPER_PRODUCT }}-${{ github.run_id }}-v1
           restore-keys: |
             superensemble-c3s-${{ runner.os }}-${{ env.SUPER_PRODUCT }}-
+            c3s-${{ runner.os }}-${{ env.SUPER_PRODUCT }}-all-cds-v2
             c3s-${{ runner.os }}-${{ env.SUPER_PRODUCT }}-
             superensemble-c3s-${{ runner.os }}-
             c3s-${{ runner.os }}-
@@ -170,36 +184,58 @@ jobs:
             fi
           fi
 
-      - name: Build wgrib2
-        if: env.SUPER_PRODUCT != 'snowfall_anomaly' || github.event_name == 'schedule'
+      - name: Restore wgrib2 tool cache
+        id: wgrib2-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: ~/.cache/wallcloud/wgrib2
+          key: wgrib2-${{ runner.os }}-v1
+
+      - name: Build wgrib2 from source when needed
+        if: ${{ steps.wgrib2-cache.outputs.cache-hit != 'true' && (env.SUPER_PRODUCT != 'snowfall_anomaly' || github.event_name == 'schedule') }}
         shell: bash
         run: |
           set -euo pipefail
           sudo apt-get update
           sudo apt-get install -y build-essential gfortran libopenjp2-7-dev libpng-dev zlib1g-dev
           source_dir="$RUNNER_TEMP/wgrib2-src"
-          mkdir -p "$source_dir"
+          install_dir="$HOME/.cache/wallcloud/wgrib2"
+          mkdir -p "$source_dir" "$install_dir"
           curl -fsSL "https://ftp.cpc.ncep.noaa.gov/wd51we/wgrib2/wgrib2.tgz" -o "$RUNNER_TEMP/wgrib2.tgz"
           tar -xzf "$RUNNER_TEMP/wgrib2.tgz" -C "$source_dir"
           makefile_dir="$source_dir/grib2"
+          test -f "$makefile_dir/makefile"
           export CC=gcc
           export FC=gfortran
-          make -C "$makefile_dir" -j2
+          make -C "$makefile_dir" -j"$(nproc)"
           wgrib2_bin="$makefile_dir/wgrib2/wgrib2"
           test -x "$wgrib2_bin"
-          echo "CANSIPS_WGRIB2=$wgrib2_bin" >> "$GITHUB_ENV"
+          cp "$wgrib2_bin" "$install_dir/wgrib2"
+          chmod +x "$install_dir/wgrib2"
 
-      - name: Render deduplicated super ensemble
+      - name: Select wgrib2 tool
+        if: ${{ env.SUPER_PRODUCT != 'snowfall_anomaly' || github.event_name == 'schedule' }}
         shell: bash
         run: |
           set -euo pipefail
-          product="$SUPER_PRODUCT"
-          if [[ "${{ github.event_name }}" == "schedule" ]]; then
-            product="$SCHEDULED_SUPER_PRODUCT"
-          fi
-          echo "Rendering super-ensemble product selection: $product"
+          test -x "$HOME/.cache/wallcloud/wgrib2/wgrib2"
+          echo "CANSIPS_WGRIB2=$HOME/.cache/wallcloud/wgrib2/wgrib2" >> "$GITHUB_ENV"
+
+      - name: Save wgrib2 tool cache
+        if: ${{ success() && steps.wgrib2-cache.outputs.cache-hit != 'true' && (env.SUPER_PRODUCT != 'snowfall_anomaly' || github.event_name == 'schedule') }}
+        uses: actions/cache/save@v4
+        continue-on-error: true
+        with:
+          path: ~/.cache/wallcloud/wgrib2
+          key: wgrib2-${{ runner.os }}-v1
+
+      - name: Render product-scoped super ensemble
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "Rendering super-ensemble product: $SUPER_PRODUCT"
           python scripts/superensemble_seasonal.py \
-            --product "$product" \
+            --product "$SUPER_PRODUCT" \
             --init "$SUPER_INIT" \
             --lead-months "$LEAD_MONTHS" \
             --seasonal-window "$SEASONAL_WINDOW" \
@@ -222,21 +258,65 @@ jobs:
             --wgrib2 "$CANSIPS_WGRIB2" \
             --request-delay 1.0
 
-      - name: Package super-ensemble Pages payload
+      - name: Package product-scoped super-ensemble payload
         if: success()
         shell: bash
         run: |
           set -euo pipefail
           test -d public/seasonal/superensemble
-          test -f public/seasonal/superensemble/index.html
           test -f public/seasonal/superensemble_manifest.json
+          rm -rf pages-payload
+          mkdir -p "pages-payload/$SUPER_PRODUCT/superensemble"
+          cp -R public/seasonal/superensemble/. "pages-payload/$SUPER_PRODUCT/superensemble/"
+          cp public/seasonal/superensemble_manifest.json "pages-payload/$SUPER_PRODUCT/superensemble_manifest.json"
+          python scripts/write_seasonal_fragment.py \
+            --manifest public/seasonal/superensemble_manifest.json \
+            --product "$SUPER_PRODUCT" \
+            --init "$SUPER_INIT" \
+            --output "pages-payload/$SUPER_PRODUCT/fragment.json"
+
+      - name: Upload product-scoped super-ensemble payload
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: superensemble-product-${{ matrix.product }}-${{ github.run_id }}
+          path: pages-payload
+          if-no-files-found: error
+          retention-days: 14
+
+  merge:
+    if: ${{ always() && needs.render.result == 'success' }}
+    needs: render
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download product-scoped super-ensemble payloads
+        uses: actions/download-artifact@v4
+        with:
+          pattern: superensemble-product-*-${{ github.run_id }}
+          path: incoming/superensemble-products
+          merge-multiple: false
+
+      - name: Merge super-ensemble Pages payload
+        shell: bash
+        run: |
+          set -euo pipefail
           rm -rf pages-payload
           mkdir -p pages-payload/superensemble
           cp -R public/seasonal/superensemble/. pages-payload/superensemble/
-          cp public/seasonal/superensemble_manifest.json pages-payload/superensemble_manifest.json
+          python scripts/merge_seasonal_payloads.py \
+            --input-root incoming/superensemble-products \
+            --output-root pages-payload \
+            --asset-dir superensemble \
+            --manifest-name superensemble_manifest.json \
+            --retain-cycles 4
+          test -f pages-payload/superensemble/index.html
+          test -f pages-payload/superensemble_manifest.json
 
       - name: Upload super-ensemble Pages payload
-        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: superensemble-pages-${{ github.run_id }}

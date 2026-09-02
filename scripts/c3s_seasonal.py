@@ -20,6 +20,7 @@ from typing import Any, Iterable
 
 import numpy as np
 
+from cds_client import client_options
 from cfsv2_seasonal import (
     ANOMALY_PALETTE,
     ANOMALY_TICKS,
@@ -45,9 +46,11 @@ from cfsv2_seasonal import (
     ensure_border_files,
     mean_grids,
     NORTHERN_HEMISPHERE_REGION,
+    read_grid_state,
     relative_path,
     render_map,
     sum_grids,
+    write_grid_state,
 )
 from seas5_seasonal import grid_from_grib
 from seasonal_products import grid_quality_control, is_retired_product, require_quality_control
@@ -304,18 +307,70 @@ class CDSArchive:
         try:
             url = os.environ.get("CDS_API_URL", CDS_API_ROOT)
             key = os.environ.get("CDS_API_KEY", "").strip()
-            self._client = cdsapi.Client(url=url, key=key, quiet=True) if key else cdsapi.Client(quiet=True)
+            options = client_options()
+            self._client = (
+                cdsapi.Client(url=url, key=key, quiet=True, **options)
+                if key
+                else cdsapi.Client(quiet=True, **options)
+            )
         except Exception as exc:
             raise C3SError(f"could not initialize the CDS API client: {exc}") from exc
         return self._client
+
+    def decoded_grid_path(
+        self,
+        product: dict[str, Any],
+        init: str,
+        lead: int,
+        *,
+        raw: bool = False,
+    ) -> Path:
+        """Return the compact decoded-grid cache used by later super ensembles."""
+
+        tag = "raw" if raw else "anom"
+        product_name = str(product["name"]).replace("-", "_")
+        safe = f"{self.centre}_{self.system}_{product_name}_{init[:6]}_{tag}_l{lead:02d}".replace("-", "_")
+        return self.cache_dir / "decoded" / safe / "field.csv.gz"
+
+    def _cached_grid(
+        self,
+        product: dict[str, Any],
+        init: str,
+        lead: int,
+        *,
+        raw: bool = False,
+    ) -> Grid | None:
+        path = self.decoded_grid_path(product, init, lead, raw=raw)
+        if not path.exists() or path.stat().st_size == 0:
+            return None
+        try:
+            return read_grid_state(path)
+        except Exception as exc:
+            # A partial cache entry must never hide a usable source download.
+            path.unlink(missing_ok=True)
+            print(f"discarding unreadable C3S decoded cache {path}: {exc}", file=sys.stderr)
+            return None
+
+    def _save_grid(self, grid: Grid, path: Path) -> None:
+        try:
+            write_grid_state(grid, path)
+        except Exception as exc:
+            # Cache acceleration is best-effort; the forecast render remains
+            # valid even when a runner cannot write its cache.
+            print(f"could not save C3S decoded cache {path}: {exc}", file=sys.stderr)
+
+    def retrieve_path(self, product: dict[str, Any], init: str, lead: int, *, raw: bool = False) -> Path:
+        dataset = product["cds_raw_dataset"] if raw else product["cds_dataset"]
+        variable = product["cds_raw_variable"] if raw else product["cds_variable"]
+        tag = "raw" if raw else "anom"
+        safe = f"{self.centre}_{self.system}_{dataset}_{variable}_{init[:6]}_{tag}_l{lead:02d}".replace("-", "_")
+        return self.cache_dir / "cds" / safe / "field.grib"
 
     def retrieve(self, product: dict[str, Any], init: str, lead: int, *, raw: bool = False) -> Path:
         dataset = product["cds_raw_dataset"] if raw else product["cds_dataset"]
         variable = product["cds_raw_variable"] if raw else product["cds_variable"]
         pressure = product.get("cds_pressure_level")
-        tag = "raw" if raw else "anom"
-        safe = f"{self.centre}_{self.system}_{dataset}_{variable}_{init[:6]}_{tag}_l{lead:02d}".replace("-", "_")
-        path = self.cache_dir / "cds" / safe / "field.grib"
+        path = self.retrieve_path(product, init, lead, raw=raw)
         if path.exists() and path.stat().st_size > 0:
             return path
         request: dict[str, Any] = {
@@ -347,16 +402,26 @@ class CDSArchive:
         return path
 
     def grid(self, product: dict[str, Any], init: str, target: str, lead: int) -> tuple[Grid, Path]:
+        cached = self._cached_grid(product, init, lead)
+        if cached is not None:
+            return cached, self.retrieve_path(product, init, lead)
         path = self.retrieve(product, init, lead)
         try:
-            return grid_from_grib(path, product, target, lead), path
+            grid = grid_from_grib(path, product, target, lead)
+            self._save_grid(grid, self.decoded_grid_path(product, init, lead))
+            return grid, path
         except Exception as exc:
             raise C3SError(f"could not decode C3S {self.centre}/{self.system} {path.name}: {exc}") from exc
 
     def height(self, product: dict[str, Any], init: str, target: str, lead: int) -> tuple[Grid, Path]:
+        cached = self._cached_grid(product, init, lead, raw=True)
+        if cached is not None:
+            return cached, self.retrieve_path(product, init, lead, raw=True)
         path = self.retrieve(product, init, lead, raw=True)
         try:
-            return grid_from_grib(path, {**product, "variable": "z500"}, target, lead), path
+            grid = grid_from_grib(path, {**product, "variable": "z500"}, target, lead)
+            self._save_grid(grid, self.decoded_grid_path(product, init, lead, raw=True))
+            return grid, path
         except Exception as exc:
             raise C3SError(f"could not decode C3S raw geopotential {path.name}: {exc}") from exc
 

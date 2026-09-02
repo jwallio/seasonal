@@ -42,6 +42,12 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  # A newer scheduled cycle supersedes an older readiness wait. This prevents
+  # a delayed source cycle from occupying the runner for the full timeout.
+  group: seasonal-cfsv2
+  cancel-in-progress: true
+
 jobs:
   render:
     runs-on: ubuntu-latest
@@ -94,24 +100,49 @@ jobs:
             fi
           fi
 
-      - name: Build wgrib2
+      - name: Restore wgrib2 tool cache
+        id: wgrib2-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: ~/.cache/wallcloud/wgrib2
+          key: wgrib2-${{ runner.os }}-v1
+
+      - name: Build wgrib2 from source when needed
+        if: ${{ steps.wgrib2-cache.outputs.cache-hit != 'true' }}
         shell: bash
         run: |
           set -euo pipefail
           sudo apt-get update
           sudo apt-get install -y build-essential gfortran libopenjp2-7-dev libpng-dev zlib1g-dev
           source_dir="$RUNNER_TEMP/wgrib2-src"
-          mkdir -p "$source_dir"
+          install_dir="$HOME/.cache/wallcloud/wgrib2"
+          mkdir -p "$source_dir" "$install_dir"
           curl -fsSL "https://ftp.cpc.ncep.noaa.gov/wd51we/wgrib2/wgrib2.tgz" -o "$RUNNER_TEMP/wgrib2.tgz"
           tar -xzf "$RUNNER_TEMP/wgrib2.tgz" -C "$source_dir"
           makefile_dir="$source_dir/grib2"
           test -f "$makefile_dir/makefile"
           export CC=gcc
           export FC=gfortran
-          make -C "$makefile_dir" -j2
+          make -C "$makefile_dir" -j"$(nproc)"
           wgrib2_bin="$makefile_dir/wgrib2/wgrib2"
           test -x "$wgrib2_bin"
-          echo "CFSV2_WGRIB2=$wgrib2_bin" >> "$GITHUB_ENV"
+          cp "$wgrib2_bin" "$install_dir/wgrib2"
+          chmod +x "$install_dir/wgrib2"
+
+      - name: Select wgrib2 tool
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -x "$HOME/.cache/wallcloud/wgrib2/wgrib2"
+          echo "CFSV2_WGRIB2=$HOME/.cache/wallcloud/wgrib2/wgrib2" >> "$GITHUB_ENV"
+
+      - name: Save wgrib2 tool cache
+        if: ${{ success() && steps.wgrib2-cache.outputs.cache-hit != 'true' }}
+        uses: actions/cache/save@v4
+        continue-on-error: true
+        with:
+          path: ~/.cache/wallcloud/wgrib2
+          key: wgrib2-${{ runner.os }}-v1
 
       - name: Render rolling CFSv2 products
         shell: bash
@@ -128,8 +159,8 @@ jobs:
           readiness_wait_minutes=0
           readiness_retry_seconds=60
           if [[ "${{ github.event_name }}" == "schedule" ]]; then
-            readiness_wait_minutes=120
-            readiness_retry_seconds=300
+            readiness_wait_minutes=30
+            readiness_retry_seconds=180
           fi
           anchor_init="$(
             python - "$readiness_products" "$readiness_leads" "$readiness_wait_minutes" "$readiness_retry_seconds" <<'PY'
