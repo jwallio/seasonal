@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "kind": "cansips_seasonal_manifest",
-  "generated_utc": "2026-09-01T22:16:41Z",
+  "generated_utc": "2026-09-02T18:00:27Z",
   "source": "ECCC MSC CanSIPS v3 / Datamart",
   "source_url": "https://eccc-msc.github.io/open-data/msc-data/nwp_cansips/readme_cansips-datamart_en/",
   "source_urls": [
@@ -11,6 +11,7 @@
   ],
   "product_labels": {
     "500mb_height_anomaly": "500-mb Height Anomaly",
+    "500mb_height_anomaly_nh": "500-mb Height Anomaly \u00b7 Northern Hemisphere",
     "850mb_temperature_anomaly": "850-mb Temperature Anomaly",
     "2m_temperature_anomaly": "2-m Temperature Anomaly",
     "precipitation_anomaly": "Precipitation Anomaly",
@@ -23,6 +24,1613 @@
     "history_runs": 3
   },
   "runs": [
+    {
+      "id": "cansips-2026090100-precipitation_anomaly",
+      "source": "ECCC MSC CanSIPS v3 / Datamart",
+      "source_url": "https://eccc-msc.github.io/open-data/msc-data/nwp_cansips/readme_cansips-datamart_en/",
+      "source_urls": [
+        "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/",
+        "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/",
+        "https://eccc-msc.github.io/open-data/msc-data/nwp_cansips/readme_cansips-datamart_en/"
+      ],
+      "model": "CanSIPS v3",
+      "product": "precipitation_anomaly",
+      "init_utc": "2026-09-01T00:00:00Z",
+      "ensemble_members": 40,
+      "ensemble_scope": "40-member CanSIPS v3 blend",
+      "member_groups": [
+        {
+          "model": "GEM5.2-NEMO",
+          "members": "1-20",
+          "count": 20
+        },
+        {
+          "model": "CanESM5",
+          "members": "21-40",
+          "count": 20
+        }
+      ],
+      "statistic": "ensemble_mean",
+      "aggregation": "3-month seasonal total of monthly forecast anomalies",
+      "field": "precipitation_anomaly",
+      "units": "in",
+      "raw_field": "PrecipRate at the surface",
+      "raw_units": "kg m-2 s-1",
+      "conversion": "PrecipRate multiplied by calendar-month seconds, converted from millimetres to inches",
+      "source_variables": null,
+      "grid": {
+        "longitude_count": 360,
+        "latitude_count": 180,
+        "resolution": "1 degree",
+        "layout": "LatLon1.0"
+      },
+      "climatology": {
+        "source": "CanSIPS v3 hindcast ensemble means",
+        "years": "1991-2020",
+        "initialization_month": "09",
+        "method": "forecast 40-member mean minus the matching-initialization-month and lead hindcast climatology"
+      },
+      "border_sources": [
+        {
+          "name": "countries.geojson"
+        },
+        {
+          "name": "us-states.geojson"
+        }
+      ],
+      "targets": [
+        {
+          "id": "cansips-2026090100-precipitation_anomaly-lead04",
+          "valid_start_utc": "2027-01-01T00:00:00Z",
+          "valid_end_utc": "2027-02-01T00:00:00Z",
+          "lead_month": 4,
+          "target_month": "202701",
+          "aggregation": "monthly forecast anomaly",
+          "field": "precipitation_anomaly",
+          "units": "in",
+          "raw_field": "PrecipRate at the surface",
+          "raw_units": "kg m-2 s-1",
+          "statistic": "ensemble_mean",
+          "ensemble_members": 40,
+          "source_files": [
+            {
+              "initialization": "2026090100",
+              "lead_month": 4,
+              "product": "precipitation_anomaly",
+              "source_field": "PrecipRate at the surface",
+              "url": "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/2026/09/202609_MSC_CanSIPS_PrecipRate_Sfc_LatLon1.0_P04M.grib2",
+              "cache_file": ".cache/cansips/means/forecast/202609/prate_lead04.csv.gz",
+              "storage": "retained_ensemble_mean_grid",
+              "downloaded": false,
+              "ensemble_members": 40
+            }
+          ],
+          "status": "rendered",
+          "baseline": {
+            "source": "CanSIPS v3 hindcast climatology; 1991-2020",
+            "years": "1991-2020",
+            "initialization_month": "09",
+            "lead_month": 4,
+            "ensemble_members": 40,
+            "method": "forecast 40-member mean minus the matching-initialization-month and lead hindcast climatology",
+            "files": [
+              {
+                "initialization": "1991090100",
+                "lead_month": 4,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1991/09/199109_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P04M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/199109/prate_lead04.csv.gz",
+                "storage": "retained_ensemble_mean_grid",
+                "downloaded": false,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "1992090100",
+                "lead_month": 4,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1992/09/199209_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P04M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/199209/prate_lead04.csv.gz",
+                "storage": "retained_ensemble_mean_grid",
+                "downloaded": false,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "1993090100",
+                "lead_month": 4,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1993/09/199309_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P04M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/199309/prate_lead04.csv.gz",
+                "storage": "retained_ensemble_mean_grid",
+                "downloaded": false,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "1994090100",
+                "lead_month": 4,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1994/09/199409_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P04M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/199409/prate_lead04.csv.gz",
+                "storage": "retained_ensemble_mean_grid",
+                "downloaded": false,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "1995090100",
+                "lead_month": 4,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1995/09/199509_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P04M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/199509/prate_lead04.csv.gz",
+                "storage": "retained_ensemble_mean_grid",
+                "downloaded": false,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "1996090100",
+                "lead_month": 4,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1996/09/199609_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P04M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/199609/prate_lead04.csv.gz",
+                "storage": "retained_ensemble_mean_grid",
+                "downloaded": false,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "1997090100",
+                "lead_month": 4,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1997/09/199709_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P04M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/199709/prate_lead04.csv.gz",
+                "storage": "retained_ensemble_mean_grid",
+                "downloaded": false,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "1998090100",
+                "lead_month": 4,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1998/09/199809_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P04M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/199809/prate_lead04.csv.gz",
+                "storage": "retained_ensemble_mean_grid",
+                "downloaded": false,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "1999090100",
+                "lead_month": 4,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1999/09/199909_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P04M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/199909/prate_lead04.csv.gz",
+                "storage": "retained_ensemble_mean_grid",
+                "downloaded": false,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2000090100",
+                "lead_month": 4,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2000/09/200009_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P04M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/200009/prate_lead04.csv.gz",
+                "storage": "retained_ensemble_mean_grid",
+                "downloaded": false,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2001090100",
+                "lead_month": 4,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2001/09/200109_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P04M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/200109/prate_lead04.csv.gz",
+                "storage": "retained_ensemble_mean_grid",
+                "downloaded": false,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2002090100",
+                "lead_month": 4,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2002/09/200209_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P04M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/200209/prate_lead04.csv.gz",
+                "storage": "retained_ensemble_mean_grid",
+                "downloaded": false,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2003090100",
+                "lead_month": 4,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2003/09/200309_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P04M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/200309/prate_lead04.csv.gz",
+                "storage": "retained_ensemble_mean_grid",
+                "downloaded": false,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2004090100",
+                "lead_month": 4,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2004/09/200409_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P04M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/200409/prate_lead04.csv.gz",
+                "storage": "retained_ensemble_mean_grid",
+                "downloaded": false,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2005090100",
+                "lead_month": 4,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2005/09/200509_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P04M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/200509/prate_lead04.csv.gz",
+                "storage": "retained_ensemble_mean_grid",
+                "downloaded": false,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2006090100",
+                "lead_month": 4,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2006/09/200609_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P04M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/200609/prate_lead04.csv.gz",
+                "storage": "retained_ensemble_mean_grid",
+                "downloaded": false,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2007090100",
+                "lead_month": 4,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2007/09/200709_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P04M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/200709/prate_lead04.csv.gz",
+                "storage": "retained_ensemble_mean_grid",
+                "downloaded": false,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2008090100",
+                "lead_month": 4,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2008/09/200809_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P04M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/200809/prate_lead04.csv.gz",
+                "storage": "retained_ensemble_mean_grid",
+                "downloaded": false,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2009090100",
+                "lead_month": 4,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2009/09/200909_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P04M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/200909/prate_lead04.csv.gz",
+                "storage": "retained_ensemble_mean_grid",
+                "downloaded": false,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2010090100",
+                "lead_month": 4,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2010/09/201009_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P04M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/201009/prate_lead04.csv.gz",
+                "storage": "retained_ensemble_mean_grid",
+                "downloaded": false,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2011090100",
+                "lead_month": 4,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2011/09/201109_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P04M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/201109/prate_lead04.csv.gz",
+                "storage": "retained_ensemble_mean_grid",
+                "downloaded": false,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2012090100",
+                "lead_month": 4,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2012/09/201209_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P04M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/201209/prate_lead04.csv.gz",
+                "storage": "retained_ensemble_mean_grid",
+                "downloaded": false,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2013090100",
+                "lead_month": 4,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2013/09/201309_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P04M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/201309/prate_lead04.csv.gz",
+                "storage": "retained_ensemble_mean_grid",
+                "downloaded": false,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2014090100",
+                "lead_month": 4,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2014/09/201409_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P04M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/201409/prate_lead04.csv.gz",
+                "storage": "retained_ensemble_mean_grid",
+                "downloaded": false,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2015090100",
+                "lead_month": 4,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2015/09/201509_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P04M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/201509/prate_lead04.csv.gz",
+                "storage": "retained_ensemble_mean_grid",
+                "downloaded": false,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2016090100",
+                "lead_month": 4,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2016/09/201609_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P04M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/201609/prate_lead04.csv.gz",
+                "storage": "retained_ensemble_mean_grid",
+                "downloaded": false,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2017090100",
+                "lead_month": 4,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2017/09/201709_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P04M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/201709/prate_lead04.csv.gz",
+                "storage": "retained_ensemble_mean_grid",
+                "downloaded": false,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2018090100",
+                "lead_month": 4,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2018/09/201809_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P04M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/201809/prate_lead04.csv.gz",
+                "storage": "retained_ensemble_mean_grid",
+                "downloaded": false,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2019090100",
+                "lead_month": 4,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2019/09/201909_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P04M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/201909/prate_lead04.csv.gz",
+                "storage": "retained_ensemble_mean_grid",
+                "downloaded": false,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2020090100",
+                "lead_month": 4,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2020/09/202009_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P04M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/202009/prate_lead04.csv.gz",
+                "storage": "retained_ensemble_mean_grid",
+                "downloaded": false,
+                "ensemble_members": 40
+              }
+            ]
+          },
+          "ensemble_complete": true,
+          "image": "public/seasonal/cansips/20260901/cansips_prcpa_202701.jpg"
+        },
+        {
+          "id": "cansips-2026090100-precipitation_anomaly-lead05",
+          "valid_start_utc": "2027-02-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": 5,
+          "target_month": "202702",
+          "aggregation": "monthly forecast anomaly",
+          "field": "precipitation_anomaly",
+          "units": "in",
+          "raw_field": "PrecipRate at the surface",
+          "raw_units": "kg m-2 s-1",
+          "statistic": "ensemble_mean",
+          "ensemble_members": 40,
+          "source_files": [
+            {
+              "initialization": "2026090100",
+              "lead_month": 5,
+              "product": "precipitation_anomaly",
+              "source_field": "PrecipRate at the surface",
+              "url": "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/2026/09/202609_MSC_CanSIPS_PrecipRate_Sfc_LatLon1.0_P05M.grib2",
+              "cache_file": ".cache/cansips/means/forecast/202609/prate_lead05.csv.gz",
+              "storage": "retained_ensemble_mean_grid",
+              "downloaded": false,
+              "ensemble_members": 40
+            }
+          ],
+          "status": "rendered",
+          "baseline": {
+            "source": "CanSIPS v3 hindcast climatology; 1991-2020",
+            "years": "1991-2020",
+            "initialization_month": "09",
+            "lead_month": 5,
+            "ensemble_members": 40,
+            "method": "forecast 40-member mean minus the matching-initialization-month and lead hindcast climatology",
+            "files": [
+              {
+                "initialization": "1991090100",
+                "lead_month": 5,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1991/09/199109_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P05M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/199109/prate_lead05.csv.gz",
+                "storage": "retained_ensemble_mean_grid",
+                "downloaded": false,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "1992090100",
+                "lead_month": 5,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1992/09/199209_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P05M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/199209/prate_lead05.csv.gz",
+                "storage": "retained_ensemble_mean_grid",
+                "downloaded": false,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "1993090100",
+                "lead_month": 5,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1993/09/199309_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P05M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/199309/prate_lead05.csv.gz",
+                "storage": "retained_ensemble_mean_grid",
+                "downloaded": false,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "1994090100",
+                "lead_month": 5,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1994/09/199409_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P05M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/199409/prate_lead05.csv.gz",
+                "storage": "retained_ensemble_mean_grid",
+                "downloaded": false,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "1995090100",
+                "lead_month": 5,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1995/09/199509_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P05M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/199509/prate_lead05.csv.gz",
+                "storage": "retained_ensemble_mean_grid",
+                "downloaded": false,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "1996090100",
+                "lead_month": 5,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1996/09/199609_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P05M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/199609/prate_lead05.csv.gz",
+                "storage": "retained_ensemble_mean_grid",
+                "downloaded": false,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "1997090100",
+                "lead_month": 5,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1997/09/199709_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P05M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/199709/prate_lead05.csv.gz",
+                "storage": "retained_ensemble_mean_grid",
+                "downloaded": false,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "1998090100",
+                "lead_month": 5,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1998/09/199809_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P05M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/199809/prate_lead05.csv.gz",
+                "storage": "retained_ensemble_mean_grid",
+                "downloaded": false,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "1999090100",
+                "lead_month": 5,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1999/09/199909_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P05M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/199909/prate_lead05.csv.gz",
+                "storage": "retained_ensemble_mean_grid",
+                "downloaded": false,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2000090100",
+                "lead_month": 5,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2000/09/200009_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P05M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/200009/prate_lead05.csv.gz",
+                "storage": "retained_ensemble_mean_grid",
+                "downloaded": false,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2001090100",
+                "lead_month": 5,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2001/09/200109_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P05M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/200109/prate_lead05.csv.gz",
+                "storage": "retained_ensemble_mean_grid",
+                "downloaded": false,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2002090100",
+                "lead_month": 5,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2002/09/200209_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P05M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/200209/prate_lead05.csv.gz",
+                "storage": "retained_ensemble_mean_grid",
+                "downloaded": false,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2003090100",
+                "lead_month": 5,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2003/09/200309_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P05M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/200309/prate_lead05.csv.gz",
+                "storage": "retained_ensemble_mean_grid",
+                "downloaded": false,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2004090100",
+                "lead_month": 5,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2004/09/200409_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P05M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/200409/prate_lead05.csv.gz",
+                "storage": "retained_ensemble_mean_grid",
+                "downloaded": false,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2005090100",
+                "lead_month": 5,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2005/09/200509_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P05M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/200509/prate_lead05.csv.gz",
+                "storage": "retained_ensemble_mean_grid",
+                "downloaded": false,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2006090100",
+                "lead_month": 5,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2006/09/200609_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P05M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/200609/prate_lead05.csv.gz",
+                "storage": "retained_ensemble_mean_grid",
+                "downloaded": false,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2007090100",
+                "lead_month": 5,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2007/09/200709_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P05M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/200709/prate_lead05.csv.gz",
+                "storage": "retained_ensemble_mean_grid",
+                "downloaded": false,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2008090100",
+                "lead_month": 5,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2008/09/200809_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P05M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/200809/prate_lead05.csv.gz",
+                "storage": "retained_ensemble_mean_grid",
+                "downloaded": false,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2009090100",
+                "lead_month": 5,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2009/09/200909_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P05M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/200909/prate_lead05.csv.gz",
+                "storage": "retained_ensemble_mean_grid",
+                "downloaded": false,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2010090100",
+                "lead_month": 5,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2010/09/201009_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P05M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/201009/prate_lead05.csv.gz",
+                "storage": "retained_ensemble_mean_grid",
+                "downloaded": false,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2011090100",
+                "lead_month": 5,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2011/09/201109_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P05M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/201109/prate_lead05.csv.gz",
+                "storage": "retained_ensemble_mean_grid",
+                "downloaded": false,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2012090100",
+                "lead_month": 5,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2012/09/201209_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P05M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/201209/prate_lead05.csv.gz",
+                "storage": "retained_ensemble_mean_grid",
+                "downloaded": false,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2013090100",
+                "lead_month": 5,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2013/09/201309_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P05M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/201309/prate_lead05.csv.gz",
+                "storage": "retained_ensemble_mean_grid",
+                "downloaded": false,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2014090100",
+                "lead_month": 5,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2014/09/201409_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P05M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/201409/prate_lead05.csv.gz",
+                "storage": "retained_ensemble_mean_grid",
+                "downloaded": false,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2015090100",
+                "lead_month": 5,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2015/09/201509_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P05M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/201509/prate_lead05.csv.gz",
+                "storage": "retained_ensemble_mean_grid",
+                "downloaded": false,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2016090100",
+                "lead_month": 5,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2016/09/201609_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P05M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/201609/prate_lead05.csv.gz",
+                "storage": "retained_ensemble_mean_grid",
+                "downloaded": false,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2017090100",
+                "lead_month": 5,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2017/09/201709_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P05M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/201709/prate_lead05.csv.gz",
+                "storage": "retained_ensemble_mean_grid",
+                "downloaded": false,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2018090100",
+                "lead_month": 5,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2018/09/201809_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P05M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/201809/prate_lead05.csv.gz",
+                "storage": "retained_ensemble_mean_grid",
+                "downloaded": false,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2019090100",
+                "lead_month": 5,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2019/09/201909_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P05M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/201909/prate_lead05.csv.gz",
+                "storage": "retained_ensemble_mean_grid",
+                "downloaded": false,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2020090100",
+                "lead_month": 5,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2020/09/202009_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P05M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/202009/prate_lead05.csv.gz",
+                "storage": "retained_ensemble_mean_grid",
+                "downloaded": false,
+                "ensemble_members": 40
+              }
+            ]
+          },
+          "ensemble_complete": true,
+          "image": "public/seasonal/cansips/20260901/cansips_prcpa_202702.jpg"
+        },
+        {
+          "id": "cansips-2026090100-precipitation_anomaly-lead06",
+          "valid_start_utc": "2027-03-01T00:00:00Z",
+          "valid_end_utc": "2027-04-01T00:00:00Z",
+          "lead_month": 6,
+          "target_month": "202703",
+          "aggregation": "monthly forecast anomaly",
+          "field": "precipitation_anomaly",
+          "units": "in",
+          "raw_field": "PrecipRate at the surface",
+          "raw_units": "kg m-2 s-1",
+          "statistic": "ensemble_mean",
+          "ensemble_members": 40,
+          "source_files": [
+            {
+              "initialization": "2026090100",
+              "lead_month": 6,
+              "product": "precipitation_anomaly",
+              "source_field": "PrecipRate at the surface",
+              "url": "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/2026/09/202609_MSC_CanSIPS_PrecipRate_Sfc_LatLon1.0_P06M.grib2",
+              "cache_file": ".cache/cansips/means/forecast/202609/prate_lead06.csv.gz",
+              "storage": "decoded_ensemble_mean_grid",
+              "downloaded": true,
+              "ensemble_members": 40
+            }
+          ],
+          "status": "rendered",
+          "baseline": {
+            "source": "CanSIPS v3 hindcast climatology; 1991-2020",
+            "years": "1991-2020",
+            "initialization_month": "09",
+            "lead_month": 6,
+            "ensemble_members": 40,
+            "method": "forecast 40-member mean minus the matching-initialization-month and lead hindcast climatology",
+            "files": [
+              {
+                "initialization": "1991090100",
+                "lead_month": 6,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1991/09/199109_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P06M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/199109/prate_lead06.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "1992090100",
+                "lead_month": 6,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1992/09/199209_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P06M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/199209/prate_lead06.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "1993090100",
+                "lead_month": 6,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1993/09/199309_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P06M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/199309/prate_lead06.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "1994090100",
+                "lead_month": 6,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1994/09/199409_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P06M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/199409/prate_lead06.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "1995090100",
+                "lead_month": 6,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1995/09/199509_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P06M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/199509/prate_lead06.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "1996090100",
+                "lead_month": 6,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1996/09/199609_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P06M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/199609/prate_lead06.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "1997090100",
+                "lead_month": 6,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1997/09/199709_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P06M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/199709/prate_lead06.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "1998090100",
+                "lead_month": 6,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1998/09/199809_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P06M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/199809/prate_lead06.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "1999090100",
+                "lead_month": 6,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1999/09/199909_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P06M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/199909/prate_lead06.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2000090100",
+                "lead_month": 6,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2000/09/200009_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P06M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/200009/prate_lead06.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2001090100",
+                "lead_month": 6,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2001/09/200109_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P06M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/200109/prate_lead06.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2002090100",
+                "lead_month": 6,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2002/09/200209_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P06M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/200209/prate_lead06.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2003090100",
+                "lead_month": 6,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2003/09/200309_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P06M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/200309/prate_lead06.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2004090100",
+                "lead_month": 6,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2004/09/200409_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P06M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/200409/prate_lead06.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2005090100",
+                "lead_month": 6,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2005/09/200509_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P06M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/200509/prate_lead06.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2006090100",
+                "lead_month": 6,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2006/09/200609_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P06M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/200609/prate_lead06.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2007090100",
+                "lead_month": 6,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2007/09/200709_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P06M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/200709/prate_lead06.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2008090100",
+                "lead_month": 6,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2008/09/200809_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P06M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/200809/prate_lead06.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2009090100",
+                "lead_month": 6,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2009/09/200909_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P06M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/200909/prate_lead06.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2010090100",
+                "lead_month": 6,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2010/09/201009_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P06M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/201009/prate_lead06.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2011090100",
+                "lead_month": 6,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2011/09/201109_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P06M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/201109/prate_lead06.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2012090100",
+                "lead_month": 6,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2012/09/201209_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P06M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/201209/prate_lead06.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2013090100",
+                "lead_month": 6,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2013/09/201309_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P06M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/201309/prate_lead06.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2014090100",
+                "lead_month": 6,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2014/09/201409_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P06M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/201409/prate_lead06.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2015090100",
+                "lead_month": 6,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2015/09/201509_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P06M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/201509/prate_lead06.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2016090100",
+                "lead_month": 6,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2016/09/201609_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P06M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/201609/prate_lead06.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2017090100",
+                "lead_month": 6,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2017/09/201709_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P06M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/201709/prate_lead06.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2018090100",
+                "lead_month": 6,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2018/09/201809_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P06M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/201809/prate_lead06.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2019090100",
+                "lead_month": 6,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2019/09/201909_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P06M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/201909/prate_lead06.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2020090100",
+                "lead_month": 6,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2020/09/202009_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P06M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/202009/prate_lead06.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              }
+            ]
+          },
+          "ensemble_complete": true,
+          "image": "public/seasonal/cansips/20260901/cansips_prcpa_202703.jpg"
+        },
+        {
+          "id": "cansips-2026090100-precipitation_anomaly-lead07",
+          "valid_start_utc": "2027-04-01T00:00:00Z",
+          "valid_end_utc": "2027-05-01T00:00:00Z",
+          "lead_month": 7,
+          "target_month": "202704",
+          "aggregation": "monthly forecast anomaly",
+          "field": "precipitation_anomaly",
+          "units": "in",
+          "raw_field": "PrecipRate at the surface",
+          "raw_units": "kg m-2 s-1",
+          "statistic": "ensemble_mean",
+          "ensemble_members": 40,
+          "source_files": [
+            {
+              "initialization": "2026090100",
+              "lead_month": 7,
+              "product": "precipitation_anomaly",
+              "source_field": "PrecipRate at the surface",
+              "url": "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/2026/09/202609_MSC_CanSIPS_PrecipRate_Sfc_LatLon1.0_P07M.grib2",
+              "cache_file": ".cache/cansips/means/forecast/202609/prate_lead07.csv.gz",
+              "storage": "decoded_ensemble_mean_grid",
+              "downloaded": true,
+              "ensemble_members": 40
+            }
+          ],
+          "status": "rendered",
+          "baseline": {
+            "source": "CanSIPS v3 hindcast climatology; 1991-2020",
+            "years": "1991-2020",
+            "initialization_month": "09",
+            "lead_month": 7,
+            "ensemble_members": 40,
+            "method": "forecast 40-member mean minus the matching-initialization-month and lead hindcast climatology",
+            "files": [
+              {
+                "initialization": "1991090100",
+                "lead_month": 7,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1991/09/199109_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P07M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/199109/prate_lead07.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "1992090100",
+                "lead_month": 7,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1992/09/199209_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P07M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/199209/prate_lead07.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "1993090100",
+                "lead_month": 7,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1993/09/199309_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P07M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/199309/prate_lead07.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "1994090100",
+                "lead_month": 7,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1994/09/199409_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P07M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/199409/prate_lead07.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "1995090100",
+                "lead_month": 7,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1995/09/199509_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P07M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/199509/prate_lead07.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "1996090100",
+                "lead_month": 7,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1996/09/199609_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P07M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/199609/prate_lead07.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "1997090100",
+                "lead_month": 7,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1997/09/199709_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P07M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/199709/prate_lead07.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "1998090100",
+                "lead_month": 7,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1998/09/199809_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P07M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/199809/prate_lead07.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "1999090100",
+                "lead_month": 7,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1999/09/199909_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P07M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/199909/prate_lead07.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2000090100",
+                "lead_month": 7,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2000/09/200009_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P07M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/200009/prate_lead07.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2001090100",
+                "lead_month": 7,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2001/09/200109_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P07M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/200109/prate_lead07.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2002090100",
+                "lead_month": 7,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2002/09/200209_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P07M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/200209/prate_lead07.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2003090100",
+                "lead_month": 7,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2003/09/200309_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P07M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/200309/prate_lead07.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2004090100",
+                "lead_month": 7,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2004/09/200409_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P07M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/200409/prate_lead07.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2005090100",
+                "lead_month": 7,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2005/09/200509_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P07M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/200509/prate_lead07.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2006090100",
+                "lead_month": 7,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2006/09/200609_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P07M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/200609/prate_lead07.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2007090100",
+                "lead_month": 7,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2007/09/200709_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P07M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/200709/prate_lead07.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2008090100",
+                "lead_month": 7,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2008/09/200809_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P07M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/200809/prate_lead07.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2009090100",
+                "lead_month": 7,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2009/09/200909_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P07M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/200909/prate_lead07.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2010090100",
+                "lead_month": 7,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2010/09/201009_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P07M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/201009/prate_lead07.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2011090100",
+                "lead_month": 7,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2011/09/201109_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P07M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/201109/prate_lead07.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2012090100",
+                "lead_month": 7,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2012/09/201209_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P07M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/201209/prate_lead07.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2013090100",
+                "lead_month": 7,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2013/09/201309_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P07M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/201309/prate_lead07.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2014090100",
+                "lead_month": 7,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2014/09/201409_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P07M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/201409/prate_lead07.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2015090100",
+                "lead_month": 7,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2015/09/201509_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P07M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/201509/prate_lead07.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2016090100",
+                "lead_month": 7,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2016/09/201609_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P07M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/201609/prate_lead07.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2017090100",
+                "lead_month": 7,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2017/09/201709_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P07M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/201709/prate_lead07.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2018090100",
+                "lead_month": 7,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2018/09/201809_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P07M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/201809/prate_lead07.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2019090100",
+                "lead_month": 7,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2019/09/201909_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P07M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/201909/prate_lead07.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              },
+              {
+                "initialization": "2020090100",
+                "lead_month": 7,
+                "product": "precipitation_anomaly",
+                "source_field": "PrecipRate at the surface",
+                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2020/09/202009_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P07M.grib2",
+                "cache_file": ".cache/cansips/means/hindcast/202009/prate_lead07.csv.gz",
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
+                "ensemble_members": 40
+              }
+            ]
+          },
+          "ensemble_complete": true,
+          "image": "public/seasonal/cansips/20260901/cansips_prcpa_202704.jpg"
+        },
+        {
+          "id": "cansips-2026090100-precipitation_anomaly-202701-202703",
+          "valid_start_utc": "2027-01-01T00:00:00Z",
+          "valid_end_utc": "2027-04-01T00:00:00Z",
+          "lead_month": "4-6",
+          "target_month": "202701-202703",
+          "aggregation": "3-month seasonal total",
+          "field": "precipitation_anomaly",
+          "units": "in",
+          "raw_field": "PrecipRate at the surface",
+          "raw_units": "kg m-2 s-1",
+          "statistic": "ensemble_mean",
+          "ensemble_members": 40,
+          "monthly_leads": [
+            4,
+            5,
+            6
+          ],
+          "source_files": [
+            {
+              "initialization": "2026090100",
+              "lead_month": 4,
+              "product": "precipitation_anomaly",
+              "source_field": "PrecipRate at the surface",
+              "url": "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/2026/09/202609_MSC_CanSIPS_PrecipRate_Sfc_LatLon1.0_P04M.grib2",
+              "cache_file": ".cache/cansips/means/forecast/202609/prate_lead04.csv.gz",
+              "storage": "retained_ensemble_mean_grid",
+              "downloaded": false,
+              "ensemble_members": 40
+            },
+            {
+              "initialization": "2026090100",
+              "lead_month": 5,
+              "product": "precipitation_anomaly",
+              "source_field": "PrecipRate at the surface",
+              "url": "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/2026/09/202609_MSC_CanSIPS_PrecipRate_Sfc_LatLon1.0_P05M.grib2",
+              "cache_file": ".cache/cansips/means/forecast/202609/prate_lead05.csv.gz",
+              "storage": "retained_ensemble_mean_grid",
+              "downloaded": false,
+              "ensemble_members": 40
+            },
+            {
+              "initialization": "2026090100",
+              "lead_month": 6,
+              "product": "precipitation_anomaly",
+              "source_field": "PrecipRate at the surface",
+              "url": "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/2026/09/202609_MSC_CanSIPS_PrecipRate_Sfc_LatLon1.0_P06M.grib2",
+              "cache_file": ".cache/cansips/means/forecast/202609/prate_lead06.csv.gz",
+              "storage": "decoded_ensemble_mean_grid",
+              "downloaded": true,
+              "ensemble_members": 40
+            }
+          ],
+          "status": "rendered",
+          "baseline": {
+            "source": "CanSIPS v3 hindcast climatology; 1991-2020",
+            "years": "1991-2020",
+            "initialization_month": "09",
+            "lead_months": [
+              4,
+              5,
+              6
+            ],
+            "method": "sum of monthly forecast-minus-hindcast anomalies"
+          },
+          "image": "public/seasonal/cansips/20260901/cansips_prcpa_202701-202703.jpg"
+        }
+      ],
+      "status": "rendered",
+      "output_dir": "public/seasonal/cansips",
+      "generated_utc": "2026-09-02T18:00:27Z"
+    },
     {
       "id": "cansips-2026090100-snowfall_anomaly",
       "source": "ECCC MSC CanSIPS v3 / Datamart",
@@ -9601,1238 +11209,6 @@
       "status": "rendered",
       "output_dir": "public/seasonal/cansips",
       "generated_utc": "2026-09-01T12:58:13Z"
-    },
-    {
-      "id": "cansips-2026090100-precipitation_anomaly",
-      "source": "ECCC MSC CanSIPS v3 / Datamart",
-      "source_url": "https://eccc-msc.github.io/open-data/msc-data/nwp_cansips/readme_cansips-datamart_en/",
-      "source_urls": [
-        "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/",
-        "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/",
-        "https://eccc-msc.github.io/open-data/msc-data/nwp_cansips/readme_cansips-datamart_en/"
-      ],
-      "model": "CanSIPS v3",
-      "product": "precipitation_anomaly",
-      "init_utc": "2026-09-01T00:00:00Z",
-      "ensemble_members": 40,
-      "ensemble_scope": "40-member CanSIPS v3 blend",
-      "member_groups": [
-        {
-          "model": "GEM5.2-NEMO",
-          "members": "1-20",
-          "count": 20
-        },
-        {
-          "model": "CanESM5",
-          "members": "21-40",
-          "count": 20
-        }
-      ],
-      "statistic": "ensemble_mean",
-      "aggregation": "3-month seasonal mean of monthly forecast anomalies",
-      "field": "precipitation_anomaly",
-      "units": "in",
-      "raw_field": "PrecipRate at the surface",
-      "raw_units": "kg m-2 s-1",
-      "grid": {
-        "longitude_count": 360,
-        "latitude_count": 180,
-        "resolution": "1 degree",
-        "layout": "LatLon1.0"
-      },
-      "climatology": {
-        "source": "CanSIPS v3 hindcast ensemble means",
-        "years": "1991-2020",
-        "initialization_month": "09",
-        "method": "forecast 40-member mean minus the matching-initialization-month and lead hindcast climatology"
-      },
-      "border_sources": [
-        {
-          "name": "countries.geojson"
-        },
-        {
-          "name": "us-states.geojson"
-        }
-      ],
-      "targets": [
-        {
-          "id": "cansips-2026090100-precipitation_anomaly-lead03",
-          "valid_start_utc": "2026-12-01T00:00:00Z",
-          "valid_end_utc": "2027-01-01T00:00:00Z",
-          "lead_month": 3,
-          "target_month": "202612",
-          "aggregation": "monthly forecast anomaly",
-          "field": "precipitation_anomaly",
-          "units": "in",
-          "raw_field": "PrecipRate at the surface",
-          "raw_units": "kg m-2 s-1",
-          "statistic": "ensemble_mean",
-          "ensemble_members": 40,
-          "source_files": [
-            {
-              "initialization": "2026090100",
-              "lead_month": 3,
-              "product": "precipitation_anomaly",
-              "source_field": "PrecipRate at the surface",
-              "url": "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/2026/09/202609_MSC_CanSIPS_PrecipRate_Sfc_LatLon1.0_P03M.grib2",
-              "cache_file": ".cache/cansips/means/forecast/202609/prate_lead03.csv.gz",
-              "storage": "decoded_ensemble_mean_grid",
-              "downloaded": true,
-              "ensemble_members": 40
-            }
-          ],
-          "status": "rendered",
-          "baseline": {
-            "source": "CanSIPS v3 hindcast climatology; 1991-2020",
-            "years": "1991-2020",
-            "initialization_month": "09",
-            "lead_month": 3,
-            "ensemble_members": 40,
-            "files": [
-              {
-                "initialization": "1991090100",
-                "lead_month": 3,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1991/09/199109_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P03M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/199109/prate_lead03.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "1992090100",
-                "lead_month": 3,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1992/09/199209_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P03M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/199209/prate_lead03.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "1993090100",
-                "lead_month": 3,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1993/09/199309_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P03M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/199309/prate_lead03.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "1994090100",
-                "lead_month": 3,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1994/09/199409_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P03M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/199409/prate_lead03.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "1995090100",
-                "lead_month": 3,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1995/09/199509_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P03M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/199509/prate_lead03.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "1996090100",
-                "lead_month": 3,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1996/09/199609_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P03M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/199609/prate_lead03.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "1997090100",
-                "lead_month": 3,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1997/09/199709_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P03M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/199709/prate_lead03.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "1998090100",
-                "lead_month": 3,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1998/09/199809_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P03M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/199809/prate_lead03.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "1999090100",
-                "lead_month": 3,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1999/09/199909_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P03M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/199909/prate_lead03.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "2000090100",
-                "lead_month": 3,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2000/09/200009_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P03M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/200009/prate_lead03.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "2001090100",
-                "lead_month": 3,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2001/09/200109_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P03M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/200109/prate_lead03.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "2002090100",
-                "lead_month": 3,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2002/09/200209_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P03M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/200209/prate_lead03.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "2003090100",
-                "lead_month": 3,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2003/09/200309_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P03M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/200309/prate_lead03.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "2004090100",
-                "lead_month": 3,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2004/09/200409_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P03M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/200409/prate_lead03.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "2005090100",
-                "lead_month": 3,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2005/09/200509_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P03M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/200509/prate_lead03.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "2006090100",
-                "lead_month": 3,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2006/09/200609_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P03M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/200609/prate_lead03.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "2007090100",
-                "lead_month": 3,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2007/09/200709_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P03M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/200709/prate_lead03.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "2008090100",
-                "lead_month": 3,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2008/09/200809_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P03M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/200809/prate_lead03.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "2009090100",
-                "lead_month": 3,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2009/09/200909_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P03M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/200909/prate_lead03.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "2010090100",
-                "lead_month": 3,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2010/09/201009_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P03M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/201009/prate_lead03.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "2011090100",
-                "lead_month": 3,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2011/09/201109_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P03M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/201109/prate_lead03.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "2012090100",
-                "lead_month": 3,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2012/09/201209_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P03M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/201209/prate_lead03.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "2013090100",
-                "lead_month": 3,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2013/09/201309_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P03M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/201309/prate_lead03.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "2014090100",
-                "lead_month": 3,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2014/09/201409_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P03M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/201409/prate_lead03.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "2015090100",
-                "lead_month": 3,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2015/09/201509_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P03M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/201509/prate_lead03.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "2016090100",
-                "lead_month": 3,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2016/09/201609_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P03M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/201609/prate_lead03.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "2017090100",
-                "lead_month": 3,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2017/09/201709_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P03M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/201709/prate_lead03.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "2018090100",
-                "lead_month": 3,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2018/09/201809_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P03M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/201809/prate_lead03.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "2019090100",
-                "lead_month": 3,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2019/09/201909_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P03M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/201909/prate_lead03.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "2020090100",
-                "lead_month": 3,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2020/09/202009_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P03M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/202009/prate_lead03.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              }
-            ]
-          },
-          "ensemble_complete": true,
-          "image": "public/seasonal/cansips/20260901/cansips_prcpa_202612.jpg"
-        },
-        {
-          "id": "cansips-2026090100-precipitation_anomaly-lead04",
-          "valid_start_utc": "2027-01-01T00:00:00Z",
-          "valid_end_utc": "2027-02-01T00:00:00Z",
-          "lead_month": 4,
-          "target_month": "202701",
-          "aggregation": "monthly forecast anomaly",
-          "field": "precipitation_anomaly",
-          "units": "in",
-          "raw_field": "PrecipRate at the surface",
-          "raw_units": "kg m-2 s-1",
-          "statistic": "ensemble_mean",
-          "ensemble_members": 40,
-          "source_files": [
-            {
-              "initialization": "2026090100",
-              "lead_month": 4,
-              "product": "precipitation_anomaly",
-              "source_field": "PrecipRate at the surface",
-              "url": "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/2026/09/202609_MSC_CanSIPS_PrecipRate_Sfc_LatLon1.0_P04M.grib2",
-              "cache_file": ".cache/cansips/means/forecast/202609/prate_lead04.csv.gz",
-              "storage": "decoded_ensemble_mean_grid",
-              "downloaded": true,
-              "ensemble_members": 40
-            }
-          ],
-          "status": "rendered",
-          "baseline": {
-            "source": "CanSIPS v3 hindcast climatology; 1991-2020",
-            "years": "1991-2020",
-            "initialization_month": "09",
-            "lead_month": 4,
-            "ensemble_members": 40,
-            "files": [
-              {
-                "initialization": "1991090100",
-                "lead_month": 4,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1991/09/199109_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P04M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/199109/prate_lead04.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "1992090100",
-                "lead_month": 4,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1992/09/199209_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P04M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/199209/prate_lead04.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "1993090100",
-                "lead_month": 4,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1993/09/199309_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P04M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/199309/prate_lead04.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "1994090100",
-                "lead_month": 4,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1994/09/199409_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P04M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/199409/prate_lead04.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "1995090100",
-                "lead_month": 4,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1995/09/199509_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P04M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/199509/prate_lead04.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "1996090100",
-                "lead_month": 4,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1996/09/199609_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P04M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/199609/prate_lead04.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "1997090100",
-                "lead_month": 4,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1997/09/199709_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P04M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/199709/prate_lead04.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "1998090100",
-                "lead_month": 4,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1998/09/199809_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P04M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/199809/prate_lead04.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "1999090100",
-                "lead_month": 4,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1999/09/199909_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P04M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/199909/prate_lead04.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "2000090100",
-                "lead_month": 4,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2000/09/200009_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P04M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/200009/prate_lead04.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "2001090100",
-                "lead_month": 4,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2001/09/200109_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P04M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/200109/prate_lead04.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "2002090100",
-                "lead_month": 4,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2002/09/200209_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P04M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/200209/prate_lead04.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "2003090100",
-                "lead_month": 4,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2003/09/200309_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P04M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/200309/prate_lead04.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "2004090100",
-                "lead_month": 4,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2004/09/200409_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P04M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/200409/prate_lead04.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "2005090100",
-                "lead_month": 4,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2005/09/200509_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P04M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/200509/prate_lead04.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "2006090100",
-                "lead_month": 4,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2006/09/200609_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P04M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/200609/prate_lead04.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "2007090100",
-                "lead_month": 4,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2007/09/200709_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P04M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/200709/prate_lead04.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "2008090100",
-                "lead_month": 4,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2008/09/200809_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P04M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/200809/prate_lead04.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "2009090100",
-                "lead_month": 4,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2009/09/200909_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P04M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/200909/prate_lead04.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "2010090100",
-                "lead_month": 4,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2010/09/201009_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P04M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/201009/prate_lead04.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "2011090100",
-                "lead_month": 4,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2011/09/201109_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P04M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/201109/prate_lead04.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "2012090100",
-                "lead_month": 4,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2012/09/201209_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P04M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/201209/prate_lead04.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "2013090100",
-                "lead_month": 4,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2013/09/201309_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P04M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/201309/prate_lead04.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "2014090100",
-                "lead_month": 4,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2014/09/201409_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P04M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/201409/prate_lead04.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "2015090100",
-                "lead_month": 4,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2015/09/201509_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P04M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/201509/prate_lead04.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "2016090100",
-                "lead_month": 4,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2016/09/201609_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P04M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/201609/prate_lead04.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "2017090100",
-                "lead_month": 4,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2017/09/201709_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P04M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/201709/prate_lead04.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "2018090100",
-                "lead_month": 4,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2018/09/201809_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P04M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/201809/prate_lead04.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "2019090100",
-                "lead_month": 4,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2019/09/201909_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P04M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/201909/prate_lead04.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "2020090100",
-                "lead_month": 4,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2020/09/202009_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P04M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/202009/prate_lead04.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              }
-            ]
-          },
-          "ensemble_complete": true,
-          "image": "public/seasonal/cansips/20260901/cansips_prcpa_202701.jpg"
-        },
-        {
-          "id": "cansips-2026090100-precipitation_anomaly-lead05",
-          "valid_start_utc": "2027-02-01T00:00:00Z",
-          "valid_end_utc": "2027-03-01T00:00:00Z",
-          "lead_month": 5,
-          "target_month": "202702",
-          "aggregation": "monthly forecast anomaly",
-          "field": "precipitation_anomaly",
-          "units": "in",
-          "raw_field": "PrecipRate at the surface",
-          "raw_units": "kg m-2 s-1",
-          "statistic": "ensemble_mean",
-          "ensemble_members": 40,
-          "source_files": [
-            {
-              "initialization": "2026090100",
-              "lead_month": 5,
-              "product": "precipitation_anomaly",
-              "source_field": "PrecipRate at the surface",
-              "url": "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/2026/09/202609_MSC_CanSIPS_PrecipRate_Sfc_LatLon1.0_P05M.grib2",
-              "cache_file": ".cache/cansips/means/forecast/202609/prate_lead05.csv.gz",
-              "storage": "decoded_ensemble_mean_grid",
-              "downloaded": true,
-              "ensemble_members": 40
-            }
-          ],
-          "status": "rendered",
-          "baseline": {
-            "source": "CanSIPS v3 hindcast climatology; 1991-2020",
-            "years": "1991-2020",
-            "initialization_month": "09",
-            "lead_month": 5,
-            "ensemble_members": 40,
-            "files": [
-              {
-                "initialization": "1991090100",
-                "lead_month": 5,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1991/09/199109_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P05M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/199109/prate_lead05.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "1992090100",
-                "lead_month": 5,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1992/09/199209_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P05M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/199209/prate_lead05.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "1993090100",
-                "lead_month": 5,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1993/09/199309_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P05M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/199309/prate_lead05.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "1994090100",
-                "lead_month": 5,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1994/09/199409_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P05M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/199409/prate_lead05.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "1995090100",
-                "lead_month": 5,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1995/09/199509_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P05M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/199509/prate_lead05.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "1996090100",
-                "lead_month": 5,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1996/09/199609_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P05M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/199609/prate_lead05.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "1997090100",
-                "lead_month": 5,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1997/09/199709_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P05M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/199709/prate_lead05.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "1998090100",
-                "lead_month": 5,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1998/09/199809_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P05M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/199809/prate_lead05.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "1999090100",
-                "lead_month": 5,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1999/09/199909_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P05M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/199909/prate_lead05.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "2000090100",
-                "lead_month": 5,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2000/09/200009_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P05M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/200009/prate_lead05.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "2001090100",
-                "lead_month": 5,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2001/09/200109_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P05M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/200109/prate_lead05.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "2002090100",
-                "lead_month": 5,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2002/09/200209_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P05M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/200209/prate_lead05.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "2003090100",
-                "lead_month": 5,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2003/09/200309_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P05M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/200309/prate_lead05.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "2004090100",
-                "lead_month": 5,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2004/09/200409_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P05M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/200409/prate_lead05.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "2005090100",
-                "lead_month": 5,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2005/09/200509_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P05M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/200509/prate_lead05.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "2006090100",
-                "lead_month": 5,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2006/09/200609_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P05M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/200609/prate_lead05.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "2007090100",
-                "lead_month": 5,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2007/09/200709_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P05M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/200709/prate_lead05.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "2008090100",
-                "lead_month": 5,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2008/09/200809_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P05M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/200809/prate_lead05.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "2009090100",
-                "lead_month": 5,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2009/09/200909_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P05M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/200909/prate_lead05.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "2010090100",
-                "lead_month": 5,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2010/09/201009_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P05M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/201009/prate_lead05.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "2011090100",
-                "lead_month": 5,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2011/09/201109_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P05M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/201109/prate_lead05.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "2012090100",
-                "lead_month": 5,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2012/09/201209_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P05M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/201209/prate_lead05.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "2013090100",
-                "lead_month": 5,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2013/09/201309_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P05M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/201309/prate_lead05.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "2014090100",
-                "lead_month": 5,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2014/09/201409_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P05M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/201409/prate_lead05.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "2015090100",
-                "lead_month": 5,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2015/09/201509_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P05M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/201509/prate_lead05.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "2016090100",
-                "lead_month": 5,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2016/09/201609_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P05M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/201609/prate_lead05.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "2017090100",
-                "lead_month": 5,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2017/09/201709_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P05M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/201709/prate_lead05.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "2018090100",
-                "lead_month": 5,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2018/09/201809_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P05M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/201809/prate_lead05.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "2019090100",
-                "lead_month": 5,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2019/09/201909_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P05M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/201909/prate_lead05.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              },
-              {
-                "initialization": "2020090100",
-                "lead_month": 5,
-                "product": "precipitation_anomaly",
-                "source_field": "PrecipRate at the surface",
-                "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2020/09/202009_MSC_CanSIPS-Hindcast_PrecipRate_Sfc_LatLon1.0_P05M.grib2",
-                "cache_file": ".cache/cansips/means/hindcast/202009/prate_lead05.csv.gz",
-                "storage": "decoded_ensemble_mean_grid",
-                "downloaded": true,
-                "ensemble_members": 40
-              }
-            ]
-          },
-          "ensemble_complete": true,
-          "image": "public/seasonal/cansips/20260901/cansips_prcpa_202702.jpg"
-        },
-        {
-          "id": "cansips-2026090100-precipitation_anomaly-202612-202702",
-          "valid_start_utc": "2026-12-01T00:00:00Z",
-          "valid_end_utc": "2027-03-01T00:00:00Z",
-          "lead_month": "3-5",
-          "target_month": "202612-202702",
-          "aggregation": "3-month seasonal mean",
-          "field": "precipitation_anomaly",
-          "units": "in",
-          "raw_field": "PrecipRate at the surface",
-          "raw_units": "kg m-2 s-1",
-          "statistic": "ensemble_mean",
-          "ensemble_members": 40,
-          "monthly_leads": [
-            3,
-            4,
-            5
-          ],
-          "source_files": [
-            {
-              "initialization": "2026090100",
-              "lead_month": 3,
-              "product": "precipitation_anomaly",
-              "source_field": "PrecipRate at the surface",
-              "url": "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/2026/09/202609_MSC_CanSIPS_PrecipRate_Sfc_LatLon1.0_P03M.grib2",
-              "cache_file": ".cache/cansips/means/forecast/202609/prate_lead03.csv.gz",
-              "storage": "decoded_ensemble_mean_grid",
-              "downloaded": true,
-              "ensemble_members": 40
-            },
-            {
-              "initialization": "2026090100",
-              "lead_month": 4,
-              "product": "precipitation_anomaly",
-              "source_field": "PrecipRate at the surface",
-              "url": "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/2026/09/202609_MSC_CanSIPS_PrecipRate_Sfc_LatLon1.0_P04M.grib2",
-              "cache_file": ".cache/cansips/means/forecast/202609/prate_lead04.csv.gz",
-              "storage": "decoded_ensemble_mean_grid",
-              "downloaded": true,
-              "ensemble_members": 40
-            },
-            {
-              "initialization": "2026090100",
-              "lead_month": 5,
-              "product": "precipitation_anomaly",
-              "source_field": "PrecipRate at the surface",
-              "url": "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/2026/09/202609_MSC_CanSIPS_PrecipRate_Sfc_LatLon1.0_P05M.grib2",
-              "cache_file": ".cache/cansips/means/forecast/202609/prate_lead05.csv.gz",
-              "storage": "decoded_ensemble_mean_grid",
-              "downloaded": true,
-              "ensemble_members": 40
-            }
-          ],
-          "status": "rendered",
-          "baseline": {
-            "source": "CanSIPS v3 hindcast climatology; 1991-2020",
-            "years": "1991-2020",
-            "initialization_month": "09",
-            "lead_months": [
-              3,
-              4,
-              5
-            ],
-            "method": "mean of monthly forecast-minus-hindcast anomalies"
-          },
-          "image": "public/seasonal/cansips/20260901/cansips_prcpa_202612-202702.jpg"
-        }
-      ],
-      "status": "rendered",
-      "output_dir": "public/seasonal/cansips",
-      "generated_utc": "2026-09-01T12:46:42Z"
     },
     {
       "id": "cansips-2026090100-2m_temperature_anomaly",
