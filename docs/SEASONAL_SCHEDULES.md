@@ -9,7 +9,7 @@ historical cycle or individual field needs to be regenerated.
 
 | Workflow | Provider release window | Automatic run (UTC) |
 | --- | --- | --- |
-| CFSv2 | New model cycles every 6 hours | Twice daily at 10:35 and 22:35, after the 06Z and 18Z cycles; readiness-gated with a two-hour readiness retry |
+| CFSv2 | New model cycles every 6 hours | Twice daily at 10:35 and 22:35, after the 06Z and 18Z cycles; readiness-gated with a 30-minute readiness retry |
 | CanSIPS v3 | ECCC monthly refresh on the 1st | 2nd of each month at 16:30 |
 | CMA CPSv3 | WMO GPC Beijing exchange window on the 15th-20th | 21st of each month at 18:30 |
 | NOAA NMME | CPC public products update on the 9th | 9th of each month at 15:30 |
@@ -37,8 +37,9 @@ centre/system, variables, pressure levels, and leads 4-6 for the target month.
 No test GRIB retrieval is submitted. The checker then reads the live site
 manifest and dispatches `product=all` only when source inventory is complete
 and the current live suite is not. C3S, JMA, and SEAS5 workers have independent
-non-cancelling concurrency groups; an active run suppresses duplicate dispatch,
-and a completed full-suite attempt has a 45-minute retry cooldown while Pages
+cancelling concurrency groups; a newer release-target run supersedes an older
+delayed attempt, while an active run still suppresses duplicate dispatch, and a
+completed full-suite attempt has a 45-minute retry cooldown while Pages
 publishes. A daily catch-up check continues from the 13th through month-end so
 an unusually late provider or failed render is not abandoned.
 
@@ -97,7 +98,7 @@ excluded land does not look like missing data. The rendered MRCC map remains
 available as the rank-1 reference. Composite source
 failures retain the previous good image and mark it stale.
 
-The CFSv2 readiness check retries the newest listed cycle for two hours before
+The CFSv2 readiness check retries the newest listed cycle for 30 minutes before
 falling back to the newest complete prior cycle. That prevents the normal
 NOMADS directory-versus-file publication gap from turning a newly listed cycle
 into an unnecessarily old analog input. The analog workflow also runs a

@@ -51,15 +51,33 @@ permissions:
   contents: read
 
 concurrency:
-  group: seasonal-c3s
-  cancel-in-progress: false
+  # A newer dispatch for the same initialization supersedes an older one. This
+  # prevents a delayed full-suite run from occupying the queue after a repair
+  # or release-check retry has already been launched.
+  group: seasonal-c3s-${{ inputs.init || 'latest' }}
+  cancel-in-progress: true
 
 jobs:
   render:
+    if: ${{ inputs.product == 'all' || inputs.product == matrix.product || (inputs.product == '' && matrix.product == '500mb_height_anomaly') }}
+    strategy:
+      fail-fast: false
+      # Four independent product requests materially reduce wall-clock time
+      # while keeping CDS request concurrency below an account-wide stampede.
+      max-parallel: 4
+      matrix:
+        product:
+          - 500mb_height_anomaly
+          - 500mb_height_anomaly_nh
+          - 850mb_temperature_anomaly
+          - 2m_temperature_anomaly
+          - precipitation_anomaly
+          - snowfall_anomaly
+          - mslp_anomaly
     runs-on: ubuntu-latest
-    timeout-minutes: 360
+    timeout-minutes: 180
     env:
-      C3S_PRODUCT: ${{ inputs.product || '500mb_height_anomaly' }}
+      C3S_PRODUCT: ${{ matrix.product }}
       SCHEDULED_C3S_PRODUCTS: 500mb_height_anomaly,500mb_height_anomaly_nh,850mb_temperature_anomaly,2m_temperature_anomaly,precipitation_anomaly,snowfall_anomaly,mslp_anomaly
       C3S_CENTRES: ${{ inputs.centres || 'all' }}
       C3S_SYSTEMS: ${{ inputs.systems || '' }}
@@ -97,7 +115,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: .cache/c3s
-          key: c3s-${{ runner.os }}-${{ env.C3S_PRODUCT }}-${{ env.C3S_CENTRES }}-cds-v1
+          key: c3s-${{ runner.os }}-${{ env.C3S_PRODUCT }}-${{ env.C3S_CENTRES }}-cds-v2
           restore-keys: |
             c3s-${{ runner.os }}-${{ env.C3S_PRODUCT }}-
 
@@ -125,28 +143,21 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if [[ "$C3S_PRODUCT" == "all" ]]; then
-            IFS=',' read -r -a products <<< "$SCHEDULED_C3S_PRODUCTS"
-          else
-            products=("$C3S_PRODUCT")
-          fi
-          for product in "${products[@]}"; do
-            echo "Rendering C3S product: $product"
-            python scripts/c3s_seasonal.py \
-              --product "$product" \
-              --centres "$C3S_CENTRES" \
-              --systems "$C3S_SYSTEMS" \
-              --init "$C3S_INIT" \
-              --lead-months "$LEAD_MONTHS" \
-              --seasonal-window "$SEASONAL_WINDOW" \
-              --cache-dir .cache/c3s \
-              --output-dir public/seasonal/c3s \
-              --manifest public/seasonal/c3s_manifest.json \
-              --previous-manifest .cache/c3s/previous_manifest.json \
-              --retain-cycles 4
-          done
+          echo "Rendering C3S product: $C3S_PRODUCT"
+          python scripts/c3s_seasonal.py \
+            --product "$C3S_PRODUCT" \
+            --centres "$C3S_CENTRES" \
+            --systems "$C3S_SYSTEMS" \
+            --init "$C3S_INIT" \
+            --lead-months "$LEAD_MONTHS" \
+            --seasonal-window "$SEASONAL_WINDOW" \
+            --cache-dir .cache/c3s \
+            --output-dir public/seasonal/c3s \
+            --manifest public/seasonal/c3s_manifest.json \
+            --previous-manifest .cache/c3s/previous_manifest.json \
+            --retain-cycles 4
 
-      - name: Package C3S Pages payload
+      - name: Package product-scoped C3S payload
         if: success()
         shell: bash
         run: |
@@ -154,12 +165,57 @@ jobs:
           test -d public/seasonal/c3s
           test -f public/seasonal/c3s_manifest.json
           rm -rf pages-payload
+          mkdir -p "pages-payload/$C3S_PRODUCT/c3s"
+          cp -R public/seasonal/c3s/. "pages-payload/$C3S_PRODUCT/c3s/"
+          cp public/seasonal/c3s_manifest.json "pages-payload/$C3S_PRODUCT/c3s_manifest.json"
+          python scripts/write_seasonal_fragment.py \
+            --manifest public/seasonal/c3s_manifest.json \
+            --product "$C3S_PRODUCT" \
+            --init "$C3S_INIT" \
+            --output "pages-payload/$C3S_PRODUCT/fragment.json"
+
+      - name: Upload product-scoped C3S payload
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: c3s-product-${{ matrix.product }}-${{ github.run_id }}
+          path: pages-payload
+          if-no-files-found: error
+          retention-days: 14
+
+  merge:
+    if: ${{ always() && needs.render.result == 'success' }}
+    needs: render
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download product-scoped C3S payloads
+        uses: actions/download-artifact@v4
+        with:
+          pattern: c3s-product-*-${{ github.run_id }}
+          path: incoming/c3s-products
+          merge-multiple: false
+
+      - name: Merge C3S Pages payload
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf pages-payload
           mkdir -p pages-payload/c3s
           cp -R public/seasonal/c3s/. pages-payload/c3s/
-          cp public/seasonal/c3s_manifest.json pages-payload/c3s_manifest.json
+          python scripts/merge_seasonal_payloads.py \
+            --input-root incoming/c3s-products \
+            --output-root pages-payload \
+            --asset-dir c3s \
+            --manifest-name c3s_manifest.json \
+            --retain-cycles 4
+          test -d pages-payload/c3s
+          test -f pages-payload/c3s_manifest.json
 
       - name: Upload C3S Pages payload
-        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: c3s-pages-${{ github.run_id }}
@@ -171,7 +227,6 @@ jobs:
       # completion cannot create a workflow_run publisher under GitHub's
       # recursion guard. An explicit workflow_dispatch remains permitted.
       - name: Dispatch C3S Pages publish
-        if: success()
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash

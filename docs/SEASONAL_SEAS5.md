@@ -102,8 +102,9 @@ needed. Polling continues hourly through the 9th if CDS indexing is late, and
 the shared daily catch-up continues through month-end for an incomplete suite.
 
 The rendering worker is `.github/workflows/seas5.yml`. It restores the CDS
-GRIB cache, retrieves the previous Pages manifest, renders the selected
-parameter or explicit `all` suite, and uploads a scoped Pages payload. The central
+GRIB cache, uses the shared bounded CDS retry policy, retrieves the previous
+Pages manifest, renders the selected parameter or explicit `all` suite, and
+uploads a scoped Pages payload. The central
 `.github/workflows/publish-pages.yml` workflow serializes successful WN2,
 CFSv2, and SEAS5 payloads, merges each payload into the existing `gh-pages`
 tree, and performs the only GitHub Pages publish.

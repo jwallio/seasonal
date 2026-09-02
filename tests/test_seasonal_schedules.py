@@ -106,9 +106,13 @@ def main() -> int:
         check(set(match.group(1).strip().split(",")) == expected_products, f"{relative_path} scheduled suite is incomplete")
         check("sst" not in match.group(1).lower(), f"{relative_path} must not schedule SST")
         check(re.search(r"^\s+- all$", text, re.MULTILINE) is not None, f"{relative_path} must expose full-suite dispatch mode")
-        check('== "all"' in text, f"{relative_path} must distinguish full-suite from targeted reruns")
-        check('for product in "${products[@]}"' in text, f"{relative_path} must render every scheduled product")
-        check("cancel-in-progress: false" in text, f"{relative_path} must serialize full-suite refreshes")
+        check('== "all"' in text or "== 'all'" in text, f"{relative_path} must distinguish full-suite from targeted reruns")
+        if relative_path == ".github/workflows/c3s.yml":
+            for term in ("strategy:", "max-parallel: 4", "matrix:", "c3s-product-", "merge_seasonal_payloads.py"):
+                check(term in text, f"{relative_path} must use the product matrix merge path ({term})")
+        else:
+            check('for product in "${products[@]}"' in text, f"{relative_path} must render every scheduled product")
+        check("cancel-in-progress: true" in text, f"{relative_path} must supersede stale full-suite refreshes")
 
     publisher_text = (ROOT / ".github/workflows/publish-pages.yml").read_text(encoding="utf-8")
     workflow_run_triggers = publisher_text.split("  workflow_dispatch:", 1)[0]
@@ -132,7 +136,8 @@ def main() -> int:
 
     super_workflow = (ROOT / ".github/workflows/superensemble.yml").read_text(encoding="utf-8")
     check("SCHEDULED_SUPER_PRODUCT: all" in super_workflow, "scheduled super ensemble must render all supported parameters")
-    check('product="$SCHEDULED_SUPER_PRODUCT"' in super_workflow, "scheduled super ensemble must select all-product mode")
+    for term in ("strategy:", "max-parallel: 4", "matrix:", "SUPER_PRODUCT: ${{ matrix.product }}", "superensemble-product-", "merge_seasonal_payloads.py"):
+        check(term in super_workflow, f"scheduled super ensemble must use the product matrix merge path ({term})")
 
     doc = (ROOT / "docs/SEASONAL_SCHEDULES.md").read_text(encoding="utf-8")
     for term in ("UTC", "ECMWF SEAS5", "CMA CPSv3", "C3S multi-system", "JMA / MRI-CPS4", "Deduplicated super ensemble", "cancel-in-progress: false"):
@@ -140,7 +145,7 @@ def main() -> int:
 
     check("22nd of each month at 20:30" in doc, "super-ensemble documentation must reflect its post-CMA schedule")
     check("full advertised anomaly suite" in doc, "schedule documentation must describe the multi-product refresh contract")
-    check("two-hour readiness retry" in doc, "schedule documentation must describe the CFSv2 delayed readiness retry")
+    check("30-minute readiness retry" in doc, "schedule documentation must describe the CFSv2 delayed readiness retry")
     check("scheduled reconciliation" in doc, "schedule documentation must describe the analog catch-up")
     check("explicitly dispatch that publisher" in doc, "schedule documentation must explain CDS worker publication")
 

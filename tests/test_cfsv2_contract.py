@@ -399,6 +399,18 @@ def main() -> int:
         '35 10,22 * * *',
     ):
         check(term in workflow, f"workflow missing CFSv2 readiness term: {term}")
+    for term in (
+        "concurrency:",
+        "cancel-in-progress: true",
+        "Restore wgrib2 tool cache",
+        "actions/cache/restore@v4",
+        "actions/cache/save@v4",
+        "steps.wgrib2-cache.outputs.cache-hit",
+        "make -C \"$makefile_dir\" -j\"$(nproc)\"",
+        "readiness_wait_minutes=30",
+        "readiness_retry_seconds=180",
+    ):
+        check(term in workflow, f"workflow missing speed-up term: {term}")
     check("--allow-partial-rolling" not in workflow, "scheduled CFSv2 workflow must not publish an incomplete rolling blend")
     check("SCHEDULED_CFSV2_PRODUCTS: 500mb_height_anomaly,500mb_height_anomaly_nh,2m_temperature_anomaly,mslp_anomaly,precipitation_anomaly" in workflow, "twice-daily workflow should refresh the complete core anomaly suite")
     check('description: "Lagged initial-condition window; 6 means 24 cycles"' in workflow, "scheduled CFSv2 workflow should stay inside the live archive")

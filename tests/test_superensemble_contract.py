@@ -136,7 +136,15 @@ def main() -> int:
     check(adapter_text.count("write_grid_state(anomaly") == 2, "monthly and seasonal super-ensemble maps should both export numeric grids")
     check("NOAA CFSv2 24-cycle rolling blend" in adapter_text, "super-ensemble should label the operational CFSv2 blend accurately")
     check("--cfsv2-rolling-days 6" in workflow, "super-ensemble workflow should use the archive-safe CFSv2 window")
-    for term in ("name: Deduplicated Seasonal Super Ensemble", "CDS_API_KEY", "Restore rolling CFSv2 state", "Restore CMA CPSv3 source cache", "--cma-cache-dir", "Restore NASA GEOS-S2S-3 numerical cache", "--geos-cache-dir", "cfsv2-rolling-", "superensemble-pages-", "30 20 22 * *", "SCHEDULED_SUPER_PRODUCT: all"):
+    for term in (
+        "name: Deduplicated Seasonal Super Ensemble", "CDS_API_KEY", "Restore rolling CFSv2 state",
+        "Restore CMA CPSv3 source cache", "--cma-cache-dir", "Restore NASA GEOS-S2S-3 numerical cache",
+        "--geos-cache-dir", "cfsv2-rolling-", "superensemble-pages-", "30 20 22 * *",
+        "SCHEDULED_SUPER_PRODUCT: all", "max-parallel: 4", "matrix:",
+        "SUPER_PRODUCT: ${{ matrix.product }}", "superensemble-product-",
+        "actions/download-artifact@v4", "merge_seasonal_payloads.py", "write_seasonal_fragment.py",
+        "Restore wgrib2 tool cache", "actions/cache/save@v4",
+    ):
         check(term in workflow, f"workflow is missing term: {term}")
     for term in ("Deduplicated Seasonal Super Ensemble", "superensemble_manifest.json", "incoming/superensemble"):
         check(term in pages, f"Pages publisher is missing term: {term}")
