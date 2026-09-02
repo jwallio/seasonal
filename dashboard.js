@@ -591,7 +591,10 @@ function ensembleText(model, run, target) {
   if (model.kind === 'weathernext') return run.ensemble_mode === 'member' ? `Member ${run.ensemble_member || '—'}` : pretty(run.ensemble_mode || 'ensemble');
   const source = target?.value || {};
   const members = source.ensemble_members || run.ensemble_members;
-  if (run.ensemble_scope === 'rolling_initial_conditions') return `${source.ensemble_members || members || 0}/${source.ensemble_expected_members || 40} cycles`;
+  if (run.ensemble_scope === 'rolling_initial_conditions') {
+    const expected = source.ensemble_expected_members || run.rolling_window?.expected_cycles || members || 0;
+    return `${source.ensemble_members || members || 0}/${expected} cycles`;
+  }
   return members ? `${members} members` : pretty(source.ensemble_scope || run.ensemble_scope || 'ensemble');
 }
 function statusText(run, target) {
