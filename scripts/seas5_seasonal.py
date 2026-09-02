@@ -4,8 +4,8 @@
 The Copernicus Climate Data Store publishes the current ECMWF/System 51
 monthly ensemble-mean anomalies at 1-degree resolution.  This adapter keeps
 the source and nominal initialization explicit, requests only the selected
-lead months and North American area, and shares WN2's operational map
-renderer and static manifest contract with the CFSv2 viewer without treating
+lead months and North American area, and shares the operational map renderer
+and static manifest contract with the CFSv2 viewer without treating
 the two models as the same source.
 """
 
@@ -35,6 +35,16 @@ from cfsv2_seasonal import (
     DEFAULT_REGION,
     NORTHERN_HEMISPHERE_REGION,
     PRECIP_ANOMALY_PALETTE,
+    SNOWFALL_ANOMALY_MAX_IN,
+    SNOWFALL_ANOMALY_MIN_IN,
+    SNOWFALL_ANOMALY_PALETTE,
+    SNOWFALL_ANOMALY_TICK_DECIMALS,
+    SNOWFALL_ANOMALY_TICK_FORMAT,
+    SNOWFALL_ANOMALY_TICKS,
+    SNOWFALL_MONTHLY_ANOMALY_MAX_IN,
+    SNOWFALL_MONTHLY_ANOMALY_MIN_IN,
+    SNOWFALL_MONTHLY_ANOMALY_PALETTE,
+    SNOWFALL_MONTHLY_ANOMALY_TICKS,
     SWE_ANOMALY_PALETTE,
     TEMPERATURE_ANOMALY_MAX_C,
     TEMPERATURE_ANOMALY_MIN_C,
@@ -82,9 +92,6 @@ T2M_ANOMALY = "2m_temperature_anomaly"
 T850_ANOMALY = "850mb_temperature_anomaly"
 PRECIP_ANOMALY = "precipitation_anomaly"
 SNOWFALL_ANOMALY = "snowfall_anomaly"
-SNOWFALL_ANOMALY_MIN_IN = -0.8
-SNOWFALL_ANOMALY_MAX_IN = 0.8
-SNOWFALL_ANOMALY_TICKS = [round(SNOWFALL_ANOMALY_MIN_IN + 0.1 * i, 1) for i in range(17)]
 SNOW_DEPTH_ANOMALY = "snow_depth_anomaly"
 MSLP_ANOMALY = "mslp_anomaly"
 
@@ -235,15 +242,22 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "anomaly_min": SNOWFALL_ANOMALY_MIN_IN,
         "anomaly_max": SNOWFALL_ANOMALY_MAX_IN,
         "anomaly_ticks": SNOWFALL_ANOMALY_TICKS,
-        "anomaly_palette": SWE_ANOMALY_PALETTE,
+        "anomaly_palette": SNOWFALL_ANOMALY_PALETTE,
+        "anomaly_tick_decimals": SNOWFALL_ANOMALY_TICK_DECIMALS,
+        "anomaly_tick_format": SNOWFALL_ANOMALY_TICK_FORMAT,
+        "monthly_anomaly_min": SNOWFALL_MONTHLY_ANOMALY_MIN_IN,
+        "monthly_anomaly_max": SNOWFALL_MONTHLY_ANOMALY_MAX_IN,
+        "monthly_anomaly_ticks": SNOWFALL_MONTHLY_ANOMALY_TICKS,
+        "monthly_anomaly_palette": SNOWFALL_MONTHLY_ANOMALY_PALETTE,
+        "monthly_anomaly_endpoint_labels": {"minimum": "≤−2.0", "maximum": "≥+2.0"},
         "conversion": "CDS anomalous snowfall water rate multiplied by target-month seconds and converted from metres to inches",
-        "header_detail": "{source_label}  •  {baseline_label}  •  Snowfall departure  •  LWE  •  CONUS  •  clipped at ±0.8 in",
+        "header_detail": "{source_label}  •  {baseline_label}  •  Snowfall departure  •  LWE  •  CONUS  •  {snowfall_scale_label}",
         "map_domain": "land",
         "fit_frame_to_domain": True,
         "domain_frame_padding_fraction": 0.012,
         "mask_states": list(CONUS_STATE_NAMES),
         "border_files": ("us-states.geojson",),
-        "anomaly_endpoint_labels": {"minimum": "≤−0.8", "maximum": "≥+0.8"},
+        "anomaly_endpoint_labels": {"minimum": "≤−4.0", "maximum": "≥+4.0"},
         "cds_dataset": CDS_SINGLE_ANOMALY_DATASET,
         "cds_variable": "snowfall_anomalous_rate_of_accumulation",
     },
@@ -1053,6 +1067,7 @@ def run(args: argparse.Namespace) -> int:
                 ensemble_label=f"{CDS_ENSEMBLE_MEMBERS}-member mean",
                 height_grid=seasonal_height,
                 product_spec={**product, "source_label": SOURCE_LABEL},
+                seasonal=True,
             )
             seasonal_entry["image"] = relative_path(output_path, repo_root)
             seasonal_entry["source_dataset"] = product["cds_dataset"] if not args.absolute else product["cds_raw_dataset"]

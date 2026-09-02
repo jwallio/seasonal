@@ -16,6 +16,16 @@ from typing import Any, Iterable
 
 REGISTRY_VERSION = 1
 
+SNOWFALL_MONTHLY_DISPLAY_BREAKPOINTS = [
+    -2.0, -1.75, -1.5, -1.25, -1.0, -0.75, -0.5, 0.0, 0.5, 0.75, 1.0,
+    1.25, 1.5, 1.75, 2.0,
+]
+SNOWFALL_SEASONAL_DISPLAY_BREAKPOINTS = [
+    -4.0, -3.5, -3.0, -2.5, -2.0, -1.75, -1.5, -1.25, -1.0, -0.75,
+    -0.5, 0.0, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 2.5, 3.0, 3.5,
+    4.0,
+]
+
 
 PRODUCTS: dict[str, dict[str, Any]] = {
     "500mb_height_anomaly": {
@@ -104,8 +114,16 @@ PRODUCTS: dict[str, dict[str, Any]] = {
         "level": {"type": "surface"},
         "aggregation": {"monthly": "total", "seasonal": "total"},
         "display": {
-            "monthly": {"minimum": -0.8, "maximum": 0.8, "step": 0.1},
-            "seasonal": {"minimum": -0.8, "maximum": 0.8, "step": 0.1},
+            "monthly": {
+                "minimum": -2.0,
+                "maximum": 2.0,
+                "breakpoints": SNOWFALL_MONTHLY_DISPLAY_BREAKPOINTS,
+            },
+            "seasonal": {
+                "minimum": -4.0,
+                "maximum": 4.0,
+                "breakpoints": SNOWFALL_SEASONAL_DISPLAY_BREAKPOINTS,
+            },
         },
         "hard_range": {"minimum": -100.0, "maximum": 100.0},
         "minimum_finite_fraction": 0.02,
@@ -285,10 +303,10 @@ CORE_COMPARISON_PRODUCTS = (
     "mslp_anomaly",
 )
 
-# Products shown in the cross-model overview and Compare view.  Snowfall is a
-# supported comparison surface only for providers with a native snowfall
-# field; the Northern Hemisphere 500-mb view is an opt-in detail product and
-# is intentionally not a duplicate comparison column.
+# Products shown in the cross-model overview and Compare view.  Keep the
+# original core tuple stable for provider contracts; snowfall is a supported
+# comparison surface only for providers with a native or explicitly derived
+# snowfall liquid-water-equivalent field.
 COMPARISON_PRODUCTS = (
     *CORE_COMPARISON_PRODUCTS[:4],
     "snowfall_anomaly",
@@ -306,7 +324,7 @@ def _unsupported(reason: str) -> dict[str, str]:
 
 # The dashboard uses two clocks for each provider: the expected model cycle
 # (used to decide whether the forecast itself is old) and the expected
-# wall.cloud publication window (used for the next-update display).  The
+# wall.cloud publication window (used for the next-update display). The
 # publication times include the current workflow's download/render buffer;
 # they are operational estimates, not provider SLAs.
 MODEL_SCHEDULES: dict[str, dict[str, Any]] = {
@@ -497,15 +515,27 @@ MODELS: dict[str, dict[str, Any]] = {
 }
 
 
-SNOWFALL_SUPPORTED_MODELS = frozenset({"c3s", "seas5"})
+SNOWFALL_SUPPORTED_MODELS = frozenset({"c3s", "seas5", "cansips", "superensemble"})
+SNOWFALL_SUPPORT_REASONS = {
+    "c3s": "C3S publishes native snowfall liquid-water-equivalent accumulation.",
+    "seas5": "SEAS5 publishes native snowfall liquid-water-equivalent accumulation.",
+    "cansips": "CanSIPS derives member-level snowfall liquid-water equivalent from 2-m/850-hPa temperature and total precipitation using the season-appropriate Dai (2008) land phase curve (DJF for winter).",
+    "superensemble": "The super ensemble blends eligible native and CanSIPS-derived snowfall fields in common LWE units.",
+}
 SNOWFALL_UNSUPPORTED_REASON = (
-    "The current seasonal adapter does not publish snowfall accumulation; "
-    "snow-water equivalent or precipitation is not interchangeable with snowfall."
+    "The current seasonal adapter does not publish a native or explicitly derived "
+    "snowfall accumulation field; snow-water equivalent or precipitation is not "
+    "interchangeable with snowfall."
 )
 for _model_key, _model_definition in MODELS.items():
     _model_definition["schedule"] = deepcopy(MODEL_SCHEDULES[_model_key])
     _model_definition["support"]["snowfall_anomaly"] = (
-        _supported() if _model_key in SNOWFALL_SUPPORTED_MODELS else _unsupported(SNOWFALL_UNSUPPORTED_REASON)
+        {
+            "state": "supported",
+            "reason": SNOWFALL_SUPPORT_REASONS[_model_key],
+        }
+        if _model_key in SNOWFALL_SUPPORTED_MODELS
+        else _unsupported(SNOWFALL_UNSUPPORTED_REASON)
     )
 
 

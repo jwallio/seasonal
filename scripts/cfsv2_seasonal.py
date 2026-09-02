@@ -33,7 +33,7 @@ from urllib.parse import urljoin
 SCRIPT_DIRECTORY = str(Path(__file__).resolve().parent)
 if SCRIPT_DIRECTORY not in sys.path:
     sys.path.insert(0, SCRIPT_DIRECTORY)
-from seasonal_products import grid_quality_control, require_quality_control
+from seasonal_products import grid_quality_control, is_retired_product, require_quality_control
 
 
 NOMADS_ROOT = "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/"
@@ -135,6 +135,104 @@ SWE_ANOMALY_PALETTE = [
     "#1d496f",
     "#143b5f",
 ]
+# Shared snowfall liquid-water-equivalent departure scale.  The previous ±1.2
+# range clips broad areas of the DJF CanSIPS field, so use a symmetric,
+# nonlinear set of bins: finer near zero and progressively wider toward the
+# tails.  The bins are intentionally categorical (uniform visual widths), so
+# the strong departures retain contrast without turning ordinary departures
+# into a mostly white map.
+SNOWFALL_ANOMALY_MIN_IN = -4.0
+SNOWFALL_ANOMALY_MAX_IN = 4.0
+SNOWFALL_ANOMALY_TICK_DECIMALS = 2
+SNOWFALL_ANOMALY_TICK_FORMAT = "signed_trimmed"
+SNOWFALL_ANOMALY_TICKS = [
+    -4.0,
+    -3.5,
+    -3.0,
+    -2.5,
+    -2.0,
+    -1.75,
+    -1.5,
+    -1.25,
+    -1.0,
+    -0.75,
+    -0.5,
+    0.0,
+    0.5,
+    0.75,
+    1.0,
+    1.25,
+    1.5,
+    1.75,
+    2.0,
+    2.5,
+    3.0,
+    3.5,
+    4.0,
+]
+SNOWFALL_ANOMALY_PALETTE = [
+    "#572308",
+    "#6b2d0c",
+    "#7b370d",
+    "#8c4712",
+    "#9d5517",
+    "#ae691f",
+    "#bd7d34",
+    "#ca9156",
+    "#d7a875",
+    "#e3c99a",
+    "#ffffff",
+    "#ffffff",
+    "#b9dce8",
+    "#96c9d7",
+    "#75b8cc",
+    "#5ca5bd",
+    "#4a93b2",
+    "#3a80a5",
+    "#2e6d93",
+    "#245b83",
+    "#1b496e",
+    "#123856",
+]
+# A single month has a smaller liquid-water-equivalent departure amplitude
+# than a three-month total. Use the approved fine breakpoints through 2 inches
+# for monthly maps, while the generic snowfall constants above remain the
+# wider seasonal/DJF scale for existing callers.
+SNOWFALL_MONTHLY_ANOMALY_MIN_IN = -2.0
+SNOWFALL_MONTHLY_ANOMALY_MAX_IN = 2.0
+SNOWFALL_MONTHLY_ANOMALY_TICKS = [
+    -2.0,
+    -1.75,
+    -1.5,
+    -1.25,
+    -1.0,
+    -0.75,
+    -0.5,
+    0.0,
+    0.5,
+    0.75,
+    1.0,
+    1.25,
+    1.5,
+    1.75,
+    2.0,
+]
+SNOWFALL_MONTHLY_ANOMALY_PALETTE = [
+    "#572308",
+    "#7b370d",
+    "#9d5517",
+    "#bd7d34",
+    "#d7a875",
+    "#e3c99a",
+    "#ffffff",
+    "#ffffff",
+    "#b9dce8",
+    "#75b8cc",
+    "#4a93b2",
+    "#2e6d93",
+    "#1b496e",
+    "#123856",
+]
 # Shared fixed scale for seasonal 850-mb and 2-m temperature anomalies.
 # Model-specific narrower ranges clipped stronger signals and made the same
 # anomaly look different in comparison views.
@@ -173,12 +271,7 @@ DEFAULT_REGION = (-160.0, -10.0, 22.0, 85.0)
 # This is a render crop only; provider download areas remain deliberately
 # larger for edge-data coverage.
 CONUS_PRECIP_REGION = (-126.0, -66.0, 24.0, 50.0)
-# Shared alias for all lower-48 seasonal fields, including non-precipitation
-# parameters.  Keep the historical constant above for compatibility with
-# provider adapters and cached manifests.
 CONUS_REGION = CONUS_PRECIP_REGION
-# A separate polar view keeps the existing North America 500-mb frame intact
-# while making the complete Northern Hemisphere available from the same data.
 NORTHERN_HEMISPHERE_REGION = (-180.0, 180.0, 0.0, 90.0)
 # The renderer uses these names when a CONUS product requests a land-only
 # frame. Keeping the list here lets every provider share the same lower-48
@@ -273,7 +366,6 @@ PRODUCT_SPECS = {
         "title": "CFSv2 500-mb Geopotential Height & Anomaly (m)",
         "absolute_title": "CFSv2 500-mb Geopotential Height (m)",
         "height_contours": True,
-        "region": DEFAULT_REGION,
         "baseline_root": NCEI_CALIBRATION_ROOT,
         "baseline_label": NCEI_CALIBRATION_LABEL,
         "seasonal_reducer": "mean",
@@ -398,6 +490,7 @@ PRODUCT_SPECS = {
         "map_domain": "land",
     },
 }
+
 
 # Both 500-mb views decode the same NOMADS field and share the rolling cache;
 # only the published image framing and output token differ.
@@ -595,6 +688,15 @@ def anomaly_style(
 ) -> tuple[float, float, Sequence[float], Sequence[str]]:
     """Return the fixed comparable scale for one anomaly product and period."""
 
+    period_prefix = "seasonal" if seasonal else "monthly"
+    period_min_key = f"{period_prefix}_anomaly_min"
+    if period_min_key in product_spec:
+        return (
+            float(product_spec[period_min_key]),
+            float(product_spec[f"{period_prefix}_anomaly_max"]),
+            product_spec.get(f"{period_prefix}_anomaly_ticks", []),
+            product_spec.get(f"{period_prefix}_anomaly_palette", ANOMALY_PALETTE),
+        )
     if "anomaly_min" in product_spec:
         return (
             float(product_spec["anomaly_min"]),
@@ -1790,7 +1892,7 @@ def render_map(
     projection_kind = str(product_spec.get("projection", "lambert_conformal_conic")).strip().lower()
     if projection_kind == "north_polar_stereographic":
         # Normalized north-polar stereographic coordinates put the pole at
-        # the origin and the equator at radius two.  The square canvas is
+        # the origin and the equator at radius two. The square canvas is
         # masked outside the requested hemisphere, so no southern-hemisphere
         # interpolation or border bleed can appear in the corners.
         polar_central_longitude = np.deg2rad(
@@ -1870,6 +1972,17 @@ def render_map(
     else:
         raise CFSv2Error(f"unsupported seasonal map projection {projection_kind!r}")
 
+    projected_x_shift = (
+        (x_max - x_min) * float(
+            product_spec.get("projected_x_shift_fraction", PROJECTED_X_SHIFT_FRACTION)
+        )
+        if projection_kind == "lambert_conformal_conic"
+        else 0.0
+    )
+    x_min -= projected_x_shift
+    x_max -= projected_x_shift
+    x_pad = max(0.01, (x_max - x_min) * 0.006)
+    y_pad = max(0.01, (y_max - y_min) * 0.006)
     projected_x_shift = (x_max - x_min) * float(
         product_spec.get("projected_x_shift_fraction", PROJECTED_X_SHIFT_FRACTION)
     )
@@ -1972,10 +2085,15 @@ def render_map(
 
     # Match a 1080x1080 social-media footprint. Size the map box from the
     # projected bounds so the LCC geometry remains undistorted at square size.
-    figure = plt.figure(figsize=(9.0, 9.0), facecolor="#f7f9fb")
+    # Snowfall maps use a tighter legend gap and are cropped after rendering so
+    # the branded share image does not carry a large unused lower panel.
+    figure = plt.figure(figsize=(9.0, 9.0), dpi=120, facecolor="#f7f9fb")
     has_footer = bool(footer_text.strip())
+    is_snowfall = product_spec.get("name") == "snowfall_anomaly"
     colorbar_height = 0.032
-    colorbar_gap = 0.025
+    colorbar_gap = float(product_spec.get("colorbar_gap", 0.012 if is_snowfall else 0.025))
+    if not math.isfinite(colorbar_gap) or colorbar_gap < 0.0:
+        raise CFSv2Error("colorbar_gap must be a finite non-negative number")
     footer_line_count = footer_text.count("\n") + 1 if has_footer else 0
     colorbar_floor = 0.055 + 0.012 * footer_line_count
     map_left = 0.05 if has_footer else 0.035
@@ -2023,9 +2141,9 @@ def render_map(
                 f"{product_spec['name']} requires the {mask_label} land mask to render its {map_domain}-only domain"
             )
         # Domain-specific products must not display model fill or extrapolated
-        # values where the parameter is undefined.  Some seasonal archives
-        # encode ocean-only fields at every grid point even though their land
-        # values are not geophysical ocean data.
+        # values where the parameter is undefined.  In particular, several
+        # seasonal archives encode SST and sea-surface height at every grid
+        # point even though their land values are not geophysical ocean data.
         masked = np.ma.masked_where(
             ~land_mask if map_domain == "land" else land_mask,
             masked,
@@ -2056,10 +2174,21 @@ def render_map(
                 map_left = (1.0 - map_width) / 2.0
             map_bottom = map_top - map_height
             axes.set_position([map_left, map_bottom, map_width, map_height])
+            # The fitted lower-48 frame replaces the original regional bounds;
+            # keep its visible border padding proportional to the fitted
+            # domain rather than reusing padding from the full CONUS window.
+            x_pad = max(0.01, (x_max - x_min) * frame_padding_fraction)
+            y_pad = max(0.01, (y_max - y_min) * frame_padding_fraction)
+    snowfall_scale_label = ""
     if anomaly:
         anomaly_min, anomaly_max, colorbar_ticks, palette = anomaly_style(
             product_spec,
             seasonal=seasonal,
+        )
+        snowfall_scale_label = (
+            f"clipped at ±{max(abs(anomaly_min), abs(anomaly_max)):.1f} in"
+            if is_snowfall
+            else ""
         )
         # Most products use their labelled ticks as color transitions. A
         # regional product may provide separate boundaries when a labelled
@@ -2327,6 +2456,7 @@ def render_map(
                 baseline_label=(
                     "Absolute field smoke output" if not anomaly else display_baseline_label
                 ),
+                snowfall_scale_label=snowfall_scale_label,
             )
         elif product_spec["height_contours"]:
             header_detail = (
@@ -2380,11 +2510,19 @@ def render_map(
                 numeric = 0.0
             if tick_format == "plain":
                 return f"{numeric:.{tick_decimals}f}"
+            if tick_format == "signed_trimmed":
+                if numeric == 0.0:
+                    return "0"
+                formatted = f"{abs(numeric):.{tick_decimals}f}".rstrip("0").rstrip(".")
+                return f"+{formatted}" if numeric > 0.0 else f"−{formatted}"
             if tick_decimals:
                 return f"{numeric:+.{tick_decimals}f}" if numeric else f"{numeric:.{tick_decimals}f}"
             return f"+{int(round(numeric))}" if numeric > 0 else str(int(round(numeric)))
 
-        endpoint_labels = product_spec.get("anomaly_endpoint_labels", {})
+        endpoint_labels = product_spec.get(
+            f"{'seasonal' if seasonal else 'monthly'}_anomaly_endpoint_labels",
+            product_spec.get("anomaly_endpoint_labels", {}),
+        )
         tick_labels = []
         for index, tick in enumerate(colorbar_ticks):
             if index == 0 and endpoint_labels.get("minimum"):
@@ -2394,22 +2532,38 @@ def render_map(
             else:
                 tick_labels.append(format_anomaly_tick(tick))
         colorbar.set_ticklabels(tick_labels)
+    dense_tick_labels = len(colorbar_ticks) > 20
     colorbar.ax.tick_params(
         axis="x",
         which="major",
-        labelsize=10.0,
+        labelsize=8.2 if dense_tick_labels else 10.0,
         length=5.0,
         width=0.85,
-        pad=1.8,
+        pad=1.2 if dense_tick_labels else 1.8,
         colors="#263640",
         direction="out",
     )
     colorbar.outline.set_edgecolor("#52636c")
     colorbar.outline.set_linewidth(0.65)
+    footer_artist = None
     if has_footer:
-        figure.text(
+        footer_y = 0.012
+        if is_snowfall:
+            # Snowfall maps are cropped to their legend.  Keep the optional
+            # multi-system provenance footer inside that compact footprint
+            # instead of leaving it at the old square-canvas baseline.
+            figure.canvas.draw()
+            renderer = figure.canvas.get_renderer()
+            colorbar_bbox = colorbar.ax.get_tightbbox(renderer)
+            figure_height_px = float(figure.canvas.get_width_height()[1])
+            if colorbar_bbox is not None and figure_height_px > 0.0:
+                footer_y = max(
+                    footer_y,
+                    (colorbar_bbox.y0 - 24.0) / figure_height_px,
+                )
+        footer_artist = figure.text(
             0.5,
-            0.012,
+            footer_y,
             footer_text,
             ha="center",
             va="bottom",
@@ -2419,8 +2573,46 @@ def render_map(
             color="#52616b",
         )
     output_path.parent.mkdir(parents=True, exist_ok=True)
+    crop_bottom_to_legend = bool(
+        product_spec.get("crop_bottom_to_legend", is_snowfall)
+    )
+    crop_bottom_px = None
+    if crop_bottom_to_legend:
+        # Draw once so Matplotlib resolves the tick-label extents.  The saved
+        # source map is then cropped only below the lowest relevant artist;
+        # the top/header and all legend labels remain unchanged.
+        figure.canvas.draw()
+        renderer = figure.canvas.get_renderer()
+        bottom_boxes = [colorbar.ax.get_tightbbox(renderer)]
+        if footer_artist is not None:
+            bottom_boxes.append(footer_artist.get_window_extent(renderer=renderer))
+        bottom_y = min(box.y0 for box in bottom_boxes if box is not None)
+        padding_px = float(product_spec.get("crop_bottom_padding_px", 10.0))
+        if not math.isfinite(padding_px) or padding_px < 0.0:
+            raise CFSv2Error("crop_bottom_padding_px must be a finite non-negative number")
+        figure_height_px = float(figure.canvas.get_width_height()[1])
+        crop_bottom_px = max(
+            1,
+            min(
+                int(round(figure_height_px)),
+                int(math.ceil(figure_height_px - bottom_y + padding_px)),
+            ),
+        )
     figure.savefig(output_path, dpi=120, facecolor=figure.get_facecolor())
     plt.close(figure)
+    if crop_bottom_px is not None:
+        from PIL import Image
+
+        temporary_path = output_path.with_name(
+            output_path.stem + ".crop.tmp" + output_path.suffix
+        )
+        with Image.open(output_path) as saved:
+            cropped = saved.crop((0, 0, saved.width, min(saved.height, crop_bottom_px)))
+            if output_path.suffix.lower() in {".jpg", ".jpeg"}:
+                cropped.save(temporary_path, format="JPEG", quality=95, subsampling=0)
+            else:
+                cropped.save(temporary_path)
+        temporary_path.replace(output_path)
 
 
 def relative_path(path: Path, repo_root: Path) -> str:
@@ -2438,6 +2630,7 @@ def manifest_product_key(run: dict) -> str:
         return str(product)
     return {
         "z500_anomaly": PRODUCT_HEIGHT_ANOMALY,
+        "z500_anomaly_nh": PRODUCT_HEIGHT_ANOMALY_NH,
         "z500": PRODUCT_HEIGHT_ABSOLUTE,
         "t2m_anomaly": PRODUCT_2M_TEMPERATURE_ANOMALY,
         "mslp_anomaly": PRODUCT_MSLP_ANOMALY,
@@ -2484,15 +2677,19 @@ def write_manifest(
             existing = json.loads(existing_path.read_text(encoding="utf-8"))
             if isinstance(existing, dict) and isinstance(existing.get("runs"), list):
                 payload.update({key: existing[key] for key in ("schema_version", "kind", "source", "source_url") if key in existing})
-                payload["runs"].extend(existing["runs"])
+                payload["runs"].extend(
+                    run for run in existing["runs"]
+                    if isinstance(run, dict) and not is_retired_product(run.get("product"))
+                )
         except (OSError, ValueError) as exc:
             raise CFSv2Error(f"could not read existing CFSv2 manifest {existing_path}: {exc}") from exc
     payload["generated_utc"] = iso_utc(dt.datetime.now(dt.timezone.utc))
     unique_runs = {}
     for run in payload["runs"]:
-        if isinstance(run, dict) and run.get("id"):
+        if isinstance(run, dict) and run.get("id") and not is_retired_product(run.get("product")):
             unique_runs[run["id"]] = run
-    unique_runs[run_entry["id"]] = run_entry
+    if not is_retired_product(run_entry.get("product")):
+        unique_runs[run_entry["id"]] = run_entry
     sorted_runs = list(unique_runs.values())
     sorted_runs.sort(
         key=lambda item: (
@@ -2655,7 +2852,7 @@ def run(args: argparse.Namespace) -> int:
         "status": "planned",
         "targets": [],
     }
-    common_reference_enabled = bool(common_reference_dir or args.common_reference_url) and product_name in HEIGHT_ANOMALY_PRODUCTS
+    common_reference_enabled = bool(common_reference_dir or args.common_reference_url) and product_name == PRODUCT_HEIGHT_ANOMALY
     if common_reference_enabled:
         run_entry["comparison_reference"] = {
             "id": "common_1991_2020",
@@ -2836,7 +3033,7 @@ def run(args: argparse.Namespace) -> int:
                 product_spec=product,
             )
             target_entry["image"] = relative_path(output_path, repo_root)
-            if product_name in HEIGHT_ANOMALY_PRODUCTS:
+            if product_name == PRODUCT_HEIGHT_ANOMALY:
                 numeric_grid_path = output_dir / init / f"cfsv2_{product['file_token']}_{target}.csv.gz"
                 write_grid_state(anomaly_grid, numeric_grid_path)
                 target_entry["numeric_grid"] = relative_path(numeric_grid_path, repo_root)
@@ -3055,7 +3252,7 @@ def run(args: argparse.Namespace) -> int:
                 product_spec=product,
             )
             seasonal_entry["image"] = relative_path(output_path, repo_root)
-            if product_name in HEIGHT_ANOMALY_PRODUCTS:
+            if product_name == PRODUCT_HEIGHT_ANOMALY:
                 numeric_grid_path = output_dir / init / f"cfsv2_{product['file_token']}_{first_target}-{last_target}.csv.gz"
                 write_grid_state(seasonal_grid, numeric_grid_path)
                 seasonal_entry["numeric_grid"] = relative_path(numeric_grid_path, repo_root)
@@ -3184,3 +3381,4 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+

@@ -128,8 +128,6 @@ def main() -> int:
         "MODEL_SCHEDULE_FALLBACKS",
         "function scheduleFor(modelKey)",
         "function availabilityScheduleState(modelKey",
-        "Last run (UTC)",
-        "Next update (ET)",
         "Official timing",
         "availability-group-row",
         "schedule-overdue",
@@ -336,5 +334,6 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
 
 

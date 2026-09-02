@@ -10,7 +10,10 @@ from typing import Any, Iterable
 
 from PIL import Image, ImageDraw, ImageFont, ImageOps
 
-from seasonal_products import is_retired_product
+try:
+    from seasonal_products import is_retired_product
+except ModuleNotFoundError:  # Imported as ``scripts.build_seasonal_share_images`` in tests.
+    from scripts.seasonal_products import is_retired_product
 
 
 IMAGE_SUFFIXES = frozenset({".jpg", ".jpeg", ".png", ".webp"})
@@ -51,6 +54,21 @@ def iter_image_values(value: Any) -> Iterable[Any]:
             yield from iter_image_values(nested)
 
 
+def iter_manifest_image_values(manifest: Any) -> Iterable[Any]:
+    """Yield image references while excluding retired seasonal products."""
+
+    if isinstance(manifest, dict) and isinstance(manifest.get("runs"), list):
+        for key, nested in manifest.items():
+            if key != "runs":
+                yield from iter_image_values(nested)
+        for run in manifest["runs"]:
+            if isinstance(run, dict) and is_retired_product(run.get("product")):
+                continue
+            yield from iter_image_values(run)
+        return
+    yield from iter_image_values(manifest)
+
+
 def load_share_assets(site_root: Path) -> set[PurePosixPath]:
     manifest_paths = set(site_root.glob("*_manifest.json"))
     manifest_paths.update((site_root / "seasonal").glob("*_manifest.json"))
@@ -59,19 +77,10 @@ def load_share_assets(site_root: Path) -> set[PurePosixPath]:
         if manifest_path.name == "runs_manifest.json":
             continue
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-        for key, value in manifest.items():
-            if key == "runs" and isinstance(value, list):
-                values = (
-                    run for run in value
-                    if not isinstance(run, dict) or not is_retired_product(run.get("product"))
-                )
-                image_values = (image for run in values for image in iter_image_values(run))
-            else:
-                image_values = iter_image_values(value)
-            for image in image_values:
-                path = normalize_asset_path(image)
-                if path is not None:
-                    assets.add(path)
+        for value in iter_manifest_image_values(manifest):
+            path = normalize_asset_path(value)
+            if path is not None:
+                assets.add(path)
     return assets
 
 
@@ -185,3 +194,4 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+

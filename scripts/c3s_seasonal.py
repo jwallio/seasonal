@@ -28,19 +28,25 @@ from cfsv2_seasonal import (
     CONUS_STATE_NAMES,
     DEFAULT_REGION,
     Grid,
-    NORTHERN_HEMISPHERE_REGION,
+    SNOWFALL_ANOMALY_MAX_IN,
+    SNOWFALL_ANOMALY_MIN_IN,
+    SNOWFALL_ANOMALY_PALETTE,
+    SNOWFALL_ANOMALY_TICK_DECIMALS,
+    SNOWFALL_ANOMALY_TICK_FORMAT,
+    SNOWFALL_ANOMALY_TICKS,
+    SNOWFALL_MONTHLY_ANOMALY_MAX_IN,
+    SNOWFALL_MONTHLY_ANOMALY_MIN_IN,
+    SNOWFALL_MONTHLY_ANOMALY_PALETTE,
+    SNOWFALL_MONTHLY_ANOMALY_TICKS,
     TEMPERATURE_ANOMALY_MAX_C,
     TEMPERATURE_ANOMALY_MIN_C,
     TEMPERATURE_ANOMALY_PALETTE,
     TEMPERATURE_ANOMALY_TICKS,
     ensure_border_files,
     mean_grids,
+    NORTHERN_HEMISPHERE_REGION,
     relative_path,
     render_map,
-    SWE_ANOMALY_MAX_IN,
-    SWE_ANOMALY_MIN_IN,
-    SWE_ANOMALY_PALETTE,
-    SWE_ANOMALY_TICKS,
     sum_grids,
 )
 from seas5_seasonal import grid_from_grib
@@ -57,9 +63,6 @@ SINGLE_SOURCE_URL = "https://cds.climate.copernicus.eu/datasets/seasonal-postpro
 LICENSE_URL = "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-pressure-levels?tab=download#manage-licences"
 NORTH_AMERICA_AREA = [90.0, -170.0, 15.0, 0.0]
 NORTHERN_HEMISPHERE_AREA = [90.0, -180.0, 0.0, 180.0]
-SNOWFALL_ANOMALY_MIN_IN = -0.8
-SNOWFALL_ANOMALY_MAX_IN = 0.8
-SNOWFALL_ANOMALY_TICKS = [round(SNOWFALL_ANOMALY_MIN_IN + 0.1 * i, 1) for i in range(17)]
 CONUS_AREA = [60.0, -135.0, 20.0, -55.0]
 GEOPOTENTIAL_GRAVITY = 9.80665
 M_TO_INCH = 1000.0 / 25.4
@@ -132,7 +135,14 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "height_contours": False, "region": CONUS_PRECIP_REGION,
         "monthly_reducer": "total", "seasonal_reducer": "sum",
         "anomaly_min": SNOWFALL_ANOMALY_MIN_IN, "anomaly_max": SNOWFALL_ANOMALY_MAX_IN,
-        "anomaly_ticks": SNOWFALL_ANOMALY_TICKS, "anomaly_palette": SWE_ANOMALY_PALETTE,
+        "anomaly_ticks": SNOWFALL_ANOMALY_TICKS, "anomaly_palette": SNOWFALL_ANOMALY_PALETTE,
+        "anomaly_tick_decimals": SNOWFALL_ANOMALY_TICK_DECIMALS,
+        "anomaly_tick_format": SNOWFALL_ANOMALY_TICK_FORMAT,
+        "monthly_anomaly_min": SNOWFALL_MONTHLY_ANOMALY_MIN_IN,
+        "monthly_anomaly_max": SNOWFALL_MONTHLY_ANOMALY_MAX_IN,
+        "monthly_anomaly_ticks": SNOWFALL_MONTHLY_ANOMALY_TICKS,
+        "monthly_anomaly_palette": SNOWFALL_MONTHLY_ANOMALY_PALETTE,
+        "monthly_anomaly_endpoint_labels": {"minimum": "≤−2.0", "maximum": "≥+2.0"},
         "cds_dataset": SINGLE_DATASET,
         "cds_variable": "snowfall_anomalous_rate_of_accumulation",
     },
@@ -145,6 +155,7 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "cds_dataset": SINGLE_DATASET, "cds_variable": "mean_sea_level_pressure_anomaly",
     },
 }
+
 
 PRODUCT_SPECS["500mb_height_anomaly_nh"] = {
     **PRODUCT_SPECS["500mb_height_anomaly"],
@@ -378,7 +389,7 @@ def product_spec(product: str, label: str, *, multisystem: bool = False) -> dict
     detail = (
         "Height contours in dam"
         if base["height_contours"]
-        else "Official snowfall departure  •  LWE  •  CONUS  •  clipped at \u00b10.8 in"
+        else "Official snowfall departure  •  LWE  •  CONUS  •  {snowfall_scale_label}"
         if product == "snowfall_anomaly"
         else f"{base['units']} anomaly"
     )
@@ -394,7 +405,7 @@ def product_spec(product: str, label: str, *, multisystem: bool = False) -> dict
                 "domain_frame_padding_fraction": 0.012,
                 "mask_states": list(CONUS_STATE_NAMES),
                 "border_files": ("us-states.geojson",),
-                "anomaly_endpoint_labels": {"minimum": "\u2264\u22120.8", "maximum": "\u2265+0.8"},
+                "anomaly_endpoint_labels": {"minimum": "\u2264\u22124.0", "maximum": "\u2265+4.0"},
             }
         )
     return base
@@ -411,12 +422,13 @@ def render_target(
     height: Grid | None,
     ensemble_label: str,
     period: str = "",
+    seasonal: bool = False,
 ) -> None:
     render_map(
         grid, init, target, lead, list(range(max(1, int(str(lead).split("–")[0])))), output,
         anomaly=True, baseline_label="C3S native postprocessed anomaly", border_paths=borders,
         period_label=period, height_grid=height, ensemble_label=ensemble_label,
-        product_spec=product,
+        product_spec=product, seasonal=seasonal,
     )
 
 
@@ -536,7 +548,7 @@ def build_run(
             require_quality_control(target_entry["quality_control"], C3SError)
             seasonal_height = combine([lead_heights[lead] for lead in seasonal_leads]) if product["height_contours"] and all(lead in lead_heights for lead in seasonal_leads) else None
             output = output_dir / init[:8] / f"c3s_{component}_{product['variable']}_{first_target}-{last_target}.jpg"
-            render_target(seasonal_grid, product, init, first_target, f"{first}–{last}", output, borders, seasonal_height, f"{members or len(centres)}-member mean" if not multisystem else f"{len(centres)}-system mean", period_label(first_target, last_target))
+            render_target(seasonal_grid, product, init, first_target, f"{first}–{last}", output, borders, seasonal_height, f"{members or len(centres)}-member mean" if not multisystem else f"{len(centres)}-system mean", period_label(first_target, last_target), seasonal=True)
             target_entry["image"] = relative_path(output, Path(__file__).resolve().parents[1])
             target_entry["status"] = "rendered"
         except Exception as exc:

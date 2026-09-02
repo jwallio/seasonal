@@ -72,8 +72,13 @@ def main() -> int:
     check((mslp_spec["anomaly_min"], mslp_spec["anomaly_max"]) == (-10.0, 10.0), "C3S and super-ensemble MSLP should use ±10 hPa")
     check(len(mslp_spec["anomaly_ticks"]) == len(mslp_spec["anomaly_palette"]) + 1, "C3S MSLP bounds must align with swatches")
     snowfall_spec = module.PRODUCT_SPECS["snowfall_anomaly"]
-    check((snowfall_spec["anomaly_min"], snowfall_spec["anomaly_max"]) == (-0.8, 0.8), "C3S snowfall should use a ±0.8 inch water-equivalent range")
-    check(snowfall_spec["anomaly_ticks"] == [round(-0.8 + 0.1 * i, 1) for i in range(17)], "C3S snowfall should use tenths-of-an-inch labelled bounds")
+    expected_snowfall_ticks = [-4.0, -3.5, -3.0, -2.5, -2.0, -1.75, -1.5, -1.25, -1.0, -0.75, -0.5, 0.0, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 2.5, 3.0, 3.5, 4.0]
+    check((snowfall_spec["anomaly_min"], snowfall_spec["anomaly_max"]) == (-4.0, 4.0), "C3S snowfall should use a nonlinear ±4.0 inch water-equivalent range")
+    check(snowfall_spec["anomaly_ticks"] == expected_snowfall_ticks, "C3S snowfall should use the approved nonlinear labelled breakpoints")
+    check(snowfall_spec["anomaly_tick_format"] == "signed_trimmed" and snowfall_spec["anomaly_tick_decimals"] == 2, "C3S snowfall labels should preserve quarter-inch breakpoints")
+    check((snowfall_spec["monthly_anomaly_min"], snowfall_spec["monthly_anomaly_max"]) == (-2.0, 2.0), "C3S monthly snowfall should use the tighter ±2.0 inch range")
+    check(len(snowfall_spec["monthly_anomaly_ticks"]) == len(snowfall_spec["monthly_anomaly_palette"]) + 1, "C3S monthly snowfall bounds must align with swatches")
+    check(snowfall_spec["monthly_anomaly_endpoint_labels"] == {"minimum": "≤−2.0", "maximum": "≥+2.0"}, "C3S monthly snowfall legend should mark clipped endpoints")
     check(snowfall_spec["region"] == module.CONUS_PRECIP_REGION, "C3S snowfall must use the CONUS crop")
     check(len(snowfall_spec["anomaly_ticks"]) == len(snowfall_spec["anomaly_palette"]) + 1, "C3S snowfall bounds must align with swatches")
     ukmo_snowfall = module.product_spec("snowfall_anomaly", "UK Met Office")
@@ -81,7 +86,7 @@ def main() -> int:
     check("(in LWE)" not in ukmo_snowfall["absolute_title"], "C3S snowfall absolute image title should omit the parenthetical LWE unit")
     check(ukmo_snowfall["map_domain"] == "land" and ukmo_snowfall["fit_frame_to_domain"], "C3S snowfall should use a fitted lower-48 land frame")
     check(len(ukmo_snowfall["mask_states"]) == 48, "C3S snowfall lower-48 mask should include all 48 states")
-    check(ukmo_snowfall["anomaly_endpoint_labels"] == {"minimum": "≤−0.8", "maximum": "≥+0.8"}, "C3S snowfall legend should mark clipped endpoints")
+    check(ukmo_snowfall["anomaly_endpoint_labels"] == {"minimum": "≤−4.0", "maximum": "≥+4.0"}, "C3S snowfall seasonal legend should mark clipped endpoints")
     converted = module.convert_product_grid(
         module.Grid([0.0], [0.0], [[0.001]]), snowfall_spec, "202601"
     )

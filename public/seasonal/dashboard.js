@@ -336,12 +336,6 @@ function ageLabel(value, now = new Date()) {
   if (hours < 48) return `${hours}h old`;
   return `${Math.floor(hours / 24)}d old`;
 }
-function durationLabel(milliseconds) {
-  const minutes = Math.max(1, Math.floor(Math.abs(milliseconds) / 60000));
-  if (minutes >= 1440) return `${Math.floor(minutes / 1440)}d`;
-  if (minutes >= 60) return `${Math.floor(minutes / 60)}h`;
-  return `${minutes}m`;
-}
 function hasUsableTarget(run) {
   return (Array.isArray(run?.targets) ? run.targets : []).some(target =>
     !['failed', 'error'].includes(String(target?.status || '').toLowerCase()) && Boolean(target?.image));
@@ -713,8 +707,7 @@ function renderOverview() {
     const scheduleState = availabilityScheduleState(modelKey, lastRun);
     const row = document.createElement('tr');
     row.className = `availability-row availability-${scheduleState.key}`;
-    const heading = document.createElement('th'); heading.scope = 'row';
-    heading.className = 'overview-model-cell';
+    const heading = document.createElement('th'); heading.scope = 'row'; heading.className = 'overview-model-cell';
     const name = document.createElement('span'); name.className = 'overview-model'; name.textContent = model.label; heading.appendChild(name);
     const role = document.createElement('span'); role.className = 'overview-role'; role.textContent = MODEL_ROLE_LABELS[model.role] || pretty(model.role); heading.appendChild(role);
     row.appendChild(heading);
@@ -1363,4 +1356,5 @@ loadDashboardData().then(() => {
   if (!modelStates[selection.model].manifest) selection.model = Object.keys(MODEL_CONFIG).find(key => modelStates[key].manifest) || selection.model;
   setView(selection.view);
 });
+
 

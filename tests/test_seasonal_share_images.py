@@ -10,7 +10,6 @@ from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-sys.path.insert(0, str(ROOT / "scripts"))
 
 from scripts.build_seasonal_share_images import (
     BRAND_BACKGROUND,
@@ -59,15 +58,27 @@ def main() -> int:
         site = Path(temporary)
         native = site / "seasonal/cfsv2/run/map.jpg"
         analog = site / "seasonal/analog_products/model/map.png"
+        retired = site / "seasonal/cfsv2/run/retired-sst.jpg"
         write_image(native, (120, 90), "navy", "JPEG")
         write_image(analog, (100, 80), "white", "PNG")
+        write_image(retired, (90, 70), "red", "JPEG")
         write_manifest(
             site / "seasonal/cfsv2_manifest.json",
             ["public/seasonal/cfsv2/run/map.jpg", "analog_products/model/map.png"],
         )
+        manifest_path = site / "seasonal/cfsv2_manifest.json"
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        manifest["runs"].append(
+            {
+                "product": "sea_surface_temperature_anomaly",
+                "targets": [{"image": "public/seasonal/cfsv2/run/retired-sst.jpg"}],
+            }
+        )
+        manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
 
         first = build_share_images(site)
         check(first["created"] == 2 and first["missing"] == 0, "expected two branded share images")
+        check(not (site / "seasonal/share/cfsv2/run/retired-sst.jpg").exists(), "retired SST assets must not receive branded derivatives")
         native_share = site / "seasonal/share/cfsv2/run/map.jpg"
         analog_share = site / "seasonal/share/analog_products/model/map.png"
         check(native_share.is_file() and analog_share.is_file(), "branded images should use deterministic paths")
@@ -87,29 +98,10 @@ def main() -> int:
         check(summary["created"] == 1, "flat Pages output should produce one share image")
         check((site / "share/cfsv2/run/map.jpg").is_file(), "flat Pages share path changed")
 
-    with tempfile.TemporaryDirectory() as temporary:
-        site = Path(temporary)
-        retained = site / "seasonal/cfsv2/run/map.jpg"
-        retired = site / "seasonal/cfsv2/run/sst-map.jpg"
-        write_image(retained, (80, 80), "navy", "JPEG")
-        write_image(retired, (80, 80), "red", "JPEG")
-        (site / "seasonal").mkdir(exist_ok=True)
-        (site / "seasonal/cfsv2_manifest.json").write_text(
-            json.dumps({
-                "runs": [
-                    {"product": "sea_surface_temperature_anomaly", "targets": [{"image": "seasonal/cfsv2/run/sst-map.jpg"}]},
-                    {"product": "2m_temperature_anomaly", "targets": [{"image": "seasonal/cfsv2/run/map.jpg"}]},
-                ],
-            }),
-            encoding="utf-8",
-        )
-        summary = build_share_images(site)
-        check(summary["created"] == 1, "retired SST runs must not create branded share images")
-        check(not (site / "seasonal/share/cfsv2/run/sst-map.jpg").exists(), "retired SST share image was generated")
-
     print("SEASONAL SHARE IMAGE CONTRACT OK: branded, uncropped nested and flat derivatives")
     return 0
 
 
 if __name__ == "__main__":
     raise SystemExit(main())
+

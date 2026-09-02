@@ -167,7 +167,7 @@ def main() -> int:
     check("title_box = title_text.get_window_extent" in adapter, "header should prevent title/valid overlap")
     check("available_title_width" in adapter, "header should fit long valid-period labels")
     check("header_summary" in adapter and "suppress_header_detail" in adapter, "product headers should support concise subtitles")
-    check('pad=1.8' in adapter, "colorbar labels should sit close to the scale")
+    check('pad=1.2 if dense_tick_labels else 1.8' in adapter, "dense snowfall colorbar labels should sit close to the scale")
     check('width=0.85' in adapter, "colorbar tick marks should remain legible")
     check("DEFAULT_REGION = (-160.0, -10.0, 22.0, 85.0)" in adapter, "seasonal graphic should use the centered North America and Greenland region")
     check("PROJECTED_X_SHIFT_FRACTION = 0.035" in adapter, "seasonal graphic should shift the projected window to center the CONUS")
@@ -454,3 +454,4 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+

@@ -19,6 +19,7 @@ on:
           - 850mb_temperature_anomaly
           - 2m_temperature_anomaly
           - precipitation_anomaly
+          - snowfall_anomaly
           - mslp_anomaly
           - sea_surface_height_anomaly
       init:
@@ -61,6 +62,7 @@ jobs:
       SEASONAL_WINDOW: ${{ inputs.seasonal_window || '4,5,6' }}
       CLIMO_START: ${{ inputs.climo_start || '1991' }}
       CLIMO_END: ${{ inputs.climo_end || '2020' }}
+      CANSIPS_WGRIB2: ""
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -73,13 +75,13 @@ jobs:
           cache-dependency-path: requirements.txt
 
       - name: Install CanSIPS rendering dependencies
-        run: python -m pip install --upgrade requests numpy matplotlib Pillow
+        run: python -m pip install --upgrade requests numpy matplotlib Pillow xarray cfgrib eccodes
 
       - name: Restore CanSIPS decoded-grid cache
         uses: actions/cache@v4
         with:
           path: .cache/cansips
-          key: cansips-${{ runner.os }}-${{ env.CANSIPS_INIT }}-${{ env.CANSIPS_PRODUCT }}-v1
+          key: cansips-${{ runner.os }}-${{ env.CANSIPS_INIT }}-${{ env.CANSIPS_PRODUCT }}-v2
           restore-keys: |
             cansips-${{ runner.os }}-${{ env.CANSIPS_INIT }}-${{ env.CANSIPS_PRODUCT }}-
             cansips-${{ runner.os }}-
@@ -105,6 +107,7 @@ jobs:
           fi
 
       - name: Build wgrib2
+        if: env.CANSIPS_PRODUCT != 'snowfall_anomaly'
         shell: bash
         run: |
           set -euo pipefail

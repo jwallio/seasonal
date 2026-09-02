@@ -49,7 +49,8 @@ The CDS anomaly datasets are already bias-adjusted monthly ensemble-mean
 anomalies. WN2 therefore does not subtract a second local hindcast
 climatology. Geopotential is divided by standard gravity (`9.80665 m s⁻²`);
 precipitation and snowfall anomaly rates are multiplied by the actual seconds
-in the target month and converted from metres to inches.
+in the target month and converted from metres to inches. Snowfall uses a
+nonlinear ±2.0-inch monthly display range and ±4.0-inch seasonal/DJF range.
 
 The 500-mb anomaly fill uses the shared seasonal -100 to +100 m range with
 10 m intervals, matching the other verified 500-mb model maps and preserving

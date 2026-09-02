@@ -45,20 +45,27 @@ The common comparison suite includes:
 - CONUS snowfall liquid-water-equivalent departures
 - Mean sea-level pressure anomalies
 
-The 500-mb height field keeps its established North America view and also has
-an optional Northern Hemisphere view. Other seasonal map fields use a CONUS
-frame. Additional provider-specific products include snow depth, absolute
-fields, sea-surface height, 200-mb fields, probability categories, and other
-native parameters where the source supports them.
+Additional provider-specific products include snow depth, absolute fields,
+sea-surface height, 200-mb fields, probability categories, and other native
+parameters where the source supports them.
 
 Shared comparison conventions include fixed cross-provider scales for 500-mb
 height and temperature. Precipitation is rendered in accumulated inches.
 Snowfall maps from C3S and SEAS5 use native snowfall accumulation rates,
 converted to inches of liquid-water equivalent—not snow depth—and provide
-CONUS monthly totals and DJF three-month sums. Their display scale uses
-tenths-of-an-inch bins from -0.8 to +0.8 inches to resolve the smaller LWE
-signal. Models without a native snowfall accumulation field remain explicitly
-not applicable.
+CONUS monthly totals and DJF three-month sums. CanSIPS v3 adds a transparent
+derived estimate from its paired 2-m temperature and precipitation members;
+the super ensemble can include that CanSIPS-derived family vote alongside
+native snowfall fields. CanSIPS also uses the paired 850-hPa temperature as a
+warm-layer gate with its 2-m temperature. Monthly snowfall maps use nonlinear
+bins from -2.0 to +2.0 inches, while seasonal/DJF maps use -4.0 to +4.0
+inches—finer near zero and wider in the tails—to reduce clipping while
+preserving the smaller LWE signal. Models without a
+native or explicitly derived snowfall field remain explicitly not applicable.
+
+The established 500-mb map retains its North America framing, with a separate
+Northern Hemisphere 500-mb view available where the source provides 500-mb
+heights. Other seasonal map fields use a CONUS frame.
 
 ## Historical analog guidance
 
@@ -213,3 +220,4 @@ definitions, and conversion notes in its manifests and documentation. Source
 data remains subject to each provider's terms and licences. Generated maps,
 analysis logic, composites, metadata, and site presentation should not be
 redistributed or used to create a competing service without permission.
+
