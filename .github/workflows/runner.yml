@@ -4,6 +4,13 @@ on:
   push:
     branches:
       - main
+    # Seasonal workflow, script, documentation, and test changes do not need
+    # a full WeatherNext render. Keep the automatic render for WN2 source or
+    # published-view changes only.
+    paths:
+      - main.py
+      - requirements.txt
+      - public/**
   workflow_dispatch:
     inputs:
       run_target:
@@ -84,6 +91,10 @@ on:
 
 permissions:
   contents: write
+
+concurrency:
+  group: weathernext-${{ github.event_name == 'push' && github.ref || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'push' }}
 
 jobs:
   run-default:

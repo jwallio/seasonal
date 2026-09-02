@@ -117,6 +117,20 @@ supported. Other model workers continue to use the publisher's `workflow_run`
 trigger. A scheduled GitHub event can still be delayed during platform load;
 the times above are release-aligned targets, not provider SLAs.
 
+The workflow layer is intentionally split into three stages: a small planner
+selects the requested product list, render jobs work in bounded parallel
+batches, and one merge job creates the canonical model artifact for the Pages
+publisher. The C3S and super-ensemble planners emit the matrix dynamically so
+manual single-product repairs do not start seven jobs, while scheduled `all`
+runs still cover the complete suite. The shared
+`.github/actions/setup-wgrib2` action restores or builds the decoder once and
+the super-ensemble prepares it before its product matrix starts, avoiding a
+cold-build in every parallel job. Monthly workers use initialization-scoped
+cancellation groups, and the WeatherNext push wrapper is path-scoped so
+seasonal-only workflow, script, documentation, or test changes do not trigger
+a full WeatherNext render. `seasonal-contracts.yml` compiles the Python layer
+and runs the repository contracts on workflow and adapter changes.
+
 Each Pages validation also writes a per-model/per-parameter health report to
 `seasonal/catalog.json` and the GitHub job summary. It distinguishes healthy,
 aging, stale, partial, failed, missing, non-comparable, and intentional

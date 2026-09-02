@@ -51,6 +51,12 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  # A second dispatch for the same monthly initialization supersedes the
+  # earlier attempt instead of competing for the same Datamart files.
+  group: seasonal-cansips-${{ inputs.init || 'latest' }}
+  cancel-in-progress: true
+
 jobs:
   render:
     runs-on: ubuntu-latest
@@ -106,51 +112,10 @@ jobs:
             fi
           fi
 
-      - name: Restore wgrib2 tool cache
-        id: wgrib2-cache
-        if: env.CANSIPS_PRODUCT != 'snowfall_anomaly'
-        uses: actions/cache/restore@v4
+      - name: Set up wgrib2
+        uses: ./.github/actions/setup-wgrib2
         with:
-          path: ~/.cache/wallcloud/wgrib2
-          key: wgrib2-${{ runner.os }}-v1
-
-      - name: Build wgrib2 from source when needed
-        if: ${{ steps.wgrib2-cache.outputs.cache-hit != 'true' && env.CANSIPS_PRODUCT != 'snowfall_anomaly' }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          sudo apt-get update
-          sudo apt-get install -y build-essential gfortran libopenjp2-7-dev libpng-dev zlib1g-dev
-          source_dir="$RUNNER_TEMP/wgrib2-src"
-          install_dir="$HOME/.cache/wallcloud/wgrib2"
-          mkdir -p "$source_dir" "$install_dir"
-          curl -fsSL "https://ftp.cpc.ncep.noaa.gov/wd51we/wgrib2/wgrib2.tgz" -o "$RUNNER_TEMP/wgrib2.tgz"
-          tar -xzf "$RUNNER_TEMP/wgrib2.tgz" -C "$source_dir"
-          makefile_dir="$source_dir/grib2"
-          test -f "$makefile_dir/makefile"
-          export CC=gcc
-          export FC=gfortran
-          make -C "$makefile_dir" -j"$(nproc)"
-          wgrib2_bin="$makefile_dir/wgrib2/wgrib2"
-          test -x "$wgrib2_bin"
-          cp "$wgrib2_bin" "$install_dir/wgrib2"
-          chmod +x "$install_dir/wgrib2"
-
-      - name: Select wgrib2 tool
-        if: env.CANSIPS_PRODUCT != 'snowfall_anomaly'
-        shell: bash
-        run: |
-          set -euo pipefail
-          test -x "$HOME/.cache/wallcloud/wgrib2/wgrib2"
-          echo "CANSIPS_WGRIB2=$HOME/.cache/wallcloud/wgrib2/wgrib2" >> "$GITHUB_ENV"
-
-      - name: Save wgrib2 tool cache
-        if: ${{ success() && steps.wgrib2-cache.outputs.cache-hit != 'true' && env.CANSIPS_PRODUCT != 'snowfall_anomaly' }}
-        uses: actions/cache/save@v4
-        continue-on-error: true
-        with:
-          path: ~/.cache/wallcloud/wgrib2
-          key: wgrib2-${{ runner.os }}-v1
+          required: ${{ env.CANSIPS_PRODUCT != 'snowfall_anomaly' }}
 
       - name: Render CanSIPS v3 products
         run: |

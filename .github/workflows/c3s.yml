@@ -58,22 +58,42 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  plan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      products: ${{ steps.select.outputs.products }}
+    steps:
+      - name: Select requested products
+        id: select
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          REQUESTED_PRODUCT: ${{ inputs.product }}
+        run: |
+          set -euo pipefail
+          all_products='["500mb_height_anomaly","500mb_height_anomaly_nh","850mb_temperature_anomaly","2m_temperature_anomaly","precipitation_anomaly","snowfall_anomaly","mslp_anomaly"]'
+          if [[ "$EVENT_NAME" == "schedule" || "$REQUESTED_PRODUCT" == "all" ]]; then
+            products="$all_products"
+          elif [[ -z "$REQUESTED_PRODUCT" ]]; then
+            products='["500mb_height_anomaly"]'
+          else
+            case "$REQUESTED_PRODUCT" in
+              500mb_height_anomaly|500mb_height_anomaly_nh|850mb_temperature_anomaly|2m_temperature_anomaly|precipitation_anomaly|snowfall_anomaly|mslp_anomaly) products="[\"$REQUESTED_PRODUCT\"]" ;;
+              *) echo "::error::Unsupported C3S product: $REQUESTED_PRODUCT"; exit 1 ;;
+            esac
+          fi
+          echo "products=$products" >> "$GITHUB_OUTPUT"
+
   render:
-    if: ${{ inputs.product == 'all' || inputs.product == matrix.product || (inputs.product == '' && matrix.product == '500mb_height_anomaly') }}
+    needs: plan
     strategy:
       fail-fast: false
       # Four independent product requests materially reduce wall-clock time
       # while keeping CDS request concurrency below an account-wide stampede.
       max-parallel: 4
       matrix:
-        product:
-          - 500mb_height_anomaly
-          - 500mb_height_anomaly_nh
-          - 850mb_temperature_anomaly
-          - 2m_temperature_anomaly
-          - precipitation_anomaly
-          - snowfall_anomaly
-          - mslp_anomaly
+        product: ${{ fromJSON(needs.plan.outputs.products) }}
     runs-on: ubuntu-latest
     timeout-minutes: 180
     env:

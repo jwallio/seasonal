@@ -49,20 +49,52 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  plan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      products: ${{ steps.select.outputs.products }}
+    steps:
+      - name: Select requested products
+        id: select
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          REQUESTED_PRODUCT: ${{ inputs.product }}
+        run: |
+          set -euo pipefail
+          all_products='["500mb_height_anomaly","500mb_height_anomaly_nh","850mb_temperature_anomaly","2m_temperature_anomaly","precipitation_anomaly","snowfall_anomaly","mslp_anomaly"]'
+          if [[ "$EVENT_NAME" == "schedule" || "$REQUESTED_PRODUCT" == "all" ]]; then
+            products="$all_products"
+          elif [[ -z "$REQUESTED_PRODUCT" ]]; then
+            products='["500mb_height_anomaly"]'
+          else
+            case "$REQUESTED_PRODUCT" in
+              500mb_height_anomaly|500mb_height_anomaly_nh|850mb_temperature_anomaly|2m_temperature_anomaly|precipitation_anomaly|snowfall_anomaly|mslp_anomaly) products="[\"$REQUESTED_PRODUCT\"]" ;;
+              *) echo "::error::Unsupported super-ensemble product: $REQUESTED_PRODUCT"; exit 1 ;;
+            esac
+          fi
+          echo "products=$products" >> "$GITHUB_OUTPUT"
+
+  prepare-tools:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up wgrib2 once for the product matrix
+        uses: ./.github/actions/setup-wgrib2
+
   render:
-    if: ${{ github.event_name == 'schedule' || inputs.product == 'all' || inputs.product == matrix.product || (inputs.product == '' && matrix.product == '500mb_height_anomaly') }}
+    needs:
+      - plan
+      - prepare-tools
     strategy:
       fail-fast: false
       max-parallel: 4
       matrix:
-        product:
-          - 500mb_height_anomaly
-          - 500mb_height_anomaly_nh
-          - 850mb_temperature_anomaly
-          - 2m_temperature_anomaly
-          - precipitation_anomaly
-          - snowfall_anomaly
-          - mslp_anomaly
+        product: ${{ fromJSON(needs.plan.outputs.products) }}
     runs-on: ubuntu-latest
     timeout-minutes: 180
     env:
@@ -184,50 +216,11 @@ jobs:
             fi
           fi
 
-      - name: Restore wgrib2 tool cache
-        id: wgrib2-cache
-        uses: actions/cache/restore@v4
+      - name: Restore wgrib2 for this product
+        uses: ./.github/actions/setup-wgrib2
         with:
-          path: ~/.cache/wallcloud/wgrib2
-          key: wgrib2-${{ runner.os }}-v1
-
-      - name: Build wgrib2 from source when needed
-        if: ${{ steps.wgrib2-cache.outputs.cache-hit != 'true' && (env.SUPER_PRODUCT != 'snowfall_anomaly' || github.event_name == 'schedule') }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          sudo apt-get update
-          sudo apt-get install -y build-essential gfortran libopenjp2-7-dev libpng-dev zlib1g-dev
-          source_dir="$RUNNER_TEMP/wgrib2-src"
-          install_dir="$HOME/.cache/wallcloud/wgrib2"
-          mkdir -p "$source_dir" "$install_dir"
-          curl -fsSL "https://ftp.cpc.ncep.noaa.gov/wd51we/wgrib2/wgrib2.tgz" -o "$RUNNER_TEMP/wgrib2.tgz"
-          tar -xzf "$RUNNER_TEMP/wgrib2.tgz" -C "$source_dir"
-          makefile_dir="$source_dir/grib2"
-          test -f "$makefile_dir/makefile"
-          export CC=gcc
-          export FC=gfortran
-          make -C "$makefile_dir" -j"$(nproc)"
-          wgrib2_bin="$makefile_dir/wgrib2/wgrib2"
-          test -x "$wgrib2_bin"
-          cp "$wgrib2_bin" "$install_dir/wgrib2"
-          chmod +x "$install_dir/wgrib2"
-
-      - name: Select wgrib2 tool
-        if: ${{ env.SUPER_PRODUCT != 'snowfall_anomaly' || github.event_name == 'schedule' }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          test -x "$HOME/.cache/wallcloud/wgrib2/wgrib2"
-          echo "CANSIPS_WGRIB2=$HOME/.cache/wallcloud/wgrib2/wgrib2" >> "$GITHUB_ENV"
-
-      - name: Save wgrib2 tool cache
-        if: ${{ success() && steps.wgrib2-cache.outputs.cache-hit != 'true' && (env.SUPER_PRODUCT != 'snowfall_anomaly' || github.event_name == 'schedule') }}
-        uses: actions/cache/save@v4
-        continue-on-error: true
-        with:
-          path: ~/.cache/wallcloud/wgrib2
-          key: wgrib2-${{ runner.os }}-v1
+          required: ${{ env.SUPER_PRODUCT != 'snowfall_anomaly' || github.event_name == 'schedule' }}
+          build: "false"
 
       - name: Render product-scoped super ensemble
         shell: bash

@@ -45,7 +45,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: seasonal-jma
+  group: seasonal-jma-${{ inputs.init || 'latest' }}
   # A newer release-check dispatch supersedes an older delayed full-suite run.
   cancel-in-progress: true
 

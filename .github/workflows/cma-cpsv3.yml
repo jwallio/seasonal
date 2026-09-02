@@ -40,8 +40,9 @@ permissions:
   contents: read
 
 concurrency:
-  group: seasonal-cma-cpsv3-${{ github.ref }}
-  cancel-in-progress: false
+  # A newer dispatch for the same release month supersedes a delayed retry.
+  group: seasonal-cma-cpsv3-${{ inputs.init || 'latest' }}
+  cancel-in-progress: true
 
 jobs:
   render:
