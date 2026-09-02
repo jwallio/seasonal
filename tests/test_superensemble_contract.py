@@ -134,6 +134,8 @@ def main() -> int:
     for term in ("numeric_grid", "numeric_grid_format", "write_grid_state(anomaly", "csv.gz"):
         check(term in adapter_text, f"adapter is missing analog numeric-grid export term: {term}")
     check(adapter_text.count("write_grid_state(anomaly") == 2, "monthly and seasonal super-ensemble maps should both export numeric grids")
+    check("NOAA CFSv2 24-cycle rolling blend" in adapter_text, "super-ensemble should label the operational CFSv2 blend accurately")
+    check("--cfsv2-rolling-days 6" in workflow, "super-ensemble workflow should use the archive-safe CFSv2 window")
     for term in ("name: Deduplicated Seasonal Super Ensemble", "CDS_API_KEY", "Restore rolling CFSv2 state", "Restore CMA CPSv3 source cache", "--cma-cache-dir", "Restore NASA GEOS-S2S-3 numerical cache", "--geos-cache-dir", "cfsv2-rolling-", "superensemble-pages-", "30 20 22 * *", "SCHEDULED_SUPER_PRODUCT: all"):
         check(term in workflow, f"workflow is missing term: {term}")
     for term in ("Deduplicated Seasonal Super Ensemble", "superensemble_manifest.json", "incoming/superensemble"):

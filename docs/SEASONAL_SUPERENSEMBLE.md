@@ -11,7 +11,7 @@ weight after that source has formed its own ensemble mean. The current core is:
 
 - seven separable C3S systems: ECMWF, UKMO, Météo-France, DWD, CMCC, JMA,
   and BOM;
-- one NOAA CFSv2 family mean formed from the standalone 10-day, 40-cycle
+- one NOAA CFSv2 family mean formed from the standalone six-day, 24-cycle
   rolling initial-condition blend for 500-mb height, 2-m temperature,
   precipitation, and MSLP;
 - one ECCC CanSIPS v3 family mean, representing its GEM5.2-NEMO and CanESM5

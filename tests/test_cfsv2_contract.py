@@ -401,11 +401,15 @@ def main() -> int:
         check(term in workflow, f"workflow missing CFSv2 readiness term: {term}")
     check("--allow-partial-rolling" not in workflow, "scheduled CFSv2 workflow must not publish an incomplete rolling blend")
     check("SCHEDULED_CFSV2_PRODUCTS: 500mb_height_anomaly,500mb_height_anomaly_nh,2m_temperature_anomaly,mslp_anomaly,precipitation_anomaly" in workflow, "twice-daily workflow should refresh the complete core anomaly suite")
+    check('description: "Lagged initial-condition window; 6 means 24 cycles"' in workflow, "scheduled CFSv2 workflow should stay inside the live archive")
+    check("ROLLING_DAYS: ${{ inputs.rolling_days || '6' }}" in workflow, "scheduled CFSv2 workflow should default to six rolling days")
+    check("actions/cache/save@v4" in workflow and "if: always()" in workflow, "CFSv2 workflow should retain warmed rolling state after failed attempts")
     check('if [[ "${{ github.event_name }}" == "schedule" ]]' in workflow, "scheduled suite should remain distinct from manual single-product dispatch")
     for term in ("Restore published CFSv2 run history", "previous_manifest.json", "--previous-manifest", "--retain-runs 4"):
         check(term in workflow, f"workflow missing history-retention term: {term}")
     check("peaceiris/actions-gh-pages" not in workflow, "CFSv2 workflow must not publish Pages directly")
     check("peaceiris/actions-gh-pages" not in update_workflow, "WeatherNext workflow must not publish Pages directly")
+    check("|| 40" not in PAGE.read_text(encoding="utf-8"), "CFSv2 viewer must not hardcode a rolling cycle count")
     with tempfile.TemporaryDirectory() as temporary:
         cache_dir = Path(temporary)
         fallback_path = adapter_module.cached_calibration_path(cache_dir, "2026082306", 4, "pgbf")

@@ -76,7 +76,7 @@ CFSV2_STANDALONE_PRODUCTS = frozenset(
         "mslp_anomaly",
     }
 )
-CFSV2_MEMBER_KEY = "noaa_cfsv2_rolling40"
+CFSV2_MEMBER_KEY = "noaa_cfsv2_rolling"
 GEOS_MEMBER_KEY = "nasa_geos_s2s3"
 CMA_MEMBER_KEY = "cma_cpsv3"
 MEMBER_FOOTER_MAX_CHARS = 142
@@ -259,11 +259,11 @@ def canonical_members(product: str, *, include_cma: bool = False) -> list[Member
         members.append(
             MemberDefinition(
                 key=CFSV2_MEMBER_KEY,
-                label="NOAA CFSv2 40-cycle rolling blend",
+                label="NOAA CFSv2 24-cycle rolling blend",
                 source_package="NOAA CFSv2 NOMADS",
-                system="10-day lagged initial-condition blend",
+                system="6-day lagged initial-condition blend",
                 footer_label="NOAA CFSv2 rolling blend",
-                internal_members=40,
+                internal_members=24,
                 notes="One CFSv2-family vote; C3S NCEP and NMME CFSv2 copies are excluded",
             )
         )
@@ -1208,7 +1208,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--cfsv2-cache-dir", default=".cache/cfsv2")
     parser.add_argument("--cfsv2-rolling-state-dir", default=".cache/cfsv2/rolling")
     parser.add_argument("--cfsv2-anchor-init", default="latest", help="rolling CFSv2 anchor cycle or latest")
-    parser.add_argument("--cfsv2-rolling-days", type=int, default=10)
+    parser.add_argument("--cfsv2-rolling-days", type=int, default=6)
     parser.add_argument("--cfsv2-rolling-member", type=int, default=1)
     parser.add_argument("--nmme-cache-dir", default=".cache/nmme")
     parser.add_argument("--geos-cache-dir", default=".cache/geos-s2s3")

@@ -2725,7 +2725,12 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--lead-months", default="1,2,3", help="comma-separated target leads, usually 1,2,3")
     parser.add_argument("--seasonal-window", default="", help="optional comma-separated leads for an additional seasonal mean, e.g. 1,2,3")
     parser.add_argument("--members", default="1,2,3,4", help="comma-separated monthly_grib member directories")
-    parser.add_argument("--rolling-days", type=int, default=0, help="use a lagged initial-condition blend covering this many days; 10 gives CPC-style 40 cycles")
+    parser.add_argument(
+        "--rolling-days",
+        type=int,
+        default=0,
+        help="use a lagged initial-condition blend covering this many days; 6 gives an archive-safe 24 cycles and 10 gives CPC-style 40 cycles with retained state",
+    )
     parser.add_argument("--rolling-member", type=int, default=ROLLING_MEMBER_DEFAULT, help="monthly_grib member used for each rolling six-hourly cycle (default: 1)")
     parser.add_argument("--rolling-state-dir", default=".cache/cfsv2/rolling", help="retained decoded grids used after NOMADS rotates old cycles")
     parser.add_argument("--allow-partial-rolling", action="store_true", help="render with available rolling cycles when the requested window is incomplete")
