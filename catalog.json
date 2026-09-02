@@ -2,8 +2,8 @@
   "schema_version": 1,
   "registry_version": 1,
   "kind": "seasonal_dashboard_catalog",
-  "generated_utc": "2026-09-02T21:09:36Z",
-  "source_revision": "a974353e9b02f3368c2342016413dafecb5bcebf",
+  "generated_utc": "2026-09-02T22:35:06Z",
+  "source_revision": "6dd13526888727bb38a2a955e07492559ce419d4",
   "model_order": [
     "superensemble",
     "c3s",
@@ -15907,8 +15907,8 @@
           "reason": "Provider adapter publishes this comparison product."
         },
         "850mb_temperature_anomaly": {
-          "state": "unsupported",
-          "reason": "The standalone rolling CFSv2 adapter does not expose this field."
+          "state": "supported",
+          "reason": "Provider adapter publishes this comparison product."
         },
         "2m_temperature_anomaly": {
           "state": "supported",
@@ -15923,8 +15923,8 @@
           "reason": "Provider adapter publishes this comparison product."
         },
         "snowfall_anomaly": {
-          "state": "unsupported",
-          "reason": "The current seasonal adapter does not publish a native or explicitly derived snowfall accumulation field; snow-water equivalent or precipitation is not interchangeable with snowfall."
+          "state": "supported",
+          "reason": "CFSv2 derives member/cycle-level snowfall liquid-water equivalent from 2-m/850-hPa temperature and monthly precipitation using the season-appropriate Dai (2008) land phase curve (DJF for winter)."
         }
       },
       "schedule": {
@@ -21411,7 +21411,7 @@
           }
         }
       ],
-      "status": "online",
+      "status": "degraded",
       "schema_version": 1,
       "manifest_kind": "cfsv2_seasonal_manifest",
       "generated_utc": "2026-09-02T19:24:35Z",
@@ -21439,10 +21439,15 @@
           "retained_fallback": false
         },
         "850mb_temperature_anomaly": {
-          "state": "unsupported",
-          "reason": "The standalone rolling CFSv2 adapter does not expose this field.",
+          "state": "missing",
+          "reason": "No rendered target is currently published.",
           "available": false,
-          "comparable": false
+          "comparable": false,
+          "latest_init_utc": null,
+          "latest_run_id": null,
+          "latest_run_status": null,
+          "latest_run_init_utc": null,
+          "retained_fallback": false
         },
         "2m_temperature_anomaly": {
           "state": "available",
@@ -21471,10 +21476,15 @@
           "retained_fallback": false
         },
         "snowfall_anomaly": {
-          "state": "unsupported",
-          "reason": "The current seasonal adapter does not publish a native or explicitly derived snowfall accumulation field; snow-water equivalent or precipitation is not interchangeable with snowfall.",
+          "state": "missing",
+          "reason": "No rendered target is currently published.",
           "available": false,
-          "comparable": false
+          "comparable": false,
+          "latest_init_utc": null,
+          "latest_run_id": null,
+          "latest_run_status": null,
+          "latest_run_init_utc": null,
+          "retained_fallback": false
         },
         "mslp_anomaly": {
           "state": "available",
@@ -46567,7 +46577,7 @@
   },
   "health": {
     "status": "attention",
-    "generated_utc": "2026-09-02T21:09:36Z",
+    "generated_utc": "2026-09-02T22:35:06Z",
     "freshness_policy_days": {
       "default": {
         "fresh_days": 35,
@@ -46580,16 +46590,16 @@
     },
     "summary": {
       "surfaces": 60,
-      "attention_surfaces": 6,
+      "attention_surfaces": 8,
       "by_state": {
         "healthy": 42,
         "aging": 3,
         "stale": 0,
         "partial": 1,
         "failed": 0,
-        "missing": 1,
+        "missing": 3,
         "noncomparable": 1,
-        "not_applicable": 12
+        "not_applicable": 10
       }
     },
     "surfaces": [
@@ -47035,7 +47045,7 @@
         "comparable": true,
         "health_state": "healthy",
         "freshness": "fresh",
-        "age_days": 0.6,
+        "age_days": 0.7,
         "latest_status": "rendered",
         "latest_init_utc": "2026-09-02T06:00:00Z",
         "selected_init_utc": "2026-09-02T06:00:00Z",
@@ -47048,18 +47058,18 @@
         "model_label": "CFSv2",
         "product": "850mb_temperature_anomaly",
         "product_label": "850-mb Temperature Anomaly",
-        "surface_state": "unsupported",
+        "surface_state": "missing",
         "available": false,
         "comparable": false,
-        "health_state": "not_applicable",
-        "freshness": "not_applicable",
+        "health_state": "missing",
+        "freshness": "unknown",
         "age_days": null,
         "latest_status": null,
         "latest_init_utc": null,
         "selected_init_utc": null,
         "selected_run_id": null,
         "retained_fallback": false,
-        "reason": "The standalone rolling CFSv2 adapter does not expose this field."
+        "reason": "No rendered target is currently published."
       },
       {
         "model": "cfsv2",
@@ -47071,7 +47081,7 @@
         "comparable": true,
         "health_state": "aging",
         "freshness": "aging",
-        "age_days": 2.6,
+        "age_days": 2.7,
         "latest_status": "rendered",
         "latest_init_utc": "2026-08-31T06:00:00Z",
         "selected_init_utc": "2026-08-31T06:00:00Z",
@@ -47089,7 +47099,7 @@
         "comparable": true,
         "health_state": "aging",
         "freshness": "aging",
-        "age_days": 2.6,
+        "age_days": 2.7,
         "latest_status": "rendered",
         "latest_init_utc": "2026-08-31T06:00:00Z",
         "selected_init_utc": "2026-08-31T06:00:00Z",
@@ -47102,18 +47112,18 @@
         "model_label": "CFSv2",
         "product": "snowfall_anomaly",
         "product_label": "CONUS Snowfall Water-Equivalent Departure",
-        "surface_state": "unsupported",
+        "surface_state": "missing",
         "available": false,
         "comparable": false,
-        "health_state": "not_applicable",
-        "freshness": "not_applicable",
+        "health_state": "missing",
+        "freshness": "unknown",
         "age_days": null,
         "latest_status": null,
         "latest_init_utc": null,
         "selected_init_utc": null,
         "selected_run_id": null,
         "retained_fallback": false,
-        "reason": "The current seasonal adapter does not publish a native or explicitly derived snowfall accumulation field; snow-water equivalent or precipitation is not interchangeable with snowfall."
+        "reason": "No rendered target is currently published."
       },
       {
         "model": "cfsv2",
@@ -47125,7 +47135,7 @@
         "comparable": true,
         "health_state": "aging",
         "freshness": "aging",
-        "age_days": 2.6,
+        "age_days": 2.7,
         "latest_status": "rendered",
         "latest_init_utc": "2026-08-31T06:00:00Z",
         "selected_init_utc": "2026-08-31T06:00:00Z",
@@ -47732,6 +47742,24 @@
       {
         "model": "cfsv2",
         "model_label": "CFSv2",
+        "product": "850mb_temperature_anomaly",
+        "product_label": "850-mb Temperature Anomaly",
+        "surface_state": "missing",
+        "available": false,
+        "comparable": false,
+        "health_state": "missing",
+        "freshness": "unknown",
+        "age_days": null,
+        "latest_status": null,
+        "latest_init_utc": null,
+        "selected_init_utc": null,
+        "selected_run_id": null,
+        "retained_fallback": false,
+        "reason": "No rendered target is currently published."
+      },
+      {
+        "model": "cfsv2",
+        "model_label": "CFSv2",
         "product": "2m_temperature_anomaly",
         "product_label": "2-m Temperature Anomaly",
         "surface_state": "available",
@@ -47739,7 +47767,7 @@
         "comparable": true,
         "health_state": "aging",
         "freshness": "aging",
-        "age_days": 2.6,
+        "age_days": 2.7,
         "latest_status": "rendered",
         "latest_init_utc": "2026-08-31T06:00:00Z",
         "selected_init_utc": "2026-08-31T06:00:00Z",
@@ -47757,13 +47785,31 @@
         "comparable": true,
         "health_state": "aging",
         "freshness": "aging",
-        "age_days": 2.6,
+        "age_days": 2.7,
         "latest_status": "rendered",
         "latest_init_utc": "2026-08-31T06:00:00Z",
         "selected_init_utc": "2026-08-31T06:00:00Z",
         "selected_run_id": "cfsv2-2026083106-precipitation_anomaly",
         "retained_fallback": false,
         "reason": "Rendered target available."
+      },
+      {
+        "model": "cfsv2",
+        "model_label": "CFSv2",
+        "product": "snowfall_anomaly",
+        "product_label": "CONUS Snowfall Water-Equivalent Departure",
+        "surface_state": "missing",
+        "available": false,
+        "comparable": false,
+        "health_state": "missing",
+        "freshness": "unknown",
+        "age_days": null,
+        "latest_status": null,
+        "latest_init_utc": null,
+        "selected_init_utc": null,
+        "selected_run_id": null,
+        "retained_fallback": false,
+        "reason": "No rendered target is currently published."
       },
       {
         "model": "cfsv2",
@@ -47775,7 +47821,7 @@
         "comparable": true,
         "health_state": "aging",
         "freshness": "aging",
-        "age_days": 2.6,
+        "age_days": 2.7,
         "latest_status": "rendered",
         "latest_init_utc": "2026-08-31T06:00:00Z",
         "selected_init_utc": "2026-08-31T06:00:00Z",
@@ -47788,10 +47834,10 @@
   "summary": {
     "models_expected": 10,
     "models_online": 10,
-    "supported_surfaces": 48,
+    "supported_surfaces": 50,
     "available_surfaces": 47,
     "partial_surfaces": 1,
-    "intentional_unavailable_surfaces": 12
+    "intentional_unavailable_surfaces": 10
   },
   "validation": {
     "status": "passed",
