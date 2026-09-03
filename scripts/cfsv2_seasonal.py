@@ -2441,13 +2441,6 @@ def render_map(
     x_max -= projected_x_shift
     x_pad = max(0.01, (x_max - x_min) * 0.006)
     y_pad = max(0.01, (y_max - y_min) * 0.006)
-    projected_x_shift = (x_max - x_min) * float(
-        product_spec.get("projected_x_shift_fraction", PROJECTED_X_SHIFT_FRACTION)
-    )
-    x_min -= projected_x_shift
-    x_max -= projected_x_shift
-    x_pad = max(0.01, (x_max - x_min) * 0.006)
-    y_pad = max(0.01, (y_max - y_min) * 0.006)
 
     # Resample the full global field onto a regular projected canvas. Using
     # only the source cells inside the lon/lat box leaves the corners of a
