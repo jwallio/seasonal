@@ -2,7 +2,7 @@
   "schema_version": 1,
   "registry_version": 1,
   "kind": "seasonal_dashboard_catalog",
-  "generated_utc": "2026-09-03T12:30:38Z",
+  "generated_utc": "2026-09-03T12:55:45Z",
   "source_revision": "5d0883d001200873165fdeef82c864c89f68e58e",
   "model_order": [
     "superensemble",
@@ -15948,6 +15948,330 @@
       },
       "runs": [
         {
+          "id": "cfsv2-2026090300-precipitation_anomaly",
+          "model": "CFSv2",
+          "source": "NOAA CFSv2 NOMADS",
+          "source_url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/",
+          "product": "precipitation_anomaly",
+          "init_utc": "2026-09-03T00:00:00Z",
+          "status": "rendered",
+          "statistic": "ensemble_mean",
+          "aggregation": "6-day rolling initial-condition mean; 3-month seasonal total",
+          "ensemble_scope": "rolling_initial_conditions",
+          "ensemble_members": 24,
+          "field": "precipitation_anomaly",
+          "units": "in",
+          "raw_field": "PRATE:surface",
+          "raw_units": "kg m-2 s-1",
+          "baseline": {
+            "source": "NCEI CFS reforecast flux calibration climatology; 1982-2010",
+            "years": "1982-2010",
+            "required": true,
+            "url_root": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/",
+            "rolling_policy": "anchor_initialization"
+          },
+          "conversion": "PRATE multiplied by calendar-month seconds, converted from mm to inches",
+          "targets": [
+            {
+              "id": "cfsv2-202701-prate-anomaly-lead04",
+              "target_month": "202701",
+              "valid_start_utc": "2027-01-01T00:00:00Z",
+              "valid_end_utc": "2027-02-01T00:00:00Z",
+              "lead_month": 4,
+              "field": "precipitation_anomaly",
+              "units": "in",
+              "status": "rendered",
+              "image": "cfsv2/2026090300/cfsv2_pratea_202701.jpg",
+              "baseline": {
+                "file": ".cache/cfsv2/calibration/flxf/2026082912/flxf.08.29.12.l04.fclm.1982.2010.grb2",
+                "label": "NCEI CFS reforecast flux calibration climatology; 1982-2010 (cached 2026082912 fallback)",
+                "years": "1982-2010",
+                "rolling_policy": "anchor_initialization",
+                "anchor_init": "2026090300",
+                "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/08/flxf.08.29.12.l04.fclm.1982.2010.grb2",
+                "requested_url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/09/flxf.09.03.00.l04.fclm.1982.2010.grb2",
+                "requested_initialization": "2026090300",
+                "used_initialization": "2026082912",
+                "fallback": "cached_prior_initialization",
+                "fallback_error": "503 Server Error: Service Unavailable for url: https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/09/flxf.09.03.00.l04.fclm.1982.2010.grb2",
+                "downloaded": false
+              },
+              "ensemble_members": 24,
+              "ensemble_expected_members": 24,
+              "ensemble_complete": true,
+              "ensemble_scope": "rolling_initial_conditions",
+              "statistic": "ensemble_mean",
+              "aggregation": "monthly total precipitation",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "precipitation_anomaly",
+                "units": "in",
+                "field": "precipitation_anomaly",
+                "period": "monthly",
+                "total_points": 72960,
+                "finite_points": 72960,
+                "finite_fraction": 1.0,
+                "minimum": -15.420132,
+                "maximum": 30.554235,
+                "p01": -7.827004,
+                "p99": 11.576576,
+                "display": {
+                  "minimum": -4.0,
+                  "maximum": 4.0,
+                  "step": 0.5,
+                  "below_fraction": 0.038021,
+                  "above_fraction": 0.037445,
+                  "clipped_fraction": 0.075466
+                },
+                "issues": [
+                  {
+                    "code": "display_scale_clipping",
+                    "severity": "warning",
+                    "message": "7.5% of finite cells exceed the fixed display scale."
+                  }
+                ],
+                "status": "warning"
+              },
+              "_catalog": {
+                "canonical_product": "precipitation_anomaly",
+                "comparable": true,
+                "quality_control": "warning"
+              }
+            },
+            {
+              "id": "cfsv2-202702-prate-anomaly-lead05",
+              "target_month": "202702",
+              "valid_start_utc": "2027-02-01T00:00:00Z",
+              "valid_end_utc": "2027-03-01T00:00:00Z",
+              "lead_month": 5,
+              "field": "precipitation_anomaly",
+              "units": "in",
+              "status": "rendered",
+              "image": "cfsv2/2026090300/cfsv2_pratea_202702.jpg",
+              "baseline": {
+                "file": ".cache/cfsv2/calibration/flxf/2026082912/flxf.08.29.12.l05.fclm.1982.2010.grb2",
+                "label": "NCEI CFS reforecast flux calibration climatology; 1982-2010 (cached 2026082912 fallback)",
+                "years": "1982-2010",
+                "rolling_policy": "anchor_initialization",
+                "anchor_init": "2026090300",
+                "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/08/flxf.08.29.12.l05.fclm.1982.2010.grb2",
+                "requested_url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/09/flxf.09.03.00.l05.fclm.1982.2010.grb2",
+                "requested_initialization": "2026090300",
+                "used_initialization": "2026082912",
+                "fallback": "cached_prior_initialization",
+                "fallback_error": "503 Server Error: Service Unavailable for url: https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/09/flxf.09.03.00.l05.fclm.1982.2010.grb2",
+                "downloaded": false
+              },
+              "ensemble_members": 24,
+              "ensemble_expected_members": 24,
+              "ensemble_complete": true,
+              "ensemble_scope": "rolling_initial_conditions",
+              "statistic": "ensemble_mean",
+              "aggregation": "monthly total precipitation",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "precipitation_anomaly",
+                "units": "in",
+                "field": "precipitation_anomaly",
+                "period": "monthly",
+                "total_points": 72960,
+                "finite_points": 72960,
+                "finite_fraction": 1.0,
+                "minimum": -13.774677,
+                "maximum": 28.885946,
+                "p01": -7.445076,
+                "p99": 10.95421,
+                "display": {
+                  "minimum": -4.0,
+                  "maximum": 4.0,
+                  "step": 0.5,
+                  "below_fraction": 0.032826,
+                  "above_fraction": 0.026562,
+                  "clipped_fraction": 0.059389
+                },
+                "issues": [
+                  {
+                    "code": "display_scale_clipping",
+                    "severity": "warning",
+                    "message": "5.9% of finite cells exceed the fixed display scale."
+                  }
+                ],
+                "status": "warning"
+              },
+              "_catalog": {
+                "canonical_product": "precipitation_anomaly",
+                "comparable": true,
+                "quality_control": "warning"
+              }
+            },
+            {
+              "id": "cfsv2-202703-prate-anomaly-lead06",
+              "target_month": "202703",
+              "valid_start_utc": "2027-03-01T00:00:00Z",
+              "valid_end_utc": "2027-04-01T00:00:00Z",
+              "lead_month": 6,
+              "field": "precipitation_anomaly",
+              "units": "in",
+              "status": "rendered",
+              "image": "cfsv2/2026090300/cfsv2_pratea_202703.jpg",
+              "baseline": {
+                "file": ".cache/cfsv2/calibration/flxf/2026082912/flxf.08.29.12.l06.fclm.1982.2010.grb2",
+                "label": "NCEI CFS reforecast flux calibration climatology; 1982-2010 (cached 2026082912 fallback)",
+                "years": "1982-2010",
+                "rolling_policy": "anchor_initialization",
+                "anchor_init": "2026090300",
+                "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/08/flxf.08.29.12.l06.fclm.1982.2010.grb2",
+                "requested_url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/09/flxf.09.03.00.l06.fclm.1982.2010.grb2",
+                "requested_initialization": "2026090300",
+                "used_initialization": "2026082912",
+                "fallback": "cached_prior_initialization",
+                "fallback_error": "503 Server Error: Service Unavailable for url: https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/09/flxf.09.03.00.l06.fclm.1982.2010.grb2",
+                "downloaded": false
+              },
+              "ensemble_members": 24,
+              "ensemble_expected_members": 24,
+              "ensemble_complete": true,
+              "ensemble_scope": "rolling_initial_conditions",
+              "statistic": "ensemble_mean",
+              "aggregation": "monthly total precipitation",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "precipitation_anomaly",
+                "units": "in",
+                "field": "precipitation_anomaly",
+                "period": "monthly",
+                "total_points": 72960,
+                "finite_points": 72960,
+                "finite_fraction": 1.0,
+                "minimum": -15.499658,
+                "maximum": 26.997973,
+                "p01": -6.783725,
+                "p99": 10.452676,
+                "display": {
+                  "minimum": -4.0,
+                  "maximum": 4.0,
+                  "step": 0.5,
+                  "below_fraction": 0.033936,
+                  "above_fraction": 0.026138,
+                  "clipped_fraction": 0.060074
+                },
+                "issues": [
+                  {
+                    "code": "display_scale_clipping",
+                    "severity": "warning",
+                    "message": "6.0% of finite cells exceed the fixed display scale."
+                  }
+                ],
+                "status": "warning"
+              },
+              "_catalog": {
+                "canonical_product": "precipitation_anomaly",
+                "comparable": true,
+                "quality_control": "warning"
+              }
+            },
+            {
+              "id": "cfsv2-202701-202703-prate-anomaly-seasonal",
+              "target_month": "202701-202703",
+              "valid_start_utc": "2027-01-01T00:00:00Z",
+              "valid_end_utc": "2027-04-01T00:00:00Z",
+              "lead_month": "4-6",
+              "monthly_leads": [
+                4,
+                5,
+                6
+              ],
+              "field": "precipitation_anomaly",
+              "units": "in",
+              "status": "rendered",
+              "image": "cfsv2/2026090300/cfsv2_pratea_202701-202703.jpg",
+              "baseline": {
+                "files": [
+                  ".cache/cfsv2/calibration/flxf/2026082912/flxf.08.29.12.l04.fclm.1982.2010.grb2",
+                  ".cache/cfsv2/calibration/flxf/2026082912/flxf.08.29.12.l05.fclm.1982.2010.grb2",
+                  ".cache/cfsv2/calibration/flxf/2026082912/flxf.08.29.12.l06.fclm.1982.2010.grb2"
+                ],
+                "label": "NCEI CFS reforecast flux calibration climatology; 1982-2010 (cached 2026082912 fallback)",
+                "years": "1982-2010",
+                "rolling_policy": "anchor_initialization",
+                "anchor_init": "2026090300",
+                "urls": [
+                  "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/08/flxf.08.29.12.l04.fclm.1982.2010.grb2",
+                  "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/08/flxf.08.29.12.l05.fclm.1982.2010.grb2",
+                  "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/08/flxf.08.29.12.l06.fclm.1982.2010.grb2"
+                ],
+                "fallbacks": [
+                  {
+                    "requested_initialization": "2026090300",
+                    "used_initialization": "2026082912",
+                    "requested_url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/09/flxf.09.03.00.l04.fclm.1982.2010.grb2",
+                    "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/08/flxf.08.29.12.l04.fclm.1982.2010.grb2",
+                    "error": "503 Server Error: Service Unavailable for url: https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/09/flxf.09.03.00.l04.fclm.1982.2010.grb2"
+                  },
+                  {
+                    "requested_initialization": "2026090300",
+                    "used_initialization": "2026082912",
+                    "requested_url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/09/flxf.09.03.00.l05.fclm.1982.2010.grb2",
+                    "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/08/flxf.08.29.12.l05.fclm.1982.2010.grb2",
+                    "error": "503 Server Error: Service Unavailable for url: https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/09/flxf.09.03.00.l05.fclm.1982.2010.grb2"
+                  },
+                  {
+                    "requested_initialization": "2026090300",
+                    "used_initialization": "2026082912",
+                    "requested_url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/09/flxf.09.03.00.l06.fclm.1982.2010.grb2",
+                    "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/08/flxf.08.29.12.l06.fclm.1982.2010.grb2",
+                    "error": "503 Server Error: Service Unavailable for url: https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/09/flxf.09.03.00.l06.fclm.1982.2010.grb2"
+                  }
+                ]
+              },
+              "ensemble_members": 24,
+              "ensemble_complete": true,
+              "ensemble_scope": "rolling_initial_conditions",
+              "statistic": "ensemble_mean",
+              "aggregation": "3-month seasonal total",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "precipitation_anomaly",
+                "units": "in",
+                "field": "precipitation_anomaly",
+                "period": "seasonal",
+                "total_points": 72960,
+                "finite_points": 72960,
+                "finite_fraction": 1.0,
+                "minimum": -34.487915,
+                "maximum": 68.729513,
+                "p01": -18.822448,
+                "p99": 30.028579,
+                "display": {
+                  "minimum": -8.0,
+                  "maximum": 8.0,
+                  "step": 1.0,
+                  "below_fraction": 0.052906,
+                  "above_fraction": 0.03395,
+                  "clipped_fraction": 0.086856
+                },
+                "issues": [
+                  {
+                    "code": "display_scale_clipping",
+                    "severity": "warning",
+                    "message": "8.7% of finite cells exceed the fixed display scale."
+                  }
+                ],
+                "status": "warning"
+              },
+              "_catalog": {
+                "canonical_product": "precipitation_anomaly",
+                "comparable": true,
+                "quality_control": "warning"
+              }
+            }
+          ],
+          "_catalog": {
+            "canonical_product": "precipitation_anomaly",
+            "comparable": true
+          }
+        },
+        {
           "id": "cfsv2-2026090300-850mb_temperature_anomaly",
           "model": "CFSv2",
           "source": "NOAA CFSv2 NOMADS",
@@ -21499,292 +21823,6 @@
           }
         },
         {
-          "id": "cfsv2-2026082912-precipitation_anomaly",
-          "model": "CFSv2",
-          "source": "NOAA CFSv2 NOMADS",
-          "source_url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/",
-          "product": "precipitation_anomaly",
-          "init_utc": "2026-08-29T12:00:00Z",
-          "status": "rendered",
-          "statistic": "ensemble_mean",
-          "aggregation": "10-day rolling initial-condition mean; 3-month seasonal total",
-          "ensemble_scope": "rolling_initial_conditions",
-          "ensemble_members": 40,
-          "field": "precipitation_anomaly",
-          "units": "in",
-          "raw_field": "PRATE:surface",
-          "raw_units": "kg m-2 s-1",
-          "baseline": {
-            "source": "NCEI CFS reforecast flux calibration climatology; 1982-2010",
-            "years": "1982-2010",
-            "url_root": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/",
-            "required": true,
-            "rolling_policy": "anchor_initialization"
-          },
-          "conversion": "PRATE multiplied by calendar-month seconds, converted from mm to inches",
-          "targets": [
-            {
-              "id": "cfsv2-202612-prate-anomaly-lead04",
-              "target_month": "202612",
-              "valid_start_utc": "2026-12-01T00:00:00Z",
-              "valid_end_utc": "2027-01-01T00:00:00Z",
-              "lead_month": 4,
-              "field": "precipitation_anomaly",
-              "units": "in",
-              "status": "rendered",
-              "image": "cfsv2/2026082912/cfsv2_pratea_202612.jpg",
-              "baseline": {
-                "file": ".cache/cfsv2/calibration/flxf/2026082912/flxf.08.29.12.l04.fclm.1982.2010.grb2",
-                "label": "NCEI CFS reforecast flux calibration climatology; 1982-2010",
-                "years": "1982-2010",
-                "rolling_policy": "anchor_initialization",
-                "anchor_init": "2026082912",
-                "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/08/flxf.08.29.12.l04.fclm.1982.2010.grb2",
-                "downloaded": false
-              },
-              "ensemble_members": 40,
-              "ensemble_expected_members": 40,
-              "ensemble_complete": true,
-              "ensemble_scope": "rolling_initial_conditions",
-              "statistic": "ensemble_mean",
-              "aggregation": "monthly total precipitation",
-              "quality_control": {
-                "registry_version": 1,
-                "product": "precipitation_anomaly",
-                "units": "in",
-                "field": "precipitation_anomaly",
-                "period": "monthly",
-                "total_points": 72960,
-                "finite_points": 72960,
-                "finite_fraction": 1.0,
-                "minimum": -9.551818,
-                "maximum": 19.746873,
-                "p01": -5.206359,
-                "p99": 7.544367,
-                "display": {
-                  "minimum": -4.0,
-                  "maximum": 4.0,
-                  "step": 0.5,
-                  "below_fraction": 0.020271,
-                  "above_fraction": 0.021998,
-                  "clipped_fraction": 0.04227
-                },
-                "issues": [
-                  {
-                    "code": "display_scale_clipping",
-                    "severity": "warning",
-                    "message": "4.2% of finite cells exceed the fixed display scale."
-                  }
-                ],
-                "status": "warning"
-              },
-              "_catalog": {
-                "canonical_product": "precipitation_anomaly",
-                "comparable": true,
-                "quality_control": "warning"
-              }
-            },
-            {
-              "id": "cfsv2-202701-prate-anomaly-lead05",
-              "target_month": "202701",
-              "valid_start_utc": "2027-01-01T00:00:00Z",
-              "valid_end_utc": "2027-02-01T00:00:00Z",
-              "lead_month": 5,
-              "field": "precipitation_anomaly",
-              "units": "in",
-              "status": "rendered",
-              "image": "cfsv2/2026082912/cfsv2_pratea_202701.jpg",
-              "baseline": {
-                "file": ".cache/cfsv2/calibration/flxf/2026082912/flxf.08.29.12.l05.fclm.1982.2010.grb2",
-                "label": "NCEI CFS reforecast flux calibration climatology; 1982-2010",
-                "years": "1982-2010",
-                "rolling_policy": "anchor_initialization",
-                "anchor_init": "2026082912",
-                "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/08/flxf.08.29.12.l05.fclm.1982.2010.grb2",
-                "downloaded": false
-              },
-              "ensemble_members": 40,
-              "ensemble_expected_members": 40,
-              "ensemble_complete": true,
-              "ensemble_scope": "rolling_initial_conditions",
-              "statistic": "ensemble_mean",
-              "aggregation": "monthly total precipitation",
-              "quality_control": {
-                "registry_version": 1,
-                "product": "precipitation_anomaly",
-                "units": "in",
-                "field": "precipitation_anomaly",
-                "period": "monthly",
-                "total_points": 72960,
-                "finite_points": 72960,
-                "finite_fraction": 1.0,
-                "minimum": -13.036637,
-                "maximum": 23.105154,
-                "p01": -6.010095,
-                "p99": 8.277136,
-                "display": {
-                  "minimum": -4.0,
-                  "maximum": 4.0,
-                  "step": 0.5,
-                  "below_fraction": 0.02722,
-                  "above_fraction": 0.025535,
-                  "clipped_fraction": 0.052755
-                },
-                "issues": [
-                  {
-                    "code": "display_scale_clipping",
-                    "severity": "warning",
-                    "message": "5.3% of finite cells exceed the fixed display scale."
-                  }
-                ],
-                "status": "warning"
-              },
-              "_catalog": {
-                "canonical_product": "precipitation_anomaly",
-                "comparable": true,
-                "quality_control": "warning"
-              }
-            },
-            {
-              "id": "cfsv2-202702-prate-anomaly-lead06",
-              "target_month": "202702",
-              "valid_start_utc": "2027-02-01T00:00:00Z",
-              "valid_end_utc": "2027-03-01T00:00:00Z",
-              "lead_month": 6,
-              "field": "precipitation_anomaly",
-              "units": "in",
-              "status": "rendered",
-              "image": "cfsv2/2026082912/cfsv2_pratea_202702.jpg",
-              "baseline": {
-                "file": ".cache/cfsv2/calibration/flxf/2026082912/flxf.08.29.12.l06.fclm.1982.2010.grb2",
-                "label": "NCEI CFS reforecast flux calibration climatology; 1982-2010",
-                "years": "1982-2010",
-                "rolling_policy": "anchor_initialization",
-                "anchor_init": "2026082912",
-                "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/08/flxf.08.29.12.l06.fclm.1982.2010.grb2",
-                "downloaded": false
-              },
-              "ensemble_members": 40,
-              "ensemble_expected_members": 40,
-              "ensemble_complete": true,
-              "ensemble_scope": "rolling_initial_conditions",
-              "statistic": "ensemble_mean",
-              "aggregation": "monthly total precipitation",
-              "quality_control": {
-                "registry_version": 1,
-                "product": "precipitation_anomaly",
-                "units": "in",
-                "field": "precipitation_anomaly",
-                "period": "monthly",
-                "total_points": 72960,
-                "finite_points": 72960,
-                "finite_fraction": 1.0,
-                "minimum": -11.692641,
-                "maximum": 21.71613,
-                "p01": -5.217948,
-                "p99": 8.418861,
-                "display": {
-                  "minimum": -4.0,
-                  "maximum": 4.0,
-                  "step": 0.5,
-                  "below_fraction": 0.018956,
-                  "above_fraction": 0.022807,
-                  "clipped_fraction": 0.041763
-                },
-                "issues": [
-                  {
-                    "code": "display_scale_clipping",
-                    "severity": "warning",
-                    "message": "4.2% of finite cells exceed the fixed display scale."
-                  }
-                ],
-                "status": "warning"
-              },
-              "_catalog": {
-                "canonical_product": "precipitation_anomaly",
-                "comparable": true,
-                "quality_control": "warning"
-              }
-            },
-            {
-              "id": "cfsv2-202612-202702-prate-anomaly-seasonal",
-              "target_month": "202612-202702",
-              "valid_start_utc": "2026-12-01T00:00:00Z",
-              "valid_end_utc": "2027-03-01T00:00:00Z",
-              "lead_month": "4-6",
-              "monthly_leads": [
-                4,
-                5,
-                6
-              ],
-              "field": "precipitation_anomaly",
-              "units": "in",
-              "status": "rendered",
-              "image": "cfsv2/2026082912/cfsv2_pratea_202612-202702.jpg",
-              "baseline": {
-                "files": [
-                  ".cache/cfsv2/calibration/flxf/2026082912/flxf.08.29.12.l04.fclm.1982.2010.grb2",
-                  ".cache/cfsv2/calibration/flxf/2026082912/flxf.08.29.12.l05.fclm.1982.2010.grb2",
-                  ".cache/cfsv2/calibration/flxf/2026082912/flxf.08.29.12.l06.fclm.1982.2010.grb2"
-                ],
-                "label": "NCEI CFS reforecast flux calibration climatology; 1982-2010",
-                "years": "1982-2010",
-                "rolling_policy": "anchor_initialization",
-                "anchor_init": "2026082912",
-                "urls": [
-                  "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/08/flxf.08.29.12.l04.fclm.1982.2010.grb2",
-                  "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/08/flxf.08.29.12.l05.fclm.1982.2010.grb2",
-                  "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/08/flxf.08.29.12.l06.fclm.1982.2010.grb2"
-                ]
-              },
-              "ensemble_members": 40,
-              "ensemble_complete": true,
-              "ensemble_scope": "rolling_initial_conditions",
-              "statistic": "ensemble_mean",
-              "aggregation": "3-month seasonal total",
-              "quality_control": {
-                "registry_version": 1,
-                "product": "precipitation_anomaly",
-                "units": "in",
-                "field": "precipitation_anomaly",
-                "period": "seasonal",
-                "total_points": 72960,
-                "finite_points": 72960,
-                "finite_fraction": 1.0,
-                "minimum": -27.362889,
-                "maximum": 58.542812,
-                "p01": -14.023577,
-                "p99": 23.849547,
-                "display": {
-                  "minimum": -8.0,
-                  "maximum": 8.0,
-                  "step": 1.0,
-                  "below_fraction": 0.038459,
-                  "above_fraction": 0.031867,
-                  "clipped_fraction": 0.070326
-                },
-                "issues": [
-                  {
-                    "code": "display_scale_clipping",
-                    "severity": "warning",
-                    "message": "7.0% of finite cells exceed the fixed display scale."
-                  }
-                ],
-                "status": "warning"
-              },
-              "_catalog": {
-                "canonical_product": "precipitation_anomaly",
-                "comparable": true,
-                "quality_control": "warning"
-              }
-            }
-          ],
-          "_catalog": {
-            "canonical_product": "precipitation_anomaly",
-            "comparable": true
-          }
-        },
-        {
           "id": "cfsv2-2026082912-mslp_anomaly",
           "model": "CFSv2",
           "source": "NOAA CFSv2 NOMADS",
@@ -22088,7 +22126,7 @@
       "status": "degraded",
       "schema_version": 1,
       "manifest_kind": "cfsv2_seasonal_manifest",
-      "generated_utc": "2026-09-03T12:29:42Z",
+      "generated_utc": "2026-09-03T12:54:41Z",
       "source_url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/",
       "product_labels": {},
       "validation": {
@@ -22143,12 +22181,12 @@
           "reason": "Rendered target available.",
           "available": true,
           "comparable": true,
-          "latest_init_utc": "2026-08-31T06:00:00Z",
-          "run_id": "cfsv2-2026083106-precipitation_anomaly",
+          "latest_init_utc": "2026-09-03T00:00:00Z",
+          "run_id": "cfsv2-2026090300-precipitation_anomaly",
           "target_count": 4,
-          "latest_run_id": "cfsv2-2026083106-precipitation_anomaly",
+          "latest_run_id": "cfsv2-2026090300-precipitation_anomaly",
           "latest_run_status": "rendered",
-          "latest_run_init_utc": "2026-08-31T06:00:00Z",
+          "latest_run_init_utc": "2026-09-03T00:00:00Z",
           "retained_fallback": false
         },
         "snowfall_anomaly": {
@@ -47253,7 +47291,7 @@
   },
   "health": {
     "status": "attention",
-    "generated_utc": "2026-09-03T12:30:38Z",
+    "generated_utc": "2026-09-03T12:55:45Z",
     "freshness_policy_days": {
       "default": {
         "fresh_days": 35,
@@ -47266,10 +47304,10 @@
     },
     "summary": {
       "surfaces": 60,
-      "attention_surfaces": 6,
+      "attention_surfaces": 5,
       "by_state": {
-        "healthy": 44,
-        "aging": 2,
+        "healthy": 45,
+        "aging": 1,
         "stale": 0,
         "partial": 1,
         "failed": 0,
@@ -47773,13 +47811,13 @@
         "surface_state": "available",
         "available": true,
         "comparable": true,
-        "health_state": "aging",
-        "freshness": "aging",
-        "age_days": 3.3,
+        "health_state": "healthy",
+        "freshness": "fresh",
+        "age_days": 0.5,
         "latest_status": "rendered",
-        "latest_init_utc": "2026-08-31T06:00:00Z",
-        "selected_init_utc": "2026-08-31T06:00:00Z",
-        "selected_run_id": "cfsv2-2026083106-precipitation_anomaly",
+        "latest_init_utc": "2026-09-03T00:00:00Z",
+        "selected_init_utc": "2026-09-03T00:00:00Z",
+        "selected_run_id": "cfsv2-2026090300-precipitation_anomaly",
         "retained_fallback": false,
         "reason": "Rendered target available."
       },
@@ -48414,24 +48452,6 @@
         "selected_run_id": "apcc-202609-precipitation_anomaly",
         "retained_fallback": false,
         "reason": "Rendered target uses noncanonical units or field metadata and is excluded from comparison."
-      },
-      {
-        "model": "cfsv2",
-        "model_label": "CFSv2",
-        "product": "precipitation_anomaly",
-        "product_label": "Precipitation Anomaly",
-        "surface_state": "available",
-        "available": true,
-        "comparable": true,
-        "health_state": "aging",
-        "freshness": "aging",
-        "age_days": 3.3,
-        "latest_status": "rendered",
-        "latest_init_utc": "2026-08-31T06:00:00Z",
-        "selected_init_utc": "2026-08-31T06:00:00Z",
-        "selected_run_id": "cfsv2-2026083106-precipitation_anomaly",
-        "retained_fallback": false,
-        "reason": "Rendered target available."
       },
       {
         "model": "cfsv2",
