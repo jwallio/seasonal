@@ -449,4 +449,47 @@ dialog::backdrop { background:#02080dcc; backdrop-filter:blur(5px); }
   .overview-matrix .availability-empty-row th { display:block; padding:24px 10px; }
 }
 
+/* UI Skills playbook: stable media, readable data, and touch-safe controls. */
+h1, h2, h3, h4, h5,
+.card-subtitle, .matrix-head p, .overview-notices,
+.compare-meta, .analog-meta, .analog-product-meta, .analog-product-note,
+.copy p, .footer-copy { text-wrap:pretty; }
+h1, h2, h3, h4, h5 { text-wrap:balance; }
+
+.overview-matrix,
+.overview-stats,
+.facts,
+.analog-table,
+.compare-summary,
+.compare-meta,
+.availability-last-time,
+.availability-next-time,
+.availability-detail,
+.availability-cadence-label,
+.status-pill,
+.footer-copy { font-variant-numeric:tabular-nums; }
+
+.map-wrap {
+  aspect-ratio:4 / 3;
+  contain:layout paint;
+}
+.map-wrap .image-button,
+.map-wrap img,
+.compare-image-wrap .image-button,
+.compare-image-wrap img { border-radius:inherit; }
+.map-wrap img,
+.compare-image-wrap img,
+.analog-product img,
+.dialog-body img { contain-intrinsic-size:720px 540px; }
+
+button:not(.image-button), select { min-height:44px; }
+.page-menu > summary { width:44px; height:44px; }
+.dialog-actions a {
+  display:inline-flex;
+  min-height:44px;
+  align-items:center;
+}
+button:not(.image-button):active,
+.dialog-actions a:active { transform:scale(.96); }
+
 
