@@ -148,7 +148,9 @@ nominal 06Z and 18Z source cycles. It downloads the previously published
 manifest before each render and readiness-checks the newest listed monthly
 files. If that newest cycle is listed before its files finish propagating, the
 check retries it for 30 minutes before selecting the newest complete prior
-cycle. The workflow reuses a cached `wgrib2` binary and refreshes the 500-mb
+cycle. Readiness uses a lightweight HEAD request and falls back to a one-byte
+ranged GET when the NOMADS edge returns a redirect for HEAD. The workflow
+reuses a cached `wgrib2` binary and refreshes the 500-mb
 height, 850-mb temperature, 2-m temperature, MSLP, precipitation, and
 derived snowfall anomaly suite. It retains the current run plus three prior
 runs for each parameter and uploads a scoped Pages payload;

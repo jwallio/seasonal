@@ -527,6 +527,7 @@ def main() -> int:
     check("is_retired_product(product_name)" in adapter, "the CFSv2 adapter must block quarantined products before downloading data")
     check("choices=tuple(product for product in PRODUCT_SPECS if not is_retired_product(product))" in adapter, "the CFSv2 CLI must hide quarantined products")
     check("snow_water_equivalent_anomaly" not in WRAPPER.read_text(encoding="utf-8"), "the CFSv2 PowerShell menu must hide quarantined SWE")
+    check('headers={"Range": "bytes=0-0"}' in adapter and "stream=True" in adapter, "CFSv2 readiness must fall back to a ranged GET when NOMADS rejects HEAD")
     check('elif [[ "$CFSV2_PRODUCT" == "all" ]]' in workflow, "manual CFSv2 all action should expand to the full product list")
     check('github.event_name }}" == "schedule" || "$CFSV2_PRODUCT" == "all"' in workflow, "manual CFSv2 all action should use delayed-file readiness retries")
     check('description: "Lagged initial-condition window; 6 means 24 cycles"' in workflow, "scheduled CFSv2 workflow should stay inside the live archive")

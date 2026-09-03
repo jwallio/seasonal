@@ -1140,7 +1140,23 @@ def discover_latest_ready_init(
                     allow_redirects=True,
                     timeout=(15, 45),
                 )
-                return response.status_code
+                status = response.status_code
+                response.close()
+                if 200 <= status < 300:
+                    return status
+                # NOMADS/Akamai can return a bare 302 to HEAD from hosted
+                # runners even when the same object is ready. A one-byte GET
+                # verifies the object without transferring the GRIB payload.
+                response = session.get(
+                    url,
+                    headers={"Range": "bytes=0-0"},
+                    allow_redirects=True,
+                    stream=True,
+                    timeout=(15, 45),
+                )
+                status = response.status_code
+                response.close()
+                return status
             except requests.RequestException:
                 return None
 
