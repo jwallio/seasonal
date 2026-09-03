@@ -14,12 +14,12 @@ on:
           - Snowfall departure
           - Snow-water equivalent anomaly
       lead_months:
-        description: "Target leads, comma-separated"
+        description: "CFS lead numbers, not month positions (Sep init: 3,4,5,6 = Dec,Jan,Feb,Mar)"
         required: false
         default: "4,5,6"
         type: string
       seasonal_window:
-        description: "Consecutive leads for the seasonal aggregate"
+        description: "CFS leads in the seasonal aggregate (Sep init: 3,4,5 = DJF)"
         required: false
         default: "4,5,6"
         type: string

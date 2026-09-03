@@ -90,6 +90,16 @@ jobs:
             scripts/purge_retired_seasonal_products.py
           sparse-checkout-cone-mode: false
 
+      - name: Normalize source workflow name
+        shell: bash
+        run: |
+          set -euo pipefail
+          case "$SOURCE_WORKFLOW" in
+            "CFSv2 Snowfall departure"*|"CFSv2 Snow-water equivalent anomaly"*)
+              echo "SOURCE_WORKFLOW=CFSv2 Snowfall and SWE Graphics" >> "$GITHUB_ENV"
+              ;;
+          esac
+
       - name: Set up thumbnail runtime
         uses: actions/setup-python@v5
         with:

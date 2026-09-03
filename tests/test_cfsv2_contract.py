@@ -591,6 +591,13 @@ def main() -> int:
         "keep_files: false",
     ):
         check(term in pages_workflow, f"central Pages workflow missing term: {term}")
+    for term in (
+        "Normalize source workflow name",
+        '"CFSv2 Snowfall departure"*',
+        '"CFSv2 Snow-water equivalent anomaly"*',
+        'echo "SOURCE_WORKFLOW=CFSv2 Snowfall and SWE Graphics" >> "$GITHUB_ENV"',
+    ):
+        check(term in pages_workflow, f"central Pages workflow missing dynamic snow-run normalization: {term}")
 
     print("CFSV2 CONTRACT OK: NOMADS source, HGT500/FLXF fields, conversions, baseline gate, manifest, wrapper")
     return 0
