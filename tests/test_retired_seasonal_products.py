@@ -36,19 +36,24 @@ def main() -> int:
         manifest_path.write_text(json.dumps({
             "runs": [
                 {"product": "sea_surface_temperature_anomaly", "id": "retired"},
+                {"product": "snow_water_equivalent_anomaly", "id": "quarantined-swe"},
                 {"product": "2m_temperature_anomaly", "id": "retained"},
             ],
             "product_labels": {
                 "sea_surface_temperature_anomaly": "SST",
+                "snow_water_equivalent_anomaly": "SWE",
                 "2m_temperature_anomaly": "2-m Temperature Anomaly",
             },
-            "comparison_products": ["sea_surface_temperature_anomaly", "2m_temperature_anomaly"],
+            "comparison_products": ["sea_surface_temperature_anomaly", "snow_water_equivalent_anomaly", "2m_temperature_anomaly"],
         }, indent=2), encoding="utf-8")
 
         retired_assets = (
             seasonal_root / "cfsv2" / "retired_sst-map.jpg",
             seasonal_root / "share" / "cfsv2_sst-map.jpg",
             seasonal_root / "thumbnails" / "cfsv2_sst-map.webp",
+            seasonal_root / "cfsv2" / "cfsv2_swea_202702.jpg",
+            seasonal_root / "share" / "cfsv2_snow-water-equivalent-anomaly.jpg",
+            seasonal_root / "thumbnails" / "cfsv2_weasd.webp",
         )
         for asset in retired_assets:
             asset.write_bytes(b"retired")
@@ -57,7 +62,7 @@ def main() -> int:
 
         summary = purger.purge(site_root)
         payload = json.loads(manifest_path.read_text(encoding="utf-8"))
-        assert summary == {"manifests_changed": 1, "assets_removed": 3}
+        assert summary == {"manifests_changed": 1, "assets_removed": 6}
         assert [run["id"] for run in payload["runs"]] == ["retained"]
         assert list(payload["product_labels"]) == ["2m_temperature_anomaly"]
         assert payload["comparison_products"] == ["2m_temperature_anomaly"]

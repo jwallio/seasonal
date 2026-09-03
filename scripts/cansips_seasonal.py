@@ -63,7 +63,7 @@ from cfsv2_seasonal import (
     target_period,
     write_grid_state,
 )
-from seasonal_products import is_retired_product
+from seasonal_products import grid_quality_control, is_retired_product, require_quality_control
 
 
 CANSIPS_ROOT = "https://dd.weather.gc.ca/today/model_cansips/100km/"
@@ -1396,6 +1396,14 @@ def render_product_run(
             anomaly = subtract_grids(forecast, climatology)
             forecast_grids[lead] = forecast
             anomaly_grids[lead] = anomaly
+            target_entry["quality_control"] = grid_quality_control(
+                product["name"],
+                anomaly.values,
+                units=product["units"],
+                field=product["field"],
+                seasonal=False,
+            )
+            require_quality_control(target_entry["quality_control"], CanSIPSError)
             common_reference_file = None
             if common_reference_enabled:
                 common_reference_file = common_reference_dir / f"z500_{target}.csv.gz"
@@ -1489,6 +1497,14 @@ def render_product_run(
                 if product["height_contours"]
                 else None
             )
+            seasonal_entry["quality_control"] = grid_quality_control(
+                product["name"],
+                seasonal_anomaly.values,
+                units=product["seasonal_units"],
+                field=product["field"],
+                seasonal=True,
+            )
+            require_quality_control(seasonal_entry["quality_control"], CanSIPSError)
             seasonal_entry["source_files"] = [
                 source for lead in seasonal_leads for source in target_entries[lead].get("source_files", [])
             ]

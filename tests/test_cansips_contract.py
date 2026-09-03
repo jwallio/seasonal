@@ -46,6 +46,9 @@ def main() -> int:
 
     adapter = ADAPTER.read_text(encoding="utf-8")
     workflow = WORKFLOW.read_text(encoding="utf-8")
+    check(adapter.count('target_entry["quality_control"] = grid_quality_control') == 1, "CanSIPS monthly anomalies must publish numeric QC")
+    check(adapter.count('seasonal_entry["quality_control"] = grid_quality_control') == 1, "CanSIPS seasonal anomalies must publish numeric QC")
+    check(adapter.count("require_quality_control(") >= 2, "CanSIPS must fail closed when numeric QC fails")
     pages_workflow = PAGES_WORKFLOW.read_text(encoding="utf-8")
     documentation = DOC.read_text(encoding="utf-8")
     page = PAGE.read_text(encoding="utf-8")

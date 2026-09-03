@@ -283,10 +283,13 @@ PRODUCTS["500mb_height_anomaly_nh"] = {
 
 
 # These keys may still occur in retained manifests from earlier releases. They
-# are retired from the seasonal product surface and must never be regenerated
-# or surfaced by the dashboard.
+# are retired or quarantined from the seasonal product surface and must never
+# be regenerated or surfaced by the dashboard. CFSv2 SWE remains quarantined
+# until a verified WEASD reforecast climatology replaces the near-zero NCEI
+# calibration field that was previously used operationally.
 RETIRED_SEASONAL_PRODUCTS = frozenset({
     "sea_surface_temperature_anomaly",
+    "snow_water_equivalent_anomaly",
     "sst_anomaly",
 })
 
@@ -567,6 +570,8 @@ def public_product_registry() -> dict[str, dict[str, Any]]:
 
     result: dict[str, dict[str, Any]] = {}
     for key, definition in PRODUCTS.items():
+        if is_retired_product(key):
+            continue
         public = deepcopy(definition)
         public["aliases"] = list(public.get("aliases", ()))
         public["compatible_units"] = list(public.get("compatible_units", ()))

@@ -23,7 +23,8 @@ SEASONAL_MODELS = frozenset({
     "nmme", "seas5", "superensemble",
 })
 RETIRED_ASSET_PATTERN = re.compile(
-    r"(?:^|[_./-])(?:sst|ssta)(?:[_./-]|$)|sea[_-]?surface[_-]?temperature",
+    r"(?:^|[_./-])(?:sst|ssta|swea|weasd)(?:[_./-]|$)"
+    r"|sea[_-]?surface[_-]?temperature|snow[_-]?water[_-]?equivalent",
     re.IGNORECASE,
 )
 

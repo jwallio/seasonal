@@ -14,10 +14,14 @@ import datetime as dt
 import json
 from pathlib import Path
 import shutil
+import sys
 from typing import Any
 
+SCRIPT_DIRECTORY = str(Path(__file__).resolve().parent)
+if SCRIPT_DIRECTORY not in sys.path:
+    sys.path.insert(0, SCRIPT_DIRECTORY)
 
-RETIRED_PRODUCTS = {"sea_surface_temperature_anomaly", "sst_anomaly"}
+from seasonal_products import is_retired_product
 
 
 def _read_json(path: Path) -> dict[str, Any]:
@@ -68,7 +72,7 @@ def merge_payloads(
         run_ids = {str(value) for value in fragment.get("run_ids", []) if value}
         if not product or not init_utc or not run_ids:
             raise ValueError(f"incomplete product fragment: {fragment_path}")
-        if product in RETIRED_PRODUCTS:
+        if is_retired_product(product):
             continue
         if target_init is None:
             target_init = init_utc
@@ -89,7 +93,7 @@ def merge_payloads(
             for run in manifest.get("runs", [])
             if isinstance(run, dict)
             and run.get("id")
-            and run.get("product") not in RETIRED_PRODUCTS
+            and not is_retired_product(run.get("product"))
         ]
         found_current = {
             str(run["id"]): run

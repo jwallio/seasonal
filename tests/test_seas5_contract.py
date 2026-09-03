@@ -78,6 +78,8 @@ def main() -> int:
         "--common-reference-dir",
         "--common-reference-url",
         "common_1991_2020",
+        "grid_quality_control",
+        "require_quality_control",
     ):
         check(term in adapter or term in workflow or term in page, f"missing SEAS5 contract term: {term}")
     for term in (
@@ -106,6 +108,9 @@ def main() -> int:
     ):
         check(term in page, f"viewer missing SEAS5 term: {term}")
     check("WN2 / ECMWF SEAS5" not in page, "SEAS5 direct viewer should not use the umbrella dashboard branding")
+    check(adapter.count('target_entry["quality_control"] = grid_quality_control') == 1, "SEAS5 monthly anomalies must publish numeric QC")
+    check(adapter.count('seasonal_entry["quality_control"] = grid_quality_control') == 1, "SEAS5 seasonal anomalies must publish numeric QC")
+    check(adapter.count("require_quality_control(") >= 2, "SEAS5 must fail closed when numeric QC fails")
     check('href="../">Seasonal dashboard</a>' in page, "SEAS5 direct viewer should link to the unified seasonal dashboard")
     check("preferredTargetIndex" in page, "SEAS5 viewer should default to the seasonal aggregate when one is present")
     module = load_adapter()

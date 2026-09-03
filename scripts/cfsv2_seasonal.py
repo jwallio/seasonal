@@ -3226,7 +3226,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--product",
-        choices=tuple(PRODUCT_SPECS),
+        choices=tuple(product for product in PRODUCT_SPECS if not is_retired_product(product)),
         default=PRODUCT_HEIGHT_ANOMALY,
         help="product to decode and render",
     )
@@ -3283,6 +3283,11 @@ def build_parser() -> argparse.ArgumentParser:
 def run(args: argparse.Namespace) -> int:
     repo_root = Path(__file__).resolve().parents[1]
     product_name, product, absolute = selected_product(args)
+    if is_retired_product(product_name):
+        raise CFSv2Error(
+            f"{product_name} is quarantined from production because its available "
+            "calibration field is not a valid anomaly baseline"
+        )
     init = discover_latest_init() if args.init == "latest" else parse_init(args.init)
     leads = parse_int_list(args.lead_months, "lead months", 1, 9)
     seasonal_leads = parse_int_list(args.seasonal_window, "seasonal window", 1, 9) if args.seasonal_window else []

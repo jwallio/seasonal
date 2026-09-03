@@ -545,17 +545,26 @@ def build_run(
     leads: list[int], seasonal_leads: list[int], archive: CDSArchive | None,
     lead_grids: dict[int, Grid], lead_heights: dict[int, Grid], output_dir: Path,
     borders: list[Path], members: int | None, multisystem: bool, centres: list[str], decode_only: bool,
+    component_names_by_lead: dict[int, list[str]] | None = None,
+    seasonal_component_names: list[str] | None = None,
+    seasonal_grid_override: Grid | None = None,
+    seasonal_height_override: Grid | None = None,
 ) -> tuple[dict[str, Any], int]:
     entry = base_run_entry(component, label, system, product, product_name, init, members, multisystem, centres)
+    component_names_by_lead = component_names_by_lead or {}
     failures = 0
     for lead in leads:
         target = target_month(init, lead)
+        available_components = component_names_by_lead.get(lead, centres) if multisystem else [component]
         target_entry: dict[str, Any] = {
             "id": f"{entry['id']}-lead{lead:02d}", "target_month": target,
             "valid_start_utc": target_period(target)[0], "valid_end_utc": target_period(target)[1],
             "lead_month": lead, "field": product["field"], "units": product["units"],
             "statistic": entry["statistic"], "status": "planned",
         }
+        if multisystem:
+            target_entry["available_components"] = available_components
+            target_entry["component_count"] = len(available_components)
         try:
             if lead not in lead_grids:
                 if archive is None:
@@ -578,7 +587,12 @@ def build_run(
                 target_entry["status"] = "decoded"
             else:
                 output = output_dir / init[:8] / f"c3s_{component}_{product['variable']}_{target}.jpg"
-                render_target(lead_grids[lead], product, init, target, lead, output, borders, lead_heights.get(lead), f"{members or len(centres)}-member mean" if not multisystem else f"{len(centres)}-system mean")
+                ensemble_label = (
+                    f"{members or len(centres)}-member mean"
+                    if not multisystem
+                    else f"{len(available_components)}-system mean"
+                )
+                render_target(lead_grids[lead], product, init, target, lead, output, borders, lead_heights.get(lead), ensemble_label)
                 target_entry["image"] = relative_path(output, Path(__file__).resolve().parents[1])
                 target_entry["status"] = "rendered"
         except Exception as exc:
@@ -598,11 +612,20 @@ def build_run(
             "field": product["field"], "units": product["seasonal_units"],
             "statistic": entry["statistic"], "status": "planned",
         }
+        if multisystem:
+            complete_components = seasonal_component_names if seasonal_component_names is not None else centres
+            target_entry["available_components"] = complete_components
+            target_entry["component_count"] = len(complete_components)
         try:
-            if any(lead not in lead_grids for lead in seasonal_leads):
-                raise C3SError("seasonal window is missing one or more component grids")
+            if multisystem and seasonal_component_names is not None and not seasonal_component_names:
+                raise C3SError("no C3S system supplied every month in the seasonal window")
             combine = sum_grids if product["seasonal_reducer"] == "sum" else mean_grids
-            seasonal_grid = combine([lead_grids[lead] for lead in seasonal_leads])
+            if seasonal_grid_override is not None:
+                seasonal_grid = seasonal_grid_override
+            else:
+                if any(lead not in lead_grids for lead in seasonal_leads):
+                    raise C3SError("seasonal window is missing one or more component grids")
+                seasonal_grid = combine([lead_grids[lead] for lead in seasonal_leads])
             target_entry["quality_control"] = grid_quality_control(
                 product_name,
                 seasonal_grid.values,
@@ -611,9 +634,16 @@ def build_run(
                 seasonal=True,
             )
             require_quality_control(target_entry["quality_control"], C3SError)
-            seasonal_height = combine([lead_heights[lead] for lead in seasonal_leads]) if product["height_contours"] and all(lead in lead_heights for lead in seasonal_leads) else None
+            seasonal_height = seasonal_height_override
+            if seasonal_height is None and product["height_contours"] and all(lead in lead_heights for lead in seasonal_leads):
+                seasonal_height = combine([lead_heights[lead] for lead in seasonal_leads])
             output = output_dir / init[:8] / f"c3s_{component}_{product['variable']}_{first_target}-{last_target}.jpg"
-            render_target(seasonal_grid, product, init, first_target, f"{first}–{last}", output, borders, seasonal_height, f"{members or len(centres)}-member mean" if not multisystem else f"{len(centres)}-system mean", period_label(first_target, last_target), seasonal=True)
+            ensemble_label = (
+                f"{members or len(centres)}-member mean"
+                if not multisystem
+                else f"{len(complete_components)}-system mean"
+            )
+            render_target(seasonal_grid, product, init, first_target, f"{first}–{last}", output, borders, seasonal_height, ensemble_label, period_label(first_target, last_target), seasonal=True)
             target_entry["image"] = relative_path(output, Path(__file__).resolve().parents[1])
             target_entry["status"] = "rendered"
         except Exception as exc:
@@ -756,8 +786,11 @@ def run(args: argparse.Namespace) -> int:
     if not args.no_blend:
         blend_grids: dict[int, Grid] = {}
         blend_heights: dict[int, Grid] = {}
+        component_names_by_lead: dict[int, list[str]] = {}
         for lead in leads:
-            available = [component_grids[centre][lead] for centre in centres if lead in component_grids.get(centre, {})]
+            available_components = [centre for centre in centres if lead in component_grids.get(centre, {})]
+            component_names_by_lead[lead] = available_components
+            available = [component_grids[centre][lead] for centre in available_components]
             if available:
                 reference = available[0]
                 # C3S systems normally share the one-degree axes.  If a centre
@@ -771,9 +804,57 @@ def run(args: argparse.Namespace) -> int:
                 from cfsv2_seasonal import regrid_nearest
                 blend_heights[lead] = mean_grids([regrid_nearest(grid, reference.lons, reference.lats, "C3S height blend") for grid in heights])
         if blend_grids:
-            entry, count = build_run(component="multisystem", label="multi-system", system="multiple", product_name=product_name, product=product_spec(product_name, "multi-system", multisystem=True), init=init, leads=leads, seasonal_leads=seasonal, archive=None, lead_grids=blend_grids, lead_heights=blend_heights, output_dir=output_dir, borders=borders, members=None, multisystem=True, centres=centres, decode_only=args.decode_only)
+            from cfsv2_seasonal import regrid_nearest
+
+            seasonal_components = [
+                centre for centre in centres
+                if seasonal and all(lead in component_grids.get(centre, {}) for lead in seasonal)
+            ]
+            seasonal_grid_override = None
+            seasonal_height_override = None
+            if seasonal_components:
+                combine = sum_grids if product["seasonal_reducer"] == "sum" else mean_grids
+                component_seasonal_grids = [
+                    combine([component_grids[centre][lead] for lead in seasonal])
+                    for centre in seasonal_components
+                ]
+                reference = component_seasonal_grids[0]
+                seasonal_grid_override = mean_grids([
+                    regrid_nearest(grid, reference.lons, reference.lats, "C3S seasonal blend")
+                    for grid in component_seasonal_grids
+                ])
+                seasonal_height_components = [
+                    centre for centre in seasonal_components
+                    if all(lead in component_heights.get(centre, {}) for lead in seasonal)
+                ]
+                if product["height_contours"] and seasonal_height_components:
+                    component_seasonal_heights = [
+                        combine([component_heights[centre][lead] for lead in seasonal])
+                        for centre in seasonal_height_components
+                    ]
+                    height_reference = component_seasonal_heights[0]
+                    seasonal_height_override = mean_grids([
+                        regrid_nearest(grid, height_reference.lons, height_reference.lats, "C3S seasonal height blend")
+                        for grid in component_seasonal_heights
+                    ])
+            entry, count = build_run(
+                component="multisystem", label="multi-system", system="multiple",
+                product_name=product_name, product=product_spec(product_name, "multi-system", multisystem=True),
+                init=init, leads=leads, seasonal_leads=seasonal, archive=None,
+                lead_grids=blend_grids, lead_heights=blend_heights, output_dir=output_dir,
+                borders=borders, members=None, multisystem=True, centres=centres,
+                decode_only=args.decode_only, component_names_by_lead=component_names_by_lead,
+                seasonal_component_names=seasonal_components,
+                seasonal_grid_override=seasonal_grid_override,
+                seasonal_height_override=seasonal_height_override,
+            )
+            entry["requested_components"] = list(centres)
             entry["available_components"] = [centre for centre in centres if component_grids.get(centre)]
+            entry["components"] = entry["available_components"]
             entry["component_count"] = len(entry["available_components"])
+            entry["component_count_by_lead"] = {
+                str(lead): len(component_names_by_lead.get(lead, [])) for lead in leads
+            }
             entries.append(entry)
             blend_failures += count
         else:

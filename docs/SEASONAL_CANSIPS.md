@@ -83,7 +83,9 @@ result is liquid-water equivalent in inches, not snow depth and not a
 snow-to-liquid-ratio product. The map uses the same tight CONUS crop and
 lower-48 land mask as the site's other snowfall maps. Monthly maps use
 nonlinear bins from -2.0 to +2.0 inches; seasonal/DJF maps use -4.0 to +4.0
-inches, with endpoint values clipped at the active range. The labelled
+inches, with endpoint values clipped at the active range. Monthly departures
+and seasonal sums pass numeric coverage and physical-range QC before
+rendering. The labelled
 breakpoints are 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 2.5, 3.0, 3.5, and
 4.0 inches on either side of zero; monthly maps stop at 2.0 inches.
 

@@ -15,7 +15,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
 from build_seasonal_catalog import build_catalog, validate_manifest  # noqa: E402
-from seasonal_products import PRODUCTS, grid_quality_control, issue_codes, require_quality_control  # noqa: E402
+from seasonal_products import PRODUCTS, grid_quality_control, issue_codes, public_product_registry, require_quality_control  # noqa: E402
 
 
 def check(condition: bool, message: str) -> None:
@@ -64,6 +64,7 @@ def manifest(product: str = "500mb_height_anomaly", target_value: dict | None = 
 
 
 def main() -> int:
+    check("snow_water_equivalent_anomaly" not in public_product_registry(), "quarantined CFSv2 SWE must not appear in the public product registry")
     snowfall_display = PRODUCTS["snowfall_anomaly"]["display"]
     check(
         (snowfall_display["monthly"]["minimum"], snowfall_display["monthly"]["maximum"]) == (-2.0, 2.0),

@@ -61,7 +61,7 @@ from cfsv2_seasonal import (
     subtract_grids,
     sum_grids,
 )
-from seasonal_products import is_retired_product
+from seasonal_products import grid_quality_control, is_retired_product, require_quality_control
 
 
 # The CDS catalogue currently identifies ECMWF SEAS5 as originating centre
@@ -936,6 +936,15 @@ def run(args: argparse.Namespace) -> int:
                     "dataset": product["cds_dataset"],
                 }
             )
+            if not args.absolute:
+                target_entry["quality_control"] = grid_quality_control(
+                    args.product,
+                    forecast.values,
+                    units=product["units"],
+                    field=product["field"],
+                    seasonal=False,
+                )
+                require_quality_control(target_entry["quality_control"], SEAS5Error)
             if args.decode_only:
                 target_entry["status"] = "decoded"
             else:
@@ -1054,6 +1063,15 @@ def run(args: argparse.Namespace) -> int:
                 if product["height_contours"] and all(lead in height_grids for lead in seasonal_leads)
                 else None
             )
+            if not args.absolute:
+                seasonal_entry["quality_control"] = grid_quality_control(
+                    args.product,
+                    seasonal_forecast.values,
+                    units=product["seasonal_units"],
+                    field=product["field"],
+                    seasonal=True,
+                )
+                require_quality_control(seasonal_entry["quality_control"], SEAS5Error)
             output_path = output_dir / init[:8] / f"seas5_{product['variable']}_{first_target}-{last_target}.jpg"
             render_map(
                 seasonal_forecast,

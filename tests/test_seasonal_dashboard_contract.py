@@ -228,7 +228,7 @@ def main() -> int:
         check(product in page, f"compare parameter menu is missing {product}")
     check('<th scope="col">SST</th>' not in page_markup, "availability matrix must not include SST")
     check("'500mb_height_anomaly_nh': '500-mb Height Anomaly · Northern Hemisphere'" in page, "dashboard must label the Northern Hemisphere 500-mb product")
-    check("new Set(['sea_surface_temperature_anomaly', 'sst_anomaly'])" in page, "dashboard must hide retired SST history")
+    check("new Set(['sea_surface_temperature_anomaly', 'snow_water_equivalent_anomaly', 'sst_anomaly'])" in page, "dashboard must hide retired SST and quarantined CFSv2 SWE history")
     check("'geos_s2s3'" in page and "'nmme'" in page, "parameter comparison must include GEOS and NMME when they publish the selected field")
     check("preferredComponent: 'multisystem'" in page, "C3S comparisons should prefer the multi-system blend")
     check("preferredComponent: 'ENSMEAN'" in page, "NMME comparisons should prefer the official ensemble mean")
@@ -250,7 +250,7 @@ def main() -> int:
     check("purge_retired_seasonal_products.py" in workflow, "Pages workflow must purge retired seasonal assets")
     for direct_page_name in ("cfsv2", "cansips", "seas5"):
         direct_page = (ROOT / "public" / "seasonal" / direct_page_name / "index.html").read_text(encoding="utf-8")
-        check("RETIRED_PRODUCTS" in direct_page and "!RETIRED_PRODUCTS.has(run.product)" in direct_page, f"{direct_page_name} viewer must hide retired SST history")
+        check("RETIRED_PRODUCTS" in direct_page and "!RETIRED_PRODUCTS.has(run.product)" in direct_page, f"{direct_page_name} viewer must hide retired or quarantined history")
     check('aria-label="Copy current dashboard link"' in page_markup, "copy action should retain an accessible label when compacted")
     check("runs[0]" not in page[page.index("function preferredRun"):page.index("function selectedRun")], "failed history must not be used as a default fallback")
     overview_block = page[page.index("function renderOverview()"):page.index("function compareEmpty")]

@@ -492,7 +492,6 @@ def main() -> int:
         "2m_temperature_anomaly",
         "mslp_anomaly",
         "precipitation_anomaly",
-        "snow_water_equivalent_anomaly",
         "snowfall_anomaly",
         "CFSV2_PRODUCT",
     ):
@@ -523,24 +522,27 @@ def main() -> int:
         check(term in workflow, f"workflow missing speed-up term: {term}")
     check("--allow-partial-rolling" not in workflow, "scheduled CFSv2 workflow must not publish an incomplete rolling blend")
     check("SCHEDULED_CFSV2_PRODUCTS: 500mb_height_anomaly,500mb_height_anomaly_nh,850mb_temperature_anomaly,2m_temperature_anomaly,mslp_anomaly,precipitation_anomaly,snowfall_anomaly" in workflow, "twice-daily workflow should refresh the complete CFSv2 anomaly suite")
-    check("ALL_CFSV2_PRODUCTS: 500mb_height_anomaly,500mb_height_anomaly_nh,500mb_height_absolute,850mb_temperature_anomaly,2m_temperature_anomaly,mslp_anomaly,precipitation_anomaly,snow_water_equivalent_anomaly,snowfall_anomaly" in workflow, "manual all action should cover every CFSv2 menu field")
+    check("ALL_CFSV2_PRODUCTS: 500mb_height_anomaly,500mb_height_anomaly_nh,500mb_height_absolute,850mb_temperature_anomaly,2m_temperature_anomaly,mslp_anomaly,precipitation_anomaly,snowfall_anomaly" in workflow, "manual all action should cover every validated CFSv2 menu field")
+    check("- snow_water_equivalent_anomaly" not in workflow, "quarantined CFSv2 SWE must not appear in the Actions menu")
+    check("is_retired_product(product_name)" in adapter, "the CFSv2 adapter must block quarantined products before downloading data")
+    check("choices=tuple(product for product in PRODUCT_SPECS if not is_retired_product(product))" in adapter, "the CFSv2 CLI must hide quarantined products")
+    check("snow_water_equivalent_anomaly" not in WRAPPER.read_text(encoding="utf-8"), "the CFSv2 PowerShell menu must hide quarantined SWE")
     check('elif [[ "$CFSV2_PRODUCT" == "all" ]]' in workflow, "manual CFSv2 all action should expand to the full product list")
     check('github.event_name }}" == "schedule" || "$CFSV2_PRODUCT" == "all"' in workflow, "manual CFSv2 all action should use delayed-file readiness retries")
     check('description: "Lagged initial-condition window; 6 means 24 cycles"' in workflow, "scheduled CFSv2 workflow should stay inside the live archive")
     check("ROLLING_DAYS: ${{ inputs.rolling_days || '6' }}" in workflow, "scheduled CFSv2 workflow should default to six rolling days")
     check("workflow_call:" in workflow, "CFSv2 workflow should be reusable by focused product menus")
     for term in (
-        "name: CFSv2 Snowfall and SWE Graphics",
-        "Snowfall departure",
-        "Snow-water equivalent anomaly",
+        "name: CFSv2 Snowfall Graphics",
+        "CFSv2 snowfall departure",
         "snowfall_anomaly",
-        "snow_water_equivalent_anomaly",
         "uses: ./.github/workflows/cfsv2.yml",
         "lead_months: ${{ inputs.lead_months }}",
         "seasonal_window: ${{ inputs.seasonal_window }}",
         "rolling_days: ${{ inputs.rolling_days }}",
     ):
         check(term in snow_workflow, f"CFSv2 snow-products workflow missing term: {term}")
+    check("snow_water_equivalent_anomaly" not in snow_workflow, "the focused snow workflow must not offer quarantined SWE")
     check("actions/cache/save@v4" in workflow and "if: always()" in workflow, "CFSv2 workflow should retain warmed rolling state after failed attempts")
     check("--keep-source-cache" in workflow and "Trim transient CFSv2 source cache" in workflow, "scheduled CFSv2 products should reuse and then trim source downloads")
     check('if [[ "${{ github.event_name }}" == "schedule" ]]' in workflow, "scheduled suite should remain distinct from manual single-product dispatch")
@@ -583,7 +585,7 @@ def main() -> int:
     for term in (
         "workflow_run:",
         "CFSv2 Rolling Seasonal Graphics",
-        "CFSv2 Snowfall and SWE Graphics",
+        "CFSv2 Snowfall Graphics",
         "ECMWF SEAS5 Seasonal Graphics",
         "WeatherNext Runner",
         "actions/download-artifact@v4",
@@ -593,9 +595,8 @@ def main() -> int:
         check(term in pages_workflow, f"central Pages workflow missing term: {term}")
     for term in (
         "Normalize source workflow name",
-        '"CFSv2 Snowfall departure"*',
-        '"CFSv2 Snow-water equivalent anomaly"*',
-        'echo "SOURCE_WORKFLOW=CFSv2 Snowfall and SWE Graphics" >> "$GITHUB_ENV"',
+        '"CFSv2 snowfall departure"*',
+        'echo "SOURCE_WORKFLOW=CFSv2 Snowfall Graphics" >> "$GITHUB_ENV"',
     ):
         check(term in pages_workflow, f"central Pages workflow missing dynamic snow-run normalization: {term}")
 

@@ -14,7 +14,9 @@ nominal start dates from April 2026 onward.
 
 The source fields are native C3S bias-adjusted anomalies. They are not
 subtracted from the CFSv2 or CanSIPS climatologies. The multi-system product
-is explicitly marked in the manifest with its available component list.
+records its actual available component list and count for every target. A
+seasonal blend uses only systems that supplied every month in that window, so
+the image label and data always describe the same ensemble.
 All component maps, including JMA/MRI-CPS4, and the C3S multi-system mean use
 the shared seasonal 500-mb scale of -100 to +100 m with 10 m intervals.
 
@@ -27,6 +29,8 @@ seasonal/DJF maps use -4.0 to +4.0 inches. Both use finer breakpoints near zero
 and wider tail bins. A centre that does not return the field is retained as a
 failed or partial component rather than being silently substituted with
 snowpack.
+Every monthly and seasonal field passes finite-coverage and physical-range QC
+before it can be rendered or published.
 
 The release monitor is `.github/workflows/seasonal-release-check.yml`. Starting
 at the official 10th/12 UTC C3S window, it polls the CDS catalogue constraints
