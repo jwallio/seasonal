@@ -641,15 +641,22 @@ function fieldText(target) {
   if (!value) return '—';
   return value.units ? `${value.field || 'Field'} (${value.units})` : (value.field || '—');
 }
-function setMessage(message) { el('map-wrap').replaceChildren(Object.assign(document.createElement('div'), { className: 'empty', textContent: message })); }
+function setMessage(message) {
+  const empty = Object.assign(document.createElement('div'), { className: 'empty', textContent: message });
+  empty.setAttribute('role', 'status');
+  empty.setAttribute('aria-live', 'polite');
+  el('map-wrap').replaceChildren(empty);
+}
 function downloadFileName(src) {
   try { return decodeURIComponent(new URL(src, location.href).pathname.split('/').pop() || 'seasonal-map.png'); }
   catch (_) { return 'seasonal-map.png'; }
 }
 let dialogMap = { src: '', title: '' };
+let dialogOpener = null;
 function openMapDialog(src, title) {
   const dialog = el('map-dialog');
   dialogMap = { src, title };
+  dialogOpener ||= document.activeElement instanceof HTMLElement ? document.activeElement : null;
   el('map-dialog-title').textContent = title;
   setImageFallbacks(el('map-dialog-image'), [src]);
   el('map-dialog-image').alt = title;
@@ -657,6 +664,16 @@ function openMapDialog(src, title) {
   el('map-dialog-download').download = downloadFileName(src);
   el('map-dialog-status').textContent = '';
   if (typeof dialog.showModal === 'function') dialog.showModal();
+}
+function closeMapDialog() {
+  const dialog = el('map-dialog');
+  if (dialog.open) dialog.close();
+}
+function restoreMapDialogFocus() {
+  const opener = dialogOpener;
+  dialogMap = { src: '', title: '' };
+  dialogOpener = null;
+  if (opener?.isConnected && !opener.disabled) opener.focus();
 }
 async function shareCurrentMap() {
   const status = el('map-dialog-status');
@@ -727,6 +744,18 @@ function renderOverviewFilters() {
     button.setAttribute('aria-pressed', String(active));
   });
 }
+function updateOverviewFilterCounts(counts) {
+  const filterBar = el('overview-filters');
+  if (!filterBar || !counts) return;
+  filterBar.querySelectorAll('[data-overview-filter]').forEach(button => {
+    const key = button.dataset.overviewFilter;
+    const label = button.dataset.overviewLabel || button.textContent.trim();
+    const count = Number(counts[key]);
+    if (!Number.isFinite(count)) return;
+    button.textContent = `${label} · ${count}`;
+    button.setAttribute('aria-label', `${label}: ${count} ${key === 'attention' ? 'items needing attention' : 'applicable surfaces'}`);
+  });
+}
 function renderOverview() {
   const body = el('overview-matrix-body');
   const filter = OVERVIEW_FILTERS.includes(selection.overviewFilter) ? selection.overviewFilter : 'all';
@@ -773,7 +802,9 @@ function renderOverview() {
       states.push(state);
       const cell = document.createElement('td'); cell.className = 'availability-status-cell'; cell.dataset.parameter = OVERVIEW_PARAMETER_LABELS[productConfig.value] || productConfig.label;
       const button = document.createElement('button'); button.type = 'button'; button.className = `status-pill ${state.className}`; button.textContent = state.label; button.title = state.title;
-      button.setAttribute('aria-label', `${model.label} ${productConfig.label}: ${state.label}; refresh ${scheduleState.label}`);
+      const lastInit = lastRun ? `Latest init ${compactUtc(lastRun.init_utc)}` : 'No usable initialization';
+      const nextUpdate = scheduleState.next ? `Next expected update ${compactEdt(scheduleState.next.publish)}` : 'Next update unavailable';
+      button.setAttribute('aria-label', `${model.label} ${productConfig.label}: ${state.label}. ${lastInit}. ${nextUpdate}. ${state.title}`);
       if (!state.available) button.disabled = true;
       else button.addEventListener('click', () => {
         selection.model = modelKey; selection.product = state.product; selection.run = String(state.run.id); selection.target = '';
@@ -812,6 +843,18 @@ function renderOverview() {
     emptyRow.appendChild(emptyCell); groupedRows.push(emptyRow);
   }
   body.replaceChildren(...groupedRows);
+  const filterStatus = el('overview-filter-status');
+  if (filterStatus) {
+    const visibleRows = scheduleRows.filter(item => item.rowMatches).length;
+    const matchingCells = states.filter(state => {
+      const scheduleState = scheduleRows.find(item => item.modelKey === state.modelKey)?.scheduleState;
+      return filter === 'all' || overviewFilterMatches(filter, state, scheduleState);
+    }).length;
+    const filterLabel = filter.charAt(0).toUpperCase() + filter.slice(1);
+    filterStatus.textContent = filter === 'all'
+      ? `Availability filter: All. Showing ${visibleRows} model rows.`
+      : `${filterLabel} filter active. Showing ${visibleRows} model rows and ${matchingCells} matching surfaces.`;
+  }
   const online = COMPARE_MODELS.filter(modelKey => Boolean(modelStates[modelKey].manifest)).length;
   const applicable = states.filter(state => state.applicable !== false);
   const available = applicable.filter(state => state.available).length;
@@ -819,6 +862,13 @@ function renderOverview() {
   const processingModels = scheduleRows.filter(item => item.scheduleState.key === 'processing');
   const attention = applicable.filter(state => OVERVIEW_ATTENTION_CLASSES.includes(state.className)).length;
   const needsAttention = attention + overdueModels.length + processingModels.length;
+  updateOverviewFilterCounts({
+    all: applicable.length,
+    fresh: applicable.filter(state => state.className === 'status-fresh').length,
+    aging: applicable.filter(state => state.className === 'status-aging').length,
+    partial: applicable.filter(state => state.className === 'status-partial').length,
+    attention: needsAttention,
+  });
   const stats = [
     { label: 'Models online', value: `${online}/${COMPARE_MODELS.length}`, detail: 'published manifests loaded' },
     { label: 'Map coverage', value: `${available}/${applicable.length}`, detail: 'supported model-parameter surfaces' },
@@ -861,7 +911,12 @@ function renderOverview() {
   syncUrlState();
 }
 function compareEmpty(message) {
-  const empty = document.createElement('div'); empty.className = 'empty'; empty.textContent = message; return empty;
+  const empty = document.createElement('div');
+  empty.className = 'empty';
+  empty.textContent = message;
+  empty.setAttribute('role', 'status');
+  empty.setAttribute('aria-live', 'polite');
+  return empty;
 }
 function compareBaselineLabel(value) {
   return COMPARE_BASELINES.find(item => item.value === value)?.label || 'Model reference';
@@ -940,7 +995,7 @@ function renderCompareCard(modelKey, targetKey) {
       imageWrap.replaceChildren(compareEmpty('The manifest target exists, but its image is not in the published Pages tree.'));
     });
     const imageButton = document.createElement('button'); imageButton.type = 'button'; imageButton.className = 'image-button'; imageButton.setAttribute('aria-label', `Open full-size ${image.alt}`);
-    imageButton.addEventListener('click', () => openMapDialog(fullImage, image.alt));
+    imageButton.addEventListener('click', () => { dialogOpener = imageButton; openMapDialog(fullImage, image.alt); });
     imageButton.appendChild(image); imageWrap.appendChild(imageButton);
   }
   card.appendChild(imageWrap);
@@ -978,8 +1033,9 @@ function renderAnalogProductGrid(section, products, entry, analogLabel) {
       const img = document.createElement('img');
       img.alt = `${title.textContent} for ${analogLabel || entry.top_analog?.label || entry.period?.label || 'the selected period'}`;
       img.loading = 'lazy';
+      img.decoding = 'async';
       setImageFallbacks(img, [image, originalImage], () => { tile.replaceChildren(title, Object.assign(document.createElement('p'), { className: 'analog-product-note', textContent: 'The generated image is not in the published tree.' })); });
-      button.addEventListener('click', () => openMapDialog(image, img.alt));
+      button.addEventListener('click', () => { dialogOpener = button; openMapDialog(image, img.alt); });
       button.appendChild(img);
       tile.appendChild(button);
     } else {
@@ -1265,9 +1321,9 @@ function renderAll() {
   setMessage('');
   el('map-wrap').replaceChildren();
   if (image) {
-    const imageElement = document.createElement('img'); imageElement.alt = `${runDisplayName(model, run)} ${label} ${targetText(model, target)}`; imageElement.loading = 'eager';
+    const imageElement = document.createElement('img'); imageElement.alt = `${runDisplayName(model, run)} ${label} ${targetText(model, target)}`; imageElement.loading = 'eager'; imageElement.decoding = 'async'; imageElement.fetchPriority = 'high';
     setImageFallbacks(imageElement, [image, originalImage], () => { el('download-link').hidden = true; setMessage('The manifest is available, but this image is not present in the published Pages tree.'); });
-    const imageButton = document.createElement('button'); imageButton.type = 'button'; imageButton.className = 'image-button'; imageButton.setAttribute('aria-label', `Open full-size ${imageElement.alt}`); imageButton.addEventListener('click', () => openMapDialog(imageElement.src, imageElement.alt)); imageButton.appendChild(imageElement); el('map-wrap').appendChild(imageButton);
+    const imageButton = document.createElement('button'); imageButton.type = 'button'; imageButton.className = 'image-button'; imageButton.setAttribute('aria-label', `Open full-size ${imageElement.alt}`); imageButton.addEventListener('click', () => { dialogOpener = imageButton; openMapDialog(imageElement.src, imageElement.alt); }); imageButton.appendChild(imageElement); el('map-wrap').appendChild(imageButton);
     el('download-link').href = image; el('download-link').download = downloadFileName(image); el('download-link').hidden = false;
   } else setMessage('No rendered image is available for this target.');
   const warning = el('warning');
@@ -1294,6 +1350,11 @@ function setView(view) {
   el('compare-view').hidden = selection.view !== 'compare';
   renderCurrentView();
 }
+function refreshOperationalOverview() {
+  if (!document.hidden && selection.view === 'overview' && seasonalCatalog) renderOverview();
+}
+window.setInterval(refreshOperationalOverview, 60000);
+document.addEventListener('visibilitychange', refreshOperationalOverview);
 async function copyCurrentLink() {
   syncUrlState(); const status = el('copy-status');
   try {
@@ -1323,8 +1384,9 @@ el('compare-role-select').addEventListener('change', event => { selection.compar
 el('compare-available-only').addEventListener('change', event => { selection.compareAvailableOnly = event.target.checked; renderCompare(); });
 el('copy-link').addEventListener('click', copyCurrentLink);
 el('map-dialog-share').addEventListener('click', shareCurrentMap);
-el('map-dialog-close').addEventListener('click', () => el('map-dialog').close());
-el('map-dialog').addEventListener('click', event => { if (event.target === el('map-dialog')) el('map-dialog').close(); });
+el('map-dialog-close').addEventListener('click', closeMapDialog);
+el('map-dialog').addEventListener('click', event => { if (event.target === el('map-dialog')) closeMapDialog(); });
+el('map-dialog').addEventListener('close', restoreMapDialogFocus);
 document.querySelector('.view-tabs').addEventListener('keydown', event => {
   const ids = ['overview-tab', 'single-tab', 'compare-tab']; const current = ids.indexOf(event.target.id);
   if (current < 0 || !['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;

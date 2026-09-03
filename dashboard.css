@@ -398,7 +398,7 @@ dialog::backdrop { background:#02080dcc; backdrop-filter:blur(5px); }
 .overview-matrix-card .card-head { padding:14px 16px; }
 .overview-matrix-card .matrix-head h2 { font-size:18px; }
 .overview-filters { display:flex; align-items:center; flex-wrap:wrap; gap:6px; padding:10px 16px 0; }
-.overview-filter { border-radius:999px; padding:6px 10px; font-size:10px; font-weight:800; }
+.overview-filter { border-radius:999px; padding:6px 10px; font-size:10px; font-weight:800; white-space:nowrap; font-variant-numeric:tabular-nums; }
 .overview-filter.active { border-color:var(--teal); background:#173c45; color:var(--ink); }
 .overview-filter[data-overview-filter="attention"].active { border-color:var(--coral); background:#43251f; color:#ffd1c8; }
 .overview-matrix .availability-status-cell.filter-muted { opacity:.28; }
@@ -491,5 +491,16 @@ button:not(.image-button), select { min-height:44px; }
 }
 button:not(.image-button):active,
 .dialog-actions a:active { transform:scale(.96); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior:auto !important;
+    transition-duration:0.01ms !important;
+    animation-duration:0.01ms !important;
+    animation-iteration-count:1 !important;
+  }
+  button:not(.image-button):active,
+  .dialog-actions a:active { transform:none; }
+}
 
 
