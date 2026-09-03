@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Seasonal | wall.cloud</title>
   <meta name="description" content="Seasonal forecast maps, model comparisons, and historical analogs from wall.cloud.">
+  <meta name="theme-color" content="#08141b">
   <link rel="stylesheet" href="dashboard.css">
 </head>
 <body>
@@ -32,12 +33,13 @@
           <p>Select a status to open that map.</p>
         </div>
         <div class="overview-filters" id="overview-filters" role="toolbar" aria-label="Filter availability">
-          <button class="overview-filter active" type="button" data-overview-filter="all" aria-pressed="true">All</button>
-          <button class="overview-filter" type="button" data-overview-filter="fresh" aria-pressed="false">Fresh</button>
-          <button class="overview-filter" type="button" data-overview-filter="aging" aria-pressed="false">Aging</button>
-          <button class="overview-filter" type="button" data-overview-filter="partial" aria-pressed="false">Partial</button>
-          <button class="overview-filter" type="button" data-overview-filter="attention" aria-pressed="false">Attention</button>
+          <button class="overview-filter active" type="button" data-overview-filter="all" data-overview-label="All" aria-pressed="true">All</button>
+          <button class="overview-filter" type="button" data-overview-filter="fresh" data-overview-label="Fresh" aria-pressed="false">Fresh</button>
+          <button class="overview-filter" type="button" data-overview-filter="aging" data-overview-label="Aging" aria-pressed="false">Aging</button>
+          <button class="overview-filter" type="button" data-overview-filter="partial" data-overview-label="Partial" aria-pressed="false">Partial</button>
+          <button class="overview-filter" type="button" data-overview-filter="attention" data-overview-label="Attention" aria-pressed="false">Attention</button>
         </div>
+        <p class="sr-only" id="overview-filter-status" role="status" aria-live="polite"></p>
         <div class="matrix-wrap" role="region" aria-label="Model and parameter availability" tabindex="0">
           <table class="overview-matrix" id="overview-matrix">
             <thead><tr><th scope="col">Model</th><th scope="col">Cadence</th><th scope="col">Last run</th><th scope="col">Next update (EDT)</th><th scope="col">500-mb height</th><th scope="col">850-mb temp</th><th scope="col">2-m temp</th><th scope="col">Precipitation</th><th scope="col">Snowfall</th><th scope="col">MSLP</th></tr></thead>
@@ -102,9 +104,10 @@
         <div class="analog-grid" id="analog-grid"></div>
       </details>
     </section>
-    <dialog id="map-dialog" aria-labelledby="map-dialog-title">
+    <dialog id="map-dialog" aria-labelledby="map-dialog-title" aria-describedby="map-dialog-description map-dialog-status">
       <div class="dialog-head"><h2 id="map-dialog-title">Forecast map</h2><div class="dialog-actions"><button id="map-dialog-share" type="button">Share</button><a id="map-dialog-download" href="#" download>Download</a><button id="map-dialog-close" type="button">Close</button></div></div>
       <div class="dialog-body"><img id="map-dialog-image" alt=""></div>
+      <p class="sr-only" id="map-dialog-description">Full-size forecast map. Use Share or Download to keep the branded image, or Close to return to the selected map.</p>
       <p class="dialog-status" id="map-dialog-status" role="status" aria-live="polite"></p>
     </dialog>
     <div class="footer" id="footer"><span class="footer-copy" id="footer-copy">Loading catalog…</span><a class="footer-brand" href="https://wall.cloud/" aria-label="wall.cloud">wall<span class="brand-dot">.</span>cloud</a></div>
