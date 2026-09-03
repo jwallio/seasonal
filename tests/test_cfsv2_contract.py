@@ -313,6 +313,64 @@ def main() -> int:
     ), "CFSv2 snowfall should require 2-m temperature, 850-mb temperature, and precipitation")
     check(snowfall_spec["map_domain"] == "land" and snowfall_spec["region"] == adapter_module.CONUS_PRECIP_REGION, "CFSv2 snowfall should use a CONUS land-only map")
     check(adapter_module.product_dependency_names(adapter_module.PRODUCT_SNOWFALL_ANOMALY) == snowfall_spec["dependencies"], "readiness should expand snowfall to its raw dependencies")
+    snowfall_seasonal_baseline = adapter_module.seasonal_baseline_manifest(
+        [
+            {
+                "label": "derived snowfall baseline",
+                "dependencies": [
+                    {
+                        "product": adapter_module.PRODUCT_2M_TEMPERATURE_ANOMALY,
+                        "file": "tmp2m-l04.grb2",
+                        "url": "https://example.test/tmp2m-l04.grb2",
+                        "fallback": "cached_prior_initialization",
+                        "requested_initialization": "2026090300",
+                        "used_initialization": "2026082700",
+                        "requested_url": "https://example.test/requested-tmp2m-l04.grb2",
+                        "fallback_error": "HTTP 503",
+                    },
+                    {
+                        "product": adapter_module.PRODUCT_850_TEMPERATURE_ANOMALY,
+                        "file": "tmp850-l04.grb2",
+                        "url": "https://example.test/tmp850-l04.grb2",
+                        "fallback": None,
+                    },
+                    {
+                        "product": adapter_module.PRODUCT_PRECIPITATION_ANOMALY,
+                        "file": "prate-l04.grb2",
+                        "url": "https://example.test/prate-l04.grb2",
+                        "fallback": None,
+                    },
+                ],
+            }
+        ],
+        "fallback label",
+        adapter_module.NCEI_CALIBRATION_YEARS,
+        rolling_init="2026090300",
+    )
+    check(
+        snowfall_seasonal_baseline["files"] == ["tmp2m-l04.grb2", "tmp850-l04.grb2", "prate-l04.grb2"],
+        "seasonal snowfall should flatten dependency baseline files without requiring baseline.file",
+    )
+    check(
+        snowfall_seasonal_baseline["label"] == "derived snowfall baseline"
+        and snowfall_seasonal_baseline["anchor_init"] == "2026090300",
+        "seasonal snowfall should retain its derived baseline label and rolling anchor",
+    )
+    check(
+        len(snowfall_seasonal_baseline["fallbacks"]) == 1
+        and snowfall_seasonal_baseline["fallbacks"][0]["error"] == "HTTP 503",
+        "seasonal snowfall should retain nested calibration fallback provenance",
+    )
+    direct_seasonal_baseline = adapter_module.seasonal_baseline_manifest(
+        [{"file": "z500-l04.grb2", "label": "direct baseline", "url": "https://example.test/z500-l04.grb2"}],
+        "fallback label",
+        adapter_module.NCEI_CALIBRATION_YEARS,
+    )
+    check(
+        direct_seasonal_baseline["files"] == ["z500-l04.grb2"]
+        and direct_seasonal_baseline["urls"] == ["https://example.test/z500-l04.grb2"],
+        "ordinary products should retain their direct baseline provenance",
+    )
     converted_mslp = adapter_module.prepare_product_grid(
         adapter_module.Grid([0.0], [0.0], [[101325.0]]), mslp_spec, "202608"
     )

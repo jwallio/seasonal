@@ -2128,6 +2128,54 @@ def configured_baseline_label(args: argparse.Namespace) -> str:
     return "user-supplied CFSv2/reforecast baseline"
 
 
+def seasonal_baseline_manifest(
+    monthly_baselines: Sequence[dict[str, object]],
+    default_label: str,
+    years: str | None,
+    *,
+    rolling_init: str | None = None,
+) -> dict[str, object]:
+    """Build seasonal baseline provenance for direct and derived products."""
+
+    provenance_records: list[dict[str, object]] = []
+    for baseline in monthly_baselines:
+        dependencies = baseline.get("dependencies")
+        nested_records = (
+            [item for item in dependencies if isinstance(item, dict)]
+            if isinstance(dependencies, list)
+            else []
+        )
+        provenance_records.extend(nested_records or [baseline])
+
+    metadata: dict[str, object] = {
+        "files": [item["file"] for item in provenance_records if item.get("file")],
+        "label": monthly_baselines[0].get("label", default_label) if monthly_baselines else default_label,
+        "years": years,
+    }
+    if rolling_init:
+        metadata["rolling_policy"] = "anchor_initialization"
+        metadata["anchor_init"] = rolling_init
+
+    baseline_urls = [item.get("url") for item in provenance_records if item.get("url")]
+    if baseline_urls:
+        metadata["urls"] = baseline_urls
+
+    fallback_baselines = [
+        {
+            "requested_initialization": item.get("requested_initialization"),
+            "used_initialization": item.get("used_initialization"),
+            "requested_url": item.get("requested_url"),
+            "url": item.get("url"),
+            "error": item.get("fallback_error"),
+        }
+        for item in provenance_records
+        if item.get("fallback") == "cached_prior_initialization"
+    ]
+    if fallback_baselines:
+        metadata["fallbacks"] = fallback_baselines
+    return metadata
+
+
 def _finite_values(grid: Grid) -> Iterator[float]:
     for row in grid.values:
         for value in row:
@@ -3700,38 +3748,12 @@ def run(args: argparse.Namespace) -> int:
                     if monthly_baselines
                     else configured_baseline_label(args)
                 )
-                seasonal_entry["baseline"] = {
-                    "files": [
-                        target_entries_by_lead[lead]["baseline"]["file"]
-                        for lead in seasonal_leads
-                        if "baseline" in target_entries_by_lead.get(lead, {})
-                    ],
-                    "label": monthly_baselines[0].get("label", baseline_label) if monthly_baselines else baseline_label,
-                    "years": NCEI_CALIBRATION_YEARS if args.ncei_calibration else (args.baseline_years or None),
-                }
-                if rolling_mode:
-                    seasonal_entry["baseline"]["rolling_policy"] = "anchor_initialization"
-                    seasonal_entry["baseline"]["anchor_init"] = init
-                baseline_urls = [
-                    target_entries_by_lead[lead]["baseline"].get("url")
-                    for lead in seasonal_leads
-                    if target_entries_by_lead[lead].get("baseline", {}).get("url")
-                ]
-                if baseline_urls:
-                    seasonal_entry["baseline"]["urls"] = baseline_urls
-                fallback_baselines = [
-                    {
-                        "requested_initialization": item["requested_initialization"],
-                        "used_initialization": item["used_initialization"],
-                        "requested_url": item["requested_url"],
-                        "url": item["url"],
-                        "error": item["fallback_error"],
-                    }
-                    for item in monthly_baselines
-                    if item.get("fallback") == "cached_prior_initialization"
-                ]
-                if fallback_baselines:
-                    seasonal_entry["baseline"]["fallbacks"] = fallback_baselines
+                seasonal_entry["baseline"] = seasonal_baseline_manifest(
+                    monthly_baselines,
+                    baseline_label,
+                    NCEI_CALIBRATION_YEARS if args.ncei_calibration else (args.baseline_years or None),
+                    rolling_init=init if rolling_mode else None,
+                )
             else:
                 seasonal_entry["baseline"] = {"status": "not_applicable", "reason": "absolute smoke output"}
             seasonal_entry["source_files"] = [
