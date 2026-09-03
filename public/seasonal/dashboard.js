@@ -70,7 +70,7 @@ let seasonalAnalogProducts = null;
 let analogManifestError = '';
 let analogProductsManifestError = '';
 const modelStates = Object.fromEntries(Object.keys(MODEL_CONFIG).map(key => [key, { manifest: null, catalog: null, runs: [], error: null }]));
-const selection = { view: 'overview', model: 'cfsv2', product: '', run: '', target: '', compareProduct: '500mb_height_anomaly', compareTarget: '', compareBaseline: '', compareRole: 'all', compareAvailableOnly: true, ratio: '10' };
+const selection = { view: 'overview', model: 'cfsv2', product: '', run: '', target: '', overviewFilter: 'all', compareProduct: '500mb_height_anomaly', compareTarget: '', compareBaseline: '', compareRole: 'all', compareAvailableOnly: true, ratio: '10' };
 const DEFAULT_PRODUCT_PRIORITY = [
   '500mb_height_anomaly',
   '2m_temperature_anomaly',
@@ -140,6 +140,16 @@ const COMPARE_PRODUCTS = [
   { value: 'snowfall_anomaly', label: 'CONUS Snowfall Water-Equivalent Departure', aliases: ['snowfall_anomaly'] },
   { value: 'mslp_anomaly', label: 'MSLP Anomaly', aliases: ['mslp_anomaly'] },
 ];
+const OVERVIEW_FILTERS = ['all', 'fresh', 'aging', 'partial', 'attention'];
+const OVERVIEW_ATTENTION_CLASSES = ['status-aging', 'status-stale', 'status-partial', 'status-failed'];
+const OVERVIEW_PARAMETER_LABELS = {
+  '500mb_height_anomaly': '500-mb height',
+  '850mb_temperature_anomaly': '850-mb temp',
+  '2m_temperature_anomaly': '2-m temp',
+  'precipitation_anomaly': 'Precipitation',
+  'snowfall_anomaly': 'Snowfall',
+  'mslp_anomaly': 'MSLP',
+};
 const COMPARE_BASELINES = [
   { value: 'native', label: 'Native model reference' },
   { value: 'common_1991_2020', label: 'Common 1991–2020 (limited)' },
@@ -164,6 +174,8 @@ function readUrlState() {
   if (params.has('run')) selection.run = params.get('run') || '';
   if (params.has('target')) selection.target = params.get('target') || '';
   if (params.has('ratio')) selection.ratio = params.get('ratio') || '10';
+  const overviewFilter = params.get('status');
+  if (OVERVIEW_FILTERS.includes(overviewFilter)) selection.overviewFilter = overviewFilter;
   if (params.has('compare')) selection.compareProduct = params.get('compare') || DEFAULT_COMPARE_PRODUCT;
   if (params.has('period')) selection.compareTarget = params.get('period') || '';
   if (params.has('reference')) selection.compareBaseline = params.get('reference') || '';
@@ -174,7 +186,9 @@ function readUrlState() {
 function syncUrlState() {
   const params = new URLSearchParams();
   params.set('view', selection.view);
-  if (selection.view === 'single') {
+  if (selection.view === 'overview') {
+    if (selection.overviewFilter !== 'all') params.set('status', selection.overviewFilter);
+  } else if (selection.view === 'single') {
     params.set('model', selection.model);
     if (selection.product) params.set('product', selection.product);
     if (selection.run) params.set('run', selection.run);
@@ -699,11 +713,28 @@ function renderUnavailable(model) {
   el('warning').style.display = 'none';
   syncUrlState();
 }
+function overviewFilterMatches(filter, state, scheduleState) {
+  if (filter === 'all') return true;
+  if (filter === 'attention') return OVERVIEW_ATTENTION_CLASSES.includes(state?.className) || ['overdue', 'processing'].includes(scheduleState?.key);
+  return state?.className === `status-${filter}`;
+}
+function renderOverviewFilters() {
+  const filterBar = el('overview-filters');
+  if (!filterBar) return;
+  filterBar.querySelectorAll('[data-overview-filter]').forEach(button => {
+    const active = button.dataset.overviewFilter === selection.overviewFilter;
+    button.classList.toggle('active', active);
+    button.setAttribute('aria-pressed', String(active));
+  });
+}
 function renderOverview() {
   const body = el('overview-matrix-body');
+  const filter = OVERVIEW_FILTERS.includes(selection.overviewFilter) ? selection.overviewFilter : 'all';
+  selection.overviewFilter = filter;
+  renderOverviewFilters();
   const states = [];
   const scheduleRows = [];
-  const rows = COMPARE_MODELS.map(modelKey => {
+  COMPARE_MODELS.forEach(modelKey => {
     const model = MODEL_CONFIG[modelKey];
     const lastRun = latestUsableModelRun(modelKey);
     const schedule = scheduleFor(modelKey);
@@ -736,9 +767,11 @@ function renderOverview() {
     const nextDetail = document.createElement('span'); nextDetail.className = 'availability-detail'; nextDetail.textContent = 'Expected wall.cloud availability'; nextCell.appendChild(nextDetail);
     nextCell.title = scheduleState.next ? `Expected wall.cloud availability: ${formatEdt(scheduleState.next.publish)}. ${schedule.officialSchedule || ''}` : scheduleState.title;
     row.appendChild(nextCell);
+    const rowStates = [];
     COMPARE_PRODUCTS.forEach(productConfig => {
-      const state = freshnessState(modelKey, productConfig.value); states.push({ ...state, modelKey, productKey: productConfig.value });
-      const cell = document.createElement('td'); cell.className = 'availability-status-cell'; cell.dataset.parameter = productConfig.label;
+      const state = { ...freshnessState(modelKey, productConfig.value), modelKey, productKey: productConfig.value };
+      states.push(state);
+      const cell = document.createElement('td'); cell.className = 'availability-status-cell'; cell.dataset.parameter = OVERVIEW_PARAMETER_LABELS[productConfig.value] || productConfig.label;
       const button = document.createElement('button'); button.type = 'button'; button.className = `status-pill ${state.className}`; button.textContent = state.label; button.title = state.title;
       button.setAttribute('aria-label', `${model.label} ${productConfig.label}: ${state.label}; refresh ${scheduleState.label}`);
       if (!state.available) button.disabled = true;
@@ -747,16 +780,25 @@ function renderOverview() {
         setView('single');
       });
       cell.appendChild(button); row.appendChild(cell);
+      rowStates.push({ cell, state });
     });
-    scheduleRows.push({ modelKey, row, schedule, scheduleState });
-    return row;
+    const scheduleMatches = filter === 'attention' && ['overdue', 'processing'].includes(scheduleState.key);
+    const rowMatches = filter === 'all' || scheduleMatches || rowStates.some(item => overviewFilterMatches(filter, item.state, scheduleState));
+    row.hidden = !rowMatches;
+    row.classList.toggle('availability-filter-match', filter !== 'all' && rowMatches);
+    rowStates.forEach(item => {
+      const cellMatches = filter !== 'all' && overviewFilterMatches(filter, item.state, scheduleState);
+      item.cell.classList.toggle('filter-match', cellMatches);
+      item.cell.classList.toggle('filter-muted', filter !== 'all' && !cellMatches);
+    });
+    scheduleRows.push({ modelKey, row, schedule, scheduleState, rowMatches });
   });
   const groupedRows = [];
   [
     { key: 'frequent', label: 'Frequent refresh', detail: 'High-frequency source cycles' },
     { key: 'monthly', label: 'Monthly and release-window models', detail: 'One forecast family per row' },
   ].forEach(group => {
-    const members = scheduleRows.filter(item => (item.schedule.cadenceGroup || 'monthly') === group.key);
+    const members = scheduleRows.filter(item => (item.schedule.cadenceGroup || 'monthly') === group.key && item.rowMatches);
     if (!members.length) return;
     const divider = document.createElement('tr'); divider.className = 'availability-group-row';
     const cell = document.createElement('th'); cell.scope = 'rowgroup'; cell.colSpan = COMPARE_PRODUCTS.length + 4;
@@ -764,22 +806,33 @@ function renderOverview() {
     const detail = document.createElement('small'); detail.textContent = group.detail;
     cell.append(label, detail); divider.appendChild(cell); groupedRows.push(divider, ...members.map(item => item.row));
   });
+  if (!groupedRows.length && filter !== 'all') {
+    const emptyRow = document.createElement('tr'); emptyRow.className = 'availability-empty-row';
+    const emptyCell = document.createElement('th'); emptyCell.scope = 'row'; emptyCell.colSpan = COMPARE_PRODUCTS.length + 4; emptyCell.textContent = `No ${filter} surfaces are currently published.`;
+    emptyRow.appendChild(emptyCell); groupedRows.push(emptyRow);
+  }
   body.replaceChildren(...groupedRows);
   const online = COMPARE_MODELS.filter(modelKey => Boolean(modelStates[modelKey].manifest)).length;
   const applicable = states.filter(state => state.applicable !== false);
   const available = applicable.filter(state => state.available).length;
   const overdueModels = scheduleRows.filter(item => item.scheduleState.key === 'overdue');
   const processingModels = scheduleRows.filter(item => item.scheduleState.key === 'processing');
-  const fresh = applicable.filter(state => state.className === 'status-fresh' && !overdueModels.some(item => item.modelKey === state.modelKey)).length;
-  const attention = applicable.filter(state => ['status-aging', 'status-stale', 'status-partial', 'status-failed'].includes(state.className)).length;
+  const attention = applicable.filter(state => OVERVIEW_ATTENTION_CLASSES.includes(state.className)).length;
+  const needsAttention = attention + overdueModels.length + processingModels.length;
   const stats = [
     { label: 'Models online', value: `${online}/${COMPARE_MODELS.length}`, detail: 'published manifests loaded' },
     { label: 'Map coverage', value: `${available}/${applicable.length}`, detail: 'supported model-parameter surfaces' },
-    { label: 'On schedule', value: `${COMPARE_MODELS.length - overdueModels.length}/${COMPARE_MODELS.length}`, detail: 'provider windows' },
-    { label: 'Needs attention', value: String(attention + overdueModels.length), detail: 'aging, stale, partial, failed, or late' },
+    { label: 'On schedule', value: `${COMPARE_MODELS.length - overdueModels.length - processingModels.length}/${COMPARE_MODELS.length}`, detail: 'provider windows' },
+    { label: 'Needs attention', value: String(needsAttention), detail: 'aging, stale, partial, failed, or late surfaces' },
   ];
   el('overview-stats').replaceChildren(...stats.map(stat => {
-    const card = document.createElement('article'); card.className = 'card overview-stat';
+    const isAttention = stat.label === 'Needs attention';
+    const card = document.createElement(isAttention ? 'button' : 'article'); card.className = `card overview-stat ${isAttention ? 'overview-stat-attention' : 'overview-stat-meta'}`;
+    if (isAttention) {
+      card.type = 'button'; card.setAttribute('aria-controls', 'overview-matrix');
+      const active = filter === 'attention'; card.setAttribute('aria-pressed', String(active));
+      card.addEventListener('click', () => { selection.overviewFilter = active ? 'all' : 'attention'; renderOverview(); });
+    }
     const label = document.createElement('small'); label.textContent = stat.label;
     const value = document.createElement('strong'); value.textContent = stat.value;
     const detail = document.createElement('span'); detail.textContent = stat.detail;
@@ -788,15 +841,22 @@ function renderOverview() {
   const unavailableModels = COMPARE_MODELS.filter(modelKey => modelStates[modelKey].error).map(modelKey => MODEL_CONFIG[modelKey].label);
   const partialCount = states.filter(state => state.className === 'status-partial').length;
   const staleCount = states.filter(state => state.className === 'status-stale').length;
-  const notApplicableCount = states.filter(state => state.applicable === false).length;
+  const failedCount = states.filter(state => state.className === 'status-failed').length;
   const notices = [];
-  if (unavailableModels.length) notices.push(`Manifest unavailable: ${unavailableModels.join(' · ')}`);
-  if (partialCount) notices.push(`${partialCount} surface${partialCount === 1 ? '' : 's'} have partial ensemble coverage`);
-  if (staleCount) notices.push(`${staleCount} surface${staleCount === 1 ? '' : 's'} are beyond the expected refresh window`);
-  if (overdueModels.length) notices.push(`Old run: ${overdueModels.map(item => MODEL_CONFIG[item.modelKey].label).join(' · ')} is past its expected publication window`);
-  if (processingModels.length) notices.push(`${processingModels.map(item => MODEL_CONFIG[item.modelKey].label).join(' · ')} is inside its expected publication grace window`);
-  if (notApplicableCount) notices.push(`${notApplicableCount} intentionally unsupported or quarantined surface${notApplicableCount === 1 ? ' is' : 's are'} excluded from coverage`);
-  el('overview-notices').textContent = notices.length ? notices.join('. ') + '.' : `${fresh} map surfaces are fresh and all model rows are within their expected publication windows.`;
+  if (unavailableModels.length) notices.push(`Manifest unavailable — ${unavailableModels.join(' · ')}`);
+  if (partialCount) notices.push(`${partialCount} ${partialCount === 1 ? 'surface' : 'surfaces'} with partial ensemble coverage`);
+  if (failedCount) notices.push(`${failedCount} ${failedCount === 1 ? 'surface' : 'surfaces'} failed to render`);
+  if (staleCount) notices.push(`${staleCount} ${staleCount === 1 ? 'surface' : 'surfaces'} beyond the expected refresh window`);
+  if (overdueModels.length) notices.push(`Late — ${overdueModels.map(item => MODEL_CONFIG[item.modelKey].label).join(' · ')} past the expected publication window`);
+  if (processingModels.length) notices.push(`Processing — ${processingModels.map(item => MODEL_CONFIG[item.modelKey].label).join(' · ')} inside the expected publication grace window`);
+  const noticesElement = el('overview-notices');
+  noticesElement.replaceChildren();
+  noticesElement.hidden = notices.length === 0;
+  if (notices.length) {
+    const label = document.createElement('strong'); label.className = 'overview-notices-label'; label.textContent = 'Needs attention';
+    const list = document.createElement('ul'); notices.forEach(notice => { const item = document.createElement('li'); item.textContent = notice; list.appendChild(item); });
+    noticesElement.append(label, list);
+  }
   el('footer-copy').textContent = seasonalCatalog?.generated_utc ? `Catalog updated ${initLabel(seasonalCatalog.generated_utc)}` : 'Seasonal catalog loaded';
   syncUrlState();
 }
@@ -1272,6 +1332,12 @@ document.querySelector('.view-tabs').addEventListener('keydown', event => {
   const next = event.key === 'Home' ? 0 : event.key === 'End' ? ids.length - 1 : event.key === 'ArrowLeft' ? (current - 1 + ids.length) % ids.length : (current + 1) % ids.length;
   const nextView = ids[next].replace('-tab', ''); setView(nextView); el(ids[next]).focus();
 });
+document.querySelectorAll('[data-overview-filter]').forEach(button => button.addEventListener('click', () => {
+  const filter = button.dataset.overviewFilter;
+  if (!OVERVIEW_FILTERS.includes(filter)) return;
+  selection.overviewFilter = filter;
+  renderOverview();
+}));
 document.querySelectorAll('[data-overview-model]').forEach(button => button.addEventListener('click', () => { selection.model = button.dataset.overviewModel; selection.product = ''; selection.run = ''; selection.target = ''; setView('single'); }));
 const provenanceMedia = window.matchMedia('(min-width: 901px)');
 function syncProvenanceDisclosure(event = provenanceMedia) { el('provenance-details').open = event.matches; }
