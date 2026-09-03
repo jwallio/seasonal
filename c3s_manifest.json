@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "kind": "c3s_seasonal_manifest",
-  "generated_utc": "2026-08-30T19:51:48Z",
+  "generated_utc": "2026-09-03T23:28:45Z",
   "source": "Copernicus C3S seasonal forecasts",
   "source_url": "https://climate.copernicus.eu/seasonal-forecasts",
   "source_urls": [
@@ -15,7 +15,8 @@
     "2m_temperature_anomaly": "2-m Temperature Anomaly",
     "precipitation_anomaly": "Precipitation Anomaly",
     "snowfall_anomaly": "snowfall_anomaly",
-    "mslp_anomaly": "MSLP Anomaly"
+    "mslp_anomaly": "MSLP Anomaly",
+    "500mb_height_anomaly_nh": "500-mb Height Anomaly \u00b7 Northern Hemisphere"
   },
   "retention": {
     "max_cycles": 4,
@@ -87,12 +88,28 @@
             "p01": -0.832698,
             "p99": 0.086288,
             "display": {
-              "minimum": -0.8,
-              "maximum": 0.8,
-              "step": 0.1,
-              "below_fraction": 0.013125,
+              "minimum": -2.0,
+              "maximum": 2.0,
+              "breakpoints": [
+                -2.0,
+                -1.75,
+                -1.5,
+                -1.25,
+                -1.0,
+                -0.75,
+                -0.5,
+                0.0,
+                0.5,
+                0.75,
+                1.0,
+                1.25,
+                1.5,
+                1.75,
+                2.0
+              ],
+              "below_fraction": 0.000937,
               "above_fraction": 0.0,
-              "clipped_fraction": 0.013125
+              "clipped_fraction": 0.000937
             },
             "issues": [],
             "status": "passed"
@@ -124,12 +141,28 @@
             "p01": -0.797179,
             "p99": 0.377918,
             "display": {
-              "minimum": -0.8,
-              "maximum": 0.8,
-              "step": 0.1,
-              "below_fraction": 0.01,
-              "above_fraction": 0.001563,
-              "clipped_fraction": 0.011562
+              "minimum": -2.0,
+              "maximum": 2.0,
+              "breakpoints": [
+                -2.0,
+                -1.75,
+                -1.5,
+                -1.25,
+                -1.0,
+                -0.75,
+                -0.5,
+                0.0,
+                0.5,
+                0.75,
+                1.0,
+                1.25,
+                1.5,
+                1.75,
+                2.0
+              ],
+              "below_fraction": 0.0,
+              "above_fraction": 0.0,
+              "clipped_fraction": 0.0
             },
             "issues": [],
             "status": "passed"
@@ -161,12 +194,28 @@
             "p01": -0.809557,
             "p99": 0.380966,
             "display": {
-              "minimum": -0.8,
-              "maximum": 0.8,
-              "step": 0.1,
-              "below_fraction": 0.010313,
-              "above_fraction": 0.002188,
-              "clipped_fraction": 0.0125
+              "minimum": -2.0,
+              "maximum": 2.0,
+              "breakpoints": [
+                -2.0,
+                -1.75,
+                -1.5,
+                -1.25,
+                -1.0,
+                -0.75,
+                -0.5,
+                0.0,
+                0.5,
+                0.75,
+                1.0,
+                1.25,
+                1.5,
+                1.75,
+                2.0
+              ],
+              "below_fraction": 0.0,
+              "above_fraction": 0.0,
+              "clipped_fraction": 0.0
             },
             "issues": [],
             "status": "passed"
@@ -202,21 +251,39 @@
             "p01": -2.092328,
             "p99": 0.636717,
             "display": {
-              "minimum": -0.8,
-              "maximum": 0.8,
-              "step": 0.1,
-              "below_fraction": 0.105313,
-              "above_fraction": 0.004687,
-              "clipped_fraction": 0.11
+              "minimum": -4.0,
+              "maximum": 4.0,
+              "breakpoints": [
+                -4.0,
+                -3.5,
+                -3.0,
+                -2.5,
+                -2.0,
+                -1.75,
+                -1.5,
+                -1.25,
+                -1.0,
+                -0.75,
+                -0.5,
+                0.0,
+                0.5,
+                0.75,
+                1.0,
+                1.25,
+                1.5,
+                1.75,
+                2.0,
+                2.5,
+                3.0,
+                3.5,
+                4.0
+              ],
+              "below_fraction": 0.000625,
+              "above_fraction": 0.0,
+              "clipped_fraction": 0.000625
             },
-            "issues": [
-              {
-                "code": "display_scale_clipping",
-                "severity": "warning",
-                "message": "11.0% of finite cells exceed the fixed display scale."
-              }
-            ],
-            "status": "warning"
+            "issues": [],
+            "status": "passed"
           },
           "image": "public/seasonal/c3s/20260801/c3s_ukmo_sf_202612-202702.jpg"
         }
@@ -1268,7 +1335,7 @@
           "units": "in",
           "statistic": "ensemble_mean",
           "status": "failed",
-          "error": "C3S request failed for ncep/2 snowfall_anomalous_rate_of_accumulation lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/processes/seasonal-postprocessed-single-levels/execution\ninvalid request\nRequest has not produced a valid combination of values, please check your selection.\n{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'data_format': ['grib'], 'leadtime_month': ['4'], 'month': ['08'], 'originating_centre': ['ncep'], 'product_type': ['ensemble_mean'], 'system': ['2'], 'variable': ['snowfall_anomalous_rate_of_accumulation'], 'year': ['2026']}"
+          "error": "C3S request failed for ncep/2 snowfall_anomalous_rate_of_accumulation lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/7bda1265-294b-4e50-bfff-4cfba81dc8a3/results\nThe job has failed\nMARS returned no data, please check your selection.Request submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-08-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['4'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['kwbc'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['2'], 'time': ['all'], 'type': ['em']}]\n\nThe job failed with: MarsNoDataError"
         },
         {
           "id": "c3s-ncep-2026080100-snowfall_anomaly-lead05",
@@ -1280,7 +1347,7 @@
           "units": "in",
           "statistic": "ensemble_mean",
           "status": "failed",
-          "error": "C3S request failed for ncep/2 snowfall_anomalous_rate_of_accumulation lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/processes/seasonal-postprocessed-single-levels/execution\ninvalid request\nRequest has not produced a valid combination of values, please check your selection.\n{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'data_format': ['grib'], 'leadtime_month': ['5'], 'month': ['08'], 'originating_centre': ['ncep'], 'product_type': ['ensemble_mean'], 'system': ['2'], 'variable': ['snowfall_anomalous_rate_of_accumulation'], 'year': ['2026']}"
+          "error": "C3S request failed for ncep/2 snowfall_anomalous_rate_of_accumulation lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/e5fce6fe-8771-48dc-8973-7eda3958986c/results\nThe job has failed\nMARS returned no data, please check your selection.Request submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-08-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['5'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['kwbc'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['2'], 'time': ['all'], 'type': ['em']}]\n\nThe job failed with: MarsNoDataError"
         },
         {
           "id": "c3s-ncep-2026080100-snowfall_anomaly-lead06",
@@ -1292,7 +1359,7 @@
           "units": "in",
           "statistic": "ensemble_mean",
           "status": "failed",
-          "error": "C3S request failed for ncep/2 snowfall_anomalous_rate_of_accumulation lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/processes/seasonal-postprocessed-single-levels/execution\ninvalid request\nRequest has not produced a valid combination of values, please check your selection.\n{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'data_format': ['grib'], 'leadtime_month': ['6'], 'month': ['08'], 'originating_centre': ['ncep'], 'product_type': ['ensemble_mean'], 'system': ['2'], 'variable': ['snowfall_anomalous_rate_of_accumulation'], 'year': ['2026']}"
+          "error": "C3S request failed for ncep/2 snowfall_anomalous_rate_of_accumulation lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/ac87d931-e657-4b35-b9a2-f8e4ce2c9dbf/results\nThe job has failed\nMARS returned no data, please check your selection.Request submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-08-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['6'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['kwbc'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['2'], 'time': ['all'], 'type': ['em']}]\n\nThe job failed with: MarsNoDataError"
         },
         {
           "id": "c3s-ncep-2026080100-snowfall_anomaly-202612-202702",
@@ -2326,10 +2393,7 @@
         "meteo_france",
         "dwd",
         "cmcc",
-        "ncep",
-        "jma",
-        "eccc",
-        "bom"
+        "eccc"
       ],
       "originating_centre": "multi-system",
       "system": "multiple",
@@ -2373,6 +2437,15 @@
           "units": "in",
           "statistic": "multi-system mean of native ensemble-mean anomalies",
           "status": "rendered",
+          "available_components": [
+            "ecmwf",
+            "ukmo",
+            "meteo_france",
+            "dwd",
+            "cmcc",
+            "eccc"
+          ],
+          "component_count": 6,
           "quality_control": {
             "registry_version": 1,
             "product": "snowfall_anomaly",
@@ -2387,12 +2460,28 @@
             "p01": -0.753042,
             "p99": 0.062498,
             "display": {
-              "minimum": -0.8,
-              "maximum": 0.8,
-              "step": 0.1,
-              "below_fraction": 0.009375,
+              "minimum": -2.0,
+              "maximum": 2.0,
+              "breakpoints": [
+                -2.0,
+                -1.75,
+                -1.5,
+                -1.25,
+                -1.0,
+                -0.75,
+                -0.5,
+                0.0,
+                0.5,
+                0.75,
+                1.0,
+                1.25,
+                1.5,
+                1.75,
+                2.0
+              ],
+              "below_fraction": 0.0,
               "above_fraction": 0.0,
-              "clipped_fraction": 0.009375
+              "clipped_fraction": 0.0
             },
             "issues": [],
             "status": "passed"
@@ -2409,6 +2498,15 @@
           "units": "in",
           "statistic": "multi-system mean of native ensemble-mean anomalies",
           "status": "rendered",
+          "available_components": [
+            "ecmwf",
+            "ukmo",
+            "meteo_france",
+            "dwd",
+            "cmcc",
+            "eccc"
+          ],
+          "component_count": 6,
           "quality_control": {
             "registry_version": 1,
             "product": "snowfall_anomaly",
@@ -2423,12 +2521,28 @@
             "p01": -0.824092,
             "p99": 0.17749,
             "display": {
-              "minimum": -0.8,
-              "maximum": 0.8,
-              "step": 0.1,
-              "below_fraction": 0.012188,
+              "minimum": -2.0,
+              "maximum": 2.0,
+              "breakpoints": [
+                -2.0,
+                -1.75,
+                -1.5,
+                -1.25,
+                -1.0,
+                -0.75,
+                -0.5,
+                0.0,
+                0.5,
+                0.75,
+                1.0,
+                1.25,
+                1.5,
+                1.75,
+                2.0
+              ],
+              "below_fraction": 0.0,
               "above_fraction": 0.0,
-              "clipped_fraction": 0.012188
+              "clipped_fraction": 0.0
             },
             "issues": [],
             "status": "passed"
@@ -2445,6 +2559,15 @@
           "units": "in",
           "statistic": "multi-system mean of native ensemble-mean anomalies",
           "status": "rendered",
+          "available_components": [
+            "ecmwf",
+            "ukmo",
+            "meteo_france",
+            "dwd",
+            "cmcc",
+            "eccc"
+          ],
+          "component_count": 6,
           "quality_control": {
             "registry_version": 1,
             "product": "snowfall_anomaly",
@@ -2459,21 +2582,31 @@
             "p01": -0.956827,
             "p99": 0.269649,
             "display": {
-              "minimum": -0.8,
-              "maximum": 0.8,
-              "step": 0.1,
-              "below_fraction": 0.019375,
-              "above_fraction": 0.00125,
-              "clipped_fraction": 0.020625
+              "minimum": -2.0,
+              "maximum": 2.0,
+              "breakpoints": [
+                -2.0,
+                -1.75,
+                -1.5,
+                -1.25,
+                -1.0,
+                -0.75,
+                -0.5,
+                0.0,
+                0.5,
+                0.75,
+                1.0,
+                1.25,
+                1.5,
+                1.75,
+                2.0
+              ],
+              "below_fraction": 0.0,
+              "above_fraction": 0.0,
+              "clipped_fraction": 0.0
             },
-            "issues": [
-              {
-                "code": "display_scale_clipping",
-                "severity": "warning",
-                "message": "2.1% of finite cells exceed the fixed display scale."
-              }
-            ],
-            "status": "warning"
+            "issues": [],
+            "status": "passed"
           },
           "image": "public/seasonal/c3s/20260801/c3s_multisystem_sf_202702.jpg"
         },
@@ -2492,6 +2625,15 @@
           "units": "in",
           "statistic": "multi-system mean of native ensemble-mean anomalies",
           "status": "rendered",
+          "available_components": [
+            "ecmwf",
+            "ukmo",
+            "meteo_france",
+            "dwd",
+            "cmcc",
+            "eccc"
+          ],
+          "component_count": 6,
           "quality_control": {
             "registry_version": 1,
             "product": "snowfall_anomaly",
@@ -2506,27 +2648,56 @@
             "p01": -2.493296,
             "p99": 0.388217,
             "display": {
-              "minimum": -0.8,
-              "maximum": 0.8,
-              "step": 0.1,
-              "below_fraction": 0.10125,
-              "above_fraction": 0.00125,
-              "clipped_fraction": 0.1025
+              "minimum": -4.0,
+              "maximum": 4.0,
+              "breakpoints": [
+                -4.0,
+                -3.5,
+                -3.0,
+                -2.5,
+                -2.0,
+                -1.75,
+                -1.5,
+                -1.25,
+                -1.0,
+                -0.75,
+                -0.5,
+                0.0,
+                0.5,
+                0.75,
+                1.0,
+                1.25,
+                1.5,
+                1.75,
+                2.0,
+                2.5,
+                3.0,
+                3.5,
+                4.0
+              ],
+              "below_fraction": 0.00125,
+              "above_fraction": 0.0,
+              "clipped_fraction": 0.00125
             },
-            "issues": [
-              {
-                "code": "display_scale_clipping",
-                "severity": "warning",
-                "message": "10.2% of finite cells exceed the fixed display scale."
-              }
-            ],
-            "status": "warning"
+            "issues": [],
+            "status": "passed"
           },
           "image": "public/seasonal/c3s/20260801/c3s_multisystem_sf_202612-202702.jpg"
         }
       ],
       "status": "rendered",
       "output_dir": "public/seasonal/c3s",
+      "requested_components": [
+        "ecmwf",
+        "ukmo",
+        "meteo_france",
+        "dwd",
+        "cmcc",
+        "ncep",
+        "jma",
+        "eccc",
+        "bom"
+      ],
       "available_components": [
         "ecmwf",
         "ukmo",
@@ -2535,7 +2706,12 @@
         "cmcc",
         "eccc"
       ],
-      "component_count": 6
+      "component_count": 6,
+      "component_count_by_lead": {
+        "4": 6,
+        "5": 6,
+        "6": 6
+      }
     },
     {
       "id": "c3s-multisystem-2026080100-precipitation_anomaly",
@@ -3669,12 +3845,28 @@
             "p01": -0.686847,
             "p99": 0.168314,
             "display": {
-              "minimum": -0.8,
-              "maximum": 0.8,
-              "step": 0.1,
-              "below_fraction": 0.00625,
+              "minimum": -2.0,
+              "maximum": 2.0,
+              "breakpoints": [
+                -2.0,
+                -1.75,
+                -1.5,
+                -1.25,
+                -1.0,
+                -0.75,
+                -0.5,
+                0.0,
+                0.5,
+                0.75,
+                1.0,
+                1.25,
+                1.5,
+                1.75,
+                2.0
+              ],
+              "below_fraction": 0.0,
               "above_fraction": 0.0,
-              "clipped_fraction": 0.00625
+              "clipped_fraction": 0.0
             },
             "issues": [],
             "status": "passed"
@@ -3706,21 +3898,31 @@
             "p01": -0.91216,
             "p99": 0.256706,
             "display": {
-              "minimum": -0.8,
-              "maximum": 0.8,
-              "step": 0.1,
-              "below_fraction": 0.0225,
+              "minimum": -2.0,
+              "maximum": 2.0,
+              "breakpoints": [
+                -2.0,
+                -1.75,
+                -1.5,
+                -1.25,
+                -1.0,
+                -0.75,
+                -0.5,
+                0.0,
+                0.5,
+                0.75,
+                1.0,
+                1.25,
+                1.5,
+                1.75,
+                2.0
+              ],
+              "below_fraction": 0.0,
               "above_fraction": 0.0,
-              "clipped_fraction": 0.0225
+              "clipped_fraction": 0.0
             },
-            "issues": [
-              {
-                "code": "display_scale_clipping",
-                "severity": "warning",
-                "message": "2.2% of finite cells exceed the fixed display scale."
-              }
-            ],
-            "status": "warning"
+            "issues": [],
+            "status": "passed"
           },
           "image": "public/seasonal/c3s/20260801/c3s_meteo_france_sf_202701.jpg"
         },
@@ -3749,21 +3951,31 @@
             "p01": -1.127233,
             "p99": 0.398653,
             "display": {
-              "minimum": -0.8,
-              "maximum": 0.8,
-              "step": 0.1,
-              "below_fraction": 0.030625,
-              "above_fraction": 0.000313,
-              "clipped_fraction": 0.030937
+              "minimum": -2.0,
+              "maximum": 2.0,
+              "breakpoints": [
+                -2.0,
+                -1.75,
+                -1.5,
+                -1.25,
+                -1.0,
+                -0.75,
+                -0.5,
+                0.0,
+                0.5,
+                0.75,
+                1.0,
+                1.25,
+                1.5,
+                1.75,
+                2.0
+              ],
+              "below_fraction": 0.000313,
+              "above_fraction": 0.0,
+              "clipped_fraction": 0.000313
             },
-            "issues": [
-              {
-                "code": "display_scale_clipping",
-                "severity": "warning",
-                "message": "3.1% of finite cells exceed the fixed display scale."
-              }
-            ],
-            "status": "warning"
+            "issues": [],
+            "status": "passed"
           },
           "image": "public/seasonal/c3s/20260801/c3s_meteo_france_sf_202702.jpg"
         },
@@ -3796,21 +4008,39 @@
             "p01": -2.344136,
             "p99": 0.550306,
             "display": {
-              "minimum": -0.8,
-              "maximum": 0.8,
-              "step": 0.1,
-              "below_fraction": 0.105938,
-              "above_fraction": 0.00125,
-              "clipped_fraction": 0.107188
+              "minimum": -4.0,
+              "maximum": 4.0,
+              "breakpoints": [
+                -4.0,
+                -3.5,
+                -3.0,
+                -2.5,
+                -2.0,
+                -1.75,
+                -1.5,
+                -1.25,
+                -1.0,
+                -0.75,
+                -0.5,
+                0.0,
+                0.5,
+                0.75,
+                1.0,
+                1.25,
+                1.5,
+                1.75,
+                2.0,
+                2.5,
+                3.0,
+                3.5,
+                4.0
+              ],
+              "below_fraction": 0.001563,
+              "above_fraction": 0.0,
+              "clipped_fraction": 0.001563
             },
-            "issues": [
-              {
-                "code": "display_scale_clipping",
-                "severity": "warning",
-                "message": "10.7% of finite cells exceed the fixed display scale."
-              }
-            ],
-            "status": "warning"
+            "issues": [],
+            "status": "passed"
           },
           "image": "public/seasonal/c3s/20260801/c3s_meteo_france_sf_202612-202702.jpg"
         }
@@ -4850,7 +5080,7 @@
           "units": "in",
           "statistic": "ensemble_mean",
           "status": "failed",
-          "error": "C3S request failed for jma/4 snowfall_anomalous_rate_of_accumulation lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/processes/seasonal-postprocessed-single-levels/execution\ninvalid request\nRequest has not produced a valid combination of values, please check your selection.\n{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'data_format': ['grib'], 'leadtime_month': ['4'], 'month': ['08'], 'originating_centre': ['jma'], 'product_type': ['ensemble_mean'], 'system': ['4'], 'variable': ['snowfall_anomalous_rate_of_accumulation'], 'year': ['2026']}"
+          "error": "C3S request failed for jma/4 snowfall_anomalous_rate_of_accumulation lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/276c4433-b093-4ef2-b79a-b3f25669a71d/results\nThe job has failed\nThe job failed with: MarsNoDataError\nMARS returned no data, please check your selection.Request submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-08-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['4'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['rjtd'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['4'], 'time': ['all'], 'type': ['em']}]\n"
         },
         {
           "id": "c3s-jma-2026080100-snowfall_anomaly-lead05",
@@ -4862,7 +5092,7 @@
           "units": "in",
           "statistic": "ensemble_mean",
           "status": "failed",
-          "error": "C3S request failed for jma/4 snowfall_anomalous_rate_of_accumulation lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/processes/seasonal-postprocessed-single-levels/execution\ninvalid request\nRequest has not produced a valid combination of values, please check your selection.\n{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'data_format': ['grib'], 'leadtime_month': ['5'], 'month': ['08'], 'originating_centre': ['jma'], 'product_type': ['ensemble_mean'], 'system': ['4'], 'variable': ['snowfall_anomalous_rate_of_accumulation'], 'year': ['2026']}"
+          "error": "C3S request failed for jma/4 snowfall_anomalous_rate_of_accumulation lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/34024103-8b0a-45f8-9140-acb1d90791cd/results\nThe job has failed\nMARS returned no data, please check your selection.Request submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-08-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['5'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['rjtd'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['4'], 'time': ['all'], 'type': ['em']}]\n\nThe job failed with: MarsNoDataError"
         },
         {
           "id": "c3s-jma-2026080100-snowfall_anomaly-lead06",
@@ -4874,7 +5104,7 @@
           "units": "in",
           "statistic": "ensemble_mean",
           "status": "failed",
-          "error": "C3S request failed for jma/4 snowfall_anomalous_rate_of_accumulation lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/processes/seasonal-postprocessed-single-levels/execution\ninvalid request\nRequest has not produced a valid combination of values, please check your selection.\n{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'data_format': ['grib'], 'leadtime_month': ['6'], 'month': ['08'], 'originating_centre': ['jma'], 'product_type': ['ensemble_mean'], 'system': ['4'], 'variable': ['snowfall_anomalous_rate_of_accumulation'], 'year': ['2026']}"
+          "error": "C3S request failed for jma/4 snowfall_anomalous_rate_of_accumulation lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/366a2609-8824-4f2c-af29-96a11772a830/results\nThe job has failed\nThe job failed with: MarsNoDataError\nMARS returned no data, please check your selection.Request submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-08-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['6'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['rjtd'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['4'], 'time': ['all'], 'type': ['em']}]\n"
         },
         {
           "id": "c3s-jma-2026080100-snowfall_anomaly-202612-202702",
@@ -5962,12 +6192,28 @@
             "p01": -0.697065,
             "p99": 0.077938,
             "display": {
-              "minimum": -0.8,
-              "maximum": 0.8,
-              "step": 0.1,
-              "below_fraction": 0.008125,
-              "above_fraction": 0.000625,
-              "clipped_fraction": 0.00875
+              "minimum": -2.0,
+              "maximum": 2.0,
+              "breakpoints": [
+                -2.0,
+                -1.75,
+                -1.5,
+                -1.25,
+                -1.0,
+                -0.75,
+                -0.5,
+                0.0,
+                0.5,
+                0.75,
+                1.0,
+                1.25,
+                1.5,
+                1.75,
+                2.0
+              ],
+              "below_fraction": 0.0,
+              "above_fraction": 0.0,
+              "clipped_fraction": 0.0
             },
             "issues": [],
             "status": "passed"
@@ -5999,12 +6245,28 @@
             "p01": -0.908211,
             "p99": 0.190344,
             "display": {
-              "minimum": -0.8,
-              "maximum": 0.8,
-              "step": 0.1,
-              "below_fraction": 0.015938,
-              "above_fraction": 0.000313,
-              "clipped_fraction": 0.01625
+              "minimum": -2.0,
+              "maximum": 2.0,
+              "breakpoints": [
+                -2.0,
+                -1.75,
+                -1.5,
+                -1.25,
+                -1.0,
+                -0.75,
+                -0.5,
+                0.0,
+                0.5,
+                0.75,
+                1.0,
+                1.25,
+                1.5,
+                1.75,
+                2.0
+              ],
+              "below_fraction": 0.0,
+              "above_fraction": 0.0,
+              "clipped_fraction": 0.0
             },
             "issues": [],
             "status": "passed"
@@ -6036,21 +6298,31 @@
             "p01": -1.0505,
             "p99": 0.391391,
             "display": {
-              "minimum": -0.8,
-              "maximum": 0.8,
-              "step": 0.1,
-              "below_fraction": 0.019688,
-              "above_fraction": 0.002188,
-              "clipped_fraction": 0.021875
+              "minimum": -2.0,
+              "maximum": 2.0,
+              "breakpoints": [
+                -2.0,
+                -1.75,
+                -1.5,
+                -1.25,
+                -1.0,
+                -0.75,
+                -0.5,
+                0.0,
+                0.5,
+                0.75,
+                1.0,
+                1.25,
+                1.5,
+                1.75,
+                2.0
+              ],
+              "below_fraction": 0.000625,
+              "above_fraction": 0.0,
+              "clipped_fraction": 0.000625
             },
-            "issues": [
-              {
-                "code": "display_scale_clipping",
-                "severity": "warning",
-                "message": "2.2% of finite cells exceed the fixed display scale."
-              }
-            ],
-            "status": "warning"
+            "issues": [],
+            "status": "passed"
           },
           "image": "public/seasonal/c3s/20260801/c3s_ecmwf_sf_202702.jpg"
         },
@@ -6083,21 +6355,39 @@
             "p01": -2.407761,
             "p99": 0.34069,
             "display": {
-              "minimum": -0.8,
-              "maximum": 0.8,
-              "step": 0.1,
-              "below_fraction": 0.083437,
-              "above_fraction": 0.001563,
-              "clipped_fraction": 0.085
+              "minimum": -4.0,
+              "maximum": 4.0,
+              "breakpoints": [
+                -4.0,
+                -3.5,
+                -3.0,
+                -2.5,
+                -2.0,
+                -1.75,
+                -1.5,
+                -1.25,
+                -1.0,
+                -0.75,
+                -0.5,
+                0.0,
+                0.5,
+                0.75,
+                1.0,
+                1.25,
+                1.5,
+                1.75,
+                2.0,
+                2.5,
+                3.0,
+                3.5,
+                4.0
+              ],
+              "below_fraction": 0.001875,
+              "above_fraction": 0.0,
+              "clipped_fraction": 0.001875
             },
-            "issues": [
-              {
-                "code": "display_scale_clipping",
-                "severity": "warning",
-                "message": "8.5% of finite cells exceed the fixed display scale."
-              }
-            ],
-            "status": "warning"
+            "issues": [],
+            "status": "passed"
           },
           "image": "public/seasonal/c3s/20260801/c3s_ecmwf_sf_202612-202702.jpg"
         }
@@ -7152,12 +7442,28 @@
             "p01": -0.652429,
             "p99": 0.213258,
             "display": {
-              "minimum": -0.8,
-              "maximum": 0.8,
-              "step": 0.1,
-              "below_fraction": 0.005625,
+              "minimum": -2.0,
+              "maximum": 2.0,
+              "breakpoints": [
+                -2.0,
+                -1.75,
+                -1.5,
+                -1.25,
+                -1.0,
+                -0.75,
+                -0.5,
+                0.0,
+                0.5,
+                0.75,
+                1.0,
+                1.25,
+                1.5,
+                1.75,
+                2.0
+              ],
+              "below_fraction": 0.0,
               "above_fraction": 0.0,
-              "clipped_fraction": 0.005625
+              "clipped_fraction": 0.0
             },
             "issues": [],
             "status": "passed"
@@ -7189,21 +7495,31 @@
             "p01": -0.982729,
             "p99": 0.412438,
             "display": {
-              "minimum": -0.8,
-              "maximum": 0.8,
-              "step": 0.1,
-              "below_fraction": 0.02,
-              "above_fraction": 0.000313,
-              "clipped_fraction": 0.020313
+              "minimum": -2.0,
+              "maximum": 2.0,
+              "breakpoints": [
+                -2.0,
+                -1.75,
+                -1.5,
+                -1.25,
+                -1.0,
+                -0.75,
+                -0.5,
+                0.0,
+                0.5,
+                0.75,
+                1.0,
+                1.25,
+                1.5,
+                1.75,
+                2.0
+              ],
+              "below_fraction": 0.0,
+              "above_fraction": 0.0,
+              "clipped_fraction": 0.0
             },
-            "issues": [
-              {
-                "code": "display_scale_clipping",
-                "severity": "warning",
-                "message": "2.0% of finite cells exceed the fixed display scale."
-              }
-            ],
-            "status": "warning"
+            "issues": [],
+            "status": "passed"
           },
           "image": "public/seasonal/c3s/20260801/c3s_eccc_sf_202701.jpg"
         },
@@ -7232,12 +7548,28 @@
             "p01": -0.908164,
             "p99": 0.504098,
             "display": {
-              "minimum": -0.8,
-              "maximum": 0.8,
-              "step": 0.1,
-              "below_fraction": 0.015625,
-              "above_fraction": 0.00375,
-              "clipped_fraction": 0.019375
+              "minimum": -2.0,
+              "maximum": 2.0,
+              "breakpoints": [
+                -2.0,
+                -1.75,
+                -1.5,
+                -1.25,
+                -1.0,
+                -0.75,
+                -0.5,
+                0.0,
+                0.5,
+                0.75,
+                1.0,
+                1.25,
+                1.5,
+                1.75,
+                2.0
+              ],
+              "below_fraction": 0.0,
+              "above_fraction": 0.0,
+              "clipped_fraction": 0.0
             },
             "issues": [],
             "status": "passed"
@@ -7273,21 +7605,39 @@
             "p01": -2.359291,
             "p99": 0.91071,
             "display": {
-              "minimum": -0.8,
-              "maximum": 0.8,
-              "step": 0.1,
-              "below_fraction": 0.112187,
-              "above_fraction": 0.015312,
-              "clipped_fraction": 0.1275
+              "minimum": -4.0,
+              "maximum": 4.0,
+              "breakpoints": [
+                -4.0,
+                -3.5,
+                -3.0,
+                -2.5,
+                -2.0,
+                -1.75,
+                -1.5,
+                -1.25,
+                -1.0,
+                -0.75,
+                -0.5,
+                0.0,
+                0.5,
+                0.75,
+                1.0,
+                1.25,
+                1.5,
+                1.75,
+                2.0,
+                2.5,
+                3.0,
+                3.5,
+                4.0
+              ],
+              "below_fraction": 0.0,
+              "above_fraction": 0.0,
+              "clipped_fraction": 0.0
             },
-            "issues": [
-              {
-                "code": "display_scale_clipping",
-                "severity": "warning",
-                "message": "12.8% of finite cells exceed the fixed display scale."
-              }
-            ],
-            "status": "warning"
+            "issues": [],
+            "status": "passed"
           },
           "image": "public/seasonal/c3s/20260801/c3s_eccc_sf_202612-202702.jpg"
         }
@@ -8348,21 +8698,31 @@
             "p01": -1.397699,
             "p99": 0.219919,
             "display": {
-              "minimum": -0.8,
-              "maximum": 0.8,
-              "step": 0.1,
-              "below_fraction": 0.021875,
+              "minimum": -2.0,
+              "maximum": 2.0,
+              "breakpoints": [
+                -2.0,
+                -1.75,
+                -1.5,
+                -1.25,
+                -1.0,
+                -0.75,
+                -0.5,
+                0.0,
+                0.5,
+                0.75,
+                1.0,
+                1.25,
+                1.5,
+                1.75,
+                2.0
+              ],
+              "below_fraction": 0.002188,
               "above_fraction": 0.0,
-              "clipped_fraction": 0.021875
+              "clipped_fraction": 0.002188
             },
-            "issues": [
-              {
-                "code": "display_scale_clipping",
-                "severity": "warning",
-                "message": "2.2% of finite cells exceed the fixed display scale."
-              }
-            ],
-            "status": "warning"
+            "issues": [],
+            "status": "passed"
           },
           "image": "public/seasonal/c3s/20260801/c3s_dwd_sf_202612.jpg"
         },
@@ -8391,21 +8751,31 @@
             "p01": -1.609041,
             "p99": 0.204138,
             "display": {
-              "minimum": -0.8,
-              "maximum": 0.8,
-              "step": 0.1,
-              "below_fraction": 0.03625,
+              "minimum": -2.0,
+              "maximum": 2.0,
+              "breakpoints": [
+                -2.0,
+                -1.75,
+                -1.5,
+                -1.25,
+                -1.0,
+                -0.75,
+                -0.5,
+                0.0,
+                0.5,
+                0.75,
+                1.0,
+                1.25,
+                1.5,
+                1.75,
+                2.0
+              ],
+              "below_fraction": 0.003125,
               "above_fraction": 0.0,
-              "clipped_fraction": 0.03625
+              "clipped_fraction": 0.003125
             },
-            "issues": [
-              {
-                "code": "display_scale_clipping",
-                "severity": "warning",
-                "message": "3.6% of finite cells exceed the fixed display scale."
-              }
-            ],
-            "status": "warning"
+            "issues": [],
+            "status": "passed"
           },
           "image": "public/seasonal/c3s/20260801/c3s_dwd_sf_202701.jpg"
         },
@@ -8434,21 +8804,31 @@
             "p01": -1.565576,
             "p99": 0.207247,
             "display": {
-              "minimum": -0.8,
-              "maximum": 0.8,
-              "step": 0.1,
-              "below_fraction": 0.030312,
+              "minimum": -2.0,
+              "maximum": 2.0,
+              "breakpoints": [
+                -2.0,
+                -1.75,
+                -1.5,
+                -1.25,
+                -1.0,
+                -0.75,
+                -0.5,
+                0.0,
+                0.5,
+                0.75,
+                1.0,
+                1.25,
+                1.5,
+                1.75,
+                2.0
+              ],
+              "below_fraction": 0.002812,
               "above_fraction": 0.0,
-              "clipped_fraction": 0.030312
+              "clipped_fraction": 0.002812
             },
-            "issues": [
-              {
-                "code": "display_scale_clipping",
-                "severity": "warning",
-                "message": "3.0% of finite cells exceed the fixed display scale."
-              }
-            ],
-            "status": "warning"
+            "issues": [],
+            "status": "passed"
           },
           "image": "public/seasonal/c3s/20260801/c3s_dwd_sf_202702.jpg"
         },
@@ -8481,21 +8861,39 @@
             "p01": -4.406266,
             "p99": 0.503531,
             "display": {
-              "minimum": -0.8,
-              "maximum": 0.8,
-              "step": 0.1,
-              "below_fraction": 0.19375,
-              "above_fraction": 0.000625,
-              "clipped_fraction": 0.194375
+              "minimum": -4.0,
+              "maximum": 4.0,
+              "breakpoints": [
+                -4.0,
+                -3.5,
+                -3.0,
+                -2.5,
+                -2.0,
+                -1.75,
+                -1.5,
+                -1.25,
+                -1.0,
+                -0.75,
+                -0.5,
+                0.0,
+                0.5,
+                0.75,
+                1.0,
+                1.25,
+                1.5,
+                1.75,
+                2.0,
+                2.5,
+                3.0,
+                3.5,
+                4.0
+              ],
+              "below_fraction": 0.013437,
+              "above_fraction": 0.0,
+              "clipped_fraction": 0.013437
             },
-            "issues": [
-              {
-                "code": "display_scale_clipping",
-                "severity": "warning",
-                "message": "19.4% of finite cells exceed the fixed display scale."
-              }
-            ],
-            "status": "warning"
+            "issues": [],
+            "status": "passed"
           },
           "image": "public/seasonal/c3s/20260801/c3s_dwd_sf_202612-202702.jpg"
         }
@@ -9550,12 +9948,28 @@
             "p01": -0.763755,
             "p99": 0.107481,
             "display": {
-              "minimum": -0.8,
-              "maximum": 0.8,
-              "step": 0.1,
-              "below_fraction": 0.009375,
+              "minimum": -2.0,
+              "maximum": 2.0,
+              "breakpoints": [
+                -2.0,
+                -1.75,
+                -1.5,
+                -1.25,
+                -1.0,
+                -0.75,
+                -0.5,
+                0.0,
+                0.5,
+                0.75,
+                1.0,
+                1.25,
+                1.5,
+                1.75,
+                2.0
+              ],
+              "below_fraction": 0.0,
               "above_fraction": 0.0,
-              "clipped_fraction": 0.009375
+              "clipped_fraction": 0.0
             },
             "issues": [],
             "status": "passed"
@@ -9587,12 +10001,28 @@
             "p01": -0.919199,
             "p99": 0.343352,
             "display": {
-              "minimum": -0.8,
-              "maximum": 0.8,
-              "step": 0.1,
-              "below_fraction": 0.015312,
+              "minimum": -2.0,
+              "maximum": 2.0,
+              "breakpoints": [
+                -2.0,
+                -1.75,
+                -1.5,
+                -1.25,
+                -1.0,
+                -0.75,
+                -0.5,
+                0.0,
+                0.5,
+                0.75,
+                1.0,
+                1.25,
+                1.5,
+                1.75,
+                2.0
+              ],
+              "below_fraction": 0.0,
               "above_fraction": 0.0,
-              "clipped_fraction": 0.015312
+              "clipped_fraction": 0.0
             },
             "issues": [],
             "status": "passed"
@@ -9624,21 +10054,31 @@
             "p01": -1.054492,
             "p99": 0.470047,
             "display": {
-              "minimum": -0.8,
-              "maximum": 0.8,
-              "step": 0.1,
-              "below_fraction": 0.019062,
-              "above_fraction": 0.003438,
-              "clipped_fraction": 0.0225
+              "minimum": -2.0,
+              "maximum": 2.0,
+              "breakpoints": [
+                -2.0,
+                -1.75,
+                -1.5,
+                -1.25,
+                -1.0,
+                -0.75,
+                -0.5,
+                0.0,
+                0.5,
+                0.75,
+                1.0,
+                1.25,
+                1.5,
+                1.75,
+                2.0
+              ],
+              "below_fraction": 0.000625,
+              "above_fraction": 0.0,
+              "clipped_fraction": 0.000625
             },
-            "issues": [
-              {
-                "code": "display_scale_clipping",
-                "severity": "warning",
-                "message": "2.2% of finite cells exceed the fixed display scale."
-              }
-            ],
-            "status": "warning"
+            "issues": [],
+            "status": "passed"
           },
           "image": "public/seasonal/c3s/20260801/c3s_cmcc_sf_202702.jpg"
         },
@@ -9671,21 +10111,39 @@
             "p01": -2.668283,
             "p99": 0.620792,
             "display": {
-              "minimum": -0.8,
-              "maximum": 0.8,
-              "step": 0.1,
-              "below_fraction": 0.0675,
-              "above_fraction": 0.00375,
-              "clipped_fraction": 0.07125
+              "minimum": -4.0,
+              "maximum": 4.0,
+              "breakpoints": [
+                -4.0,
+                -3.5,
+                -3.0,
+                -2.5,
+                -2.0,
+                -1.75,
+                -1.5,
+                -1.25,
+                -1.0,
+                -0.75,
+                -0.5,
+                0.0,
+                0.5,
+                0.75,
+                1.0,
+                1.25,
+                1.5,
+                1.75,
+                2.0,
+                2.5,
+                3.0,
+                3.5,
+                4.0
+              ],
+              "below_fraction": 0.001875,
+              "above_fraction": 0.0,
+              "clipped_fraction": 0.001875
             },
-            "issues": [
-              {
-                "code": "display_scale_clipping",
-                "severity": "warning",
-                "message": "7.1% of finite cells exceed the fixed display scale."
-              }
-            ],
-            "status": "warning"
+            "issues": [],
+            "status": "passed"
           },
           "image": "public/seasonal/c3s/20260801/c3s_cmcc_sf_202612-202702.jpg"
         }
@@ -10737,7 +11195,7 @@
           "units": "in",
           "statistic": "ensemble_mean",
           "status": "failed",
-          "error": "C3S request failed for bom/2 snowfall_anomalous_rate_of_accumulation lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/processes/seasonal-postprocessed-single-levels/execution\ninvalid request\nRequest has not produced a valid combination of values, please check your selection.\n{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'data_format': ['grib'], 'leadtime_month': ['4'], 'month': ['08'], 'originating_centre': ['bom'], 'product_type': ['ensemble_mean'], 'system': ['2'], 'variable': ['snowfall_anomalous_rate_of_accumulation'], 'year': ['2026']}"
+          "error": "C3S request failed for bom/2 snowfall_anomalous_rate_of_accumulation lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/72e5a967-0f12-4b25-bb04-f7f9af822035/results\nThe job has failed\nThe job failed with: MarsNoDataError\nMARS returned no data, please check your selection.Request submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-08-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['4'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['ammc'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['2'], 'time': ['all'], 'type': ['em']}]\n"
         },
         {
           "id": "c3s-bom-2026080100-snowfall_anomaly-lead05",
@@ -10749,7 +11207,7 @@
           "units": "in",
           "statistic": "ensemble_mean",
           "status": "failed",
-          "error": "C3S request failed for bom/2 snowfall_anomalous_rate_of_accumulation lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/processes/seasonal-postprocessed-single-levels/execution\ninvalid request\nRequest has not produced a valid combination of values, please check your selection.\n{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'data_format': ['grib'], 'leadtime_month': ['5'], 'month': ['08'], 'originating_centre': ['bom'], 'product_type': ['ensemble_mean'], 'system': ['2'], 'variable': ['snowfall_anomalous_rate_of_accumulation'], 'year': ['2026']}"
+          "error": "C3S request failed for bom/2 snowfall_anomalous_rate_of_accumulation lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/0238638b-2003-4397-a7ff-2f29a8f108e4/results\nThe job has failed\nThe job failed with: MarsNoDataError\nMARS returned no data, please check your selection.Request submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-08-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['5'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['ammc'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['2'], 'time': ['all'], 'type': ['em']}]\n"
         },
         {
           "id": "c3s-bom-2026080100-snowfall_anomaly-lead06",
@@ -10761,7 +11219,7 @@
           "units": "in",
           "statistic": "ensemble_mean",
           "status": "failed",
-          "error": "C3S request failed for bom/2 snowfall_anomalous_rate_of_accumulation lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/processes/seasonal-postprocessed-single-levels/execution\ninvalid request\nRequest has not produced a valid combination of values, please check your selection.\n{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'data_format': ['grib'], 'leadtime_month': ['6'], 'month': ['08'], 'originating_centre': ['bom'], 'product_type': ['ensemble_mean'], 'system': ['2'], 'variable': ['snowfall_anomalous_rate_of_accumulation'], 'year': ['2026']}"
+          "error": "C3S request failed for bom/2 snowfall_anomalous_rate_of_accumulation lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/91abb22f-5aeb-40a9-aa53-5962f70d9dca/results\nThe job has failed\nMARS returned no data, please check your selection.Request submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-08-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['6'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['ammc'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['2'], 'time': ['all'], 'type': ['em']}]\n\nThe job failed with: MarsNoDataError"
         },
         {
           "id": "c3s-bom-2026080100-snowfall_anomaly-202612-202702",
