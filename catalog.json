@@ -2,8 +2,8 @@
   "schema_version": 1,
   "registry_version": 1,
   "kind": "seasonal_dashboard_catalog",
-  "generated_utc": "2026-09-03T11:02:09Z",
-  "source_revision": "5907c67fef5cc8d5a98ef610c9b35249a6bab995",
+  "generated_utc": "2026-09-03T12:09:52Z",
+  "source_revision": "5d0883d001200873165fdeef82c864c89f68e58e",
   "model_order": [
     "superensemble",
     "c3s",
@@ -15948,6 +15948,318 @@
       },
       "runs": [
         {
+          "id": "cfsv2-2026090300-2m_temperature_anomaly",
+          "model": "CFSv2",
+          "source": "NOAA CFSv2 NOMADS",
+          "source_url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/",
+          "product": "2m_temperature_anomaly",
+          "init_utc": "2026-09-03T00:00:00Z",
+          "status": "rendered",
+          "statistic": "ensemble_mean",
+          "aggregation": "6-day rolling initial-condition mean; 3-month seasonal mean",
+          "ensemble_scope": "rolling_initial_conditions",
+          "ensemble_members": 24,
+          "field": "t2m_anomaly",
+          "units": "°C",
+          "raw_field": "TMP:2 m above ground",
+          "raw_units": "K",
+          "baseline": {
+            "source": "NCEI CFS reforecast flux calibration climatology; 1982-2010",
+            "years": "1982-2010",
+            "required": true,
+            "url_root": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/",
+            "rolling_policy": "anchor_initialization"
+          },
+          "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in °C",
+          "targets": [
+            {
+              "id": "cfsv2-202701-t2ma-lead04",
+              "target_month": "202701",
+              "valid_start_utc": "2027-01-01T00:00:00Z",
+              "valid_end_utc": "2027-02-01T00:00:00Z",
+              "lead_month": 4,
+              "field": "t2m_anomaly",
+              "units": "°C",
+              "status": "rendered",
+              "image": "cfsv2/2026090300/cfsv2_t2ma_202701.jpg",
+              "baseline": {
+                "file": ".cache/cfsv2/calibration/flxf/2026082912/flxf.08.29.12.l04.fclm.1982.2010.grb2",
+                "label": "NCEI CFS reforecast flux calibration climatology; 1982-2010 (cached 2026082912 fallback)",
+                "years": "1982-2010",
+                "rolling_policy": "anchor_initialization",
+                "anchor_init": "2026090300",
+                "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/08/flxf.08.29.12.l04.fclm.1982.2010.grb2",
+                "requested_url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/09/flxf.09.03.00.l04.fclm.1982.2010.grb2",
+                "requested_initialization": "2026090300",
+                "used_initialization": "2026082912",
+                "fallback": "cached_prior_initialization",
+                "fallback_error": "503 Server Error: Service Unavailable for url: https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/09/flxf.09.03.00.l04.fclm.1982.2010.grb2",
+                "downloaded": false
+              },
+              "ensemble_members": 24,
+              "ensemble_expected_members": 24,
+              "ensemble_complete": true,
+              "ensemble_scope": "rolling_initial_conditions",
+              "statistic": "ensemble_mean",
+              "aggregation": "monthly mean 2-m temperature",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "2m_temperature_anomaly",
+                "units": "°C",
+                "field": "t2m_anomaly",
+                "period": "monthly",
+                "total_points": 72960,
+                "finite_points": 72960,
+                "finite_fraction": 1.0,
+                "minimum": -13.39825,
+                "maximum": 6.637958,
+                "p01": -5.494178,
+                "p99": 5.860852,
+                "display": {
+                  "minimum": -7.0,
+                  "maximum": 7.0,
+                  "step": 1.0,
+                  "below_fraction": 0.006264,
+                  "above_fraction": 0.0,
+                  "clipped_fraction": 0.006264
+                },
+                "issues": [],
+                "status": "passed"
+              },
+              "_catalog": {
+                "canonical_product": "2m_temperature_anomaly",
+                "comparable": true,
+                "quality_control": "passed"
+              }
+            },
+            {
+              "id": "cfsv2-202702-t2ma-lead05",
+              "target_month": "202702",
+              "valid_start_utc": "2027-02-01T00:00:00Z",
+              "valid_end_utc": "2027-03-01T00:00:00Z",
+              "lead_month": 5,
+              "field": "t2m_anomaly",
+              "units": "°C",
+              "status": "rendered",
+              "image": "cfsv2/2026090300/cfsv2_t2ma_202702.jpg",
+              "baseline": {
+                "file": ".cache/cfsv2/calibration/flxf/2026082912/flxf.08.29.12.l05.fclm.1982.2010.grb2",
+                "label": "NCEI CFS reforecast flux calibration climatology; 1982-2010 (cached 2026082912 fallback)",
+                "years": "1982-2010",
+                "rolling_policy": "anchor_initialization",
+                "anchor_init": "2026090300",
+                "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/08/flxf.08.29.12.l05.fclm.1982.2010.grb2",
+                "requested_url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/09/flxf.09.03.00.l05.fclm.1982.2010.grb2",
+                "requested_initialization": "2026090300",
+                "used_initialization": "2026082912",
+                "fallback": "cached_prior_initialization",
+                "fallback_error": "503 Server Error: Service Unavailable for url: https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/09/flxf.09.03.00.l05.fclm.1982.2010.grb2",
+                "downloaded": false
+              },
+              "ensemble_members": 24,
+              "ensemble_expected_members": 24,
+              "ensemble_complete": true,
+              "ensemble_scope": "rolling_initial_conditions",
+              "statistic": "ensemble_mean",
+              "aggregation": "monthly mean 2-m temperature",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "2m_temperature_anomaly",
+                "units": "°C",
+                "field": "t2m_anomaly",
+                "period": "monthly",
+                "total_points": 72960,
+                "finite_points": 72960,
+                "finite_fraction": 1.0,
+                "minimum": -9.137917,
+                "maximum": 8.756667,
+                "p01": -8.241099,
+                "p99": 6.132394,
+                "display": {
+                  "minimum": -7.0,
+                  "maximum": 7.0,
+                  "step": 1.0,
+                  "below_fraction": 0.039542,
+                  "above_fraction": 0.00318,
+                  "clipped_fraction": 0.042722
+                },
+                "issues": [
+                  {
+                    "code": "display_scale_clipping",
+                    "severity": "warning",
+                    "message": "4.3% of finite cells exceed the fixed display scale."
+                  }
+                ],
+                "status": "warning"
+              },
+              "_catalog": {
+                "canonical_product": "2m_temperature_anomaly",
+                "comparable": true,
+                "quality_control": "warning"
+              }
+            },
+            {
+              "id": "cfsv2-202703-t2ma-lead06",
+              "target_month": "202703",
+              "valid_start_utc": "2027-03-01T00:00:00Z",
+              "valid_end_utc": "2027-04-01T00:00:00Z",
+              "lead_month": 6,
+              "field": "t2m_anomaly",
+              "units": "°C",
+              "status": "rendered",
+              "image": "cfsv2/2026090300/cfsv2_t2ma_202703.jpg",
+              "baseline": {
+                "file": ".cache/cfsv2/calibration/flxf/2026082912/flxf.08.29.12.l06.fclm.1982.2010.grb2",
+                "label": "NCEI CFS reforecast flux calibration climatology; 1982-2010 (cached 2026082912 fallback)",
+                "years": "1982-2010",
+                "rolling_policy": "anchor_initialization",
+                "anchor_init": "2026090300",
+                "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/08/flxf.08.29.12.l06.fclm.1982.2010.grb2",
+                "requested_url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/09/flxf.09.03.00.l06.fclm.1982.2010.grb2",
+                "requested_initialization": "2026090300",
+                "used_initialization": "2026082912",
+                "fallback": "cached_prior_initialization",
+                "fallback_error": "503 Server Error: Service Unavailable for url: https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/09/flxf.09.03.00.l06.fclm.1982.2010.grb2",
+                "downloaded": false
+              },
+              "ensemble_members": 24,
+              "ensemble_expected_members": 24,
+              "ensemble_complete": true,
+              "ensemble_scope": "rolling_initial_conditions",
+              "statistic": "ensemble_mean",
+              "aggregation": "monthly mean 2-m temperature",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "2m_temperature_anomaly",
+                "units": "°C",
+                "field": "t2m_anomaly",
+                "period": "monthly",
+                "total_points": 72960,
+                "finite_points": 72960,
+                "finite_fraction": 1.0,
+                "minimum": -9.176958,
+                "maximum": 13.897792,
+                "p01": -7.549748,
+                "p99": 9.877909,
+                "display": {
+                  "minimum": -7.0,
+                  "maximum": 7.0,
+                  "step": 1.0,
+                  "below_fraction": 0.024657,
+                  "above_fraction": 0.060458,
+                  "clipped_fraction": 0.085115
+                },
+                "issues": [
+                  {
+                    "code": "display_scale_clipping",
+                    "severity": "warning",
+                    "message": "8.5% of finite cells exceed the fixed display scale."
+                  }
+                ],
+                "status": "warning"
+              },
+              "_catalog": {
+                "canonical_product": "2m_temperature_anomaly",
+                "comparable": true,
+                "quality_control": "warning"
+              }
+            },
+            {
+              "id": "cfsv2-202701-202703-t2ma-seasonal",
+              "target_month": "202701-202703",
+              "valid_start_utc": "2027-01-01T00:00:00Z",
+              "valid_end_utc": "2027-04-01T00:00:00Z",
+              "lead_month": "4-6",
+              "monthly_leads": [
+                4,
+                5,
+                6
+              ],
+              "field": "t2m_anomaly",
+              "units": "°C",
+              "status": "rendered",
+              "image": "cfsv2/2026090300/cfsv2_t2ma_202701-202703.jpg",
+              "baseline": {
+                "files": [
+                  ".cache/cfsv2/calibration/flxf/2026082912/flxf.08.29.12.l04.fclm.1982.2010.grb2",
+                  ".cache/cfsv2/calibration/flxf/2026082912/flxf.08.29.12.l05.fclm.1982.2010.grb2",
+                  ".cache/cfsv2/calibration/flxf/2026082912/flxf.08.29.12.l06.fclm.1982.2010.grb2"
+                ],
+                "label": "NCEI CFS reforecast flux calibration climatology; 1982-2010 (cached 2026082912 fallback)",
+                "years": "1982-2010",
+                "rolling_policy": "anchor_initialization",
+                "anchor_init": "2026090300",
+                "urls": [
+                  "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/08/flxf.08.29.12.l04.fclm.1982.2010.grb2",
+                  "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/08/flxf.08.29.12.l05.fclm.1982.2010.grb2",
+                  "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/08/flxf.08.29.12.l06.fclm.1982.2010.grb2"
+                ],
+                "fallbacks": [
+                  {
+                    "requested_initialization": "2026090300",
+                    "used_initialization": "2026082912",
+                    "requested_url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/09/flxf.09.03.00.l04.fclm.1982.2010.grb2",
+                    "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/08/flxf.08.29.12.l04.fclm.1982.2010.grb2",
+                    "error": "503 Server Error: Service Unavailable for url: https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/09/flxf.09.03.00.l04.fclm.1982.2010.grb2"
+                  },
+                  {
+                    "requested_initialization": "2026090300",
+                    "used_initialization": "2026082912",
+                    "requested_url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/09/flxf.09.03.00.l05.fclm.1982.2010.grb2",
+                    "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/08/flxf.08.29.12.l05.fclm.1982.2010.grb2",
+                    "error": "503 Server Error: Service Unavailable for url: https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/09/flxf.09.03.00.l05.fclm.1982.2010.grb2"
+                  },
+                  {
+                    "requested_initialization": "2026090300",
+                    "used_initialization": "2026082912",
+                    "requested_url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/09/flxf.09.03.00.l06.fclm.1982.2010.grb2",
+                    "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/08/flxf.08.29.12.l06.fclm.1982.2010.grb2",
+                    "error": "503 Server Error: Service Unavailable for url: https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/09/flxf.09.03.00.l06.fclm.1982.2010.grb2"
+                  }
+                ]
+              },
+              "ensemble_members": 24,
+              "ensemble_complete": true,
+              "ensemble_scope": "rolling_initial_conditions",
+              "statistic": "ensemble_mean",
+              "aggregation": "3-month seasonal mean",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "2m_temperature_anomaly",
+                "units": "°C",
+                "field": "t2m_anomaly",
+                "period": "seasonal",
+                "total_points": 72960,
+                "finite_points": 72960,
+                "finite_fraction": 1.0,
+                "minimum": -6.282708,
+                "maximum": 6.928569,
+                "p01": -5.357002,
+                "p99": 5.174081,
+                "display": {
+                  "minimum": -7.0,
+                  "maximum": 7.0,
+                  "step": 1.0,
+                  "below_fraction": 0.0,
+                  "above_fraction": 0.0,
+                  "clipped_fraction": 0.0
+                },
+                "issues": [],
+                "status": "passed"
+              },
+              "_catalog": {
+                "canonical_product": "2m_temperature_anomaly",
+                "comparable": true,
+                "quality_control": "passed"
+              }
+            }
+          ],
+          "_catalog": {
+            "canonical_product": "2m_temperature_anomaly",
+            "comparable": true
+          }
+        },
+        {
           "id": "cfsv2-2026090212-850mb_temperature_anomaly",
           "model": "CFSv2",
           "source": "NOAA CFSv2 NOMADS",
@@ -21459,274 +21771,12 @@
             "canonical_product": "mslp_anomaly",
             "comparable": true
           }
-        },
-        {
-          "id": "cfsv2-2026082912-2m_temperature_anomaly",
-          "model": "CFSv2",
-          "source": "NOAA CFSv2 NOMADS",
-          "source_url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/",
-          "product": "2m_temperature_anomaly",
-          "init_utc": "2026-08-29T12:00:00Z",
-          "status": "rendered",
-          "statistic": "ensemble_mean",
-          "aggregation": "10-day rolling initial-condition mean; 3-month seasonal mean",
-          "ensemble_scope": "rolling_initial_conditions",
-          "ensemble_members": 40,
-          "field": "t2m_anomaly",
-          "units": "°C",
-          "raw_field": "TMP:2 m above ground",
-          "raw_units": "K",
-          "baseline": {
-            "source": "NCEI CFS reforecast flux calibration climatology; 1982-2010",
-            "years": "1982-2010",
-            "url_root": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/",
-            "required": true,
-            "rolling_policy": "anchor_initialization"
-          },
-          "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in °C",
-          "targets": [
-            {
-              "id": "cfsv2-202612-t2ma-lead04",
-              "target_month": "202612",
-              "valid_start_utc": "2026-12-01T00:00:00Z",
-              "valid_end_utc": "2027-01-01T00:00:00Z",
-              "lead_month": 4,
-              "field": "t2m_anomaly",
-              "units": "°C",
-              "status": "rendered",
-              "image": "cfsv2/2026082912/cfsv2_t2ma_202612.jpg",
-              "baseline": {
-                "file": ".cache/cfsv2/calibration/flxf/2026082912/flxf.08.29.12.l04.fclm.1982.2010.grb2",
-                "label": "NCEI CFS reforecast flux calibration climatology; 1982-2010",
-                "years": "1982-2010",
-                "rolling_policy": "anchor_initialization",
-                "anchor_init": "2026082912",
-                "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/08/flxf.08.29.12.l04.fclm.1982.2010.grb2",
-                "downloaded": true
-              },
-              "ensemble_members": 40,
-              "ensemble_expected_members": 40,
-              "ensemble_complete": true,
-              "ensemble_scope": "rolling_initial_conditions",
-              "statistic": "ensemble_mean",
-              "aggregation": "monthly mean 2-m temperature",
-              "quality_control": {
-                "registry_version": 1,
-                "product": "2m_temperature_anomaly",
-                "units": "°C",
-                "field": "t2m_anomaly",
-                "period": "monthly",
-                "total_points": 72960,
-                "finite_points": 72960,
-                "finite_fraction": 1.0,
-                "minimum": -2.435425,
-                "maximum": 6.531375,
-                "p01": -0.847674,
-                "p99": 4.404612,
-                "display": {
-                  "minimum": -7.0,
-                  "maximum": 7.0,
-                  "step": 1.0,
-                  "below_fraction": 0.0,
-                  "above_fraction": 0.0,
-                  "clipped_fraction": 0.0
-                },
-                "issues": [],
-                "status": "passed"
-              },
-              "_catalog": {
-                "canonical_product": "2m_temperature_anomaly",
-                "comparable": true,
-                "quality_control": "passed"
-              }
-            },
-            {
-              "id": "cfsv2-202701-t2ma-lead05",
-              "target_month": "202701",
-              "valid_start_utc": "2027-01-01T00:00:00Z",
-              "valid_end_utc": "2027-02-01T00:00:00Z",
-              "lead_month": 5,
-              "field": "t2m_anomaly",
-              "units": "°C",
-              "status": "rendered",
-              "image": "cfsv2/2026082912/cfsv2_t2ma_202701.jpg",
-              "baseline": {
-                "file": ".cache/cfsv2/calibration/flxf/2026082912/flxf.08.29.12.l05.fclm.1982.2010.grb2",
-                "label": "NCEI CFS reforecast flux calibration climatology; 1982-2010",
-                "years": "1982-2010",
-                "rolling_policy": "anchor_initialization",
-                "anchor_init": "2026082912",
-                "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/08/flxf.08.29.12.l05.fclm.1982.2010.grb2",
-                "downloaded": true
-              },
-              "ensemble_members": 40,
-              "ensemble_expected_members": 40,
-              "ensemble_complete": true,
-              "ensemble_scope": "rolling_initial_conditions",
-              "statistic": "ensemble_mean",
-              "aggregation": "monthly mean 2-m temperature",
-              "quality_control": {
-                "registry_version": 1,
-                "product": "2m_temperature_anomaly",
-                "units": "°C",
-                "field": "t2m_anomaly",
-                "period": "monthly",
-                "total_points": 72960,
-                "finite_points": 72960,
-                "finite_fraction": 1.0,
-                "minimum": -5.223775,
-                "maximum": 5.903575,
-                "p01": -0.975097,
-                "p99": 4.867826,
-                "display": {
-                  "minimum": -7.0,
-                  "maximum": 7.0,
-                  "step": 1.0,
-                  "below_fraction": 0.0,
-                  "above_fraction": 0.0,
-                  "clipped_fraction": 0.0
-                },
-                "issues": [],
-                "status": "passed"
-              },
-              "_catalog": {
-                "canonical_product": "2m_temperature_anomaly",
-                "comparable": true,
-                "quality_control": "passed"
-              }
-            },
-            {
-              "id": "cfsv2-202702-t2ma-lead06",
-              "target_month": "202702",
-              "valid_start_utc": "2027-02-01T00:00:00Z",
-              "valid_end_utc": "2027-03-01T00:00:00Z",
-              "lead_month": 6,
-              "field": "t2m_anomaly",
-              "units": "°C",
-              "status": "rendered",
-              "image": "cfsv2/2026082912/cfsv2_t2ma_202702.jpg",
-              "baseline": {
-                "file": ".cache/cfsv2/calibration/flxf/2026082912/flxf.08.29.12.l06.fclm.1982.2010.grb2",
-                "label": "NCEI CFS reforecast flux calibration climatology; 1982-2010",
-                "years": "1982-2010",
-                "rolling_policy": "anchor_initialization",
-                "anchor_init": "2026082912",
-                "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/08/flxf.08.29.12.l06.fclm.1982.2010.grb2",
-                "downloaded": true
-              },
-              "ensemble_members": 40,
-              "ensemble_expected_members": 40,
-              "ensemble_complete": true,
-              "ensemble_scope": "rolling_initial_conditions",
-              "statistic": "ensemble_mean",
-              "aggregation": "monthly mean 2-m temperature",
-              "quality_control": {
-                "registry_version": 1,
-                "product": "2m_temperature_anomaly",
-                "units": "°C",
-                "field": "t2m_anomaly",
-                "period": "monthly",
-                "total_points": 72960,
-                "finite_points": 72960,
-                "finite_fraction": 1.0,
-                "minimum": -3.73005,
-                "maximum": 6.231025,
-                "p01": -1.741486,
-                "p99": 4.95825,
-                "display": {
-                  "minimum": -7.0,
-                  "maximum": 7.0,
-                  "step": 1.0,
-                  "below_fraction": 0.0,
-                  "above_fraction": 0.0,
-                  "clipped_fraction": 0.0
-                },
-                "issues": [],
-                "status": "passed"
-              },
-              "_catalog": {
-                "canonical_product": "2m_temperature_anomaly",
-                "comparable": true,
-                "quality_control": "passed"
-              }
-            },
-            {
-              "id": "cfsv2-202612-202702-t2ma-seasonal",
-              "target_month": "202612-202702",
-              "valid_start_utc": "2026-12-01T00:00:00Z",
-              "valid_end_utc": "2027-03-01T00:00:00Z",
-              "lead_month": "4-6",
-              "monthly_leads": [
-                4,
-                5,
-                6
-              ],
-              "field": "t2m_anomaly",
-              "units": "°C",
-              "status": "rendered",
-              "image": "cfsv2/2026082912/cfsv2_t2ma_202612-202702.jpg",
-              "baseline": {
-                "files": [
-                  ".cache/cfsv2/calibration/flxf/2026082912/flxf.08.29.12.l04.fclm.1982.2010.grb2",
-                  ".cache/cfsv2/calibration/flxf/2026082912/flxf.08.29.12.l05.fclm.1982.2010.grb2",
-                  ".cache/cfsv2/calibration/flxf/2026082912/flxf.08.29.12.l06.fclm.1982.2010.grb2"
-                ],
-                "label": "NCEI CFS reforecast flux calibration climatology; 1982-2010",
-                "years": "1982-2010",
-                "rolling_policy": "anchor_initialization",
-                "anchor_init": "2026082912",
-                "urls": [
-                  "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/08/flxf.08.29.12.l04.fclm.1982.2010.grb2",
-                  "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/08/flxf.08.29.12.l05.fclm.1982.2010.grb2",
-                  "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/08/flxf.08.29.12.l06.fclm.1982.2010.grb2"
-                ]
-              },
-              "ensemble_members": 40,
-              "ensemble_complete": true,
-              "ensemble_scope": "rolling_initial_conditions",
-              "statistic": "ensemble_mean",
-              "aggregation": "3-month seasonal mean",
-              "quality_control": {
-                "registry_version": 1,
-                "product": "2m_temperature_anomaly",
-                "units": "°C",
-                "field": "t2m_anomaly",
-                "period": "seasonal",
-                "total_points": 72960,
-                "finite_points": 72960,
-                "finite_fraction": 1.0,
-                "minimum": -2.941833,
-                "maximum": 4.81105,
-                "p01": -0.785,
-                "p99": 3.888879,
-                "display": {
-                  "minimum": -7.0,
-                  "maximum": 7.0,
-                  "step": 1.0,
-                  "below_fraction": 0.0,
-                  "above_fraction": 0.0,
-                  "clipped_fraction": 0.0
-                },
-                "issues": [],
-                "status": "passed"
-              },
-              "_catalog": {
-                "canonical_product": "2m_temperature_anomaly",
-                "comparable": true,
-                "quality_control": "passed"
-              }
-            }
-          ],
-          "_catalog": {
-            "canonical_product": "2m_temperature_anomaly",
-            "comparable": true
-          }
         }
       ],
       "status": "degraded",
       "schema_version": 1,
       "manifest_kind": "cfsv2_seasonal_manifest",
-      "generated_utc": "2026-09-02T23:57:16Z",
+      "generated_utc": "2026-09-03T12:08:40Z",
       "source_url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/",
       "product_labels": {},
       "validation": {
@@ -21768,12 +21818,12 @@
           "reason": "Rendered target available.",
           "available": true,
           "comparable": true,
-          "latest_init_utc": "2026-08-31T06:00:00Z",
-          "run_id": "cfsv2-2026083106-2m_temperature_anomaly",
+          "latest_init_utc": "2026-09-03T00:00:00Z",
+          "run_id": "cfsv2-2026090300-2m_temperature_anomaly",
           "target_count": 4,
-          "latest_run_id": "cfsv2-2026083106-2m_temperature_anomaly",
+          "latest_run_id": "cfsv2-2026090300-2m_temperature_anomaly",
           "latest_run_status": "rendered",
-          "latest_run_init_utc": "2026-08-31T06:00:00Z",
+          "latest_run_init_utc": "2026-09-03T00:00:00Z",
           "retained_fallback": false
         },
         "precipitation_anomaly": {
@@ -46891,7 +46941,7 @@
   },
   "health": {
     "status": "attention",
-    "generated_utc": "2026-09-03T11:02:09Z",
+    "generated_utc": "2026-09-03T12:09:52Z",
     "freshness_policy_days": {
       "default": {
         "fresh_days": 35,
@@ -46904,10 +46954,10 @@
     },
     "summary": {
       "surfaces": 60,
-      "attention_surfaces": 7,
+      "attention_surfaces": 6,
       "by_state": {
-        "healthy": 43,
-        "aging": 3,
+        "healthy": 44,
+        "aging": 2,
         "stale": 0,
         "partial": 1,
         "failed": 0,
@@ -47359,7 +47409,7 @@
         "comparable": true,
         "health_state": "healthy",
         "freshness": "fresh",
-        "age_days": 1.2,
+        "age_days": 1.3,
         "latest_status": "rendered",
         "latest_init_utc": "2026-09-02T06:00:00Z",
         "selected_init_utc": "2026-09-02T06:00:00Z",
@@ -47393,13 +47443,13 @@
         "surface_state": "available",
         "available": true,
         "comparable": true,
-        "health_state": "aging",
-        "freshness": "aging",
-        "age_days": 3.2,
+        "health_state": "healthy",
+        "freshness": "fresh",
+        "age_days": 0.5,
         "latest_status": "rendered",
-        "latest_init_utc": "2026-08-31T06:00:00Z",
-        "selected_init_utc": "2026-08-31T06:00:00Z",
-        "selected_run_id": "cfsv2-2026083106-2m_temperature_anomaly",
+        "latest_init_utc": "2026-09-03T00:00:00Z",
+        "selected_init_utc": "2026-09-03T00:00:00Z",
+        "selected_run_id": "cfsv2-2026090300-2m_temperature_anomaly",
         "retained_fallback": false,
         "reason": "Rendered target available."
       },
@@ -47413,7 +47463,7 @@
         "comparable": true,
         "health_state": "aging",
         "freshness": "aging",
-        "age_days": 3.2,
+        "age_days": 3.3,
         "latest_status": "rendered",
         "latest_init_utc": "2026-08-31T06:00:00Z",
         "selected_init_utc": "2026-08-31T06:00:00Z",
@@ -47449,7 +47499,7 @@
         "comparable": true,
         "health_state": "aging",
         "freshness": "aging",
-        "age_days": 3.2,
+        "age_days": 3.3,
         "latest_status": "rendered",
         "latest_init_utc": "2026-08-31T06:00:00Z",
         "selected_init_utc": "2026-08-31T06:00:00Z",
@@ -48056,24 +48106,6 @@
       {
         "model": "cfsv2",
         "model_label": "CFSv2",
-        "product": "2m_temperature_anomaly",
-        "product_label": "2-m Temperature Anomaly",
-        "surface_state": "available",
-        "available": true,
-        "comparable": true,
-        "health_state": "aging",
-        "freshness": "aging",
-        "age_days": 3.2,
-        "latest_status": "rendered",
-        "latest_init_utc": "2026-08-31T06:00:00Z",
-        "selected_init_utc": "2026-08-31T06:00:00Z",
-        "selected_run_id": "cfsv2-2026083106-2m_temperature_anomaly",
-        "retained_fallback": false,
-        "reason": "Rendered target available."
-      },
-      {
-        "model": "cfsv2",
-        "model_label": "CFSv2",
         "product": "precipitation_anomaly",
         "product_label": "Precipitation Anomaly",
         "surface_state": "available",
@@ -48081,7 +48113,7 @@
         "comparable": true,
         "health_state": "aging",
         "freshness": "aging",
-        "age_days": 3.2,
+        "age_days": 3.3,
         "latest_status": "rendered",
         "latest_init_utc": "2026-08-31T06:00:00Z",
         "selected_init_utc": "2026-08-31T06:00:00Z",
@@ -48117,7 +48149,7 @@
         "comparable": true,
         "health_state": "aging",
         "freshness": "aging",
-        "age_days": 3.2,
+        "age_days": 3.3,
         "latest_status": "rendered",
         "latest_init_utc": "2026-08-31T06:00:00Z",
         "selected_init_utc": "2026-08-31T06:00:00Z",
