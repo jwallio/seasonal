@@ -41,6 +41,27 @@ on:
         required: false
         default: "6"
         type: string
+  workflow_call:
+    inputs:
+      product:
+        description: "CFSv2 product to generate"
+        required: true
+        type: string
+      lead_months:
+        description: "Target leads, comma-separated"
+        required: false
+        default: "4,5,6"
+        type: string
+      seasonal_window:
+        description: "Optional consecutive leads for a seasonal aggregate"
+        required: false
+        default: "4,5,6"
+        type: string
+      rolling_days:
+        description: "Lagged initial-condition window"
+        required: false
+        default: "6"
+        type: string
 
 permissions:
   contents: write

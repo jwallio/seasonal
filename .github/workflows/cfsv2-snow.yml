@@ -1,0 +1,43 @@
+name: CFSv2 Snowfall and SWE Graphics
+
+run-name: CFSv2 ${{ inputs.snow_product }} · leads ${{ inputs.lead_months }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      snow_product:
+        description: "Snow product to generate"
+        required: true
+        default: "Snowfall departure"
+        type: choice
+        options:
+          - Snowfall departure
+          - Snow-water equivalent anomaly
+      lead_months:
+        description: "Target leads, comma-separated"
+        required: false
+        default: "4,5,6"
+        type: string
+      seasonal_window:
+        description: "Consecutive leads for the seasonal aggregate"
+        required: false
+        default: "4,5,6"
+        type: string
+      rolling_days:
+        description: "Lagged initial-condition window; 6 means 24 cycles"
+        required: false
+        default: "6"
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    name: Generate selected CFSv2 snow product
+    uses: ./.github/workflows/cfsv2.yml
+    with:
+      product: ${{ inputs.snow_product == 'Snowfall departure' && 'snowfall_anomaly' || 'snow_water_equivalent_anomaly' }}
+      lead_months: ${{ inputs.lead_months }}
+      seasonal_window: ${{ inputs.seasonal_window }}
+      rolling_days: ${{ inputs.rolling_days }}

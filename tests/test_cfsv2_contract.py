@@ -14,6 +14,7 @@ ADAPTER = ROOT / "scripts" / "cfsv2_seasonal.py"
 WRAPPER = ROOT / "scripts" / "render_cfsv2.ps1"
 DOC = ROOT / "docs" / "SEASONAL_CFSV2.md"
 WORKFLOW = ROOT / ".github" / "workflows" / "cfsv2.yml"
+SNOW_WORKFLOW = ROOT / ".github" / "workflows" / "cfsv2-snow.yml"
 PAGES_WORKFLOW = ROOT / ".github" / "workflows" / "publish-pages.yml"
 UPDATE_WORKFLOW = ROOT / ".github" / "workflows" / "update.yml"
 PAGE = ROOT / "public" / "seasonal" / "cfsv2" / "index.html"
@@ -39,6 +40,7 @@ def main() -> int:
     check(WRAPPER.exists(), "CFSv2 PowerShell wrapper missing")
     check(DOC.exists(), "CFSv2 documentation missing")
     check(WORKFLOW.exists(), "CFSv2 workflow missing")
+    check(SNOW_WORKFLOW.exists(), "CFSv2 snow-products workflow missing")
     check(PAGES_WORKFLOW.exists(), "central Pages workflow missing")
     check(UPDATE_WORKFLOW.exists(), "WeatherNext workflow missing")
     check(PAGE.exists(), "CFSv2 Pages index missing")
@@ -478,6 +480,7 @@ def main() -> int:
         check(retained_payload["retention"]["scope"] == "per_product", "manifest retention should identify its per-product scope")
         check(retained_payload["retention"]["max_runs_per_product"] == 4, "manifest should retain four runs for each product")
     workflow = WORKFLOW.read_text(encoding="utf-8")
+    snow_workflow = SNOW_WORKFLOW.read_text(encoding="utf-8")
     pages_workflow = PAGES_WORKFLOW.read_text(encoding="utf-8")
     update_workflow = UPDATE_WORKFLOW.read_text(encoding="utf-8")
     for term in (
@@ -525,6 +528,19 @@ def main() -> int:
     check('github.event_name }}" == "schedule" || "$CFSV2_PRODUCT" == "all"' in workflow, "manual CFSv2 all action should use delayed-file readiness retries")
     check('description: "Lagged initial-condition window; 6 means 24 cycles"' in workflow, "scheduled CFSv2 workflow should stay inside the live archive")
     check("ROLLING_DAYS: ${{ inputs.rolling_days || '6' }}" in workflow, "scheduled CFSv2 workflow should default to six rolling days")
+    check("workflow_call:" in workflow, "CFSv2 workflow should be reusable by focused product menus")
+    for term in (
+        "name: CFSv2 Snowfall and SWE Graphics",
+        "Snowfall departure",
+        "Snow-water equivalent anomaly",
+        "snowfall_anomaly",
+        "snow_water_equivalent_anomaly",
+        "uses: ./.github/workflows/cfsv2.yml",
+        "lead_months: ${{ inputs.lead_months }}",
+        "seasonal_window: ${{ inputs.seasonal_window }}",
+        "rolling_days: ${{ inputs.rolling_days }}",
+    ):
+        check(term in snow_workflow, f"CFSv2 snow-products workflow missing term: {term}")
     check("actions/cache/save@v4" in workflow and "if: always()" in workflow, "CFSv2 workflow should retain warmed rolling state after failed attempts")
     check("--keep-source-cache" in workflow and "Trim transient CFSv2 source cache" in workflow, "scheduled CFSv2 products should reuse and then trim source downloads")
     check('if [[ "${{ github.event_name }}" == "schedule" ]]' in workflow, "scheduled suite should remain distinct from manual single-product dispatch")
@@ -567,6 +583,7 @@ def main() -> int:
     for term in (
         "workflow_run:",
         "CFSv2 Rolling Seasonal Graphics",
+        "CFSv2 Snowfall and SWE Graphics",
         "ECMWF SEAS5 Seasonal Graphics",
         "WeatherNext Runner",
         "actions/download-artifact@v4",

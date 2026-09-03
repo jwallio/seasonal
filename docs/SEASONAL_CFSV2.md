@@ -110,6 +110,14 @@ manual menu field in one run: both 500-mb views, absolute 500-mb height,
 snowfall. The twice-daily scheduled suite remains limited to the operational
 anomaly products listed above.
 
+For a shorter manual menu, **CFSv2 Snowfall and SWE Graphics** offers an
+either/or selector for **Snowfall departure** (`snowfall_anomaly`) and
+**Snow-water equivalent anomaly** (`snow_water_equivalent_anomaly`). It passes
+the selected lead months, seasonal window, and rolling-window length through
+the same reusable CFSv2 renderer, then uploads the standard CFSv2 payload for
+the central Pages publisher. This keeps the snow-only action scientifically
+and operationally identical to selecting either product from the full menu.
+
 The adapter also supports the CPC-style `--rolling-days 10` window, which
 produces 40 cycles, for callers that maintain a durable rolling-state archive
 outside the seven-day NOMADS rotation. It is not the automated site default.

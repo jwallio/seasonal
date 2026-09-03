@@ -6,6 +6,7 @@ on:
       - WeatherNext Runner
       - WeatherNext Runner Custom
       - CFSv2 Rolling Seasonal Graphics
+      - CFSv2 Snowfall and SWE Graphics
       - CanSIPS v3 Seasonal Graphics
       - CMA CPSv3 Seasonal Graphics
       - APCC MME Seasonal Graphics
@@ -25,6 +26,7 @@ on:
           - WeatherNext Runner
           - WeatherNext Runner Custom
           - CFSv2 Rolling Seasonal Graphics
+          - CFSv2 Snowfall and SWE Graphics
           - ECMWF SEAS5 Seasonal Graphics
           - CanSIPS v3 Seasonal Graphics
           - CMA CPSv3 Seasonal Graphics
@@ -107,7 +109,7 @@ jobs:
           run-id: ${{ env.SOURCE_RUN_ID }}
 
       - name: Download CFSv2 payload
-        if: ${{ env.SOURCE_WORKFLOW == 'CFSv2 Rolling Seasonal Graphics' }}
+        if: ${{ env.SOURCE_WORKFLOW == 'CFSv2 Rolling Seasonal Graphics' || env.SOURCE_WORKFLOW == 'CFSv2 Snowfall and SWE Graphics' }}
         uses: actions/download-artifact@v4
         with:
           name: cfsv2-pages-${{ env.SOURCE_RUN_ID }}
@@ -287,7 +289,7 @@ jobs:
                 cp -R "$payload_root/runs/." site/wn2/runs/
               fi
               ;;
-            "CFSv2 Rolling Seasonal Graphics")
+            "CFSv2 Rolling Seasonal Graphics"|"CFSv2 Snowfall and SWE Graphics")
               payload_root=incoming/cfsv2
               if [ -d "$payload_root/pages-payload" ]; then
                 payload_root="$payload_root/pages-payload"
