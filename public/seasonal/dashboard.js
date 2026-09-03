@@ -1400,7 +1400,6 @@ document.querySelectorAll('[data-overview-filter]').forEach(button => button.add
   selection.overviewFilter = filter;
   renderOverview();
 }));
-document.querySelectorAll('[data-overview-model]').forEach(button => button.addEventListener('click', () => { selection.model = button.dataset.overviewModel; selection.product = ''; selection.run = ''; selection.target = ''; setView('single'); }));
 const provenanceMedia = window.matchMedia('(min-width: 901px)');
 function syncProvenanceDisclosure(event = provenanceMedia) { el('provenance-details').open = event.matches; }
 provenanceMedia.addEventListener('change', syncProvenanceDisclosure);
