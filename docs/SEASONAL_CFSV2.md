@@ -83,10 +83,11 @@ crystal habit, melting, wind compaction, or settling.
 Monthly accumulation maps retain the WN2 two-inch color bands through 40 inches,
 then use five-inch bands through 100 inches and ten-inch high-end bands through
 200 inches. DJF and JFM maps use five-inch bands through 100 inches and the same
-ten-inch bands from 100-200 inches. Both scales use value-aligned cool color
-families across the full range: blue from 0-50 inches, purple from 50-100,
-green from 100-150, and cyan from 150-200. This keeps Northeast and mountain
-maxima distinct without using warm colors on a snowfall accumulation map.
+ten-inch bands from 100-200 inches. The established WN2 progression uses blues,
+purples, cyan, and green through 100 inches, then yellow, orange, red, and deep
+purple bands through 200 inches. Major legend labels appear every 20 inches,
+while all contour boundaries remain intact. This keeps Northeast and mountain
+maxima distinct and the legend readable when the share image is viewed small.
 
 Source references: [CIPS interactive climatology](https://www.eas.slu.edu/CIPS/SLR/slrmap.htm)
 and [Baxter et al. (2005)](https://doi.org/10.1175/WAF856.1).
