@@ -65,6 +65,17 @@ C3S_CANONICAL_CENTRES = (
     "jma",
     "bom",
 )
+# C3S currently publishes the postprocessed snowfall-anomaly field for only
+# these five centres. NCEP is represented by the standalone rolling CFSv2
+# derivation, while JMA and BOM return provider-confirmed MARS no-data
+# responses for this field and must not make every snowfall blend look partial.
+C3S_SNOWFALL_CENTRES = (
+    "ecmwf",
+    "ukmo",
+    "meteo_france",
+    "dwd",
+    "cmcc",
+)
 NMME_UNIQUE_COMPONENTS = ("NCAR_CCSM4", "NCAR_CESM1")
 NMME_PRODUCTS = frozenset({"2m_temperature_anomaly", "precipitation_anomaly"})
 CFSV2_STANDALONE_PRODUCTS = frozenset(
@@ -73,6 +84,7 @@ CFSV2_STANDALONE_PRODUCTS = frozenset(
         "500mb_height_anomaly_nh",
         "2m_temperature_anomaly",
         "precipitation_anomaly",
+        "snowfall_anomaly",
         "mslp_anomaly",
     }
 )
@@ -142,7 +154,26 @@ COMMON_EXCLUSIONS: list[dict[str, Any]] = [
 
 
 def canonical_exclusions(product: str) -> list[dict[str, Any]]:
-    exclusions = [dict(item) for item in COMMON_EXCLUSIONS]
+    exclusions = [
+        dict(item)
+        for item in COMMON_EXCLUSIONS
+        if not (product == "snowfall_anomaly" and item["package"] == "JMA standalone")
+    ]
+    if product == "snowfall_anomaly":
+        exclusions.extend(
+            [
+                {
+                    "package": "C3S JMA System 4 / JMA standalone",
+                    "reason": "C3S does not publish the postprocessed snowfall-anomaly field for JMA",
+                    "represented_by": None,
+                },
+                {
+                    "package": "C3S BOM System 2",
+                    "reason": "C3S does not publish the postprocessed snowfall-anomaly field for BOM",
+                    "represented_by": None,
+                },
+            ]
+        )
     if product in NMME_PRODUCTS:
         exclusions.append(
             {
@@ -237,6 +268,8 @@ def selected_products(value: str) -> list[str]:
 
 
 def c3s_centres_for(product: str) -> tuple[str, ...]:
+    if product == "snowfall_anomaly":
+        return C3S_SNOWFALL_CENTRES
     if product in CFSV2_STANDALONE_PRODUCTS:
         return tuple(centre for centre in C3S_CANONICAL_CENTRES if centre != "ncep")
     return C3S_CANONICAL_CENTRES
@@ -522,39 +555,88 @@ def load_cfsv2_member(
         request_delay=args.request_delay,
         force_decode=args.force_decode,
         allow_partial_rolling=True,
+        keep_source_cache=False,
+        baseline_file="",
+        baseline_dir="",
+        baseline_label="",
+        baseline_years=cfsv2.NCEI_CALIBRATION_YEARS,
+        ncei_calibration=True,
+        allow_stale_calibration=True,
+        product=product,
     )
     last_request = 0.0
     for lead in leads:
         target = c3s.target_month(init, lead)
         try:
             anchor_lead = cfsv2.lead_for_target(anchor, target)
-            forecast, source_files, available, expected, label, last_request = cfsv2.decode_target_ensemble(
-                decoder_args,
-                anchor,
-                target,
-                [args.cfsv2_rolling_member],
-                rolling_inits,
-                cache_dir,
-                state_dir,
-                wgrib2,
-                root,
-                last_request,
-                product_spec,
-            )
-            baseline_url = cfsv2.ncei_calibration_url(anchor, anchor_lead, product_spec["source_kind"])
-            baseline_path = cfsv2.cached_calibration_path(
-                cache_dir,
-                anchor,
-                anchor_lead,
-                product_spec["source_kind"],
-            )
-            baseline_downloaded, last_request = cfsv2.download_file(
-                baseline_url,
-                baseline_path,
-                max(0.0, args.request_delay),
-                last_request,
-            )
-            baseline = cfsv2.load_baseline(baseline_path, wgrib2, product_spec, target)
+            derivation = None
+            if product == "snowfall_anomaly":
+                (
+                    forecast,
+                    source_files,
+                    available,
+                    expected,
+                    label,
+                    last_request,
+                    derivation,
+                ) = cfsv2.decode_snowfall_target_ensemble(
+                    decoder_args,
+                    anchor,
+                    target,
+                    [args.cfsv2_rolling_member],
+                    rolling_inits,
+                    cache_dir,
+                    state_dir,
+                    wgrib2,
+                    root,
+                    last_request,
+                )
+                baseline, baseline_info, last_request = cfsv2.load_snowfall_baseline(
+                    decoder_args,
+                    anchor,
+                    target,
+                    anchor_lead,
+                    cache_dir,
+                    root,
+                    wgrib2,
+                    last_request,
+                )
+            else:
+                forecast, source_files, available, expected, label, last_request = cfsv2.decode_target_ensemble(
+                    decoder_args,
+                    anchor,
+                    target,
+                    [args.cfsv2_rolling_member],
+                    rolling_inits,
+                    cache_dir,
+                    state_dir,
+                    wgrib2,
+                    root,
+                    last_request,
+                    product_spec,
+                )
+                baseline_url = cfsv2.ncei_calibration_url(anchor, anchor_lead, product_spec["source_kind"])
+                baseline_path = cfsv2.cached_calibration_path(
+                    cache_dir,
+                    anchor,
+                    anchor_lead,
+                    product_spec["source_kind"],
+                )
+                baseline_downloaded, last_request = cfsv2.download_file(
+                    baseline_url,
+                    baseline_path,
+                    max(0.0, args.request_delay),
+                    last_request,
+                )
+                baseline = cfsv2.load_baseline(baseline_path, wgrib2, product_spec, target)
+                baseline_info = {
+                    "source": product_spec["baseline_label"],
+                    "years": cfsv2.NCEI_CALIBRATION_YEARS,
+                    "url": baseline_url,
+                    "file": relative_path(baseline_path, root),
+                    "downloaded": baseline_downloaded,
+                    "rolling_policy": "anchor_initialization",
+                }
             member_grids[lead][key] = subtract_grids(forecast, baseline)
             if product_spec["height_contours"] and not args.decode_only:
                 height_grids[lead][key] = forecast
@@ -574,15 +656,10 @@ def load_cfsv2_member(
                     "label": label,
                 },
                 "source_files": source_files,
-                "baseline": {
-                    "source": product_spec["baseline_label"],
-                    "years": cfsv2.NCEI_CALIBRATION_YEARS,
-                    "url": baseline_url,
-                    "file": relative_path(baseline_path, root),
-                    "downloaded": baseline_downloaded,
-                    "rolling_policy": "anchor_initialization",
-                },
+                "baseline": baseline_info,
             }
+            if derivation is not None:
+                provenance[lead][key]["derivation"] = derivation
         except Exception as exc:
             errors[lead][key] = str(exc)
             print(f"super ensemble rolling CFSv2 lead {lead} unavailable: {exc}", file=sys.stderr)

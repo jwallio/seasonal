@@ -86,6 +86,10 @@ def main() -> int:
     check("eccc_cansips_v3" in height_keys, "CanSIPS should represent the ECCC family once")
     snowfall_keys = [member.key for member in module.canonical_members("snowfall_anomaly")]
     check("eccc_cansips_v3" in snowfall_keys, "snowfall roster should include the CanSIPS-derived family vote")
+    check(module.CFSV2_MEMBER_KEY in snowfall_keys, "snowfall roster should include the standalone rolling CFSv2 family vote")
+    check(len(snowfall_keys) == 7 and len(snowfall_keys) == len(set(snowfall_keys)), "snowfall roster must contain seven supported unique source families")
+    check("c3s_ncep_system2" not in snowfall_keys, "snowfall roster must not duplicate rolling CFSv2 through C3S NCEP")
+    check("c3s_jma_system4" not in snowfall_keys and "c3s_bom_system2" not in snowfall_keys, "provider-unsupported C3S snowfall systems must not create permanent partial coverage")
     check(module.CFSV2_MEMBER_KEY in height_keys, "500-mb roster should use the standalone rolling CFSv2 family")
     check("c3s_ncep_system2" not in height_keys, "C3S NCEP must not duplicate standalone rolling CFSv2")
     check(module.CFSV2_MEMBER_KEY in surface_keys and "c3s_ncep_system2" not in surface_keys, "surface roster should contain one rolling CFSv2 family vote")
@@ -127,6 +131,11 @@ def main() -> int:
     check(any(item["package"] == "NASA GEOS-S2S-3 APCN z500 archive" and item["represented_by"] is None for item in height_exclusions), "height ledger must document the rejected NASA pressure level")
     surface_exclusions = module.membership_ledger("2m_temperature_anomaly")["excluded"]
     check(any(item["package"] == "NMME NASA_GEOS5v2" and item["represented_by"] == module.GEOS_MEMBER_KEY for item in surface_exclusions), "surface ledger must document the NASA deduplication")
+    snowfall_ledger = module.membership_ledger("snowfall_anomaly")
+    check(snowfall_ledger["expected_count"] == 7, "snowfall membership should expect only the seven supported families")
+    check(any(item["package"] == "C3S NCEP System 2" and item["represented_by"] == module.CFSV2_MEMBER_KEY for item in snowfall_ledger["excluded"]), "snowfall ledger must document the C3S NCEP substitution")
+    check(any(item["package"].startswith("C3S JMA") and item["represented_by"] is None for item in snowfall_ledger["excluded"]), "snowfall ledger must document unavailable JMA data")
+    check(any(item["package"] == "C3S BOM System 2" and item["represented_by"] is None for item in snowfall_ledger["excluded"]), "snowfall ledger must document unavailable BOM data")
     check(module.c3s.target_month("2026080100", 4) == "202612", "lead 4 should align to December")
     check(module.nmme.target_month("2026080800", 4) == "202612", "NMME lead alignment should match December")
     for term in ("intersection of canonical members", "APCC MME", "C3S multi-system mean", "NMME CFSv2", "native_model_baselines", "NASA GEOS-S2S-3"):
@@ -188,6 +197,64 @@ def main() -> int:
             check(heights[4][module.CFSV2_MEMBER_KEY].values == [[100.0]], "rolling CFSv2 absolute height should supply contours")
             check(provenance[4][module.CFSV2_MEMBER_KEY]["rolling_window"]["available_cycles"] == 39, "rolling CFSv2 provenance should retain partial-cycle counts")
             check(not errors[4], "mock rolling CFSv2 load should not record an error")
+        finally:
+            for name, value in originals.items():
+                setattr(module.cfsv2, name, value)
+
+    with tempfile.TemporaryDirectory() as temporary:
+        originals = {
+            name: getattr(module.cfsv2, name)
+            for name in (
+                "rolling_cycle_inits", "decode_target_ensemble",
+                "decode_snowfall_target_ensemble", "load_snowfall_baseline",
+            )
+        }
+        snowfall_calls = {"forecast": 0, "baseline": 0}
+        try:
+            module.cfsv2.rolling_cycle_inits = lambda anchor, count: ["2026081812"] * count
+
+            def fail_generic_decoder(*args, **kwargs):
+                raise AssertionError("snowfall must use the derived-field decoder")
+
+            def mock_snowfall_decoder(*args, **kwargs):
+                snowfall_calls["forecast"] += 1
+                return (
+                    module.Grid([0.0], [0.0], [[3.5]]), [], 24, 24,
+                    "24/24-cycle derived snowfall mean", 0.0,
+                    {"method": "temperature phase gate"},
+                )
+
+            def mock_snowfall_baseline(*args, **kwargs):
+                snowfall_calls["baseline"] += 1
+                return (
+                    module.Grid([0.0], [0.0], [[1.0]]),
+                    {"source": "test derived snowfall climatology", "years": "1982-2010"},
+                    0.0,
+                )
+
+            module.cfsv2.decode_target_ensemble = fail_generic_decoder
+            module.cfsv2.decode_snowfall_target_ensemble = mock_snowfall_decoder
+            module.cfsv2.load_snowfall_baseline = mock_snowfall_baseline
+            grids = {4: {}}
+            heights = {4: {}}
+            provenance = {4: {}}
+            errors = {4: {}}
+            module.load_cfsv2_member(
+                args=SimpleNamespace(
+                    cfsv2_anchor_init="2026081812", cfsv2_rolling_days=6,
+                    cfsv2_rolling_member=1, request_delay=0.0,
+                    force_decode=False, decode_only=False,
+                ),
+                product="snowfall_anomaly", init="2026080100", leads=[4],
+                cache_dir=Path(temporary), state_dir=Path(temporary) / "rolling",
+                root=ROOT, wgrib2="wgrib2", member_grids=grids,
+                height_grids=heights, provenance=provenance, errors=errors,
+            )
+            check(snowfall_calls == {"forecast": 1, "baseline": 1}, "rolling CFSv2 snowfall should use both derived forecast and derived baseline adapters")
+            check(grids[4][module.CFSV2_MEMBER_KEY].values == [[2.5]], "rolling CFSv2 snowfall should subtract the matching derived climatology")
+            check(provenance[4][module.CFSV2_MEMBER_KEY]["derivation"]["method"] == "temperature phase gate", "snowfall provenance should retain the derivation method")
+            check(not heights[4], "derived snowfall should not populate 500-mb height contours")
+            check(not errors[4], "mock rolling CFSv2 snowfall load should not record an error")
         finally:
             for name, value in originals.items():
                 setattr(module.cfsv2, name, value)

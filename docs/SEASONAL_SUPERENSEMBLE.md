@@ -13,7 +13,7 @@ weight after that source has formed its own ensemble mean. The current core is:
   and BOM;
 - one NOAA CFSv2 family mean formed from the standalone six-day, 24-cycle
   rolling initial-condition blend for 500-mb height, 2-m temperature,
-  precipitation, and MSLP;
+  precipitation, snowfall, and MSLP;
 - one ECCC CanSIPS v3 family mean, representing its GEM5.2-NEMO and CanESM5
   members once;
 - one 21-member CMA CPSv3 family mean from the WMO GPC Beijing package when
@@ -36,6 +36,13 @@ package exposes an overlapping aggregate rather than separable component
 grids. GEOS-S2S-3 remains excluded from 500-mb height because NASA's current
 long-range archive named `z500` declares 200 hPa and fails the adapter's
 strict pressure-level check.
+
+Snowfall has a seven-family operational roster: five C3S systems (ECMWF,
+UKMO, Météo-France, DWD, and CMCC), the standalone rolling CFSv2 derivation,
+and the CanSIPS v3 derivation. C3S JMA and BOM are excluded because the
+provider returns no postprocessed snowfall-anomaly field for those systems;
+they are recorded as unsupported rather than making every valid snowfall
+blend appear permanently partial.
 
 CMA CPSv3 is target-aligned rather than assumed to be available at every
 horizon. The source system runs seven months, but WMO redistributes only
