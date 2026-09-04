@@ -514,10 +514,16 @@ def load_c3s_members(
 
 
 def resolve_cfsv2_anchor(value: str, shared_init: str) -> str:
-    anchor = cfsv2.discover_latest_init() if value == "latest" else cfsv2.parse_init(value)
+    if value == "latest":
+        # Monthly systems can remain on their latest release month after the
+        # calendar turns. CFSv2 is a frequent-refresh source, so use its latest
+        # cycle and align it by target month rather than forcing an older cycle
+        # merely to match the C3S/CanSIPS release month.
+        return cfsv2.discover_latest_init()
+    anchor = cfsv2.parse_init(value)
     if anchor[:6] != shared_init[:6]:
         raise SuperEnsembleError(
-            f"rolling CFSv2 anchor {anchor} does not match the shared initialization month {shared_init[:6]}"
+            f"explicit rolling CFSv2 anchor {anchor} does not match the shared initialization month {shared_init[:6]}"
         )
     return anchor
 

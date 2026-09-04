@@ -65,7 +65,11 @@ The blended 500-mb map uses the same -100 to +100 m scale and 10 m intervals
 as its verified component maps.
 The rolling CFSv2 contribution uses its official NCEI CFS reforecast
 calibration climatology and records its anchor cycle, available/expected cycle
-count, source files, and calibration URL in the manifest.
+count, source files, and calibration URL in the manifest. Its `latest` anchor
+is aligned to the requested target months, so a calendar-month rollover does
+not strand the blend on an obsolete CFSv2 cycle while monthly systems await
+their next release. An explicitly supplied anchor remains constrained to the
+shared monthly release for reproducible backfills.
 The GEOS-S2S-3 contribution uses NASA's lead- and initialization-month-matched
 provider drift climatology and records its lagged initialization dates,
 available members, archive, and drift source.

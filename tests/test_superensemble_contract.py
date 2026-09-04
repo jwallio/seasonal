@@ -120,12 +120,21 @@ def main() -> int:
     check(adapter_text.count("footer_text=included_models_footer(keys, definitions)") == 2, "monthly and seasonal super-ensemble maps should both receive the included-model footer")
     check(abs(sum(item["weight"] for item in module.weights_for(height_keys, {member.key: member for member in height_members})) - 1.0) < 1e-8, "equal weights should sum to one")
     check(module.resolve_cfsv2_anchor("2026081818", "2026080100") == "2026081818", "CFSv2 anchor should align within the shared initialization month")
+    original_latest_init = module.cfsv2.discover_latest_init
+    try:
+        module.cfsv2.discover_latest_init = lambda: "2026090318"
+        check(
+            module.resolve_cfsv2_anchor("latest", "2026080100") == "2026090318",
+            "latest CFSv2 should remain target-aligned when monthly systems are still on the prior release month",
+        )
+    finally:
+        module.cfsv2.discover_latest_init = original_latest_init
     try:
         module.resolve_cfsv2_anchor("2026073118", "2026080100")
     except module.SuperEnsembleError:
         pass
     else:
-        raise AssertionError("CFSv2 anchor must not silently drift into another initialization month")
+        raise AssertionError("an explicit CFSv2 anchor must not silently drift into another initialization month")
     height_exclusions = module.membership_ledger("500mb_height_anomaly")["excluded"]
     check(any(item["package"] == "C3S NCEP System 2" and item["represented_by"] == module.CFSV2_MEMBER_KEY for item in height_exclusions), "height ledger must document the C3S NCEP substitution")
     check(any(item["package"] == "NASA GEOS-S2S-3 APCN z500 archive" and item["represented_by"] is None for item in height_exclusions), "height ledger must document the rejected NASA pressure level")
