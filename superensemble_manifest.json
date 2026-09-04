@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "kind": "deduplicated_seasonal_superensemble_manifest",
-  "generated_utc": "2026-08-24T18:35:44Z",
+  "generated_utc": "2026-09-04T01:18:16Z",
   "source": "wall.cloud deduplicated seasonal super ensemble",
   "source_url": "https://climate.copernicus.eu/seasonal-forecasts",
   "source_urls": [
@@ -17,9 +17,11 @@
   ],
   "product_labels": {
     "500mb_height_anomaly": "500-mb Height Anomaly",
+    "500mb_height_anomaly_nh": "500-mb Height Anomaly \u00b7 Northern Hemisphere",
     "850mb_temperature_anomaly": "850-mb Temperature Anomaly",
     "2m_temperature_anomaly": "2-m Temperature Anomaly",
     "precipitation_anomaly": "CONUS Precipitation Anomaly",
+    "snowfall_anomaly": "CONUS Snowfall Water-Equivalent Departure",
     "mslp_anomaly": "MSLP Anomaly"
   },
   "membership_policy": {
@@ -79,12 +81,12 @@
         {
           "package": "C3S NCEP System 2",
           "reason": "duplicate CFSv2 family",
-          "represented_by": "noaa_cfsv2_rolling40"
+          "represented_by": "noaa_cfsv2_rolling"
         },
         {
           "package": "NMME CFSv2",
           "reason": "duplicate CFSv2 family",
-          "represented_by": "noaa_cfsv2_rolling40"
+          "represented_by": "noaa_cfsv2_rolling"
         }
       ],
       "850mb_temperature_anomaly": [
@@ -125,7 +127,7 @@
         },
         {
           "package": "CFSv2 standalone",
-          "reason": "standalone rolling adapter does not currently expose this parameter",
+          "reason": "standalone CFSv2 exposes this parameter separately but is not currently included in this super-ensemble product",
           "represented_by": "c3s_ncep_system2"
         },
         {
@@ -178,12 +180,12 @@
         {
           "package": "C3S NCEP System 2",
           "reason": "duplicate CFSv2 family",
-          "represented_by": "noaa_cfsv2_rolling40"
+          "represented_by": "noaa_cfsv2_rolling"
         },
         {
           "package": "NMME CFSv2",
           "reason": "duplicate CFSv2 family",
-          "represented_by": "noaa_cfsv2_rolling40"
+          "represented_by": "noaa_cfsv2_rolling"
         }
       ],
       "precipitation_anomaly": [
@@ -230,15 +232,15 @@
         {
           "package": "C3S NCEP System 2",
           "reason": "duplicate CFSv2 family",
-          "represented_by": "noaa_cfsv2_rolling40"
+          "represented_by": "noaa_cfsv2_rolling"
         },
         {
           "package": "NMME CFSv2",
           "reason": "duplicate CFSv2 family",
-          "represented_by": "noaa_cfsv2_rolling40"
+          "represented_by": "noaa_cfsv2_rolling"
         }
       ],
-      "sea_surface_temperature_anomaly": [
+      "snowfall_anomaly": [
         {
           "package": "ECMWF SEAS5 standalone",
           "reason": "duplicate",
@@ -276,7 +278,7 @@
         },
         {
           "package": "CFSv2 standalone",
-          "reason": "standalone rolling adapter does not currently expose this parameter",
+          "reason": "standalone CFSv2 exposes this parameter separately but is not currently included in this super-ensemble product",
           "represented_by": "c3s_ncep_system2"
         },
         {
@@ -324,12 +326,64 @@
         {
           "package": "C3S NCEP System 2",
           "reason": "duplicate CFSv2 family",
-          "represented_by": "noaa_cfsv2_rolling40"
+          "represented_by": "noaa_cfsv2_rolling"
         },
         {
           "package": "NMME CFSv2",
           "reason": "duplicate CFSv2 family",
-          "represented_by": "noaa_cfsv2_rolling40"
+          "represented_by": "noaa_cfsv2_rolling"
+        }
+      ],
+      "500mb_height_anomaly_nh": [
+        {
+          "package": "ECMWF SEAS5 standalone",
+          "reason": "duplicate",
+          "represented_by": "c3s_ecmwf_system51"
+        },
+        {
+          "package": "JMA standalone",
+          "reason": "duplicate",
+          "represented_by": "c3s_jma_system4"
+        },
+        {
+          "package": "C3S ECCC System 5",
+          "reason": "duplicate within the fuller ECCC family",
+          "represented_by": "eccc_cansips_v3"
+        },
+        {
+          "package": "C3S multi-system mean",
+          "reason": "aggregate of individually included C3S systems",
+          "represented_by": "C3S component fields"
+        },
+        {
+          "package": "NMME GEM5.2_NEMO and CanESM5",
+          "reason": "duplicate ECCC systems",
+          "represented_by": "eccc_cansips_v3"
+        },
+        {
+          "package": "NMME ensemble/consensus products",
+          "reason": "aggregate containing already represented systems",
+          "represented_by": "two unique NCAR NMME component fields where supported"
+        },
+        {
+          "package": "APCC MME",
+          "reason": "opaque overlapping aggregate; current package does not expose separable component grids",
+          "represented_by": null
+        },
+        {
+          "package": "NASA GEOS-S2S-3 APCN z500 archive",
+          "reason": "current long-range files declare 200 hPa and fail the strict 500-hPa safety check",
+          "represented_by": null
+        },
+        {
+          "package": "C3S NCEP System 2",
+          "reason": "duplicate CFSv2 family",
+          "represented_by": "noaa_cfsv2_rolling"
+        },
+        {
+          "package": "NMME CFSv2",
+          "reason": "duplicate CFSv2 family",
+          "represented_by": "noaa_cfsv2_rolling"
         }
       ]
     }
@@ -339,6 +393,1454 @@
     "history_cycles": 3
   },
   "runs": [
+    {
+      "id": "superensemble-2026080100-snowfall_anomaly",
+      "model": "Seasonal Super Ensemble",
+      "source": "wall.cloud deduplicated seasonal super ensemble",
+      "source_url": "https://climate.copernicus.eu/seasonal-forecasts",
+      "source_urls": [
+        "https://climate.copernicus.eu/seasonal-forecasts",
+        "https://eccc-msc.github.io/open-data/msc-data/nwp_cansips/readme_cansips-datamart_en/",
+        "https://www.wmolc.org/contents2/index/Beijing",
+        "https://www.wmolc.org/seasonDownload/direct",
+        "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/",
+        "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs_refor_calclim_mm_9m_pgbf/",
+        "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/NRT/APCN/",
+        "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/Drift/for_APCN/",
+        "https://www.cpc.ncep.noaa.gov/products/NMME/data.html"
+      ],
+      "product": "snowfall_anomaly",
+      "init_utc": "2026-08-01T00:00:00Z",
+      "field": "snowfall_anomaly",
+      "units": "in",
+      "statistic": "equal_weight_deduplicated_family_mean",
+      "aggregation": "monthly or seasonal mean of canonical non-overlapping forecast-family anomalies",
+      "ensemble_scope": "up to 9 canonical forecast families",
+      "membership_policy": {
+        "product": "snowfall_anomaly",
+        "weighting_unit": "canonical non-overlapping forecast-family source",
+        "weighting": "equal weight after each source has formed its own ensemble mean",
+        "native_baselines": true,
+        "included": [
+          {
+            "key": "c3s_ecmwf_system51",
+            "label": "ECMWF / System 51",
+            "source_package": "Copernicus C3S",
+            "system": "ecmwf/51",
+            "internal_members": 51,
+            "notes": "Official C3S postprocessed ensemble-mean anomaly"
+          },
+          {
+            "key": "c3s_ukmo_system610",
+            "label": "UK Met Office / System 610",
+            "source_package": "Copernicus C3S",
+            "system": "ukmo/610",
+            "internal_members": 62,
+            "notes": "Official C3S postprocessed ensemble-mean anomaly"
+          },
+          {
+            "key": "c3s_meteo_france_system9",
+            "label": "M\u00e9t\u00e9o-France / System 9",
+            "source_package": "Copernicus C3S",
+            "system": "meteo_france/9",
+            "internal_members": 51,
+            "notes": "Official C3S postprocessed ensemble-mean anomaly"
+          },
+          {
+            "key": "c3s_dwd_system22",
+            "label": "DWD / System 22",
+            "source_package": "Copernicus C3S",
+            "system": "dwd/22",
+            "internal_members": 50,
+            "notes": "Official C3S postprocessed ensemble-mean anomaly"
+          },
+          {
+            "key": "c3s_cmcc_system4",
+            "label": "CMCC / System 4",
+            "source_package": "Copernicus C3S",
+            "system": "cmcc/4",
+            "internal_members": 50,
+            "notes": "Official C3S postprocessed ensemble-mean anomaly"
+          },
+          {
+            "key": "c3s_ncep_system2",
+            "label": "NCEP / System 2",
+            "source_package": "Copernicus C3S",
+            "system": "ncep/2",
+            "internal_members": 24,
+            "notes": "Official C3S postprocessed ensemble-mean anomaly"
+          },
+          {
+            "key": "c3s_jma_system4",
+            "label": "JMA / System 4",
+            "source_package": "Copernicus C3S",
+            "system": "jma/4",
+            "internal_members": 55,
+            "notes": "Official C3S postprocessed ensemble-mean anomaly"
+          },
+          {
+            "key": "c3s_bom_system2",
+            "label": "BOM / System 2",
+            "source_package": "Copernicus C3S",
+            "system": "bom/2",
+            "internal_members": 33,
+            "notes": "Official C3S postprocessed ensemble-mean anomaly"
+          },
+          {
+            "key": "eccc_cansips_v3",
+            "label": "ECCC CanSIPS v3 family",
+            "source_package": "ECCC CanSIPS v3",
+            "system": "20 GEM5.2-NEMO + 20 CanESM5 members",
+            "internal_members": 40,
+            "notes": "One ECCC family vote; CanSIPS snowfall is derived from member 2-m + 850-hPa temperature and total precipitation; C3S ECCC and NMME ECCC copies are excluded"
+          }
+        ],
+        "expected_count": 9,
+        "excluded": [
+          {
+            "package": "ECMWF SEAS5 standalone",
+            "reason": "duplicate",
+            "represented_by": "c3s_ecmwf_system51"
+          },
+          {
+            "package": "JMA standalone",
+            "reason": "duplicate",
+            "represented_by": "c3s_jma_system4"
+          },
+          {
+            "package": "C3S ECCC System 5",
+            "reason": "duplicate within the fuller ECCC family",
+            "represented_by": "eccc_cansips_v3"
+          },
+          {
+            "package": "C3S multi-system mean",
+            "reason": "aggregate of individually included C3S systems",
+            "represented_by": "C3S component fields"
+          },
+          {
+            "package": "NMME GEM5.2_NEMO and CanESM5",
+            "reason": "duplicate ECCC systems",
+            "represented_by": "eccc_cansips_v3"
+          },
+          {
+            "package": "NMME ensemble/consensus products",
+            "reason": "aggregate containing already represented systems",
+            "represented_by": "two unique NCAR NMME component fields where supported"
+          },
+          {
+            "package": "APCC MME",
+            "reason": "opaque overlapping aggregate; current package does not expose separable component grids",
+            "represented_by": null
+          },
+          {
+            "package": "CFSv2 standalone",
+            "reason": "standalone CFSv2 exposes this parameter separately but is not currently included in this super-ensemble product",
+            "represented_by": "c3s_ncep_system2"
+          },
+          {
+            "package": "NMME CFSv2",
+            "reason": "duplicate CFSv2 family",
+            "represented_by": "c3s_ncep_system2"
+          }
+        ]
+      },
+      "synthetic_preview": false,
+      "targets": [
+        {
+          "id": "superensemble-2026080100-snowfall_anomaly-202612",
+          "target_month": "202612",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-01-01T00:00:00Z",
+          "lead_month": 4,
+          "field": "snowfall_anomaly",
+          "units": "in",
+          "statistic": "equal_weight_deduplicated_family_mean",
+          "expected_member_count": 9,
+          "member_count": 6,
+          "included_members": [
+            "c3s_ecmwf_system51",
+            "c3s_ukmo_system610",
+            "c3s_meteo_france_system9",
+            "c3s_dwd_system22",
+            "c3s_cmcc_system4",
+            "eccc_cansips_v3"
+          ],
+          "missing_members": [
+            "c3s_ncep_system2",
+            "c3s_jma_system4",
+            "c3s_bom_system2"
+          ],
+          "member_weights": [
+            {
+              "key": "c3s_ecmwf_system51",
+              "label": "ECMWF / System 51",
+              "weight": 0.1666666667
+            },
+            {
+              "key": "c3s_ukmo_system610",
+              "label": "UK Met Office / System 610",
+              "weight": 0.1666666667
+            },
+            {
+              "key": "c3s_meteo_france_system9",
+              "label": "M\u00e9t\u00e9o-France / System 9",
+              "weight": 0.1666666667
+            },
+            {
+              "key": "c3s_dwd_system22",
+              "label": "DWD / System 22",
+              "weight": 0.1666666667
+            },
+            {
+              "key": "c3s_cmcc_system4",
+              "label": "CMCC / System 4",
+              "weight": 0.1666666667
+            },
+            {
+              "key": "eccc_cansips_v3",
+              "label": "ECCC CanSIPS v3 family",
+              "weight": 0.1666666667
+            }
+          ],
+          "member_sources": [
+            {
+              "key": "c3s_ecmwf_system51",
+              "source_package": "Copernicus C3S",
+              "originating_centre": "ecmwf",
+              "system": "51",
+              "source_file": ".cache/c3s/cds/ecmwf_51_seasonal_postprocessed_single_levels_snowfall_anomalous_rate_of_accumulation_202608_anom_l04/field.grib",
+              "baseline": "official C3S native postprocessed anomaly"
+            },
+            {
+              "key": "c3s_ukmo_system610",
+              "source_package": "Copernicus C3S",
+              "originating_centre": "ukmo",
+              "system": "610",
+              "source_file": ".cache/c3s/cds/ukmo_610_seasonal_postprocessed_single_levels_snowfall_anomalous_rate_of_accumulation_202608_anom_l04/field.grib",
+              "baseline": "official C3S native postprocessed anomaly"
+            },
+            {
+              "key": "c3s_meteo_france_system9",
+              "source_package": "Copernicus C3S",
+              "originating_centre": "meteo_france",
+              "system": "9",
+              "source_file": ".cache/c3s/cds/meteo_france_9_seasonal_postprocessed_single_levels_snowfall_anomalous_rate_of_accumulation_202608_anom_l04/field.grib",
+              "baseline": "official C3S native postprocessed anomaly"
+            },
+            {
+              "key": "c3s_dwd_system22",
+              "source_package": "Copernicus C3S",
+              "originating_centre": "dwd",
+              "system": "22",
+              "source_file": ".cache/c3s/cds/dwd_22_seasonal_postprocessed_single_levels_snowfall_anomalous_rate_of_accumulation_202608_anom_l04/field.grib",
+              "baseline": "official C3S native postprocessed anomaly"
+            },
+            {
+              "key": "c3s_cmcc_system4",
+              "source_package": "Copernicus C3S",
+              "originating_centre": "cmcc",
+              "system": "4",
+              "source_file": ".cache/c3s/cds/cmcc_4_seasonal_postprocessed_single_levels_snowfall_anomalous_rate_of_accumulation_202608_anom_l04/field.grib",
+              "baseline": "official C3S native postprocessed anomaly"
+            },
+            {
+              "key": "eccc_cansips_v3",
+              "source_package": "ECCC CanSIPS v3",
+              "source_file": {
+                "initialization": "2026080100",
+                "lead_month": 4,
+                "product": "snowfall_anomaly",
+                "source_field": "Derived from 2-m/850-hPa AirTemp and surface PrecipRate",
+                "source_variables": [
+                  "AirTemp at AGL-2m",
+                  "AirTemp at ISBL-0850",
+                  "PrecipRate at Sfc"
+                ],
+                "source_urls": [
+                  "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/2026/08/202608_MSC_CanSIPS_AirTemp_AGL-2m_LatLon1.0_P04M.grib2",
+                  "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/2026/08/202608_MSC_CanSIPS_AirTemp_ISBL-0850_LatLon1.0_P04M.grib2",
+                  "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/2026/08/202608_MSC_CanSIPS_PrecipRate_Sfc_LatLon1.0_P04M.grib2"
+                ],
+                "cache_file": ".cache/cansips/means/forecast/202608/snowfall_estimate_dai_t850_lead04.csv.gz",
+                "storage": "decoded_40_member_derived_grid",
+                "ensemble_members": 40,
+                "derivation": "For each of 40 members, convert total PrecipRate to the calendar-month liquid-water total, apply the season-appropriate Dai (2008) land snow-frequency curve (DJF for December-February) to the warmer of monthly mean 2-m and 850-hPa temperature, then average members; seasonal values sum the monthly liquid-water-equivalent estimates",
+                "source_files": [
+                  {
+                    "initialization": "2026080100",
+                    "lead_month": 4,
+                    "product": "snowfall_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/2026/08/202608_MSC_CanSIPS_AirTemp_AGL-2m_LatLon1.0_P04M.grib2",
+                    "cache_file": ".cache/cansips/raw/forecast/202608/202608_MSC_CanSIPS_AirTemp_AGL-2m_LatLon1.0_P04M.grib2",
+                    "raw_units": "K",
+                    "downloaded": true
+                  },
+                  {
+                    "initialization": "2026080100",
+                    "lead_month": 4,
+                    "product": "snowfall_anomaly",
+                    "source_field": "AirTemp at 850 hPa",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/2026/08/202608_MSC_CanSIPS_AirTemp_ISBL-0850_LatLon1.0_P04M.grib2",
+                    "cache_file": ".cache/cansips/raw/forecast/202608/202608_MSC_CanSIPS_AirTemp_ISBL-0850_LatLon1.0_P04M.grib2",
+                    "raw_units": "K",
+                    "downloaded": true
+                  },
+                  {
+                    "initialization": "2026080100",
+                    "lead_month": 4,
+                    "product": "snowfall_anomaly",
+                    "source_field": "PrecipRate at the surface",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/2026/08/202608_MSC_CanSIPS_PrecipRate_Sfc_LatLon1.0_P04M.grib2",
+                    "cache_file": ".cache/cansips/raw/forecast/202608/202608_MSC_CanSIPS_PrecipRate_Sfc_LatLon1.0_P04M.grib2",
+                    "raw_units": "kg m-2 s-1",
+                    "downloaded": true
+                  }
+                ],
+                "downloaded": true,
+                "decoded_variables": [
+                  "avg_2t",
+                  "avg_t",
+                  "prate"
+                ],
+                "diagnostics": {
+                  "valid_member_count_min": 40,
+                  "valid_member_count_max": 40,
+                  "valid_member_fraction_min": 1.0,
+                  "snow_fraction": {
+                    "method": "Dai_2008_land_seasonal_hyperbolic_tangent",
+                    "season": "DJF",
+                    "parameters": {
+                      "a_percent": -48.2372,
+                      "b_per_c": 0.7449,
+                      "c_c": 1.0919,
+                      "d": 1.0209
+                    },
+                    "phase_temperature": "max(2-m, 850-hPa)"
+                  },
+                  "calendar_month_seconds": 2678400
+                }
+              },
+              "hindcast_file_count": 30,
+              "baseline": "CanSIPS v3 hindcast climatology 1991-2020",
+              "internal_members": 40,
+              "internal_groups": [
+                "GEM5.2-NEMO",
+                "CanESM5"
+              ],
+              "derivation": "For each of 40 members, convert total PrecipRate to the calendar-month liquid-water total, apply the season-appropriate Dai (2008) land snow-frequency curve (DJF for December-February) to the warmer of monthly mean 2-m and 850-hPa temperature, then average members; seasonal values sum the monthly liquid-water-equivalent estimates"
+            }
+          ],
+          "member_errors": {
+            "c3s_ncep_system2": "C3S request failed for ncep/2 snowfall_anomalous_rate_of_accumulation lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/1d7acdae-e9a5-4ace-bfa2-eb6f83093347/results\nThe job has failed\nMARS returned no data, please check your selection.Request submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-08-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['4'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['kwbc'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['2'], 'time': ['all'], 'type': ['em']}]\n\nThe job failed with: MarsNoDataError",
+            "c3s_jma_system4": "C3S request failed for jma/4 snowfall_anomalous_rate_of_accumulation lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/4db70193-042d-412e-93f5-a22ab58f2bf4/results\nThe job has failed\nMARS returned no data, please check your selection.Request submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-08-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['4'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['rjtd'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['4'], 'time': ['all'], 'type': ['em']}]\n\nThe job failed with: MarsNoDataError",
+            "c3s_bom_system2": "C3S request failed for bom/2 snowfall_anomalous_rate_of_accumulation lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/9438e271-d645-424a-aa06-9a731b86fa07/results\nThe job has failed\nMARS returned no data, please check your selection.Request submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-08-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['4'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['ammc'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['2'], 'time': ['all'], 'type': ['em']}]\n\nThe job failed with: MarsNoDataError"
+          },
+          "ensemble_scope": "6/9 canonical forecast families",
+          "baseline": {
+            "status": "native_model_baselines",
+            "method": "equal mean of source-native anomaly fields; no common climatology imposed"
+          },
+          "status": "partial",
+          "quality_control": {
+            "registry_version": 1,
+            "product": "snowfall_anomaly",
+            "units": "in",
+            "field": "snowfall_anomaly",
+            "period": "monthly",
+            "total_points": 3200,
+            "finite_points": 3200,
+            "finite_fraction": 1.0,
+            "minimum": -1.526376,
+            "maximum": 0.356269,
+            "p01": -0.832502,
+            "p99": 0.087095,
+            "display": {
+              "minimum": -2.0,
+              "maximum": 2.0,
+              "breakpoints": [
+                -2.0,
+                -1.75,
+                -1.5,
+                -1.25,
+                -1.0,
+                -0.75,
+                -0.5,
+                0.0,
+                0.5,
+                0.75,
+                1.0,
+                1.25,
+                1.5,
+                1.75,
+                2.0
+              ],
+              "below_fraction": 0.0,
+              "above_fraction": 0.0,
+              "clipped_fraction": 0.0
+            },
+            "issues": [],
+            "status": "passed"
+          },
+          "height_member_count": 0,
+          "image": "public/seasonal/superensemble/20260801/superensemble_sf_202612.jpg"
+        },
+        {
+          "id": "superensemble-2026080100-snowfall_anomaly-202701",
+          "target_month": "202701",
+          "valid_start_utc": "2027-01-01T00:00:00Z",
+          "valid_end_utc": "2027-02-01T00:00:00Z",
+          "lead_month": 5,
+          "field": "snowfall_anomaly",
+          "units": "in",
+          "statistic": "equal_weight_deduplicated_family_mean",
+          "expected_member_count": 9,
+          "member_count": 6,
+          "included_members": [
+            "c3s_ecmwf_system51",
+            "c3s_ukmo_system610",
+            "c3s_meteo_france_system9",
+            "c3s_dwd_system22",
+            "c3s_cmcc_system4",
+            "eccc_cansips_v3"
+          ],
+          "missing_members": [
+            "c3s_ncep_system2",
+            "c3s_jma_system4",
+            "c3s_bom_system2"
+          ],
+          "member_weights": [
+            {
+              "key": "c3s_ecmwf_system51",
+              "label": "ECMWF / System 51",
+              "weight": 0.1666666667
+            },
+            {
+              "key": "c3s_ukmo_system610",
+              "label": "UK Met Office / System 610",
+              "weight": 0.1666666667
+            },
+            {
+              "key": "c3s_meteo_france_system9",
+              "label": "M\u00e9t\u00e9o-France / System 9",
+              "weight": 0.1666666667
+            },
+            {
+              "key": "c3s_dwd_system22",
+              "label": "DWD / System 22",
+              "weight": 0.1666666667
+            },
+            {
+              "key": "c3s_cmcc_system4",
+              "label": "CMCC / System 4",
+              "weight": 0.1666666667
+            },
+            {
+              "key": "eccc_cansips_v3",
+              "label": "ECCC CanSIPS v3 family",
+              "weight": 0.1666666667
+            }
+          ],
+          "member_sources": [
+            {
+              "key": "c3s_ecmwf_system51",
+              "source_package": "Copernicus C3S",
+              "originating_centre": "ecmwf",
+              "system": "51",
+              "source_file": ".cache/c3s/cds/ecmwf_51_seasonal_postprocessed_single_levels_snowfall_anomalous_rate_of_accumulation_202608_anom_l05/field.grib",
+              "baseline": "official C3S native postprocessed anomaly"
+            },
+            {
+              "key": "c3s_ukmo_system610",
+              "source_package": "Copernicus C3S",
+              "originating_centre": "ukmo",
+              "system": "610",
+              "source_file": ".cache/c3s/cds/ukmo_610_seasonal_postprocessed_single_levels_snowfall_anomalous_rate_of_accumulation_202608_anom_l05/field.grib",
+              "baseline": "official C3S native postprocessed anomaly"
+            },
+            {
+              "key": "c3s_meteo_france_system9",
+              "source_package": "Copernicus C3S",
+              "originating_centre": "meteo_france",
+              "system": "9",
+              "source_file": ".cache/c3s/cds/meteo_france_9_seasonal_postprocessed_single_levels_snowfall_anomalous_rate_of_accumulation_202608_anom_l05/field.grib",
+              "baseline": "official C3S native postprocessed anomaly"
+            },
+            {
+              "key": "c3s_dwd_system22",
+              "source_package": "Copernicus C3S",
+              "originating_centre": "dwd",
+              "system": "22",
+              "source_file": ".cache/c3s/cds/dwd_22_seasonal_postprocessed_single_levels_snowfall_anomalous_rate_of_accumulation_202608_anom_l05/field.grib",
+              "baseline": "official C3S native postprocessed anomaly"
+            },
+            {
+              "key": "c3s_cmcc_system4",
+              "source_package": "Copernicus C3S",
+              "originating_centre": "cmcc",
+              "system": "4",
+              "source_file": ".cache/c3s/cds/cmcc_4_seasonal_postprocessed_single_levels_snowfall_anomalous_rate_of_accumulation_202608_anom_l05/field.grib",
+              "baseline": "official C3S native postprocessed anomaly"
+            },
+            {
+              "key": "eccc_cansips_v3",
+              "source_package": "ECCC CanSIPS v3",
+              "source_file": {
+                "initialization": "2026080100",
+                "lead_month": 5,
+                "product": "snowfall_anomaly",
+                "source_field": "Derived from 2-m/850-hPa AirTemp and surface PrecipRate",
+                "source_variables": [
+                  "AirTemp at AGL-2m",
+                  "AirTemp at ISBL-0850",
+                  "PrecipRate at Sfc"
+                ],
+                "source_urls": [
+                  "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/2026/08/202608_MSC_CanSIPS_AirTemp_AGL-2m_LatLon1.0_P05M.grib2",
+                  "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/2026/08/202608_MSC_CanSIPS_AirTemp_ISBL-0850_LatLon1.0_P05M.grib2",
+                  "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/2026/08/202608_MSC_CanSIPS_PrecipRate_Sfc_LatLon1.0_P05M.grib2"
+                ],
+                "cache_file": ".cache/cansips/means/forecast/202608/snowfall_estimate_dai_t850_lead05.csv.gz",
+                "storage": "decoded_40_member_derived_grid",
+                "ensemble_members": 40,
+                "derivation": "For each of 40 members, convert total PrecipRate to the calendar-month liquid-water total, apply the season-appropriate Dai (2008) land snow-frequency curve (DJF for December-February) to the warmer of monthly mean 2-m and 850-hPa temperature, then average members; seasonal values sum the monthly liquid-water-equivalent estimates",
+                "source_files": [
+                  {
+                    "initialization": "2026080100",
+                    "lead_month": 5,
+                    "product": "snowfall_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/2026/08/202608_MSC_CanSIPS_AirTemp_AGL-2m_LatLon1.0_P05M.grib2",
+                    "cache_file": ".cache/cansips/raw/forecast/202608/202608_MSC_CanSIPS_AirTemp_AGL-2m_LatLon1.0_P05M.grib2",
+                    "raw_units": "K",
+                    "downloaded": true
+                  },
+                  {
+                    "initialization": "2026080100",
+                    "lead_month": 5,
+                    "product": "snowfall_anomaly",
+                    "source_field": "AirTemp at 850 hPa",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/2026/08/202608_MSC_CanSIPS_AirTemp_ISBL-0850_LatLon1.0_P05M.grib2",
+                    "cache_file": ".cache/cansips/raw/forecast/202608/202608_MSC_CanSIPS_AirTemp_ISBL-0850_LatLon1.0_P05M.grib2",
+                    "raw_units": "K",
+                    "downloaded": true
+                  },
+                  {
+                    "initialization": "2026080100",
+                    "lead_month": 5,
+                    "product": "snowfall_anomaly",
+                    "source_field": "PrecipRate at the surface",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/2026/08/202608_MSC_CanSIPS_PrecipRate_Sfc_LatLon1.0_P05M.grib2",
+                    "cache_file": ".cache/cansips/raw/forecast/202608/202608_MSC_CanSIPS_PrecipRate_Sfc_LatLon1.0_P05M.grib2",
+                    "raw_units": "kg m-2 s-1",
+                    "downloaded": true
+                  }
+                ],
+                "downloaded": true,
+                "decoded_variables": [
+                  "avg_2t",
+                  "avg_t",
+                  "prate"
+                ],
+                "diagnostics": {
+                  "valid_member_count_min": 40,
+                  "valid_member_count_max": 40,
+                  "valid_member_fraction_min": 1.0,
+                  "snow_fraction": {
+                    "method": "Dai_2008_land_seasonal_hyperbolic_tangent",
+                    "season": "DJF",
+                    "parameters": {
+                      "a_percent": -48.2372,
+                      "b_per_c": 0.7449,
+                      "c_c": 1.0919,
+                      "d": 1.0209
+                    },
+                    "phase_temperature": "max(2-m, 850-hPa)"
+                  },
+                  "calendar_month_seconds": 2678400
+                }
+              },
+              "hindcast_file_count": 30,
+              "baseline": "CanSIPS v3 hindcast climatology 1991-2020",
+              "internal_members": 40,
+              "internal_groups": [
+                "GEM5.2-NEMO",
+                "CanESM5"
+              ],
+              "derivation": "For each of 40 members, convert total PrecipRate to the calendar-month liquid-water total, apply the season-appropriate Dai (2008) land snow-frequency curve (DJF for December-February) to the warmer of monthly mean 2-m and 850-hPa temperature, then average members; seasonal values sum the monthly liquid-water-equivalent estimates"
+            }
+          ],
+          "member_errors": {
+            "c3s_ncep_system2": "C3S request failed for ncep/2 snowfall_anomalous_rate_of_accumulation lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/558cf51d-bce7-4ca8-b5bb-77e3180e2dea/results\nThe job has failed\nThe job failed with: MarsNoDataError\nMARS returned no data, please check your selection.Request submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-08-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['5'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['kwbc'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['2'], 'time': ['all'], 'type': ['em']}]\n",
+            "c3s_jma_system4": "C3S request failed for jma/4 snowfall_anomalous_rate_of_accumulation lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/f08d9113-cf62-401e-a3a3-bda1cbceb0b8/results\nThe job has failed\nMARS returned no data, please check your selection.Request submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-08-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['5'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['rjtd'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['4'], 'time': ['all'], 'type': ['em']}]\n\nThe job failed with: MarsNoDataError",
+            "c3s_bom_system2": "C3S request failed for bom/2 snowfall_anomalous_rate_of_accumulation lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/8d0a5261-dddc-478a-90f8-9ce8e1dc8817/results\nThe job has failed\nMARS returned no data, please check your selection.Request submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-08-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['5'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['ammc'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['2'], 'time': ['all'], 'type': ['em']}]\n\nThe job failed with: MarsNoDataError"
+          },
+          "ensemble_scope": "6/9 canonical forecast families",
+          "baseline": {
+            "status": "native_model_baselines",
+            "method": "equal mean of source-native anomaly fields; no common climatology imposed"
+          },
+          "status": "partial",
+          "quality_control": {
+            "registry_version": 1,
+            "product": "snowfall_anomaly",
+            "units": "in",
+            "field": "snowfall_anomaly",
+            "period": "monthly",
+            "total_points": 3200,
+            "finite_points": 3200,
+            "finite_fraction": 1.0,
+            "minimum": -1.488133,
+            "maximum": 0.412596,
+            "p01": -0.888015,
+            "p99": 0.192899,
+            "display": {
+              "minimum": -2.0,
+              "maximum": 2.0,
+              "breakpoints": [
+                -2.0,
+                -1.75,
+                -1.5,
+                -1.25,
+                -1.0,
+                -0.75,
+                -0.5,
+                0.0,
+                0.5,
+                0.75,
+                1.0,
+                1.25,
+                1.5,
+                1.75,
+                2.0
+              ],
+              "below_fraction": 0.0,
+              "above_fraction": 0.0,
+              "clipped_fraction": 0.0
+            },
+            "issues": [],
+            "status": "passed"
+          },
+          "height_member_count": 0,
+          "image": "public/seasonal/superensemble/20260801/superensemble_sf_202701.jpg"
+        },
+        {
+          "id": "superensemble-2026080100-snowfall_anomaly-202702",
+          "target_month": "202702",
+          "valid_start_utc": "2027-02-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": 6,
+          "field": "snowfall_anomaly",
+          "units": "in",
+          "statistic": "equal_weight_deduplicated_family_mean",
+          "expected_member_count": 9,
+          "member_count": 6,
+          "included_members": [
+            "c3s_ecmwf_system51",
+            "c3s_ukmo_system610",
+            "c3s_meteo_france_system9",
+            "c3s_dwd_system22",
+            "c3s_cmcc_system4",
+            "eccc_cansips_v3"
+          ],
+          "missing_members": [
+            "c3s_ncep_system2",
+            "c3s_jma_system4",
+            "c3s_bom_system2"
+          ],
+          "member_weights": [
+            {
+              "key": "c3s_ecmwf_system51",
+              "label": "ECMWF / System 51",
+              "weight": 0.1666666667
+            },
+            {
+              "key": "c3s_ukmo_system610",
+              "label": "UK Met Office / System 610",
+              "weight": 0.1666666667
+            },
+            {
+              "key": "c3s_meteo_france_system9",
+              "label": "M\u00e9t\u00e9o-France / System 9",
+              "weight": 0.1666666667
+            },
+            {
+              "key": "c3s_dwd_system22",
+              "label": "DWD / System 22",
+              "weight": 0.1666666667
+            },
+            {
+              "key": "c3s_cmcc_system4",
+              "label": "CMCC / System 4",
+              "weight": 0.1666666667
+            },
+            {
+              "key": "eccc_cansips_v3",
+              "label": "ECCC CanSIPS v3 family",
+              "weight": 0.1666666667
+            }
+          ],
+          "member_sources": [
+            {
+              "key": "c3s_ecmwf_system51",
+              "source_package": "Copernicus C3S",
+              "originating_centre": "ecmwf",
+              "system": "51",
+              "source_file": ".cache/c3s/cds/ecmwf_51_seasonal_postprocessed_single_levels_snowfall_anomalous_rate_of_accumulation_202608_anom_l06/field.grib",
+              "baseline": "official C3S native postprocessed anomaly"
+            },
+            {
+              "key": "c3s_ukmo_system610",
+              "source_package": "Copernicus C3S",
+              "originating_centre": "ukmo",
+              "system": "610",
+              "source_file": ".cache/c3s/cds/ukmo_610_seasonal_postprocessed_single_levels_snowfall_anomalous_rate_of_accumulation_202608_anom_l06/field.grib",
+              "baseline": "official C3S native postprocessed anomaly"
+            },
+            {
+              "key": "c3s_meteo_france_system9",
+              "source_package": "Copernicus C3S",
+              "originating_centre": "meteo_france",
+              "system": "9",
+              "source_file": ".cache/c3s/cds/meteo_france_9_seasonal_postprocessed_single_levels_snowfall_anomalous_rate_of_accumulation_202608_anom_l06/field.grib",
+              "baseline": "official C3S native postprocessed anomaly"
+            },
+            {
+              "key": "c3s_dwd_system22",
+              "source_package": "Copernicus C3S",
+              "originating_centre": "dwd",
+              "system": "22",
+              "source_file": ".cache/c3s/cds/dwd_22_seasonal_postprocessed_single_levels_snowfall_anomalous_rate_of_accumulation_202608_anom_l06/field.grib",
+              "baseline": "official C3S native postprocessed anomaly"
+            },
+            {
+              "key": "c3s_cmcc_system4",
+              "source_package": "Copernicus C3S",
+              "originating_centre": "cmcc",
+              "system": "4",
+              "source_file": ".cache/c3s/cds/cmcc_4_seasonal_postprocessed_single_levels_snowfall_anomalous_rate_of_accumulation_202608_anom_l06/field.grib",
+              "baseline": "official C3S native postprocessed anomaly"
+            },
+            {
+              "key": "eccc_cansips_v3",
+              "source_package": "ECCC CanSIPS v3",
+              "source_file": {
+                "initialization": "2026080100",
+                "lead_month": 6,
+                "product": "snowfall_anomaly",
+                "source_field": "Derived from 2-m/850-hPa AirTemp and surface PrecipRate",
+                "source_variables": [
+                  "AirTemp at AGL-2m",
+                  "AirTemp at ISBL-0850",
+                  "PrecipRate at Sfc"
+                ],
+                "source_urls": [
+                  "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/2026/08/202608_MSC_CanSIPS_AirTemp_AGL-2m_LatLon1.0_P06M.grib2",
+                  "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/2026/08/202608_MSC_CanSIPS_AirTemp_ISBL-0850_LatLon1.0_P06M.grib2",
+                  "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/2026/08/202608_MSC_CanSIPS_PrecipRate_Sfc_LatLon1.0_P06M.grib2"
+                ],
+                "cache_file": ".cache/cansips/means/forecast/202608/snowfall_estimate_dai_t850_lead06.csv.gz",
+                "storage": "decoded_40_member_derived_grid",
+                "ensemble_members": 40,
+                "derivation": "For each of 40 members, convert total PrecipRate to the calendar-month liquid-water total, apply the season-appropriate Dai (2008) land snow-frequency curve (DJF for December-February) to the warmer of monthly mean 2-m and 850-hPa temperature, then average members; seasonal values sum the monthly liquid-water-equivalent estimates",
+                "source_files": [
+                  {
+                    "initialization": "2026080100",
+                    "lead_month": 6,
+                    "product": "snowfall_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/2026/08/202608_MSC_CanSIPS_AirTemp_AGL-2m_LatLon1.0_P06M.grib2",
+                    "cache_file": ".cache/cansips/raw/forecast/202608/202608_MSC_CanSIPS_AirTemp_AGL-2m_LatLon1.0_P06M.grib2",
+                    "raw_units": "K",
+                    "downloaded": true
+                  },
+                  {
+                    "initialization": "2026080100",
+                    "lead_month": 6,
+                    "product": "snowfall_anomaly",
+                    "source_field": "AirTemp at 850 hPa",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/2026/08/202608_MSC_CanSIPS_AirTemp_ISBL-0850_LatLon1.0_P06M.grib2",
+                    "cache_file": ".cache/cansips/raw/forecast/202608/202608_MSC_CanSIPS_AirTemp_ISBL-0850_LatLon1.0_P06M.grib2",
+                    "raw_units": "K",
+                    "downloaded": true
+                  },
+                  {
+                    "initialization": "2026080100",
+                    "lead_month": 6,
+                    "product": "snowfall_anomaly",
+                    "source_field": "PrecipRate at the surface",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/2026/08/202608_MSC_CanSIPS_PrecipRate_Sfc_LatLon1.0_P06M.grib2",
+                    "cache_file": ".cache/cansips/raw/forecast/202608/202608_MSC_CanSIPS_PrecipRate_Sfc_LatLon1.0_P06M.grib2",
+                    "raw_units": "kg m-2 s-1",
+                    "downloaded": true
+                  }
+                ],
+                "downloaded": true,
+                "decoded_variables": [
+                  "avg_2t",
+                  "avg_t",
+                  "prate"
+                ],
+                "diagnostics": {
+                  "valid_member_count_min": 40,
+                  "valid_member_count_max": 40,
+                  "valid_member_fraction_min": 1.0,
+                  "snow_fraction": {
+                    "method": "Dai_2008_land_seasonal_hyperbolic_tangent",
+                    "season": "DJF",
+                    "parameters": {
+                      "a_percent": -48.2372,
+                      "b_per_c": 0.7449,
+                      "c_c": 1.0919,
+                      "d": 1.0209
+                    },
+                    "phase_temperature": "max(2-m, 850-hPa)"
+                  },
+                  "calendar_month_seconds": 2419200
+                }
+              },
+              "hindcast_file_count": 30,
+              "baseline": "CanSIPS v3 hindcast climatology 1991-2020",
+              "internal_members": 40,
+              "internal_groups": [
+                "GEM5.2-NEMO",
+                "CanESM5"
+              ],
+              "derivation": "For each of 40 members, convert total PrecipRate to the calendar-month liquid-water total, apply the season-appropriate Dai (2008) land snow-frequency curve (DJF for December-February) to the warmer of monthly mean 2-m and 850-hPa temperature, then average members; seasonal values sum the monthly liquid-water-equivalent estimates"
+            }
+          ],
+          "member_errors": {
+            "c3s_ncep_system2": "C3S request failed for ncep/2 snowfall_anomalous_rate_of_accumulation lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/407d827c-17d9-48df-a11e-74d665eb6180/results\nThe job has failed\nThe job failed with: MarsNoDataError\nMARS returned no data, please check your selection.Request submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-08-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['6'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['kwbc'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['2'], 'time': ['all'], 'type': ['em']}]\n",
+            "c3s_jma_system4": "C3S request failed for jma/4 snowfall_anomalous_rate_of_accumulation lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/bff48ae9-e7f4-4450-8e4b-bb04f555e004/results\nThe job has failed\nMARS returned no data, please check your selection.Request submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-08-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['6'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['rjtd'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['4'], 'time': ['all'], 'type': ['em']}]\n\nThe job failed with: MarsNoDataError",
+            "c3s_bom_system2": "C3S request failed for bom/2 snowfall_anomalous_rate_of_accumulation lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/ddca782b-ab6b-4b48-a1f0-595dc1983c8a/results\nThe job has failed\nMARS returned no data, please check your selection.Request submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-08-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['6'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['ammc'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['2'], 'time': ['all'], 'type': ['em']}]\n\nThe job failed with: MarsNoDataError"
+          },
+          "ensemble_scope": "6/9 canonical forecast families",
+          "baseline": {
+            "status": "native_model_baselines",
+            "method": "equal mean of source-native anomaly fields; no common climatology imposed"
+          },
+          "status": "partial",
+          "quality_control": {
+            "registry_version": 1,
+            "product": "snowfall_anomaly",
+            "units": "in",
+            "field": "snowfall_anomaly",
+            "period": "monthly",
+            "total_points": 3200,
+            "finite_points": 3200,
+            "finite_fraction": 1.0,
+            "minimum": -2.226751,
+            "maximum": 0.827272,
+            "p01": -1.049818,
+            "p99": 0.2391,
+            "display": {
+              "minimum": -2.0,
+              "maximum": 2.0,
+              "breakpoints": [
+                -2.0,
+                -1.75,
+                -1.5,
+                -1.25,
+                -1.0,
+                -0.75,
+                -0.5,
+                0.0,
+                0.5,
+                0.75,
+                1.0,
+                1.25,
+                1.5,
+                1.75,
+                2.0
+              ],
+              "below_fraction": 0.000625,
+              "above_fraction": 0.0,
+              "clipped_fraction": 0.000625
+            },
+            "issues": [],
+            "status": "passed"
+          },
+          "height_member_count": 0,
+          "image": "public/seasonal/superensemble/20260801/superensemble_sf_202702.jpg"
+        },
+        {
+          "id": "superensemble-2026080100-snowfall_anomaly-202612-202702",
+          "target_month": "202612-202702",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": "4\u20136",
+          "field": "snowfall_anomaly",
+          "units": "in",
+          "statistic": "equal_weight_deduplicated_family_mean",
+          "expected_member_count": 9,
+          "member_count": 6,
+          "included_members": [
+            "c3s_ecmwf_system51",
+            "c3s_ukmo_system610",
+            "c3s_meteo_france_system9",
+            "c3s_dwd_system22",
+            "c3s_cmcc_system4",
+            "eccc_cansips_v3"
+          ],
+          "missing_members": [
+            "c3s_ncep_system2",
+            "c3s_jma_system4",
+            "c3s_bom_system2"
+          ],
+          "member_weights": [
+            {
+              "key": "c3s_ecmwf_system51",
+              "label": "ECMWF / System 51",
+              "weight": 0.1666666667
+            },
+            {
+              "key": "c3s_ukmo_system610",
+              "label": "UK Met Office / System 610",
+              "weight": 0.1666666667
+            },
+            {
+              "key": "c3s_meteo_france_system9",
+              "label": "M\u00e9t\u00e9o-France / System 9",
+              "weight": 0.1666666667
+            },
+            {
+              "key": "c3s_dwd_system22",
+              "label": "DWD / System 22",
+              "weight": 0.1666666667
+            },
+            {
+              "key": "c3s_cmcc_system4",
+              "label": "CMCC / System 4",
+              "weight": 0.1666666667
+            },
+            {
+              "key": "eccc_cansips_v3",
+              "label": "ECCC CanSIPS v3 family",
+              "weight": 0.1666666667
+            }
+          ],
+          "member_sources": [
+            {
+              "key": "c3s_ecmwf_system51",
+              "member": {
+                "key": "c3s_ecmwf_system51",
+                "label": "ECMWF / System 51",
+                "source_package": "Copernicus C3S",
+                "system": "ecmwf/51",
+                "internal_members": 51,
+                "notes": "Official C3S postprocessed ensemble-mean anomaly"
+              },
+              "monthly_sources": [
+                {
+                  "source_package": "Copernicus C3S",
+                  "originating_centre": "ecmwf",
+                  "system": "51",
+                  "source_file": ".cache/c3s/cds/ecmwf_51_seasonal_postprocessed_single_levels_snowfall_anomalous_rate_of_accumulation_202608_anom_l04/field.grib",
+                  "baseline": "official C3S native postprocessed anomaly"
+                },
+                {
+                  "source_package": "Copernicus C3S",
+                  "originating_centre": "ecmwf",
+                  "system": "51",
+                  "source_file": ".cache/c3s/cds/ecmwf_51_seasonal_postprocessed_single_levels_snowfall_anomalous_rate_of_accumulation_202608_anom_l05/field.grib",
+                  "baseline": "official C3S native postprocessed anomaly"
+                },
+                {
+                  "source_package": "Copernicus C3S",
+                  "originating_centre": "ecmwf",
+                  "system": "51",
+                  "source_file": ".cache/c3s/cds/ecmwf_51_seasonal_postprocessed_single_levels_snowfall_anomalous_rate_of_accumulation_202608_anom_l06/field.grib",
+                  "baseline": "official C3S native postprocessed anomaly"
+                }
+              ]
+            },
+            {
+              "key": "c3s_ukmo_system610",
+              "member": {
+                "key": "c3s_ukmo_system610",
+                "label": "UK Met Office / System 610",
+                "source_package": "Copernicus C3S",
+                "system": "ukmo/610",
+                "internal_members": 62,
+                "notes": "Official C3S postprocessed ensemble-mean anomaly"
+              },
+              "monthly_sources": [
+                {
+                  "source_package": "Copernicus C3S",
+                  "originating_centre": "ukmo",
+                  "system": "610",
+                  "source_file": ".cache/c3s/cds/ukmo_610_seasonal_postprocessed_single_levels_snowfall_anomalous_rate_of_accumulation_202608_anom_l04/field.grib",
+                  "baseline": "official C3S native postprocessed anomaly"
+                },
+                {
+                  "source_package": "Copernicus C3S",
+                  "originating_centre": "ukmo",
+                  "system": "610",
+                  "source_file": ".cache/c3s/cds/ukmo_610_seasonal_postprocessed_single_levels_snowfall_anomalous_rate_of_accumulation_202608_anom_l05/field.grib",
+                  "baseline": "official C3S native postprocessed anomaly"
+                },
+                {
+                  "source_package": "Copernicus C3S",
+                  "originating_centre": "ukmo",
+                  "system": "610",
+                  "source_file": ".cache/c3s/cds/ukmo_610_seasonal_postprocessed_single_levels_snowfall_anomalous_rate_of_accumulation_202608_anom_l06/field.grib",
+                  "baseline": "official C3S native postprocessed anomaly"
+                }
+              ]
+            },
+            {
+              "key": "c3s_meteo_france_system9",
+              "member": {
+                "key": "c3s_meteo_france_system9",
+                "label": "M\u00e9t\u00e9o-France / System 9",
+                "source_package": "Copernicus C3S",
+                "system": "meteo_france/9",
+                "internal_members": 51,
+                "notes": "Official C3S postprocessed ensemble-mean anomaly"
+              },
+              "monthly_sources": [
+                {
+                  "source_package": "Copernicus C3S",
+                  "originating_centre": "meteo_france",
+                  "system": "9",
+                  "source_file": ".cache/c3s/cds/meteo_france_9_seasonal_postprocessed_single_levels_snowfall_anomalous_rate_of_accumulation_202608_anom_l04/field.grib",
+                  "baseline": "official C3S native postprocessed anomaly"
+                },
+                {
+                  "source_package": "Copernicus C3S",
+                  "originating_centre": "meteo_france",
+                  "system": "9",
+                  "source_file": ".cache/c3s/cds/meteo_france_9_seasonal_postprocessed_single_levels_snowfall_anomalous_rate_of_accumulation_202608_anom_l05/field.grib",
+                  "baseline": "official C3S native postprocessed anomaly"
+                },
+                {
+                  "source_package": "Copernicus C3S",
+                  "originating_centre": "meteo_france",
+                  "system": "9",
+                  "source_file": ".cache/c3s/cds/meteo_france_9_seasonal_postprocessed_single_levels_snowfall_anomalous_rate_of_accumulation_202608_anom_l06/field.grib",
+                  "baseline": "official C3S native postprocessed anomaly"
+                }
+              ]
+            },
+            {
+              "key": "c3s_dwd_system22",
+              "member": {
+                "key": "c3s_dwd_system22",
+                "label": "DWD / System 22",
+                "source_package": "Copernicus C3S",
+                "system": "dwd/22",
+                "internal_members": 50,
+                "notes": "Official C3S postprocessed ensemble-mean anomaly"
+              },
+              "monthly_sources": [
+                {
+                  "source_package": "Copernicus C3S",
+                  "originating_centre": "dwd",
+                  "system": "22",
+                  "source_file": ".cache/c3s/cds/dwd_22_seasonal_postprocessed_single_levels_snowfall_anomalous_rate_of_accumulation_202608_anom_l04/field.grib",
+                  "baseline": "official C3S native postprocessed anomaly"
+                },
+                {
+                  "source_package": "Copernicus C3S",
+                  "originating_centre": "dwd",
+                  "system": "22",
+                  "source_file": ".cache/c3s/cds/dwd_22_seasonal_postprocessed_single_levels_snowfall_anomalous_rate_of_accumulation_202608_anom_l05/field.grib",
+                  "baseline": "official C3S native postprocessed anomaly"
+                },
+                {
+                  "source_package": "Copernicus C3S",
+                  "originating_centre": "dwd",
+                  "system": "22",
+                  "source_file": ".cache/c3s/cds/dwd_22_seasonal_postprocessed_single_levels_snowfall_anomalous_rate_of_accumulation_202608_anom_l06/field.grib",
+                  "baseline": "official C3S native postprocessed anomaly"
+                }
+              ]
+            },
+            {
+              "key": "c3s_cmcc_system4",
+              "member": {
+                "key": "c3s_cmcc_system4",
+                "label": "CMCC / System 4",
+                "source_package": "Copernicus C3S",
+                "system": "cmcc/4",
+                "internal_members": 50,
+                "notes": "Official C3S postprocessed ensemble-mean anomaly"
+              },
+              "monthly_sources": [
+                {
+                  "source_package": "Copernicus C3S",
+                  "originating_centre": "cmcc",
+                  "system": "4",
+                  "source_file": ".cache/c3s/cds/cmcc_4_seasonal_postprocessed_single_levels_snowfall_anomalous_rate_of_accumulation_202608_anom_l04/field.grib",
+                  "baseline": "official C3S native postprocessed anomaly"
+                },
+                {
+                  "source_package": "Copernicus C3S",
+                  "originating_centre": "cmcc",
+                  "system": "4",
+                  "source_file": ".cache/c3s/cds/cmcc_4_seasonal_postprocessed_single_levels_snowfall_anomalous_rate_of_accumulation_202608_anom_l05/field.grib",
+                  "baseline": "official C3S native postprocessed anomaly"
+                },
+                {
+                  "source_package": "Copernicus C3S",
+                  "originating_centre": "cmcc",
+                  "system": "4",
+                  "source_file": ".cache/c3s/cds/cmcc_4_seasonal_postprocessed_single_levels_snowfall_anomalous_rate_of_accumulation_202608_anom_l06/field.grib",
+                  "baseline": "official C3S native postprocessed anomaly"
+                }
+              ]
+            },
+            {
+              "key": "eccc_cansips_v3",
+              "member": {
+                "key": "eccc_cansips_v3",
+                "label": "ECCC CanSIPS v3 family",
+                "source_package": "ECCC CanSIPS v3",
+                "system": "20 GEM5.2-NEMO + 20 CanESM5 members",
+                "internal_members": 40,
+                "notes": "One ECCC family vote; CanSIPS snowfall is derived from member 2-m + 850-hPa temperature and total precipitation; C3S ECCC and NMME ECCC copies are excluded"
+              },
+              "monthly_sources": [
+                {
+                  "source_package": "ECCC CanSIPS v3",
+                  "source_file": {
+                    "initialization": "2026080100",
+                    "lead_month": 4,
+                    "product": "snowfall_anomaly",
+                    "source_field": "Derived from 2-m/850-hPa AirTemp and surface PrecipRate",
+                    "source_variables": [
+                      "AirTemp at AGL-2m",
+                      "AirTemp at ISBL-0850",
+                      "PrecipRate at Sfc"
+                    ],
+                    "source_urls": [
+                      "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/2026/08/202608_MSC_CanSIPS_AirTemp_AGL-2m_LatLon1.0_P04M.grib2",
+                      "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/2026/08/202608_MSC_CanSIPS_AirTemp_ISBL-0850_LatLon1.0_P04M.grib2",
+                      "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/2026/08/202608_MSC_CanSIPS_PrecipRate_Sfc_LatLon1.0_P04M.grib2"
+                    ],
+                    "cache_file": ".cache/cansips/means/forecast/202608/snowfall_estimate_dai_t850_lead04.csv.gz",
+                    "storage": "decoded_40_member_derived_grid",
+                    "ensemble_members": 40,
+                    "derivation": "For each of 40 members, convert total PrecipRate to the calendar-month liquid-water total, apply the season-appropriate Dai (2008) land snow-frequency curve (DJF for December-February) to the warmer of monthly mean 2-m and 850-hPa temperature, then average members; seasonal values sum the monthly liquid-water-equivalent estimates",
+                    "source_files": [
+                      {
+                        "initialization": "2026080100",
+                        "lead_month": 4,
+                        "product": "snowfall_anomaly",
+                        "source_field": "AirTemp at 2 m",
+                        "url": "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/2026/08/202608_MSC_CanSIPS_AirTemp_AGL-2m_LatLon1.0_P04M.grib2",
+                        "cache_file": ".cache/cansips/raw/forecast/202608/202608_MSC_CanSIPS_AirTemp_AGL-2m_LatLon1.0_P04M.grib2",
+                        "raw_units": "K",
+                        "downloaded": true
+                      },
+                      {
+                        "initialization": "2026080100",
+                        "lead_month": 4,
+                        "product": "snowfall_anomaly",
+                        "source_field": "AirTemp at 850 hPa",
+                        "url": "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/2026/08/202608_MSC_CanSIPS_AirTemp_ISBL-0850_LatLon1.0_P04M.grib2",
+                        "cache_file": ".cache/cansips/raw/forecast/202608/202608_MSC_CanSIPS_AirTemp_ISBL-0850_LatLon1.0_P04M.grib2",
+                        "raw_units": "K",
+                        "downloaded": true
+                      },
+                      {
+                        "initialization": "2026080100",
+                        "lead_month": 4,
+                        "product": "snowfall_anomaly",
+                        "source_field": "PrecipRate at the surface",
+                        "url": "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/2026/08/202608_MSC_CanSIPS_PrecipRate_Sfc_LatLon1.0_P04M.grib2",
+                        "cache_file": ".cache/cansips/raw/forecast/202608/202608_MSC_CanSIPS_PrecipRate_Sfc_LatLon1.0_P04M.grib2",
+                        "raw_units": "kg m-2 s-1",
+                        "downloaded": true
+                      }
+                    ],
+                    "downloaded": true,
+                    "decoded_variables": [
+                      "avg_2t",
+                      "avg_t",
+                      "prate"
+                    ],
+                    "diagnostics": {
+                      "valid_member_count_min": 40,
+                      "valid_member_count_max": 40,
+                      "valid_member_fraction_min": 1.0,
+                      "snow_fraction": {
+                        "method": "Dai_2008_land_seasonal_hyperbolic_tangent",
+                        "season": "DJF",
+                        "parameters": {
+                          "a_percent": -48.2372,
+                          "b_per_c": 0.7449,
+                          "c_c": 1.0919,
+                          "d": 1.0209
+                        },
+                        "phase_temperature": "max(2-m, 850-hPa)"
+                      },
+                      "calendar_month_seconds": 2678400
+                    }
+                  },
+                  "hindcast_file_count": 30,
+                  "baseline": "CanSIPS v3 hindcast climatology 1991-2020",
+                  "internal_members": 40,
+                  "internal_groups": [
+                    "GEM5.2-NEMO",
+                    "CanESM5"
+                  ],
+                  "derivation": "For each of 40 members, convert total PrecipRate to the calendar-month liquid-water total, apply the season-appropriate Dai (2008) land snow-frequency curve (DJF for December-February) to the warmer of monthly mean 2-m and 850-hPa temperature, then average members; seasonal values sum the monthly liquid-water-equivalent estimates"
+                },
+                {
+                  "source_package": "ECCC CanSIPS v3",
+                  "source_file": {
+                    "initialization": "2026080100",
+                    "lead_month": 5,
+                    "product": "snowfall_anomaly",
+                    "source_field": "Derived from 2-m/850-hPa AirTemp and surface PrecipRate",
+                    "source_variables": [
+                      "AirTemp at AGL-2m",
+                      "AirTemp at ISBL-0850",
+                      "PrecipRate at Sfc"
+                    ],
+                    "source_urls": [
+                      "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/2026/08/202608_MSC_CanSIPS_AirTemp_AGL-2m_LatLon1.0_P05M.grib2",
+                      "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/2026/08/202608_MSC_CanSIPS_AirTemp_ISBL-0850_LatLon1.0_P05M.grib2",
+                      "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/2026/08/202608_MSC_CanSIPS_PrecipRate_Sfc_LatLon1.0_P05M.grib2"
+                    ],
+                    "cache_file": ".cache/cansips/means/forecast/202608/snowfall_estimate_dai_t850_lead05.csv.gz",
+                    "storage": "decoded_40_member_derived_grid",
+                    "ensemble_members": 40,
+                    "derivation": "For each of 40 members, convert total PrecipRate to the calendar-month liquid-water total, apply the season-appropriate Dai (2008) land snow-frequency curve (DJF for December-February) to the warmer of monthly mean 2-m and 850-hPa temperature, then average members; seasonal values sum the monthly liquid-water-equivalent estimates",
+                    "source_files": [
+                      {
+                        "initialization": "2026080100",
+                        "lead_month": 5,
+                        "product": "snowfall_anomaly",
+                        "source_field": "AirTemp at 2 m",
+                        "url": "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/2026/08/202608_MSC_CanSIPS_AirTemp_AGL-2m_LatLon1.0_P05M.grib2",
+                        "cache_file": ".cache/cansips/raw/forecast/202608/202608_MSC_CanSIPS_AirTemp_AGL-2m_LatLon1.0_P05M.grib2",
+                        "raw_units": "K",
+                        "downloaded": true
+                      },
+                      {
+                        "initialization": "2026080100",
+                        "lead_month": 5,
+                        "product": "snowfall_anomaly",
+                        "source_field": "AirTemp at 850 hPa",
+                        "url": "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/2026/08/202608_MSC_CanSIPS_AirTemp_ISBL-0850_LatLon1.0_P05M.grib2",
+                        "cache_file": ".cache/cansips/raw/forecast/202608/202608_MSC_CanSIPS_AirTemp_ISBL-0850_LatLon1.0_P05M.grib2",
+                        "raw_units": "K",
+                        "downloaded": true
+                      },
+                      {
+                        "initialization": "2026080100",
+                        "lead_month": 5,
+                        "product": "snowfall_anomaly",
+                        "source_field": "PrecipRate at the surface",
+                        "url": "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/2026/08/202608_MSC_CanSIPS_PrecipRate_Sfc_LatLon1.0_P05M.grib2",
+                        "cache_file": ".cache/cansips/raw/forecast/202608/202608_MSC_CanSIPS_PrecipRate_Sfc_LatLon1.0_P05M.grib2",
+                        "raw_units": "kg m-2 s-1",
+                        "downloaded": true
+                      }
+                    ],
+                    "downloaded": true,
+                    "decoded_variables": [
+                      "avg_2t",
+                      "avg_t",
+                      "prate"
+                    ],
+                    "diagnostics": {
+                      "valid_member_count_min": 40,
+                      "valid_member_count_max": 40,
+                      "valid_member_fraction_min": 1.0,
+                      "snow_fraction": {
+                        "method": "Dai_2008_land_seasonal_hyperbolic_tangent",
+                        "season": "DJF",
+                        "parameters": {
+                          "a_percent": -48.2372,
+                          "b_per_c": 0.7449,
+                          "c_c": 1.0919,
+                          "d": 1.0209
+                        },
+                        "phase_temperature": "max(2-m, 850-hPa)"
+                      },
+                      "calendar_month_seconds": 2678400
+                    }
+                  },
+                  "hindcast_file_count": 30,
+                  "baseline": "CanSIPS v3 hindcast climatology 1991-2020",
+                  "internal_members": 40,
+                  "internal_groups": [
+                    "GEM5.2-NEMO",
+                    "CanESM5"
+                  ],
+                  "derivation": "For each of 40 members, convert total PrecipRate to the calendar-month liquid-water total, apply the season-appropriate Dai (2008) land snow-frequency curve (DJF for December-February) to the warmer of monthly mean 2-m and 850-hPa temperature, then average members; seasonal values sum the monthly liquid-water-equivalent estimates"
+                },
+                {
+                  "source_package": "ECCC CanSIPS v3",
+                  "source_file": {
+                    "initialization": "2026080100",
+                    "lead_month": 6,
+                    "product": "snowfall_anomaly",
+                    "source_field": "Derived from 2-m/850-hPa AirTemp and surface PrecipRate",
+                    "source_variables": [
+                      "AirTemp at AGL-2m",
+                      "AirTemp at ISBL-0850",
+                      "PrecipRate at Sfc"
+                    ],
+                    "source_urls": [
+                      "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/2026/08/202608_MSC_CanSIPS_AirTemp_AGL-2m_LatLon1.0_P06M.grib2",
+                      "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/2026/08/202608_MSC_CanSIPS_AirTemp_ISBL-0850_LatLon1.0_P06M.grib2",
+                      "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/2026/08/202608_MSC_CanSIPS_PrecipRate_Sfc_LatLon1.0_P06M.grib2"
+                    ],
+                    "cache_file": ".cache/cansips/means/forecast/202608/snowfall_estimate_dai_t850_lead06.csv.gz",
+                    "storage": "decoded_40_member_derived_grid",
+                    "ensemble_members": 40,
+                    "derivation": "For each of 40 members, convert total PrecipRate to the calendar-month liquid-water total, apply the season-appropriate Dai (2008) land snow-frequency curve (DJF for December-February) to the warmer of monthly mean 2-m and 850-hPa temperature, then average members; seasonal values sum the monthly liquid-water-equivalent estimates",
+                    "source_files": [
+                      {
+                        "initialization": "2026080100",
+                        "lead_month": 6,
+                        "product": "snowfall_anomaly",
+                        "source_field": "AirTemp at 2 m",
+                        "url": "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/2026/08/202608_MSC_CanSIPS_AirTemp_AGL-2m_LatLon1.0_P06M.grib2",
+                        "cache_file": ".cache/cansips/raw/forecast/202608/202608_MSC_CanSIPS_AirTemp_AGL-2m_LatLon1.0_P06M.grib2",
+                        "raw_units": "K",
+                        "downloaded": true
+                      },
+                      {
+                        "initialization": "2026080100",
+                        "lead_month": 6,
+                        "product": "snowfall_anomaly",
+                        "source_field": "AirTemp at 850 hPa",
+                        "url": "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/2026/08/202608_MSC_CanSIPS_AirTemp_ISBL-0850_LatLon1.0_P06M.grib2",
+                        "cache_file": ".cache/cansips/raw/forecast/202608/202608_MSC_CanSIPS_AirTemp_ISBL-0850_LatLon1.0_P06M.grib2",
+                        "raw_units": "K",
+                        "downloaded": true
+                      },
+                      {
+                        "initialization": "2026080100",
+                        "lead_month": 6,
+                        "product": "snowfall_anomaly",
+                        "source_field": "PrecipRate at the surface",
+                        "url": "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/2026/08/202608_MSC_CanSIPS_PrecipRate_Sfc_LatLon1.0_P06M.grib2",
+                        "cache_file": ".cache/cansips/raw/forecast/202608/202608_MSC_CanSIPS_PrecipRate_Sfc_LatLon1.0_P06M.grib2",
+                        "raw_units": "kg m-2 s-1",
+                        "downloaded": true
+                      }
+                    ],
+                    "downloaded": true,
+                    "decoded_variables": [
+                      "avg_2t",
+                      "avg_t",
+                      "prate"
+                    ],
+                    "diagnostics": {
+                      "valid_member_count_min": 40,
+                      "valid_member_count_max": 40,
+                      "valid_member_fraction_min": 1.0,
+                      "snow_fraction": {
+                        "method": "Dai_2008_land_seasonal_hyperbolic_tangent",
+                        "season": "DJF",
+                        "parameters": {
+                          "a_percent": -48.2372,
+                          "b_per_c": 0.7449,
+                          "c_c": 1.0919,
+                          "d": 1.0209
+                        },
+                        "phase_temperature": "max(2-m, 850-hPa)"
+                      },
+                      "calendar_month_seconds": 2419200
+                    }
+                  },
+                  "hindcast_file_count": 30,
+                  "baseline": "CanSIPS v3 hindcast climatology 1991-2020",
+                  "internal_members": 40,
+                  "internal_groups": [
+                    "GEM5.2-NEMO",
+                    "CanESM5"
+                  ],
+                  "derivation": "For each of 40 members, convert total PrecipRate to the calendar-month liquid-water total, apply the season-appropriate Dai (2008) land snow-frequency curve (DJF for December-February) to the warmer of monthly mean 2-m and 850-hPa temperature, then average members; seasonal values sum the monthly liquid-water-equivalent estimates"
+                }
+              ]
+            }
+          ],
+          "member_errors": {
+            "lead4_c3s_ncep_system2": "C3S request failed for ncep/2 snowfall_anomalous_rate_of_accumulation lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/1d7acdae-e9a5-4ace-bfa2-eb6f83093347/results\nThe job has failed\nMARS returned no data, please check your selection.Request submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-08-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['4'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['kwbc'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['2'], 'time': ['all'], 'type': ['em']}]\n\nThe job failed with: MarsNoDataError",
+            "lead4_c3s_jma_system4": "C3S request failed for jma/4 snowfall_anomalous_rate_of_accumulation lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/4db70193-042d-412e-93f5-a22ab58f2bf4/results\nThe job has failed\nMARS returned no data, please check your selection.Request submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-08-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['4'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['rjtd'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['4'], 'time': ['all'], 'type': ['em']}]\n\nThe job failed with: MarsNoDataError",
+            "lead4_c3s_bom_system2": "C3S request failed for bom/2 snowfall_anomalous_rate_of_accumulation lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/9438e271-d645-424a-aa06-9a731b86fa07/results\nThe job has failed\nMARS returned no data, please check your selection.Request submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-08-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['4'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['ammc'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['2'], 'time': ['all'], 'type': ['em']}]\n\nThe job failed with: MarsNoDataError",
+            "lead5_c3s_ncep_system2": "C3S request failed for ncep/2 snowfall_anomalous_rate_of_accumulation lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/558cf51d-bce7-4ca8-b5bb-77e3180e2dea/results\nThe job has failed\nThe job failed with: MarsNoDataError\nMARS returned no data, please check your selection.Request submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-08-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['5'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['kwbc'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['2'], 'time': ['all'], 'type': ['em']}]\n",
+            "lead5_c3s_jma_system4": "C3S request failed for jma/4 snowfall_anomalous_rate_of_accumulation lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/f08d9113-cf62-401e-a3a3-bda1cbceb0b8/results\nThe job has failed\nMARS returned no data, please check your selection.Request submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-08-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['5'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['rjtd'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['4'], 'time': ['all'], 'type': ['em']}]\n\nThe job failed with: MarsNoDataError",
+            "lead5_c3s_bom_system2": "C3S request failed for bom/2 snowfall_anomalous_rate_of_accumulation lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/8d0a5261-dddc-478a-90f8-9ce8e1dc8817/results\nThe job has failed\nMARS returned no data, please check your selection.Request submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-08-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['5'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['ammc'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['2'], 'time': ['all'], 'type': ['em']}]\n\nThe job failed with: MarsNoDataError",
+            "lead6_c3s_ncep_system2": "C3S request failed for ncep/2 snowfall_anomalous_rate_of_accumulation lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/407d827c-17d9-48df-a11e-74d665eb6180/results\nThe job has failed\nThe job failed with: MarsNoDataError\nMARS returned no data, please check your selection.Request submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-08-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['6'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['kwbc'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['2'], 'time': ['all'], 'type': ['em']}]\n",
+            "lead6_c3s_jma_system4": "C3S request failed for jma/4 snowfall_anomalous_rate_of_accumulation lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/bff48ae9-e7f4-4450-8e4b-bb04f555e004/results\nThe job has failed\nMARS returned no data, please check your selection.Request submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-08-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['6'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['rjtd'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['4'], 'time': ['all'], 'type': ['em']}]\n\nThe job failed with: MarsNoDataError",
+            "lead6_c3s_bom_system2": "C3S request failed for bom/2 snowfall_anomalous_rate_of_accumulation lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/ddca782b-ab6b-4b48-a1f0-595dc1983c8a/results\nThe job has failed\nMARS returned no data, please check your selection.Request submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-08-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['6'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['ammc'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['2'], 'time': ['all'], 'type': ['em']}]\n\nThe job failed with: MarsNoDataError"
+          },
+          "ensemble_scope": "6/9 canonical forecast families",
+          "baseline": {
+            "status": "native_model_baselines",
+            "method": "equal mean of source-native anomaly fields; no common climatology imposed"
+          },
+          "status": "partial",
+          "monthly_leads": [
+            4,
+            5,
+            6
+          ],
+          "composition_rule": "intersection of canonical members available for every month",
+          "quality_control": {
+            "registry_version": 1,
+            "product": "snowfall_anomaly",
+            "units": "in",
+            "field": "snowfall_anomaly",
+            "period": "seasonal",
+            "total_points": 3200,
+            "finite_points": 3200,
+            "finite_fraction": 1.0,
+            "minimum": -5.208387,
+            "maximum": 1.212717,
+            "p01": -2.741663,
+            "p99": 0.408086,
+            "display": {
+              "minimum": -4.0,
+              "maximum": 4.0,
+              "breakpoints": [
+                -4.0,
+                -3.5,
+                -3.0,
+                -2.5,
+                -2.0,
+                -1.75,
+                -1.5,
+                -1.25,
+                -1.0,
+                -0.75,
+                -0.5,
+                0.0,
+                0.5,
+                0.75,
+                1.0,
+                1.25,
+                1.5,
+                1.75,
+                2.0,
+                2.5,
+                3.0,
+                3.5,
+                4.0
+              ],
+              "below_fraction": 0.0025,
+              "above_fraction": 0.0,
+              "clipped_fraction": 0.0025
+            },
+            "issues": [],
+            "status": "passed"
+          },
+          "height_member_count": 0,
+          "image": "public/seasonal/superensemble/20260801/superensemble_sf_202612-202702.jpg"
+        }
+      ],
+      "status": "partial",
+      "generated_utc": "2026-09-04T01:17:44Z",
+      "output_dir": "public/seasonal/superensemble"
+    },
     {
       "id": "superensemble-2026080100-precipitation_anomaly",
       "model": "Seasonal Super Ensemble",
