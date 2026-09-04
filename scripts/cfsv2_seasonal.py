@@ -238,12 +238,15 @@ SNOWFALL_MONTHLY_ANOMALY_PALETTE = [
     "#123856",
 ]
 # Snow-depth accumulation uses the established WN2 snowfall palette. Monthly
-# products retain two-inch bins through 40 inches; three-month totals use the
-# same visual progression in five-inch bins through 100 inches, then add
-# ten-inch high-end bands through 200 inches so Northeast and mountain maxima
-# remain distinguishable instead of sharing one pale saturated color.
-SNOWFALL_ACCUMULATION_MONTHLY_BOUNDS_IN = list(range(0, 42, 2))
-SNOWFALL_ACCUMULATION_MONTHLY_TICKS_IN = list(range(0, 41, 4))
+# products retain two-inch bins through 40 inches, then use five-inch bins
+# through 100 inches and ten-inch high-end bins through 200 inches. Three-month
+# totals use five-inch bins through 100 inches and the same ten-inch high-end
+# bins. This keeps ordinary monthly totals detailed while preventing Northeast
+# and mountain maxima from sharing one saturated terminal color.
+SNOWFALL_ACCUMULATION_MONTHLY_BOUNDS_IN = (
+    list(range(0, 42, 2)) + list(range(45, 105, 5)) + list(range(110, 201, 10))
+)
+SNOWFALL_ACCUMULATION_MONTHLY_TICKS_IN = list(range(0, 101, 10)) + list(range(120, 201, 20))
 SNOWFALL_ACCUMULATION_SEASONAL_BOUNDS_IN = list(range(0, 105, 5)) + list(range(110, 201, 10))
 SNOWFALL_ACCUMULATION_SEASONAL_TICKS_IN = list(range(0, 101, 10)) + list(range(120, 201, 20))
 SNOWFALL_ACCUMULATION_PALETTE = [
@@ -251,6 +254,12 @@ SNOWFALL_ACCUMULATION_PALETTE = [
     "#2f8fd9", "#516dd0", "#6b52c6", "#8540be", "#9d36b7",
     "#b93db8", "#d451bb", "#00b8d6", "#28d0e6", "#74e8f4",
     "#cbfbff", "#1ec48f", "#53d8ae", "#97edd0", "#ddfff1",
+]
+SNOWFALL_ACCUMULATION_MONTHLY_PALETTE = SNOWFALL_ACCUMULATION_PALETTE + [
+    "#efffd6", "#fffbd1", "#fff6a6", "#ffeb82", "#ffe066", "#ffd153",
+    "#ffc247", "#f9b03b", "#f59e32", "#f28530", "#ef6c2f", "#e95732",
+    "#e33f36", "#d92d3a", "#c91f3a", "#ba173f", "#a50f47", "#92154f",
+    "#7f1d5a", "#6a1a59", "#53144f", "#3b103f",
 ]
 SNOWFALL_ACCUMULATION_SEASONAL_PALETTE = SNOWFALL_ACCUMULATION_PALETTE + [
     "#fff6a6", "#ffe066", "#ffc247", "#f59e32", "#ef6c2f",
@@ -611,7 +620,7 @@ PRODUCT_SPECS = {
         "monthly_aggregation": "monthly estimated snowfall accumulation",
         "monthly_absolute_bounds": SNOWFALL_ACCUMULATION_MONTHLY_BOUNDS_IN,
         "monthly_absolute_ticks": SNOWFALL_ACCUMULATION_MONTHLY_TICKS_IN,
-        "monthly_absolute_palette": SNOWFALL_ACCUMULATION_PALETTE,
+        "monthly_absolute_palette": SNOWFALL_ACCUMULATION_MONTHLY_PALETTE,
         "seasonal_absolute_bounds": SNOWFALL_ACCUMULATION_SEASONAL_BOUNDS_IN,
         "seasonal_absolute_ticks": SNOWFALL_ACCUMULATION_SEASONAL_TICKS_IN,
         "seasonal_absolute_palette": SNOWFALL_ACCUMULATION_SEASONAL_PALETTE,
