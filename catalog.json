@@ -2,8 +2,8 @@
   "schema_version": 1,
   "registry_version": 1,
   "kind": "seasonal_dashboard_catalog",
-  "generated_utc": "2026-09-04T18:34:07Z",
-  "source_revision": "efa0e18b3ef0bacd94c8ae933b8bf0ff856990a1",
+  "generated_utc": "2026-09-04T19:05:25Z",
+  "source_revision": "b95e3625ad150083c94c848bf6be40b9c90cadfd",
   "model_order": [
     "superensemble",
     "c3s",
@@ -315,7 +315,7 @@
         },
         "seasonal": {
           "minimum": 0.0,
-          "maximum": 100.0,
+          "maximum": 200.0,
           "step": 5.0
         }
       },
@@ -17754,25 +17754,19 @@
                 "p99": 156.035024,
                 "display": {
                   "minimum": 0.0,
-                  "maximum": 100.0,
+                  "maximum": 200.0,
                   "step": 5.0,
                   "below_fraction": 0.0,
-                  "above_fraction": 0.038816,
-                  "clipped_fraction": 0.038816
+                  "above_fraction": 0.002851,
+                  "clipped_fraction": 0.002851
                 },
-                "issues": [
-                  {
-                    "code": "display_scale_clipping",
-                    "severity": "warning",
-                    "message": "3.9% of finite cells exceed the fixed display scale."
-                  }
-                ],
-                "status": "warning"
+                "issues": [],
+                "status": "passed"
               },
               "_catalog": {
                 "canonical_product": "snowfall_accumulation",
                 "comparable": true,
-                "quality_control": "warning"
+                "quality_control": "passed"
               }
             },
             {
@@ -17815,25 +17809,19 @@
                 "p99": 148.40918,
                 "display": {
                   "minimum": 0.0,
-                  "maximum": 100.0,
+                  "maximum": 200.0,
                   "step": 5.0,
                   "below_fraction": 0.0,
-                  "above_fraction": 0.036143,
-                  "clipped_fraction": 0.036143
+                  "above_fraction": 0.001604,
+                  "clipped_fraction": 0.001604
                 },
-                "issues": [
-                  {
-                    "code": "display_scale_clipping",
-                    "severity": "warning",
-                    "message": "3.6% of finite cells exceed the fixed display scale."
-                  }
-                ],
-                "status": "warning"
+                "issues": [],
+                "status": "passed"
               },
               "_catalog": {
                 "canonical_product": "snowfall_accumulation",
                 "comparable": true,
-                "quality_control": "warning"
+                "quality_control": "passed"
               }
             }
           ],
@@ -25970,7 +25958,7 @@
       "status": "online",
       "schema_version": 1,
       "manifest_kind": "cfsv2_seasonal_manifest",
-      "generated_utc": "2026-09-04T18:30:46Z",
+      "generated_utc": "2026-09-04T19:04:21Z",
       "source_url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/",
       "product_labels": {},
       "validation": {
@@ -53779,7 +53767,7 @@
   },
   "health": {
     "status": "attention",
-    "generated_utc": "2026-09-04T18:34:07Z",
+    "generated_utc": "2026-09-04T19:05:25Z",
     "freshness_policy_days": {
       "default": {
         "fresh_days": 35,
