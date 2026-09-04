@@ -2,7 +2,7 @@
   "schema_version": 1,
   "registry_version": 1,
   "kind": "seasonal_dashboard_catalog",
-  "generated_utc": "2026-09-04T13:53:40Z",
+  "generated_utc": "2026-09-04T13:59:37Z",
   "source_revision": "c4684723898970f87b599b2c62f408d715c0599f",
   "model_order": [
     "superensemble",
@@ -16744,7 +16744,7 @@
                     "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/09/flxf.09.04.00.l03.fclm.1982.2010.grb2",
                     "requested_initialization": "2026090400",
                     "used_initialization": "2026090400",
-                    "downloaded": true,
+                    "downloaded": false,
                     "fallback": null,
                     "fallback_error": null
                   },
@@ -16755,7 +16755,7 @@
                     "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs_refor_calclim_mm_9m_pgbf/09/pgbf.09.04.00.l03.fclm.1982.2010.grb2",
                     "requested_initialization": "2026090400",
                     "used_initialization": "2026090400",
-                    "downloaded": true,
+                    "downloaded": false,
                     "fallback": null,
                     "fallback_error": null
                   },
@@ -16870,7 +16870,7 @@
                     "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/09/flxf.09.04.00.l04.fclm.1982.2010.grb2",
                     "requested_initialization": "2026090400",
                     "used_initialization": "2026090400",
-                    "downloaded": true,
+                    "downloaded": false,
                     "fallback": null,
                     "fallback_error": null
                   },
@@ -16881,7 +16881,7 @@
                     "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs_refor_calclim_mm_9m_pgbf/09/pgbf.09.04.00.l04.fclm.1982.2010.grb2",
                     "requested_initialization": "2026090400",
                     "used_initialization": "2026090400",
-                    "downloaded": true,
+                    "downloaded": false,
                     "fallback": null,
                     "fallback_error": null
                   },
@@ -16996,7 +16996,7 @@
                     "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/09/flxf.09.04.00.l05.fclm.1982.2010.grb2",
                     "requested_initialization": "2026090400",
                     "used_initialization": "2026090400",
-                    "downloaded": true,
+                    "downloaded": false,
                     "fallback": null,
                     "fallback_error": null
                   },
@@ -17007,7 +17007,7 @@
                     "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs_refor_calclim_mm_9m_pgbf/09/pgbf.09.04.00.l05.fclm.1982.2010.grb2",
                     "requested_initialization": "2026090400",
                     "used_initialization": "2026090400",
-                    "downloaded": true,
+                    "downloaded": false,
                     "fallback": null,
                     "fallback_error": null
                   },
@@ -17122,7 +17122,7 @@
                     "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/09/flxf.09.04.00.l06.fclm.1982.2010.grb2",
                     "requested_initialization": "2026090400",
                     "used_initialization": "2026090400",
-                    "downloaded": true,
+                    "downloaded": false,
                     "fallback": null,
                     "fallback_error": null
                   },
@@ -17133,7 +17133,7 @@
                     "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs_refor_calclim_mm_9m_pgbf/09/pgbf.09.04.00.l06.fclm.1982.2010.grb2",
                     "requested_initialization": "2026090400",
                     "used_initialization": "2026090400",
-                    "downloaded": true,
+                    "downloaded": false,
                     "fallback": null,
                     "fallback_error": null
                   },
@@ -17227,6 +17227,7 @@
             {
               "id": "cfsv2-202612-202702-snowfall-anomaly-seasonal",
               "target_month": "202612-202702",
+              "label": "DJF 2026–27",
               "valid_start_utc": "2026-12-01T00:00:00Z",
               "valid_end_utc": "2027-03-01T00:00:00Z",
               "lead_month": "3-5",
@@ -17324,6 +17325,115 @@
                 "canonical_product": "snowfall_anomaly",
                 "comparable": true,
                 "quality_control": "passed"
+              }
+            },
+            {
+              "id": "cfsv2-202701-202703-snowfall-anomaly-seasonal",
+              "target_month": "202701-202703",
+              "label": "JFM 2027",
+              "valid_start_utc": "2027-01-01T00:00:00Z",
+              "valid_end_utc": "2027-04-01T00:00:00Z",
+              "lead_month": "4-6",
+              "monthly_leads": [
+                4,
+                5,
+                6
+              ],
+              "field": "snowfall_lwe",
+              "units": "in",
+              "status": "rendered",
+              "image": "cfsv2/2026090400/cfsv2_snowfalla_202701-202703.jpg",
+              "baseline": {
+                "files": [
+                  ".cache/cfsv2/calibration/flxf/2026090400/flxf.09.04.00.l04.fclm.1982.2010.grb2",
+                  ".cache/cfsv2/calibration/pgbf/2026090400/pgbf.09.04.00.l04.fclm.1982.2010.grb2",
+                  ".cache/cfsv2/calibration/flxf/2026090400/flxf.09.04.00.l04.fclm.1982.2010.grb2",
+                  ".cache/cfsv2/calibration/flxf/2026090400/flxf.09.04.00.l05.fclm.1982.2010.grb2",
+                  ".cache/cfsv2/calibration/pgbf/2026090400/pgbf.09.04.00.l05.fclm.1982.2010.grb2",
+                  ".cache/cfsv2/calibration/flxf/2026090400/flxf.09.04.00.l05.fclm.1982.2010.grb2",
+                  ".cache/cfsv2/calibration/flxf/2026090400/flxf.09.04.00.l06.fclm.1982.2010.grb2",
+                  ".cache/cfsv2/calibration/pgbf/2026090400/pgbf.09.04.00.l06.fclm.1982.2010.grb2",
+                  ".cache/cfsv2/calibration/flxf/2026090400/flxf.09.04.00.l06.fclm.1982.2010.grb2"
+                ],
+                "label": "NCEI CFSR/CFSv2 1982-2010 derived snowfall climatology",
+                "years": "1982-2010",
+                "rolling_policy": "anchor_initialization",
+                "anchor_init": "2026090400",
+                "urls": [
+                  "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/09/flxf.09.04.00.l04.fclm.1982.2010.grb2",
+                  "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs_refor_calclim_mm_9m_pgbf/09/pgbf.09.04.00.l04.fclm.1982.2010.grb2",
+                  "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/09/flxf.09.04.00.l04.fclm.1982.2010.grb2",
+                  "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/09/flxf.09.04.00.l05.fclm.1982.2010.grb2",
+                  "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs_refor_calclim_mm_9m_pgbf/09/pgbf.09.04.00.l05.fclm.1982.2010.grb2",
+                  "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/09/flxf.09.04.00.l05.fclm.1982.2010.grb2",
+                  "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/09/flxf.09.04.00.l06.fclm.1982.2010.grb2",
+                  "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs_refor_calclim_mm_9m_pgbf/09/pgbf.09.04.00.l06.fclm.1982.2010.grb2",
+                  "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/09/flxf.09.04.00.l06.fclm.1982.2010.grb2"
+                ]
+              },
+              "ensemble_members": 24,
+              "ensemble_complete": true,
+              "ensemble_scope": "rolling_initial_conditions",
+              "statistic": "ensemble_mean",
+              "aggregation": "3-month seasonal snowfall departure total",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "snowfall_anomaly",
+                "units": "in",
+                "field": "snowfall_lwe",
+                "period": "seasonal",
+                "total_points": 72960,
+                "finite_points": 72960,
+                "finite_fraction": 1.0,
+                "minimum": -13.236587,
+                "maximum": 5.230644,
+                "p01": -5.475596,
+                "p99": 1.91953,
+                "display": {
+                  "minimum": -4.0,
+                  "maximum": 4.0,
+                  "breakpoints": [
+                    -4.0,
+                    -3.5,
+                    -3.0,
+                    -2.5,
+                    -2.0,
+                    -1.75,
+                    -1.5,
+                    -1.25,
+                    -1.0,
+                    -0.75,
+                    -0.5,
+                    0.0,
+                    0.5,
+                    0.75,
+                    1.0,
+                    1.25,
+                    1.5,
+                    1.75,
+                    2.0,
+                    2.5,
+                    3.0,
+                    3.5,
+                    4.0
+                  ],
+                  "below_fraction": 0.024918,
+                  "above_fraction": 0.000123,
+                  "clipped_fraction": 0.025041
+                },
+                "issues": [
+                  {
+                    "code": "display_scale_clipping",
+                    "severity": "warning",
+                    "message": "2.5% of finite cells exceed the fixed display scale."
+                  }
+                ],
+                "status": "warning"
+              },
+              "_catalog": {
+                "canonical_product": "snowfall_anomaly",
+                "comparable": true,
+                "quality_control": "warning"
               }
             }
           ],
@@ -24697,7 +24807,7 @@
       "status": "online",
       "schema_version": 1,
       "manifest_kind": "cfsv2_seasonal_manifest",
-      "generated_utc": "2026-09-04T12:43:44Z",
+      "generated_utc": "2026-09-04T13:58:35Z",
       "source_url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/",
       "product_labels": {},
       "validation": {
@@ -24767,7 +24877,7 @@
           "comparable": true,
           "latest_init_utc": "2026-09-04T00:00:00Z",
           "run_id": "cfsv2-2026090400-snowfall_anomaly",
-          "target_count": 5,
+          "target_count": 6,
           "latest_run_id": "cfsv2-2026090400-snowfall_anomaly",
           "latest_run_status": "rendered",
           "latest_run_init_utc": "2026-09-04T00:00:00Z",
@@ -52506,7 +52616,7 @@
   },
   "health": {
     "status": "attention",
-    "generated_utc": "2026-09-04T13:53:40Z",
+    "generated_utc": "2026-09-04T13:59:37Z",
     "freshness_policy_days": {
       "default": {
         "fresh_days": 35,
