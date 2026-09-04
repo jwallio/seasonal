@@ -179,10 +179,6 @@ def main() -> int:
     check("CFSV2_HEIGHT_ANOMALY_TICKS = list(range(-100, 101, 10))" in adapter, "CFSv2 height anomaly scale should label every 10 m")
     check("PRECIP_MONTHLY_ANOMALY_TICKS = [value / 2.0 for value in range(-8, 9)]" in adapter, "monthly precipitation should use 0.5-inch intervals from -4 to +4")
     check("PRECIP_SEASONAL_ANOMALY_TICKS = list(range(-8, 9))" in adapter, "seasonal precipitation should retain 1-inch intervals from -8 to +8")
-    check("list(range(0, 42, 2)) + list(range(45, 105, 5)) + list(range(110, 201, 10))" in adapter, "monthly estimated snowfall should retain two-inch detail through 40 inches and add high-end bands through 200 inches")
-    check("SNOWFALL_ACCUMULATION_MONTHLY_TICKS_IN = list(range(0, 201, 20))" in adapter, "monthly estimated snowfall should use readable 20-inch major labels")
-    check("SNOWFALL_ACCUMULATION_SEASONAL_BOUNDS_IN = list(range(0, 105, 5)) + list(range(110, 201, 10))" in adapter, "seasonal estimated snowfall should preserve five-inch detail through 100 inches and add high-end bands through 200 inches")
-    check("SNOWFALL_ACCUMULATION_SEASONAL_TICKS_IN = list(range(0, 201, 20))" in adapter, "seasonal estimated snowfall should use readable 20-inch major labels")
     check("CFSV2_TEMPERATURE_ANOMALY_TICKS = TEMPERATURE_ANOMALY_TICKS" in adapter, "CFSv2 2-m temperature should use the shared scale")
     check("CFSV2_MSLP_ANOMALY_TICKS = list(range(-10, 11))" in adapter, "CFSv2 MSLP should use 1 hPa intervals from -10 to +10")
     check('boundary_values = product_spec.get("anomaly_bounds", colorbar_ticks)' in adapter, "anomaly bounds should support product-specific neutral intervals")
@@ -233,18 +229,15 @@ def main() -> int:
     check("available.find(run => !isFailedRun(run))" in page, "Pages viewer should default to the latest non-failed run")
     check("if (target?.label) return target.label;" in page, "Pages viewer should honor manifest labels for DJF and JFM")
     adapter_module = load_adapter()
-    check(len(adapter_module.SNOWFALL_ACCUMULATION_BLUE_PALETTE) == 8, "estimated snowfall should expand the WN2 blue family to eight bands")
-    check(len(adapter_module.SNOWFALL_ACCUMULATION_PURPLE_PALETTE) == 8, "estimated snowfall should expand the WN2 purple family to eight bands")
-    check(len(adapter_module.SNOWFALL_ACCUMULATION_CYAN_PALETTE) == 6, "estimated snowfall should expand the WN2 cyan family to six bands")
-    check(len(adapter_module.SNOWFALL_ACCUMULATION_YELLOW_PALETTE) == 1, "estimated snowfall should use one saturated yellow transition band")
-    check(len(adapter_module.SNOWFALL_ACCUMULATION_MONTHLY_PALETTE) == len(adapter_module.SNOWFALL_ACCUMULATION_MONTHLY_BOUNDS_IN) - 1, "monthly estimated snowfall should provide exactly one color per contour band")
-    check(len(adapter_module.SNOWFALL_ACCUMULATION_SEASONAL_PALETTE) == len(adapter_module.SNOWFALL_ACCUMULATION_SEASONAL_BOUNDS_IN) - 1, "seasonal estimated snowfall should provide exactly one color per contour band")
+    anchors = adapter_module.SNOWFALL_ACCUMULATION_COLOR_ANCHORS
+    check(anchors[0][0] == 0 and anchors[-1][0] == 200, "estimated snowfall master palette should cover 0-200 inches")
+    check(all(left[0] < right[0] for left, right in zip(anchors, anchors[1:])), "snowfall color anchors must be strictly ordered by amount")
     accumulation_spec = adapter_module.get_product_spec(adapter_module.PRODUCT_SNOWFALL_ACCUMULATION)
     check(
         accumulation_spec["requires_baseline"] is False
         and accumulation_spec["render_as_anomaly"] is False
-        and len(accumulation_spec["monthly_absolute_bounds"]) == len(accumulation_spec["monthly_absolute_palette"]) + 1,
-        "estimated snowfall should be a separately labelled absolute product with a valid fixed palette",
+        and accumulation_spec["continuous_accumulation_scale"] is True,
+        "estimated snowfall should remain a separately labelled absolute product with continuous amount-based colors",
     )
     august_snowfall = adapter_module.default_winter_snowfall_windows("2026080100")
     september_snowfall = adapter_module.default_winter_snowfall_windows("2026090400")
