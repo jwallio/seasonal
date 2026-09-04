@@ -68,8 +68,11 @@ calibration climatology and records its anchor cycle, available/expected cycle
 count, source files, and calibration URL in the manifest. Its `latest` anchor
 is aligned to the requested target months, so a calendar-month rollover does
 not strand the blend on an obsolete CFSv2 cycle while monthly systems await
-their next release. An explicitly supplied anchor remains constrained to the
-shared monthly release for reproducible backfills.
+their next release. The adapter probes every dependency for those exact valid
+months and selects the newest fully published cycle, rather than accepting a
+newly listed cycle with incomplete monthly files. An explicitly supplied
+anchor remains constrained to the shared monthly release for reproducible
+backfills.
 The workflow restores the newest standalone CFSv2 rolling-state cache before
 falling back to a prior super-ensemble cache, minimizing duplicate downloads
 and keeping the frequent-refresh contribution current. Every render job also

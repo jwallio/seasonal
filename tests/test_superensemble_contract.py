@@ -129,6 +129,45 @@ def main() -> int:
         )
     finally:
         module.cfsv2.discover_latest_init = original_latest_init
+    readiness_originals = {
+        "listed_cycle_inits": module.cfsv2.listed_cycle_inits,
+        "discover_latest_ready_init": module.cfsv2.discover_latest_ready_init,
+    }
+    readiness_calls = []
+    try:
+        module.cfsv2.listed_cycle_inits = lambda: [
+            "2026090318", "2026090312", "2026083118",
+        ]
+
+        def mock_ready(products, leads, *, candidate_inits):
+            readiness_calls.append((products, leads, candidate_inits))
+            if candidate_inits[0].startswith("202609"):
+                return "2026090312"
+            raise module.cfsv2.CFSv2Error("unexpected prior-month readiness probe")
+
+        module.cfsv2.discover_latest_ready_init = mock_ready
+        check(
+            module.resolve_cfsv2_anchor(
+                "latest",
+                "2026080100",
+                product="snowfall_anomaly",
+                target_months=["202612", "202701", "202702"],
+            ) == "2026090312",
+            "latest CFSv2 should select the newest fully published cycle for the fixed valid months",
+        )
+        check(
+            readiness_calls == [
+                (
+                    ["snowfall_anomaly"],
+                    [3, 4, 5],
+                    ["2026090318", "2026090312"],
+                )
+            ],
+            "CFSv2 readiness should translate fixed valid months into leads for the candidate release month",
+        )
+    finally:
+        for name, value in readiness_originals.items():
+            setattr(module.cfsv2, name, value)
     try:
         module.resolve_cfsv2_anchor("2026073118", "2026080100")
     except module.SuperEnsembleError:

@@ -513,13 +513,45 @@ def load_c3s_members(
                     print(f"super ensemble C3S {centre} height lead {lead} unavailable: {exc}", file=sys.stderr)
 
 
-def resolve_cfsv2_anchor(value: str, shared_init: str) -> str:
+def resolve_cfsv2_anchor(
+    value: str,
+    shared_init: str,
+    *,
+    product: str | None = None,
+    target_months: list[str] | None = None,
+) -> str:
     if value == "latest":
         # Monthly systems can remain on their latest release month after the
         # calendar turns. CFSv2 is a frequent-refresh source, so use its latest
         # cycle and align it by target month rather than forcing an older cycle
         # merely to match the C3S/CanSIPS release month.
-        return cfsv2.discover_latest_init()
+        if not product or not target_months:
+            return cfsv2.discover_latest_init()
+        candidates = cfsv2.listed_cycle_inits()
+        candidate_months = list(dict.fromkeys(candidate[:6] for candidate in candidates))
+        readiness_errors: list[str] = []
+        for candidate_month in candidate_months:
+            month_candidates = [candidate for candidate in candidates if candidate[:6] == candidate_month]
+            try:
+                target_leads = sorted(
+                    {cfsv2.lead_for_target(month_candidates[0], target) for target in target_months}
+                )
+            except cfsv2.CFSv2Error as exc:
+                readiness_errors.append(f"{candidate_month}: {exc}")
+                continue
+            try:
+                return cfsv2.discover_latest_ready_init(
+                    [product],
+                    target_leads,
+                    candidate_inits=month_candidates,
+                )
+            except cfsv2.CFSv2Error as exc:
+                readiness_errors.append(f"{candidate_month}: {exc}")
+        detail = "; ".join(readiness_errors) or "NOMADS listed no candidate cycles"
+        raise SuperEnsembleError(
+            f"no fully published rolling CFSv2 anchor was available for "
+            f"{','.join(target_months)} ({detail})"
+        )
     anchor = cfsv2.parse_init(value)
     if anchor[:6] != shared_init[:6]:
         raise SuperEnsembleError(
@@ -547,7 +579,12 @@ def load_cfsv2_member(
         return
     key = CFSV2_MEMBER_KEY
     try:
-        anchor = resolve_cfsv2_anchor(args.cfsv2_anchor_init, init)
+        anchor = resolve_cfsv2_anchor(
+            args.cfsv2_anchor_init,
+            init,
+            product=product,
+            target_months=[c3s.target_month(init, lead) for lead in leads],
+        )
     except Exception as exc:
         for lead in leads:
             errors[lead][key] = str(exc)
