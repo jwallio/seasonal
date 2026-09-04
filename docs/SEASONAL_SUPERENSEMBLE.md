@@ -70,6 +70,9 @@ is aligned to the requested target months, so a calendar-month rollover does
 not strand the blend on an obsolete CFSv2 cycle while monthly systems await
 their next release. An explicitly supplied anchor remains constrained to the
 shared monthly release for reproducible backfills.
+The workflow restores the newest standalone CFSv2 rolling-state cache before
+falling back to a prior super-ensemble cache, minimizing duplicate downloads
+and keeping the frequent-refresh contribution current.
 The GEOS-S2S-3 contribution uses NASA's lead- and initialization-month-matched
 provider drift climatology and records its lagged initialization dates,
 available members, archive, and drift source.

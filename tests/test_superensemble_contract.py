@@ -164,6 +164,11 @@ def main() -> int:
         "Set up wgrib2 once for the product matrix", "Restore wgrib2 for this product",
     ):
         check(term in workflow, f"workflow is missing term: {term}")
+    check(
+        workflow.index("            cfsv2-rolling-\n")
+        < workflow.index("            superensemble-cfsv2-${{ runner.os }}-${{ env.SUPER_PRODUCT }}-\n"),
+        "super-ensemble should restore the newest standalone CFSv2 rolling state before its older product cache",
+    )
     for term in ("Deduplicated Seasonal Super Ensemble", "superensemble_manifest.json", "incoming/superensemble"):
         check(term in pages, f"Pages publisher is missing term: {term}")
 

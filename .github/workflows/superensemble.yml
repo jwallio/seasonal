@@ -171,8 +171,8 @@ jobs:
           path: .cache/cfsv2
           key: superensemble-cfsv2-${{ runner.os }}-${{ env.SUPER_PRODUCT }}-${{ github.run_id }}-v1
           restore-keys: |
-            superensemble-cfsv2-${{ runner.os }}-${{ env.SUPER_PRODUCT }}-
             cfsv2-rolling-
+            superensemble-cfsv2-${{ runner.os }}-${{ env.SUPER_PRODUCT }}-
             superensemble-cfsv2-${{ runner.os }}-
 
       - name: Restore unique NMME component cache
