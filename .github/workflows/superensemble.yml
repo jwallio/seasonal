@@ -219,7 +219,7 @@ jobs:
       - name: Restore wgrib2 for this product
         uses: ./.github/actions/setup-wgrib2
         with:
-          required: ${{ env.SUPER_PRODUCT != 'snowfall_anomaly' || github.event_name == 'schedule' }}
+          required: "true"
           build: "false"
 
       - name: Render product-scoped super ensemble

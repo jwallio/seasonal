@@ -169,6 +169,14 @@ def main() -> int:
         < workflow.index("            superensemble-cfsv2-${{ runner.os }}-${{ env.SUPER_PRODUCT }}-\n"),
         "super-ensemble should restore the newest standalone CFSv2 rolling state before its older product cache",
     )
+    check(
+        'required: "true"\n          build: "false"' in workflow,
+        "every super-ensemble product, including manual snowfall runs, must restore wgrib2",
+    )
+    check(
+        "SUPER_PRODUCT != 'snowfall_anomaly'" not in workflow,
+        "snowfall must not bypass wgrib2 now that the blend includes derived CFSv2 data",
+    )
     for term in ("Deduplicated Seasonal Super Ensemble", "superensemble_manifest.json", "incoming/superensemble"):
         check(term in pages, f"Pages publisher is missing term: {term}")
 
