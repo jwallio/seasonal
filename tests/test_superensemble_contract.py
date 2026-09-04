@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Static and unit contracts for the deduplicated seasonal super ensemble."""
 
+import ast
 import importlib.util
 import inspect
 import json
@@ -118,6 +119,33 @@ def main() -> int:
     footer_parameter = inspect.signature(module.render_map).parameters.get("footer_text")
     check(footer_parameter is not None and footer_parameter.default == "", "shared renderer should expose an optional footer without changing other model maps")
     check(adapter_text.count("footer_text=included_models_footer(keys, definitions)") == 2, "monthly and seasonal super-ensemble maps should both receive the included-model footer")
+    render_calls = sorted(
+        (
+            node
+            for node in ast.walk(ast.parse(adapter_text))
+            if isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Name)
+            and node.func.id == "render_map"
+        ),
+        key=lambda node: node.lineno,
+    )
+    render_period_flags = [
+        next(
+            (
+                keyword.value.value
+                for keyword in call.keywords
+                if keyword.arg == "seasonal"
+                and isinstance(keyword.value, ast.Constant)
+                and isinstance(keyword.value.value, bool)
+            ),
+            None,
+        )
+        for call in render_calls
+    ]
+    check(
+        render_period_flags == [False, True],
+        "monthly and seasonal super-ensemble renders must select the monthly and seasonal color scales respectively",
+    )
     check(abs(sum(item["weight"] for item in module.weights_for(height_keys, {member.key: member for member in height_members})) - 1.0) < 1e-8, "equal weights should sum to one")
     check(module.resolve_cfsv2_anchor("2026081818", "2026080100") == "2026081818", "CFSv2 anchor should align within the shared initialization month")
     original_latest_init = module.cfsv2.discover_latest_init

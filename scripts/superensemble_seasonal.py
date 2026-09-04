@@ -1113,7 +1113,7 @@ def render_product_run(
                     height_grid=height,
                     product_spec=render_spec,
                     footer_text=included_models_footer(keys, definitions),
-                    seasonal=True,
+                    seasonal=False,
                 )
                 entry["image"] = relative_path(output, root)
                 if product in {"500mb_height_anomaly", "500mb_height_anomaly_nh"}:
@@ -1221,6 +1221,7 @@ def render_product_run(
                         height_grid=height,
                         product_spec=render_spec,
                         footer_text=included_models_footer(keys, definitions),
+                        seasonal=True,
                     )
                     entry["image"] = relative_path(output, root)
                     if product in {"500mb_height_anomaly", "500mb_height_anomaly_nh"}:
