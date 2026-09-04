@@ -237,34 +237,50 @@ SNOWFALL_MONTHLY_ANOMALY_PALETTE = [
     "#1b496e",
     "#123856",
 ]
-# Snow-depth accumulation uses the established WN2 snowfall palette. Monthly
-# products retain two-inch bins through 40 inches, then use five-inch bins
-# through 100 inches and ten-inch high-end bins through 200 inches. Three-month
-# totals use five-inch bins through 100 inches and the same ten-inch high-end
-# bins. This keeps ordinary monthly totals detailed while preventing Northeast
-# and mountain maxima from sharing one saturated terminal color.
+# Snow-depth accumulation uses four cool-only color families across the full
+# 0-200 inch range: blue, purple, green, and cyan. Monthly products retain
+# two-inch bins through 40 inches, then use five-inch bins through 100 inches
+# and ten-inch high-end bins through 200 inches. Three-month totals use
+# five-inch bins through 100 inches and the same ten-inch high-end bins.
 SNOWFALL_ACCUMULATION_MONTHLY_BOUNDS_IN = (
     list(range(0, 42, 2)) + list(range(45, 105, 5)) + list(range(110, 201, 10))
 )
 SNOWFALL_ACCUMULATION_MONTHLY_TICKS_IN = list(range(0, 101, 10)) + list(range(120, 201, 20))
 SNOWFALL_ACCUMULATION_SEASONAL_BOUNDS_IN = list(range(0, 105, 5)) + list(range(110, 201, 10))
 SNOWFALL_ACCUMULATION_SEASONAL_TICKS_IN = list(range(0, 101, 10)) + list(range(120, 201, 20))
-SNOWFALL_ACCUMULATION_PALETTE = [
-    "#eaf8ff", "#cfeeff", "#a9defd", "#7bc9f7", "#4aaee8",
-    "#2f8fd9", "#516dd0", "#6b52c6", "#8540be", "#9d36b7",
-    "#b93db8", "#d451bb", "#00b8d6", "#28d0e6", "#74e8f4",
-    "#cbfbff", "#1ec48f", "#53d8ae", "#97edd0", "#ddfff1",
-]
-SNOWFALL_ACCUMULATION_MONTHLY_PALETTE = SNOWFALL_ACCUMULATION_PALETTE + [
-    "#efffd6", "#fffbd1", "#fff6a6", "#ffeb82", "#ffe066", "#ffd153",
-    "#ffc247", "#f9b03b", "#f59e32", "#f28530", "#ef6c2f", "#e95732",
-    "#e33f36", "#d92d3a", "#c91f3a", "#ba173f", "#a50f47", "#92154f",
-    "#7f1d5a", "#6a1a59", "#53144f", "#3b103f",
-]
-SNOWFALL_ACCUMULATION_SEASONAL_PALETTE = SNOWFALL_ACCUMULATION_PALETTE + [
-    "#fff6a6", "#ffe066", "#ffc247", "#f59e32", "#ef6c2f",
-    "#e33f36", "#c91f3a", "#a50f47", "#7f1d5a", "#53144f",
-]
+SNOWFALL_ACCUMULATION_COOL_RAMPS = (
+    ("#eaf8ff", "#174f8f"),  # 0-50 in: blue
+    ("#eee9ff", "#4a1f7a"),  # 50-100 in: purple
+    ("#e7faef", "#0a5a35"),  # 100-150 in: green
+    ("#e5fcff", "#006f8c"),  # 150-200 in: cyan
+)
+
+
+def _interpolate_hex_color(start: str, end: str, fraction: float) -> str:
+    fraction = max(0.0, min(1.0, float(fraction)))
+    start_rgb = tuple(int(start[index : index + 2], 16) for index in (1, 3, 5))
+    end_rgb = tuple(int(end[index : index + 2], 16) for index in (1, 3, 5))
+    channels = tuple(round(left + ((right - left) * fraction)) for left, right in zip(start_rgb, end_rgb))
+    return "#" + "".join(f"{channel:02x}" for channel in channels)
+
+
+def _snowfall_accumulation_palette(bounds: Sequence[float]) -> list[str]:
+    colors: list[str] = []
+    for lower, upper in zip(bounds[:-1], bounds[1:]):
+        midpoint = (float(lower) + float(upper)) / 2.0
+        family_index = min(int(midpoint // 50.0), len(SNOWFALL_ACCUMULATION_COOL_RAMPS) - 1)
+        family_start = family_index * 50.0
+        fraction = (midpoint - family_start) / 50.0
+        colors.append(_interpolate_hex_color(*SNOWFALL_ACCUMULATION_COOL_RAMPS[family_index], fraction))
+    return colors
+
+
+SNOWFALL_ACCUMULATION_MONTHLY_PALETTE = _snowfall_accumulation_palette(
+    SNOWFALL_ACCUMULATION_MONTHLY_BOUNDS_IN
+)
+SNOWFALL_ACCUMULATION_SEASONAL_PALETTE = _snowfall_accumulation_palette(
+    SNOWFALL_ACCUMULATION_SEASONAL_BOUNDS_IN
+)
 # Shared fixed scale for seasonal 850-mb and 2-m temperature anomalies.
 # Model-specific narrower ranges clipped stronger signals and made the same
 # anomaly look different in comparison views.
