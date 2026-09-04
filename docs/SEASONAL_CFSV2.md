@@ -80,6 +80,12 @@ source, years, anchors, interpolation, bounds, and limitations. This is a
 climatological snow-depth estimate; monthly CFSv2 cannot resolve event-scale
 crystal habit, melting, wind compaction, or settling.
 
+Monthly accumulation maps retain the WN2 two-inch color bands from 0-40 inches.
+DJF and JFM maps use five-inch bands through 100 inches and ten-inch high-end
+bands from 100-200 inches. The added yellow, orange, red, and deep-purple bands
+keep Northeast and mountain maxima distinct instead of clipping every total at
+or above 100 inches into the same terminal color.
+
 Source references: [CIPS interactive climatology](https://www.eas.slu.edu/CIPS/SLR/slrmap.htm)
 and [Baxter et al. (2005)](https://doi.org/10.1175/WAF856.1).
 

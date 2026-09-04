@@ -141,7 +141,7 @@ PRODUCTS: dict[str, dict[str, Any]] = {
         "aggregation": {"monthly": "total", "seasonal": "total"},
         "display": {
             "monthly": {"minimum": 0.0, "maximum": 40.0, "step": 2.0},
-            "seasonal": {"minimum": 0.0, "maximum": 100.0, "step": 5.0},
+            "seasonal": {"minimum": 0.0, "maximum": 200.0, "step": 5.0},
         },
         "hard_range": {"minimum": 0.0, "maximum": 500.0},
         "minimum_finite_fraction": 0.02,

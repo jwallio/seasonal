@@ -239,17 +239,22 @@ SNOWFALL_MONTHLY_ANOMALY_PALETTE = [
 ]
 # Snow-depth accumulation uses the established WN2 snowfall palette. Monthly
 # products retain two-inch bins through 40 inches; three-month totals use the
-# same visual progression in five-inch bins through 100 inches so mountain
-# totals do not immediately saturate the map.
+# same visual progression in five-inch bins through 100 inches, then add
+# ten-inch high-end bands through 200 inches so Northeast and mountain maxima
+# remain distinguishable instead of sharing one pale saturated color.
 SNOWFALL_ACCUMULATION_MONTHLY_BOUNDS_IN = list(range(0, 42, 2))
 SNOWFALL_ACCUMULATION_MONTHLY_TICKS_IN = list(range(0, 41, 4))
-SNOWFALL_ACCUMULATION_SEASONAL_BOUNDS_IN = list(range(0, 105, 5))
-SNOWFALL_ACCUMULATION_SEASONAL_TICKS_IN = list(range(0, 101, 10))
+SNOWFALL_ACCUMULATION_SEASONAL_BOUNDS_IN = list(range(0, 105, 5)) + list(range(110, 201, 10))
+SNOWFALL_ACCUMULATION_SEASONAL_TICKS_IN = list(range(0, 101, 10)) + list(range(120, 201, 20))
 SNOWFALL_ACCUMULATION_PALETTE = [
     "#eaf8ff", "#cfeeff", "#a9defd", "#7bc9f7", "#4aaee8",
     "#2f8fd9", "#516dd0", "#6b52c6", "#8540be", "#9d36b7",
     "#b93db8", "#d451bb", "#00b8d6", "#28d0e6", "#74e8f4",
     "#cbfbff", "#1ec48f", "#53d8ae", "#97edd0", "#ddfff1",
+]
+SNOWFALL_ACCUMULATION_SEASONAL_PALETTE = SNOWFALL_ACCUMULATION_PALETTE + [
+    "#fff6a6", "#ffe066", "#ffc247", "#f59e32", "#ef6c2f",
+    "#e33f36", "#c91f3a", "#a50f47", "#7f1d5a", "#53144f",
 ]
 # Shared fixed scale for seasonal 850-mb and 2-m temperature anomalies.
 # Model-specific narrower ranges clipped stronger signals and made the same
@@ -609,7 +614,7 @@ PRODUCT_SPECS = {
         "monthly_absolute_palette": SNOWFALL_ACCUMULATION_PALETTE,
         "seasonal_absolute_bounds": SNOWFALL_ACCUMULATION_SEASONAL_BOUNDS_IN,
         "seasonal_absolute_ticks": SNOWFALL_ACCUMULATION_SEASONAL_TICKS_IN,
-        "seasonal_absolute_palette": SNOWFALL_ACCUMULATION_PALETTE,
+        "seasonal_absolute_palette": SNOWFALL_ACCUMULATION_SEASONAL_PALETTE,
         "conversion": "Dai (2008) member-level snow fraction converted from LWE to snow depth with the Baxter et al. (2005) CIPS 1971-2000 seasonal mean SLR contour climatology",
         "header_detail": "{source_label}  •  Dai phase estimate + CIPS 1971-2000 seasonal mean SLR  •  Estimated snow depth (in)  •  CONUS domain",
         "map_domain": "land",
