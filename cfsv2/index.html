@@ -110,6 +110,7 @@
       return new Intl.DateTimeFormat(undefined,{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit',hour12:false,timeZone:'UTC'}).format(date).replace(',', '') + 'Z';
     }
     function targetLabel(target) {
+      if (target?.label) return target.label;
       const value = target?.target_month || target?.valid_start_utc;
       if (/^\d{6}$/.test(value || '')) return dateLabel(`${value.slice(0,4)}-${value.slice(4,6)}-01T00:00:00Z`);
       return value || 'Selected target';
