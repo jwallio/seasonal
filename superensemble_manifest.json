@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "kind": "deduplicated_seasonal_superensemble_manifest",
-  "generated_utc": "2026-09-04T01:58:17Z",
+  "generated_utc": "2026-09-04T02:12:43Z",
   "source": "wall.cloud deduplicated seasonal super ensemble",
   "source_url": "https://climate.copernicus.eu/seasonal-forecasts",
   "source_urls": [
@@ -642,18 +642,37 @@
             {
               "key": "noaa_cfsv2_rolling",
               "source_package": "NOAA CFSv2 NOMADS",
-              "anchor_initialization": "2026090318",
-              "anchor_initialization_utc": "2026-09-03T18:00:00Z",
+              "anchor_initialization": "2026090312",
+              "anchor_initialization_utc": "2026-09-03T12:00:00Z",
               "rolling_window": {
                 "days": 6,
                 "cycle_interval_hours": 6,
                 "expected_cycles": 24,
-                "available_cycles": 23,
+                "available_cycles": 24,
                 "member_stream": 1,
-                "complete": false,
-                "label": "23/24-cycle rolling mean"
+                "complete": true,
+                "label": "24/24-cycle rolling mean"
               },
               "source_files": [
+                {
+                  "initialization": "2026082818",
+                  "initialization_utc": "2026-08-28T18:00:00Z",
+                  "lead_month": 4,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260828/18/monthly_grib_01/flxf.01.2026082818.202612.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026082818/member_01/flxf.01.2026082818.202612.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202612/tmp2m.2026082818.m01.csv.gz",
+                  "storage": "nomads_grib2",
+                  "downloaded": true,
+                  "product": "2m_temperature_anomaly",
+                  "source_kind": "FLXF",
+                  "decoded_field": "TMP:2 m above ground",
+                  "raw_units": "K",
+                  "units": "\u00b0C",
+                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                  "status": "available",
+                  "derived_dependency": "2m_temperature_anomaly"
+                },
                 {
                   "initialization": "2026082900",
                   "initialization_utc": "2026-08-29T00:00:00Z",
@@ -1092,16 +1111,23 @@
                   "derived_dependency": "2m_temperature_anomaly"
                 },
                 {
-                  "initialization": "2026090318",
-                  "initialization_utc": "2026-09-03T18:00:00Z",
-                  "lead_month": 3,
+                  "initialization": "2026082818",
+                  "initialization_utc": "2026-08-28T18:00:00Z",
+                  "lead_month": 4,
                   "member": 1,
-                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260903/18/monthly_grib_01/flxf.01.2026090318.202612.avrg.grib.grb2",
-                  "cache_file": ".cache/cfsv2/2026090318/member_01/flxf.01.2026090318.202612.avrg.grib.grb2",
-                  "state_file": ".cache/cfsv2/rolling/tmp2m/202612/tmp2m.2026090318.m01.csv.gz",
-                  "status": "missing",
-                  "error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260903/18/monthly_grib_01/flxf.01.2026090318.202612.avrg.grib.grb2",
-                  "derived_dependency": "2m_temperature_anomaly"
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260828/18/monthly_grib_01/pgbf.01.2026082818.202612.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026082818/member_01/pgbf.01.2026082818.202612.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp850/202612/tmp850.2026082818.m01.csv.gz",
+                  "storage": "nomads_grib2",
+                  "downloaded": true,
+                  "product": "850mb_temperature_anomaly",
+                  "source_kind": "PGBF",
+                  "decoded_field": "TMP:850 mb",
+                  "raw_units": "K",
+                  "units": "\u00b0C",
+                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                  "status": "available",
+                  "derived_dependency": "850mb_temperature_anomaly"
                 },
                 {
                   "initialization": "2026082900",
@@ -1541,16 +1567,23 @@
                   "derived_dependency": "850mb_temperature_anomaly"
                 },
                 {
-                  "initialization": "2026090318",
-                  "initialization_utc": "2026-09-03T18:00:00Z",
-                  "lead_month": 3,
+                  "initialization": "2026082818",
+                  "initialization_utc": "2026-08-28T18:00:00Z",
+                  "lead_month": 4,
                   "member": 1,
-                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260903/18/monthly_grib_01/pgbf.01.2026090318.202612.avrg.grib.grb2",
-                  "cache_file": ".cache/cfsv2/2026090318/member_01/pgbf.01.2026090318.202612.avrg.grib.grb2",
-                  "state_file": ".cache/cfsv2/rolling/tmp850/202612/tmp850.2026090318.m01.csv.gz",
-                  "status": "missing",
-                  "error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260903/18/monthly_grib_01/pgbf.01.2026090318.202612.avrg.grib.grb2",
-                  "derived_dependency": "850mb_temperature_anomaly"
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260828/18/monthly_grib_01/flxf.01.2026082818.202612.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026082818/member_01/flxf.01.2026082818.202612.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/prate_in/202612/prate_in.2026082818.m01.csv.gz",
+                  "storage": "nomads_grib2",
+                  "downloaded": true,
+                  "product": "precipitation_anomaly",
+                  "source_kind": "FLXF",
+                  "decoded_field": "PRATE:surface",
+                  "raw_units": "kg m-2 s-1",
+                  "units": "in",
+                  "conversion": "PRATE multiplied by calendar-month seconds, converted from mm to inches",
+                  "status": "available",
+                  "derived_dependency": "precipitation_anomaly"
                 },
                 {
                   "initialization": "2026082900",
@@ -1988,18 +2021,6 @@
                   "conversion": "PRATE multiplied by calendar-month seconds, converted from mm to inches",
                   "status": "available",
                   "derived_dependency": "precipitation_anomaly"
-                },
-                {
-                  "initialization": "2026090318",
-                  "initialization_utc": "2026-09-03T18:00:00Z",
-                  "lead_month": 3,
-                  "member": 1,
-                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260903/18/monthly_grib_01/flxf.01.2026090318.202612.avrg.grib.grb2",
-                  "cache_file": ".cache/cfsv2/2026090318/member_01/flxf.01.2026090318.202612.avrg.grib.grb2",
-                  "state_file": ".cache/cfsv2/rolling/prate_in/202612/prate_in.2026090318.m01.csv.gz",
-                  "status": "missing",
-                  "error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260903/18/monthly_grib_01/flxf.01.2026090318.202612.avrg.grib.grb2",
-                  "derived_dependency": "precipitation_anomaly"
                 }
               ],
               "baseline": {
@@ -2011,33 +2032,33 @@
                 "dependencies": [
                   {
                     "product": "2m_temperature_anomaly",
-                    "file": ".cache/cfsv2/calibration/flxf/2026090318/flxf.09.03.18.l03.fclm.1982.2010.grb2",
+                    "file": ".cache/cfsv2/calibration/flxf/2026090312/flxf.09.03.12.l03.fclm.1982.2010.grb2",
                     "label": "NCEI CFSR/CFSv2 1982-2010 derived snowfall climatology",
-                    "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/09/flxf.09.03.18.l03.fclm.1982.2010.grb2",
-                    "requested_initialization": "2026090318",
-                    "used_initialization": "2026090318",
-                    "downloaded": true,
+                    "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/09/flxf.09.03.12.l03.fclm.1982.2010.grb2",
+                    "requested_initialization": "2026090312",
+                    "used_initialization": "2026090312",
+                    "downloaded": false,
                     "fallback": null,
                     "fallback_error": null
                   },
                   {
                     "product": "850mb_temperature_anomaly",
-                    "file": ".cache/cfsv2/calibration/pgbf/2026090318/pgbf.09.03.18.l03.fclm.1982.2010.grb2",
+                    "file": ".cache/cfsv2/calibration/pgbf/2026090312/pgbf.09.03.12.l03.fclm.1982.2010.grb2",
                     "label": "NCEI CFSR/CFSv2 1982-2010 derived snowfall climatology",
-                    "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs_refor_calclim_mm_9m_pgbf/09/pgbf.09.03.18.l03.fclm.1982.2010.grb2",
-                    "requested_initialization": "2026090318",
-                    "used_initialization": "2026090318",
-                    "downloaded": true,
+                    "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs_refor_calclim_mm_9m_pgbf/09/pgbf.09.03.12.l03.fclm.1982.2010.grb2",
+                    "requested_initialization": "2026090312",
+                    "used_initialization": "2026090312",
+                    "downloaded": false,
                     "fallback": null,
                     "fallback_error": null
                   },
                   {
                     "product": "precipitation_anomaly",
-                    "file": ".cache/cfsv2/calibration/flxf/2026090318/flxf.09.03.18.l03.fclm.1982.2010.grb2",
+                    "file": ".cache/cfsv2/calibration/flxf/2026090312/flxf.09.03.12.l03.fclm.1982.2010.grb2",
                     "label": "NCEI CFSR/CFSv2 1982-2010 derived snowfall climatology",
-                    "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/09/flxf.09.03.18.l03.fclm.1982.2010.grb2",
-                    "requested_initialization": "2026090318",
-                    "used_initialization": "2026090318",
+                    "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/09/flxf.09.03.12.l03.fclm.1982.2010.grb2",
+                    "requested_initialization": "2026090312",
+                    "used_initialization": "2026090312",
                     "downloaded": false,
                     "fallback": null,
                     "fallback_error": null
@@ -2065,9 +2086,9 @@
                 }
               },
               "derivation": {
-                "member_or_cycle_count": 23,
-                "valid_member_count_min": 23,
-                "valid_member_count_max": 23,
+                "member_or_cycle_count": 24,
+                "valid_member_count_min": 24,
+                "valid_member_count_max": 24,
                 "valid_member_fraction_min": 1.0,
                 "snow_fraction": {
                   "method": "Dai_2008_land_seasonal_hyperbolic_tangent",
@@ -2170,10 +2191,10 @@
             "total_points": 3200,
             "finite_points": 3200,
             "finite_fraction": 1.0,
-            "minimum": -1.840739,
-            "maximum": 0.163564,
-            "p01": -0.926595,
-            "p99": 0.043103,
+            "minimum": -1.999712,
+            "maximum": 0.140592,
+            "p01": -0.888177,
+            "p99": 0.04965,
             "display": {
               "minimum": -2.0,
               "maximum": 2.0,
@@ -2306,18 +2327,37 @@
             {
               "key": "noaa_cfsv2_rolling",
               "source_package": "NOAA CFSv2 NOMADS",
-              "anchor_initialization": "2026090318",
-              "anchor_initialization_utc": "2026-09-03T18:00:00Z",
+              "anchor_initialization": "2026090312",
+              "anchor_initialization_utc": "2026-09-03T12:00:00Z",
               "rolling_window": {
                 "days": 6,
                 "cycle_interval_hours": 6,
                 "expected_cycles": 24,
-                "available_cycles": 23,
+                "available_cycles": 24,
                 "member_stream": 1,
-                "complete": false,
-                "label": "23/24-cycle rolling mean"
+                "complete": true,
+                "label": "24/24-cycle rolling mean"
               },
               "source_files": [
+                {
+                  "initialization": "2026082818",
+                  "initialization_utc": "2026-08-28T18:00:00Z",
+                  "lead_month": 5,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260828/18/monthly_grib_01/flxf.01.2026082818.202701.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026082818/member_01/flxf.01.2026082818.202701.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202701/tmp2m.2026082818.m01.csv.gz",
+                  "storage": "nomads_grib2",
+                  "downloaded": true,
+                  "product": "2m_temperature_anomaly",
+                  "source_kind": "FLXF",
+                  "decoded_field": "TMP:2 m above ground",
+                  "raw_units": "K",
+                  "units": "\u00b0C",
+                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                  "status": "available",
+                  "derived_dependency": "2m_temperature_anomaly"
+                },
                 {
                   "initialization": "2026082900",
                   "initialization_utc": "2026-08-29T00:00:00Z",
@@ -2756,16 +2796,23 @@
                   "derived_dependency": "2m_temperature_anomaly"
                 },
                 {
-                  "initialization": "2026090318",
-                  "initialization_utc": "2026-09-03T18:00:00Z",
-                  "lead_month": 4,
+                  "initialization": "2026082818",
+                  "initialization_utc": "2026-08-28T18:00:00Z",
+                  "lead_month": 5,
                   "member": 1,
-                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260903/18/monthly_grib_01/flxf.01.2026090318.202701.avrg.grib.grb2",
-                  "cache_file": ".cache/cfsv2/2026090318/member_01/flxf.01.2026090318.202701.avrg.grib.grb2",
-                  "state_file": ".cache/cfsv2/rolling/tmp2m/202701/tmp2m.2026090318.m01.csv.gz",
-                  "status": "missing",
-                  "error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260903/18/monthly_grib_01/flxf.01.2026090318.202701.avrg.grib.grb2",
-                  "derived_dependency": "2m_temperature_anomaly"
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260828/18/monthly_grib_01/pgbf.01.2026082818.202701.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026082818/member_01/pgbf.01.2026082818.202701.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp850/202701/tmp850.2026082818.m01.csv.gz",
+                  "storage": "nomads_grib2",
+                  "downloaded": true,
+                  "product": "850mb_temperature_anomaly",
+                  "source_kind": "PGBF",
+                  "decoded_field": "TMP:850 mb",
+                  "raw_units": "K",
+                  "units": "\u00b0C",
+                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                  "status": "available",
+                  "derived_dependency": "850mb_temperature_anomaly"
                 },
                 {
                   "initialization": "2026082900",
@@ -3205,16 +3252,23 @@
                   "derived_dependency": "850mb_temperature_anomaly"
                 },
                 {
-                  "initialization": "2026090318",
-                  "initialization_utc": "2026-09-03T18:00:00Z",
-                  "lead_month": 4,
+                  "initialization": "2026082818",
+                  "initialization_utc": "2026-08-28T18:00:00Z",
+                  "lead_month": 5,
                   "member": 1,
-                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260903/18/monthly_grib_01/pgbf.01.2026090318.202701.avrg.grib.grb2",
-                  "cache_file": ".cache/cfsv2/2026090318/member_01/pgbf.01.2026090318.202701.avrg.grib.grb2",
-                  "state_file": ".cache/cfsv2/rolling/tmp850/202701/tmp850.2026090318.m01.csv.gz",
-                  "status": "missing",
-                  "error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260903/18/monthly_grib_01/pgbf.01.2026090318.202701.avrg.grib.grb2",
-                  "derived_dependency": "850mb_temperature_anomaly"
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260828/18/monthly_grib_01/flxf.01.2026082818.202701.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026082818/member_01/flxf.01.2026082818.202701.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/prate_in/202701/prate_in.2026082818.m01.csv.gz",
+                  "storage": "nomads_grib2",
+                  "downloaded": true,
+                  "product": "precipitation_anomaly",
+                  "source_kind": "FLXF",
+                  "decoded_field": "PRATE:surface",
+                  "raw_units": "kg m-2 s-1",
+                  "units": "in",
+                  "conversion": "PRATE multiplied by calendar-month seconds, converted from mm to inches",
+                  "status": "available",
+                  "derived_dependency": "precipitation_anomaly"
                 },
                 {
                   "initialization": "2026082900",
@@ -3652,18 +3706,6 @@
                   "conversion": "PRATE multiplied by calendar-month seconds, converted from mm to inches",
                   "status": "available",
                   "derived_dependency": "precipitation_anomaly"
-                },
-                {
-                  "initialization": "2026090318",
-                  "initialization_utc": "2026-09-03T18:00:00Z",
-                  "lead_month": 4,
-                  "member": 1,
-                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260903/18/monthly_grib_01/flxf.01.2026090318.202701.avrg.grib.grb2",
-                  "cache_file": ".cache/cfsv2/2026090318/member_01/flxf.01.2026090318.202701.avrg.grib.grb2",
-                  "state_file": ".cache/cfsv2/rolling/prate_in/202701/prate_in.2026090318.m01.csv.gz",
-                  "status": "missing",
-                  "error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260903/18/monthly_grib_01/flxf.01.2026090318.202701.avrg.grib.grb2",
-                  "derived_dependency": "precipitation_anomaly"
                 }
               ],
               "baseline": {
@@ -3675,33 +3717,33 @@
                 "dependencies": [
                   {
                     "product": "2m_temperature_anomaly",
-                    "file": ".cache/cfsv2/calibration/flxf/2026090318/flxf.09.03.18.l04.fclm.1982.2010.grb2",
+                    "file": ".cache/cfsv2/calibration/flxf/2026090312/flxf.09.03.12.l04.fclm.1982.2010.grb2",
                     "label": "NCEI CFSR/CFSv2 1982-2010 derived snowfall climatology",
-                    "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/09/flxf.09.03.18.l04.fclm.1982.2010.grb2",
-                    "requested_initialization": "2026090318",
-                    "used_initialization": "2026090318",
-                    "downloaded": true,
+                    "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/09/flxf.09.03.12.l04.fclm.1982.2010.grb2",
+                    "requested_initialization": "2026090312",
+                    "used_initialization": "2026090312",
+                    "downloaded": false,
                     "fallback": null,
                     "fallback_error": null
                   },
                   {
                     "product": "850mb_temperature_anomaly",
-                    "file": ".cache/cfsv2/calibration/pgbf/2026090318/pgbf.09.03.18.l04.fclm.1982.2010.grb2",
+                    "file": ".cache/cfsv2/calibration/pgbf/2026090312/pgbf.09.03.12.l04.fclm.1982.2010.grb2",
                     "label": "NCEI CFSR/CFSv2 1982-2010 derived snowfall climatology",
-                    "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs_refor_calclim_mm_9m_pgbf/09/pgbf.09.03.18.l04.fclm.1982.2010.grb2",
-                    "requested_initialization": "2026090318",
-                    "used_initialization": "2026090318",
-                    "downloaded": true,
+                    "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs_refor_calclim_mm_9m_pgbf/09/pgbf.09.03.12.l04.fclm.1982.2010.grb2",
+                    "requested_initialization": "2026090312",
+                    "used_initialization": "2026090312",
+                    "downloaded": false,
                     "fallback": null,
                     "fallback_error": null
                   },
                   {
                     "product": "precipitation_anomaly",
-                    "file": ".cache/cfsv2/calibration/flxf/2026090318/flxf.09.03.18.l04.fclm.1982.2010.grb2",
+                    "file": ".cache/cfsv2/calibration/flxf/2026090312/flxf.09.03.12.l04.fclm.1982.2010.grb2",
                     "label": "NCEI CFSR/CFSv2 1982-2010 derived snowfall climatology",
-                    "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/09/flxf.09.03.18.l04.fclm.1982.2010.grb2",
-                    "requested_initialization": "2026090318",
-                    "used_initialization": "2026090318",
+                    "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/09/flxf.09.03.12.l04.fclm.1982.2010.grb2",
+                    "requested_initialization": "2026090312",
+                    "used_initialization": "2026090312",
                     "downloaded": false,
                     "fallback": null,
                     "fallback_error": null
@@ -3729,9 +3771,9 @@
                 }
               },
               "derivation": {
-                "member_or_cycle_count": 23,
-                "valid_member_count_min": 23,
-                "valid_member_count_max": 23,
+                "member_or_cycle_count": 24,
+                "valid_member_count_min": 24,
+                "valid_member_count_max": 24,
                 "valid_member_fraction_min": 1.0,
                 "snow_fraction": {
                   "method": "Dai_2008_land_seasonal_hyperbolic_tangent",
@@ -3834,10 +3876,10 @@
             "total_points": 3200,
             "finite_points": 3200,
             "finite_fraction": 1.0,
-            "minimum": -1.924078,
-            "maximum": 0.572842,
-            "p01": -0.949059,
-            "p99": 0.247805,
+            "minimum": -2.049858,
+            "maximum": 0.462211,
+            "p01": -1.094443,
+            "p99": 0.206894,
             "display": {
               "minimum": -2.0,
               "maximum": 2.0,
@@ -3858,9 +3900,9 @@
                 1.75,
                 2.0
               ],
-              "below_fraction": 0.0,
+              "below_fraction": 0.000313,
               "above_fraction": 0.0,
-              "clipped_fraction": 0.0
+              "clipped_fraction": 0.000313
             },
             "issues": [],
             "status": "passed"
@@ -3970,18 +4012,37 @@
             {
               "key": "noaa_cfsv2_rolling",
               "source_package": "NOAA CFSv2 NOMADS",
-              "anchor_initialization": "2026090318",
-              "anchor_initialization_utc": "2026-09-03T18:00:00Z",
+              "anchor_initialization": "2026090312",
+              "anchor_initialization_utc": "2026-09-03T12:00:00Z",
               "rolling_window": {
                 "days": 6,
                 "cycle_interval_hours": 6,
                 "expected_cycles": 24,
-                "available_cycles": 23,
+                "available_cycles": 24,
                 "member_stream": 1,
-                "complete": false,
-                "label": "23/24-cycle rolling mean"
+                "complete": true,
+                "label": "24/24-cycle rolling mean"
               },
               "source_files": [
+                {
+                  "initialization": "2026082818",
+                  "initialization_utc": "2026-08-28T18:00:00Z",
+                  "lead_month": 6,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260828/18/monthly_grib_01/flxf.01.2026082818.202702.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026082818/member_01/flxf.01.2026082818.202702.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202702/tmp2m.2026082818.m01.csv.gz",
+                  "storage": "nomads_grib2",
+                  "downloaded": true,
+                  "product": "2m_temperature_anomaly",
+                  "source_kind": "FLXF",
+                  "decoded_field": "TMP:2 m above ground",
+                  "raw_units": "K",
+                  "units": "\u00b0C",
+                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                  "status": "available",
+                  "derived_dependency": "2m_temperature_anomaly"
+                },
                 {
                   "initialization": "2026082900",
                   "initialization_utc": "2026-08-29T00:00:00Z",
@@ -4420,16 +4481,23 @@
                   "derived_dependency": "2m_temperature_anomaly"
                 },
                 {
-                  "initialization": "2026090318",
-                  "initialization_utc": "2026-09-03T18:00:00Z",
-                  "lead_month": 5,
+                  "initialization": "2026082818",
+                  "initialization_utc": "2026-08-28T18:00:00Z",
+                  "lead_month": 6,
                   "member": 1,
-                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260903/18/monthly_grib_01/flxf.01.2026090318.202702.avrg.grib.grb2",
-                  "cache_file": ".cache/cfsv2/2026090318/member_01/flxf.01.2026090318.202702.avrg.grib.grb2",
-                  "state_file": ".cache/cfsv2/rolling/tmp2m/202702/tmp2m.2026090318.m01.csv.gz",
-                  "status": "missing",
-                  "error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260903/18/monthly_grib_01/flxf.01.2026090318.202702.avrg.grib.grb2",
-                  "derived_dependency": "2m_temperature_anomaly"
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260828/18/monthly_grib_01/pgbf.01.2026082818.202702.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026082818/member_01/pgbf.01.2026082818.202702.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp850/202702/tmp850.2026082818.m01.csv.gz",
+                  "storage": "nomads_grib2",
+                  "downloaded": true,
+                  "product": "850mb_temperature_anomaly",
+                  "source_kind": "PGBF",
+                  "decoded_field": "TMP:850 mb",
+                  "raw_units": "K",
+                  "units": "\u00b0C",
+                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                  "status": "available",
+                  "derived_dependency": "850mb_temperature_anomaly"
                 },
                 {
                   "initialization": "2026082900",
@@ -4869,16 +4937,23 @@
                   "derived_dependency": "850mb_temperature_anomaly"
                 },
                 {
-                  "initialization": "2026090318",
-                  "initialization_utc": "2026-09-03T18:00:00Z",
-                  "lead_month": 5,
+                  "initialization": "2026082818",
+                  "initialization_utc": "2026-08-28T18:00:00Z",
+                  "lead_month": 6,
                   "member": 1,
-                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260903/18/monthly_grib_01/pgbf.01.2026090318.202702.avrg.grib.grb2",
-                  "cache_file": ".cache/cfsv2/2026090318/member_01/pgbf.01.2026090318.202702.avrg.grib.grb2",
-                  "state_file": ".cache/cfsv2/rolling/tmp850/202702/tmp850.2026090318.m01.csv.gz",
-                  "status": "missing",
-                  "error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260903/18/monthly_grib_01/pgbf.01.2026090318.202702.avrg.grib.grb2",
-                  "derived_dependency": "850mb_temperature_anomaly"
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260828/18/monthly_grib_01/flxf.01.2026082818.202702.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026082818/member_01/flxf.01.2026082818.202702.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/prate_in/202702/prate_in.2026082818.m01.csv.gz",
+                  "storage": "nomads_grib2",
+                  "downloaded": true,
+                  "product": "precipitation_anomaly",
+                  "source_kind": "FLXF",
+                  "decoded_field": "PRATE:surface",
+                  "raw_units": "kg m-2 s-1",
+                  "units": "in",
+                  "conversion": "PRATE multiplied by calendar-month seconds, converted from mm to inches",
+                  "status": "available",
+                  "derived_dependency": "precipitation_anomaly"
                 },
                 {
                   "initialization": "2026082900",
@@ -5316,18 +5391,6 @@
                   "conversion": "PRATE multiplied by calendar-month seconds, converted from mm to inches",
                   "status": "available",
                   "derived_dependency": "precipitation_anomaly"
-                },
-                {
-                  "initialization": "2026090318",
-                  "initialization_utc": "2026-09-03T18:00:00Z",
-                  "lead_month": 5,
-                  "member": 1,
-                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260903/18/monthly_grib_01/flxf.01.2026090318.202702.avrg.grib.grb2",
-                  "cache_file": ".cache/cfsv2/2026090318/member_01/flxf.01.2026090318.202702.avrg.grib.grb2",
-                  "state_file": ".cache/cfsv2/rolling/prate_in/202702/prate_in.2026090318.m01.csv.gz",
-                  "status": "missing",
-                  "error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260903/18/monthly_grib_01/flxf.01.2026090318.202702.avrg.grib.grb2",
-                  "derived_dependency": "precipitation_anomaly"
                 }
               ],
               "baseline": {
@@ -5339,33 +5402,33 @@
                 "dependencies": [
                   {
                     "product": "2m_temperature_anomaly",
-                    "file": ".cache/cfsv2/calibration/flxf/2026090318/flxf.09.03.18.l05.fclm.1982.2010.grb2",
+                    "file": ".cache/cfsv2/calibration/flxf/2026090312/flxf.09.03.12.l05.fclm.1982.2010.grb2",
                     "label": "NCEI CFSR/CFSv2 1982-2010 derived snowfall climatology",
-                    "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/09/flxf.09.03.18.l05.fclm.1982.2010.grb2",
-                    "requested_initialization": "2026090318",
-                    "used_initialization": "2026090318",
-                    "downloaded": true,
+                    "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/09/flxf.09.03.12.l05.fclm.1982.2010.grb2",
+                    "requested_initialization": "2026090312",
+                    "used_initialization": "2026090312",
+                    "downloaded": false,
                     "fallback": null,
                     "fallback_error": null
                   },
                   {
                     "product": "850mb_temperature_anomaly",
-                    "file": ".cache/cfsv2/calibration/pgbf/2026090318/pgbf.09.03.18.l05.fclm.1982.2010.grb2",
+                    "file": ".cache/cfsv2/calibration/pgbf/2026090312/pgbf.09.03.12.l05.fclm.1982.2010.grb2",
                     "label": "NCEI CFSR/CFSv2 1982-2010 derived snowfall climatology",
-                    "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs_refor_calclim_mm_9m_pgbf/09/pgbf.09.03.18.l05.fclm.1982.2010.grb2",
-                    "requested_initialization": "2026090318",
-                    "used_initialization": "2026090318",
-                    "downloaded": true,
+                    "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs_refor_calclim_mm_9m_pgbf/09/pgbf.09.03.12.l05.fclm.1982.2010.grb2",
+                    "requested_initialization": "2026090312",
+                    "used_initialization": "2026090312",
+                    "downloaded": false,
                     "fallback": null,
                     "fallback_error": null
                   },
                   {
                     "product": "precipitation_anomaly",
-                    "file": ".cache/cfsv2/calibration/flxf/2026090318/flxf.09.03.18.l05.fclm.1982.2010.grb2",
+                    "file": ".cache/cfsv2/calibration/flxf/2026090312/flxf.09.03.12.l05.fclm.1982.2010.grb2",
                     "label": "NCEI CFSR/CFSv2 1982-2010 derived snowfall climatology",
-                    "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/09/flxf.09.03.18.l05.fclm.1982.2010.grb2",
-                    "requested_initialization": "2026090318",
-                    "used_initialization": "2026090318",
+                    "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/09/flxf.09.03.12.l05.fclm.1982.2010.grb2",
+                    "requested_initialization": "2026090312",
+                    "used_initialization": "2026090312",
                     "downloaded": false,
                     "fallback": null,
                     "fallback_error": null
@@ -5393,9 +5456,9 @@
                 }
               },
               "derivation": {
-                "member_or_cycle_count": 23,
-                "valid_member_count_min": 23,
-                "valid_member_count_max": 23,
+                "member_or_cycle_count": 24,
+                "valid_member_count_min": 24,
+                "valid_member_count_max": 24,
                 "valid_member_fraction_min": 1.0,
                 "snow_fraction": {
                   "method": "Dai_2008_land_seasonal_hyperbolic_tangent",
@@ -5498,10 +5561,10 @@
             "total_points": 3200,
             "finite_points": 3200,
             "finite_fraction": 1.0,
-            "minimum": -2.256495,
-            "maximum": 0.944239,
-            "p01": -1.100076,
-            "p99": 0.357433,
+            "minimum": -2.089447,
+            "maximum": 0.919221,
+            "p01": -1.145355,
+            "p99": 0.35638,
             "display": {
               "minimum": -2.0,
               "maximum": 2.0,
@@ -5522,9 +5585,9 @@
                 1.75,
                 2.0
               ],
-              "below_fraction": 0.000937,
+              "below_fraction": 0.000313,
               "above_fraction": 0.0,
-              "clipped_fraction": 0.000937
+              "clipped_fraction": 0.000313
             },
             "issues": [],
             "status": "passed"
@@ -5774,18 +5837,37 @@
               "monthly_sources": [
                 {
                   "source_package": "NOAA CFSv2 NOMADS",
-                  "anchor_initialization": "2026090318",
-                  "anchor_initialization_utc": "2026-09-03T18:00:00Z",
+                  "anchor_initialization": "2026090312",
+                  "anchor_initialization_utc": "2026-09-03T12:00:00Z",
                   "rolling_window": {
                     "days": 6,
                     "cycle_interval_hours": 6,
                     "expected_cycles": 24,
-                    "available_cycles": 23,
+                    "available_cycles": 24,
                     "member_stream": 1,
-                    "complete": false,
-                    "label": "23/24-cycle rolling mean"
+                    "complete": true,
+                    "label": "24/24-cycle rolling mean"
                   },
                   "source_files": [
+                    {
+                      "initialization": "2026082818",
+                      "initialization_utc": "2026-08-28T18:00:00Z",
+                      "lead_month": 4,
+                      "member": 1,
+                      "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260828/18/monthly_grib_01/flxf.01.2026082818.202612.avrg.grib.grb2",
+                      "cache_file": ".cache/cfsv2/2026082818/member_01/flxf.01.2026082818.202612.avrg.grib.grb2",
+                      "state_file": ".cache/cfsv2/rolling/tmp2m/202612/tmp2m.2026082818.m01.csv.gz",
+                      "storage": "nomads_grib2",
+                      "downloaded": true,
+                      "product": "2m_temperature_anomaly",
+                      "source_kind": "FLXF",
+                      "decoded_field": "TMP:2 m above ground",
+                      "raw_units": "K",
+                      "units": "\u00b0C",
+                      "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                      "status": "available",
+                      "derived_dependency": "2m_temperature_anomaly"
+                    },
                     {
                       "initialization": "2026082900",
                       "initialization_utc": "2026-08-29T00:00:00Z",
@@ -6224,16 +6306,23 @@
                       "derived_dependency": "2m_temperature_anomaly"
                     },
                     {
-                      "initialization": "2026090318",
-                      "initialization_utc": "2026-09-03T18:00:00Z",
-                      "lead_month": 3,
+                      "initialization": "2026082818",
+                      "initialization_utc": "2026-08-28T18:00:00Z",
+                      "lead_month": 4,
                       "member": 1,
-                      "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260903/18/monthly_grib_01/flxf.01.2026090318.202612.avrg.grib.grb2",
-                      "cache_file": ".cache/cfsv2/2026090318/member_01/flxf.01.2026090318.202612.avrg.grib.grb2",
-                      "state_file": ".cache/cfsv2/rolling/tmp2m/202612/tmp2m.2026090318.m01.csv.gz",
-                      "status": "missing",
-                      "error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260903/18/monthly_grib_01/flxf.01.2026090318.202612.avrg.grib.grb2",
-                      "derived_dependency": "2m_temperature_anomaly"
+                      "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260828/18/monthly_grib_01/pgbf.01.2026082818.202612.avrg.grib.grb2",
+                      "cache_file": ".cache/cfsv2/2026082818/member_01/pgbf.01.2026082818.202612.avrg.grib.grb2",
+                      "state_file": ".cache/cfsv2/rolling/tmp850/202612/tmp850.2026082818.m01.csv.gz",
+                      "storage": "nomads_grib2",
+                      "downloaded": true,
+                      "product": "850mb_temperature_anomaly",
+                      "source_kind": "PGBF",
+                      "decoded_field": "TMP:850 mb",
+                      "raw_units": "K",
+                      "units": "\u00b0C",
+                      "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                      "status": "available",
+                      "derived_dependency": "850mb_temperature_anomaly"
                     },
                     {
                       "initialization": "2026082900",
@@ -6673,16 +6762,23 @@
                       "derived_dependency": "850mb_temperature_anomaly"
                     },
                     {
-                      "initialization": "2026090318",
-                      "initialization_utc": "2026-09-03T18:00:00Z",
-                      "lead_month": 3,
+                      "initialization": "2026082818",
+                      "initialization_utc": "2026-08-28T18:00:00Z",
+                      "lead_month": 4,
                       "member": 1,
-                      "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260903/18/monthly_grib_01/pgbf.01.2026090318.202612.avrg.grib.grb2",
-                      "cache_file": ".cache/cfsv2/2026090318/member_01/pgbf.01.2026090318.202612.avrg.grib.grb2",
-                      "state_file": ".cache/cfsv2/rolling/tmp850/202612/tmp850.2026090318.m01.csv.gz",
-                      "status": "missing",
-                      "error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260903/18/monthly_grib_01/pgbf.01.2026090318.202612.avrg.grib.grb2",
-                      "derived_dependency": "850mb_temperature_anomaly"
+                      "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260828/18/monthly_grib_01/flxf.01.2026082818.202612.avrg.grib.grb2",
+                      "cache_file": ".cache/cfsv2/2026082818/member_01/flxf.01.2026082818.202612.avrg.grib.grb2",
+                      "state_file": ".cache/cfsv2/rolling/prate_in/202612/prate_in.2026082818.m01.csv.gz",
+                      "storage": "nomads_grib2",
+                      "downloaded": true,
+                      "product": "precipitation_anomaly",
+                      "source_kind": "FLXF",
+                      "decoded_field": "PRATE:surface",
+                      "raw_units": "kg m-2 s-1",
+                      "units": "in",
+                      "conversion": "PRATE multiplied by calendar-month seconds, converted from mm to inches",
+                      "status": "available",
+                      "derived_dependency": "precipitation_anomaly"
                     },
                     {
                       "initialization": "2026082900",
@@ -7120,18 +7216,6 @@
                       "conversion": "PRATE multiplied by calendar-month seconds, converted from mm to inches",
                       "status": "available",
                       "derived_dependency": "precipitation_anomaly"
-                    },
-                    {
-                      "initialization": "2026090318",
-                      "initialization_utc": "2026-09-03T18:00:00Z",
-                      "lead_month": 3,
-                      "member": 1,
-                      "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260903/18/monthly_grib_01/flxf.01.2026090318.202612.avrg.grib.grb2",
-                      "cache_file": ".cache/cfsv2/2026090318/member_01/flxf.01.2026090318.202612.avrg.grib.grb2",
-                      "state_file": ".cache/cfsv2/rolling/prate_in/202612/prate_in.2026090318.m01.csv.gz",
-                      "status": "missing",
-                      "error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260903/18/monthly_grib_01/flxf.01.2026090318.202612.avrg.grib.grb2",
-                      "derived_dependency": "precipitation_anomaly"
                     }
                   ],
                   "baseline": {
@@ -7143,33 +7227,33 @@
                     "dependencies": [
                       {
                         "product": "2m_temperature_anomaly",
-                        "file": ".cache/cfsv2/calibration/flxf/2026090318/flxf.09.03.18.l03.fclm.1982.2010.grb2",
+                        "file": ".cache/cfsv2/calibration/flxf/2026090312/flxf.09.03.12.l03.fclm.1982.2010.grb2",
                         "label": "NCEI CFSR/CFSv2 1982-2010 derived snowfall climatology",
-                        "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/09/flxf.09.03.18.l03.fclm.1982.2010.grb2",
-                        "requested_initialization": "2026090318",
-                        "used_initialization": "2026090318",
-                        "downloaded": true,
+                        "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/09/flxf.09.03.12.l03.fclm.1982.2010.grb2",
+                        "requested_initialization": "2026090312",
+                        "used_initialization": "2026090312",
+                        "downloaded": false,
                         "fallback": null,
                         "fallback_error": null
                       },
                       {
                         "product": "850mb_temperature_anomaly",
-                        "file": ".cache/cfsv2/calibration/pgbf/2026090318/pgbf.09.03.18.l03.fclm.1982.2010.grb2",
+                        "file": ".cache/cfsv2/calibration/pgbf/2026090312/pgbf.09.03.12.l03.fclm.1982.2010.grb2",
                         "label": "NCEI CFSR/CFSv2 1982-2010 derived snowfall climatology",
-                        "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs_refor_calclim_mm_9m_pgbf/09/pgbf.09.03.18.l03.fclm.1982.2010.grb2",
-                        "requested_initialization": "2026090318",
-                        "used_initialization": "2026090318",
-                        "downloaded": true,
+                        "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs_refor_calclim_mm_9m_pgbf/09/pgbf.09.03.12.l03.fclm.1982.2010.grb2",
+                        "requested_initialization": "2026090312",
+                        "used_initialization": "2026090312",
+                        "downloaded": false,
                         "fallback": null,
                         "fallback_error": null
                       },
                       {
                         "product": "precipitation_anomaly",
-                        "file": ".cache/cfsv2/calibration/flxf/2026090318/flxf.09.03.18.l03.fclm.1982.2010.grb2",
+                        "file": ".cache/cfsv2/calibration/flxf/2026090312/flxf.09.03.12.l03.fclm.1982.2010.grb2",
                         "label": "NCEI CFSR/CFSv2 1982-2010 derived snowfall climatology",
-                        "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/09/flxf.09.03.18.l03.fclm.1982.2010.grb2",
-                        "requested_initialization": "2026090318",
-                        "used_initialization": "2026090318",
+                        "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/09/flxf.09.03.12.l03.fclm.1982.2010.grb2",
+                        "requested_initialization": "2026090312",
+                        "used_initialization": "2026090312",
                         "downloaded": false,
                         "fallback": null,
                         "fallback_error": null
@@ -7197,9 +7281,9 @@
                     }
                   },
                   "derivation": {
-                    "member_or_cycle_count": 23,
-                    "valid_member_count_min": 23,
-                    "valid_member_count_max": 23,
+                    "member_or_cycle_count": 24,
+                    "valid_member_count_min": 24,
+                    "valid_member_count_max": 24,
                     "valid_member_fraction_min": 1.0,
                     "snow_fraction": {
                       "method": "Dai_2008_land_seasonal_hyperbolic_tangent",
@@ -7225,18 +7309,37 @@
                 },
                 {
                   "source_package": "NOAA CFSv2 NOMADS",
-                  "anchor_initialization": "2026090318",
-                  "anchor_initialization_utc": "2026-09-03T18:00:00Z",
+                  "anchor_initialization": "2026090312",
+                  "anchor_initialization_utc": "2026-09-03T12:00:00Z",
                   "rolling_window": {
                     "days": 6,
                     "cycle_interval_hours": 6,
                     "expected_cycles": 24,
-                    "available_cycles": 23,
+                    "available_cycles": 24,
                     "member_stream": 1,
-                    "complete": false,
-                    "label": "23/24-cycle rolling mean"
+                    "complete": true,
+                    "label": "24/24-cycle rolling mean"
                   },
                   "source_files": [
+                    {
+                      "initialization": "2026082818",
+                      "initialization_utc": "2026-08-28T18:00:00Z",
+                      "lead_month": 5,
+                      "member": 1,
+                      "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260828/18/monthly_grib_01/flxf.01.2026082818.202701.avrg.grib.grb2",
+                      "cache_file": ".cache/cfsv2/2026082818/member_01/flxf.01.2026082818.202701.avrg.grib.grb2",
+                      "state_file": ".cache/cfsv2/rolling/tmp2m/202701/tmp2m.2026082818.m01.csv.gz",
+                      "storage": "nomads_grib2",
+                      "downloaded": true,
+                      "product": "2m_temperature_anomaly",
+                      "source_kind": "FLXF",
+                      "decoded_field": "TMP:2 m above ground",
+                      "raw_units": "K",
+                      "units": "\u00b0C",
+                      "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                      "status": "available",
+                      "derived_dependency": "2m_temperature_anomaly"
+                    },
                     {
                       "initialization": "2026082900",
                       "initialization_utc": "2026-08-29T00:00:00Z",
@@ -7675,16 +7778,23 @@
                       "derived_dependency": "2m_temperature_anomaly"
                     },
                     {
-                      "initialization": "2026090318",
-                      "initialization_utc": "2026-09-03T18:00:00Z",
-                      "lead_month": 4,
+                      "initialization": "2026082818",
+                      "initialization_utc": "2026-08-28T18:00:00Z",
+                      "lead_month": 5,
                       "member": 1,
-                      "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260903/18/monthly_grib_01/flxf.01.2026090318.202701.avrg.grib.grb2",
-                      "cache_file": ".cache/cfsv2/2026090318/member_01/flxf.01.2026090318.202701.avrg.grib.grb2",
-                      "state_file": ".cache/cfsv2/rolling/tmp2m/202701/tmp2m.2026090318.m01.csv.gz",
-                      "status": "missing",
-                      "error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260903/18/monthly_grib_01/flxf.01.2026090318.202701.avrg.grib.grb2",
-                      "derived_dependency": "2m_temperature_anomaly"
+                      "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260828/18/monthly_grib_01/pgbf.01.2026082818.202701.avrg.grib.grb2",
+                      "cache_file": ".cache/cfsv2/2026082818/member_01/pgbf.01.2026082818.202701.avrg.grib.grb2",
+                      "state_file": ".cache/cfsv2/rolling/tmp850/202701/tmp850.2026082818.m01.csv.gz",
+                      "storage": "nomads_grib2",
+                      "downloaded": true,
+                      "product": "850mb_temperature_anomaly",
+                      "source_kind": "PGBF",
+                      "decoded_field": "TMP:850 mb",
+                      "raw_units": "K",
+                      "units": "\u00b0C",
+                      "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                      "status": "available",
+                      "derived_dependency": "850mb_temperature_anomaly"
                     },
                     {
                       "initialization": "2026082900",
@@ -8124,16 +8234,23 @@
                       "derived_dependency": "850mb_temperature_anomaly"
                     },
                     {
-                      "initialization": "2026090318",
-                      "initialization_utc": "2026-09-03T18:00:00Z",
-                      "lead_month": 4,
+                      "initialization": "2026082818",
+                      "initialization_utc": "2026-08-28T18:00:00Z",
+                      "lead_month": 5,
                       "member": 1,
-                      "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260903/18/monthly_grib_01/pgbf.01.2026090318.202701.avrg.grib.grb2",
-                      "cache_file": ".cache/cfsv2/2026090318/member_01/pgbf.01.2026090318.202701.avrg.grib.grb2",
-                      "state_file": ".cache/cfsv2/rolling/tmp850/202701/tmp850.2026090318.m01.csv.gz",
-                      "status": "missing",
-                      "error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260903/18/monthly_grib_01/pgbf.01.2026090318.202701.avrg.grib.grb2",
-                      "derived_dependency": "850mb_temperature_anomaly"
+                      "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260828/18/monthly_grib_01/flxf.01.2026082818.202701.avrg.grib.grb2",
+                      "cache_file": ".cache/cfsv2/2026082818/member_01/flxf.01.2026082818.202701.avrg.grib.grb2",
+                      "state_file": ".cache/cfsv2/rolling/prate_in/202701/prate_in.2026082818.m01.csv.gz",
+                      "storage": "nomads_grib2",
+                      "downloaded": true,
+                      "product": "precipitation_anomaly",
+                      "source_kind": "FLXF",
+                      "decoded_field": "PRATE:surface",
+                      "raw_units": "kg m-2 s-1",
+                      "units": "in",
+                      "conversion": "PRATE multiplied by calendar-month seconds, converted from mm to inches",
+                      "status": "available",
+                      "derived_dependency": "precipitation_anomaly"
                     },
                     {
                       "initialization": "2026082900",
@@ -8571,18 +8688,6 @@
                       "conversion": "PRATE multiplied by calendar-month seconds, converted from mm to inches",
                       "status": "available",
                       "derived_dependency": "precipitation_anomaly"
-                    },
-                    {
-                      "initialization": "2026090318",
-                      "initialization_utc": "2026-09-03T18:00:00Z",
-                      "lead_month": 4,
-                      "member": 1,
-                      "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260903/18/monthly_grib_01/flxf.01.2026090318.202701.avrg.grib.grb2",
-                      "cache_file": ".cache/cfsv2/2026090318/member_01/flxf.01.2026090318.202701.avrg.grib.grb2",
-                      "state_file": ".cache/cfsv2/rolling/prate_in/202701/prate_in.2026090318.m01.csv.gz",
-                      "status": "missing",
-                      "error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260903/18/monthly_grib_01/flxf.01.2026090318.202701.avrg.grib.grb2",
-                      "derived_dependency": "precipitation_anomaly"
                     }
                   ],
                   "baseline": {
@@ -8594,33 +8699,33 @@
                     "dependencies": [
                       {
                         "product": "2m_temperature_anomaly",
-                        "file": ".cache/cfsv2/calibration/flxf/2026090318/flxf.09.03.18.l04.fclm.1982.2010.grb2",
+                        "file": ".cache/cfsv2/calibration/flxf/2026090312/flxf.09.03.12.l04.fclm.1982.2010.grb2",
                         "label": "NCEI CFSR/CFSv2 1982-2010 derived snowfall climatology",
-                        "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/09/flxf.09.03.18.l04.fclm.1982.2010.grb2",
-                        "requested_initialization": "2026090318",
-                        "used_initialization": "2026090318",
-                        "downloaded": true,
+                        "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/09/flxf.09.03.12.l04.fclm.1982.2010.grb2",
+                        "requested_initialization": "2026090312",
+                        "used_initialization": "2026090312",
+                        "downloaded": false,
                         "fallback": null,
                         "fallback_error": null
                       },
                       {
                         "product": "850mb_temperature_anomaly",
-                        "file": ".cache/cfsv2/calibration/pgbf/2026090318/pgbf.09.03.18.l04.fclm.1982.2010.grb2",
+                        "file": ".cache/cfsv2/calibration/pgbf/2026090312/pgbf.09.03.12.l04.fclm.1982.2010.grb2",
                         "label": "NCEI CFSR/CFSv2 1982-2010 derived snowfall climatology",
-                        "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs_refor_calclim_mm_9m_pgbf/09/pgbf.09.03.18.l04.fclm.1982.2010.grb2",
-                        "requested_initialization": "2026090318",
-                        "used_initialization": "2026090318",
-                        "downloaded": true,
+                        "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs_refor_calclim_mm_9m_pgbf/09/pgbf.09.03.12.l04.fclm.1982.2010.grb2",
+                        "requested_initialization": "2026090312",
+                        "used_initialization": "2026090312",
+                        "downloaded": false,
                         "fallback": null,
                         "fallback_error": null
                       },
                       {
                         "product": "precipitation_anomaly",
-                        "file": ".cache/cfsv2/calibration/flxf/2026090318/flxf.09.03.18.l04.fclm.1982.2010.grb2",
+                        "file": ".cache/cfsv2/calibration/flxf/2026090312/flxf.09.03.12.l04.fclm.1982.2010.grb2",
                         "label": "NCEI CFSR/CFSv2 1982-2010 derived snowfall climatology",
-                        "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/09/flxf.09.03.18.l04.fclm.1982.2010.grb2",
-                        "requested_initialization": "2026090318",
-                        "used_initialization": "2026090318",
+                        "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/09/flxf.09.03.12.l04.fclm.1982.2010.grb2",
+                        "requested_initialization": "2026090312",
+                        "used_initialization": "2026090312",
                         "downloaded": false,
                         "fallback": null,
                         "fallback_error": null
@@ -8648,9 +8753,9 @@
                     }
                   },
                   "derivation": {
-                    "member_or_cycle_count": 23,
-                    "valid_member_count_min": 23,
-                    "valid_member_count_max": 23,
+                    "member_or_cycle_count": 24,
+                    "valid_member_count_min": 24,
+                    "valid_member_count_max": 24,
                     "valid_member_fraction_min": 1.0,
                     "snow_fraction": {
                       "method": "Dai_2008_land_seasonal_hyperbolic_tangent",
@@ -8676,18 +8781,37 @@
                 },
                 {
                   "source_package": "NOAA CFSv2 NOMADS",
-                  "anchor_initialization": "2026090318",
-                  "anchor_initialization_utc": "2026-09-03T18:00:00Z",
+                  "anchor_initialization": "2026090312",
+                  "anchor_initialization_utc": "2026-09-03T12:00:00Z",
                   "rolling_window": {
                     "days": 6,
                     "cycle_interval_hours": 6,
                     "expected_cycles": 24,
-                    "available_cycles": 23,
+                    "available_cycles": 24,
                     "member_stream": 1,
-                    "complete": false,
-                    "label": "23/24-cycle rolling mean"
+                    "complete": true,
+                    "label": "24/24-cycle rolling mean"
                   },
                   "source_files": [
+                    {
+                      "initialization": "2026082818",
+                      "initialization_utc": "2026-08-28T18:00:00Z",
+                      "lead_month": 6,
+                      "member": 1,
+                      "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260828/18/monthly_grib_01/flxf.01.2026082818.202702.avrg.grib.grb2",
+                      "cache_file": ".cache/cfsv2/2026082818/member_01/flxf.01.2026082818.202702.avrg.grib.grb2",
+                      "state_file": ".cache/cfsv2/rolling/tmp2m/202702/tmp2m.2026082818.m01.csv.gz",
+                      "storage": "nomads_grib2",
+                      "downloaded": true,
+                      "product": "2m_temperature_anomaly",
+                      "source_kind": "FLXF",
+                      "decoded_field": "TMP:2 m above ground",
+                      "raw_units": "K",
+                      "units": "\u00b0C",
+                      "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                      "status": "available",
+                      "derived_dependency": "2m_temperature_anomaly"
+                    },
                     {
                       "initialization": "2026082900",
                       "initialization_utc": "2026-08-29T00:00:00Z",
@@ -9126,16 +9250,23 @@
                       "derived_dependency": "2m_temperature_anomaly"
                     },
                     {
-                      "initialization": "2026090318",
-                      "initialization_utc": "2026-09-03T18:00:00Z",
-                      "lead_month": 5,
+                      "initialization": "2026082818",
+                      "initialization_utc": "2026-08-28T18:00:00Z",
+                      "lead_month": 6,
                       "member": 1,
-                      "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260903/18/monthly_grib_01/flxf.01.2026090318.202702.avrg.grib.grb2",
-                      "cache_file": ".cache/cfsv2/2026090318/member_01/flxf.01.2026090318.202702.avrg.grib.grb2",
-                      "state_file": ".cache/cfsv2/rolling/tmp2m/202702/tmp2m.2026090318.m01.csv.gz",
-                      "status": "missing",
-                      "error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260903/18/monthly_grib_01/flxf.01.2026090318.202702.avrg.grib.grb2",
-                      "derived_dependency": "2m_temperature_anomaly"
+                      "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260828/18/monthly_grib_01/pgbf.01.2026082818.202702.avrg.grib.grb2",
+                      "cache_file": ".cache/cfsv2/2026082818/member_01/pgbf.01.2026082818.202702.avrg.grib.grb2",
+                      "state_file": ".cache/cfsv2/rolling/tmp850/202702/tmp850.2026082818.m01.csv.gz",
+                      "storage": "nomads_grib2",
+                      "downloaded": true,
+                      "product": "850mb_temperature_anomaly",
+                      "source_kind": "PGBF",
+                      "decoded_field": "TMP:850 mb",
+                      "raw_units": "K",
+                      "units": "\u00b0C",
+                      "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                      "status": "available",
+                      "derived_dependency": "850mb_temperature_anomaly"
                     },
                     {
                       "initialization": "2026082900",
@@ -9575,16 +9706,23 @@
                       "derived_dependency": "850mb_temperature_anomaly"
                     },
                     {
-                      "initialization": "2026090318",
-                      "initialization_utc": "2026-09-03T18:00:00Z",
-                      "lead_month": 5,
+                      "initialization": "2026082818",
+                      "initialization_utc": "2026-08-28T18:00:00Z",
+                      "lead_month": 6,
                       "member": 1,
-                      "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260903/18/monthly_grib_01/pgbf.01.2026090318.202702.avrg.grib.grb2",
-                      "cache_file": ".cache/cfsv2/2026090318/member_01/pgbf.01.2026090318.202702.avrg.grib.grb2",
-                      "state_file": ".cache/cfsv2/rolling/tmp850/202702/tmp850.2026090318.m01.csv.gz",
-                      "status": "missing",
-                      "error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260903/18/monthly_grib_01/pgbf.01.2026090318.202702.avrg.grib.grb2",
-                      "derived_dependency": "850mb_temperature_anomaly"
+                      "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260828/18/monthly_grib_01/flxf.01.2026082818.202702.avrg.grib.grb2",
+                      "cache_file": ".cache/cfsv2/2026082818/member_01/flxf.01.2026082818.202702.avrg.grib.grb2",
+                      "state_file": ".cache/cfsv2/rolling/prate_in/202702/prate_in.2026082818.m01.csv.gz",
+                      "storage": "nomads_grib2",
+                      "downloaded": true,
+                      "product": "precipitation_anomaly",
+                      "source_kind": "FLXF",
+                      "decoded_field": "PRATE:surface",
+                      "raw_units": "kg m-2 s-1",
+                      "units": "in",
+                      "conversion": "PRATE multiplied by calendar-month seconds, converted from mm to inches",
+                      "status": "available",
+                      "derived_dependency": "precipitation_anomaly"
                     },
                     {
                       "initialization": "2026082900",
@@ -10022,18 +10160,6 @@
                       "conversion": "PRATE multiplied by calendar-month seconds, converted from mm to inches",
                       "status": "available",
                       "derived_dependency": "precipitation_anomaly"
-                    },
-                    {
-                      "initialization": "2026090318",
-                      "initialization_utc": "2026-09-03T18:00:00Z",
-                      "lead_month": 5,
-                      "member": 1,
-                      "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260903/18/monthly_grib_01/flxf.01.2026090318.202702.avrg.grib.grb2",
-                      "cache_file": ".cache/cfsv2/2026090318/member_01/flxf.01.2026090318.202702.avrg.grib.grb2",
-                      "state_file": ".cache/cfsv2/rolling/prate_in/202702/prate_in.2026090318.m01.csv.gz",
-                      "status": "missing",
-                      "error": "404 Client Error: Not Found for url: https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260903/18/monthly_grib_01/flxf.01.2026090318.202702.avrg.grib.grb2",
-                      "derived_dependency": "precipitation_anomaly"
                     }
                   ],
                   "baseline": {
@@ -10045,33 +10171,33 @@
                     "dependencies": [
                       {
                         "product": "2m_temperature_anomaly",
-                        "file": ".cache/cfsv2/calibration/flxf/2026090318/flxf.09.03.18.l05.fclm.1982.2010.grb2",
+                        "file": ".cache/cfsv2/calibration/flxf/2026090312/flxf.09.03.12.l05.fclm.1982.2010.grb2",
                         "label": "NCEI CFSR/CFSv2 1982-2010 derived snowfall climatology",
-                        "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/09/flxf.09.03.18.l05.fclm.1982.2010.grb2",
-                        "requested_initialization": "2026090318",
-                        "used_initialization": "2026090318",
-                        "downloaded": true,
+                        "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/09/flxf.09.03.12.l05.fclm.1982.2010.grb2",
+                        "requested_initialization": "2026090312",
+                        "used_initialization": "2026090312",
+                        "downloaded": false,
                         "fallback": null,
                         "fallback_error": null
                       },
                       {
                         "product": "850mb_temperature_anomaly",
-                        "file": ".cache/cfsv2/calibration/pgbf/2026090318/pgbf.09.03.18.l05.fclm.1982.2010.grb2",
+                        "file": ".cache/cfsv2/calibration/pgbf/2026090312/pgbf.09.03.12.l05.fclm.1982.2010.grb2",
                         "label": "NCEI CFSR/CFSv2 1982-2010 derived snowfall climatology",
-                        "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs_refor_calclim_mm_9m_pgbf/09/pgbf.09.03.18.l05.fclm.1982.2010.grb2",
-                        "requested_initialization": "2026090318",
-                        "used_initialization": "2026090318",
-                        "downloaded": true,
+                        "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs_refor_calclim_mm_9m_pgbf/09/pgbf.09.03.12.l05.fclm.1982.2010.grb2",
+                        "requested_initialization": "2026090312",
+                        "used_initialization": "2026090312",
+                        "downloaded": false,
                         "fallback": null,
                         "fallback_error": null
                       },
                       {
                         "product": "precipitation_anomaly",
-                        "file": ".cache/cfsv2/calibration/flxf/2026090318/flxf.09.03.18.l05.fclm.1982.2010.grb2",
+                        "file": ".cache/cfsv2/calibration/flxf/2026090312/flxf.09.03.12.l05.fclm.1982.2010.grb2",
                         "label": "NCEI CFSR/CFSv2 1982-2010 derived snowfall climatology",
-                        "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/09/flxf.09.03.18.l05.fclm.1982.2010.grb2",
-                        "requested_initialization": "2026090318",
-                        "used_initialization": "2026090318",
+                        "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/09/flxf.09.03.12.l05.fclm.1982.2010.grb2",
+                        "requested_initialization": "2026090312",
+                        "used_initialization": "2026090312",
                         "downloaded": false,
                         "fallback": null,
                         "fallback_error": null
@@ -10099,9 +10225,9 @@
                     }
                   },
                   "derivation": {
-                    "member_or_cycle_count": 23,
-                    "valid_member_count_min": 23,
-                    "valid_member_count_max": 23,
+                    "member_or_cycle_count": 24,
+                    "valid_member_count_min": 24,
+                    "valid_member_count_max": 24,
                     "valid_member_fraction_min": 1.0,
                     "snow_fraction": {
                       "method": "Dai_2008_land_seasonal_hyperbolic_tangent",
@@ -10346,10 +10472,10 @@
             "total_points": 3200,
             "finite_points": 3200,
             "finite_fraction": 1.0,
-            "minimum": -5.5915,
-            "maximum": 1.220101,
-            "p01": -2.955452,
-            "p99": 0.501474,
+            "minimum": -5.919277,
+            "maximum": 1.248807,
+            "p01": -3.032615,
+            "p99": 0.458871,
             "display": {
               "minimum": -4.0,
               "maximum": 4.0,
@@ -10378,9 +10504,9 @@
                 3.5,
                 4.0
               ],
-              "below_fraction": 0.00375,
+              "below_fraction": 0.004063,
               "above_fraction": 0.0,
-              "clipped_fraction": 0.00375
+              "clipped_fraction": 0.004063
             },
             "issues": [],
             "status": "passed"
@@ -10390,7 +10516,7 @@
         }
       ],
       "status": "rendered",
-      "generated_utc": "2026-09-04T01:57:41Z",
+      "generated_utc": "2026-09-04T02:12:10Z",
       "output_dir": "public/seasonal/superensemble"
     },
     {
