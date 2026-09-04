@@ -2,8 +2,8 @@
   "schema_version": 1,
   "registry_version": 1,
   "kind": "seasonal_dashboard_catalog",
-  "generated_utc": "2026-09-04T01:18:52Z",
-  "source_revision": "e7b4598fdc1214e3e19535fc69e6e39a1b602264",
+  "generated_utc": "2026-09-04T01:58:59Z",
+  "source_revision": "3cd35322d7dcb0bef7a341274e80b76ab41cdc42",
   "model_order": [
     "superensemble",
     "c3s",
@@ -661,11 +661,11 @@
           ],
           "product": "snowfall_anomaly",
           "init_utc": "2026-08-01T00:00:00Z",
-          "generated_utc": "2026-09-04T01:17:44Z",
-          "status": "partial",
+          "generated_utc": "2026-09-04T01:57:41Z",
+          "status": "rendered",
           "statistic": "equal_weight_deduplicated_family_mean",
           "aggregation": "monthly or seasonal mean of canonical non-overlapping forecast-family anomalies",
-          "ensemble_scope": "up to 9 canonical forecast families",
+          "ensemble_scope": "up to 7 canonical forecast families",
           "field": "snowfall_anomaly",
           "units": "in",
           "targets": [
@@ -677,28 +677,25 @@
               "lead_month": 4,
               "field": "snowfall_anomaly",
               "units": "in",
-              "status": "partial",
+              "status": "rendered",
               "image": "superensemble/20260801/superensemble_sf_202612.jpg",
               "baseline": {
                 "status": "native_model_baselines",
                 "method": "equal mean of source-native anomaly fields; no common climatology imposed"
               },
-              "ensemble_scope": "6/9 canonical forecast families",
-              "member_count": 6,
-              "expected_member_count": 9,
+              "ensemble_scope": "7/7 canonical forecast families",
+              "member_count": 7,
+              "expected_member_count": 7,
               "included_members": [
                 "c3s_ecmwf_system51",
                 "c3s_ukmo_system610",
                 "c3s_meteo_france_system9",
                 "c3s_dwd_system22",
                 "c3s_cmcc_system4",
+                "noaa_cfsv2_rolling",
                 "eccc_cansips_v3"
               ],
-              "missing_members": [
-                "c3s_ncep_system2",
-                "c3s_jma_system4",
-                "c3s_bom_system2"
-              ],
+              "missing_members": [],
               "statistic": "equal_weight_deduplicated_family_mean",
               "quality_control": {
                 "registry_version": 1,
@@ -709,10 +706,10 @@
                 "total_points": 3200,
                 "finite_points": 3200,
                 "finite_fraction": 1.0,
-                "minimum": -1.526376,
-                "maximum": 0.356269,
-                "p01": -0.832502,
-                "p99": 0.087095,
+                "minimum": -1.840739,
+                "maximum": 0.163564,
+                "p01": -0.926595,
+                "p99": 0.043103,
                 "display": {
                   "minimum": -2.0,
                   "maximum": 2.0,
@@ -754,28 +751,25 @@
               "lead_month": 5,
               "field": "snowfall_anomaly",
               "units": "in",
-              "status": "partial",
+              "status": "rendered",
               "image": "superensemble/20260801/superensemble_sf_202701.jpg",
               "baseline": {
                 "status": "native_model_baselines",
                 "method": "equal mean of source-native anomaly fields; no common climatology imposed"
               },
-              "ensemble_scope": "6/9 canonical forecast families",
-              "member_count": 6,
-              "expected_member_count": 9,
+              "ensemble_scope": "7/7 canonical forecast families",
+              "member_count": 7,
+              "expected_member_count": 7,
               "included_members": [
                 "c3s_ecmwf_system51",
                 "c3s_ukmo_system610",
                 "c3s_meteo_france_system9",
                 "c3s_dwd_system22",
                 "c3s_cmcc_system4",
+                "noaa_cfsv2_rolling",
                 "eccc_cansips_v3"
               ],
-              "missing_members": [
-                "c3s_ncep_system2",
-                "c3s_jma_system4",
-                "c3s_bom_system2"
-              ],
+              "missing_members": [],
               "statistic": "equal_weight_deduplicated_family_mean",
               "quality_control": {
                 "registry_version": 1,
@@ -786,10 +780,10 @@
                 "total_points": 3200,
                 "finite_points": 3200,
                 "finite_fraction": 1.0,
-                "minimum": -1.488133,
-                "maximum": 0.412596,
-                "p01": -0.888015,
-                "p99": 0.192899,
+                "minimum": -1.924078,
+                "maximum": 0.572842,
+                "p01": -0.949059,
+                "p99": 0.247805,
                 "display": {
                   "minimum": -2.0,
                   "maximum": 2.0,
@@ -831,28 +825,25 @@
               "lead_month": 6,
               "field": "snowfall_anomaly",
               "units": "in",
-              "status": "partial",
+              "status": "rendered",
               "image": "superensemble/20260801/superensemble_sf_202702.jpg",
               "baseline": {
                 "status": "native_model_baselines",
                 "method": "equal mean of source-native anomaly fields; no common climatology imposed"
               },
-              "ensemble_scope": "6/9 canonical forecast families",
-              "member_count": 6,
-              "expected_member_count": 9,
+              "ensemble_scope": "7/7 canonical forecast families",
+              "member_count": 7,
+              "expected_member_count": 7,
               "included_members": [
                 "c3s_ecmwf_system51",
                 "c3s_ukmo_system610",
                 "c3s_meteo_france_system9",
                 "c3s_dwd_system22",
                 "c3s_cmcc_system4",
+                "noaa_cfsv2_rolling",
                 "eccc_cansips_v3"
               ],
-              "missing_members": [
-                "c3s_ncep_system2",
-                "c3s_jma_system4",
-                "c3s_bom_system2"
-              ],
+              "missing_members": [],
               "statistic": "equal_weight_deduplicated_family_mean",
               "quality_control": {
                 "registry_version": 1,
@@ -863,10 +854,10 @@
                 "total_points": 3200,
                 "finite_points": 3200,
                 "finite_fraction": 1.0,
-                "minimum": -2.226751,
-                "maximum": 0.827272,
-                "p01": -1.049818,
-                "p99": 0.2391,
+                "minimum": -2.256495,
+                "maximum": 0.944239,
+                "p01": -1.100076,
+                "p99": 0.357433,
                 "display": {
                   "minimum": -2.0,
                   "maximum": 2.0,
@@ -887,9 +878,9 @@
                     1.75,
                     2.0
                   ],
-                  "below_fraction": 0.000625,
+                  "below_fraction": 0.000937,
                   "above_fraction": 0.0,
-                  "clipped_fraction": 0.000625
+                  "clipped_fraction": 0.000937
                 },
                 "issues": [],
                 "status": "passed"
@@ -913,28 +904,25 @@
               ],
               "field": "snowfall_anomaly",
               "units": "in",
-              "status": "partial",
+              "status": "rendered",
               "image": "superensemble/20260801/superensemble_sf_202612-202702.jpg",
               "baseline": {
                 "status": "native_model_baselines",
                 "method": "equal mean of source-native anomaly fields; no common climatology imposed"
               },
-              "ensemble_scope": "6/9 canonical forecast families",
-              "member_count": 6,
-              "expected_member_count": 9,
+              "ensemble_scope": "7/7 canonical forecast families",
+              "member_count": 7,
+              "expected_member_count": 7,
               "included_members": [
                 "c3s_ecmwf_system51",
                 "c3s_ukmo_system610",
                 "c3s_meteo_france_system9",
                 "c3s_dwd_system22",
                 "c3s_cmcc_system4",
+                "noaa_cfsv2_rolling",
                 "eccc_cansips_v3"
               ],
-              "missing_members": [
-                "c3s_ncep_system2",
-                "c3s_jma_system4",
-                "c3s_bom_system2"
-              ],
+              "missing_members": [],
               "statistic": "equal_weight_deduplicated_family_mean",
               "quality_control": {
                 "registry_version": 1,
@@ -945,10 +933,10 @@
                 "total_points": 3200,
                 "finite_points": 3200,
                 "finite_fraction": 1.0,
-                "minimum": -5.208387,
-                "maximum": 1.212717,
-                "p01": -2.741663,
-                "p99": 0.408086,
+                "minimum": -5.5915,
+                "maximum": 1.220101,
+                "p01": -2.955452,
+                "p99": 0.501474,
                 "display": {
                   "minimum": -4.0,
                   "maximum": 4.0,
@@ -977,9 +965,9 @@
                     3.5,
                     4.0
                   ],
-                  "below_fraction": 0.0025,
+                  "below_fraction": 0.00375,
                   "above_fraction": 0.0,
-                  "clipped_fraction": 0.0025
+                  "clipped_fraction": 0.00375
                 },
                 "issues": [],
                 "status": "passed"
@@ -2037,7 +2025,7 @@
       "status": "degraded",
       "schema_version": 1,
       "manifest_kind": "deduplicated_seasonal_superensemble_manifest",
-      "generated_utc": "2026-09-04T01:18:16Z",
+      "generated_utc": "2026-09-04T01:58:17Z",
       "source_url": "https://climate.copernicus.eu/seasonal-forecasts",
       "product_labels": {
         "500mb_height_anomaly": "500-mb Height Anomaly",
@@ -2139,15 +2127,15 @@
           "retained_fallback": false
         },
         "snowfall_anomaly": {
-          "state": "partial",
-          "reason": "Rendered with partial ensemble coverage.",
+          "state": "available",
+          "reason": "Rendered target available.",
           "available": true,
           "comparable": true,
           "latest_init_utc": "2026-08-01T00:00:00Z",
           "run_id": "superensemble-2026080100-snowfall_anomaly",
           "target_count": 4,
           "latest_run_id": "superensemble-2026080100-snowfall_anomaly",
-          "latest_run_status": "partial",
+          "latest_run_status": "rendered",
           "latest_run_init_utc": "2026-08-01T00:00:00Z",
           "retained_fallback": false
         },
@@ -51861,7 +51849,7 @@
   },
   "health": {
     "status": "attention",
-    "generated_utc": "2026-09-04T01:18:52Z",
+    "generated_utc": "2026-09-04T01:58:59Z",
     "freshness_policy_days": {
       "default": {
         "fresh_days": 35,
@@ -51874,12 +51862,12 @@
     },
     "summary": {
       "surfaces": 60,
-      "attention_surfaces": 4,
+      "attention_surfaces": 3,
       "by_state": {
-        "healthy": 46,
+        "healthy": 47,
         "aging": 1,
         "stale": 0,
-        "partial": 2,
+        "partial": 1,
         "failed": 0,
         "missing": 0,
         "noncomparable": 1,
@@ -51964,18 +51952,18 @@
         "model_label": "Super Ensemble",
         "product": "snowfall_anomaly",
         "product_label": "CONUS Snowfall Water-Equivalent Departure",
-        "surface_state": "partial",
+        "surface_state": "available",
         "available": true,
         "comparable": true,
-        "health_state": "partial",
+        "health_state": "healthy",
         "freshness": "fresh",
         "age_days": 34.1,
-        "latest_status": "partial",
+        "latest_status": "rendered",
         "latest_init_utc": "2026-08-01T00:00:00Z",
         "selected_init_utc": "2026-08-01T00:00:00Z",
         "selected_run_id": "superensemble-2026080100-snowfall_anomaly",
         "retained_fallback": false,
-        "reason": "Rendered with partial ensemble coverage."
+        "reason": "Rendered target available."
       },
       {
         "model": "superensemble",
@@ -52988,24 +52976,6 @@
         "reason": "Rendered with partial ensemble coverage."
       },
       {
-        "model": "superensemble",
-        "model_label": "Super Ensemble",
-        "product": "snowfall_anomaly",
-        "product_label": "CONUS Snowfall Water-Equivalent Departure",
-        "surface_state": "partial",
-        "available": true,
-        "comparable": true,
-        "health_state": "partial",
-        "freshness": "fresh",
-        "age_days": 34.1,
-        "latest_status": "partial",
-        "latest_init_utc": "2026-08-01T00:00:00Z",
-        "selected_init_utc": "2026-08-01T00:00:00Z",
-        "selected_run_id": "superensemble-2026080100-snowfall_anomaly",
-        "retained_fallback": false,
-        "reason": "Rendered with partial ensemble coverage."
-      },
-      {
         "model": "apcc",
         "model_label": "APCC MME",
         "product": "precipitation_anomaly",
@@ -53048,7 +53018,7 @@
     "models_online": 10,
     "supported_surfaces": 50,
     "available_surfaces": 50,
-    "partial_surfaces": 2,
+    "partial_surfaces": 1,
     "intentional_unavailable_surfaces": 10
   },
   "validation": {
