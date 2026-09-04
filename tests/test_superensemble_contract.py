@@ -153,6 +153,14 @@ def main() -> int:
         check(term in adapter_text, f"adapter is missing analog numeric-grid export term: {term}")
     check(adapter_text.count("write_grid_state(anomaly") == 2, "monthly and seasonal super-ensemble maps should both export numeric grids")
     check("NOAA CFSv2 24-cycle rolling blend" in adapter_text, "super-ensemble should label the operational CFSv2 blend accurately")
+    check(
+        'if args.synthetic_preview\n        else cansips.find_wgrib2(args.wgrib2)' in adapter_text,
+        "non-synthetic snowfall-only runs must resolve wgrib2 for their CFSv2 member",
+    )
+    check(
+        'not any(product != "snowfall_anomaly" for product in products)' not in adapter_text,
+        "snowfall-only runs must not replace the configured wgrib2 path with an empty executable",
+    )
     check("--cfsv2-rolling-days 6" in workflow, "super-ensemble workflow should use the archive-safe CFSv2 window")
     for term in (
         "name: Deduplicated Seasonal Super Ensemble", "CDS_API_KEY", "Restore rolling CFSv2 state",

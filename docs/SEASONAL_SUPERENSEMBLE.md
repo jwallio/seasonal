@@ -74,7 +74,8 @@ The workflow restores the newest standalone CFSv2 rolling-state cache before
 falling back to a prior super-ensemble cache, minimizing duplicate downloads
 and keeping the frequent-refresh contribution current. Every render job also
 restores the shared `wgrib2` binary; snowfall needs it to decode the CFSv2
-forecast dependencies and matching calibration fields.
+forecast dependencies and matching calibration fields, including when
+snowfall is the only requested product.
 The GEOS-S2S-3 contribution uses NASA's lead- and initialization-month-matched
 provider drift climatology and records its lagged initialization dates,
 available members, archive, and drift source.

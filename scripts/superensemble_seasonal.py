@@ -1347,7 +1347,7 @@ def run(args: argparse.Namespace) -> int:
     systems = c3s.parse_system_overrides(args.systems)
     wgrib2 = (
         ""
-        if args.synthetic_preview or not any(product != "snowfall_anomaly" for product in products)
+        if args.synthetic_preview
         else cansips.find_wgrib2(args.wgrib2)
     )
 
