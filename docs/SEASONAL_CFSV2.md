@@ -81,15 +81,25 @@ while border drawing is limited to the North America/Greenland window so
 South America and unrelated eastern-Atlantic outlines do not appear.
 
 `--lead-months "1,2,3"` writes individual target-month maps. Adding
-`--seasonal-window "1,2,3"` also writes a seasonal map. Height uses the mean
-of the selected forecast months and corresponding mean baseline; precipitation
-uses the total across the selected months and corresponding total baseline;
-derived snowfall uses the total of the selected monthly departures.
+`--seasonal-window "1,2,3"` also writes a seasonal map. Snowfall can request
+more than one window in one run with semicolons, such as
+`--seasonal-window "3,4,5;4,5,6"`. Height uses the mean of the selected forecast
+months and corresponding mean baseline; precipitation uses the total across the
+selected months and corresponding total baseline; derived snowfall uses the
+accumulated total of the selected monthly departures. A three-month snowfall
+departure therefore remains inches of liquid-water-equivalent accumulation,
+not an arithmetic mean of monthly inch values.
 
 The scheduled site workflow uses a six-day lagged initial-condition window.
 CFSv2 is run four times per day, so this produces 24 six-hourly members using
 `monthly_grib_01` from each cycle. Six days leaves practical margin inside the
 seven-day NOMADS real-time archive when the latest usable anchor is delayed.
+The workflow checks all four daily cycles at 05:45, 11:45, 17:45, and 23:45
+UTC, approximately 11 hours 45 minutes after the corresponding 18Z, 00Z, 06Z,
+and 12Z initializations. A minimum-age gate ignores the newer cycle directory
+whose monthly files are not expected yet, while the existing 30-minute retry
+allows for a modest publication delay without silently selecting a partial
+anchor.
 The workflow still records and retains decoded grids, and explicitly saves the
 rolling cache after failed attempts so a transient source problem does not
 discard useful state. It probes the required monthly GRIB2 files for every
@@ -100,12 +110,24 @@ the 850-mb and snowfall products reuse the same CFSv2 downloads as the other
 fields. A cleanup step removes only the temporary per-cycle source directories
 before the durable rolling-state cache is saved.
 
+Scheduled and manual `all` runs resolve the snowfall leads from the selected
+anchor initialization instead of treating fixed lead numbers as calendar
+months. When the full cold season is inside the 1-9 month forecast horizon,
+each CFSv2 refresh publishes six snowfall targets: **December**, **January**,
+**February**, **March**, the **DJF** accumulated departure, and the **JFM**
+accumulated departure. For example, a September initialization maps those
+targets to leads `3,4,5,6`, with seasonal windows `3,4,5;4,5,6`; an August
+initialization maps them to `4,5,6,7` and `4,5,6;5,6,7`. If a scheduled or
+manual all-field cycle cannot contain the entire December-March window within
+leads 1-9, the workflow keeps the last complete published snowfall run while
+continuing to refresh the other CFSv2 fields.
+
 The Actions `workflow_dispatch` menu also provides an `all` choice. Selecting
 it uses the same ready-anchor and six-day rolling window, then renders every
 manual menu field in one run: both 500-mb views, absolute 500-mb height,
 850-mb temperature, 2-m temperature, MSLP, precipitation, and derived
-snowfall. The twice-daily scheduled suite remains limited to the operational
-anomaly products listed above.
+snowfall. The four-times-daily scheduled suite remains limited to the
+operational anomaly products listed above.
 
 The GitHub-hosted Actions menus intentionally lock this window to six days
 (24 cycles). Free-form 7- or 10-day requests are not offered because the
@@ -117,10 +139,12 @@ remain available through the local CLI only when a complete external rolling
 archive has already been populated.
 
 For a shorter manual menu, **CFSv2 Snowfall Graphics** runs the validated
-derived **Snowfall departure** (`snowfall_anomaly`). It passes the selected
-lead months and seasonal window through the same reusable CFSv2 renderer,
-always using the archive-safe 24-cycle window, then uploads the standard
-CFSv2 payload for the central Pages publisher.
+derived **Snowfall departure** (`snowfall_anomaly`). Its default
+`operational-winter` preset produces the same December-March monthly set plus
+DJF and JFM. Custom calls can still supply explicit lead months and one or more
+semicolon-separated seasonal windows. The menu always uses the archive-safe
+24-cycle window, then uploads the standard CFSv2 payload for the central Pages
+publisher.
 
 The adapter also supports the CPC-style `--rolling-days 10` window, which
 produces 40 cycles, for callers that maintain a durable rolling-state archive
@@ -304,8 +328,8 @@ Generate derived snowfall liquid-water-equivalent departures from the same
 .\scripts\render_cfsv2.ps1 `
   -Product "snowfall_anomaly" `
   -Init "2026081000" `
-  -LeadMonths "4,5,6" `
-  -SeasonalWindow "4,5,6" `
+  -LeadMonths "4,5,6,7" `
+  -SeasonalWindow "4,5,6;5,6,7" `
   -RollingDays 6 `
   -RollingMember 1 `
   -UseNceiCalibration
@@ -385,6 +409,8 @@ per-product meaning.
 
 ## Source notes
 
+- [NOAA CFSv2 operational information](https://cfs.ncep.noaa.gov/cfsv2.info/)
+- [NCEP CFSv2 technical paper](https://cfs.ncep.noaa.gov/cfsv2.info/CFSv2_paper.pdf)
 - [NOAA CFSv2 downloads](https://cfs.ncep.noaa.gov/cfsv2/downloads.html)
 - [NOAA NOMADS CFSv2 operational directory](https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/)
 - [NOMADS CFS pressure-level filter](https://nomads.ncep.noaa.gov/cgi-bin/filter_cfs_pgb.pl)

@@ -7,6 +7,7 @@ import math
 from pathlib import Path
 import sys
 import tempfile
+from types import SimpleNamespace
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -220,7 +221,110 @@ def main() -> int:
     check("'snowfall_anomaly': 'CONUS Snowfall Departure'" in page, "Pages viewer missing snowfall label")
     check("Retaining ${history} prior run${history === 1 ? '' : 's'} per parameter" in page, "Pages viewer should report per-parameter run history")
     check("available.find(run => !isFailedRun(run))" in page, "Pages viewer should default to the latest non-failed run")
+    check("if (target?.label) return target.label;" in page, "Pages viewer should honor manifest labels for DJF and JFM")
     adapter_module = load_adapter()
+    august_snowfall = adapter_module.default_winter_snowfall_windows("2026080100")
+    september_snowfall = adapter_module.default_winter_snowfall_windows("2026090400")
+    check(august_snowfall == ([4, 5, 6, 7], [[4, 5, 6], [5, 6, 7]]), "August snowfall defaults should target Dec-Mar plus DJF/JFM")
+    check(september_snowfall == ([3, 4, 5, 6], [[3, 4, 5], [4, 5, 6]]), "snowfall target months must remain fixed when the initialization month advances")
+    check(adapter_module.parse_seasonal_windows("3,4,5;4,5,6") == [[3, 4, 5], [4, 5, 6]], "multiple snowfall seasonal windows should parse independently")
+    check(adapter_module.seasonal_period_label("202701", "202703") == "JFM 2027", "JFM seasonal targets should use a concise label")
+    try:
+        adapter_module.default_winter_snowfall_windows("2026050100")
+    except adapter_module.CFSv2Error:
+        pass
+    else:
+        raise AssertionError("the operational snowfall preset should reject an incomplete Dec-Mar horizon")
+    merged_snowfall = adapter_module.merge_seasonal_window_runs(
+        [
+            {
+                "id": "cfsv2-2026090400-snowfall_anomaly",
+                "status": "rendered",
+                "targets": [
+                    {"id": "dec", "status": "rendered", "image": "dec.jpg"},
+                    {"id": "jan", "status": "rendered", "image": "jan.jpg"},
+                    {"id": "feb", "status": "rendered", "image": "feb.jpg"},
+                    {"id": "mar", "status": "rendered", "image": "mar.jpg"},
+                    {"id": "djf", "status": "rendered", "image": "djf.jpg"},
+                ],
+            },
+            {
+                "id": "cfsv2-2026090400-snowfall_anomaly",
+                "status": "rendered",
+                "targets": [
+                    {"id": "jan", "status": "decoded"},
+                    {"id": "feb", "status": "decoded"},
+                    {"id": "mar", "status": "decoded"},
+                    {"id": "jfm", "status": "rendered", "image": "jfm.jpg"},
+                ],
+            },
+        ],
+        [[3, 4, 5], [4, 5, 6]],
+    )
+    check([target["id"] for target in merged_snowfall["targets"]] == ["dec", "jan", "feb", "mar", "djf", "jfm"], "snowfall manifest should retain four monthly maps and both seasonal maps")
+    check(merged_snowfall["targets"][1]["image"] == "jan.jpg", "seasonal-window merging must not replace a rendered monthly map with a decode-only fragment")
+    check(merged_snowfall["seasonal_windows"] == [[3, 4, 5], [4, 5, 6]], "snowfall manifest should record both configured seasonal windows")
+    with tempfile.TemporaryDirectory() as temporary:
+        wrapper_calls = []
+        final_run = {}
+        original_single_window = adapter_module._run_single_window
+        original_write_manifest = adapter_module.write_manifest
+        try:
+            def fake_single_window(child):
+                seasonal_id = "djf" if child.seasonal_window == "3,4,5" else "jfm"
+                wrapper_calls.append((child.lead_months, child.seasonal_window, getattr(child, "_seasonal_only", False)))
+                monthly_targets = (
+                    [
+                        {"id": "dec", "status": "rendered", "image": "dec.jpg"},
+                        {"id": "jan", "status": "rendered", "image": "jan.jpg"},
+                        {"id": "feb", "status": "rendered", "image": "feb.jpg"},
+                        {"id": "mar", "status": "rendered", "image": "mar.jpg"},
+                    ]
+                    if seasonal_id == "djf"
+                    else [
+                        {"id": "jan", "status": "decoded"},
+                        {"id": "feb", "status": "decoded"},
+                        {"id": "mar", "status": "decoded"},
+                    ]
+                )
+                payload = {
+                    "runs": [{
+                        "id": "cfsv2-2026090400-snowfall_anomaly",
+                        "status": "rendered",
+                        "targets": monthly_targets + [{"id": seasonal_id, "status": "rendered", "image": f"{seasonal_id}.jpg"}],
+                    }]
+                }
+                Path(child.manifest).write_text(json.dumps(payload), encoding="utf-8")
+                return 0
+
+            def capture_manifest(_path, _repo_root, run_entry, _previous_manifest, _retain_runs):
+                final_run.update(run_entry)
+
+            adapter_module._run_single_window = fake_single_window
+            adapter_module.write_manifest = capture_manifest
+            wrapper_result = adapter_module.run(SimpleNamespace(
+                product=adapter_module.PRODUCT_SNOWFALL_ANOMALY,
+                absolute=False,
+                decode_only=False,
+                init="2026090400",
+                lead_months="3,4,5,6",
+                seasonal_window="3,4,5;4,5,6",
+                manifest=Path(temporary) / "manifest.json",
+                previous_manifest=None,
+                retain_runs=4,
+            ))
+        finally:
+            adapter_module._run_single_window = original_single_window
+            adapter_module.write_manifest = original_write_manifest
+        check(wrapper_result == 0, "multi-window snowfall wrapper should return success")
+        check(wrapper_calls == [("3,4,5,6", "3,4,5", False), ("4,5,6", "4,5,6", True)], "second snowfall window should reuse decoded inputs without re-rendering monthly maps")
+        check([target["id"] for target in final_run["targets"]] == ["dec", "jan", "feb", "mar", "djf", "jfm"], "multi-window snowfall wrapper should publish exactly six default maps")
+    mature_cycles = adapter_module.filter_mature_cycle_inits(
+        ["2026090412", "2026090406", "2026090400"],
+        660,
+        now=adapter_module.dt.datetime(2026, 9, 4, 17, 45, tzinfo=adapter_module.dt.timezone.utc),
+    )
+    check(mature_cycles == ["2026090406", "2026090400"], "maturity filter should exclude the newer incomplete cycle directory")
     readiness_calls = []
 
     def readiness_probe(url):
@@ -503,12 +607,17 @@ def main() -> int:
     for term in (
         "discover_latest_ready_init",
         "readiness_products",
-        "readiness_leads",
         "readiness_wait_minutes",
         "readiness_retry_seconds",
         "wait_for_latest_minutes",
         "retry_seconds",
-        '35 10,22 * * *',
+        "filter_mature_cycle_inits",
+        "minimum_anchor_age_minutes=\"$CFSV2_MINIMUM_ANCHOR_AGE_MINUTES\"",
+        '45 5,11,17,23 * * *',
+        "default_winter_snowfall_windows",
+        "snowfall_lead_months",
+        "snowfall_seasonal_windows",
+        "product_lead_months",
     ):
         check(term in workflow, f"workflow missing CFSv2 readiness term: {term}")
     for term in (
@@ -521,7 +630,7 @@ def main() -> int:
     ):
         check(term in workflow, f"workflow missing speed-up term: {term}")
     check("--allow-partial-rolling" not in workflow, "scheduled CFSv2 workflow must not publish an incomplete rolling blend")
-    check("SCHEDULED_CFSV2_PRODUCTS: 500mb_height_anomaly,500mb_height_anomaly_nh,850mb_temperature_anomaly,2m_temperature_anomaly,mslp_anomaly,precipitation_anomaly,snowfall_anomaly" in workflow, "twice-daily workflow should refresh the complete CFSv2 anomaly suite")
+    check("SCHEDULED_CFSV2_PRODUCTS: 500mb_height_anomaly,500mb_height_anomaly_nh,850mb_temperature_anomaly,2m_temperature_anomaly,mslp_anomaly,precipitation_anomaly,snowfall_anomaly" in workflow, "four-times-daily workflow should refresh the complete CFSv2 anomaly suite")
     check("ALL_CFSV2_PRODUCTS: 500mb_height_anomaly,500mb_height_anomaly_nh,500mb_height_absolute,850mb_temperature_anomaly,2m_temperature_anomaly,mslp_anomaly,precipitation_anomaly,snowfall_anomaly" in workflow, "manual all action should cover every validated CFSv2 menu field")
     check("- snow_water_equivalent_anomaly" not in workflow, "quarantined CFSv2 SWE must not appear in the Actions menu")
     check("is_retired_product(product_name)" in adapter, "the CFSv2 adapter must block quarantined products before downloading data")
@@ -530,6 +639,7 @@ def main() -> int:
     check('headers={"Range": "bytes=0-0"}' in adapter and "stream=True" in adapter, "CFSv2 readiness must fall back to a ranged GET when NOMADS rejects HEAD")
     check('elif [[ "$CFSV2_PRODUCT" == "all" ]]' in workflow, "manual CFSv2 all action should expand to the full product list")
     check('github.event_name }}" == "schedule" || "$CFSV2_PRODUCT" == "all"' in workflow, "manual CFSv2 all action should use delayed-file readiness retries")
+    check(workflow.count('github.event_name }}" == "schedule" || "$CFSV2_PRODUCT" == "all"') >= 2, "scheduled and manual all-field runs should both use the target-aware snowfall preset")
     check("ROLLING_DAYS: ${{ inputs.rolling_days || '6' }}" in workflow, "scheduled CFSv2 workflow should default to six rolling days")
     dispatch_inputs = workflow.split("  workflow_dispatch:", 1)[1].split("  workflow_call:", 1)[0]
     check("rolling_days:" not in dispatch_inputs, "manual CFSv2 Actions must not offer archive-unsafe rolling windows")
@@ -547,6 +657,8 @@ def main() -> int:
     ):
         check(term in snow_workflow, f"CFSv2 snow-products workflow missing term: {term}")
     snow_dispatch_inputs = snow_workflow.split("  workflow_dispatch:", 1)[1].split("\npermissions:", 1)[0]
+    check(snow_dispatch_inputs.count('default: "operational-winter"') == 2, "focused snowfall Actions should default to Dec-Mar plus DJF/JFM")
+    check("semicolons" in snow_dispatch_inputs and "DJF and JFM" in snow_dispatch_inputs, "focused snowfall Actions should explain multiple seasonal windows")
     check("rolling_days:" not in snow_dispatch_inputs, "focused snowfall Actions must always use the supported 24-cycle window")
     check("snow_water_equivalent_anomaly" not in snow_workflow, "the focused snow workflow must not offer quarantined SWE")
     check("actions/cache/save@v4" in workflow and "if: always()" in workflow, "CFSv2 workflow should retain warmed rolling state after failed attempts")

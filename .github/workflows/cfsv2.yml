@@ -2,12 +2,13 @@ name: CFSv2 Rolling Seasonal Graphics
 
 on:
   schedule:
-    # CFSv2 runs every six hours. Run after the 06Z and 18Z cycles so the
-    # newest listed cycle is normally available, and let the readiness probe
-    # retry it before falling back to an older complete monthly-file set.
+    # CFSv2 runs every six hours, while its monthly_grib_01 files normally
+    # reach NOMADS about 11.5 hours after initialization. Check all four daily
+    # cycles at +11:45, then let the readiness probe retry a delayed file set
+    # before falling back to an older complete cycle.
     # The six-day rolling window stays inside NOMADS's seven-day archive even
     # when the selected anchor is delayed.
-    - cron: "35 10,22 * * *"
+    - cron: "45 5,11,17,23 * * *"
   workflow_dispatch:
     inputs:
       product:
@@ -26,12 +27,12 @@ on:
           - precipitation_anomaly
           - snowfall_anomaly
       lead_months:
-        description: "Target leads, comma-separated (DJF default: 4,5,6)"
+        description: "Target leads, comma-separated"
         required: false
         default: "4,5,6"
         type: string
       seasonal_window:
-        description: "Optional consecutive leads for a seasonal mean (DJF default: 4,5,6)"
+        description: "Optional consecutive leads for a seasonal aggregate"
         required: false
         default: "4,5,6"
         type: string
@@ -77,6 +78,7 @@ jobs:
       LEAD_MONTHS: ${{ inputs.lead_months || '4,5,6' }}
       SEASONAL_WINDOW: ${{ inputs.seasonal_window || '4,5,6' }}
       ROLLING_DAYS: ${{ inputs.rolling_days || '6' }}
+      CFSV2_MINIMUM_ANCHOR_AGE_MINUTES: "660"
     steps:
       - name: Validate archive-safe rolling window
         shell: bash
@@ -145,41 +147,113 @@ jobs:
             products=("$CFSV2_PRODUCT")
             readiness_products="$CFSV2_PRODUCT"
           fi
-          readiness_leads="${LEAD_MONTHS},${SEASONAL_WINDOW}"
           readiness_wait_minutes=0
           readiness_retry_seconds=60
+          minimum_anchor_age_minutes=0
+          use_default_snowfall_windows=0
+          if [[ "${{ github.event_name }}" == "schedule" || "$CFSV2_PRODUCT" == "all" ]]; then
+            use_default_snowfall_windows=1
+          elif [[ "$CFSV2_PRODUCT" == "snowfall_anomaly" && ( "$LEAD_MONTHS" == "operational-winter" || "$SEASONAL_WINDOW" == "operational-winter" ) ]]; then
+            use_default_snowfall_windows=1
+          fi
           if [[ "${{ github.event_name }}" == "schedule" || "$CFSV2_PRODUCT" == "all" ]]; then
             readiness_wait_minutes=30
             readiness_retry_seconds=180
+            minimum_anchor_age_minutes="$CFSV2_MINIMUM_ANCHOR_AGE_MINUTES"
           fi
           anchor_init="$(
-            python - "$readiness_products" "$readiness_leads" "$readiness_wait_minutes" "$readiness_retry_seconds" <<'PY'
+            python - "$readiness_products" "$LEAD_MONTHS" "$SEASONAL_WINDOW" "$readiness_wait_minutes" "$readiness_retry_seconds" "$minimum_anchor_age_minutes" "$use_default_snowfall_windows" <<'PY'
           import sys
 
           sys.path.insert(0, "scripts")
-          from cfsv2_seasonal import discover_latest_ready_init
+          from cfsv2_seasonal import (
+              CFSv2Error,
+              default_winter_snowfall_windows,
+              discover_latest_ready_init,
+              filter_mature_cycle_inits,
+              listed_cycle_inits,
+              parse_int_list,
+              parse_seasonal_windows,
+          )
 
           products = [value.strip() for value in sys.argv[1].split(",") if value.strip()]
-          leads = sorted({int(value) for value in sys.argv[2].split(",") if value.strip()})
+          candidate_inits = filter_mature_cycle_inits(
+              listed_cycle_inits(),
+              minimum_age_minutes=int(sys.argv[6]),
+          )
+          leads = set()
+          if sys.argv[2] != "operational-winter":
+              leads.update(parse_int_list(sys.argv[2], "lead months", 1, 9))
+          if sys.argv[3] != "operational-winter":
+              for window in parse_seasonal_windows(sys.argv[3]):
+                  leads.update(window)
+          if sys.argv[7] == "1" and "snowfall_anomaly" in products:
+              try:
+                  snowfall_leads, _windows = default_winter_snowfall_windows(candidate_inits[0])
+                  leads.update(snowfall_leads)
+              except (CFSv2Error, IndexError) as exc:
+                  if products == ["snowfall_anomaly"]:
+                      raise
+                  print(f"CFSv2 snowfall readiness skipped: {exc}", file=sys.stderr)
           print(
               discover_latest_ready_init(
                   products,
-                  leads,
-                  wait_for_latest_minutes=int(sys.argv[3]),
-                  retry_seconds=int(sys.argv[4]),
+                  sorted(leads),
+                  candidate_inits=candidate_inits,
+                  wait_for_latest_minutes=int(sys.argv[4]),
+                  retry_seconds=int(sys.argv[5]),
               )
           )
           PY
           )"
           echo "Using CFSv2 anchor initialization $anchor_init for ${#products[@]} product(s)."
+          snowfall_lead_months=""
+          snowfall_seasonal_windows=""
+          if [[ "$use_default_snowfall_windows" == "1" ]]; then
+            snowfall_config="$(
+              python - "$anchor_init" <<'PY'
+          import sys
+
+          sys.path.insert(0, "scripts")
+          from cfsv2_seasonal import CFSv2Error, default_winter_snowfall_windows
+
+          try:
+              leads, windows = default_winter_snowfall_windows(sys.argv[1])
+          except CFSv2Error as exc:
+              print(f"::warning title=CFSv2 snowfall window unavailable::{exc}", file=sys.stderr)
+              print("|")
+          else:
+              lead_text = ",".join(str(lead) for lead in leads)
+              window_text = ";".join(",".join(str(lead) for lead in window) for window in windows)
+              print(f"{lead_text}|{window_text}")
+          PY
+            )"
+            IFS='|' read -r snowfall_lead_months snowfall_seasonal_windows <<< "$snowfall_config"
+          fi
           overall_status=0
           for product in "${products[@]}"; do
             echo "Rendering CFSv2 product: $product"
+            product_lead_months="$LEAD_MONTHS"
+            product_seasonal_window="$SEASONAL_WINDOW"
+            if [[ "$product" == "snowfall_anomaly" && "$use_default_snowfall_windows" == "1" ]]; then
+              if [[ -z "$snowfall_lead_months" || -z "$snowfall_seasonal_windows" ]]; then
+                if [[ "${{ github.event_name }}" == "schedule" || "$CFSV2_PRODUCT" == "all" ]]; then
+                  echo "CFSv2 snowfall is outside the complete December-March forecast horizon; retaining the last published snowfall run."
+                  continue
+                fi
+                echo "CFSv2 snowfall default window is unavailable for $anchor_init." >&2
+                overall_status=1
+                continue
+              fi
+              product_lead_months="$snowfall_lead_months"
+              product_seasonal_window="$snowfall_seasonal_windows"
+              echo "Using snowfall leads $product_lead_months with seasonal windows $product_seasonal_window."
+            fi
             args=(
               scripts/cfsv2_seasonal.py
               --init "$anchor_init"
-              --lead-months "$LEAD_MONTHS"
-              --seasonal-window "$SEASONAL_WINDOW"
+              --lead-months "$product_lead_months"
+              --seasonal-window "$product_seasonal_window"
               --members 1
               --rolling-days "$ROLLING_DAYS"
               --rolling-member 1

@@ -25,6 +25,7 @@ import re
 import shutil
 import subprocess
 import sys
+import tempfile
 import time
 from dataclasses import dataclass
 from typing import Callable, Iterable, Iterator, Sequence
@@ -993,6 +994,21 @@ def parse_int_list(value: str, label: str, minimum: int, maximum: int) -> list[i
     return result
 
 
+def parse_seasonal_windows(value: str) -> list[list[int]]:
+    """Parse one or more semicolon-separated consecutive lead windows."""
+
+    windows: list[list[int]] = []
+    for index, raw_window in enumerate(str(value or "").split(";"), start=1):
+        if not raw_window.strip():
+            continue
+        leads = parse_int_list(raw_window, f"seasonal window {index}", 1, 9)
+        if leads != list(range(min(leads), max(leads) + 1)):
+            raise CFSv2Error("each --seasonal-window group must contain consecutive lead months")
+        if leads not in windows:
+            windows.append(leads)
+    return windows
+
+
 def month_after(year: int, month: int, lead_months: int) -> tuple[int, int]:
     absolute = year * 12 + month - 1 + lead_months
     return absolute // 12, absolute % 12 + 1
@@ -1018,6 +1034,7 @@ def seasonal_period_label(first_target: str, last_target: str) -> str:
     end = dt.datetime.strptime(last_target, "%Y%m")
     season = {
         (12, 2): f"DJF {start.year}\u2013{end.year % 100:02d}",
+        (1, 3): f"JFM {end.year}",
         (3, 5): f"MAM {end.year}",
         (6, 8): f"JJA {end.year}",
         (9, 11): f"SON {end.year}",
@@ -1058,6 +1075,41 @@ def listed_cycle_inits(
             if dt.datetime.strptime(candidate, "%Y%m%d%H") <= current:
                 candidates.append(candidate)
     return candidates
+
+
+def filter_mature_cycle_inits(
+    candidate_inits: Sequence[str],
+    minimum_age_minutes: int,
+    *,
+    now: dt.datetime | None = None,
+) -> list[str]:
+    """Keep listed cycles old enough for their delayed monthly files.
+
+    NOMADS creates each cycle directory well before ``monthly_grib_01`` is
+    complete. Scheduled full-suite runs use this filter so their bounded
+    readiness retry follows the cycle that should now be publishing instead
+    of waiting on the next, much younger cycle directory.
+    """
+
+    try:
+        minimum_age = int(minimum_age_minutes)
+    except (TypeError, ValueError) as exc:
+        raise CFSv2Error("CFSv2 minimum cycle age must be an integer number of minutes") from exc
+    if minimum_age < 0:
+        raise CFSv2Error("CFSv2 minimum cycle age cannot be negative")
+    current = now or dt.datetime.now(dt.timezone.utc)
+    if current.tzinfo is not None:
+        current = current.astimezone(dt.timezone.utc).replace(tzinfo=None)
+    cutoff = current - dt.timedelta(minutes=minimum_age)
+    mature = []
+    for candidate in candidate_inits:
+        try:
+            initialized = dt.datetime.strptime(candidate, "%Y%m%d%H")
+        except ValueError as exc:
+            raise CFSv2Error(f"invalid CFSv2 cycle initialization: {candidate}") from exc
+        if initialized <= cutoff:
+            mature.append(candidate)
+    return mature
 
 
 def discover_latest_init(root: str = NOMADS_ROOT) -> str:
@@ -1394,6 +1446,26 @@ def lead_for_target(init: str, target: str) -> int:
         if target_month(init, lead) == target:
             return lead
     raise CFSv2Error(f"CFSv2 cycle {init} has no 1-9 month lead for target {target}")
+
+
+def default_winter_snowfall_windows(init: str) -> tuple[list[int], list[list[int]]]:
+    """Return Dec-Mar leads plus DJF/JFM windows for the next forecast winter."""
+
+    parsed_init = dt.datetime.strptime(parse_init(init), "%Y%m%d%H")
+    winter_start_year = parsed_init.year if parsed_init.month <= 11 else parsed_init.year + 1
+    target_months = [
+        f"{winter_start_year:04d}12",
+        f"{winter_start_year + 1:04d}01",
+        f"{winter_start_year + 1:04d}02",
+        f"{winter_start_year + 1:04d}03",
+    ]
+    try:
+        leads = [lead_for_target(init, target) for target in target_months]
+    except CFSv2Error as exc:
+        raise CFSv2Error(
+            "a complete December-March snowfall window is outside this cycle's 1-9 month horizon"
+        ) from exc
+    return leads, [leads[:3], leads[1:]]
 
 
 def rolling_state_path(
@@ -3248,7 +3320,11 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--init", default="latest", help="CFSv2 cycle as YYYYMMDDHH, or latest")
     parser.add_argument("--lead-months", default="1,2,3", help="comma-separated target leads, usually 1,2,3")
-    parser.add_argument("--seasonal-window", default="", help="optional comma-separated leads for an additional seasonal mean, e.g. 1,2,3")
+    parser.add_argument(
+        "--seasonal-window",
+        default="",
+        help="optional consecutive leads for seasonal aggregates; separate multiple windows with semicolons, e.g. 3,4,5;4,5,6",
+    )
     parser.add_argument("--members", default="1,2,3,4", help="comma-separated monthly_grib member directories")
     parser.add_argument(
         "--rolling-days",
@@ -3296,7 +3372,7 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def run(args: argparse.Namespace) -> int:
+def _run_single_window(args: argparse.Namespace) -> int:
     repo_root = Path(__file__).resolve().parents[1]
     product_name, product, absolute = selected_product(args)
     if is_retired_product(product_name):
@@ -3606,6 +3682,21 @@ def run(args: argparse.Namespace) -> int:
                             )
                         target_entry["baseline"]["downloaded"] = baseline_downloaded
 
+            if getattr(args, "_seasonal_only", False):
+                target_entry["quality_control"] = grid_quality_control(
+                    product_name,
+                    anomaly_grid.values,
+                    units=product["units"],
+                    field=product["field"],
+                    seasonal=False,
+                )
+                require_quality_control(target_entry["quality_control"], CFSv2Error)
+                target_entry["status"] = "partial" if not target_entry["ensemble_complete"] else "decoded"
+                run_entry["targets"].append(target_entry)
+                target_entries_by_lead[lead] = target_entry
+                print(f"decoded CFSv2 {target} lead {lead} for an additional seasonal window")
+                continue
+
             output_path = output_dir / init / f"cfsv2_{product['file_token']}_{target}.jpg"
             target_entry["quality_control"] = grid_quality_control(
                 product_name,
@@ -3793,6 +3884,7 @@ def run(args: argparse.Namespace) -> int:
             start_date = dt.datetime.strptime(first_target, "%Y%m")
             end_date = dt.datetime.strptime(last_target, "%Y%m")
             period_label = seasonal_period_label(first_target, last_target)
+            seasonal_entry["label"] = period_label
             output_path = output_dir / init / f"cfsv2_{product['file_token']}_{first_target}-{last_target}.jpg"
             seasonal_entry["quality_control"] = grid_quality_control(
                 product_name,
@@ -3938,6 +4030,92 @@ def run(args: argparse.Namespace) -> int:
     write_manifest(manifest_path, repo_root, run_entry, previous_manifest, args.retain_runs)
     print(f"wrote CFSv2 manifest: {manifest_path}")
     return 2 if failures else 0
+
+
+def merge_seasonal_window_runs(runs: Sequence[dict], windows: Sequence[Sequence[int]]) -> dict:
+    """Merge one-init snowfall runs while retaining the best copy of each target."""
+
+    if not runs:
+        raise CFSv2Error("multiple seasonal windows produced no CFSv2 runs")
+    combined = json.loads(json.dumps(runs[0]))
+    targets_by_id = {
+        str(target.get("id")): target
+        for target in combined.get("targets", [])
+        if isinstance(target, dict) and target.get("id")
+    }
+    target_order = list(targets_by_id)
+    for run_entry in runs[1:]:
+        if run_entry.get("id") != combined.get("id"):
+            raise CFSv2Error("seasonal-window fragments identify different CFSv2 runs")
+        for target in run_entry.get("targets", []):
+            if not isinstance(target, dict) or not target.get("id"):
+                continue
+            target_id = str(target["id"])
+            if target_id not in targets_by_id:
+                target_order.append(target_id)
+                targets_by_id[target_id] = target
+            elif not targets_by_id[target_id].get("image") and target.get("image"):
+                targets_by_id[target_id] = target
+    combined["targets"] = [targets_by_id[target_id] for target_id in target_order]
+    combined["seasonal_windows"] = [list(window) for window in windows]
+    statuses = [str(target.get("status", "")) for target in combined["targets"]]
+    if any(status in {"failed", "partial"} for status in statuses):
+        combined["status"] = "partial" if any(status != "failed" for status in statuses) else "failed"
+    elif statuses:
+        combined["status"] = "rendered"
+    return combined
+
+
+def run(args: argparse.Namespace) -> int:
+    seasonal_windows = parse_seasonal_windows(args.seasonal_window)
+    if len(seasonal_windows) <= 1:
+        if seasonal_windows:
+            args.seasonal_window = ",".join(str(lead) for lead in seasonal_windows[0])
+        return _run_single_window(args)
+
+    product_name, _product, _absolute = selected_product(args)
+    if product_name != PRODUCT_SNOWFALL_ANOMALY:
+        raise CFSv2Error("multiple --seasonal-window groups are currently supported only for snowfall_anomaly")
+    if args.decode_only:
+        raise CFSv2Error("multiple --seasonal-window groups require rendered output")
+
+    repo_root = Path(__file__).resolve().parents[1]
+    resolved_init = discover_latest_init() if args.init == "latest" else parse_init(args.init)
+    expected_run_id = f"cfsv2-{resolved_init}-{product_name}"
+    window_runs: list[dict] = []
+    result = 0
+    with tempfile.TemporaryDirectory(prefix="cfsv2-seasonal-windows-") as temporary:
+        temporary_root = Path(temporary)
+        for index, seasonal_window in enumerate(seasonal_windows):
+            child = argparse.Namespace(**vars(args))
+            child.init = resolved_init
+            child.seasonal_window = ",".join(str(lead) for lead in seasonal_window)
+            child.manifest = temporary_root / f"window-{index}.json"
+            child.previous_manifest = None
+            if index > 0:
+                child.lead_months = child.seasonal_window
+                child._seasonal_only = True
+            child_result = _run_single_window(child)
+            result = max(result, child_result)
+            payload = json.loads(Path(child.manifest).read_text(encoding="utf-8"))
+            current = next(
+                (
+                    run_entry
+                    for run_entry in payload.get("runs", [])
+                    if run_entry.get("id") == expected_run_id
+                ),
+                None,
+            )
+            if current is None:
+                raise CFSv2Error(f"seasonal window {child.seasonal_window} did not write {expected_run_id}")
+            window_runs.append(current)
+
+    combined_run = merge_seasonal_window_runs(window_runs, seasonal_windows)
+    manifest_path = resolve_repo_path(args.manifest, repo_root)
+    previous_manifest = resolve_repo_path(args.previous_manifest, repo_root) if args.previous_manifest else None
+    write_manifest(manifest_path, repo_root, combined_run, previous_manifest, args.retain_runs)
+    print(f"merged {len(seasonal_windows)} CFSv2 snowfall seasonal windows: {manifest_path}")
+    return result
 
 
 def main() -> int:

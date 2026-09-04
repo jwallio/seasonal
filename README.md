@@ -62,6 +62,9 @@ bins from -2.0 to +2.0 inches, while seasonal/DJF maps use -4.0 to +4.0
 inches—finer near zero and wider in the tails—to reduce clipping while
 preserving the smaller LWE signal. Models without a
 native or explicitly derived snowfall field remain explicitly not applicable.
+CFSv2 refreshes its derived snowfall suite for December through March and
+publishes accumulated DJF and JFM departures whenever that complete cold-season
+window is inside the model's 1-9 month horizon.
 
 The established 500-mb map retains its North America framing, with a separate
 Northern Hemisphere 500-mb view available where the source provides 500-mb

@@ -12,7 +12,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 from seasonal_products import MODEL_SCHEDULES  # noqa: E402
 
 EXPECTED = {
-    ".github/workflows/cfsv2.yml": "35 10,22 * * *",
+    ".github/workflows/cfsv2.yml": "45 5,11,17,23 * * *",
     ".github/workflows/cansips.yml": "30 16 2 * *",
     ".github/workflows/cma-cpsv3.yml": "30 18 21 * *",
     ".github/workflows/nmme.yml": "30 15 9 * *",

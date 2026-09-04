@@ -8,8 +8,8 @@ on:
     types:
       - completed
   schedule:
-    # Reconcile late Pages/source publication after the twice-daily CFSv2
-    # windows. The freshness gate below avoids rebuilding unchanged maps.
+    # Reconcile late Pages/source publication between the four daily CFSv2
+    # windows. Source-triggered runs still follow every successful refresh.
     - cron: "35 2,14 * * *"
   workflow_dispatch:
 

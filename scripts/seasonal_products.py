@@ -377,12 +377,12 @@ MODEL_SCHEDULES: dict[str, dict[str, Any]] = {
     },
     "cfsv2": {
         "cadence_group": "frequent",
-        "cadence_label": "Twice daily",
-        "official_schedule": "CFSv2 runs four times daily at 00, 06, 12, and 18 UTC; wall.cloud harvests the 06Z and 18Z cycles.",
-        "official_url": "https://www.ncei.noaa.gov/products/weather-climate-models/climate-forecast-system",
+        "cadence_label": "Four times daily",
+        "official_schedule": "NCEP CFSv2 starts four 9-month forecasts daily at 00, 06, 12, and 18 UTC; wall.cloud checks each cycle after its NOMADS monthly files normally appear.",
+        "official_url": "https://cfs.ncep.noaa.gov/cfsv2.info/",
         "expected_cycle": {
-            "kind": "daily_times", "run_times_utc": ["06:00", "18:00"],
-            "publish_times_utc": ["10:35", "22:35"],
+            "kind": "daily_times", "run_times_utc": ["00:00", "06:00", "12:00", "18:00"],
+            "publish_times_utc": ["11:45", "17:45", "23:45", "05:45"],
             "publish_lag_minutes": 45, "late_after_minutes": 90,
         },
     },
