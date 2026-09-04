@@ -76,6 +76,11 @@ def main() -> int:
         "PRODUCT_SNOWFALL_ANOMALY",
         "snowfall_anomaly",
         "derive_snowfall_lwe_grid",
+        "PRODUCT_SNOWFALL_ACCUMULATION",
+        "snowfall_accumulation",
+        "derive_snowfall_accumulation_grid",
+        "Baxter_2005_CIPS_published_contour_anchor_IDW",
+        "CIPS_SLR_BASELINE_YEARS = \"1971-2000\"",
         "Dai_2008_land_seasonal_hyperbolic_tangent",
         "max(2-m, 850-hPa)",
         "dependencies",
@@ -174,6 +179,8 @@ def main() -> int:
     check("CFSV2_HEIGHT_ANOMALY_TICKS = list(range(-100, 101, 10))" in adapter, "CFSv2 height anomaly scale should label every 10 m")
     check("PRECIP_MONTHLY_ANOMALY_TICKS = [value / 2.0 for value in range(-8, 9)]" in adapter, "monthly precipitation should use 0.5-inch intervals from -4 to +4")
     check("PRECIP_SEASONAL_ANOMALY_TICKS = list(range(-8, 9))" in adapter, "seasonal precipitation should retain 1-inch intervals from -8 to +8")
+    check("SNOWFALL_ACCUMULATION_MONTHLY_BOUNDS_IN = list(range(0, 42, 2))" in adapter, "monthly estimated snowfall should use the WN2 two-inch scale through 40 inches")
+    check("SNOWFALL_ACCUMULATION_SEASONAL_BOUNDS_IN = list(range(0, 105, 5))" in adapter, "seasonal estimated snowfall should use a non-saturating five-inch scale through 100 inches")
     check("CFSV2_TEMPERATURE_ANOMALY_TICKS = TEMPERATURE_ANOMALY_TICKS" in adapter, "CFSv2 2-m temperature should use the shared scale")
     check("CFSV2_MSLP_ANOMALY_TICKS = list(range(-10, 11))" in adapter, "CFSv2 MSLP should use 1 hPa intervals from -10 to +10")
     check('boundary_values = product_spec.get("anomaly_bounds", colorbar_ticks)' in adapter, "anomaly bounds should support product-specific neutral intervals")
@@ -219,10 +226,18 @@ def main() -> int:
     check("'850mb_temperature_anomaly': '850-mb Temperature Anomaly'" in page, "Pages viewer missing 850-mb temperature label")
     check("'mslp_anomaly': 'Mean Sea-Level Pressure Anomaly'" in page, "Pages viewer missing MSLP label")
     check("'snowfall_anomaly': 'CONUS Snowfall Departure'" in page, "Pages viewer missing snowfall label")
+    check("'snowfall_accumulation': 'CONUS Estimated Snowfall Accumulation'" in page, "Pages viewer missing estimated snowfall label")
     check("Retaining ${history} prior run${history === 1 ? '' : 's'} per parameter" in page, "Pages viewer should report per-parameter run history")
     check("available.find(run => !isFailedRun(run))" in page, "Pages viewer should default to the latest non-failed run")
     check("if (target?.label) return target.label;" in page, "Pages viewer should honor manifest labels for DJF and JFM")
     adapter_module = load_adapter()
+    accumulation_spec = adapter_module.get_product_spec(adapter_module.PRODUCT_SNOWFALL_ACCUMULATION)
+    check(
+        accumulation_spec["requires_baseline"] is False
+        and accumulation_spec["render_as_anomaly"] is False
+        and len(accumulation_spec["monthly_absolute_bounds"]) == len(accumulation_spec["monthly_absolute_palette"]) + 1,
+        "estimated snowfall should be a separately labelled absolute product with a valid fixed palette",
+    )
     august_snowfall = adapter_module.default_winter_snowfall_windows("2026080100")
     september_snowfall = adapter_module.default_winter_snowfall_windows("2026090400")
     check(august_snowfall == ([4, 5, 6, 7], [[4, 5, 6], [5, 6, 7]]), "August snowfall defaults should target Dec-Mar plus DJF/JFM")
@@ -507,6 +522,34 @@ def main() -> int:
     check(math.isclose(derived_snowfall.values[0][0], expected_snowfall, rel_tol=1e-9), "CFSv2 snowfall should apply the warmer-level Dai phase fraction to monthly precipitation")
     check(snowfall_diagnostics["member_or_cycle_count"] == 2, "snowfall diagnostics should record the contributing members")
     check("regridded" in snowfall_diagnostics["regridding"], "snowfall diagnostics should disclose the 850-mb regrid")
+    accumulation_input = adapter_module.Grid(
+        [-124.0, -107.0, -82.0],
+        [35.0, 45.0],
+        [[1.0, 1.0, 1.0], [1.0, 1.0, 1.0]],
+    )
+    accumulation, slr_diagnostics = adapter_module.derive_snowfall_accumulation_grid(
+        accumulation_input,
+        "202701",
+    )
+    check(
+        accumulation.values[1][1] > accumulation.values[1][0],
+        "CIPS SLR should preserve the higher midwinter interior-mountain ratio relative to the Pacific coast",
+    )
+    check(
+        all(adapter_module.CIPS_SLR_MIN <= value <= adapter_module.CIPS_SLR_MAX for row in accumulation.values for value in row),
+        "one inch of snowfall LWE should convert to snow depth within the documented CIPS ratio bounds",
+    )
+    check(
+        slr_diagnostics["baseline_years"] == "1971-2000"
+        and slr_diagnostics["season"] == "DJF"
+        and "storm-scale" in slr_diagnostics["limitations"],
+        "accumulation metadata should disclose the CIPS period, season, and climatological limitation",
+    )
+    _, march_slr_diagnostics = adapter_module.derive_snowfall_accumulation_grid(
+        accumulation_input,
+        "202703",
+    )
+    check(march_slr_diagnostics["season"] == "MAM", "March accumulation should use the published late-winter SLR field")
     reference = adapter_module.Grid([0.0, 1.0], [0.0, 1.0], [[500.0, 501.0], [502.0, 503.0]])
     regridded = adapter_module.regrid_nearest(reference, [0.1, 0.9], [0.1, 0.9], "test")
     check(regridded.values == [[500.0, 501.0], [502.0, 503.0]], "common reference regrid should preserve nearest source values")
@@ -597,6 +640,8 @@ def main() -> int:
         "mslp_anomaly",
         "precipitation_anomaly",
         "snowfall_anomaly",
+        "snowfall_accumulation",
+        "snowfall_suite",
         "CFSV2_PRODUCT",
     ):
         check(term in workflow, f"workflow missing product selector term: {term}")
@@ -630,8 +675,8 @@ def main() -> int:
     ):
         check(term in workflow, f"workflow missing speed-up term: {term}")
     check("--allow-partial-rolling" not in workflow, "scheduled CFSv2 workflow must not publish an incomplete rolling blend")
-    check("SCHEDULED_CFSV2_PRODUCTS: 500mb_height_anomaly,500mb_height_anomaly_nh,850mb_temperature_anomaly,2m_temperature_anomaly,mslp_anomaly,precipitation_anomaly,snowfall_anomaly" in workflow, "four-times-daily workflow should refresh the complete CFSv2 anomaly suite")
-    check("ALL_CFSV2_PRODUCTS: 500mb_height_anomaly,500mb_height_anomaly_nh,500mb_height_absolute,850mb_temperature_anomaly,2m_temperature_anomaly,mslp_anomaly,precipitation_anomaly,snowfall_anomaly" in workflow, "manual all action should cover every validated CFSv2 menu field")
+    check("SCHEDULED_CFSV2_PRODUCTS: 500mb_height_anomaly,500mb_height_anomaly_nh,850mb_temperature_anomaly,2m_temperature_anomaly,mslp_anomaly,precipitation_anomaly,snowfall_anomaly,snowfall_accumulation" in workflow, "four-times-daily workflow should refresh the complete CFSv2 anomaly and snowfall-estimate suite")
+    check("ALL_CFSV2_PRODUCTS: 500mb_height_anomaly,500mb_height_anomaly_nh,500mb_height_absolute,850mb_temperature_anomaly,2m_temperature_anomaly,mslp_anomaly,precipitation_anomaly,snowfall_anomaly,snowfall_accumulation" in workflow, "manual all action should cover every validated CFSv2 menu field")
     check("- snow_water_equivalent_anomaly" not in workflow, "quarantined CFSv2 SWE must not appear in the Actions menu")
     check("is_retired_product(product_name)" in adapter, "the CFSv2 adapter must block quarantined products before downloading data")
     check("choices=tuple(product for product in PRODUCT_SPECS if not is_retired_product(product))" in adapter, "the CFSv2 CLI must hide quarantined products")
@@ -648,9 +693,12 @@ def main() -> int:
     check("workflow_call:" in workflow, "CFSv2 workflow should be reusable by focused product menus")
     for term in (
         "name: CFSv2 Snowfall Graphics",
-        "CFSv2 snowfall departure",
+        "Snow product to generate",
+        "snowfall_suite",
         "snowfall_anomaly",
+        "snowfall_accumulation",
         "uses: ./.github/workflows/cfsv2.yml",
+        "product: ${{ inputs.product }}",
         "lead_months: ${{ inputs.lead_months }}",
         "seasonal_window: ${{ inputs.seasonal_window }}",
         'rolling_days: "6"',

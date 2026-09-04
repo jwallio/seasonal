@@ -119,8 +119,12 @@ the four daily refreshes publishes snowfall departure maps for December,
 January, February, and March, plus accumulated DJF and JFM departures. The
 workflow derives the required leads from the chosen anchor cycle, so advancing
 from an August to a September initialization does not shift the requested
-calendar months. These three-month snowfall products are sums of monthly
-liquid-water-equivalent departures in inches. Outside the complete Dec-Mar
+calendar months. The same refresh also publishes CIPS-climatology-adjusted
+estimated snow-depth accumulation for those four months and both seasonal
+windows. The three-month departure products are sums of monthly
+liquid-water-equivalent departures in inches; the accumulation products sum
+monthly snow-depth estimates after applying each month's seasonal SLR field.
+Outside the complete Dec-Mar
 horizon, the scheduled suite retains the latest complete snowfall set while
 the other CFSv2 products continue to update.
 

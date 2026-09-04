@@ -35,6 +35,7 @@ The supported production products are:
 | `mslp_anomaly` | `PRES:mean sea level` from `pgbf` | hPa | 3-month mean |
 | `precipitation_anomaly` | `PRATE:surface` from `flxf` | in | 3-month total |
 | `snowfall_anomaly` | Derived from `TMP:2 m`, `TMP:850 mb`, and `PRATE:surface` | in LWE | 3-month total |
+| `snowfall_accumulation` | Derived snowfall LWE multiplied by seasonal CIPS/Baxter SLR climatology | in estimated snow depth | 3-month total |
 
 The 2-m temperature anomaly is a forecast-minus-reforecast difference; the
 Kelvin offset cancels, so it is displayed in °C. MSLP is decoded from the
@@ -65,6 +66,22 @@ regridded to the native FLXF Gaussian grid before the phase calculation. The
 matching 1982-2010 NCEI calibration fields are processed with the same method
 and subtracted from the forecast. A single SWE or precipitation baseline is
 never accepted as a snowfall substitute.
+
+Estimated snowfall accumulation is a separate product. After the member-level
+Dai phase calculation produces monthly snowfall liquid-water equivalent, the
+monthly LWE is multiplied by a deterministic spatial SLR field based on the
+published Baxter et al. (2005) CIPS 1971-2000 mean contours. December through
+February use the published midwinter contour field and March uses the late-winter
+field. Representative contour anchors are inverse-distance interpolated with a
+175-km distance floor and bounded to the published 8:1-18:1 CONUS range. DJF and
+JFM are sums of the already converted monthly snow-depth estimates, so March's
+late-winter ratio is applied before JFM is accumulated. The manifest records the
+source, years, anchors, interpolation, bounds, and limitations. This is a
+climatological snow-depth estimate; monthly CFSv2 cannot resolve event-scale
+crystal habit, melting, wind compaction, or settling.
+
+Source references: [CIPS interactive climatology](https://www.eas.slu.edu/CIPS/SLR/slrmap.htm)
+and [Baxter et al. (2005)](https://doi.org/10.1175/WAF856.1).
 
 `snow_water_equivalent_anomaly` is quarantined from production. The available
 NCEI flux-calibration `WEASD` field is effectively zero and is not a valid
@@ -115,7 +132,8 @@ anchor initialization instead of treating fixed lead numbers as calendar
 months. When the full cold season is inside the 1-9 month forecast horizon,
 each CFSv2 refresh publishes six snowfall targets: **December**, **January**,
 **February**, **March**, the **DJF** accumulated departure, and the **JFM**
-accumulated departure. For example, a September initialization maps those
+accumulated departure. The same six periods are published as climatology-adjusted
+estimated snowfall accumulation. For example, a September initialization maps those
 targets to leads `3,4,5,6`, with seasonal windows `3,4,5;4,5,6`; an August
 initialization maps them to `4,5,6,7` and `4,5,6;5,6,7`. If a scheduled or
 manual all-field cycle cannot contain the entire December-March window within
@@ -139,9 +157,11 @@ remain available through the local CLI only when a complete external rolling
 archive has already been populated.
 
 For a shorter manual menu, **CFSv2 Snowfall Graphics** runs the validated
-derived **Snowfall departure** (`snowfall_anomaly`). Its default
-`operational-winter` preset produces the same December-March monthly set plus
-DJF and JFM. Custom calls can still supply explicit lead months and one or more
+derived **Snowfall departure** (`snowfall_anomaly`), the separate **Estimated
+snowfall accumulation** (`snowfall_accumulation`), or both. Its default
+`snowfall_suite` plus `operational-winter` preset produces the same
+December-March monthly set plus DJF and JFM for both products. Custom calls can
+still supply explicit lead months and one or more
 semicolon-separated seasonal windows. The menu always uses the archive-safe
 24-cycle window, then uploads the standard CFSv2 payload for the central Pages
 publisher.
@@ -252,7 +272,7 @@ and `Pillow`; `wgrib2` must be installed separately. The adapter honors
 The GitHub Actions workflow includes a **CFSv2 product** dropdown. The current
 adapter supports `500mb_height_anomaly` (the production output, selected by
 default), `850mb_temperature_anomaly`, `2m_temperature_anomaly`, `mslp_anomaly`,
-`precipitation_anomaly`, `snowfall_anomaly`,
+`precipitation_anomaly`, `snowfall_anomaly`, `snowfall_accumulation`,
 and `500mb_height_absolute` (a clearly
 labelled decoder/source smoke output). The viewer's product selector displays
 each product when its run is present in the retained manifest.
@@ -388,8 +408,8 @@ Each target entry uses these fields:
 | `valid_start_utc` / `valid_end_utc` | Calendar month represented |
 | `lead_month` / `target_month` | CFSv2 lead and `YYYYMM` target |
 | `aggregation` | Monthly forecast average, monthly 2-m temperature/sea-level pressure mean, monthly precipitation total, or 3-month seasonal total/mean |
-| `field` | `z500_anomaly`, `z500`, `t850_anomaly`, `t2m_anomaly`, `mslp_anomaly`, `precipitation_anomaly`, or `snowfall_lwe` |
-| `units` | m for height; °C for 850-mb/2-m temperature; hPa for MSLP; in for precipitation and snowfall LWE |
+| `field` | `z500_anomaly`, `z500`, `t850_anomaly`, `t2m_anomaly`, `mslp_anomaly`, `precipitation_anomaly`, `snowfall_lwe`, or `snowfall_accumulation` |
+| `units` | m for height; °C for 850-mb/2-m temperature; hPa for MSLP; in for precipitation, snowfall LWE, and estimated snow depth |
 | `raw_field` / `raw_units` | Source GRIB field and units before any conversion |
 | `conversion` | Product-specific unit conversion, including calendar-month PRATE totals |
 | `baseline` | Baseline file, label, and years when applicable |

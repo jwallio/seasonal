@@ -9,6 +9,9 @@ The production anomaly path uses a month-matched CFSv2/reforecast baseline.
 The script never substitutes a WeatherNext, ERA5, or MERRA-2 climatology.
 ``--absolute`` is available only for source/decoder smoke tests and is labelled
 as an absolute-height product in the manifest and image.
+The separately named snowfall-accumulation product is an explicit derived
+snow-depth estimate using a documented climatological snow-to-liquid ratio;
+it is never presented as an anomaly or as storm-scale deterministic snowfall.
 """
 
 from __future__ import annotations
@@ -234,6 +237,20 @@ SNOWFALL_MONTHLY_ANOMALY_PALETTE = [
     "#1b496e",
     "#123856",
 ]
+# Snow-depth accumulation uses the established WN2 snowfall palette. Monthly
+# products retain two-inch bins through 40 inches; three-month totals use the
+# same visual progression in five-inch bins through 100 inches so mountain
+# totals do not immediately saturate the map.
+SNOWFALL_ACCUMULATION_MONTHLY_BOUNDS_IN = list(range(0, 42, 2))
+SNOWFALL_ACCUMULATION_MONTHLY_TICKS_IN = list(range(0, 41, 4))
+SNOWFALL_ACCUMULATION_SEASONAL_BOUNDS_IN = list(range(0, 105, 5))
+SNOWFALL_ACCUMULATION_SEASONAL_TICKS_IN = list(range(0, 101, 10))
+SNOWFALL_ACCUMULATION_PALETTE = [
+    "#eaf8ff", "#cfeeff", "#a9defd", "#7bc9f7", "#4aaee8",
+    "#2f8fd9", "#516dd0", "#6b52c6", "#8540be", "#9d36b7",
+    "#b93db8", "#d451bb", "#00b8d6", "#28d0e6", "#74e8f4",
+    "#cbfbff", "#1ec48f", "#53d8ae", "#97edd0", "#ddfff1",
+]
 # Shared fixed scale for seasonal 850-mb and 2-m temperature anomalies.
 # Model-specific narrower ranges clipped stronger signals and made the same
 # anomaly look different in comparison views.
@@ -319,6 +336,7 @@ PRODUCT_MSLP_ANOMALY = "mslp_anomaly"
 PRODUCT_PRECIPITATION_ANOMALY = "precipitation_anomaly"
 PRODUCT_SWE_ANOMALY = "snow_water_equivalent_anomaly"
 PRODUCT_SNOWFALL_ANOMALY = "snowfall_anomaly"
+PRODUCT_SNOWFALL_ACCUMULATION = "snowfall_accumulation"
 
 # The NOMADS filenames retain the ``pgbf.`` and ``flxf.`` product prefixes.
 # The FLXF monthly files are on the native CFSv2 Gaussian grid. Keep the
@@ -561,6 +579,45 @@ PRODUCT_SPECS = {
         "mask_states": list(CONUS_STATE_NAMES),
         "border_files": ("us-states.geojson",),
     },
+    PRODUCT_SNOWFALL_ACCUMULATION: {
+        "name": PRODUCT_SNOWFALL_ACCUMULATION,
+        "source_kind": "derived",
+        "dependencies": (
+            PRODUCT_2M_TEMPERATURE_ANOMALY,
+            PRODUCT_850_TEMPERATURE_ANOMALY,
+            PRODUCT_PRECIPITATION_ANOMALY,
+        ),
+        "raw_field": "Derived from TMP:2 m above ground, TMP:850 mb, and PRATE:surface",
+        "raw_units": "K; K; kg m-2 s-1",
+        "field": "snowfall_accumulation",
+        "units": "in",
+        "grid_shape": (FLUX_GRID_LON_COUNT, FLUX_GRID_LAT_COUNT),
+        "id_token": "snowfall-accumulation",
+        "file_token": "snowfall",
+        "title": "CFSv2 Estimated Snowfall Accumulation (in)",
+        "absolute_title": "CFSv2 Estimated Snowfall Accumulation (in)",
+        "region": CONUS_PRECIP_REGION,
+        "height_contours": False,
+        "requires_baseline": False,
+        "render_as_anomaly": False,
+        "seasonal_reducer": "sum",
+        "seasonal_aggregation": "seasonal estimated snowfall accumulation",
+        "seasonal_units": "in",
+        "monthly_aggregation": "monthly estimated snowfall accumulation",
+        "monthly_absolute_bounds": SNOWFALL_ACCUMULATION_MONTHLY_BOUNDS_IN,
+        "monthly_absolute_ticks": SNOWFALL_ACCUMULATION_MONTHLY_TICKS_IN,
+        "monthly_absolute_palette": SNOWFALL_ACCUMULATION_PALETTE,
+        "seasonal_absolute_bounds": SNOWFALL_ACCUMULATION_SEASONAL_BOUNDS_IN,
+        "seasonal_absolute_ticks": SNOWFALL_ACCUMULATION_SEASONAL_TICKS_IN,
+        "seasonal_absolute_palette": SNOWFALL_ACCUMULATION_PALETTE,
+        "conversion": "Dai (2008) member-level snow fraction converted from LWE to snow depth with the Baxter et al. (2005) CIPS 1971-2000 seasonal mean SLR contour climatology",
+        "header_detail": "{source_label}  •  Dai phase estimate + CIPS 1971-2000 seasonal mean SLR  •  Estimated snow depth (in)  •  CONUS domain",
+        "map_domain": "land",
+        "fit_frame_to_domain": True,
+        "domain_frame_padding_fraction": 0.0,
+        "mask_states": list(CONUS_STATE_NAMES),
+        "border_files": ("us-states.geojson",),
+    },
 }
 
 
@@ -580,6 +637,7 @@ PRODUCT_SPECS[PRODUCT_HEIGHT_ANOMALY_NH] = {
 }
 
 HEIGHT_ANOMALY_PRODUCTS = frozenset({PRODUCT_HEIGHT_ANOMALY, PRODUCT_HEIGHT_ANOMALY_NH})
+SNOWFALL_PRODUCTS = frozenset({PRODUCT_SNOWFALL_ANOMALY, PRODUCT_SNOWFALL_ACCUMULATION})
 
 
 class CFSv2Error(RuntimeError):
@@ -743,6 +801,130 @@ def derive_snowfall_lwe_grid(
         "regridding": "850-mb pressure grid nearest-neighbor regridded to the FLXF Gaussian grid",
     }
     return Grid(reference.lons[:], reference.lats[:], means.tolist()), diagnostics
+
+
+# Baxter et al. (2005) published objectively analyzed mean SLR contours for
+# midwinter (Dec-Feb) and late winter (Mar-Apr). The interactive CIPS page is
+# a legacy image map rather than a numeric service, so retain a compact,
+# versioned set of representative contour anchors here and interpolate them
+# deterministically. Values and locations follow Figs. 7-8 and are deliberately
+# bounded to the published 8:1-18:1 CONUS range. This is a climatological snow
+# depth estimate, not a storm-scale microphysics diagnosis.
+CIPS_SLR_SOURCE_URL = "https://doi.org/10.1175/WAF856.1"
+CIPS_SLR_INTERACTIVE_URL = "https://www.eas.slu.edu/CIPS/SLR/slrmap.htm"
+CIPS_SLR_BASELINE_YEARS = "1971-2000"
+CIPS_SLR_MIN = 8.0
+CIPS_SLR_MAX = 18.0
+CIPS_SLR_ANCHORS = {
+    "DJF": (
+        (-124.0, 47.0, 9.0), (-123.0, 43.5, 10.0), (-122.0, 39.5, 10.0),
+        (-119.5, 35.5, 9.0), (-116.5, 40.5, 12.0), (-113.5, 45.0, 16.0),
+        (-109.0, 47.0, 17.0), (-107.0, 43.0, 18.0), (-106.0, 39.0, 17.0),
+        (-111.0, 34.5, 11.0), (-106.0, 34.5, 14.0), (-102.0, 35.0, 14.0),
+        (-100.5, 47.0, 17.0), (-99.0, 42.5, 15.0), (-98.0, 38.0, 13.0),
+        (-96.0, 32.0, 14.0), (-93.0, 46.0, 16.0), (-89.0, 44.5, 16.0),
+        (-87.0, 42.5, 16.0), (-84.5, 44.5, 17.0), (-90.0, 39.0, 12.0),
+        (-84.0, 39.5, 12.0), (-80.0, 42.5, 15.0), (-76.5, 43.0, 16.0),
+        (-72.5, 44.0, 15.0), (-69.5, 45.5, 15.0), (-73.5, 41.0, 11.0),
+        (-76.0, 39.0, 10.0), (-80.0, 37.5, 11.0), (-82.0, 34.5, 9.0),
+        (-88.0, 35.0, 10.0), (-92.0, 33.0, 9.0),
+    ),
+    "MAM": (
+        (-124.0, 47.0, 9.0), (-123.0, 43.5, 9.0), (-122.0, 39.5, 10.0),
+        (-119.0, 35.5, 8.0), (-117.0, 42.0, 13.0), (-113.5, 46.0, 16.0),
+        (-108.0, 45.0, 15.0), (-107.0, 40.0, 15.0), (-111.0, 34.5, 9.0),
+        (-106.0, 34.5, 14.0), (-100.0, 46.5, 12.0), (-98.0, 38.5, 11.0),
+        (-93.0, 45.0, 12.0), (-85.0, 44.0, 13.0), (-90.0, 39.0, 11.0),
+        (-84.0, 39.0, 11.0), (-77.0, 42.5, 13.0), (-71.0, 45.0, 13.0),
+        (-72.0, 42.0, 11.0), (-74.5, 39.5, 9.0), (-80.0, 37.0, 11.0),
+        (-82.5, 34.5, 8.0), (-88.0, 35.0, 10.0), (-93.0, 34.0, 10.0),
+    ),
+}
+
+
+def cips_slr_season(target: str) -> str:
+    """Return the available CIPS seasonal SLR contour set for a YYYYMM target."""
+
+    month = dt.datetime.strptime(target, "%Y%m").month
+    if month in (12, 1, 2):
+        return "DJF"
+    if month == 3:
+        return "MAM"
+    raise CFSv2Error(
+        "CFSv2 climatology-adjusted snowfall accumulation is supported only "
+        "for December through March"
+    )
+
+
+def cips_climatological_slr_grid(grid: Grid, target: str) -> tuple[Grid, dict[str, object]]:
+    """Interpolate the published CIPS seasonal mean SLR contour anchors."""
+
+    try:
+        import numpy as np
+    except ImportError as exc:  # pragma: no cover - requirements install numpy
+        raise CFSv2Error("CFSv2 snowfall accumulation requires numpy") from exc
+
+    season = cips_slr_season(target)
+    anchors = np.asarray(CIPS_SLR_ANCHORS[season], dtype=float)
+    longitudes, latitudes = np.meshgrid(
+        np.asarray([_normalize_lon(value) for value in grid.lons], dtype=float),
+        np.asarray(grid.lats, dtype=float),
+    )
+    # A 175-km floor prevents a contour anchor from becoming a pixel-scale
+    # bullseye on the coarse FLXF grid. Longitude distance is latitude-scaled.
+    latitude_midpoint = np.deg2rad((latitudes[..., None] + anchors[:, 1]) / 2.0)
+    dx_km = (
+        (longitudes[..., None] - anchors[:, 0])
+        * np.cos(latitude_midpoint)
+        * 111.32
+    )
+    dy_km = (latitudes[..., None] - anchors[:, 1]) * 110.57
+    distance_squared = dx_km * dx_km + dy_km * dy_km
+    weights = 1.0 / (distance_squared + 175.0**2)
+    ratios = np.sum(weights * anchors[:, 2], axis=-1) / np.sum(weights, axis=-1)
+    ratios = np.clip(ratios, CIPS_SLR_MIN, CIPS_SLR_MAX)
+    diagnostics = {
+        "method": "Baxter_2005_CIPS_published_contour_anchor_IDW",
+        "source": CIPS_SLR_SOURCE_URL,
+        "interactive_reference": CIPS_SLR_INTERACTIVE_URL,
+        "baseline_years": CIPS_SLR_BASELINE_YEARS,
+        "season": season,
+        "anchor_count": int(anchors.shape[0]),
+        "interpolation": "inverse-distance weighting with 175-km distance floor",
+        "ratio_bounds": [CIPS_SLR_MIN, CIPS_SLR_MAX],
+        "limitations": "seasonal climatological mean; does not resolve storm-scale crystal growth, melting, wind compaction, or settling",
+    }
+    return Grid(grid.lons[:], grid.lats[:], ratios.tolist()), diagnostics
+
+
+def derive_snowfall_accumulation_grid(
+    snowfall_lwe_grid: Grid,
+    target: str,
+) -> tuple[Grid, dict[str, object]]:
+    """Convert monthly snowfall LWE to estimated snow depth using CIPS SLR."""
+
+    try:
+        import numpy as np
+    except ImportError as exc:  # pragma: no cover - requirements install numpy
+        raise CFSv2Error("CFSv2 snowfall accumulation requires numpy") from exc
+
+    ratio_grid, diagnostics = cips_climatological_slr_grid(snowfall_lwe_grid, target)
+    snowfall_lwe_grid.assert_compatible(ratio_grid, "CIPS SLR")
+    lwe = np.asarray(snowfall_lwe_grid.values, dtype=float)
+    ratios = np.asarray(ratio_grid.values, dtype=float)
+    valid = np.isfinite(lwe) & np.isfinite(ratios)
+    snowfall_depth = np.where(valid, np.maximum(lwe, 0.0) * ratios, np.nan)
+    if not np.isfinite(snowfall_depth).any():
+        raise CFSv2Error("CFSv2 snowfall accumulation produced no finite values")
+    diagnostics = dict(diagnostics)
+    diagnostics["formula"] = "monthly snowfall LWE (in) multiplied by climatological SLR"
+    diagnostics["input_units"] = "inches liquid-water equivalent"
+    diagnostics["output_units"] = "inches estimated snow depth"
+    return Grid(
+        snowfall_lwe_grid.lons[:],
+        snowfall_lwe_grid.lats[:],
+        snowfall_depth.tolist(),
+    ), diagnostics
 
 
 def _bicubic_sample_grid(
@@ -952,6 +1134,23 @@ def anomaly_style(
             SWE_ANOMALY_PALETTE,
         )
     return ANOMALY_MIN_M, ANOMALY_MAX_M, ANOMALY_TICKS, ANOMALY_PALETTE
+
+
+def absolute_style(
+    product_spec: dict,
+    seasonal: bool = False,
+) -> tuple[Sequence[float], Sequence[float], Sequence[str]] | None:
+    """Return an optional fixed categorical scale for a non-anomaly product."""
+
+    period_prefix = "seasonal" if seasonal else "monthly"
+    bounds = product_spec.get(f"{period_prefix}_absolute_bounds")
+    if bounds is None:
+        return None
+    ticks = product_spec.get(f"{period_prefix}_absolute_ticks", bounds)
+    palette = product_spec.get(f"{period_prefix}_absolute_palette")
+    if palette is None:
+        raise CFSv2Error(f"{product_spec['name']} fixed absolute scale has no palette")
+    return bounds, ticks, palette
 
 
 def iso_utc(value: dt.datetime) -> str:
@@ -1933,10 +2132,13 @@ def decode_snowfall_target_ensemble(
     wgrib2: str,
     repo_root: Path,
     last_request: float,
+    product_name: str = PRODUCT_SNOWFALL_ANOMALY,
 ) -> tuple[Grid, list[dict], int, int, str, float, dict[str, object]]:
     """Decode the three CFSv2 fields needed for derived snowfall."""
 
-    dependencies = PRODUCT_SPECS[PRODUCT_SNOWFALL_ANOMALY]["dependencies"]
+    if product_name not in SNOWFALL_PRODUCTS:
+        raise CFSv2Error(f"{product_name} is not a derived CFSv2 snowfall product")
+    dependencies = PRODUCT_SPECS[product_name]["dependencies"]
     member_grids: dict[str, dict[str, Grid]] = {}
     source_files: list[dict] = []
     counts: list[tuple[int, int]] = []
@@ -1995,6 +2197,12 @@ def decode_snowfall_target_ensemble(
         snowfall_inputs[PRODUCT_PRECIPITATION_ANOMALY],
         target,
     )
+    if product_name == PRODUCT_SNOWFALL_ACCUMULATION:
+        snowfall_grid, ratio_diagnostics = derive_snowfall_accumulation_grid(
+            snowfall_grid,
+            target,
+        )
+        diagnostics["snow_to_liquid_ratio"] = ratio_diagnostics
     diagnostics["dependencies"] = list(dependencies)
     diagnostics["regridded_dependency"] = PRODUCT_850_TEMPERATURE_ANOMALY
     available_count = min(count for count, _ in counts)
@@ -2004,6 +2212,8 @@ def decode_snowfall_target_ensemble(
         if rolling_inits
         else f"{available_count}-member derived snowfall mean"
     )
+    if product_name == PRODUCT_SNOWFALL_ACCUMULATION:
+        label = f"{label}; CIPS climatological SLR"
     return snowfall_grid, source_files, available_count, expected_count, label, last_request, diagnostics
 
 
@@ -2676,7 +2886,7 @@ def render_map(
     # the branded share image does not carry a large unused lower panel.
     figure = plt.figure(figsize=(9.0, 9.0), dpi=120, facecolor="#f7f9fb")
     has_footer = bool(footer_text.strip())
-    is_snowfall = product_spec.get("name") == "snowfall_anomaly"
+    is_snowfall = product_spec.get("name") in SNOWFALL_PRODUCTS
     colorbar_height = 0.032
     colorbar_gap = float(product_spec.get("colorbar_gap", 0.012 if is_snowfall else 0.025))
     if not math.isfinite(colorbar_gap) or colorbar_gap < 0.0:
@@ -2767,6 +2977,7 @@ def render_map(
             x_pad = max(0.01, (x_max - x_min) * frame_padding_fraction)
             y_pad = max(0.01, (y_max - y_min) * frame_padding_fraction)
     snowfall_scale_label = ""
+    fixed_absolute_style = None
     if anomaly:
         anomaly_min, anomaly_max, colorbar_ticks, palette = anomaly_style(
             product_spec,
@@ -2803,25 +3014,49 @@ def render_map(
             antialiased=True,
         )
     else:
-        finite = np.asarray(list(_finite_values(grid)), dtype=float)
-        if finite.size == 0:
-            raise CFSv2Error("decoded grid contains no finite values")
-        vmin = float(np.nanpercentile(finite, 2))
-        vmax = float(np.nanpercentile(finite, 98))
-        if vmin == vmax:
-            vmin -= 1.0
-            vmax += 1.0
-        image = axes.contourf(
-            canvas_x,
-            canvas_y,
-            masked,
-            levels=np.linspace(vmin, vmax, 17),
-            cmap="viridis",
-            norm=mcolors.Normalize(vmin=vmin, vmax=vmax),
-            extend="both",
-            antialiased=True,
-        )
-        colorbar_ticks = np.linspace(vmin, vmax, 7)
+        fixed_absolute_style = absolute_style(product_spec, seasonal=seasonal)
+        if fixed_absolute_style is not None:
+            absolute_bounds, colorbar_ticks, palette = fixed_absolute_style
+            bounds = np.asarray(absolute_bounds, dtype=float)
+            if (
+                bounds.ndim != 1
+                or bounds.size != len(palette) + 1
+                or np.any(np.diff(bounds) <= 0.0)
+            ):
+                raise CFSv2Error(
+                    "absolute palette must have one fewer color than strictly increasing boundaries"
+                )
+            cmap = mcolors.ListedColormap(palette)
+            norm = mcolors.BoundaryNorm(bounds, cmap.N, clip=True)
+            image = axes.contourf(
+                canvas_x,
+                canvas_y,
+                np.ma.clip(masked, bounds[0], bounds[-1]),
+                levels=bounds,
+                cmap=cmap,
+                norm=norm,
+                antialiased=True,
+            )
+        else:
+            finite = np.asarray(list(_finite_values(grid)), dtype=float)
+            if finite.size == 0:
+                raise CFSv2Error("decoded grid contains no finite values")
+            vmin = float(np.nanpercentile(finite, 2))
+            vmax = float(np.nanpercentile(finite, 98))
+            if vmin == vmax:
+                vmin -= 1.0
+                vmax += 1.0
+            image = axes.contourf(
+                canvas_x,
+                canvas_y,
+                masked,
+                levels=np.linspace(vmin, vmax, 17),
+                cmap="viridis",
+                norm=mcolors.Normalize(vmin=vmin, vmax=vmax),
+                extend="both",
+                antialiased=True,
+            )
+            colorbar_ticks = np.linspace(vmin, vmax, 7)
 
     # Filled anomalies show the signal; actual 500-mb heights provide the
     # synoptic structure and make the map readable like an operational
@@ -3076,7 +3311,7 @@ def render_map(
     colorbar_bottom = max(colorbar_floor, map_bottom - colorbar_gap - colorbar_height)
     colorbar_axes = figure.add_axes([map_left, colorbar_bottom, map_width, colorbar_height])
     colorbar_options = {"ticks": colorbar_ticks}
-    if anomaly:
+    if anomaly or fixed_absolute_style is not None:
         colorbar_options["boundaries"] = bounds
     colorbar = figure.colorbar(
         image,
@@ -3088,6 +3323,7 @@ def render_map(
             PRODUCT_PRECIPITATION_ANOMALY,
             PRODUCT_SWE_ANOMALY,
             PRODUCT_SNOWFALL_ANOMALY,
+            PRODUCT_SNOWFALL_ACCUMULATION,
         },
         **colorbar_options,
     )
@@ -3233,6 +3469,7 @@ def manifest_product_key(run: dict) -> str:
         "precipitation_anomaly": PRODUCT_PRECIPITATION_ANOMALY,
         "snow_water_equivalent_anomaly": PRODUCT_SWE_ANOMALY,
         "snowfall_anomaly": PRODUCT_SNOWFALL_ANOMALY,
+        "snowfall_accumulation": PRODUCT_SNOWFALL_ACCUMULATION,
     }.get(str(run.get("field", "")), PRODUCT_HEIGHT_ANOMALY)
 
 
@@ -3375,6 +3612,8 @@ def build_parser() -> argparse.ArgumentParser:
 def _run_single_window(args: argparse.Namespace) -> int:
     repo_root = Path(__file__).resolve().parents[1]
     product_name, product, absolute = selected_product(args)
+    requires_baseline = bool(product.get("requires_baseline", not absolute))
+    render_as_anomaly = bool(product.get("render_as_anomaly", requires_baseline))
     if is_retired_product(product_name):
         raise CFSv2Error(
             f"{product_name} is quarantined from production because its available "
@@ -3405,7 +3644,7 @@ def _run_single_window(args: argparse.Namespace) -> int:
         raise CFSv2Error(
             f"--ncei-calibration uses the published {NCEI_CALIBRATION_YEARS} baseline"
         )
-    if not absolute and not args.decode_only and configured_baselines == 0:
+    if requires_baseline and not args.decode_only and configured_baselines == 0:
         raise CFSv2Error(
             "production anomaly rendering needs a CFSv2/reforecast baseline; "
             "provide --baseline-file/--baseline-dir, use --ncei-calibration, or use --absolute for smoke testing"
@@ -3489,7 +3728,16 @@ def _run_single_window(args: argparse.Namespace) -> int:
         }
     if product.get("conversion"):
         run_entry["conversion"] = product["conversion"]
-    if absolute:
+    if not requires_baseline:
+        run_entry["baseline"] = {
+            "status": "not_applicable",
+            "reason": (
+                "climatology-adjusted absolute snowfall estimate"
+                if product_name == PRODUCT_SNOWFALL_ACCUMULATION
+                else "absolute smoke output"
+            ),
+        }
+    elif absolute:
         run_entry["baseline"] = {"status": "not_applicable", "reason": "absolute smoke output"}
     elif args.decode_only:
         run_entry["baseline"] = {
@@ -3521,7 +3769,7 @@ def _run_single_window(args: argparse.Namespace) -> int:
             "years": args.baseline_years or None,
             "required": True,
         }
-    if rolling_mode and not absolute:
+    if rolling_mode and requires_baseline:
         run_entry["baseline"]["rolling_policy"] = "anchor_initialization"
 
     last_request = 0.0
@@ -3551,7 +3799,7 @@ def _run_single_window(args: argparse.Namespace) -> int:
             "status": "planned",
         }
         try:
-            if product_name == PRODUCT_SNOWFALL_ANOMALY:
+            if product_name in SNOWFALL_PRODUCTS:
                 (
                     ensemble,
                     source_files,
@@ -3571,6 +3819,7 @@ def _run_single_window(args: argparse.Namespace) -> int:
                     wgrib2,
                     repo_root,
                     last_request,
+                    product_name,
                 )
                 target_entry["derivation"] = derivation_diagnostics
             else:
@@ -3600,9 +3849,9 @@ def _run_single_window(args: argparse.Namespace) -> int:
                 print(f"decoded CFSv2 {target} lead {lead} from {ensemble_count}/{ensemble_expected_for_target} member(s)")
                 continue
 
-            baseline_label = "absolute field smoke output"
+            baseline_label = "not applicable"
             anomaly_grid = ensemble
-            if not absolute:
+            if requires_baseline:
                 if product_name == PRODUCT_SNOWFALL_ANOMALY:
                     baseline_grid, baseline_info, last_request = load_snowfall_baseline(
                         args,
@@ -3713,7 +3962,7 @@ def _run_single_window(args: argparse.Namespace) -> int:
                 lead,
                 members,
                 output_path,
-                anomaly=not absolute,
+                anomaly=render_as_anomaly,
                 baseline_label=baseline_label,
                 border_paths=border_paths,
                 ensemble_label=ensemble_label,
@@ -3839,8 +4088,8 @@ def _run_single_window(args: argparse.Namespace) -> int:
                 else mean_grids([forecast_grids[lead] for lead in seasonal_leads])
             )
             seasonal_grid = seasonal_forecast
-            baseline_label = "absolute field smoke output"
-            if not absolute:
+            baseline_label = "not applicable"
+            if requires_baseline:
                 missing_baselines = [lead for lead in seasonal_leads if lead not in baseline_grids]
                 if missing_baselines:
                     raise CFSv2Error(f"seasonal window is missing baseline lead(s): {missing_baselines}")
@@ -3867,7 +4116,14 @@ def _run_single_window(args: argparse.Namespace) -> int:
                     rolling_init=init if rolling_mode else None,
                 )
             else:
-                seasonal_entry["baseline"] = {"status": "not_applicable", "reason": "absolute smoke output"}
+                seasonal_entry["baseline"] = {
+                    "status": "not_applicable",
+                    "reason": (
+                        "climatology-adjusted absolute snowfall estimate"
+                        if product_name == PRODUCT_SNOWFALL_ACCUMULATION
+                        else "absolute smoke output"
+                    ),
+                }
             seasonal_entry["source_files"] = [
                 source_file
                 for lead in seasonal_leads
@@ -3901,7 +4157,7 @@ def _run_single_window(args: argparse.Namespace) -> int:
                 f"{first_lead}\u2013{last_lead}",
                 members,
                 output_path,
-                anomaly=not absolute,
+                anomaly=render_as_anomaly,
                 baseline_label=baseline_label,
                 border_paths=border_paths,
                 period_label=period_label,
@@ -4074,8 +4330,10 @@ def run(args: argparse.Namespace) -> int:
         return _run_single_window(args)
 
     product_name, _product, _absolute = selected_product(args)
-    if product_name != PRODUCT_SNOWFALL_ANOMALY:
-        raise CFSv2Error("multiple --seasonal-window groups are currently supported only for snowfall_anomaly")
+    if product_name not in SNOWFALL_PRODUCTS:
+        raise CFSv2Error(
+            "multiple --seasonal-window groups are currently supported only for snowfall products"
+        )
     if args.decode_only:
         raise CFSv2Error("multiple --seasonal-window groups require rendered output")
 

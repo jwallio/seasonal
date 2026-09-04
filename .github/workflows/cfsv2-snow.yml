@@ -1,10 +1,19 @@
 name: CFSv2 Snowfall Graphics
 
-run-name: CFSv2 snowfall departure · leads ${{ inputs.lead_months }}
+run-name: CFSv2 ${{ inputs.product }} · leads ${{ inputs.lead_months }}
 
 on:
   workflow_dispatch:
     inputs:
+      product:
+        description: "Snow product to generate"
+        required: false
+        default: "snowfall_suite"
+        type: choice
+        options:
+          - snowfall_suite
+          - snowfall_anomaly
+          - snowfall_accumulation
       lead_months:
         description: "CFS leads, or operational-winter for the next available Dec-Mar window"
         required: false
@@ -24,7 +33,7 @@ jobs:
     name: Generate selected CFSv2 snow product
     uses: ./.github/workflows/cfsv2.yml
     with:
-      product: snowfall_anomaly
+      product: ${{ inputs.product }}
       lead_months: ${{ inputs.lead_months }}
       seasonal_window: ${{ inputs.seasonal_window }}
       # GitHub-hosted jobs use the archive-safe operational window. Longer

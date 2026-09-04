@@ -26,6 +26,8 @@ on:
           - mslp_anomaly
           - precipitation_anomaly
           - snowfall_anomaly
+          - snowfall_accumulation
+          - snowfall_suite
       lead_months:
         description: "Target leads, comma-separated"
         required: false
@@ -73,8 +75,8 @@ jobs:
     timeout-minutes: 240
     env:
       CFSV2_PRODUCT: ${{ inputs.product || '500mb_height_anomaly' }}
-      SCHEDULED_CFSV2_PRODUCTS: 500mb_height_anomaly,500mb_height_anomaly_nh,850mb_temperature_anomaly,2m_temperature_anomaly,mslp_anomaly,precipitation_anomaly,snowfall_anomaly
-      ALL_CFSV2_PRODUCTS: 500mb_height_anomaly,500mb_height_anomaly_nh,500mb_height_absolute,850mb_temperature_anomaly,2m_temperature_anomaly,mslp_anomaly,precipitation_anomaly,snowfall_anomaly
+      SCHEDULED_CFSV2_PRODUCTS: 500mb_height_anomaly,500mb_height_anomaly_nh,850mb_temperature_anomaly,2m_temperature_anomaly,mslp_anomaly,precipitation_anomaly,snowfall_anomaly,snowfall_accumulation
+      ALL_CFSV2_PRODUCTS: 500mb_height_anomaly,500mb_height_anomaly_nh,500mb_height_absolute,850mb_temperature_anomaly,2m_temperature_anomaly,mslp_anomaly,precipitation_anomaly,snowfall_anomaly,snowfall_accumulation
       LEAD_MONTHS: ${{ inputs.lead_months || '4,5,6' }}
       SEASONAL_WINDOW: ${{ inputs.seasonal_window || '4,5,6' }}
       ROLLING_DAYS: ${{ inputs.rolling_days || '6' }}
@@ -143,6 +145,9 @@ jobs:
           elif [[ "$CFSV2_PRODUCT" == "all" ]]; then
             IFS=',' read -r -a products <<< "$ALL_CFSV2_PRODUCTS"
             readiness_products="$ALL_CFSV2_PRODUCTS"
+          elif [[ "$CFSV2_PRODUCT" == "snowfall_suite" ]]; then
+            products=("snowfall_anomaly" "snowfall_accumulation")
+            readiness_products="snowfall_anomaly,snowfall_accumulation"
           else
             products=("$CFSV2_PRODUCT")
             readiness_products="$CFSV2_PRODUCT"
@@ -153,7 +158,7 @@ jobs:
           use_default_snowfall_windows=0
           if [[ "${{ github.event_name }}" == "schedule" || "$CFSV2_PRODUCT" == "all" ]]; then
             use_default_snowfall_windows=1
-          elif [[ "$CFSV2_PRODUCT" == "snowfall_anomaly" && ( "$LEAD_MONTHS" == "operational-winter" || "$SEASONAL_WINDOW" == "operational-winter" ) ]]; then
+          elif [[ ( "$CFSV2_PRODUCT" == "snowfall_anomaly" || "$CFSV2_PRODUCT" == "snowfall_accumulation" || "$CFSV2_PRODUCT" == "snowfall_suite" ) && ( "$LEAD_MONTHS" == "operational-winter" || "$SEASONAL_WINDOW" == "operational-winter" ) ]]; then
             use_default_snowfall_windows=1
           fi
           if [[ "${{ github.event_name }}" == "schedule" || "$CFSV2_PRODUCT" == "all" ]]; then
@@ -187,12 +192,15 @@ jobs:
           if sys.argv[3] != "operational-winter":
               for window in parse_seasonal_windows(sys.argv[3]):
                   leads.update(window)
-          if sys.argv[7] == "1" and "snowfall_anomaly" in products:
+          if sys.argv[7] == "1" and any(
+              product in {"snowfall_anomaly", "snowfall_accumulation"}
+              for product in products
+          ):
               try:
                   snowfall_leads, _windows = default_winter_snowfall_windows(candidate_inits[0])
                   leads.update(snowfall_leads)
               except (CFSv2Error, IndexError) as exc:
-                  if products == ["snowfall_anomaly"]:
+                  if set(products).issubset({"snowfall_anomaly", "snowfall_accumulation"}):
                       raise
                   print(f"CFSv2 snowfall readiness skipped: {exc}", file=sys.stderr)
           print(
@@ -235,7 +243,7 @@ jobs:
             echo "Rendering CFSv2 product: $product"
             product_lead_months="$LEAD_MONTHS"
             product_seasonal_window="$SEASONAL_WINDOW"
-            if [[ "$product" == "snowfall_anomaly" && "$use_default_snowfall_windows" == "1" ]]; then
+            if [[ ( "$product" == "snowfall_anomaly" || "$product" == "snowfall_accumulation" ) && "$use_default_snowfall_windows" == "1" ]]; then
               if [[ -z "$snowfall_lead_months" || -z "$snowfall_seasonal_windows" ]]; then
                 if [[ "${{ github.event_name }}" == "schedule" || "$CFSV2_PRODUCT" == "all" ]]; then
                   echo "CFSv2 snowfall is outside the complete December-March forecast horizon; retaining the last published snowfall run."
@@ -270,6 +278,8 @@ jobs:
             )
             if [[ "$product" == "500mb_height_absolute" ]]; then
               args+=(--product "$product" --absolute)
+            elif [[ "$product" == "snowfall_accumulation" ]]; then
+              args+=(--product "$product")
             else
               args+=(--product "$product" --ncei-calibration --allow-stale-calibration)
             fi
