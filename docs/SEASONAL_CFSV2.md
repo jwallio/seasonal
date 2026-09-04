@@ -107,11 +107,20 @@ manual menu field in one run: both 500-mb views, absolute 500-mb height,
 snowfall. The twice-daily scheduled suite remains limited to the operational
 anomaly products listed above.
 
+The GitHub-hosted Actions menus intentionally lock this window to six days
+(24 cycles). Free-form 7- or 10-day requests are not offered because the
+oldest required cycles can already be outside NOMADS by the time a delayed
+anchor is ready. Reusable workflow calls fail immediately with a clear error
+if they request more than six days, instead of downloading for several minutes
+and failing on an unavailable boundary cycle. Longer experimental windows
+remain available through the local CLI only when a complete external rolling
+archive has already been populated.
+
 For a shorter manual menu, **CFSv2 Snowfall Graphics** runs the validated
 derived **Snowfall departure** (`snowfall_anomaly`). It passes the selected
-lead months, seasonal window, and rolling-window length through the same
-reusable CFSv2 renderer, then uploads the standard CFSv2 payload for the
-central Pages publisher.
+lead months and seasonal window through the same reusable CFSv2 renderer,
+always using the archive-safe 24-cycle window, then uploads the standard
+CFSv2 payload for the central Pages publisher.
 
 The adapter also supports the CPC-style `--rolling-days 10` window, which
 produces 40 cycles, for callers that maintain a durable rolling-state archive

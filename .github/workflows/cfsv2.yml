@@ -35,11 +35,6 @@ on:
         required: false
         default: "4,5,6"
         type: string
-      rolling_days:
-        description: "Lagged initial-condition window; 6 means 24 cycles"
-        required: false
-        default: "6"
-        type: string
   workflow_call:
     inputs:
       product:
@@ -66,9 +61,9 @@ permissions:
   contents: write
 
 concurrency:
-  # A newer scheduled cycle supersedes an older readiness wait. This prevents
-  # a delayed source cycle from occupying the runner for the full timeout.
-  group: seasonal-cfsv2-${{ inputs.init || 'latest' }}
+  # Supersede only an older run from the same entry point and product scope.
+  # A focused snowfall repair must never cancel the scheduled all-field suite.
+  group: seasonal-cfsv2-${{ github.workflow }}-${{ github.event_name == 'schedule' && 'scheduled-suite' || (inputs.product || 'default') }}
   cancel-in-progress: true
 
 jobs:
@@ -83,6 +78,15 @@ jobs:
       SEASONAL_WINDOW: ${{ inputs.seasonal_window || '4,5,6' }}
       ROLLING_DAYS: ${{ inputs.rolling_days || '6' }}
     steps:
+      - name: Validate archive-safe rolling window
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! [[ "$ROLLING_DAYS" =~ ^[1-6]$ ]]; then
+            echo "::error title=Unsupported CFSv2 rolling window::GitHub-hosted jobs support 1-6 days (up to 24 cycles). Use 6 for operational maps; longer windows require a pre-populated external rolling archive."
+            exit 2
+          fi
+
       - name: Checkout
         uses: actions/checkout@v4
 

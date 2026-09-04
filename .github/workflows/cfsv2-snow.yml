@@ -15,11 +15,6 @@ on:
         required: false
         default: "4,5,6"
         type: string
-      rolling_days:
-        description: "Lagged initial-condition window; 6 means 24 cycles"
-        required: false
-        default: "6"
-        type: string
 
 permissions:
   contents: write
@@ -32,4 +27,6 @@ jobs:
       product: snowfall_anomaly
       lead_months: ${{ inputs.lead_months }}
       seasonal_window: ${{ inputs.seasonal_window }}
-      rolling_days: ${{ inputs.rolling_days }}
+      # GitHub-hosted jobs use the archive-safe operational window. Longer
+      # windows require a rolling archive that predates the live NOMADS files.
+      rolling_days: "6"

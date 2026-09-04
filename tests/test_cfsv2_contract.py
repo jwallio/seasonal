@@ -530,8 +530,11 @@ def main() -> int:
     check('headers={"Range": "bytes=0-0"}' in adapter and "stream=True" in adapter, "CFSv2 readiness must fall back to a ranged GET when NOMADS rejects HEAD")
     check('elif [[ "$CFSV2_PRODUCT" == "all" ]]' in workflow, "manual CFSv2 all action should expand to the full product list")
     check('github.event_name }}" == "schedule" || "$CFSV2_PRODUCT" == "all"' in workflow, "manual CFSv2 all action should use delayed-file readiness retries")
-    check('description: "Lagged initial-condition window; 6 means 24 cycles"' in workflow, "scheduled CFSv2 workflow should stay inside the live archive")
     check("ROLLING_DAYS: ${{ inputs.rolling_days || '6' }}" in workflow, "scheduled CFSv2 workflow should default to six rolling days")
+    dispatch_inputs = workflow.split("  workflow_dispatch:", 1)[1].split("  workflow_call:", 1)[0]
+    check("rolling_days:" not in dispatch_inputs, "manual CFSv2 Actions must not offer archive-unsafe rolling windows")
+    check("Validate archive-safe rolling window" in workflow and "^[1-6]$" in workflow, "reusable CFSv2 calls must reject rolling windows outside the live archive before downloading")
+    check("github.workflow" in workflow and "scheduled-suite" in workflow and "inputs.product" in workflow, "CFSv2 concurrency must isolate scheduled, all-fields, and focused product runs")
     check("workflow_call:" in workflow, "CFSv2 workflow should be reusable by focused product menus")
     for term in (
         "name: CFSv2 Snowfall Graphics",
@@ -540,9 +543,11 @@ def main() -> int:
         "uses: ./.github/workflows/cfsv2.yml",
         "lead_months: ${{ inputs.lead_months }}",
         "seasonal_window: ${{ inputs.seasonal_window }}",
-        "rolling_days: ${{ inputs.rolling_days }}",
+        'rolling_days: "6"',
     ):
         check(term in snow_workflow, f"CFSv2 snow-products workflow missing term: {term}")
+    snow_dispatch_inputs = snow_workflow.split("  workflow_dispatch:", 1)[1].split("\npermissions:", 1)[0]
+    check("rolling_days:" not in snow_dispatch_inputs, "focused snowfall Actions must always use the supported 24-cycle window")
     check("snow_water_equivalent_anomaly" not in snow_workflow, "the focused snow workflow must not offer quarantined SWE")
     check("actions/cache/save@v4" in workflow and "if: always()" in workflow, "CFSv2 workflow should retain warmed rolling state after failed attempts")
     check("--keep-source-cache" in workflow and "Trim transient CFSv2 source cache" in workflow, "scheduled CFSv2 products should reuse and then trim source downloads")

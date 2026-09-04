@@ -101,7 +101,12 @@ failures retain the previous good image and mark it stale.
 The CFSv2 readiness check retries the newest listed cycle for 30 minutes before
 falling back to the newest complete prior cycle. That prevents the normal
 NOMADS directory-versus-file publication gap from turning a newly listed cycle
-into an unnecessarily old analog input. The analog workflow also runs a
+into an unnecessarily old analog input. Hosted CFSv2 jobs use the fixed
+six-day/24-cycle window that remains inside the seven-day NOMADS archive;
+longer rolling windows require a pre-populated external archive and are not
+offered in the Actions menus. Scheduled full-suite, manual all-fields, and
+focused snowfall runs have separate concurrency scopes, so a repair can no
+longer cancel an operational refresh. The analog workflow also runs a
 scheduled reconciliation after each CFSv2 window; it compares the current
 Pages source manifests with the analog manifest and only rebuilds when a
 source run is newer or changed. This covers delayed workflow events and Pages
