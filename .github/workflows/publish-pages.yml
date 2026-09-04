@@ -95,7 +95,7 @@ jobs:
         run: |
           set -euo pipefail
           case "$SOURCE_WORKFLOW" in
-            "CFSv2 snowfall departure"*)
+            "CFSv2 snowfall"*)
               echo "SOURCE_WORKFLOW=CFSv2 Snowfall Graphics" >> "$GITHUB_ENV"
               ;;
           esac

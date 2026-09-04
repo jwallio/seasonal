@@ -761,7 +761,7 @@ def main() -> int:
         check(term in pages_workflow, f"central Pages workflow missing term: {term}")
     for term in (
         "Normalize source workflow name",
-        '"CFSv2 snowfall departure"*',
+        '"CFSv2 snowfall"*',
         'echo "SOURCE_WORKFLOW=CFSv2 Snowfall Graphics" >> "$GITHUB_ENV"',
     ):
         check(term in pages_workflow, f"central Pages workflow missing dynamic snow-run normalization: {term}")
