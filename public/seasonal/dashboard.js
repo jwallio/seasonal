@@ -8,7 +8,8 @@ const ANALOG_PRODUCTS_MANIFEST_URL = assetPath('seasonal/analog_products_manifes
 const ANALOG_PRODUCT_ORDER = ['psl_500mb_height_anomaly', 'psl_2m_temperature_anomaly', 'mrcc_snowfall_departure'];
 function shareImagePath(value) {
   const relative = normalizeAssetPath(value);
-  return assetPath(relative.startsWith('share/') ? relative : `share/${relative}`);
+  const version = seasonalCatalog?.generated_utc || seasonalCatalog?.source_revision || '';
+  return `${assetPath(relative.startsWith('share/') ? relative : `share/${relative}`)}${version ? `?v=${encodeURIComponent(version)}` : ''}`;
 }
 function thumbnailPath(value) {
   const relative = normalizeAssetPath(value);
@@ -1313,6 +1314,8 @@ function renderAll() {
   el('fact-lead').textContent = leadText(model, target); el('fact-ensemble').textContent = ensembleText(model, run, target); el('fact-field').textContent = fieldText(target); el('fact-status').textContent = statusText(run, target);
   if (model.kind === 'weathernext') {
     el('scope').textContent = `${run.source_label || run.source || model.source} · Updated ${initLabel(run.updated_utc)}. ${run.successful_exports || 0} successful exports.`;
+  } else if (selection.model === 'cfsv2' && selection.product === 'snowfall_accumulation') {
+    el('scope').textContent = `${run.conversion || 'Retained earlier snowfall estimation method'}. Init ${initLabel(run.init_utc)}. No departure baseline is applied to this total.`;
   } else {
     const baseline = run.climatology?.source || targetValue?.baseline?.source || 'model calibration baseline';
     el('scope').textContent = `${runMethodText(model, run)} from ${initLabel(run.init_utc)}. Baseline: ${baseline}.`;

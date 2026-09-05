@@ -54,7 +54,7 @@ TARGET_FIELDS = (
     "monthly_leads", "field", "units", "status", "error", "image", "comparison", "baseline",
     "ensemble_members", "ensemble_expected_members", "ensemble_complete", "ensemble_scope", "member_count",
     "expected_member_count", "included_members", "missing_members", "statistic", "aggregation",
-    "probability_integrity", "quality_control",
+    "probability_integrity", "quality_control", "derivation", "source_warning", "numeric_grid", "native_lwe_grid",
 )
 
 

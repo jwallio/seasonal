@@ -144,7 +144,7 @@ PRODUCTS: dict[str, dict[str, Any]] = {
             "seasonal": {"minimum": 0.0, "maximum": 200.0, "step": 5.0},
         },
         "hard_range": {"minimum": 0.0, "maximum": 500.0},
-        "minimum_finite_fraction": 0.02,
+        "minimum_finite_fraction": 0.01,
         "domain": "conus",
         "comparison": False,
     },

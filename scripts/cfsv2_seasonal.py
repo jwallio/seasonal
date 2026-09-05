@@ -622,14 +622,12 @@ PRODUCT_SPECS = {
     },
     PRODUCT_SNOWFALL_ACCUMULATION: {
         "name": PRODUCT_SNOWFALL_ACCUMULATION,
-        "source_kind": "derived",
-        "dependencies": (
-            PRODUCT_2M_TEMPERATURE_ANOMALY,
-            PRODUCT_850_TEMPERATURE_ANOMALY,
-            PRODUCT_PRECIPITATION_ANOMALY,
-        ),
-        "raw_field": "Derived from TMP:2 m above ground, TMP:850 mb, and PRATE:surface",
-        "raw_units": "K; K; kg m-2 s-1",
+        "source_kind": "flxf",
+        "match": ":SRWEQ:surface:",
+        "cache_tag": "native-srweq-v1",
+        "state_tag": "native-srweq-v1",
+        "raw_field": "SRWEQ:surface",
+        "raw_units": "kg m-2 s-1",
         "field": "snowfall_accumulation",
         "units": "in",
         "grid_shape": (FLUX_GRID_LON_COUNT, FLUX_GRID_LAT_COUNT),
@@ -651,8 +649,8 @@ PRODUCT_SPECS = {
         "seasonal_absolute_bounds": SNOWFALL_ACCUMULATION_SEASONAL_BOUNDS_IN,
         "seasonal_absolute_ticks": SNOWFALL_ACCUMULATION_SEASONAL_TICKS_IN,
         "seasonal_absolute_palette": SNOWFALL_ACCUMULATION_SEASONAL_PALETTE,
-        "conversion": "Dai (2008) member-level snow fraction converted from LWE to snow depth with the Baxter et al. (2005) CIPS 1971-2000 seasonal mean SLR contour climatology",
-        "header_detail": "{source_label}  •  Dai phase estimate + CIPS 1971-2000 seasonal mean SLR  •  Estimated snow depth (in)  •  CONUS domain",
+        "conversion": "Native SRWEQ integrated over calendar months, complete-cycle mean, multiplied by verified CIPS 1971-2000 CWA mean SLR; unadjusted estimate",
+        "header_detail": "{source_label}  •  Native snowfall × CIPS 1971-2000 CWA mean ratio  •  Estimated snow depth (in)  •  CONUS domain",
         "map_domain": "land",
         "fit_frame_to_domain": True,
         "domain_frame_padding_fraction": 0.0,
@@ -2179,6 +2177,9 @@ def decode_snowfall_target_ensemble(
 
     if product_name not in SNOWFALL_PRODUCTS:
         raise CFSv2Error(f"{product_name} is not a derived CFSv2 snowfall product")
+    if product_name == PRODUCT_SNOWFALL_ACCUMULATION:
+        from cfsv2_native_snow import decode
+        return decode(args, init, target, members, rolling_inits, cache_dir, state_dir, wgrib2)
     dependencies = PRODUCT_SPECS[product_name]["dependencies"]
     member_grids: dict[str, dict[str, Grid]] = {}
     source_files: list[dict] = []
@@ -2693,6 +2694,7 @@ def render_map(
     product_spec: dict | None = None,
     initialization_label: str = "",
     footer_text: str = "",
+    native_lwe: Grid | None = None,
 ) -> None:
     try:
         import matplotlib
@@ -2705,6 +2707,11 @@ def render_map(
         raise CFSv2Error("rendering requires numpy and matplotlib; install requirements.txt") from exc
 
     product_spec = product_spec or PRODUCT_SPECS[PRODUCT_HEIGHT_ANOMALY]
+    if product_spec["name"] == PRODUCT_SNOWFALL_ACCUMULATION:
+        if native_lwe is None:
+            raise CFSv2Error("Native accumulation rendering requires its paired LWE grid")
+        from cfsv2_native_snow import render
+        return render(native_lwe, init, target, lead, output_path, seasonal, period_label, ensemble_label)
     region = product_spec.get("region", region)
     if product_spec["height_contours"]:
         # Absolute products can contour their own field.  An anomaly product
@@ -3748,6 +3755,8 @@ def _run_single_window(args: argparse.Namespace) -> int:
         "status": "planned",
         "targets": [],
     }
+    if product_name == PRODUCT_SNOWFALL_ACCUMULATION:
+        run_entry["source_warning"] = "Unadjusted native snowfall × CIPS CWA ratios; 19 CWAs unavailable. The separate phase-derived departure is not a reference for this accumulation."
     common_reference_enabled = bool(common_reference_dir or args.common_reference_url) and product_name == PRODUCT_HEIGHT_ANOMALY
     if common_reference_enabled:
         run_entry["comparison_reference"] = {
@@ -3773,7 +3782,7 @@ def _run_single_window(args: argparse.Namespace) -> int:
         run_entry["baseline"] = {
             "status": "not_applicable",
             "reason": (
-                "climatology-adjusted absolute snowfall estimate"
+                "unadjusted native snowfall × CIPS CWA ratio; native departure unavailable"
                 if product_name == PRODUCT_SNOWFALL_ACCUMULATION
                 else "absolute smoke output"
             ),
@@ -3815,6 +3824,7 @@ def _run_single_window(args: argparse.Namespace) -> int:
 
     last_request = 0.0
     failures = 0
+    native_lwe_grids: dict[int, Grid] = {}
     forecast_grids: dict[int, Grid] = {}
     baseline_grids: dict[int, Grid] = {}
     target_entries_by_lead: dict[int, dict] = {}
@@ -3862,6 +3872,9 @@ def _run_single_window(args: argparse.Namespace) -> int:
                     last_request,
                     product_name,
                 )
+                if product_name == PRODUCT_SNOWFALL_ACCUMULATION:
+                    native_lwe_grids[lead] = derivation_diagnostics.pop("_native_lwe")
+                    target_entry["source_warning"] = "Unadjusted native snowfall estimate; 19 CWA ratios unavailable. Separate phase-derived departures are not its reference."
                 target_entry["derivation"] = derivation_diagnostics
             else:
                 ensemble, source_files, ensemble_count, ensemble_expected_for_target, ensemble_label, last_request = decode_target_ensemble(
@@ -4007,15 +4020,20 @@ def _run_single_window(args: argparse.Namespace) -> int:
                 baseline_label=baseline_label,
                 border_paths=border_paths,
                 ensemble_label=ensemble_label,
+                native_lwe=native_lwe_grids.get(lead),
                 height_grid=ensemble if product["height_contours"] else None,
                 product_spec=product,
             )
             target_entry["image"] = relative_path(output_path, repo_root)
-            if product_name == PRODUCT_HEIGHT_ANOMALY:
+            if product_name in {PRODUCT_HEIGHT_ANOMALY, PRODUCT_SNOWFALL_ACCUMULATION}:
                 numeric_grid_path = output_dir / init / f"cfsv2_{product['file_token']}_{target}.csv.gz"
                 write_grid_state(anomaly_grid, numeric_grid_path)
                 target_entry["numeric_grid"] = relative_path(numeric_grid_path, repo_root)
                 target_entry["numeric_grid_format"] = "csv.gz"
+            if product_name == PRODUCT_SNOWFALL_ACCUMULATION:
+                native_path = output_dir / init / f"cfsv2_snowfall_lwe_{target}.csv.gz"
+                write_grid_state(native_lwe_grids[lead], native_path)
+                target_entry["native_lwe_grid"] = relative_path(native_path, repo_root)
             target_entry["status"] = "partial" if not target_entry["ensemble_complete"] else "rendered"
             print(f"rendered CFSv2 {target} lead {lead}: {output_path}")
             if common_reference_enabled:
@@ -4160,7 +4178,7 @@ def _run_single_window(args: argparse.Namespace) -> int:
                 seasonal_entry["baseline"] = {
                     "status": "not_applicable",
                     "reason": (
-                        "climatology-adjusted absolute snowfall estimate"
+                        "unadjusted native snowfall × CIPS CWA ratio; native departure unavailable"
                         if product_name == PRODUCT_SNOWFALL_ACCUMULATION
                         else "absolute smoke output"
                     ),
@@ -4208,15 +4226,22 @@ def _run_single_window(args: argparse.Namespace) -> int:
                     if rolling_mode
                     else f"{len(members)}-member mean"
                 ),
+                native_lwe=sum_grids([native_lwe_grids[l] for l in seasonal_leads]) if product_name == PRODUCT_SNOWFALL_ACCUMULATION else None,
                 height_grid=seasonal_forecast if product["height_contours"] else None,
                 product_spec=product,
             )
             seasonal_entry["image"] = relative_path(output_path, repo_root)
-            if product_name == PRODUCT_HEIGHT_ANOMALY:
+            if product_name in {PRODUCT_HEIGHT_ANOMALY, PRODUCT_SNOWFALL_ACCUMULATION}:
                 numeric_grid_path = output_dir / init / f"cfsv2_{product['file_token']}_{first_target}-{last_target}.csv.gz"
                 write_grid_state(seasonal_grid, numeric_grid_path)
                 seasonal_entry["numeric_grid"] = relative_path(numeric_grid_path, repo_root)
                 seasonal_entry["numeric_grid_format"] = "csv.gz"
+            if product_name == PRODUCT_SNOWFALL_ACCUMULATION:
+                seasonal_entry["derivation"] = target_entries_by_lead[first_lead]["derivation"]
+                seasonal_entry["source_warning"] = target_entries_by_lead[first_lead]["source_warning"]
+                native_path = output_dir / init / f"cfsv2_snowfall_lwe_{first_target}-{last_target}.csv.gz"
+                write_grid_state(sum_grids([native_lwe_grids[l] for l in seasonal_leads]), native_path)
+                seasonal_entry["native_lwe_grid"] = relative_path(native_path, repo_root)
             seasonal_entry["status"] = "rendered" if seasonal_entry["ensemble_complete"] else "partial"
             print(f"rendered CFSv2 seasonal product {first_target}-{last_target}: {output_path}")
             if common_reference_enabled:

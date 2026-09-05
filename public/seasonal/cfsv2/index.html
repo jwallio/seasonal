@@ -73,7 +73,7 @@
         </div></article>
         <article class="card"><div class="card-head"><h2>Run metadata</h2></div><div class="copy">
           <p id="scope">The manifest will identify the initialization window, available cycles, and calibration baseline.</p>
-        </div><div class="links"><a href="native-snowfall/">Native snowfall estimate · experimental snapshot</a><a href="../">Seasonal dashboard</a><a href="https://www.cpc.ncep.noaa.gov/products/CFSv2/CFSv2seasonal.shtml">CPC context</a><a href="https://cfs.ncep.noaa.gov/cfsv2/downloads.html">CFSv2 data</a><a href="https://github.com/jwallio/seasonal/actions/workflows/cfsv2.yml">Workflow</a></div></article>
+        </div><div class="links"><a href="../">Seasonal dashboard</a><a href="https://www.cpc.ncep.noaa.gov/products/CFSv2/CFSv2seasonal.shtml">CPC context</a><a href="https://cfs.ncep.noaa.gov/cfsv2/downloads.html">CFSv2 data</a><a href="https://github.com/jwallio/seasonal/actions/workflows/cfsv2.yml">Workflow</a></div></article>
       </aside>
     </section>
     <div class="footer" id="footer">Source: NOAA CFSv2 NOMADS · Loading provenance…</div>
@@ -176,8 +176,8 @@
       el('run-status').textContent = target.status || run.status || 'unknown';
       el('scope').textContent = run.ensemble_scope === 'rolling_initial_conditions' ? `Rolling blend from ${run.rolling_window?.start_init || '—'} through ${run.rolling_window?.end_init || '—'}. ${run.aggregation || ''}` : `${run.aggregation || 'Monthly forecast average'} from the ${run.init_utc || 'selected'} initialization.`;
       const warning = el('warning');
-      if (target.status === 'partial' || target.ensemble_complete === false) { warning.style.display='block'; warning.textContent=`Partial blend: ${target.ensemble_members || 0} of ${expectedCycles || 'an unknown number of'} requested cycles are available. The workflow retains state for the next run.`; } else { warning.style.display='none'; }
-      const image = target.image ? cleanPath(target.image) : '';
+      if (target.status === 'partial' || target.ensemble_complete === false) { warning.style.display='block'; warning.textContent=`Partial blend: ${target.ensemble_members || 0} of ${expectedCycles || 'an unknown number of'} requested cycles are available. The workflow retains state for the next run.`; } else if (run.source_warning) { warning.style.display='block'; warning.textContent=run.source_warning; } else { warning.style.display='none'; }
+      const image = target.image ? `${cleanPath(target.image)}?v=${encodeURIComponent(run.generated_utc || run.init_utc || '')}` : '';
       el('map-wrap').innerHTML = image ? `<img src="${image}" alt="CFSv2 ${label} for ${target.target_month || 'selected target'}" loading="eager">` : '<div class="empty">No rendered image is available for this target.</div>';
     }
     el('product-select').addEventListener('change', () => { renderRunSelector(); pick(preferredTargetIndex()); });

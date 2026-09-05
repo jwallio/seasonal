@@ -64,11 +64,11 @@ preserving the smaller LWE signal. Models without a
 native or explicitly derived snowfall field remain explicitly not applicable.
 CFSv2 refreshes its derived snowfall suite for December through March and
 publishes accumulated DJF and JFM departures whenever that complete cold-season
-window is inside the model's 1-9 month horizon. It also publishes separate
-estimated snow-depth accumulations for the same six periods by multiplying each
-month's derived snowfall LWE by a bounded, spatially varying seasonal SLR field
-based on the published 1971-2000 CIPS/Baxter climatology. These maps are labelled
-as climatological estimates and are not storm-scale ratio forecasts.
+window is inside the model's 1-9 month horizon. It also publishes native SRWEQ-based estimated snowfall accumulations for the
+same six periods using verified CIPS 1971-2000 CWA mean ratios. These unadjusted
+estimates require complete cycles; 19 CWAs with unavailable ratios are hatched.
+The separate phase-derived LWE departure is not their reference. See
+[automatic native snowfall](docs/CFSV2_NATIVE_AUTOMATIC_2026-09-05.md).
 
 The established 500-mb map retains its North America framing, with a separate
 Northern Hemisphere 500-mb view available where the source provides 500-mb
