@@ -37,12 +37,7 @@ from urllib.parse import urljoin
 SCRIPT_DIRECTORY = str(Path(__file__).resolve().parent)
 if SCRIPT_DIRECTORY not in sys.path:
     sys.path.insert(0, SCRIPT_DIRECTORY)
-from seasonal_products import (
-    PRODUCTS as SEASONAL_PRODUCTS,
-    grid_quality_control,
-    is_retired_product,
-    require_quality_control,
-)
+from seasonal_products import grid_quality_control, is_retired_product, require_quality_control
 
 
 NOMADS_ROOT = "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/"
@@ -242,19 +237,61 @@ SNOWFALL_MONTHLY_ANOMALY_PALETTE = [
     "#1b496e",
     "#123856",
 ]
-# One amount-to-color mapping for monthly and seasonal estimated accumulation.
-# The monthly legend stops at 100 inches; it never rescales the palette.
-# Intermediate violet/blue anchors soften the former magenta-to-cyan jump.
-# Only near-zero snowfall is pale; high totals do not return to near-white.
-SNOWFALL_ACCUMULATION_COLOR_ANCHORS = (
-    (0.0, "#f7fbff"), (2.0, "#aadbf4"), (5.0, "#68bee7"),
-    (10.0, "#3293ca"), (20.0, "#3965ad"), (30.0, "#7445b0"),
-    (40.0, "#b346ae"), (50.0, "#8068bb"), (60.0, "#408eb9"),
-    (70.0, "#16aabd"), (80.0, "#159c88"), (90.0, "#d4b740"),
-    (100.0, "#ee9a32"), (120.0, "#e55d32"), (140.0, "#ce3049"),
-    (160.0, "#a51f56"), (180.0, "#721d58"), (200.0, "#421640"),
+# Snow-depth accumulation uses the established WN2 snowfall palette. Monthly
+# products retain two-inch bins through 40 inches, then use five-inch bins
+# through 100 inches and ten-inch high-end bins through 200 inches. Three-month
+# totals use five-inch bins through 100 inches and the same ten-inch high-end
+# bins. Major labels remain sparse while every contour boundary is retained.
+SNOWFALL_ACCUMULATION_MONTHLY_BOUNDS_IN = (
+    list(range(0, 42, 2)) + list(range(45, 105, 5)) + list(range(110, 201, 10))
 )
-SNOWFALL_ACCUMULATION_REFERENCE_CONTOURS_IN = (10, 30, 60, 100, 150)
+SNOWFALL_ACCUMULATION_MONTHLY_TICKS_IN = list(range(0, 201, 20))
+SNOWFALL_ACCUMULATION_SEASONAL_BOUNDS_IN = list(range(0, 105, 5)) + list(range(110, 201, 10))
+SNOWFALL_ACCUMULATION_SEASONAL_TICKS_IN = list(range(0, 201, 20))
+SNOWFALL_ACCUMULATION_BLUE_PALETTE = [
+    "#eaf8ff", "#cfeeff", "#a9defd", "#8bd1fa",
+    "#6ac1f0", "#4aaee8", "#3a9ee1", "#2f8fd9",
+]
+SNOWFALL_ACCUMULATION_PURPLE_PALETTE = [
+    "#516dd0", "#5f5fc9", "#6b52c6", "#7849c2",
+    "#8540be", "#9d36b7", "#b93db8", "#d451bb",
+]
+SNOWFALL_ACCUMULATION_CYAN_PALETTE = [
+    "#00b8d6", "#16c4df", "#28d0e6",
+    "#52def0", "#74e8f4", "#cbfbff",
+]
+SNOWFALL_ACCUMULATION_GREEN_PALETTE = [
+    "#1ec48f", "#53d8ae", "#97edd0", "#ddfff1",
+]
+SNOWFALL_ACCUMULATION_YELLOW_PALETTE = ["#ffd153"]
+SNOWFALL_ACCUMULATION_ORANGE_PALETTE = ["#f9b03b", "#f28530", "#ef6c2f"]
+SNOWFALL_ACCUMULATION_RED_PALETTE = [
+    "#e95732", "#e33f36", "#d92d3a", "#c91f3a", "#ba173f",
+]
+SNOWFALL_ACCUMULATION_HIGH_PALETTE = [
+    "#a50f47", "#92154f", "#7f1d5a", "#6a1a59",
+    "#53144f", "#441143", "#3b103f",
+]
+SNOWFALL_ACCUMULATION_MONTHLY_PALETTE = (
+    SNOWFALL_ACCUMULATION_BLUE_PALETTE
+    + SNOWFALL_ACCUMULATION_PURPLE_PALETTE
+    + SNOWFALL_ACCUMULATION_CYAN_PALETTE
+    + SNOWFALL_ACCUMULATION_GREEN_PALETTE
+    + SNOWFALL_ACCUMULATION_YELLOW_PALETTE
+    + SNOWFALL_ACCUMULATION_ORANGE_PALETTE
+    + SNOWFALL_ACCUMULATION_RED_PALETTE
+    + SNOWFALL_ACCUMULATION_HIGH_PALETTE
+)
+SNOWFALL_ACCUMULATION_SEASONAL_PALETTE = (
+    SNOWFALL_ACCUMULATION_BLUE_PALETTE
+    + SNOWFALL_ACCUMULATION_PURPLE_PALETTE
+    + SNOWFALL_ACCUMULATION_CYAN_PALETTE
+    + [SNOWFALL_ACCUMULATION_GREEN_PALETTE[0], SNOWFALL_ACCUMULATION_GREEN_PALETTE[2]]
+    + SNOWFALL_ACCUMULATION_YELLOW_PALETTE
+    + [SNOWFALL_ACCUMULATION_ORANGE_PALETTE[1]]
+    + [SNOWFALL_ACCUMULATION_RED_PALETTE[1], SNOWFALL_ACCUMULATION_RED_PALETTE[3]]
+    + [SNOWFALL_ACCUMULATION_HIGH_PALETTE[2], SNOWFALL_ACCUMULATION_HIGH_PALETTE[4]]
+)
 # Shared fixed scale for seasonal 850-mb and 2-m temperature anomalies.
 # Model-specific narrower ranges clipped stronger signals and made the same
 # anomaly look different in comparison views.
@@ -608,7 +645,12 @@ PRODUCT_SPECS = {
         "seasonal_aggregation": "seasonal estimated snowfall accumulation",
         "seasonal_units": "in",
         "monthly_aggregation": "monthly estimated snowfall accumulation",
-        "continuous_accumulation_scale": True,
+        "monthly_absolute_bounds": SNOWFALL_ACCUMULATION_MONTHLY_BOUNDS_IN,
+        "monthly_absolute_ticks": SNOWFALL_ACCUMULATION_MONTHLY_TICKS_IN,
+        "monthly_absolute_palette": SNOWFALL_ACCUMULATION_MONTHLY_PALETTE,
+        "seasonal_absolute_bounds": SNOWFALL_ACCUMULATION_SEASONAL_BOUNDS_IN,
+        "seasonal_absolute_ticks": SNOWFALL_ACCUMULATION_SEASONAL_TICKS_IN,
+        "seasonal_absolute_palette": SNOWFALL_ACCUMULATION_SEASONAL_PALETTE,
         "conversion": "Dai (2008) member-level snow fraction converted from LWE to snow depth with the Baxter et al. (2005) CIPS 1971-2000 seasonal mean SLR contour climatology",
         "header_detail": "{source_label}  •  Dai phase estimate + CIPS 1971-2000 seasonal mean SLR  •  Estimated snow depth (in)  •  CONUS domain",
         "map_domain": "land",
@@ -1150,29 +1192,6 @@ def absolute_style(
     if palette is None:
         raise CFSv2Error(f"{product_spec['name']} fixed absolute scale has no palette")
     return bounds, ticks, palette
-
-
-def snowfall_accumulation_style(seasonal: bool = False) -> tuple:
-    """Return a shared continuous color mapping and period-specific legend.
-
-    Both periods normalize to the same 200-inch master scale. Limiting the
-    monthly display to 100 inches must not change any color below that cap.
-    Imports stay local so source/contract tools need no plotting dependency.
-    """
-    import matplotlib.colors as mcolors
-
-    maximum = SNOWFALL_ACCUMULATION_COLOR_ANCHORS[-1][0]
-    cmap = mcolors.LinearSegmentedColormap.from_list(
-        "seasonal_snowfall_accumulation",
-        [(amount / maximum, color) for amount, color in SNOWFALL_ACCUMULATION_COLOR_ANCHORS],
-        N=4096,
-    )
-    cmap.set_bad((0.0, 0.0, 0.0, 0.0))
-    norm = mcolors.Normalize(vmin=0.0, vmax=maximum, clip=True)
-    display = SEASONAL_PRODUCTS[PRODUCT_SNOWFALL_ACCUMULATION]["display"][
-        "seasonal" if seasonal else "monthly"
-    ]
-    return cmap, norm, display
 
 
 def iso_utc(value: dt.datetime) -> str:
@@ -2909,8 +2928,7 @@ def render_map(
     figure = plt.figure(figsize=(9.0, 9.0), dpi=120, facecolor="#f7f9fb")
     has_footer = bool(footer_text.strip())
     is_snowfall = product_spec.get("name") in SNOWFALL_PRODUCTS
-    continuous_accumulation = bool(product_spec.get("continuous_accumulation_scale")) and not anomaly
-    colorbar_height = 0.043 if continuous_accumulation else 0.032
+    colorbar_height = 0.032
     colorbar_gap = float(product_spec.get("colorbar_gap", 0.012 if is_snowfall else 0.025))
     if not math.isfinite(colorbar_gap) or colorbar_gap < 0.0:
         raise CFSv2Error("colorbar_gap must be a finite non-negative number")
@@ -3036,27 +3054,6 @@ def render_map(
             norm=norm,
             antialiased=True,
         )
-    elif continuous_accumulation:
-        cmap, norm, display = snowfall_accumulation_style(seasonal=seasonal)
-        colorbar_ticks = display["ticks"]
-        display_maximum = float(display["maximum"])
-        # The projected field already uses the standard source interpolation.
-        # Smooth color mapping adds no filter or alteration to source values.
-        image = axes.pcolormesh(
-            canvas_x, canvas_y,
-            np.ma.clip(masked, 0.0, display_maximum),
-            cmap=cmap, norm=norm, shading="nearest", rasterized=True,
-        )
-        bounds = np.linspace(0.0, display_maximum, 1025)
-        reference_levels = [
-            level for level in SNOWFALL_ACCUMULATION_REFERENCE_CONTOURS_IN
-            if level <= display_maximum and masked.min() < level < masked.max()
-        ]
-        if reference_levels:
-            axes.contour(
-                canvas_x, canvas_y, masked, levels=reference_levels,
-                colors="#263640", linewidths=0.35, alpha=0.3,
-            )
     else:
         fixed_absolute_style = absolute_style(product_spec, seasonal=seasonal)
         if fixed_absolute_style is not None:
@@ -3355,28 +3352,23 @@ def render_map(
     colorbar_bottom = max(colorbar_floor, map_bottom - colorbar_gap - colorbar_height)
     colorbar_axes = figure.add_axes([map_left, colorbar_bottom, map_width, colorbar_height])
     colorbar_options = {"ticks": colorbar_ticks}
-    if anomaly or fixed_absolute_style is not None or continuous_accumulation:
+    if anomaly or fixed_absolute_style is not None:
         colorbar_options["boundaries"] = bounds
     colorbar = figure.colorbar(
         image,
         cax=colorbar_axes,
         orientation="horizontal",
-        extend="max" if continuous_accumulation else "neither",
-        spacing="proportional" if continuous_accumulation else "uniform",
+        extend="neither",
+        spacing="uniform",
         drawedges=product_spec["name"] in {
             PRODUCT_PRECIPITATION_ANOMALY,
             PRODUCT_SWE_ANOMALY,
             PRODUCT_SNOWFALL_ANOMALY,
+            PRODUCT_SNOWFALL_ACCUMULATION,
         },
         **colorbar_options,
     )
     colorbar.set_ticks(colorbar_ticks)
-    if continuous_accumulation:
-        colorbar.set_ticklabels([
-            f"{tick:g}+" if tick == colorbar_ticks[-1] else f"{tick:g}"
-            for tick in colorbar_ticks
-        ])
-        colorbar.ax.minorticks_off()
     if anomaly:
         automatic_tick_decimals = (
             1 if any(not float(tick).is_integer() for tick in colorbar_ticks) else 0
@@ -3416,7 +3408,7 @@ def render_map(
     colorbar.ax.tick_params(
         axis="x",
         which="major",
-        labelsize=14.0 if continuous_accumulation else (8.2 if dense_tick_labels else 10.0),
+        labelsize=8.2 if dense_tick_labels else 10.0,
         length=5.0,
         width=0.85,
         pad=1.2 if dense_tick_labels else 1.8,

@@ -80,24 +80,15 @@ source, years, anchors, interpolation, bounds, and limitations. This is a
 climatological snow-depth estimate; monthly CFSv2 cannot resolve event-scale
 crystal habit, melting, wind compaction, or settling.
 
-Accumulation maps use one continuous amount-to-color mapping: a given total
-has the same color in monthly, DJF, and JFM maps within their displayed ranges.
-The master palette spans 0-200 inches. Monthly legends show 0-100 inches and
-seasonal legends show 0-200 inches, with a triangle and `100+` or `200+` label
-for overflow. Larger values keep the endpoint color for that map; this clips
-the presentation only, leaving the underlying estimates unchanged.
-
-The blue, purple, cyan, and warm-color progression uses intermediate colors
-to soften transitions and reserves near-white for near-zero totals. Missing
-data remain transparent. A taller, continuous legend uses selected ticks,
-with proportional spacing in inches. Faint reference contours at 10, 30, 60,
-100, and 150 inches appear where within the displayed range and data range.
-This replaces fine contour-band edges without adding spatial smoothing or
-changing the forecast, phase estimate, SLR conversion, or seasonal sums.
-Display-clipping diagnostics use these same legend limits. The existing rule
-rejecting a map with more than half its finite cells outside the displayed
-range remains active, now against 100 inches for monthly accumulation. The
-separate 0-500 inch hard envelope is unchanged.
+Monthly accumulation maps retain the WN2 two-inch color bands through 40 inches,
+then use five-inch bands through 100 inches and ten-inch high-end bands through
+200 inches. DJF and JFM maps use five-inch bands through 100 inches and the same
+ten-inch bands from 100-200 inches. The WN2 progression emphasizes expanded
+blue, purple, and cyan families, with a single saturated-yellow transition
+before orange, red, and deep purple at the high end. Major legend labels appear
+every 20 inches, while all contour boundaries remain intact. This keeps
+Northeast and mountain maxima distinct, avoids broad washed-out yellow areas,
+and keeps the legend readable when the share image is viewed small.
 
 Source references: [CIPS interactive climatology](https://www.eas.slu.edu/CIPS/SLR/slrmap.htm)
 and [Baxter et al. (2005)](https://doi.org/10.1175/WAF856.1).
