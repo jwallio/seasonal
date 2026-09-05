@@ -1,0 +1,36 @@
+name: CFSv2 Unpublished Snowfall Preview Inputs
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [codex/cfsv2-snowfall-consistency-preview-20260904]
+    paths:
+      - .github/workflows/cfsv2-snow-preview.yml
+      - scripts/export_cfsv2_snow_preview_inputs.py
+
+permissions:
+  contents: read
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install --disable-pip-version-check numpy
+      - uses: actions/cache/restore@v4
+        with:
+          path: .cache/cfsv2
+          key: cfsv2-rolling-33933168932
+          fail-on-cache-miss: true
+      - name: Export only the paired JFM forecast and calibration fields
+        run: python scripts/export_cfsv2_snow_preview_inputs.py --output preview-inputs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cfsv2-snow-preview-inputs
+          path: preview-inputs
+          if-no-files-found: error
+          retention-days: 7
