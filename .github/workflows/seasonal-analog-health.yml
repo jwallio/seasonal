@@ -1,0 +1,26 @@
+name: Seasonal Analog Queue Health
+
+on:
+  schedule:
+    - cron: "17,47 * * * *"
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+
+concurrency:
+  group: seasonal-analog-health
+  cancel-in-progress: true
+
+jobs:
+  queue-health:
+    # Must stay hosted: the archive runner cannot report its own outage.
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check admitted analog jobs for runner starvation
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 scripts/check_analog_queue.py --threshold-minutes 15

@@ -1,5 +1,8 @@
 # Seasonal model release schedules
 
+For the local analog runner's unattended startup, recovery, and independent
+queue check, see [Seasonal runner recovery](SEASONAL_RUNNER_RECOVERY.md).
+
 The scheduled workflows use UTC because that is how GitHub Actions interprets
 cron expressions. Fixed-date providers start after their normal release
 windows. CDS-backed monthly providers use a separate inventory checker so a
