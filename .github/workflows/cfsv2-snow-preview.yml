@@ -24,7 +24,7 @@ jobs:
       - uses: actions/cache/restore@v4
         with:
           path: .cache/cfsv2
-          key: cfsv2-rolling-33933168932
+          key: cfsv2-rolling-33934463395
           fail-on-cache-miss: true
       - name: Export only the paired JFM forecast and calibration fields
         run: python scripts/export_cfsv2_snow_preview_inputs.py --output preview-inputs
