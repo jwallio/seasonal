@@ -37,8 +37,9 @@ on:
           - NOAA NMME Seasonal Graphics
           - Deduplicated Seasonal Super Ensemble
           - Seasonal 500-mb Pattern Analogs
+          - Native Snowfall Estimate Page
       source_run_id:
-        description: "GitHub Actions run ID containing the uploaded Pages artifact"
+        description: "Artifact run ID (use 0 for Native Snowfall Estimate Page)"
         required: true
         type: string
 
@@ -75,6 +76,7 @@ jobs:
             public/seasonal/dashboard.css
             public/seasonal/dashboard.js
             public/seasonal/cfsv2/index.html
+            public/seasonal/cfsv2/native-snowfall/
             public/seasonal/seas5/index.html
             public/seasonal/c3s/index.html
             public/seasonal/cma_cpsv3/index.html
@@ -87,6 +89,7 @@ jobs:
             scripts/build_seasonal_catalog.py
             scripts/build_seasonal_share_images.py
             scripts/build_seasonal_thumbnails.py
+            scripts/validate_native_snow_snapshot.py
             scripts/purge_retired_seasonal_products.py
           sparse-checkout-cone-mode: false
 
@@ -282,6 +285,9 @@ jobs:
           cp dashboard-source/public/seasonal/superensemble/index.html site/superensemble/index.html
 
           case "$SOURCE_WORKFLOW" in
+            "Native Snowfall Estimate Page")
+              # Static reviewed snapshot; no model run or incoming payload.
+              ;;
             "WeatherNext Runner"|"WeatherNext Runner Custom")
               payload_root=incoming/wn2
               if [ -d "$payload_root/pages-payload" ]; then
@@ -451,7 +457,14 @@ jobs:
               ;;
           esac
 
+          # Apply reviewed static pages after model payloads so they survive refreshes.
+          mkdir -p site/cfsv2/native-snowfall
+          cp -R dashboard-source/public/seasonal/cfsv2/native-snowfall/. site/cfsv2/native-snowfall/
+
           rm -rf site/.git
+
+      - name: Validate reviewed native snowfall snapshot
+        run: python dashboard-source/scripts/validate_native_snow_snapshot.py --site-root site
 
       - name: Remove retired seasonal products
         run: python dashboard-source/scripts/purge_retired_seasonal_products.py --site-root site
