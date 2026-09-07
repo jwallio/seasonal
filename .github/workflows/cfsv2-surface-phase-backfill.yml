@@ -13,6 +13,10 @@ on:
         description: Comma-separated target months YYYYMM
         required: true
         default: '202612,202701,202702,202703'
+      checkpoint_tag:
+        description: Optional cfsv2-data release tag to restore if cache is unavailable
+        required: false
+        default: ''
       historical_year:
         description: Historical initialization year (2011–2025); blank builds forecast
         required: false
@@ -26,19 +30,25 @@ on:
         required: true
         default: '6'
 permissions:
-  contents: read
+  contents: write
+  actions: read
 concurrency:
-  group: surface-phase-${{ inputs.init || '2026090612' }}-${{ github.event_name == 'pull_request' && '2019' || inputs.historical_year }}-${{ inputs.targets || '202612,202701,202702,202703' }}-${{ inputs.rolling_days || '6' }}
+  group: surface-phase-${{ github.ref }}-${{ inputs.init || '2026090612' }}-${{ inputs.targets || '202612,202701,202702,202703' }}-${{ inputs.rolling_days || '6' }}
   cancel-in-progress: false
 jobs:
   backfill:
-    if: github.event_name == 'workflow_dispatch' || github.head_ref == 'codex/cfsv2-surface-phase'
+    if: github.event_name == 'workflow_dispatch' || (github.head_ref == 'codex/cfsv2-surface-phase' && github.event.pull_request.head.repo.full_name == github.repository)
     runs-on: ubuntu-latest
     timeout-minutes: 350
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        year: ${{ fromJSON(github.event_name == 'pull_request' && '[2019,2020]' || format('["{0}"]', inputs.historical_year)) }}
     env:
       INIT: ${{ inputs.init || '2026090612' }}
       TARGETS: ${{ inputs.targets || '202612,202701,202702,202703' }}
-      HISTORICAL_YEAR: ${{ github.event_name == 'pull_request' && '2019' || inputs.historical_year }}
+      HISTORICAL_YEAR: ${{ matrix.year }}
       EXCLUDE_CYCLES: ${{ github.event_name == 'pull_request' && '2026083118,2026090418' || inputs.exclude_cycles }}
       ROLLING_DAYS: ${{ inputs.rolling_days || '6' }}
     steps:
@@ -64,10 +74,41 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: .cache/cfsv2-surface-phase
-          key: surface-phase-v1-${{ inputs.init || '2026090612' }}-${{ github.event_name == 'pull_request' && '2019' || inputs.historical_year }}-${{ steps.cache-months.outputs.key }}-${{ inputs.rolling_days || '6' }}-${{ github.run_id }}-${{ github.run_attempt }}
+          key: surface-phase-v1-${{ inputs.init || '2026090612' }}-${{ matrix.year }}-${{ steps.cache-months.outputs.key }}-${{ inputs.rolling_days || '6' }}-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys: |
-            surface-phase-v1-${{ inputs.init || '2026090612' }}-${{ github.event_name == 'pull_request' && '2019' || inputs.historical_year }}-${{ steps.cache-months.outputs.key }}-${{ inputs.rolling_days || '6' }}-
-            surface-phase-v1-${{ inputs.init || '2026090612' }}-${{ github.event_name == 'pull_request' && '2019' || inputs.historical_year }}-
+            surface-phase-v1-${{ inputs.init || '2026090612' }}-${{ matrix.year }}-${{ steps.cache-months.outputs.key }}-${{ inputs.rolling_days || '6' }}-
+            surface-phase-v1-${{ inputs.init || '2026090612' }}-${{ matrix.year }}-
+      - name: Restore durable completed bundles
+        if: inputs.checkpoint_tag != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          CHECKPOINT_TAG: ${{ inputs.checkpoint_tag }}
+          DATA_YEAR: ${{ matrix.year || 'forecast' }}
+        shell: bash
+        run: |
+          mkdir -p /tmp/phase-restore .cache/cfsv2-surface-phase
+          gh release download "$CHECKPOINT_TAG" --pattern "surface-phase-${INIT}-${DATA_YEAR}-*.tar.gz*" --dir /tmp/phase-restore
+          (cd /tmp/phase-restore && sha256sum --check *.sha256)
+          python - <<'PY'
+          from pathlib import Path
+          import tarfile
+          for archive in Path("/tmp/phase-restore").glob("*.tar.gz"):
+              with tarfile.open(archive) as bundle:
+                  members = bundle.getmembers()
+                  if any(not m.name.startswith("months/") and m.name != "months" for m in members):
+                      raise SystemExit("Unexpected checkpoint layout")
+                  bundle.extractall(".cache/cfsv2-surface-phase", filter="data")
+          PY
+      - name: Reuse completed February preview input
+        if: contains(fromJSON('["2011","2012","2013","2014","2015","2016","2017","2018",""]'), format('{0}', matrix.year))
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: 34121823157
+          name: preview-input-${{ matrix.year || '2026' }}
+          path: .cache/cfsv2-surface-phase/months
       - name: Build resumable month bundles
         shell: bash
         run: |
@@ -81,12 +122,30 @@ jobs:
         uses: actions/cache/save@v4
         with:
           path: .cache/cfsv2-surface-phase
-          key: surface-phase-v1-${{ inputs.init || '2026090612' }}-${{ github.event_name == 'pull_request' && '2019' || inputs.historical_year }}-${{ steps.cache-months.outputs.key }}-${{ inputs.rolling_days || '6' }}-${{ github.run_id }}-${{ github.run_attempt }}
+          key: surface-phase-v1-${{ inputs.init || '2026090612' }}-${{ matrix.year }}-${{ steps.cache-months.outputs.key }}-${{ inputs.rolling_days || '6' }}-${{ github.run_id }}-${{ github.run_attempt }}
       - name: Export completed bundles for reference assembly
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: surface-phase-${{ inputs.init || '2026090612' }}-${{ github.event_name == 'pull_request' && '2019' || inputs.historical_year || 'forecast' }}
+          name: surface-phase-${{ inputs.init || '2026090612' }}-${{ matrix.year || 'forecast' }}
           path: .cache/cfsv2-surface-phase/months/
           if-no-files-found: warn
-          retention-days: 30
+          retention-days: 90
+
+      - name: Preserve completed bundles in a versioned data release
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          DATA_YEAR: ${{ matrix.year || 'forecast' }}
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        shell: bash
+        run: |
+          if ! compgen -G '.cache/cfsv2-surface-phase/months/*.npz' > /dev/null; then
+            exit 0
+          fi
+          archive="surface-phase-${INIT}-${DATA_YEAR}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}.tar.gz"
+          tar -czf "$archive" -C .cache/cfsv2-surface-phase months
+          sha256sum "$archive" > "$archive.sha256"
+          tag="cfsv2-data-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${DATA_YEAR}"
+          gh release create "$tag" "$archive" "$archive.sha256" --target "$SOURCE_SHA" --prerelease --title "CFSv2 data checkpoint $DATA_YEAR" --notes "Completed month bundles and acquisition status. May be incomplete as a reference. Not published graphics."

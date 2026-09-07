@@ -14,7 +14,7 @@ The February test workflow succeeded, including all inputs and rendering. GitHub
 
 ## GitHub
 
-Use CFSv2 Surface Phase Reference Backfill for one historical year and target month at a time. Re-run with identical inputs to restore saved checkpoints. The job has a 300-minute download budget inside a 350-minute job, leaving time to upload results. Archive artifacts locally before expiration; GitHub caches can be evicted. Green acquisition is not proof that all production references or graphics are ready.
+Use CFSv2 Surface Phase Reference Backfill for one historical year and one or more target months. The PR rollout runs 2019 and 2020 with a maximum of two jobs, each using two workers. Re-run with identical inputs to restore saved checkpoints. The job has a 300-minute download budget inside a 350-minute job, leaving time to upload results. Completed-bundle artifacts are retained for 90 days. Every job with month bundles also saves a checksummed archive in a uniquely versioned prerelease (including partial campaigns). These data releases do not publish graphics. To recover after cache eviction, supply that release tag in `checkpoint_tag`; the workflow verifies the archive checksum and safely extracts it before the usual per-bundle validation. Failed explicit restores stop acquisition instead of silently downloading everything again. GitHub caches can be evicted. Green acquisition is not proof that all production references or graphics are ready.
 
 ## Home PC (Windows + WSL)
 
@@ -34,13 +34,13 @@ To continue on another machine, copy the entire checkpoint directory, including 
 
 The reference builder currently requires 2011–2025; smaller fixed year sets require explicit implementation and labeling. Seasonal target months must share the same year/cycle sample. Build and verify forecasts and matching references, then connect them to graphics generation. None of the recovery paths publishes incomplete departure maps.
 
-## Further speed improvements to evaluate
+## Speed improvements and remaining opportunities
 
-1. Unify preview/backfill input caches, or import completed artifacts once. Cache identity should follow initialization, target, member, and method rather than the workflow name. This avoids rebuilding the eight preview years when production requests the same cycles.
-2. Keep completed compact month bundles in durable versioned storage; use Actions cache primarily for partial raw inputs. This avoids cache eviction forcing completed reconstructions to be downloaded again.
-3. Measure download, decode, and cache-validation time separately. Reuse an endpoint already decoded in the adjacent interval; avoid repeated hash checks for unchanged files within a single process. Preserve verification when loading data from a new run.
-4. Use resumable year/month shards with a campaign-level limit. Do not launch unrestricted combinations of job and worker concurrency; two jobs with two workers would create four simultaneous requests.
+1. Implemented: import matching February input artifacts from successful preview run 34121823157 for 2011–2018 and the forecast. The optional import may expire; normal validated acquisition remains available.
+2. Implemented: durable versioned completed-bundle archives plus checksum manifests, with explicit release-tag recovery.
+3. Already implemented: each decoded endpoint is reused in its adjacent interval. Additional timing instrumentation remains an opportunity; hash validation is retained.
+4. Implemented: bounded two-job rollout for historical years 2019 and 2020, with two workers per job. Separate manually dispatched campaigns have separate limits; avoid overlapping them.
 5. Preflight calendar coverage from provider indexes/listings to identify missing entire cycles before spending time on them. Absence of an index alone is not proof that GRIB data are absent.
 6. Once references are complete, operational runs need only new forecast cycles, not historical reconstruction.
 
-These are follow-up opportunities, not implemented performance claims. Reducing historical years, changing precipitation-type fields, or dropping cycles changes the scientific product and is not a performance-only optimization.
+Provider-wide preflight and timing instrumentation remain future work. No measured speedup is claimed. Reducing historical years, changing precipitation-type fields, or dropping cycles changes the scientific product and is not a performance-only optimization.
