@@ -48,13 +48,25 @@ jobs:
           python-version: '3.12'
       - name: Install decoding dependencies
         run: python -m pip install numpy requests eccodes
+      - name: Normalize cache month key
+        id: cache-months
+        shell: bash
+        run: |
+          python - <<'PY'
+          import os,re
+          targets=os.environ["TARGETS"]
+          if not re.fullmatch(r"[0-9]{6}(,[0-9]{6})*", targets):
+              raise SystemExit("Expected comma-separated YYYYMM targets")
+          with open(os.environ["GITHUB_OUTPUT"], "a") as output:
+              output.write("key=" + targets.replace(",", "-") + "\n")
+          PY
       - name: Restore validated and partial inputs
         uses: actions/cache/restore@v4
         with:
           path: .cache/cfsv2-surface-phase
-          key: surface-phase-v1-${{ inputs.init || '2026090612' }}-${{ github.event_name == 'pull_request' && '2019' || inputs.historical_year }}-${{ inputs.targets || '202612,202701,202702,202703' }}-${{ inputs.rolling_days || '6' }}-${{ github.run_id }}-${{ github.run_attempt }}
+          key: surface-phase-v1-${{ inputs.init || '2026090612' }}-${{ github.event_name == 'pull_request' && '2019' || inputs.historical_year }}-${{ steps.cache-months.outputs.key }}-${{ inputs.rolling_days || '6' }}-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys: |
-            surface-phase-v1-${{ inputs.init || '2026090612' }}-${{ github.event_name == 'pull_request' && '2019' || inputs.historical_year }}-${{ inputs.targets || '202612,202701,202702,202703' }}-${{ inputs.rolling_days || '6' }}-
+            surface-phase-v1-${{ inputs.init || '2026090612' }}-${{ github.event_name == 'pull_request' && '2019' || inputs.historical_year }}-${{ steps.cache-months.outputs.key }}-${{ inputs.rolling_days || '6' }}-
             surface-phase-v1-${{ inputs.init || '2026090612' }}-${{ github.event_name == 'pull_request' && '2019' || inputs.historical_year }}-
       - name: Build resumable month bundles
         shell: bash
@@ -69,7 +81,7 @@ jobs:
         uses: actions/cache/save@v4
         with:
           path: .cache/cfsv2-surface-phase
-          key: surface-phase-v1-${{ inputs.init || '2026090612' }}-${{ github.event_name == 'pull_request' && '2019' || inputs.historical_year }}-${{ inputs.targets || '202612,202701,202702,202703' }}-${{ inputs.rolling_days || '6' }}-${{ github.run_id }}-${{ github.run_attempt }}
+          key: surface-phase-v1-${{ inputs.init || '2026090612' }}-${{ github.event_name == 'pull_request' && '2019' || inputs.historical_year }}-${{ steps.cache-months.outputs.key }}-${{ inputs.rolling_days || '6' }}-${{ github.run_id }}-${{ github.run_attempt }}
       - name: Export completed bundles for reference assembly
         if: always()
         uses: actions/upload-artifact@v4
