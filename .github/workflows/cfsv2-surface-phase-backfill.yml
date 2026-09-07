@@ -5,6 +5,10 @@ on:
     paths: [".github/workflows/cfsv2-surface-phase-backfill.yml"]
   workflow_dispatch:
     inputs:
+      full_rebuild:
+        description: Build all 15 historical years plus forecast
+        type: boolean
+        default: true
       init:
         description: Forecast initialization YYYYMMDDHH
         required: true
@@ -24,7 +28,7 @@ on:
       exclude_cycles:
         description: Forecast initialization timestamps to exclude on both sides
         required: false
-        default: ""
+        default: "2026083118,2026090418"
       rolling_days:
         description: Rolling window in days (1–6)
         required: true
@@ -44,7 +48,7 @@ jobs:
       fail-fast: false
       max-parallel: 2
       matrix:
-        year: ${{ fromJSON(github.event_name == 'pull_request' && '[2019,2020]' || format('["{0}"]', inputs.historical_year)) }}
+        year: ${{ fromJSON((github.event_name == 'pull_request' || inputs.full_rebuild) && '[2019,2020,2021,2022,2023,2024,2025,2011,2012,2013,2014,2015,2016,2017,2018,""]' || format('["{0}"]', inputs.historical_year)) }}
     env:
       INIT: ${{ inputs.init || '2026090612' }}
       TARGETS: ${{ inputs.targets || '202612,202701,202702,202703' }}
@@ -149,3 +153,46 @@ jobs:
           sha256sum "$archive" > "$archive.sha256"
           tag="cfsv2-data-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${DATA_YEAR}"
           gh release create "$tag" "$archive" "$archive.sha256" --target "$SOURCE_SHA" --prerelease --title "CFSv2 data checkpoint $DATA_YEAR" --notes "Completed month bundles and acquisition status. May be incomplete as a reference. Not published graphics."
+
+  assemble:
+    needs: backfill
+    if: github.event_name == 'pull_request' || inputs.full_rebuild
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install numpy requests eccodes
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: surface-phase-*
+          merge-multiple: true
+          path: .cache/cfsv2-surface-phase/months
+      - name: Validate forecast bundles offline
+        env:
+          INIT: ${{ inputs.init || '2026090612' }}
+          TARGETS: ${{ inputs.targets || '202612,202701,202702,202703' }}
+          EXCLUDE_CYCLES: ${{ github.event_name == 'pull_request' && '2026083118,2026090418' || inputs.exclude_cycles }}
+          ROLLING_DAYS: ${{ inputs.rolling_days || '6' }}
+        run: >-
+          python scripts/cfsv2_surface_phase_build.py --offline
+          --init "$INIT" --targets "$TARGETS" --rolling-days "$ROLLING_DAYS"
+          --exclude-cycles "$EXCLUDE_CYCLES"
+      - name: Assemble all 15 matched historical years
+        env:
+          INIT: ${{ inputs.init || '2026090612' }}
+          TARGETS: ${{ inputs.targets || '202612,202701,202702,202703' }}
+          EXCLUDE_CYCLES: ${{ github.event_name == 'pull_request' && '2026083118,2026090418' || inputs.exclude_cycles }}
+          ROLLING_DAYS: ${{ inputs.rolling_days || '6' }}
+        run: >-
+          python scripts/cfsv2_surface_phase_build.py --reference
+          --init "$INIT" --targets "$TARGETS" --rolling-days "$ROLLING_DAYS"
+          --exclude-cycles "$EXCLUDE_CYCLES"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: matched-surface-phase-reference
+          path: .cache/cfsv2-surface-phase/reference/
+          if-no-files-found: error
+          retention-days: 90
