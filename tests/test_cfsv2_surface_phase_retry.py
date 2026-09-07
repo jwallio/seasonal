@@ -35,3 +35,21 @@ class RetryTests(unittest.TestCase):
         with patch.object(build, 'session', return_value=client), patch.object(build.time, 'sleep'):
             with self.assertRaises(requests.Timeout): build.get('https://example.test')
             self.assertEqual(client.get.call_count, 8)
+
+class AcquisitionContinuationTests(unittest.TestCase):
+    def test_missing_cycle_does_not_stop_remaining_cycles_or_report_success(self):
+        import tempfile
+        import json
+        with tempfile.TemporaryDirectory() as directory:
+            argv = ['build', '--init', '2026090612', '--targets', '202702',
+                    '--rolling-days', '1', '--workers', '1', '--month-pause-seconds', '0',
+                    '--bundles', directory]
+            with patch.object(sys, 'argv', argv), patch.object(build, 'build_month',
+                    side_effect=[requests.HTTPError('404 missing'), None, None, None]) as acquire:
+                with self.assertRaises(SystemExit):
+                    build.main()
+            self.assertEqual(acquire.call_count, 4)
+            report = json.loads((Path(directory)/'acquisition-status.json').read_text())
+            self.assertFalse(report['complete'])
+            self.assertEqual(len(report['failures']), 1)
+            self.assertEqual(len(report['completed']), 3)

@@ -210,10 +210,23 @@ def main():
         return
     if args.workers == 1:
         ordered = sorted(tasks)
+        failures = []
+        completed = []
+        status_path = args.bundles / "acquisition-status.json"
+        args.bundles.mkdir(parents=True, exist_ok=True)
         for index, task in enumerate(ordered):
             stem = phase.month_stem(args.bundles, *task)
             cached = stem.with_suffix(".npz").exists() and stem.with_suffix(".json").exists()
-            build_month(args.raw_cache, args.bundles, *task, args.offline)
+            try:
+                build_month(args.raw_cache, args.bundles, *task, args.offline)
+                completed.append(task)
+            except Exception as exc:
+                failures.append({"init": task[0], "target": task[1], "error": str(exc)})
+                print(f"Incomplete cycle {task}: {exc}; continuing remaining cycles", flush=True)
+            temporary = status_path.with_suffix(".tmp")
+            temporary.write_text(json.dumps({"complete": False, "completed": completed,
+                                             "failures": failures, "expected": ordered}, indent=2))
+            temporary.replace(status_path)
             if not cached and index < len(ordered)-1 and args.month_pause_seconds:
                 print(f"Pausing {args.month_pause_seconds}s between months", flush=True)
                 remaining = args.month_pause_seconds
@@ -221,6 +234,10 @@ def main():
                     duration = min(60, remaining)
                     time.sleep(duration)
                     remaining -= duration
+        status_path.write_text(json.dumps({"complete": not failures, "completed": completed,
+                                           "failures": failures, "expected": ordered}, indent=2))
+        if failures:
+            raise SystemExit(f"Acquisition incomplete: {len(failures)}/{len(ordered)} cycle-months failed; see {status_path}")
     else:
         with ThreadPoolExecutor(max_workers=args.workers) as pool:
             list(pool.map(lambda task: build_month(args.raw_cache, args.bundles, *task, args.offline), sorted(tasks)))
