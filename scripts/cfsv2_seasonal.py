@@ -2413,9 +2413,13 @@ def load_snowfall_baseline(
             from cfsv2_native_reference import load_reference
         else:
             from cfsv2_snow_reference import load_reference
+        cycles = rolling_cycle_inits(init, args.rolling_days * 4)
+        if getattr(args, "surface_phase_bundle_dir", None):
+            from cfsv2_surface_phase import selected_cycles
+            cycles = selected_cycles(cycles, getattr(args, "surface_phase_exclude_cycles", ""))
         grid, info = load_reference(
             resolve_repo_path(args.snowfall_reference_dir, repo_root), init, target,
-            rolling_cycle_inits(init, args.rolling_days * 4), args.rolling_member,
+            cycles, args.rolling_member,
         )
         return grid, info, last_request
     if args.baseline_file:
@@ -3752,6 +3756,8 @@ def build_parser() -> argparse.ArgumentParser:
         default=4,
         help="number of current and historical runs to retain per product in the manifest",
     )
+    parser.add_argument("--surface-phase-exclude-cycles", default="",
+                        help="explicit forecast cycle timestamps excluded from both surface-phase forecast and reference")
     parser.add_argument("--surface-phase-bundle-dir", type=Path,
                         help="use complete APCP/surface-phase month bundles; departures require matching surface-phase references")
     parser.add_argument("--native-snowfall-departure", action="store_true",

@@ -17,6 +17,20 @@ from snowfall_display import depth_departure
 
 
 class SurfacePhaseTests(unittest.TestCase):
+    def test_exclusions_are_explicit_and_preserve_order(self):
+        cycles = cf.rolling_cycle_inits("2026090612", 24)
+        selected = phase.selected_cycles(cycles, "2026090418")
+        self.assertEqual(len(selected), 23)
+        self.assertNotIn("2026090418", selected)
+        self.assertEqual(selected, sorted(selected))
+        from cfsv2_native_reference import historical_cycle
+        historical = [h for c in selected for h, w in historical_cycle(c, 2019, "2026090612")]
+        self.assertNotIn("2019090418", historical)
+        self.assertEqual(len(historical), 23)
+        for excluded in ("2025090418", "2026090418,2026090418", ",".join(cycles)):
+            with self.assertRaises(ValueError):
+                phase.selected_cycles(cycles, excluded)
+
     def test_precipitation_weighting_precedes_time_average(self):
         # A dry snowy interval must not turn a rainy wet interval into snow.
         wet_rain = phase.interval_amount([25.4], [0], [0])

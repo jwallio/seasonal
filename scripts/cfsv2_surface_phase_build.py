@@ -166,6 +166,7 @@ def build_month(cache, output, init, target, offline=False):
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--init", required=True)
+    p.add_argument("--exclude-cycles", default="", help="comma-separated forecast initialization timestamps to omit from BOTH forecast and historical acquisition/reference")
     p.add_argument("--targets", required=True, help="comma-separated YYYYMM months")
     p.add_argument("--rolling-days", type=int, choices=range(1, 7), default=6)
     p.add_argument("--historical-year", type=int, choices=phase.YEARS)
@@ -188,6 +189,7 @@ def main():
         p.error("initialization must be a six-hour cycle")
     cycles = [(anchor-timedelta(hours=6*i)).strftime("%Y%m%d%H")
               for i in reversed(range(args.rolling_days*4))]
+    cycles = phase.selected_cycles(cycles, args.exclude_cycles)
     targets = args.targets.split(",")
     for target in targets:
         phase.endpoints(target)

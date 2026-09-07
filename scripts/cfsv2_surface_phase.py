@@ -19,6 +19,17 @@ YEARS = list(range(2011, 2026))
 PARAMETERS = {"apcp": 8, "crain": 192, "cfrzr": 193, "cicep": 194, "csnow": 195}
 
 
+def selected_cycles(cycles, excluded=""):
+    """Explicit forecast-cycle exclusion, shared by forecasts and references."""
+    excluded = excluded.split(",") if isinstance(excluded, str) and excluded else list(excluded or [])
+    if len(excluded) != len(set(excluded)) or not set(excluded).issubset(cycles):
+        raise ValueError("Excluded cycles must be unique members of the requested forecast window")
+    selected = [cycle for cycle in cycles if cycle not in excluded]
+    if not selected:
+        raise ValueError("Cannot exclude the entire forecast window")
+    return selected
+
+
 def endpoints(target):
     start = datetime.strptime(target, "%Y%m")
     days = calendar.monthrange(start.year, start.month)[1]
@@ -270,6 +281,8 @@ def decode(args, init, target, members, rolling_inits, *unused):
     import time
     if not rolling_inits or args.rolling_member != 1 or args.allow_partial_rolling:
         raise ValueError("Surface-phase reconstruction needs a complete member-1 rolling window")
+    requested_count = len(rolling_inits)
+    rolling_inits = selected_cycles(rolling_inits, getattr(args, "surface_phase_exclude_cycles", ""))
     grids, sources = [], []
     for cycle in rolling_inits:
         a, meta = load_month(args.surface_phase_bundle_dir, cycle, target)
@@ -284,4 +297,6 @@ def decode(args, init, target, members, rolling_inits, *unused):
         result = depth_grid(lwe)
         diagnostics["_native_lwe"] = lwe
     n = len(rolling_inits)
-    return result, sources, n, n, f"{n}/{n}-cycle rolling mean", time.monotonic(), diagnostics
+    diagnostics["excluded_cycles"] = getattr(args, "surface_phase_exclude_cycles", "")
+    label = f"{n}/{requested_count}-cycle matched mean" if n != requested_count else f"{n}/{n}-cycle rolling mean"
+    return result, sources, n, n, label, time.monotonic(), diagnostics

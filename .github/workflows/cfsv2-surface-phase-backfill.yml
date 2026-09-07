@@ -17,6 +17,10 @@ on:
         description: Historical initialization year (2011–2025); blank builds forecast
         required: false
         default: ''
+      exclude_cycles:
+        description: Forecast initialization timestamps to exclude on both sides
+        required: false
+        default: ""
       rolling_days:
         description: Rolling window in days (1–6)
         required: true
@@ -35,6 +39,7 @@ jobs:
       INIT: ${{ inputs.init || '2026090612' }}
       TARGETS: ${{ inputs.targets || '202702' }}
       HISTORICAL_YEAR: ${{ github.event_name == 'pull_request' && '2019' || inputs.historical_year }}
+      EXCLUDE_CYCLES: ${{ github.event_name == 'pull_request' && '2026090418' || inputs.exclude_cycles }}
       ROLLING_DAYS: ${{ inputs.rolling_days || '6' }}
     steps:
       - uses: actions/checkout@v4
@@ -53,7 +58,7 @@ jobs:
       - name: Build resumable month bundles
         shell: bash
         run: |
-          args=(--init "$INIT" --targets "$TARGETS" --rolling-days "$ROLLING_DAYS" --workers 1 --month-pause-seconds 60)
+          args=(--exclude-cycles "$EXCLUDE_CYCLES" --init "$INIT" --targets "$TARGETS" --rolling-days "$ROLLING_DAYS" --workers 1 --month-pause-seconds 60)
           if [[ -n "$HISTORICAL_YEAR" ]]; then
             args+=(--historical-year "$HISTORICAL_YEAR")
           fi

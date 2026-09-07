@@ -21,3 +21,9 @@ python scripts/cfsv2_surface_phase_build.py --init 2026090612 --targets 202612,2
 ```
 
 Reference assembly requires all 15 years and the exact forecast cycle window. It rejects incomplete years and incompatible methods. Pass the resulting month directory using `--surface-phase-bundle-dir` and the matching reference directory using the existing snowfall reference option when rendering. Do not combine these forecast estimates with the old SRWEQ reference. Production defaults remain unchanged; this workflow never publishes.
+
+## Explicit paired cycle exclusions
+
+The known September 2019 gap maps to forecast initialization `2026090418` for the September 2026 anchor. Pass `--exclude-cycles 2026090418` to acquisition and reference assembly, and `--surface-phase-exclude-cycles 2026090418` to rendering. The same list must be used for every month in DJF/JFM. Reference loading compares the exact selected forecast-cycle list and rejects a different mask. No interval is zero-filled. The title's ensemble line reports 23/24-cycle matched mean.
+
+The PR backfill now omits that known cycle explicitly and restores previously completed bundles. This only completes the 2019 February shard; other reference years and seasonal months are still required. Missing cycles discovered elsewhere are reported; they are not automatically dropped from a reference.
