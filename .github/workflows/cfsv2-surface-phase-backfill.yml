@@ -39,7 +39,7 @@ jobs:
       INIT: ${{ inputs.init || '2026090612' }}
       TARGETS: ${{ inputs.targets || '202612,202701,202702,202703' }}
       HISTORICAL_YEAR: ${{ github.event_name == 'pull_request' && '2019' || inputs.historical_year }}
-      EXCLUDE_CYCLES: ${{ github.event_name == 'pull_request' && '2026090418' || inputs.exclude_cycles }}
+      EXCLUDE_CYCLES: ${{ github.event_name == 'pull_request' && '2026083118,2026090418' || inputs.exclude_cycles }}
       ROLLING_DAYS: ${{ inputs.rolling_days || '6' }}
     steps:
       - uses: actions/checkout@v4
