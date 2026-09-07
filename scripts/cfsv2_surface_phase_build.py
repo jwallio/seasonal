@@ -124,9 +124,12 @@ class Source:
                 if end-start > 2_000_000:
                     raise ValueError("Unexpected pressure-field range")
                 messages = extract(get(aws, start, end), init, valid)
-            except requests.HTTPError as exc:
-                if exc.response.status_code != 404:
+            except requests.RequestException as exc:
+                response = getattr(exc, "response", None)
+                status = response.status_code if response is not None else None
+                if status is not None and status not in (404, 408, 429, 500, 502, 503, 504):
                     raise
+                print(f"AWS unavailable ({status or type(exc).__name__}); trying exact NCEI forecast record", flush=True)
         if not messages:
             url = ("https://www.ncei.noaa.gov/oa/prod-cfs-operational-forecast/"
                    f"6-hourly-by-pressure/{init[:4]}/{init[:6]}/{init[:8]}/{init}/"
