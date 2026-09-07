@@ -1272,6 +1272,19 @@ function renderControls(model, run, targets) {
     selection.ratio = ratioSelect.value || '10'; ratioSelect.addEventListener('change', () => { selection.ratio = ratioSelect.value; renderAll(); });
   }
 }
+function c3sReleaseMessage(run, target, now = new Date()) {
+  const errors = [run?.error, target?.error, ...(run?.targets || []).map(item => item.error)].join(' ');
+  if (!/Restricted access to current C3S seasonal forecast non-ECMWF contribution/i.test(errors)) return '';
+  const init = new Date(run?.init_utc);
+  if (!Number.isFinite(init.getTime())) return 'This C3S update is awaiting public release.';
+  const release = new Date(Date.UTC(init.getUTCFullYear(), init.getUTCMonth(), 10, 12));
+  const month = init.toLocaleString('en-US', { month: 'long', timeZone: 'UTC' });
+  const date = release.toLocaleString('en-US', { month: 'long', day: 'numeric', timeZone: 'UTC' });
+  return now < release
+    ? `${month} update available ${date} at 12 UTC. The provider has not released this run yet.`
+    : `${month} update was scheduled for release ${date} at 12 UTC. This saved request was made before access was available; an updated download is needed.`;
+}
+
 function renderAll() {
   renderModelOptions();
   el('download-link').hidden = true;
@@ -1303,15 +1316,18 @@ function renderAll() {
   renderControls(model, run, targets);
   const target = targets.find(item => String(item.key) === String(selection.target)) || targets[0];
   if (!run || !target) {
-    setMessage(runs.length ? 'No usable rendered target is available by default. Choose a retained run to inspect its failure.' : 'No rendered target is available for the selected parameter.');
+    const releaseNotice = selection.model === 'c3s' ? runs.map(run => c3sReleaseMessage(run)).find(Boolean) : '';
+    setMessage(releaseNotice || (runs.length ? 'No usable rendered target is available by default. Choose a retained run to inspect its failure.' : 'No rendered target is available for the selected parameter.'));
     ['fact-target','fact-lead','fact-ensemble','fact-field','fact-status'].forEach(id => el(id).textContent = '—');
     el('fact-model').textContent = model.label;
     el('scope').textContent = runs.length ? 'All published runs for this parameter are failed or lack a rendered target.' : 'No published run is available for this parameter.';
     const warning = el('warning'); warning.style.display = runs.length ? 'block' : 'none'; warning.textContent = runs.length ? 'No failed run was selected automatically; retained history remains available for diagnosis.' : '';
+    if (releaseNotice) { el('scope').textContent = 'Awaiting public C3S release.'; warning.style.display = 'none'; }
     syncUrlState();
     return;
   }
   const targetValue = target.value;
+  const releaseMessage = selection.model === 'c3s' ? c3sReleaseMessage(run, targetValue) : '';
   const label = productLabel(model, selection.product);
   el('fact-model').textContent = runDisplayName(model, run); el('fact-target').textContent = model.kind === 'weathernext' ? targetText(model, target) : periodLabel(targetValue.target_month || targetValue.valid_start_utc);
   el('fact-lead').textContent = leadText(model, target); el('fact-ensemble').textContent = ensembleText(model, run, target); el('fact-field').textContent = fieldText(target); el('fact-status').textContent = statusText(run, target);
@@ -1329,14 +1345,18 @@ function renderAll() {
   const image = targetValue?.image ? shareImagePath(targetValue.image) : originalImage;
   setMessage('');
   el('map-wrap').replaceChildren();
-  if (image) {
+  if (releaseMessage) {
+    setMessage(releaseMessage);
+    el('fact-status').textContent = 'Awaiting update';
+  } else if (image) {
     const imageElement = document.createElement('img'); imageElement.alt = `${runDisplayName(model, run)} ${label} ${targetText(model, target)}`; imageElement.loading = 'eager'; imageElement.decoding = 'async'; imageElement.fetchPriority = 'high';
     setImageFallbacks(imageElement, [image, originalImage], () => { el('download-link').hidden = true; setMessage('The manifest is available, but this image is not present in the published Pages tree.'); });
     const imageButton = document.createElement('button'); imageButton.type = 'button'; imageButton.className = 'image-button'; imageButton.setAttribute('aria-label', `Open full-size ${imageElement.alt}`); imageButton.addEventListener('click', () => { dialogOpener = imageButton; openMapDialog(imageElement.src, imageElement.alt); }); imageButton.appendChild(imageElement); el('map-wrap').appendChild(imageButton);
     el('download-link').href = image; el('download-link').download = downloadFileName(image); el('download-link').hidden = false;
   } else setMessage(targetValue?.error || 'No rendered image is available for this target.');
   const warning = el('warning');
-  if (targetValue?.status === 'failed') { warning.style.display = 'block'; warning.textContent = targetValue.error || 'This target failed; retained history remains selectable.'; }
+  if (releaseMessage) { warning.style.display = 'none'; warning.textContent = ''; }
+  else if (targetValue?.status === 'failed') { warning.style.display = 'block'; warning.textContent = targetValue.error || 'This target failed; retained history remains selectable.'; }
   else if (targetValue?.status === 'partial' || (run.status === 'partial' && !(selection.model === 'cansips' && selection.product === 'snowfall_anomaly'))) { const counts = runCoverageCounts(run, targetValue); const coverage = counts ? ` (${counts.available}/${counts.expected} ${run.ensemble_scope === 'rolling_initial_conditions' ? 'cycles' : 'members'})` : ''; warning.style.display = 'block'; warning.textContent = `This run is partial${coverage}; retained history remains selectable.`; }
   else if (run.source_warning) { warning.style.display = 'block'; warning.textContent = run.source_warning; }
   else warning.style.display = 'none';
