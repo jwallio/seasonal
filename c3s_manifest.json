@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "kind": "c3s_seasonal_manifest",
-  "generated_utc": "2026-09-07T16:56:50Z",
+  "generated_utc": "2026-09-07T17:38:39Z",
   "source": "Copernicus C3S seasonal forecasts",
   "source_url": "https://climate.copernicus.eu/seasonal-forecasts",
   "source_urls": [
@@ -64,6 +64,18 @@
       },
       "targets": [
         {
+          "id": "c3s-ukmo-2026090100-snowfall_anomaly-lead03",
+          "target_month": "202612",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-01-01T00:00:00Z",
+          "lead_month": 3,
+          "field": "snowfall_anomaly",
+          "units": "in",
+          "statistic": "ensemble_mean",
+          "status": "failed",
+          "error": "C3S request failed for ukmo/610 snowfall_anomalous_rate_of_accumulation lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/5c51fa52-d3ea-4cc8-a804-8b1ba41015c3/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['4'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['egrr'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['610'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260907.172716 - Mars server task finished in error\nmars - ERROR  - 20260907.172716 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260907.172716 - Error code is -2\nmars - ERROR  - 20260907.172716 - Request failed\nmars - ERROR  - 20260907.172716 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError"
+        },
+        {
           "id": "c3s-ukmo-2026090100-snowfall_anomaly-lead04",
           "target_month": "202701",
           "valid_start_utc": "2027-01-01T00:00:00Z",
@@ -73,7 +85,7 @@
           "units": "in",
           "statistic": "ensemble_mean",
           "status": "failed",
-          "error": "C3S request failed for ukmo/610 snowfall_anomalous_rate_of_accumulation lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/4c7d2786-b4da-4d94-bbe6-e881c4648155/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['5'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['egrr'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['610'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260907.164924 - Mars server task finished in error\nmars - ERROR  - 20260907.164924 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260907.164924 - Error code is -2\nmars - ERROR  - 20260907.164924 - Request failed\nmars - ERROR  - 20260907.164924 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError"
+          "error": "C3S request failed for ukmo/610 snowfall_anomalous_rate_of_accumulation lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/b444d950-6c3a-47d8-b4e0-da68450c676c/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['5'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['egrr'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['610'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260907.172745 - Mars server task finished in error\nmars - ERROR  - 20260907.172745 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260907.172745 - Error code is -2\nmars - ERROR  - 20260907.172745 - Request failed\nmars - ERROR  - 20260907.172745 - Some errors reported (last error -2)\n"
         },
         {
           "id": "c3s-ukmo-2026090100-snowfall_anomaly-lead05",
@@ -85,7 +97,7 @@
           "units": "in",
           "statistic": "ensemble_mean",
           "status": "failed",
-          "error": "C3S request failed for ukmo/610 snowfall_anomalous_rate_of_accumulation lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/20b746ef-ba24-4df4-8683-1f1d980e6072/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['6'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['egrr'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['610'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260907.164952 - Mars server task finished in error\nmars - ERROR  - 20260907.164952 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260907.164952 - Error code is -2\nmars - ERROR  - 20260907.164952 - Request failed\nmars - ERROR  - 20260907.164952 - Some errors reported (last error -2)\n"
+          "error": "C3S request failed for ukmo/610 snowfall_anomalous_rate_of_accumulation lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/82b1af96-071b-41fb-b0f1-129b0a53b569/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['6'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['egrr'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['610'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260907.172802 - Mars server task finished in error\nmars - ERROR  - 20260907.172802 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260907.172802 - Error code is -2\nmars - ERROR  - 20260907.172802 - Request failed\nmars - ERROR  - 20260907.172802 - Some errors reported (last error -2)\n"
         },
         {
           "id": "c3s-ukmo-2026090100-snowfall_anomaly-lead06",
@@ -100,15 +112,15 @@
           "error": "Native monthly snowfall ends 202702 for initialization 202609; 202703 is unavailable"
         },
         {
-          "id": "c3s-ukmo-2026090100-snowfall_anomaly-202701-202703",
-          "target_month": "202701-202703",
-          "valid_start_utc": "2027-01-01T00:00:00Z",
-          "valid_end_utc": "2027-04-01T00:00:00Z",
-          "lead_month": "4\u20136",
+          "id": "c3s-ukmo-2026090100-snowfall_anomaly-202612-202702",
+          "target_month": "202612-202702",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": "3\u20135",
           "monthly_leads": [
+            3,
             4,
-            5,
-            6
+            5
           ],
           "field": "snowfall_anomaly",
           "units": "in",
@@ -161,6 +173,18 @@
       },
       "targets": [
         {
+          "id": "c3s-ncep-2026090100-snowfall_anomaly-lead03",
+          "target_month": "202612",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-01-01T00:00:00Z",
+          "lead_month": 3,
+          "field": "snowfall_anomaly",
+          "units": "in",
+          "statistic": "ensemble_mean",
+          "status": "failed",
+          "error": "C3S request failed for ncep/2 snowfall_anomalous_rate_of_accumulation lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/be5904b2-91ef-4206-ac81-b7a72413b509/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['4'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['kwbc'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['2'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260907.173217 - Mars server task finished in error\nmars - ERROR  - 20260907.173217 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260907.173217 - Error code is -2\nmars - ERROR  - 20260907.173217 - Request failed\nmars - ERROR  - 20260907.173217 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError"
+        },
+        {
           "id": "c3s-ncep-2026090100-snowfall_anomaly-lead04",
           "target_month": "202701",
           "valid_start_utc": "2027-01-01T00:00:00Z",
@@ -170,7 +194,7 @@
           "units": "in",
           "statistic": "ensemble_mean",
           "status": "failed",
-          "error": "C3S request failed for ncep/2 snowfall_anomalous_rate_of_accumulation lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/42e8e637-84d4-49ec-8a8e-8e556aac8051/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['5'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['kwbc'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['2'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260907.165320 - Mars server task finished in error\nmars - ERROR  - 20260907.165320 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260907.165320 - Error code is -2\nmars - ERROR  - 20260907.165320 - Request failed\nmars - ERROR  - 20260907.165320 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError"
+          "error": "C3S request failed for ncep/2 snowfall_anomalous_rate_of_accumulation lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/7ca0cd5a-d7a6-4ff7-85b5-c2446d71017a/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['5'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['kwbc'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['2'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260907.173249 - Mars server task finished in error\nmars - ERROR  - 20260907.173249 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260907.173249 - Error code is -2\nmars - ERROR  - 20260907.173249 - Request failed\nmars - ERROR  - 20260907.173249 - Some errors reported (last error -2)\n"
         },
         {
           "id": "c3s-ncep-2026090100-snowfall_anomaly-lead05",
@@ -182,7 +206,7 @@
           "units": "in",
           "statistic": "ensemble_mean",
           "status": "failed",
-          "error": "C3S request failed for ncep/2 snowfall_anomalous_rate_of_accumulation lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/33420729-bba9-486c-aa84-bcc18ff49216/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['6'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['kwbc'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['2'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260907.165348 - Mars server task finished in error\nmars - ERROR  - 20260907.165348 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260907.165348 - Error code is -2\nmars - ERROR  - 20260907.165348 - Request failed\nmars - ERROR  - 20260907.165348 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError"
+          "error": "C3S request failed for ncep/2 snowfall_anomalous_rate_of_accumulation lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/425643ae-71ea-4bb8-b893-5ad691ac7ec3/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['6'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['kwbc'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['2'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260907.173329 - Mars server task finished in error\nmars - ERROR  - 20260907.173329 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260907.173329 - Error code is -2\nmars - ERROR  - 20260907.173329 - Request failed\nmars - ERROR  - 20260907.173329 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError"
         },
         {
           "id": "c3s-ncep-2026090100-snowfall_anomaly-lead06",
@@ -197,15 +221,15 @@
           "error": "Native monthly snowfall ends 202702 for initialization 202609; 202703 is unavailable"
         },
         {
-          "id": "c3s-ncep-2026090100-snowfall_anomaly-202701-202703",
-          "target_month": "202701-202703",
-          "valid_start_utc": "2027-01-01T00:00:00Z",
-          "valid_end_utc": "2027-04-01T00:00:00Z",
-          "lead_month": "4\u20136",
+          "id": "c3s-ncep-2026090100-snowfall_anomaly-202612-202702",
+          "target_month": "202612-202702",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": "3\u20135",
           "monthly_leads": [
+            3,
             4,
-            5,
-            6
+            5
           ],
           "field": "snowfall_anomaly",
           "units": "in",
@@ -257,6 +281,68 @@
         "method": "native C3S postprocessed anomaly"
       },
       "targets": [
+        {
+          "id": "c3s-multisystem-2026090100-snowfall_anomaly-lead03",
+          "target_month": "202612",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-01-01T00:00:00Z",
+          "lead_month": 3,
+          "field": "snowfall_anomaly",
+          "units": "in",
+          "statistic": "multi-system mean of native ensemble-mean anomalies",
+          "status": "rendered",
+          "available_components": [
+            "ecmwf"
+          ],
+          "component_count": 1,
+          "quality_control": {
+            "registry_version": 1,
+            "product": "snowfall_anomaly",
+            "units": "in",
+            "field": "snowfall_anomaly",
+            "period": "monthly",
+            "total_points": 3200,
+            "finite_points": 3200,
+            "finite_fraction": 1.0,
+            "minimum": -2.138202,
+            "maximum": 0.773958,
+            "p01": -1.040151,
+            "p99": 0.217711,
+            "display": {
+              "minimum": -10.0,
+              "maximum": 10.0,
+              "breakpoints": [
+                -10,
+                -9,
+                -8,
+                -7,
+                -6,
+                -5,
+                -4,
+                -3,
+                -2,
+                -1,
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10
+              ],
+              "below_fraction": 0.011562,
+              "above_fraction": 0.0,
+              "clipped_fraction": 0.011562
+            },
+            "issues": [],
+            "status": "passed"
+          },
+          "image": "public/seasonal/c3s/20260901/c3s_multisystem_sf_202612.jpg"
+        },
         {
           "id": "c3s-multisystem-2026090100-snowfall_anomaly-lead04",
           "target_month": "202701",
@@ -396,23 +482,77 @@
           "error": "multi-system blend has no component grid for this lead"
         },
         {
-          "id": "c3s-multisystem-2026090100-snowfall_anomaly-202701-202703",
-          "target_month": "202701-202703",
-          "valid_start_utc": "2027-01-01T00:00:00Z",
-          "valid_end_utc": "2027-04-01T00:00:00Z",
-          "lead_month": "4\u20136",
+          "id": "c3s-multisystem-2026090100-snowfall_anomaly-202612-202702",
+          "target_month": "202612-202702",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": "3\u20135",
           "monthly_leads": [
+            3,
             4,
-            5,
-            6
+            5
           ],
           "field": "snowfall_anomaly",
           "units": "in",
           "statistic": "multi-system mean of native ensemble-mean anomalies",
-          "status": "failed",
-          "available_components": [],
-          "component_count": 0,
-          "error": "no C3S system supplied every month in the seasonal window"
+          "status": "rendered",
+          "available_components": [
+            "ecmwf"
+          ],
+          "component_count": 1,
+          "quality_control": {
+            "registry_version": 1,
+            "product": "snowfall_anomaly",
+            "units": "in",
+            "field": "snowfall_anomaly",
+            "period": "seasonal",
+            "total_points": 3200,
+            "finite_points": 3200,
+            "finite_fraction": 1.0,
+            "minimum": -7.403791,
+            "maximum": 4.029061,
+            "p01": -3.440505,
+            "p99": 0.765347,
+            "display": {
+              "minimum": -10.0,
+              "maximum": 10.0,
+              "breakpoints": [
+                -10,
+                -9,
+                -8,
+                -7,
+                -6,
+                -5,
+                -4,
+                -3,
+                -2,
+                -1,
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10
+              ],
+              "below_fraction": 0.095,
+              "above_fraction": 0.005625,
+              "clipped_fraction": 0.100625
+            },
+            "issues": [
+              {
+                "code": "display_scale_clipping",
+                "severity": "warning",
+                "message": "10.1% of finite cells exceed the fixed display scale."
+              }
+            ],
+            "status": "warning"
+          },
+          "image": "public/seasonal/c3s/20260901/c3s_multisystem_sf_202612-202702.jpg"
         }
       ],
       "status": "partial",
@@ -433,6 +573,7 @@
       ],
       "component_count": 1,
       "component_count_by_lead": {
+        "3": 1,
         "4": 1,
         "5": 1,
         "6": 0
@@ -479,6 +620,18 @@
       },
       "targets": [
         {
+          "id": "c3s-meteo_france-2026090100-snowfall_anomaly-lead03",
+          "target_month": "202612",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-01-01T00:00:00Z",
+          "lead_month": 3,
+          "field": "snowfall_anomaly",
+          "units": "in",
+          "statistic": "ensemble_mean",
+          "status": "failed",
+          "error": "C3S request failed for meteo_france/9 snowfall_anomalous_rate_of_accumulation lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/c3ea51fd-4a6a-4d75-ac1e-bc072ae6710f/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['4'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['lfpw'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['9'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260907.172830 - Mars server task finished in error\nmars - ERROR  - 20260907.172830 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260907.172830 - Error code is -2\nmars - ERROR  - 20260907.172830 - Request failed\nmars - ERROR  - 20260907.172830 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError"
+        },
+        {
           "id": "c3s-meteo_france-2026090100-snowfall_anomaly-lead04",
           "target_month": "202701",
           "valid_start_utc": "2027-01-01T00:00:00Z",
@@ -488,7 +641,7 @@
           "units": "in",
           "statistic": "ensemble_mean",
           "status": "failed",
-          "error": "C3S request failed for meteo_france/9 snowfall_anomalous_rate_of_accumulation lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/a4b4b272-bad3-4e89-86ca-cf69b2ae6296/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['5'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['lfpw'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['9'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260907.165037 - Mars server task finished in error\nmars - ERROR  - 20260907.165037 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260907.165037 - Error code is -2\nmars - ERROR  - 20260907.165037 - Request failed\nmars - ERROR  - 20260907.165037 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError"
+          "error": "C3S request failed for meteo_france/9 snowfall_anomalous_rate_of_accumulation lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/6f3e927f-016e-4eaa-9727-1a41a2ac7bb0/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['5'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['lfpw'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['9'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260907.172852 - Mars server task finished in error\nmars - ERROR  - 20260907.172852 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260907.172852 - Error code is -2\nmars - ERROR  - 20260907.172852 - Request failed\nmars - ERROR  - 20260907.172852 - Some errors reported (last error -2)\n"
         },
         {
           "id": "c3s-meteo_france-2026090100-snowfall_anomaly-lead05",
@@ -500,7 +653,7 @@
           "units": "in",
           "statistic": "ensemble_mean",
           "status": "failed",
-          "error": "C3S request failed for meteo_france/9 snowfall_anomalous_rate_of_accumulation lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/de138a90-86ea-43cd-8391-33a8bc401ac4/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['6'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['lfpw'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['9'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260907.165058 - Mars server task finished in error\nmars - ERROR  - 20260907.165058 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260907.165058 - Error code is -2\nmars - ERROR  - 20260907.165058 - Request failed\nmars - ERROR  - 20260907.165058 - Some errors reported (last error -2)\n"
+          "error": "C3S request failed for meteo_france/9 snowfall_anomalous_rate_of_accumulation lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/c7363063-2d8d-4b79-a0ad-ad76a5dc938d/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['6'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['lfpw'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['9'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260907.172910 - Mars server task finished in error\nmars - ERROR  - 20260907.172910 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260907.172910 - Error code is -2\nmars - ERROR  - 20260907.172910 - Request failed\nmars - ERROR  - 20260907.172910 - Some errors reported (last error -2)\n"
         },
         {
           "id": "c3s-meteo_france-2026090100-snowfall_anomaly-lead06",
@@ -515,15 +668,15 @@
           "error": "Native monthly snowfall ends 202702 for initialization 202609; 202703 is unavailable"
         },
         {
-          "id": "c3s-meteo_france-2026090100-snowfall_anomaly-202701-202703",
-          "target_month": "202701-202703",
-          "valid_start_utc": "2027-01-01T00:00:00Z",
-          "valid_end_utc": "2027-04-01T00:00:00Z",
-          "lead_month": "4\u20136",
+          "id": "c3s-meteo_france-2026090100-snowfall_anomaly-202612-202702",
+          "target_month": "202612-202702",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": "3\u20135",
           "monthly_leads": [
+            3,
             4,
-            5,
-            6
+            5
           ],
           "field": "snowfall_anomaly",
           "units": "in",
@@ -576,6 +729,18 @@
       },
       "targets": [
         {
+          "id": "c3s-jma-2026090100-snowfall_anomaly-lead03",
+          "target_month": "202612",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-01-01T00:00:00Z",
+          "lead_month": 3,
+          "field": "snowfall_anomaly",
+          "units": "in",
+          "statistic": "ensemble_mean",
+          "status": "failed",
+          "error": "C3S request failed for jma/4 snowfall_anomalous_rate_of_accumulation lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/9c4fdec5-1872-46e2-9128-86a0bdccc6ec/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['4'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['rjtd'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['4'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260907.173401 - Mars server task finished in error\nmars - ERROR  - 20260907.173401 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260907.173401 - Error code is -2\nmars - ERROR  - 20260907.173401 - Request failed\nmars - ERROR  - 20260907.173401 - Some errors reported (last error -2)\n"
+        },
+        {
           "id": "c3s-jma-2026090100-snowfall_anomaly-lead04",
           "target_month": "202701",
           "valid_start_utc": "2027-01-01T00:00:00Z",
@@ -585,7 +750,7 @@
           "units": "in",
           "statistic": "ensemble_mean",
           "status": "failed",
-          "error": "C3S request failed for jma/4 snowfall_anomalous_rate_of_accumulation lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/16e06707-fdb9-4d8a-9f54-4d199918aa7c/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['5'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['rjtd'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['4'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260907.165420 - Mars server task finished in error\nmars - ERROR  - 20260907.165420 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260907.165420 - Error code is -2\nmars - ERROR  - 20260907.165420 - Request failed\nmars - ERROR  - 20260907.165420 - Some errors reported (last error -2)\n"
+          "error": "C3S request failed for jma/4 snowfall_anomalous_rate_of_accumulation lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/e1a1b588-98ae-49c8-9e0a-2198794d3bde/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['5'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['rjtd'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['4'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260907.173422 - Mars server task finished in error\nmars - ERROR  - 20260907.173422 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260907.173422 - Error code is -2\nmars - ERROR  - 20260907.173422 - Request failed\nmars - ERROR  - 20260907.173422 - Some errors reported (last error -2)\n"
         },
         {
           "id": "c3s-jma-2026090100-snowfall_anomaly-lead05",
@@ -597,7 +762,7 @@
           "units": "in",
           "statistic": "ensemble_mean",
           "status": "failed",
-          "error": "C3S request failed for jma/4 snowfall_anomalous_rate_of_accumulation lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/6b0f0429-b971-4e79-8090-95a19e466327/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['6'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['rjtd'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['4'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260907.165441 - Mars server task finished in error\nmars - ERROR  - 20260907.165441 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260907.165441 - Error code is -2\nmars - ERROR  - 20260907.165441 - Request failed\nmars - ERROR  - 20260907.165441 - Some errors reported (last error -2)\n"
+          "error": "C3S request failed for jma/4 snowfall_anomalous_rate_of_accumulation lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/7d996399-ef73-40c5-ac73-ee7ffe1b7a9c/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['6'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['rjtd'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['4'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260907.173441 - Mars server task finished in error\nmars - ERROR  - 20260907.173441 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260907.173441 - Error code is -2\nmars - ERROR  - 20260907.173441 - Request failed\nmars - ERROR  - 20260907.173441 - Some errors reported (last error -2)\n"
         },
         {
           "id": "c3s-jma-2026090100-snowfall_anomaly-lead06",
@@ -612,15 +777,15 @@
           "error": "Native monthly snowfall ends 202702 for initialization 202609; 202703 is unavailable"
         },
         {
-          "id": "c3s-jma-2026090100-snowfall_anomaly-202701-202703",
-          "target_month": "202701-202703",
-          "valid_start_utc": "2027-01-01T00:00:00Z",
-          "valid_end_utc": "2027-04-01T00:00:00Z",
-          "lead_month": "4\u20136",
+          "id": "c3s-jma-2026090100-snowfall_anomaly-202612-202702",
+          "target_month": "202612-202702",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": "3\u20135",
           "monthly_leads": [
+            3,
             4,
-            5,
-            6
+            5
           ],
           "field": "snowfall_anomaly",
           "units": "in",
@@ -672,6 +837,65 @@
         "method": "native C3S postprocessed anomaly"
       },
       "targets": [
+        {
+          "id": "c3s-ecmwf-2026090100-snowfall_anomaly-lead03",
+          "target_month": "202612",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-01-01T00:00:00Z",
+          "lead_month": 3,
+          "field": "snowfall_anomaly",
+          "units": "in",
+          "statistic": "ensemble_mean",
+          "status": "rendered",
+          "source_file": ".cache/c3s/cds/ecmwf_51_seasonal_postprocessed_single_levels_snowfall_anomalous_rate_of_accumulation_202609_anom_l04/field.grib",
+          "quality_control": {
+            "registry_version": 1,
+            "product": "snowfall_anomaly",
+            "units": "in",
+            "field": "snowfall_anomaly",
+            "period": "monthly",
+            "total_points": 3200,
+            "finite_points": 3200,
+            "finite_fraction": 1.0,
+            "minimum": -2.138202,
+            "maximum": 0.773958,
+            "p01": -1.040151,
+            "p99": 0.217711,
+            "display": {
+              "minimum": -10.0,
+              "maximum": 10.0,
+              "breakpoints": [
+                -10,
+                -9,
+                -8,
+                -7,
+                -6,
+                -5,
+                -4,
+                -3,
+                -2,
+                -1,
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10
+              ],
+              "below_fraction": 0.011562,
+              "above_fraction": 0.0,
+              "clipped_fraction": 0.011562
+            },
+            "issues": [],
+            "status": "passed"
+          },
+          "image": "public/seasonal/c3s/20260901/c3s_ecmwf_sf_202612.jpg"
+        },
         {
           "id": "c3s-ecmwf-2026090100-snowfall_anomaly-lead04",
           "target_month": "202701",
@@ -803,21 +1027,73 @@
           "error": "Native monthly snowfall ends 202702 for initialization 202609; 202703 is unavailable"
         },
         {
-          "id": "c3s-ecmwf-2026090100-snowfall_anomaly-202701-202703",
-          "target_month": "202701-202703",
-          "valid_start_utc": "2027-01-01T00:00:00Z",
-          "valid_end_utc": "2027-04-01T00:00:00Z",
-          "lead_month": "4\u20136",
+          "id": "c3s-ecmwf-2026090100-snowfall_anomaly-202612-202702",
+          "target_month": "202612-202702",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": "3\u20135",
           "monthly_leads": [
+            3,
             4,
-            5,
-            6
+            5
           ],
           "field": "snowfall_anomaly",
           "units": "in",
           "statistic": "ensemble_mean",
-          "status": "failed",
-          "error": "seasonal window is missing one or more component grids"
+          "status": "rendered",
+          "quality_control": {
+            "registry_version": 1,
+            "product": "snowfall_anomaly",
+            "units": "in",
+            "field": "snowfall_anomaly",
+            "period": "seasonal",
+            "total_points": 3200,
+            "finite_points": 3200,
+            "finite_fraction": 1.0,
+            "minimum": -7.403791,
+            "maximum": 4.029061,
+            "p01": -3.440505,
+            "p99": 0.765347,
+            "display": {
+              "minimum": -10.0,
+              "maximum": 10.0,
+              "breakpoints": [
+                -10,
+                -9,
+                -8,
+                -7,
+                -6,
+                -5,
+                -4,
+                -3,
+                -2,
+                -1,
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10
+              ],
+              "below_fraction": 0.095,
+              "above_fraction": 0.005625,
+              "clipped_fraction": 0.100625
+            },
+            "issues": [
+              {
+                "code": "display_scale_clipping",
+                "severity": "warning",
+                "message": "10.1% of finite cells exceed the fixed display scale."
+              }
+            ],
+            "status": "warning"
+          },
+          "image": "public/seasonal/c3s/20260901/c3s_ecmwf_sf_202612-202702.jpg"
         }
       ],
       "status": "partial",
@@ -864,6 +1140,18 @@
       },
       "targets": [
         {
+          "id": "c3s-eccc-2026090100-snowfall_anomaly-lead03",
+          "target_month": "202612",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-01-01T00:00:00Z",
+          "lead_month": 3,
+          "field": "snowfall_anomaly",
+          "units": "in",
+          "statistic": "ensemble_mean",
+          "status": "failed",
+          "error": "C3S request failed for eccc/5 snowfall_anomalous_rate_of_accumulation lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/f3c8065d-0efc-4371-bdaa-60d91c70d195/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['4'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['cwao'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['5'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260907.173512 - Mars server task finished in error\nmars - ERROR  - 20260907.173512 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260907.173512 - Error code is -2\nmars - ERROR  - 20260907.173512 - Request failed\nmars - ERROR  - 20260907.173512 - Some errors reported (last error -2)\n"
+        },
+        {
           "id": "c3s-eccc-2026090100-snowfall_anomaly-lead04",
           "target_month": "202701",
           "valid_start_utc": "2027-01-01T00:00:00Z",
@@ -873,7 +1161,7 @@
           "units": "in",
           "statistic": "ensemble_mean",
           "status": "failed",
-          "error": "C3S request failed for eccc/5 snowfall_anomalous_rate_of_accumulation lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/9efcff5e-550d-4399-9a27-f3b44556ebc3/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['5'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['cwao'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['5'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260907.165513 - Mars server task finished in error\nmars - ERROR  - 20260907.165513 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260907.165513 - Error code is -2\nmars - ERROR  - 20260907.165513 - Request failed\nmars - ERROR  - 20260907.165513 - Some errors reported (last error -2)\n"
+          "error": "C3S request failed for eccc/5 snowfall_anomalous_rate_of_accumulation lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/be534c56-a340-4524-a1d4-703e6f6f580e/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['5'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['cwao'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['5'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260907.173545 - Mars server task finished in error\nmars - ERROR  - 20260907.173545 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260907.173545 - Error code is -2\nmars - ERROR  - 20260907.173545 - Request failed\nmars - ERROR  - 20260907.173545 - Some errors reported (last error -2)\n"
         },
         {
           "id": "c3s-eccc-2026090100-snowfall_anomaly-lead05",
@@ -885,7 +1173,7 @@
           "units": "in",
           "statistic": "ensemble_mean",
           "status": "failed",
-          "error": "C3S request failed for eccc/5 snowfall_anomalous_rate_of_accumulation lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/0bcb809d-c570-45ea-8362-b690eda0caee/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['6'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['cwao'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['5'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260907.165535 - Mars server task finished in error\nmars - ERROR  - 20260907.165535 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260907.165535 - Error code is -2\nmars - ERROR  - 20260907.165535 - Request failed\nmars - ERROR  - 20260907.165535 - Some errors reported (last error -2)\n"
+          "error": "C3S request failed for eccc/5 snowfall_anomalous_rate_of_accumulation lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/35ee3f9e-e2e7-4567-92cf-fed0375e72b4/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['6'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['cwao'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['5'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260907.173651 - Mars server task finished in error\nmars - ERROR  - 20260907.173651 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260907.173651 - Error code is -2\nmars - ERROR  - 20260907.173651 - Request failed\nmars - ERROR  - 20260907.173651 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError"
         },
         {
           "id": "c3s-eccc-2026090100-snowfall_anomaly-lead06",
@@ -900,15 +1188,15 @@
           "error": "Native monthly snowfall ends 202702 for initialization 202609; 202703 is unavailable"
         },
         {
-          "id": "c3s-eccc-2026090100-snowfall_anomaly-202701-202703",
-          "target_month": "202701-202703",
-          "valid_start_utc": "2027-01-01T00:00:00Z",
-          "valid_end_utc": "2027-04-01T00:00:00Z",
-          "lead_month": "4\u20136",
+          "id": "c3s-eccc-2026090100-snowfall_anomaly-202612-202702",
+          "target_month": "202612-202702",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": "3\u20135",
           "monthly_leads": [
+            3,
             4,
-            5,
-            6
+            5
           ],
           "field": "snowfall_anomaly",
           "units": "in",
@@ -961,6 +1249,18 @@
       },
       "targets": [
         {
+          "id": "c3s-dwd-2026090100-snowfall_anomaly-lead03",
+          "target_month": "202612",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-01-01T00:00:00Z",
+          "lead_month": 3,
+          "field": "snowfall_anomaly",
+          "units": "in",
+          "statistic": "ensemble_mean",
+          "status": "failed",
+          "error": "C3S request failed for dwd/22 snowfall_anomalous_rate_of_accumulation lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/e429716a-d9d4-4ad6-8389-0ba7cb3e8410/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['4'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['edzw'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['22'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260907.172930 - Mars server task finished in error\nmars - ERROR  - 20260907.172930 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260907.172930 - Error code is -2\nmars - ERROR  - 20260907.172930 - Request failed\nmars - ERROR  - 20260907.172930 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError"
+        },
+        {
           "id": "c3s-dwd-2026090100-snowfall_anomaly-lead04",
           "target_month": "202701",
           "valid_start_utc": "2027-01-01T00:00:00Z",
@@ -970,7 +1270,7 @@
           "units": "in",
           "statistic": "ensemble_mean",
           "status": "failed",
-          "error": "C3S request failed for dwd/22 snowfall_anomalous_rate_of_accumulation lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/256bc3a8-1968-427f-8aec-e10c7493a0fd/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['5'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['edzw'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['22'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260907.165129 - Mars server task finished in error\nmars - ERROR  - 20260907.165129 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260907.165129 - Error code is -2\nmars - ERROR  - 20260907.165129 - Request failed\nmars - ERROR  - 20260907.165129 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError"
+          "error": "C3S request failed for dwd/22 snowfall_anomalous_rate_of_accumulation lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/3461b16b-151f-456a-bb0f-ccb6168f148d/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['5'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['edzw'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['22'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260907.173000 - Mars server task finished in error\nmars - ERROR  - 20260907.173000 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260907.173000 - Error code is -2\nmars - ERROR  - 20260907.173000 - Request failed\nmars - ERROR  - 20260907.173000 - Some errors reported (last error -2)\n"
         },
         {
           "id": "c3s-dwd-2026090100-snowfall_anomaly-lead05",
@@ -982,7 +1282,7 @@
           "units": "in",
           "statistic": "ensemble_mean",
           "status": "failed",
-          "error": "C3S request failed for dwd/22 snowfall_anomalous_rate_of_accumulation lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/ec4f6812-b079-44fa-9c1a-fc843a5af106/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['6'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['edzw'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['22'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260907.165151 - Mars server task finished in error\nmars - ERROR  - 20260907.165151 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260907.165151 - Error code is -2\nmars - ERROR  - 20260907.165151 - Request failed\nmars - ERROR  - 20260907.165151 - Some errors reported (last error -2)\n"
+          "error": "C3S request failed for dwd/22 snowfall_anomalous_rate_of_accumulation lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/7f7c3750-7717-4d06-ac30-492cdd589430/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['6'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['edzw'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['22'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260907.173033 - Mars server task finished in error\nmars - ERROR  - 20260907.173033 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260907.173033 - Error code is -2\nmars - ERROR  - 20260907.173033 - Request failed\nmars - ERROR  - 20260907.173033 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError"
         },
         {
           "id": "c3s-dwd-2026090100-snowfall_anomaly-lead06",
@@ -997,15 +1297,15 @@
           "error": "Native monthly snowfall ends 202702 for initialization 202609; 202703 is unavailable"
         },
         {
-          "id": "c3s-dwd-2026090100-snowfall_anomaly-202701-202703",
-          "target_month": "202701-202703",
-          "valid_start_utc": "2027-01-01T00:00:00Z",
-          "valid_end_utc": "2027-04-01T00:00:00Z",
-          "lead_month": "4\u20136",
+          "id": "c3s-dwd-2026090100-snowfall_anomaly-202612-202702",
+          "target_month": "202612-202702",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": "3\u20135",
           "monthly_leads": [
+            3,
             4,
-            5,
-            6
+            5
           ],
           "field": "snowfall_anomaly",
           "units": "in",
@@ -1058,6 +1358,18 @@
       },
       "targets": [
         {
+          "id": "c3s-cmcc-2026090100-snowfall_anomaly-lead03",
+          "target_month": "202612",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-01-01T00:00:00Z",
+          "lead_month": 3,
+          "field": "snowfall_anomaly",
+          "units": "in",
+          "statistic": "ensemble_mean",
+          "status": "failed",
+          "error": "C3S request failed for cmcc/4 snowfall_anomalous_rate_of_accumulation lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/a0a992d2-62fe-4366-8a33-ec25d76007e8/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['4'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['cmcc'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['4'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260907.173107 - Mars server task finished in error\nmars - ERROR  - 20260907.173107 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260907.173107 - Error code is -2\nmars - ERROR  - 20260907.173107 - Request failed\nmars - ERROR  - 20260907.173107 - Some errors reported (last error -2)\n"
+        },
+        {
           "id": "c3s-cmcc-2026090100-snowfall_anomaly-lead04",
           "target_month": "202701",
           "valid_start_utc": "2027-01-01T00:00:00Z",
@@ -1067,7 +1379,7 @@
           "units": "in",
           "statistic": "ensemble_mean",
           "status": "failed",
-          "error": "C3S request failed for cmcc/4 snowfall_anomalous_rate_of_accumulation lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/2e116455-91b1-426f-bdf4-cdb484f3166c/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['5'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['cmcc'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['4'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260907.165222 - Mars server task finished in error\nmars - ERROR  - 20260907.165222 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260907.165222 - Error code is -2\nmars - ERROR  - 20260907.165222 - Request failed\nmars - ERROR  - 20260907.165222 - Some errors reported (last error -2)\n"
+          "error": "C3S request failed for cmcc/4 snowfall_anomalous_rate_of_accumulation lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/a4ae2077-f92b-4fbd-bfbe-0d5f11fe1b36/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['5'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['cmcc'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['4'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260907.173127 - Mars server task finished in error\nmars - ERROR  - 20260907.173127 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260907.173127 - Error code is -2\nmars - ERROR  - 20260907.173127 - Request failed\nmars - ERROR  - 20260907.173127 - Some errors reported (last error -2)\n"
         },
         {
           "id": "c3s-cmcc-2026090100-snowfall_anomaly-lead05",
@@ -1079,7 +1391,7 @@
           "units": "in",
           "statistic": "ensemble_mean",
           "status": "failed",
-          "error": "C3S request failed for cmcc/4 snowfall_anomalous_rate_of_accumulation lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/a88eef59-87ae-4115-8e99-9e06e12b1130/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['6'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['cmcc'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['4'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260907.165255 - Mars server task finished in error\nmars - ERROR  - 20260907.165255 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260907.165255 - Error code is -2\nmars - ERROR  - 20260907.165255 - Request failed\nmars - ERROR  - 20260907.165255 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError"
+          "error": "C3S request failed for cmcc/4 snowfall_anomalous_rate_of_accumulation lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/bcae05dc-cbf0-409b-b724-252407bdfca2/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['6'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['cmcc'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['4'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260907.173158 - Mars server task finished in error\nmars - ERROR  - 20260907.173158 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260907.173158 - Error code is -2\nmars - ERROR  - 20260907.173158 - Request failed\nmars - ERROR  - 20260907.173158 - Some errors reported (last error -2)\n"
         },
         {
           "id": "c3s-cmcc-2026090100-snowfall_anomaly-lead06",
@@ -1094,15 +1406,15 @@
           "error": "Native monthly snowfall ends 202702 for initialization 202609; 202703 is unavailable"
         },
         {
-          "id": "c3s-cmcc-2026090100-snowfall_anomaly-202701-202703",
-          "target_month": "202701-202703",
-          "valid_start_utc": "2027-01-01T00:00:00Z",
-          "valid_end_utc": "2027-04-01T00:00:00Z",
-          "lead_month": "4\u20136",
+          "id": "c3s-cmcc-2026090100-snowfall_anomaly-202612-202702",
+          "target_month": "202612-202702",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": "3\u20135",
           "monthly_leads": [
+            3,
             4,
-            5,
-            6
+            5
           ],
           "field": "snowfall_anomaly",
           "units": "in",
@@ -1155,6 +1467,18 @@
       },
       "targets": [
         {
+          "id": "c3s-bom-2026090100-snowfall_anomaly-lead03",
+          "target_month": "202612",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-01-01T00:00:00Z",
+          "lead_month": 3,
+          "field": "snowfall_anomaly",
+          "units": "in",
+          "statistic": "ensemble_mean",
+          "status": "failed",
+          "error": "C3S request failed for bom/2 snowfall_anomalous_rate_of_accumulation lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/26d3d179-bced-4ad2-85c5-3875861aee1d/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['4'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['ammc'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['2'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260907.173731 - Mars server task finished in error\nmars - ERROR  - 20260907.173731 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260907.173731 - Error code is -2\nmars - ERROR  - 20260907.173731 - Request failed\nmars - ERROR  - 20260907.173731 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError"
+        },
+        {
           "id": "c3s-bom-2026090100-snowfall_anomaly-lead04",
           "target_month": "202701",
           "valid_start_utc": "2027-01-01T00:00:00Z",
@@ -1164,7 +1488,7 @@
           "units": "in",
           "statistic": "ensemble_mean",
           "status": "failed",
-          "error": "C3S request failed for bom/2 snowfall_anomalous_rate_of_accumulation lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/23c138a9-8b0c-48a8-9686-1bbae795dd97/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['5'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['ammc'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['2'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260907.165606 - Mars server task finished in error\nmars - ERROR  - 20260907.165606 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260907.165606 - Error code is -2\nmars - ERROR  - 20260907.165606 - Request failed\nmars - ERROR  - 20260907.165606 - Some errors reported (last error -2)\n"
+          "error": "C3S request failed for bom/2 snowfall_anomalous_rate_of_accumulation lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/e2086e89-a2ca-4290-b6bc-dd9f304862a7/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['5'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['ammc'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['2'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260907.173750 - Mars server task finished in error\nmars - ERROR  - 20260907.173750 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260907.173750 - Error code is -2\nmars - ERROR  - 20260907.173750 - Request failed\nmars - ERROR  - 20260907.173750 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError"
         },
         {
           "id": "c3s-bom-2026090100-snowfall_anomaly-lead05",
@@ -1176,7 +1500,7 @@
           "units": "in",
           "statistic": "ensemble_mean",
           "status": "failed",
-          "error": "C3S request failed for bom/2 snowfall_anomalous_rate_of_accumulation lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/d0453886-2ce7-49ea-bf9f-0b610435702b/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['6'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['ammc'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['2'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260907.165632 - Mars server task finished in error\nmars - ERROR  - 20260907.165632 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260907.165632 - Error code is -2\nmars - ERROR  - 20260907.165632 - Request failed\nmars - ERROR  - 20260907.165632 - Some errors reported (last error -2)\n"
+          "error": "C3S request failed for bom/2 snowfall_anomalous_rate_of_accumulation lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/1a6a4287-ead9-41e2-adfc-67d82b9fd214/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['6'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['ammc'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['2'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260907.173812 - Mars server task finished in error\nmars - ERROR  - 20260907.173812 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260907.173812 - Error code is -2\nmars - ERROR  - 20260907.173812 - Request failed\nmars - ERROR  - 20260907.173812 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError"
         },
         {
           "id": "c3s-bom-2026090100-snowfall_anomaly-lead06",
@@ -1191,15 +1515,15 @@
           "error": "Native monthly snowfall ends 202702 for initialization 202609; 202703 is unavailable"
         },
         {
-          "id": "c3s-bom-2026090100-snowfall_anomaly-202701-202703",
-          "target_month": "202701-202703",
-          "valid_start_utc": "2027-01-01T00:00:00Z",
-          "valid_end_utc": "2027-04-01T00:00:00Z",
-          "lead_month": "4\u20136",
+          "id": "c3s-bom-2026090100-snowfall_anomaly-202612-202702",
+          "target_month": "202612-202702",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": "3\u20135",
           "monthly_leads": [
+            3,
             4,
-            5,
-            6
+            5
           ],
           "field": "snowfall_anomaly",
           "units": "in",
