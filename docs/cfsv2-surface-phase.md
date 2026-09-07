@@ -10,7 +10,7 @@ Eight February targets (2012–2019), one September 6 12Z initialization per yea
 
 ## Backfill
 
-Dispatch `cfsv2-surface-phase-backfill.yml` for each historical initialization year 2011–2025 and once with a blank year for the forecast. Keep init, targets, and rolling_days identical across jobs. Re-run an interrupted shard with the same inputs: it restores complete and partial inputs from cache and checks complete bundles before reusing them. Downloads run sequentially with a 60-second pause between newly built months. HTTP 429, selected server errors, and transport failures retry with backoff and Retry-After support; persistent failures still fail visibly.
+Dispatch `cfsv2-surface-phase-backfill.yml` for each historical initialization year 2011–2025 and once with a blank year for the forecast. Keep init, targets, and rolling_days identical across jobs. Re-run an interrupted shard with the same inputs: it restores complete and partial inputs from cache and checks complete bundles before reusing them. Downloads use two workers by default with no unconditional pauses; retry backoff remains enabled. HTTP 429, selected server errors, and transport failures retry with backoff and Retry-After support; persistent failures still fail visibly.
 
 Each job limits acquisition to 300 minutes, leaving time to save checkpoints and upload complete bundles. Cache retention/eviction is controlled by GitHub; download completed artifacts if long-term preservation is needed. Do not launch many shards simultaneously against the archive.
 

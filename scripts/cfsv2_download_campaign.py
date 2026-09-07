@@ -11,6 +11,7 @@ def main():
     p.add_argument('--init',default='2026090612')
     p.add_argument('--targets',default='202612,202701,202702,202703')
     p.add_argument('--years',default=','.join(map(str,range(2011,2026)))+',forecast')
+    p.add_argument('--workers',type=int,choices=range(1,5),default=2)
     p.add_argument('--rolling-days',type=int,choices=range(1,7),default=6)
     p.add_argument('--exclude-cycles',default='2026090418')
     p.add_argument('--checkpoint-dir',type=Path,required=True)
@@ -31,7 +32,7 @@ def main():
             for target in targets:
                 command=[sys.executable,str(Path(__file__).with_name('cfsv2_surface_phase_build.py')),
                          '--init',a.init,'--targets',target,'--rolling-days',str(a.rolling_days),
-                         '--exclude-cycles',a.exclude_cycles,'--workers','1','--month-pause-seconds','60',
+                         '--exclude-cycles',a.exclude_cycles,'--workers',str(a.workers),'--month-pause-seconds','0',
                          '--raw-cache',str(root/'raw'),'--bundles',str(root/'months')]
                 if year!='forecast':command+=['--historical-year',year]
                 tasks.append((year,target,command))

@@ -4,7 +4,7 @@ Use --historical-year to shard the one-time backfill. This command never
 publishes maps. --reference requires every 2011-2025 month/cycle bundle.
 """
 import argparse
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timedelta
 import hashlib
 import json
@@ -176,9 +176,9 @@ def main():
     p.add_argument("--raw-cache", type=Path, default=Path(".cache/cfsv2-surface-phase/raw"))
     p.add_argument("--bundles", type=Path, default=Path(".cache/cfsv2-surface-phase/months"))
     p.add_argument("--reference-dir", type=Path, default=Path(".cache/cfsv2-surface-phase/reference"))
-    p.add_argument("--workers", type=int, choices=range(1, 5), default=1)
-    p.add_argument("--month-pause-seconds", type=int, default=60,
-                   help="pause between month bundles; requires one worker (default 60)")
+    p.add_argument("--workers", type=int, choices=range(1, 5), default=2)
+    p.add_argument("--month-pause-seconds", type=int, default=0,
+                   help="optional pause between month bundles; requires one worker (default 0)")
     p.add_argument("--offline", action="store_true")
     p.add_argument("--reference", action="store_true", help="assemble all years; no acquisition")
     p.add_argument("--plan", action="store_true", help="print required month/cycle tasks")
@@ -213,39 +213,46 @@ def main():
     if args.plan:
         print(json.dumps(sorted(tasks), indent=2))
         return
-    if args.workers == 1:
-        ordered = sorted(tasks)
-        failures = []
-        completed = []
-        status_path = args.bundles / "acquisition-status.json"
-        args.bundles.mkdir(parents=True, exist_ok=True)
-        for index, task in enumerate(ordered):
+    ordered = sorted(tasks)
+    failures, completed = [], []
+    status_path = args.bundles / "acquisition-status.json"
+    args.bundles.mkdir(parents=True, exist_ok=True)
+    # Adjacent months share endpoint records. Serialize within an init to avoid
+    # simultaneous writes to the same raw checkpoint; different cycles overlap.
+    locks = {init: threading.Lock() for init, target in ordered}
+    def acquire(task):
+        with locks[task[0]]:
             stem = phase.month_stem(args.bundles, *task)
             cached = stem.with_suffix(".npz").exists() and stem.with_suffix(".json").exists()
-            try:
-                build_month(args.raw_cache, args.bundles, *task, args.offline)
-                completed.append(task)
-            except Exception as exc:
-                failures.append({"init": task[0], "target": task[1], "error": str(exc)})
-                print(f"Incomplete cycle {task}: {exc}; continuing remaining cycles", flush=True)
-            temporary = status_path.with_suffix(".tmp")
-            temporary.write_text(json.dumps({"complete": False, "completed": completed,
-                                             "failures": failures, "expected": ordered}, indent=2))
-            temporary.replace(status_path)
-            if not cached and index < len(ordered)-1 and args.month_pause_seconds:
-                print(f"Pausing {args.month_pause_seconds}s between months", flush=True)
+            build_month(args.raw_cache, args.bundles, *task, args.offline)
+            if not cached and args.month_pause_seconds:
                 remaining = args.month_pause_seconds
                 while remaining:
                     duration = min(60, remaining)
                     time.sleep(duration)
                     remaining -= duration
-        status_path.write_text(json.dumps({"complete": not failures, "completed": completed,
-                                           "failures": failures, "expected": ordered}, indent=2))
-        if failures:
-            raise SystemExit(f"Acquisition incomplete: {len(failures)}/{len(ordered)} cycle-months failed; see {status_path}")
-    else:
-        with ThreadPoolExecutor(max_workers=args.workers) as pool:
-            list(pool.map(lambda task: build_month(args.raw_cache, args.bundles, *task, args.offline), sorted(tasks)))
+    def report(final=False):
+        temporary = status_path.with_suffix(".tmp")
+        temporary.write_text(json.dumps({"complete": final and not failures,
+            "completed": sorted(completed), "failures": failures, "expected": ordered}, indent=2))
+        temporary.replace(status_path)
+    report()
+    # Cycle-round-robin submission avoids filling every worker with one init.
+    ordered = sorted(ordered, key=lambda task: (task[1], task[0]))
+    with ThreadPoolExecutor(max_workers=args.workers) as pool:
+        futures = {pool.submit(acquire, task): task for task in ordered}
+        for future in as_completed(futures):
+            task = futures[future]
+            try:
+                future.result()
+                completed.append(task)
+            except Exception as exc:
+                failures.append({"init": task[0], "target": task[1], "error": str(exc)})
+                print(f"Incomplete cycle {task}: {exc}; continuing remaining cycles", flush=True)
+            report()
+    report(final=True)
+    if failures:
+        raise SystemExit(f"Acquisition incomplete: {len(failures)}/{len(ordered)} cycle-months failed; see {status_path}")
 
 
 if __name__ == "__main__":

@@ -53,3 +53,21 @@ class AcquisitionContinuationTests(unittest.TestCase):
             self.assertFalse(report['complete'])
             self.assertEqual(len(report['failures']), 1)
             self.assertEqual(len(report['completed']), 3)
+
+
+class ParallelAcquisitionTests(unittest.TestCase):
+    def test_parallel_errors_preserve_other_completed_cycles(self):
+        import tempfile,json
+        def acquire(cache, output, init, target, offline):
+            if init == '2026090518':
+                raise requests.HTTPError('404 missing')
+        with tempfile.TemporaryDirectory() as directory:
+            argv=['build','--init','2026090612','--targets','202702','--rolling-days','1',
+                  '--workers','2','--bundles',directory]
+            with patch.object(sys,'argv',argv), patch.object(build,'build_month',side_effect=acquire) as worker:
+                with self.assertRaises(SystemExit): build.main()
+            self.assertEqual(worker.call_count,4)
+            report=json.loads((Path(directory)/'acquisition-status.json').read_text())
+            self.assertFalse(report['complete'])
+            self.assertEqual(len(report['completed']),3)
+            self.assertEqual(report['failures'][0]['init'],'2026090518')

@@ -71,7 +71,7 @@ jobs:
       - name: Build resumable month bundles
         shell: bash
         run: |
-          args=(--exclude-cycles "$EXCLUDE_CYCLES" --init "$INIT" --targets "$TARGETS" --rolling-days "$ROLLING_DAYS" --workers 1 --month-pause-seconds 60)
+          args=(--exclude-cycles "$EXCLUDE_CYCLES" --init "$INIT" --targets "$TARGETS" --rolling-days "$ROLLING_DAYS" --workers 2 --month-pause-seconds 0)
           if [[ -n "$HISTORICAL_YEAR" ]]; then
             args+=(--historical-year "$HISTORICAL_YEAR")
           fi
