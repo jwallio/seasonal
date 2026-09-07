@@ -1,5 +1,8 @@
 name: CFSv2 Surface Phase Reference Backfill
 on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths: [".github/workflows/cfsv2-surface-phase-backfill.yml"]
   workflow_dispatch:
     inputs:
       init:
@@ -21,17 +24,18 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: surface-phase-${{ inputs.init }}-${{ inputs.historical_year }}-${{ inputs.targets }}-${{ inputs.rolling_days }}
+  group: surface-phase-${{ inputs.init || '2026090612' }}-${{ github.event_name == 'pull_request' && '2019' || inputs.historical_year }}-${{ inputs.targets || '202702' }}-${{ inputs.rolling_days || '6' }}
   cancel-in-progress: false
 jobs:
   backfill:
+    if: github.event_name == 'workflow_dispatch' || github.head_ref == 'codex/cfsv2-surface-phase'
     runs-on: ubuntu-latest
     timeout-minutes: 350
     env:
-      INIT: ${{ inputs.init }}
-      TARGETS: ${{ inputs.targets }}
-      HISTORICAL_YEAR: ${{ inputs.historical_year }}
-      ROLLING_DAYS: ${{ inputs.rolling_days }}
+      INIT: ${{ inputs.init || '2026090612' }}
+      TARGETS: ${{ inputs.targets || '202702' }}
+      HISTORICAL_YEAR: ${{ github.event_name == 'pull_request' && '2019' || inputs.historical_year }}
+      ROLLING_DAYS: ${{ inputs.rolling_days || '6' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -43,9 +47,9 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: .cache/cfsv2-surface-phase
-          key: surface-phase-v1-${{ inputs.init }}-${{ inputs.historical_year }}-${{ inputs.targets }}-${{ inputs.rolling_days }}-${{ github.run_id }}-${{ github.run_attempt }}
+          key: surface-phase-v1-${{ inputs.init || '2026090612' }}-${{ github.event_name == 'pull_request' && '2019' || inputs.historical_year }}-${{ inputs.targets || '202702' }}-${{ inputs.rolling_days || '6' }}-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys: |
-            surface-phase-v1-${{ inputs.init }}-${{ inputs.historical_year }}-${{ inputs.targets }}-${{ inputs.rolling_days }}-
+            surface-phase-v1-${{ inputs.init || '2026090612' }}-${{ github.event_name == 'pull_request' && '2019' || inputs.historical_year }}-${{ inputs.targets || '202702' }}-${{ inputs.rolling_days || '6' }}-
       - name: Build resumable month bundles
         shell: bash
         run: |
@@ -59,12 +63,12 @@ jobs:
         uses: actions/cache/save@v4
         with:
           path: .cache/cfsv2-surface-phase
-          key: surface-phase-v1-${{ inputs.init }}-${{ inputs.historical_year }}-${{ inputs.targets }}-${{ inputs.rolling_days }}-${{ github.run_id }}-${{ github.run_attempt }}
+          key: surface-phase-v1-${{ inputs.init || '2026090612' }}-${{ github.event_name == 'pull_request' && '2019' || inputs.historical_year }}-${{ inputs.targets || '202702' }}-${{ inputs.rolling_days || '6' }}-${{ github.run_id }}-${{ github.run_attempt }}
       - name: Export completed bundles for reference assembly
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: surface-phase-${{ inputs.init }}-${{ inputs.historical_year || 'forecast' }}
+          name: surface-phase-${{ inputs.init || '2026090612' }}-${{ github.event_name == 'pull_request' && '2019' || inputs.historical_year || 'forecast' }}
           path: .cache/cfsv2-surface-phase/months/
           if-no-files-found: warn
           retention-days: 30
