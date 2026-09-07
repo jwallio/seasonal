@@ -2228,6 +2228,9 @@ def _decode_snowfall_target_ensemble(
 
     if product_name not in SNOWFALL_PRODUCTS:
         raise CFSv2Error(f"{product_name} is not a derived CFSv2 snowfall product")
+    if getattr(args, "surface_phase_bundle_dir", None):
+        from cfsv2_surface_phase import decode
+        return decode(args, init, target, members, rolling_inits)
     if product_name == PRODUCT_SNOWFALL_ACCUMULATION or getattr(args, "native_snowfall_departure", False):
         from cfsv2_native_snow import decode
         result = decode(args, init, target, members, rolling_inits, cache_dir, state_dir, wgrib2)
@@ -2404,7 +2407,9 @@ def load_snowfall_baseline(
     """Load and derive a matching snowfall baseline from all three fields."""
 
     if getattr(args, "snowfall_reference_dir", None):
-        if getattr(args, "native_snowfall_departure", False):
+        if getattr(args, "surface_phase_bundle_dir", None):
+            from cfsv2_surface_phase import load_reference
+        elif getattr(args, "native_snowfall_departure", False):
             from cfsv2_native_reference import load_reference
         else:
             from cfsv2_snow_reference import load_reference
@@ -2528,6 +2533,8 @@ def load_snowfall_baseline(
 
 
 def configured_baseline_label(args: argparse.Namespace) -> str:
+    if getattr(args, "surface_phase_bundle_dir", None):
+        return "2011–2025 surface-phase operational snowfall reference"
     if getattr(args, "native_snowfall_departure", False):
         return "2011–2025 native operational snowfall reference"
     if getattr(args, "snowfall_reference_dir", None):
@@ -2569,6 +2576,15 @@ def seasonal_baseline_manifest(
         metadata["rolling_policy"] = "anchor_initialization"
         metadata["anchor_init"] = rolling_init
 
+    if any(item.get("method") == "surface_phase_apcp_endpoint_trapezoid_v1" for item in monthly_baselines):
+        first = monthly_baselines[0]
+        if (any(item.get("method") != "surface_phase_apcp_endpoint_trapezoid_v1" for item in monthly_baselines)
+                or any(item.get("historical_years") != first.get("historical_years")
+                       or item.get("forecast_cycles") != first.get("forecast_cycles") for item in monthly_baselines)):
+            raise CFSv2Error("Seasonal surface-phase departures require identical methods, years, and cycle windows")
+        metadata.update(years=first["years"], label=first["label"], method=first["method"],
+                        rolling_policy="reference_matched_to_each_forecast_cycle",
+                        monthly_references=list(monthly_baselines))
     if monthly_baselines and all(item.get("method") == "native_srweq_operational_2011_2025_v1" for item in monthly_baselines):
         if any(item["historical_years"] != monthly_baselines[0]["historical_years"] for item in monthly_baselines):
             raise CFSv2Error("Seasonal native snowfall requires identical historical years for every month")
@@ -2802,7 +2818,8 @@ def render_map(
         if native_lwe is None:
             raise CFSv2Error("Native accumulation rendering requires its paired LWE grid")
         from cfsv2_native_snow import render
-        return render(native_lwe, init, target, lead, output_path, seasonal, period_label, ensemble_label)
+        return render(native_lwe, init, target, lead, output_path, seasonal, period_label, ensemble_label,
+                      input_label=product_spec.get("snowfall_input_kind", "Native model snowfall"))
     from snowfall_display import depth_departure
     grid, product_spec = depth_departure(grid, product_spec, SNOWFALL_ANOMALY_PALETTE)
     region = product_spec.get("region", region)
@@ -3735,6 +3752,8 @@ def build_parser() -> argparse.ArgumentParser:
         default=4,
         help="number of current and historical runs to retain per product in the manifest",
     )
+    parser.add_argument("--surface-phase-bundle-dir", type=Path,
+                        help="use complete APCP/surface-phase month bundles; departures require matching surface-phase references")
     parser.add_argument("--native-snowfall-departure", action="store_true",
                         help="pair native SRWEQ forecasts with matching native operational reference bundles")
     parser.add_argument("--snowfall-reference-dir", type=Path,
@@ -3778,6 +3797,20 @@ def _run_single_window(args: argparse.Namespace) -> int:
                        snowfall_input_kind="Native snowfall · 2011–2025 operational reference",
                        monthly_aggregation="monthly native snowfall departure",
                        conversion="Native SRWEQ forecast minus matched native reference; fixed 10:1 display")
+    if getattr(args, "surface_phase_bundle_dir", None):
+        if (product_name not in SNOWFALL_PRODUCTS or args.native_snowfall_departure
+                or not 1 <= args.rolling_days <= 6 or args.rolling_member != 1
+                or args.allow_partial_rolling):
+            raise CFSv2Error("Surface-phase mode requires complete member-1 snowfall windows and cannot mix with SRWEQ mode")
+        if product_name == PRODUCT_SNOWFALL_ANOMALY and not args.snowfall_reference_dir:
+            raise CFSv2Error("Surface-phase departures require a matching surface-phase reference")
+        args.surface_phase_bundle_dir = resolve_repo_path(args.surface_phase_bundle_dir, repo_root)
+        product = dict(product, raw_field="APCP + CSNOW:surface", raw_units="kg m-2",
+                       source_kind="pgbf", dependencies=(), estimated_snow_depth=True,
+                       title="CFSv2 Estimated Snowfall " + ("Departure" if product_name == PRODUCT_SNOWFALL_ANOMALY else "Accumulation"),
+                       snowfall_input_kind="Surface precipitation type · six-hour reconstruction",
+                       monthly_aggregation="monthly accumulated surface-phase snowfall",
+                       conversion="Six-hour APCP times mean endpoint CSNOW; matched-method reference; fixed 10:1 display")
     requires_baseline = bool(product.get("requires_baseline", not absolute))
     render_as_anomaly = bool(product.get("render_as_anomaly", requires_baseline))
     if is_retired_product(product_name):
@@ -4003,7 +4036,10 @@ def _run_single_window(args: argparse.Namespace) -> int:
                 )
                 if product_name == PRODUCT_SNOWFALL_ACCUMULATION:
                     native_lwe_grids[lead] = derivation_diagnostics.pop("_native_lwe")
-                    target_entry["source_warning"] = "Unadjusted native snowfall estimate at fixed 10:1. Separate phase-derived departures are not its reference."
+                    target_entry["source_warning"] = (
+                        "Surface-phase reconstructed estimate at fixed 10:1; six-hour temporal sampling."
+                        if getattr(args, "surface_phase_bundle_dir", None) else
+                        "Unadjusted native snowfall estimate at fixed 10:1. Separate phase-derived departures are not its reference.")
                 target_entry["derivation"] = derivation_diagnostics
             else:
                 ensemble, source_files, ensemble_count, ensemble_expected_for_target, ensemble_label, last_request = decode_target_ensemble(

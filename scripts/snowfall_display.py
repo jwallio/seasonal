@@ -35,6 +35,8 @@ def depth_departure(grid, product, palette):
     kind = spec.get("snowfall_input_kind", kind)
     spec["header_detail"] = "{source_label}  •  " + kind + "  •  10:1 snow-depth estimate"
     title = spec.get("title", "Snowfall Departure").replace("Estimated Snowfall", "Snowfall").replace("Derived Snowfall", "Snowfall")
+    if product.get("estimated_snow_depth"):
+        title = product.get("title", "Estimated Snowfall Departure")
     spec["title"] = title
     if "(in)" not in title:
         spec["title"] = title + " (in)"
