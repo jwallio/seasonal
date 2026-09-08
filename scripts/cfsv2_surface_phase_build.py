@@ -138,7 +138,16 @@ class Source:
             # records are near byte 16M; expand only if validated extraction fails.
             for start, end in [(15_500_000, 17_499_999), (14_000_000, 17_999_999),
                                (0, 29_999_999)]:
-                messages = extract(get(url, start, end), init, valid)
+                try:
+                    data = get(url, start, end)
+                except requests.HTTPError as exc:
+                    # A compact GRIB can end before a heuristic range begins.
+                    # Try the next bounded window, including the byte-zero fallback.
+                    if exc.response is None or exc.response.status_code != 416:
+                        raise
+                    print(f"NCEI range {start}-{end} unavailable; trying next bounded window", flush=True)
+                    continue
+                messages = extract(data, init, valid)
                 if set(messages) == set(phase.PARAMETERS):
                     break
         if set(messages) != set(phase.PARAMETERS):
