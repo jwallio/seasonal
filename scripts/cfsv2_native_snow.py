@@ -182,11 +182,9 @@ def decode(args, init, target, members, rolling_inits, cache_dir, state_dir, wgr
 
 
 def accumulation_style(seasonal=False):
-    """Snowfall-depth inches: cool colors through 100 inches; warmth at extremes."""
-    bounds = [0, 1, 2, 4, 6, 8, 12, 18, 24, 36, 48, 60, 80, 100, 150, 200]
-    palette = ['#ffffff', '#bceaff', '#65c5ff', '#1597ff', '#0066ff',
-               '#0043d9', '#2921c7', '#5815dc', '#8509ed', '#b20de5',
-               '#d20bdf', '#ee13cf', '#ff35b6', '#ffd21a', '#ff8214']
+    """Approved monthly/seasonal snowfall-depth scales; full palette through 180 inches."""
+    bounds = [0, 1, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36, 42, 48, 54, 60, 66, 72, 84, 96, 108, 120, 132, 144, 150, 156, 162, 168, 174, 180] if seasonal else [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24, 28, 32, 36, 42, 48, 60, 72, 84, 96, 120, 144, 180]
+    palette = ['#ffffff', '#e1f2ff', '#86c7fa', '#4ba4f3', '#287eee', '#0c5dc9', '#4b0392', '#5a048d', '#67038d', '#870389', '#c7037f', '#f4067c', '#f62f94', '#f962ac', '#f789c2', '#ed97ca', '#dca7d3', '#cdbbdc', '#bdcbe4', '#a6e5ed', '#a0f2f4', '#98f9f7', '#90f1ed', '#81d8d7', '#7cb9c9', '#89b1d3', '#9ea5db', '#ac9ae4', '#bc92ed', '#c48df1']
     return bounds, bounds[:], palette
 
 
@@ -201,7 +199,7 @@ def render(lwe, init, target, lead, output, seasonal=False, period_label='', ens
     x, y = project(xlon, ylat)
     field = np.where(np.isfinite(data['display_ratios']), sample(lwe, xlon, ylat) * 10.0, np.nan)
     bounds, ticks, palette = accumulation_style(seasonal)
-    cmap = ListedColormap(palette); cmap.set_over('#a52a3a')
+    cmap = ListedColormap(palette); cmap.set_over(palette[-1])
     fig = plt.figure(figsize=(9,7.35), dpi=120, facecolor='#f7f9fb')
     ax = fig.add_axes([.038,.15,.924,.70], facecolor='#edf3f5')
     filled = ax.contourf(x,y,np.ma.masked_invalid(field), levels=bounds, cmap=cmap,
@@ -216,7 +214,7 @@ def render(lwe, init, target, lead, output, seasonal=False, period_label='', ens
     ax.set_xlim(extent[:,0].min()-.006,extent[:,0].max()+.006);ax.set_ylim(extent[:,1].min()-.006,extent[:,1].max()+.006)
     ax.set_aspect('equal');ax.set_xticks([]);ax.set_yticks([])
     cb=fig.colorbar(filled,cax=fig.add_axes([.038,.100,.924,.034]),orientation='horizontal',ticks=ticks,spacing='uniform',drawedges=True,extendrect=True,extendfrac=0)
-    cb.ax.tick_params(labelsize=9,length=3);cb.outline.set_linewidth(.5)
+    cb.ax.tick_params(labelsize=7,length=3);cb.outline.set_linewidth(.5)
     label=period_label or datetime.strptime(target,'%Y%m').strftime('%b %Y')
     fig.text(.038,.955,'CFSv2 Estimated Snowfall Accumulation (in)',fontsize=15.5,weight='bold',color='#172735')
     fig.text(.962,.955,label,fontsize=13,weight='bold',ha='right',color='#172735')
@@ -224,7 +222,7 @@ def render(lwe, init, target, lead, output, seasonal=False, period_label='', ens
     fig.text(.038,.912,f'Init {initialized}  •  Lead {lead}  •  {ensemble_label}',fontsize=10,color='#43535d')
     fig.text(.038,.878,input_label + ' • 10:1 snow-depth estimate',fontsize=9.5,color='#536875')
     fig.text(.5,.052,'Accumulated snowfall depth (inches)  •  Not standing snowpack',ha='center',fontsize=10,color='#43535d')
-    fig.text(.5,.028,'Unadjusted estimate  •  Red denotes 200+ in',ha='center',fontsize=8.5,color='#536875')
+    fig.text(.5,.028,'Unadjusted estimate  •  White below 1 in  •  Final color includes 180+ in',ha='center',fontsize=8.5,color='#536875')
     output.parent.mkdir(parents=True,exist_ok=True)
     fig.savefig(output,dpi=120,pil_kwargs={'quality':95,'subsampling':0} if output.suffix=='.jpg' else {})
     plt.close(fig)
@@ -253,3 +251,4 @@ def project(lons, lats):
     r = f / np.tan(np.pi/4+np.deg2rad(lats)/2)**n
     a = n * np.deg2rad(np.asarray(lons)-cf.SEASONAL_LCC_CENTRAL_LONGITUDE)
     return r*np.sin(a), r0-r*np.cos(a)
+
