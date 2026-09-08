@@ -292,27 +292,37 @@ SNOWFALL_ACCUMULATION_SEASONAL_PALETTE = (
 # Shared fixed scale for seasonal 850-mb and 2-m temperature anomalies.
 # Model-specific narrower ranges clipped stronger signals and made the same
 # anomaly look different in comparison views.
-TEMPERATURE_ANOMALY_MIN_C = -7.0
-TEMPERATURE_ANOMALY_MAX_C = 7.0
-TEMPERATURE_ANOMALY_TICKS = list(range(-7, 8))
+TEMPERATURE_ANOMALY_MIN_C = -6.0
+TEMPERATURE_ANOMALY_MAX_C = 6.0
+TEMPERATURE_ANOMALY_TICKS = [value / 2.0 for value in range(-12, 13)]
 # Retain the CFSv2 name for callers that imported the former model-specific
 # tick list; CFSv2 now uses the shared scale too.
 CFSV2_TEMPERATURE_ANOMALY_TICKS = TEMPERATURE_ANOMALY_TICKS
 TEMPERATURE_ANOMALY_PALETTE = [
-    "#24527a",
-    "#306b90",
-    "#3d83a6",
-    "#539cb8",
-    "#70b2c6",
-    "#95c4d3",
-    "#e1e4e7",
-    "#f2cecd",
-    "#eaaaa8",
-    "#e28c8b",
-    "#d3686c",
-    "#ca5861",
-    "#a1384a",
-    "#84283f",
+    "#173b7a",
+    "#1d5199",
+    "#2269b2",
+    "#2785c4",
+    "#49a2d4",
+    "#71bce1",
+    "#9ad3e9",
+    "#bbe1ef",
+    "#d6ebf2",
+    "#e7f1f4",
+    "#f4f7f9",
+    "#ffffff",
+    "#ffffff",
+    "#f7f7f4",
+    "#f6f6e1",
+    "#fefec6",
+    "#fff0ac",
+    "#ffdc93",
+    "#ffc479",
+    "#faa160",
+    "#f27a48",
+    "#e15232",
+    "#c43425",
+    "#9e1e20",
 ]
 MSLP_ANOMALY_TICKS = list(range(-20, 21, 2))
 CFSV2_MSLP_ANOMALY_TICKS = list(range(-10, 11))
@@ -3489,7 +3499,12 @@ def render_map(
             1 if any(not float(tick).is_integer() for tick in colorbar_ticks) else 0
         )
         tick_decimals = int(product_spec.get("anomaly_tick_decimals", automatic_tick_decimals))
-        tick_format = product_spec.get("anomaly_tick_format", "signed")
+        tick_format = product_spec.get(
+            "anomaly_tick_format",
+            "signed_trimmed" if product_spec["name"] in {
+                "850mb_temperature_anomaly", "2m_temperature_anomaly"
+            } else "signed",
+        )
 
         def format_anomaly_tick(value: float) -> str:
             numeric = float(value)

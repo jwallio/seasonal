@@ -58,8 +58,8 @@ PRODUCTS: dict[str, dict[str, Any]] = {
         "level": {"type": "pressure", "value_hpa": 850},
         "aggregation": {"monthly": "mean", "seasonal": "mean"},
         "display": {
-            "monthly": {"minimum": -7.0, "maximum": 7.0, "step": 1.0},
-            "seasonal": {"minimum": -7.0, "maximum": 7.0, "step": 1.0},
+            "monthly": {"minimum": -6.0, "maximum": 6.0, "step": 0.5},
+            "seasonal": {"minimum": -6.0, "maximum": 6.0, "step": 0.5},
         },
         "hard_range": {"minimum": -50.0, "maximum": 50.0},
         "minimum_finite_fraction": 0.2,
@@ -76,8 +76,8 @@ PRODUCTS: dict[str, dict[str, Any]] = {
         "level": {"type": "height", "value_m": 2},
         "aggregation": {"monthly": "mean", "seasonal": "mean"},
         "display": {
-            "monthly": {"minimum": -7.0, "maximum": 7.0, "step": 1.0},
-            "seasonal": {"minimum": -7.0, "maximum": 7.0, "step": 1.0},
+            "monthly": {"minimum": -6.0, "maximum": 6.0, "step": 0.5},
+            "seasonal": {"minimum": -6.0, "maximum": 6.0, "step": 0.5},
         },
         "hard_range": {"minimum": -50.0, "maximum": 50.0},
         "minimum_finite_fraction": 0.2,

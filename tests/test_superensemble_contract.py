@@ -49,8 +49,8 @@ def main() -> int:
     check(northern_height["projection"] == "north_polar_stereographic", "super-ensemble Northern Hemisphere 500-mb view must use the polar projection")
     for product in ("850mb_temperature_anomaly", "2m_temperature_anomaly"):
         temperature_spec = module.product_spec(product)
-        check((temperature_spec["anomaly_min"], temperature_spec["anomaly_max"]) == (-7.0, 7.0), f"super-ensemble {product} should use the shared ±7 °C range")
-        check(temperature_spec["anomaly_ticks"] == list(range(-7, 8)), f"super-ensemble {product} should use 1 °C labelled bounds")
+        check((temperature_spec["anomaly_min"], temperature_spec["anomaly_max"]) == (-6.0, 6.0), f"super-ensemble {product} should use the shared ±6 °C range")
+        check(temperature_spec["anomaly_ticks"] == [value / 2.0 for value in range(-12, 13)], f"super-ensemble {product} should use 0.5 °C labelled bounds")
         check(len(temperature_spec["anomaly_ticks"]) == len(temperature_spec["anomaly_palette"]) + 1, f"super-ensemble {product} bounds must align with colors")
     snowfall_spec = module.product_spec("snowfall_anomaly")
     check(snowfall_spec["region"] == module.c3s.CONUS_PRECIP_REGION, "super-ensemble snowfall must use the tight CONUS crop")

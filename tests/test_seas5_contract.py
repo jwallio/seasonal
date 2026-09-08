@@ -126,8 +126,8 @@ def main() -> int:
     check(len(northern_height["anomaly_palette"])+1 == len(northern_height["anomaly_ticks"]), "NH colors must align with bounds")
     for product in (module.T850_ANOMALY, module.T2M_ANOMALY):
         temperature_spec = module.PRODUCT_SPECS[product]
-        check((temperature_spec["anomaly_min"], temperature_spec["anomaly_max"]) == (-7.0, 7.0), f"SEAS5 {product} should use the shared ±7 °C range")
-        check(temperature_spec["anomaly_ticks"] == list(range(-7, 8)), f"SEAS5 {product} should use 1 °C labelled bounds")
+        check((temperature_spec["anomaly_min"], temperature_spec["anomaly_max"]) == (-6.0, 6.0), f"SEAS5 {product} should use the shared ±6 °C range")
+        check(temperature_spec["anomaly_ticks"] == [value / 2.0 for value in range(-12, 13)], f"SEAS5 {product} should use 0.5 °C labelled bounds")
         check(len(temperature_spec["anomaly_ticks"]) == len(temperature_spec["anomaly_palette"]) + 1, f"SEAS5 {product} bounds must align with colors")
     check(module.PRODUCT_SPECS[module.PRECIP_ANOMALY]["anomaly_palette"] == module.SEAS5_PRECIP_ANOMALY_PALETTE, "SEAS5 precipitation should use its darker negative palette")
     snowfall_spec = module.PRODUCT_SPECS[module.SNOWFALL_ANOMALY]

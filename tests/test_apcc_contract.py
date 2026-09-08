@@ -73,8 +73,8 @@ def main() -> int:
     check(height_spec["anomaly_ticks"] == [-200, -150, -100, -75, -50, -30, -20, -10, 0, 10, 20, 30, 50, 75, 100, 150, 200], "APCC 500-mb should retain reference-image labelled bounds")
     for product in ("850mb_temperature_anomaly", "2m_temperature_anomaly"):
         temperature_spec = module.PRODUCT_SPECS[product]
-        check((temperature_spec["anomaly_min"], temperature_spec["anomaly_max"]) == (-7.0, 7.0), f"APCC {product} should use the shared ±7 °C range")
-        check(temperature_spec["anomaly_ticks"] == list(range(-7, 8)), f"APCC {product} should use 1 °C labelled bounds")
+        check((temperature_spec["anomaly_min"], temperature_spec["anomaly_max"]) == (-6.0, 6.0), f"APCC {product} should use the shared ±6 °C range")
+        check(temperature_spec["anomaly_ticks"] == [value / 2.0 for value in range(-12, 13)], f"APCC {product} should use 0.5 °C labelled bounds")
     precipitation_spec = module.PRODUCT_SPECS["precipitation_anomaly"]
     check(precipitation_spec["raw_units"] == "mm/day", "APCC raw precipitation units are incorrect")
     check(precipitation_spec["units"] == "in", "APCC comparison precipitation must use inches")

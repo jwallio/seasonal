@@ -98,8 +98,8 @@ def main() -> int:
     check(height["height_contours"] is False, "CMA anomalies must not fabricate absolute-height contours")
     for product in ("850mb_temperature_anomaly", "2m_temperature_anomaly"):
         temperature_spec = module.PRODUCT_SPECS[product]
-        check((temperature_spec["anomaly_min"], temperature_spec["anomaly_max"]) == (-7.0, 7.0), f"CMA {product} should inherit the shared ±7 °C range")
-        check(temperature_spec["anomaly_ticks"] == list(range(-7, 8)), f"CMA {product} should inherit 1 °C labelled bounds")
+        check((temperature_spec["anomaly_min"], temperature_spec["anomaly_max"]) == (-6.0, 6.0), f"CMA {product} should inherit the shared ±6 °C range")
+        check(temperature_spec["anomaly_ticks"] == [value / 2.0 for value in range(-12, 13)], f"CMA {product} should inherit 0.5 °C labelled bounds")
         check(len(temperature_spec["anomaly_ticks"]) == len(temperature_spec["anomaly_palette"]) + 1, f"CMA {product} bounds must align with colors")
     northern_height = module.PRODUCT_SPECS["500mb_height_anomaly_nh"]
     check(northern_height["projection"] == "north_polar_stereographic", "CMA Northern Hemisphere 500-mb view must use the polar projection")

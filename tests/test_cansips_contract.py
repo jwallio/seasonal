@@ -143,8 +143,8 @@ def main() -> int:
     check(len(module.SSH_ANOMALY_PALETTE) == len(module.SSH_ANOMALY_TICKS) - 1, "CanSIPS sea-surface height colors must align with labelled bounds")
     for product in (module.PRODUCT_850MB_TEMPERATURE_ANOMALY, module.PRODUCT_2M_TEMPERATURE_ANOMALY):
         temperature_spec = module.PRODUCT_SPECS[product]
-        check((temperature_spec["anomaly_min"], temperature_spec["anomaly_max"]) == (-7.0, 7.0), f"CanSIPS {product} should use the shared ±7 °C range")
-        check(temperature_spec["anomaly_ticks"] == list(range(-7, 8)), f"CanSIPS {product} should use 1 °C labelled bounds")
+        check((temperature_spec["anomaly_min"], temperature_spec["anomaly_max"]) == (-6.0, 6.0), f"CanSIPS {product} should use the shared ±6 °C range")
+        check(temperature_spec["anomaly_ticks"] == [value / 2.0 for value in range(-12, 13)], f"CanSIPS {product} should use 0.5 °C labelled bounds")
         check(len(temperature_spec["anomaly_ticks"]) == len(temperature_spec["anomaly_palette"]) + 1, f"CanSIPS {product} bounds must align with colors")
     check((module.PRODUCT_SPECS[module.PRODUCT_MSLP_ANOMALY]["anomaly_min"], module.PRODUCT_SPECS[module.PRODUCT_MSLP_ANOMALY]["anomaly_max"]) == (-10.0, 10.0), "CanSIPS MSLP should use the readable shared ±10 hPa range")
     for ocean_product in (module.PRODUCT_SEA_SURFACE_HEIGHT_ANOMALY,):
