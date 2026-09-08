@@ -1517,5 +1517,3 @@ loadDashboardData().then(() => {
 });
 
 
-
-// Release: matched 21-cycle surface-phase snowfall, September 2026.
