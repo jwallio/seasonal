@@ -1,42 +1,222 @@
 name: CFSv2 Snowfall Graphics
-
-run-name: CFSv2 ${{ inputs.product }} · leads ${{ inputs.lead_months }}
-
+run-name: Corrected CFSv2 snowfall · automatic matched reference
 on:
+  workflow_call:
+  schedule:
+    - cron: '45 5,11,17,23 * * *'
+  push:
+    branches: [main]
+    paths: ['.github/workflows/cfsv2-snow.yml', 'scripts/cfsv2_surface_schedule.py']
   workflow_dispatch:
     inputs:
       product:
-        description: "Snow product to generate"
-        required: false
-        default: "snowfall_suite"
-        type: choice
-        options:
-          - snowfall_suite
-          - snowfall_anomaly
-          - snowfall_accumulation
+        description: Both snowfall totals and departures are always rebuilt together
+        default: snowfall_suite
+        type: string
       lead_months:
-        description: "CFS leads, or operational-winter for the next available Dec-Mar window"
-        required: false
-        default: "operational-winter"
+        description: Automatically selects December through March
+        default: operational-winter
         type: string
       seasonal_window:
-        description: "Consecutive lead groups separated by semicolons, or operational-winter for DJF and JFM"
-        required: false
-        default: "operational-winter"
+        description: Automatically includes DJF and JFM
+        default: operational-winter
         type: string
-
 permissions:
   contents: write
   actions: read
-
+  pages: write
+concurrency:
+  group: cfsv2-corrected-snowfall-acquisition
+  cancel-in-progress: false
 jobs:
-  generate:
-    name: Generate selected CFSv2 snow product
-    uses: ./.github/workflows/cfsv2.yml
-    with:
-      product: ${{ inputs.product }}
-      lead_months: ${{ inputs.lead_months }}
-      seasonal_window: ${{ inputs.seasonal_window }}
-      # GitHub-hosted jobs use the archive-safe operational window. Longer
-      # windows require a rolling archive that predates the live NOMADS files.
-      rolling_days: "6"
+  select:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    outputs:
+      ready: ${{ steps.plan.outputs.ready }}
+      init: ${{ steps.plan.outputs.init }}
+      targets: ${{ steps.plan.outputs.targets }}
+      leads: ${{ steps.plan.outputs.leads }}
+      windows: ${{ steps.plan.outputs.windows }}
+      cycles: ${{ steps.plan.outputs.cycles }}
+      excluded: ${{ steps.plan.outputs.excluded }}
+      years: ${{ steps.plan.outputs.years }}
+      cache_period: ${{ steps.plan.outputs.cache_period }}
+      restore_run: ${{ steps.previous.outputs.run }}
+      bootstrap: ${{ steps.previous.outputs.bootstrap }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install numpy requests eccodes
+      - id: plan
+        run: python -u scripts/cfsv2_surface_schedule.py select
+      - id: previous
+        if: steps.plan.outputs.ready == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api "repos/$GITHUB_REPOSITORY/actions/workflows/cfsv2-snow.yml/runs?status=completed&per_page=20" > previous-runs.json
+          python - <<'PY'
+          import json,os,subprocess
+          found=None
+          for run in json.load(open('previous-runs.json'))['workflow_runs']:
+              if str(run['id'])==os.environ['GITHUB_RUN_ID']: continue
+              result=subprocess.run(['gh','api',f"repos/{os.environ['GITHUB_REPOSITORY']}/actions/runs/{run['id']}/artifacts?per_page=100"],check=True,capture_output=True,text=True)
+              artifacts=json.loads(result.stdout)['artifacts']
+              if any(a['name'].startswith('surface-phase-inputs-') and not a['expired'] for a in artifacts):
+                  found=run['id'];break
+          with open(os.environ['GITHUB_OUTPUT'],'a') as f:
+              f.write(f'run={found or 34176070490}\nbootstrap={str(found is None).lower()}\n')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: steps.plan.outputs.ready == 'true'
+        with:
+          name: surface-phase-plan
+          path: surface-plan.json
+  acquire:
+    needs: select
+    if: needs.select.outputs.ready == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        year: ${{ fromJSON(needs.select.outputs.years) }}
+    env:
+      INIT: ${{ needs.select.outputs.init }}
+      TARGETS: ${{ needs.select.outputs.targets }}
+      EXCLUDED: ${{ needs.select.outputs.excluded }}
+      YEAR: ${{ matrix.year }}
+      CFSV2_LIVE_CYCLES: ${{ needs.select.outputs.cycles }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install numpy requests eccodes
+      - uses: actions/cache/restore@v4
+        with:
+          path: .cache/cfsv2-surface-phase
+          key: phase-operational-v1-${{ needs.select.outputs.cache_period }}-${{ matrix.year }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: phase-operational-v1-${{ needs.select.outputs.cache_period }}-${{ matrix.year }}-
+      - name: Restore reusable completed month bundles
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: ${{ needs.select.outputs.restore_run }}
+          name: ${{ needs.select.outputs.bootstrap == 'true' && format('surface-phase-2026090612-{0}', matrix.year == 2026 && 'forecast' || matrix.year) || format('surface-phase-inputs-{0}', matrix.year) }}
+          path: .cache/cfsv2-surface-phase/months
+      - name: Acquire and validate every required cycle-month
+        run: |
+          args=(--init "$INIT" --targets "$TARGETS" --rolling-days 6 --exclude-cycles "$EXCLUDED" --workers 2 --month-pause-seconds 0)
+          if [[ "$YEAR" != "${INIT:0:4}" ]]; then args+=(--historical-year "$YEAR"); fi
+          timeout --signal=INT --kill-after=30s 300m python -u scripts/cfsv2_surface_phase_build.py "${args[@]}"
+      - uses: actions/cache/save@v4
+        if: always()
+        with:
+          path: .cache/cfsv2-surface-phase
+          key: phase-operational-v1-${{ needs.select.outputs.cache_period }}-${{ matrix.year }}-${{ github.run_id }}-${{ github.run_attempt }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: surface-phase-inputs-${{ matrix.year }}
+          path: .cache/cfsv2-surface-phase/months/
+          if-no-files-found: warn
+          retention-days: 90
+  render:
+    needs: [select, acquire]
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      INIT: ${{ needs.select.outputs.init }}
+      TARGETS: ${{ needs.select.outputs.targets }}
+      EXCLUDED: ${{ needs.select.outputs.excluded }}
+      LEADS: ${{ needs.select.outputs.leads }}
+      WINDOWS: ${{ needs.select.outputs.windows }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install numpy requests eccodes matplotlib Pillow
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: surface-phase-inputs-*
+          merge-multiple: true
+          path: .cache/cfsv2-surface-phase/months
+      - uses: actions/download-artifact@v4
+        with:
+          name: surface-phase-plan
+          path: .
+      - name: Assemble matching reference across all 15 years
+        run: >-
+          python scripts/cfsv2_surface_phase_build.py --reference
+          --init "$INIT" --targets "$TARGETS" --rolling-days 6 --exclude-cycles "$EXCLUDED"
+      - name: Render paired monthly and seasonal maps
+        run: |
+          for product in snowfall_accumulation snowfall_anomaly; do
+            reference=()
+            if [[ "$product" == snowfall_anomaly ]]; then reference=(--snowfall-reference-dir .cache/cfsv2-surface-phase/reference); fi
+            python scripts/cfsv2_seasonal.py --product "$product" --init "$INIT" \
+              --lead-months "$LEADS" --seasonal-window "$WINDOWS" --rolling-days 6 \
+              --surface-phase-exclude-cycles "$EXCLUDED" \
+              --surface-phase-bundle-dir .cache/cfsv2-surface-phase/months "${reference[@]}"
+          done
+          python scripts/cfsv2_surface_schedule.py verify --manifest public/seasonal/cfsv2_manifest.json
+          mkdir -p payload/cfsv2
+          cp -r "public/seasonal/cfsv2/$INIT" payload/cfsv2/
+          cp public/seasonal/cfsv2_manifest.json surface-plan.json payload/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: corrected-snowfall-ready
+          path: payload/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: matched-surface-phase-reference
+          path: .cache/cfsv2-surface-phase/reference/
+          retention-days: 90
+  publish:
+    needs: [select, render]
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    concurrency:
+      group: wn2-pages-publish
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: site
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install numpy requests matplotlib Pillow
+      - uses: actions/download-artifact@v4
+        with:
+          name: corrected-snowfall-ready
+          path: incoming
+      - name: Merge only validated snowfall runs into current site
+        run: python scripts/merge_cfsv2_surface_release.py --incoming incoming --site site
+      - name: Rebuild catalog and display assets
+        run: |
+          python scripts/build_seasonal_catalog.py --site-root site --strict --source-revision "$GITHUB_SHA"
+          python scripts/build_seasonal_share_images.py --site-root site --strict
+          python scripts/build_seasonal_thumbnails.py --site-root site --max-width 560 --quality 82
+      - name: Publish corrected maps
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ github.token }}
+          publish_dir: ./site
+          publish_branch: gh-pages
+          keep_files: false
+          force_orphan: false
+          enable_jekyll: false
+      - name: Request Pages rebuild
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api --method POST "repos/$GITHUB_REPOSITORY/pages/builds"

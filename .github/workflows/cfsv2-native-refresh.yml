@@ -1,32 +1,11 @@
-name: Refresh Current and Retained CFSv2 Native Snowfall
+name: Refresh Corrected CFSv2 Snowfall
 on:
-  push:
-    branches: [main]
-    paths: [".github/workflows/cfsv2-native-refresh.yml"]
   workflow_dispatch:
 permissions:
-  actions: write
-  contents: read
+  contents: write
+  actions: read
+  pages: write
 jobs:
   refresh:
-    runs-on: ubuntu-latest
-    timeout-minutes: 240
-    env:
-      GH_TOKEN: ${{ github.token }}
-      GH_REPO: ${{ github.repository }}
-      REFRESH_SHA: ${{ github.sha }}
-    steps:
-      - name: Rebuild native snowfall and publish the successful output
-        shell: bash
-        run: |
-          set -euo pipefail
-          gh workflow run cfsv2-snow.yml --ref main -f product=snowfall_suite -f lead_months=operational-winter -f seasonal_window=operational-winter
-          run_id=""
-          for attempt in {1..12}; do
-            run_id=$(gh run list --workflow cfsv2-snow.yml --branch main --event workflow_dispatch --json databaseId,headSha --jq ".[] | select(.headSha == \"$REFRESH_SHA\") | .databaseId" | head -1)
-            [[ -n "$run_id" ]] && break
-            sleep 5
-          done
-          test -n "$run_id"
-          gh run watch "$run_id" --exit-status --interval 20
-          gh workflow run publish-pages.yml --ref main -f source_workflow="CFSv2 Snowfall Graphics" -f source_run_id="$run_id"
+    uses: ./.github/workflows/cfsv2-snow.yml
+    secrets: inherit

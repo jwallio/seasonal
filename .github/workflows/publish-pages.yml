@@ -6,7 +6,6 @@ on:
       - WeatherNext Runner
       - WeatherNext Runner Custom
       - CFSv2 Rolling Seasonal Graphics
-      - CFSv2 Snowfall Graphics
       - CanSIPS v3 Seasonal Graphics
       - CMA CPSv3 Seasonal Graphics
       - APCC MME Seasonal Graphics
@@ -91,6 +90,7 @@ jobs:
             scripts/build_seasonal_thumbnails.py
             scripts/validate_native_snow_snapshot.py
             scripts/refresh_published_snowfall.py
+            scripts/merge_cfsv2_surface_release.py
             scripts/cfsv2_seasonal.py
             scripts/cfsv2_native_snow.py
             scripts/cfsv2_slr_assumptions.py
@@ -322,8 +322,7 @@ jobs:
               fi
               test -f "$payload_root/cfsv2_manifest.json"
               mkdir -p site/cfsv2
-              cp -R "$payload_root/cfsv2/." site/cfsv2/
-              cp "$payload_root/cfsv2_manifest.json" site/cfsv2_manifest.json
+              python dashboard-source/scripts/merge_cfsv2_surface_release.py --incoming "$payload_root" --site site --preserve
               ;;
             "ECMWF SEAS5 Seasonal Graphics")
               payload_root=incoming/seas5

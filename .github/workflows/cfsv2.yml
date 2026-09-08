@@ -63,6 +63,7 @@ on:
 permissions:
   contents: write
   actions: read
+  pages: write
 
 concurrency:
   # Supersede only an older run from the same entry point and product scope.
@@ -71,13 +72,18 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  corrected_snowfall:
+    if: github.event_name != 'schedule' && contains(fromJSON('["all","snowfall_suite","snowfall_anomaly","snowfall_accumulation"]'), inputs.product)
+    uses: ./.github/workflows/cfsv2-snow.yml
+    secrets: inherit
   render:
+    if: ${{ !contains(fromJSON('["snowfall_suite","snowfall_anomaly","snowfall_accumulation"]'), inputs.product || '') }}
     runs-on: ubuntu-latest
     timeout-minutes: 240
     env:
       CFSV2_PRODUCT: ${{ inputs.product || '500mb_height_anomaly' }}
-      SCHEDULED_CFSV2_PRODUCTS: 500mb_height_anomaly,500mb_height_anomaly_nh,850mb_temperature_anomaly,2m_temperature_anomaly,mslp_anomaly,precipitation_anomaly,snowfall_anomaly,snowfall_accumulation
-      ALL_CFSV2_PRODUCTS: 500mb_height_anomaly,500mb_height_anomaly_nh,500mb_height_absolute,850mb_temperature_anomaly,2m_temperature_anomaly,mslp_anomaly,precipitation_anomaly,snowfall_anomaly,snowfall_accumulation
+      SCHEDULED_CFSV2_PRODUCTS: 500mb_height_anomaly,500mb_height_anomaly_nh,850mb_temperature_anomaly,2m_temperature_anomaly,mslp_anomaly,precipitation_anomaly
+      ALL_CFSV2_PRODUCTS: 500mb_height_anomaly,500mb_height_anomaly_nh,500mb_height_absolute,850mb_temperature_anomaly,2m_temperature_anomaly,mslp_anomaly,precipitation_anomaly
       LEAD_MONTHS: ${{ inputs.lead_months || '4,5,6' }}
       SEASONAL_WINDOW: ${{ inputs.seasonal_window || '4,5,6' }}
       ROLLING_DAYS: ${{ inputs.rolling_days || '6' }}
@@ -120,20 +126,6 @@ jobs:
           key: cfsv2-snow-reference-native-v1-${{ github.run_id }}
           restore-keys: cfsv2-snow-reference-native-v1-
 
-      - name: Restore validated surface-phase forecast
-        uses: actions/download-artifact@v4
-        with:
-          github-token: ${{ github.token }}
-          run-id: 34176070490
-          name: surface-phase-2026090612-forecast
-          path: .cache/cfsv2-surface-phase/months
-      - name: Restore matched surface-phase references
-        uses: actions/download-artifact@v4
-        with:
-          github-token: ${{ github.token }}
-          run-id: 34176070490
-          name: matched-surface-phase-reference
-          path: .cache/cfsv2-surface-phase/reference
       - name: Restore published CFSv2 run history
         shell: bash
         run: |
@@ -263,7 +255,7 @@ jobs:
           overall_status=0
           for product in "${products[@]}"; do
             if [[ "$product" == snowfall_anomaly || "$product" == snowfall_accumulation ]]; then
-              python scripts/cfsv2_operational_surface.py --product "$product"
+              echo "Snowfall is handled by the automatic matched-reference workflow."
               continue
             fi
             echo "Rendering CFSv2 product: $product"
