@@ -1,76 +1,87 @@
-name: CFSv2 Corrected Snowfall TEST Preview
+name: CFSv2 Corrected Snowfall Publication
 on:
-  workflow_dispatch:
   pull_request:
-    paths:
-      - .github/workflows/cfsv2-surface-phase-preview.yml
-      - scripts/cfsv2_surface_phase_preview.py
+    types: [opened, synchronize, reopened]
+    paths: [".github/workflows/cfsv2-surface-phase-preview.yml"]
+  workflow_dispatch:
 permissions:
-  contents: read
+  contents: write
+  actions: read
+concurrency:
+  group: wn2-pages-publish
+  cancel-in-progress: false
 jobs:
-  inputs:
-    if: github.event_name == 'workflow_dispatch' || github.head_ref == 'codex/cfsv2-surface-phase'
+  publish:
+    if: github.event_name == 'workflow_dispatch' || (github.head_ref == 'codex/cfsv2-surface-phase' && github.event.pull_request.head.repo.full_name == github.repository)
     runs-on: ubuntu-latest
-    timeout-minutes: 100
-    strategy:
-      fail-fast: false
-      max-parallel: 2
-      matrix:
-        year: [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2026]
-    env:
-      YEAR: ${{ matrix.year }}
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: site
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - run: python -m pip install numpy requests eccodes
-      - uses: actions/cache/restore@v4
-        with:
-          path: .cache/phase-preview
-          key: phase-preview-v1-${{ matrix.year }}-${{ github.run_id }}-${{ github.run_attempt }}
-          restore-keys: phase-preview-v1-${{ matrix.year }}-
-      - name: Prepare one complete February cycle
-        shell: bash
-        run: |
-          timeout --signal=INT --kill-after=30s 80m python -u - <<'PY'
-          import os,sys
-          from pathlib import Path
-          sys.path.insert(0,'scripts')
-          from cfsv2_surface_phase_build import build_month
-          year=int(os.environ['YEAR'])
-          build_month(Path('.cache/phase-preview/raw'),Path('.cache/phase-preview/months'),f'{year}090612',f'{year+1}02')
-          PY
-      - uses: actions/cache/save@v4
-        if: always()
-        with:
-          path: .cache/phase-preview
-          key: phase-preview-v1-${{ matrix.year }}-${{ github.run_id }}-${{ github.run_attempt }}
-      - uses: actions/upload-artifact@v4
-        with:
-          name: preview-input-${{ matrix.year }}
-          path: .cache/phase-preview/months/
-          if-no-files-found: error
-  render:
-    needs: inputs
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - run: python -m pip install numpy requests eccodes matplotlib
+      - run: python -m pip install numpy requests eccodes matplotlib Pillow scipy
       - uses: actions/download-artifact@v4
         with:
-          pattern: preview-input-*
-          merge-multiple: true
-          path: preview-inputs
-      - name: Render forecast, reference, and departure test images
-        run: python scripts/cfsv2_surface_phase_preview.py --bundles preview-inputs --output preview-output
+          github-token: ${{ github.token }}
+          run-id: 34176070490
+          name: surface-phase-2026090612-forecast
+          path: .cache/cfsv2-surface-phase/months
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: 34176070490
+          name: matched-surface-phase-reference
+          path: .cache/cfsv2-surface-phase/reference
+      - name: Render matched monthly and seasonal snowfall
+        run: |
+          for product in snowfall_accumulation snowfall_anomaly; do
+            python scripts/cfsv2_seasonal.py --product "$product" --init 2026090612 \
+              --lead-months 3,4,5,6 --seasonal-window '3,4,5;4,5,6' --rolling-days 6 \
+              --surface-phase-exclude-cycles 2026083118,2026090200,2026090418 \
+              --surface-phase-bundle-dir .cache/cfsv2-surface-phase/months \
+              --snowfall-reference-dir .cache/cfsv2-surface-phase/reference \
+              --previous-manifest site/cfsv2_manifest.json
+            cp public/seasonal/cfsv2_manifest.json site/cfsv2_manifest.json
+          done
+      - name: Check complete corrected outputs
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          m=json.loads(Path('public/seasonal/cfsv2_manifest.json').read_text())
+          for product in ('snowfall_accumulation','snowfall_anomaly'):
+              runs=[r for r in m['runs'] if r['product']==product and r['init_utc'].startswith('2026-09-06T12')]
+              assert len(runs)==1, (product, 'missing corrected run')
+              r=runs[0]
+              assert r['raw_field']=='APCP + CSNOW:surface', r['raw_field']
+              targets=r['targets']
+              assert {t['target_month'] for t in targets}=={'202612','202701','202702','202703','202612-202702','202701-202703'}
+              for t in targets:
+                  assert t.get('image') and t.get('status') not in ('failed','partial'), t
+                  assert Path(t['image']).is_file(), t['image']
+          print('Both corrected products contain all six requested periods')
+          PY
+      - name: Merge graphics and rebuild catalog
+        run: |
+          cp -r public/seasonal/cfsv2/. site/cfsv2/
+          python scripts/build_seasonal_catalog.py --site-root site --strict --source-revision "$GITHUB_SHA"
+          python scripts/build_seasonal_share_images.py --site-root site --strict
+          python scripts/build_seasonal_thumbnails.py --site-root site --max-width 560 --quality 82
       - uses: actions/upload-artifact@v4
         with:
-          name: corrected-snowfall-TEST-graphics
-          path: preview-output/
-          if-no-files-found: error
-      - name: Explain preview output
-        run: echo 'Download corrected-snowfall-TEST-graphics for forecast.png, reference.png and departure.png. February single-cycle example only; no live publishing.' >> "$GITHUB_STEP_SUMMARY"
+          name: corrected-snowfall-production-graphics
+          path: public/seasonal/cfsv2/
+      - name: Publish corrected maps
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./site
+          publish_branch: gh-pages
+          keep_files: false
+          force_orphan: false
+          enable_jekyll: false
