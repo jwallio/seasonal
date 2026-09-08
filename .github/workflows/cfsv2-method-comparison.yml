@@ -54,6 +54,34 @@ jobs:
           run-id: 34178085870
           name: comparison-input-${{ matrix.year }}
           path: comparison
+      - name: Wait for full DJF forecast publication
+        if: matrix.year == 2026
+        env:
+          INIT: ${{ needs.select.outputs.init }}
+        run: |
+          python -u - <<'PY'
+          import os,time,requests
+          init=os.environ['INIT']
+          base=f'https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.{init[:8]}/{init[8:]}/'
+          year=int(init[:4])
+          urls=[base+f'6hrly_grib_01/pgbf{t}.01.{init}.grb2.idx' for t in [f'{year}120100',f'{year+1}010100',f'{year+1}020100',f'{year+1}030100']]
+          urls += [base+f'monthly_grib_01/flxf.01.{init}.{t}.avrg.grib.grb2.idx' for t in [f'{year}12',f'{year+1}01',f'{year+1}02']]
+          deadline=time.monotonic()+5400
+          while True:
+              missing=[]
+              for url in urls:
+                  try:
+                      r=requests.get(url,timeout=(10,30))
+                      if r.status_code in (401,403): r.raise_for_status()
+                      if r.status_code != 200 or ':SRWEQ:' not in r.text and 'monthly_grib' in url: missing.append(url)
+                  except (requests.Timeout, requests.ConnectionError):
+                      missing.append(url)
+              if not missing: break
+              if time.monotonic() >= deadline: raise SystemExit('Forecast still incomplete after 90 minutes; saved historical inputs remain available')
+              print(f'Waiting for {len(missing)} forecast indexes; retry in 60 seconds',flush=True)
+              time.sleep(60)
+          print('Required DJF boundary and monthly snowfall indexes are available')
+          PY
       - name: Complete current forecast from NOMADS
         if: matrix.year == 2026
         env:
