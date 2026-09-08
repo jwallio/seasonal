@@ -135,7 +135,13 @@ def validate_options(args, product, init, targets, repo_root):
                          'a complete 1-6 day member-1 window, and its own reference labels')
     directory = resolve_repo_path(directory, repo_root)
     loader = load_reference
-    if getattr(args, 'native_snowfall_departure', False):
+    if getattr(args, 'surface_phase_bundle_dir', None):
+        from cfsv2_surface_phase import load_reference as loader
+    elif getattr(args, 'native_snowfall_departure', False):
         from cfsv2_native_reference import load_reference as loader
+    cycles = rolling_cycle_inits(init, args.rolling_days * 4)
+    if getattr(args, "surface_phase_bundle_dir", None):
+        from cfsv2_surface_phase import selected_cycles
+        cycles = selected_cycles(cycles, getattr(args, "surface_phase_exclude_cycles", ""))
     for target in targets:
-        loader(directory, init, target, rolling_cycle_inits(init, args.rolling_days * 4), 1)
+        loader(directory, init, target, cycles, 1)

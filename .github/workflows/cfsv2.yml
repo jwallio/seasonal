@@ -62,6 +62,7 @@ on:
 
 permissions:
   contents: write
+  actions: read
 
 concurrency:
   # Supersede only an older run from the same entry point and product scope.
@@ -119,6 +120,20 @@ jobs:
           key: cfsv2-snow-reference-native-v1-${{ github.run_id }}
           restore-keys: cfsv2-snow-reference-native-v1-
 
+      - name: Restore validated surface-phase forecast
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: 34176070490
+          name: surface-phase-2026090612-forecast
+          path: .cache/cfsv2-surface-phase/months
+      - name: Restore matched surface-phase references
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: 34176070490
+          name: matched-surface-phase-reference
+          path: .cache/cfsv2-surface-phase/reference
       - name: Restore published CFSv2 run history
         shell: bash
         run: |
@@ -247,6 +262,10 @@ jobs:
           fi
           overall_status=0
           for product in "${products[@]}"; do
+            if [[ "$product" == snowfall_anomaly || "$product" == snowfall_accumulation ]]; then
+              python scripts/cfsv2_operational_surface.py --product "$product"
+              continue
+            fi
             echo "Rendering CFSv2 product: $product"
             product_lead_months="$LEAD_MONTHS"
             product_seasonal_window="$SEASONAL_WINDOW"
@@ -286,21 +305,6 @@ jobs:
             )
             if [[ "$product" == "500mb_height_absolute" ]]; then
               args+=(--product "$product" --absolute)
-            elif [[ "$product" == "snowfall_accumulation" ]]; then
-              args+=(--product "$product")
-            elif [[ "$product" == "snowfall_anomaly" ]]; then
-              if ! python scripts/cfsv2_native_reference.py \
-                --init "$anchor_init" \
-                --lead-months "$product_lead_months" \
-                --seasonal-window "$product_seasonal_window" \
-                --rolling-days "$ROLLING_DAYS" \
-                --cache .cache/cfsv2-snow-reference \
-                --output .cache/cfsv2-snow-reference/bundles; then
-                echo "CFSv2 snowfall reference failed; no uncorrected reference substitution." >&2
-                overall_status=1
-                continue
-              fi
-              args+=(--product "$product" --native-snowfall-departure --snowfall-reference-dir .cache/cfsv2-snow-reference/bundles)
             else
               args+=(--product "$product" --ncei-calibration --allow-stale-calibration)
             fi
@@ -310,15 +314,6 @@ jobs:
             fi
           done
           exit "$overall_status"
-
-      - name: Repair retained snowfall departures from paired native totals
-        if: ${{ inputs.product == 'snowfall_suite' || inputs.product == 'snowfall_anomaly' }}
-        run: >-
-          python scripts/refresh_cfsv2_native_departures.py
-          --manifest public/seasonal/cfsv2_manifest.json
-          --site-url https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/
-          --cache .cache/cfsv2-snow-reference
-          --reference-dir .cache/cfsv2-snow-reference/bundles
 
       - name: Trim transient CFSv2 source cache
         if: always()

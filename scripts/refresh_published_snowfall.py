@@ -27,6 +27,8 @@ def refresh(root):
     document = json.loads(manifest.read_text())
     count = 0
     for run in document.get('runs', []):
+        if run.get('raw_field') == 'APCP + CSNOW:surface':
+            continue  # Preserve validated surface-phase values and labels.
         if run.get('product') != 'snowfall_accumulation':
             continue
         if (run.get('display') or {}).get('snow_to_liquid_ratio') == 10:
@@ -68,6 +70,8 @@ def refresh(root):
                 if (target.get('baseline') or {}).get('method') == 'native_srweq_operational_2011_2025_v1':
                     native_departures[run.get('init_utc'), target.get('target_month')] = target
     for run in document.get('runs', []):
+        if run.get('raw_field') == 'APCP + CSNOW:surface':
+            continue  # Preserve validated surface-phase values and labels.
         if run.get('product') != 'snowfall_accumulation':
             continue
         paired = False
