@@ -46,7 +46,7 @@ jobs:
               --lead-months 3,4,5,6 --seasonal-window '3,4,5;4,5,6' --rolling-days 6 \
               --surface-phase-exclude-cycles 2026083118,2026090200,2026090418 \
               --surface-phase-bundle-dir .cache/cfsv2-surface-phase/months \
-              --snowfall-reference-dir .cache/cfsv2-surface-phase/reference \
+              "${reference[@]}" \
               --previous-manifest site/cfsv2_manifest.json
             cp public/seasonal/cfsv2_manifest.json site/cfsv2_manifest.json
           done
