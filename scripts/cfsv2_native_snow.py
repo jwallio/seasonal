@@ -184,9 +184,9 @@ def decode(args, init, target, members, rolling_inits, cache_dir, state_dir, wgr
 def accumulation_style(seasonal=False):
     """Snowfall-depth inches: cool colors through 100 inches; warmth at extremes."""
     bounds = [0, 1, 2, 4, 6, 8, 12, 18, 24, 36, 48, 60, 80, 100, 150, 200]
-    palette = ['#ffffff', '#d6edf7', '#a6d5ed', '#6cb8e0', '#3595d1',
-               '#1671b5', '#254c9e', '#443c96', '#65459f', '#8253ad',
-               '#a168b9', '#bb88c6', '#d5b4dc', '#e7bd58', '#dc813a']
+    palette = ['#ffffff', '#bceaff', '#65c5ff', '#1597ff', '#0066ff',
+               '#0043d9', '#2921c7', '#5815dc', '#8509ed', '#b20de5',
+               '#d20bdf', '#ee13cf', '#ff35b6', '#ffd21a', '#ff8214']
     return bounds, bounds[:], palette
 
 
@@ -210,7 +210,7 @@ def render(lwe, init, target, lead, output, seasonal=False, period_label='', ens
     points, offsets = data['states_points'], data['states_offsets']
     for a,b in zip(offsets[:-1],offsets[1:]):
         px,py=project(points[a:b,0],points[a:b,1])
-        ax.plot(px,py,color='#263c46',linewidth=.55,zorder=4)
+        ax.plot(px,py,color='#142331',linewidth=.8,zorder=4)
         state_points.append(np.column_stack([px,py]))
     extent=np.concatenate(state_points)
     ax.set_xlim(extent[:,0].min()-.006,extent[:,0].max()+.006);ax.set_ylim(extent[:,1].min()-.006,extent[:,1].max()+.006)
