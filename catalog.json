@@ -2,8 +2,8 @@
   "schema_version": 1,
   "registry_version": 1,
   "kind": "seasonal_dashboard_catalog",
-  "generated_utc": "2026-09-08T21:16:21Z",
-  "source_revision": "56cd4a5ae2fcd7d7e935723302d9545fc3a336ac",
+  "generated_utc": "2026-09-08T21:42:52Z",
+  "source_revision": "c77fad88944269045535451b793803ae9f01edfd",
   "model_order": [
     "superensemble",
     "c3s",
@@ -37154,28 +37154,29 @@
             "status": "not_used"
           },
           "conversion": "geopotential divided by standard gravity to convert m² s⁻² to geopotential meters",
+          "display": null,
           "targets": [
             {
               "id": "seas5-2026090100-500mb_height_anomaly_nh-lead04",
-              "target_month": "202701",
-              "valid_start_utc": "2027-01-01T00:00:00Z",
-              "valid_end_utc": "2027-02-01T00:00:00Z",
+              "target_month": "202612",
+              "valid_start_utc": "2026-12-01T00:00:00Z",
+              "valid_end_utc": "2027-01-01T00:00:00Z",
               "lead_month": 4,
               "field": "z500_anomaly",
               "units": "m",
               "status": "rendered",
-              "image": "seas5/20260901/seas5_z500_202701.jpg",
+              "image": "seas5/20260901/seas5_z500_202612.jpg",
               "comparison": {
                 "common_1991_2020": {
-                  "image": "seas5/20260901/seas5_z500_202701_common-1991-2020.jpg",
+                  "image": "seas5/20260901/seas5_z500_202612_common-1991-2020.jpg",
                   "status": "rendered",
                   "baseline": {
                     "label": "Common 1991-2020 reference (CanSIPS v3 hindcast)",
                     "years": "1991-2020",
                     "source": "CanSIPS v3 hindcast climatology",
-                    "file": ".cache/seas5/common-reference/z500_202701.csv.gz",
-                    "url": "https://jwallio.github.io/seasonal/common_reference/1991-2020/z500_202701.csv.gz",
-                    "downloaded": false
+                    "file": ".cache/seas5/common-reference/z500_202612.csv.gz",
+                    "url": "https://jwallio.github.io/seasonal/common_reference/1991-2020/z500_202612.csv.gz",
+                    "downloaded": true
                   }
                 }
               },
@@ -37219,25 +37220,25 @@
             },
             {
               "id": "seas5-2026090100-500mb_height_anomaly_nh-lead05",
-              "target_month": "202702",
-              "valid_start_utc": "2027-02-01T00:00:00Z",
-              "valid_end_utc": "2027-03-01T00:00:00Z",
+              "target_month": "202701",
+              "valid_start_utc": "2027-01-01T00:00:00Z",
+              "valid_end_utc": "2027-02-01T00:00:00Z",
               "lead_month": 5,
               "field": "z500_anomaly",
               "units": "m",
               "status": "rendered",
-              "image": "seas5/20260901/seas5_z500_202702.jpg",
+              "image": "seas5/20260901/seas5_z500_202701.jpg",
               "comparison": {
                 "common_1991_2020": {
-                  "image": "seas5/20260901/seas5_z500_202702_common-1991-2020.jpg",
+                  "image": "seas5/20260901/seas5_z500_202701_common-1991-2020.jpg",
                   "status": "rendered",
                   "baseline": {
                     "label": "Common 1991-2020 reference (CanSIPS v3 hindcast)",
                     "years": "1991-2020",
                     "source": "CanSIPS v3 hindcast climatology",
-                    "file": ".cache/seas5/common-reference/z500_202702.csv.gz",
-                    "url": "https://jwallio.github.io/seasonal/common_reference/1991-2020/z500_202702.csv.gz",
-                    "downloaded": false
+                    "file": ".cache/seas5/common-reference/z500_202701.csv.gz",
+                    "url": "https://jwallio.github.io/seasonal/common_reference/1991-2020/z500_202701.csv.gz",
+                    "downloaded": true
                   }
                 }
               },
@@ -37281,23 +37282,26 @@
             },
             {
               "id": "seas5-2026090100-500mb_height_anomaly_nh-lead06",
-              "target_month": "202703",
-              "valid_start_utc": "2027-03-01T00:00:00Z",
-              "valid_end_utc": "2027-04-01T00:00:00Z",
+              "target_month": "202702",
+              "valid_start_utc": "2027-02-01T00:00:00Z",
+              "valid_end_utc": "2027-03-01T00:00:00Z",
               "lead_month": 6,
               "field": "z500_anomaly",
               "units": "m",
               "status": "rendered",
-              "image": "seas5/20260901/seas5_z500_202703.jpg",
+              "image": "seas5/20260901/seas5_z500_202702.jpg",
               "comparison": {
                 "common_1991_2020": {
-                  "status": "unavailable",
+                  "image": "seas5/20260901/seas5_z500_202702_common-1991-2020.jpg",
+                  "status": "rendered",
                   "baseline": {
                     "label": "Common 1991-2020 reference (CanSIPS v3 hindcast)",
                     "years": "1991-2020",
-                    "source": "CanSIPS v3 hindcast climatology"
-                  },
-                  "error": "404 Client Error: Not Found for url: https://jwallio.github.io/seasonal/common_reference/1991-2020/z500_202703.csv.gz"
+                    "source": "CanSIPS v3 hindcast climatology",
+                    "file": ".cache/seas5/common-reference/z500_202702.csv.gz",
+                    "url": "https://jwallio.github.io/seasonal/common_reference/1991-2020/z500_202702.csv.gz",
+                    "downloaded": true
+                  }
                 }
               },
               "baseline": {
@@ -37339,10 +37343,10 @@
               }
             },
             {
-              "id": "seas5-2026090100-500mb_height_anomaly_nh-202701-202703",
-              "target_month": "202701-202703",
-              "valid_start_utc": "2027-01-01T00:00:00Z",
-              "valid_end_utc": "2027-04-01T00:00:00Z",
+              "id": "seas5-2026090100-500mb_height_anomaly_nh-202612-202702",
+              "target_month": "202612-202702",
+              "valid_start_utc": "2026-12-01T00:00:00Z",
+              "valid_end_utc": "2027-03-01T00:00:00Z",
               "lead_month": "4-6",
               "monthly_leads": [
                 4,
@@ -37352,16 +37356,26 @@
               "field": "z500_anomaly",
               "units": "m",
               "status": "rendered",
-              "image": "seas5/20260901/seas5_z500_202701-202703.jpg",
+              "image": "seas5/20260901/seas5_z500_202612-202702.jpg",
               "comparison": {
                 "common_1991_2020": {
-                  "status": "unavailable",
+                  "image": "seas5/20260901/seas5_z500_202612-202702_common-1991-2020.jpg",
+                  "status": "rendered",
                   "baseline": {
                     "label": "Common 1991-2020 reference (CanSIPS v3 hindcast)",
                     "years": "1991-2020",
-                    "source": "CanSIPS v3 hindcast climatology"
-                  },
-                  "error": "404 Client Error: Not Found for url: https://jwallio.github.io/seasonal/common_reference/1991-2020/z500_202703.csv.gz"
+                    "source": "CanSIPS v3 hindcast climatology",
+                    "files": [
+                      ".cache/seas5/common-reference/z500_202612.csv.gz",
+                      ".cache/seas5/common-reference/z500_202701.csv.gz",
+                      ".cache/seas5/common-reference/z500_202702.csv.gz"
+                    ],
+                    "urls": [
+                      "https://jwallio.github.io/seasonal/common_reference/1991-2020/z500_202612.csv.gz",
+                      "https://jwallio.github.io/seasonal/common_reference/1991-2020/z500_202701.csv.gz",
+                      "https://jwallio.github.io/seasonal/common_reference/1991-2020/z500_202702.csv.gz"
+                    ]
+                  }
                 }
               },
               "baseline": {
@@ -38977,7 +38991,7 @@
       "status": "degraded",
       "schema_version": 1,
       "manifest_kind": "seas5_seasonal_manifest",
-      "generated_utc": "2026-09-08T20:45:16Z",
+      "generated_utc": "2026-09-08T21:41:21Z",
       "source_url": "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-pressure-levels",
       "product_labels": {},
       "validation": {
@@ -57342,7 +57356,7 @@
   },
   "health": {
     "status": "attention",
-    "generated_utc": "2026-09-08T21:16:21Z",
+    "generated_utc": "2026-09-08T21:42:52Z",
     "freshness_policy_days": {
       "default": {
         "fresh_days": 35,
@@ -57810,7 +57824,7 @@
         "comparable": true,
         "health_state": "healthy",
         "freshness": "fresh",
-        "age_days": 0.6,
+        "age_days": 0.7,
         "latest_status": "rendered",
         "latest_init_utc": "2026-09-08T06:00:00Z",
         "selected_init_utc": "2026-09-08T06:00:00Z",
@@ -57828,7 +57842,7 @@
         "comparable": true,
         "health_state": "healthy",
         "freshness": "fresh",
-        "age_days": 0.6,
+        "age_days": 0.7,
         "latest_status": "rendered",
         "latest_init_utc": "2026-09-08T06:00:00Z",
         "selected_init_utc": "2026-09-08T06:00:00Z",
@@ -57846,7 +57860,7 @@
         "comparable": true,
         "health_state": "healthy",
         "freshness": "fresh",
-        "age_days": 0.6,
+        "age_days": 0.7,
         "latest_status": "rendered",
         "latest_init_utc": "2026-09-08T06:00:00Z",
         "selected_init_utc": "2026-09-08T06:00:00Z",
@@ -57864,7 +57878,7 @@
         "comparable": true,
         "health_state": "healthy",
         "freshness": "fresh",
-        "age_days": 0.6,
+        "age_days": 0.7,
         "latest_status": "rendered",
         "latest_init_utc": "2026-09-08T06:00:00Z",
         "selected_init_utc": "2026-09-08T06:00:00Z",
@@ -57882,7 +57896,7 @@
         "comparable": true,
         "health_state": "healthy",
         "freshness": "fresh",
-        "age_days": 0.6,
+        "age_days": 0.7,
         "latest_status": "rendered",
         "latest_init_utc": "2026-09-08T06:00:00Z",
         "selected_init_utc": "2026-09-08T06:00:00Z",
@@ -57900,7 +57914,7 @@
         "comparable": true,
         "health_state": "healthy",
         "freshness": "fresh",
-        "age_days": 0.6,
+        "age_days": 0.7,
         "latest_status": "rendered",
         "latest_init_utc": "2026-09-08T06:00:00Z",
         "selected_init_utc": "2026-09-08T06:00:00Z",
