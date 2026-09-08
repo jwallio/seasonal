@@ -20,6 +20,10 @@ import requests
 import cfsv2_surface_phase as phase
 from cfsv2_native_reference import historical_cycle
 
+class SourceResponseError(ValueError):
+    """An incomplete source response that may recover on retry."""
+
+
 HTTP = threading.local()
 
 
@@ -36,9 +40,14 @@ def get(url, start=None, end=None):
             r = session().get(url, headers=headers, timeout=(10, 40))
             r.raise_for_status()
             if start is not None and (r.status_code != 206 or len(r.content) > end-start+1):
-                raise ValueError("Source ignored bounded byte range")
+                raise SourceResponseError("Source ignored bounded byte range")
+            if url.endswith(".idx"):
+                lines = r.content.decode("ascii", errors="replace").splitlines()
+                if any(sum(f":{name.upper()}:surface:" in line for line in lines) != 1
+                       for name in phase.PARAMETERS):
+                    raise SourceResponseError("Incomplete/duplicate pressure-file index")
             return r.content
-        except requests.RequestException as exc:
+        except (requests.RequestException, SourceResponseError) as exc:
             response = getattr(exc, "response", None)
             status = response.status_code if response is not None else None
             if status is not None and status not in (408, 429, 500, 502, 503, 504):
@@ -133,7 +142,7 @@ class Source:
                 if set(messages) != set(phase.PARAMETERS):
                     raise ValueError("Incomplete source fields")
                 break
-            except requests.RequestException as exc:
+            except (requests.RequestException, SourceResponseError) as exc:
                 response = getattr(exc, "response", None)
                 status = response.status_code if response is not None else None
                 if status is not None and status not in (404, 408, 429, 500, 502, 503, 504):
