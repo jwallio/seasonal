@@ -182,11 +182,11 @@ def decode(args, init, target, members, rolling_inits, cache_dir, state_dir, wgr
 
 
 def accumulation_style(seasonal=False):
-    """Approved blue-to-gold scale, in snowfall-depth inches for every period."""
-    bounds = [0, 1, 2, 4, 6, 8, 12, 18, 24, 36, 48, 60, 100, 200]
-    palette = ['#ffffff', '#c5e8f7', '#69bff0', '#0089e6', '#0645bd',
-               '#5124c6', '#ad42e5', '#ed94b1', '#f8ad52', '#ffa31a',
-               '#ffda00', '#a20c25', '#530d3e']
+    """Snowfall-depth inches: cool colors through 100 inches; warmth at extremes."""
+    bounds = [0, 1, 2, 4, 6, 8, 12, 18, 24, 36, 48, 60, 80, 100, 150, 200]
+    palette = ['#ffffff', '#d6edf7', '#a6d5ed', '#6cb8e0', '#3595d1',
+               '#1671b5', '#254c9e', '#443c96', '#65459f', '#8253ad',
+               '#a168b9', '#bb88c6', '#d5b4dc', '#e7bd58', '#dc813a']
     return bounds, bounds[:], palette
 
 
@@ -201,7 +201,7 @@ def render(lwe, init, target, lead, output, seasonal=False, period_label='', ens
     x, y = project(xlon, ylat)
     field = np.where(np.isfinite(data['display_ratios']), sample(lwe, xlon, ylat) * 10.0, np.nan)
     bounds, ticks, palette = accumulation_style(seasonal)
-    cmap = ListedColormap(palette); cmap.set_over(palette[-1])
+    cmap = ListedColormap(palette); cmap.set_over('#a52a3a')
     fig = plt.figure(figsize=(9,7.35), dpi=120, facecolor='#f7f9fb')
     ax = fig.add_axes([.038,.15,.924,.70], facecolor='#edf3f5')
     filled = ax.contourf(x,y,np.ma.masked_invalid(field), levels=bounds, cmap=cmap,
@@ -224,7 +224,7 @@ def render(lwe, init, target, lead, output, seasonal=False, period_label='', ens
     fig.text(.038,.912,f'Init {initialized}  •  Lead {lead}  •  {ensemble_label}',fontsize=10,color='#43535d')
     fig.text(.038,.878,input_label + ' • 10:1 snow-depth estimate',fontsize=9.5,color='#536875')
     fig.text(.5,.052,'Accumulated snowfall depth (inches)  •  Not standing snowpack',ha='center',fontsize=10,color='#43535d')
-    fig.text(.5,.028,'Unadjusted estimate  •  Colors saturate at 200 in',ha='center',fontsize=8.5,color='#536875')
+    fig.text(.5,.028,'Unadjusted estimate  •  Red denotes 200+ in',ha='center',fontsize=8.5,color='#536875')
     output.parent.mkdir(parents=True,exist_ok=True)
     fig.savefig(output,dpi=120,pil_kwargs={'quality':95,'subsampling':0} if output.suffix=='.jpg' else {})
     plt.close(fig)
