@@ -182,13 +182,12 @@ def decode(args, init, target, members, rolling_inits, cache_dir, state_dir, wgr
 
 
 def accumulation_style(seasonal=False):
-    # Show amounts below one inch as white without whitening the full
-    # old 0–2 inch monthly or 0–5 inch seasonal color band.
-    bounds,ticks,palette=cf.absolute_style(cf.get_product_spec(cf.PRODUCT_SNOWFALL_ACCUMULATION),seasonal)
-    bounds = [bounds[0],1.0,*bounds[1:]]
-    # Label alternating color boundaries, retaining the white cutoff and endpoints.
-    ticks = sorted(set([bounds[0],*bounds[1::2],bounds[-1]]))
-    return bounds, ticks, ['#ffffff',*palette]
+    """Approved blue-to-gold scale, in snowfall-depth inches for every period."""
+    bounds = [0, 1, 2, 4, 6, 8, 12, 18, 24, 36, 48, 60, 100, 200]
+    palette = ['#ffffff', '#c5e8f7', '#69bff0', '#0089e6', '#0645bd',
+               '#5124c6', '#ad42e5', '#ed94b1', '#f8ad52', '#ffa31a',
+               '#ffda00', '#a20c25', '#530d3e']
+    return bounds, bounds[:], palette
 
 
 def render(lwe, init, target, lead, output, seasonal=False, period_label='', ensemble_label='', input_label='Native model snowfall'):
@@ -206,7 +205,7 @@ def render(lwe, init, target, lead, output, seasonal=False, period_label='', ens
     fig = plt.figure(figsize=(9,7.35), dpi=120, facecolor='#f7f9fb')
     ax = fig.add_axes([.038,.15,.924,.70], facecolor='#edf3f5')
     filled = ax.contourf(x,y,np.ma.masked_invalid(field), levels=bounds, cmap=cmap,
-        norm=BoundaryNorm(bounds,cmap.N,clip=False), extend='max', antialiased=True, corner_mask=False)
+        norm=BoundaryNorm(bounds,cmap.N,clip=False), extend='max', antialiased=False, corner_mask=False)
     state_points=[]
     points, offsets = data['states_points'], data['states_offsets']
     for a,b in zip(offsets[:-1],offsets[1:]):
