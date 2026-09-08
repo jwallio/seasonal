@@ -1,0 +1,69 @@
+name: CFSv2 Same Cycle Method Comparison
+on:
+  pull_request:
+    paths: [".github/workflows/cfsv2-method-comparison.yml", "scripts/cfsv2_method_comparison.py"]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  select:
+    runs-on: ubuntu-latest
+    outputs:
+      init: ${{ steps.latest.outputs.init }}
+      years: ${{ steps.latest.outputs.years }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install requests
+      - id: latest
+        run: |
+          python - <<'PY'
+          import sys,os,json
+          sys.path.insert(0,'scripts')
+          from cfsv2_seasonal import discover_latest_init
+          init=discover_latest_init()
+          with open(os.environ['GITHUB_OUTPUT'],'a') as f:
+              f.write('init='+init+'\n')
+              f.write('years='+json.dumps(list(range(2011,2026))+[int(init[:4])])+'\n')
+          print('Pinned comparison initialization:',init)
+          PY
+  inputs:
+    needs: select
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        year: ${{ fromJSON(needs.select.outputs.years) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install numpy requests eccodes matplotlib Pillow
+      - uses: actions/cache@v4
+        with:
+          path: .cache/compare
+          key: same-cycle-${{ needs.select.outputs.init }}-${{ matrix.year }}-${{ github.run_id }}
+          restore-keys: same-cycle-${{ needs.select.outputs.init }}-${{ matrix.year }}-
+      - run: python scripts/cfsv2_method_comparison.py --init "${{ needs.select.outputs.init }}" --year "${{ matrix.year }}"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: comparison-input-${{ matrix.year }}
+          path: comparison/
+  render:
+    needs: [select, inputs]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install numpy requests eccodes matplotlib Pillow
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: comparison-input-*
+          merge-multiple: true
+          path: comparison
+      - run: python scripts/cfsv2_method_comparison.py --init "${{ needs.select.outputs.init }}"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: same-cycle-DJF-method-comparison
+          path: comparison/
