@@ -7,6 +7,7 @@ import argparse
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timedelta
 import hashlib
+import os
 import json
 from pathlib import Path
 import threading
@@ -109,6 +110,9 @@ class Source:
         init = self.init
         aws = ("https://noaa-cfs-pds.s3.amazonaws.com/"
                f"cfs.{init[:8]}/{init[8:]}/6hrly_grib_01/pgbf{valid}.01.{init}.grb2")
+        if init == os.environ.get("CFSV2_LIVE_INIT"):
+            aws = ("https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/"
+                   f"cfs.{init[:8]}/{init[8:]}/6hrly_grib_01/pgbf{valid}.01.{init}.grb2")
         messages, url = {}, aws
         if int(init[:4]) >= 2019:
             try:

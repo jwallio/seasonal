@@ -9,6 +9,7 @@ import calendar
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 import hashlib
+import os
 import io
 import json
 from pathlib import Path
@@ -45,7 +46,11 @@ def urls(cycle, target):
     filename = f'flxf.01.{cycle}.{target}.avrg.grib.grb2'
     ncei = NCEI + f'{cycle[:4]}/{cycle[:6]}/{cycle[:8]}/{cycle}/{filename}'
     aws = AWS + f'cfs.{cycle[:8]}/{cycle[8:]}/monthly_grib_01/{filename}'
-    return [aws, ncei] if int(cycle[:4]) >= 2019 else [ncei]
+    archives = [aws, ncei] if int(cycle[:4]) >= 2019 else [ncei]
+    if cycle == os.environ.get('CFSV2_LIVE_INIT'):
+        live = f'https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.{cycle[:8]}/{cycle[8:]}/monthly_grib_01/{filename}'
+        return [live] + archives
+    return archives
 
 
 def snowfall_message(data):

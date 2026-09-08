@@ -5,6 +5,7 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+  actions: read
 jobs:
   select:
     runs-on: ubuntu-latest
@@ -20,7 +21,7 @@ jobs:
           import sys,os,json
           sys.path.insert(0,'scripts')
           from cfsv2_seasonal import discover_latest_init
-          init=discover_latest_init()
+          init='2026090718'  # Resume the exact initialization whose 15 historical inputs passed.
           with open(os.environ['GITHUB_OUTPUT'],'a') as f:
               f.write('init='+init+'\n')
               f.write('years='+json.dumps(list(range(2011,2026))+[int(init[:4])])+'\n')
@@ -46,7 +47,18 @@ jobs:
           path: .cache/compare
           key: same-cycle-${{ needs.select.outputs.init }}-${{ matrix.year }}-${{ github.run_id }}
           restore-keys: same-cycle-${{ needs.select.outputs.init }}-${{ matrix.year }}-
-      - run: python scripts/cfsv2_method_comparison.py --init "${{ needs.select.outputs.init }}" --year "${{ matrix.year }}"
+      - uses: actions/download-artifact@v4
+        if: matrix.year != 2026
+        with:
+          github-token: ${{ github.token }}
+          run-id: 34178085870
+          name: comparison-input-${{ matrix.year }}
+          path: comparison
+      - name: Complete current forecast from NOMADS
+        if: matrix.year == 2026
+        env:
+          CFSV2_LIVE_INIT: ${{ needs.select.outputs.init }}
+        run: python scripts/cfsv2_method_comparison.py --init "${{ needs.select.outputs.init }}" --year "${{ matrix.year }}"
       - uses: actions/upload-artifact@v4
         with:
           name: comparison-input-${{ matrix.year }}
