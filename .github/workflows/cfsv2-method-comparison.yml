@@ -7,92 +7,43 @@ permissions:
   contents: read
   actions: read
 jobs:
-  select:
-    runs-on: ubuntu-latest
-    outputs:
-      init: ${{ steps.latest.outputs.init }}
-      years: ${{ steps.latest.outputs.years }}
-    steps:
-      - uses: actions/checkout@v4
-      - run: pip install requests
-      - id: latest
-        run: |
-          python - <<'PY'
-          import sys,os,json
-          sys.path.insert(0,'scripts')
-          from cfsv2_seasonal import discover_latest_init
-          init='2026090718'  # Resume the exact initialization whose 15 historical inputs passed.
-          with open(os.environ['GITHUB_OUTPUT'],'a') as f:
-              f.write('init='+init+'\n')
-              f.write('years='+json.dumps(list(range(2011,2026))+[int(init[:4])])+'\n')
-          print('Pinned comparison initialization:',init)
-          PY
   inputs:
-    needs: select
     runs-on: ubuntu-latest
     timeout-minutes: 120
     strategy:
       fail-fast: false
       max-parallel: 2
       matrix:
-        year: ${{ fromJSON(needs.select.outputs.years) }}
+        year: [2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025,2026]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
       - run: pip install numpy requests eccodes matplotlib Pillow
-      - uses: actions/cache@v4
+      - uses: actions/cache/restore@v4
         with:
-          path: .cache/compare
-          key: same-cycle-${{ needs.select.outputs.init }}-${{ matrix.year }}-${{ github.run_id }}
-          restore-keys: same-cycle-${{ needs.select.outputs.init }}-${{ matrix.year }}-
+          path: .cache/compare/native
+          key: matched21-native-2026090612-${{ matrix.year }}-${{ github.run_id }}
+          restore-keys: matched21-native-2026090612-${{ matrix.year }}-
       - uses: actions/download-artifact@v4
-        if: matrix.year != 2026
         with:
           github-token: ${{ github.token }}
-          run-id: 34178085870
-          name: comparison-input-${{ matrix.year }}
-          path: comparison
-      - name: Wait for full DJF forecast publication
-        if: matrix.year == 2026
-        env:
-          INIT: ${{ needs.select.outputs.init }}
-        run: |
-          python -u - <<'PY'
-          import os,time,requests
-          init=os.environ['INIT']
-          base=f'https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.{init[:8]}/{init[8:]}/'
-          year=int(init[:4])
-          urls=[base+f'6hrly_grib_01/pgbf{t}.01.{init}.grb2.idx' for t in [f'{year}120100',f'{year+1}010100',f'{year+1}020100',f'{year+1}030100']]
-          urls += [base+f'monthly_grib_01/flxf.01.{init}.{t}.avrg.grib.grb2.idx' for t in [f'{year}12',f'{year+1}01',f'{year+1}02']]
-          deadline=time.monotonic()+5400
-          while True:
-              missing=[]
-              for url in urls:
-                  try:
-                      r=requests.get(url,timeout=(10,30))
-                      if r.status_code in (401,403): r.raise_for_status()
-                      if r.status_code != 200 or ':SRWEQ:' not in r.text and 'monthly_grib' in url: missing.append(url)
-                  except (requests.Timeout, requests.ConnectionError):
-                      missing.append(url)
-              if not missing: break
-              if time.monotonic() >= deadline: raise SystemExit('Forecast still incomplete after 90 minutes; saved historical inputs remain available')
-              print(f'Waiting for {len(missing)} forecast indexes; retry in 60 seconds',flush=True)
-              time.sleep(60)
-          print('Required DJF boundary and monthly snowfall indexes are available')
-          PY
-      - name: Complete current forecast from NOMADS
-        if: matrix.year == 2026
-        env:
-          CFSV2_LIVE_INIT: ${{ needs.select.outputs.init }}
-        run: python scripts/cfsv2_method_comparison.py --init "${{ needs.select.outputs.init }}" --year "${{ matrix.year }}"
+          run-id: 34176070490
+          name: surface-phase-2026090612-${{ matrix.year == 2026 && 'forecast' || matrix.year }}
+          path: .cache/compare/months
+      - run: python -u scripts/cfsv2_method_comparison.py --init 2026090612 --year "${{ matrix.year }}"
+      - uses: actions/cache/save@v4
+        if: always()
+        with:
+          path: .cache/compare/native
+          key: matched21-native-2026090612-${{ matrix.year }}-${{ github.run_id }}
       - uses: actions/upload-artifact@v4
         with:
           name: comparison-input-${{ matrix.year }}
           path: comparison/
   render:
-    needs: [select, inputs]
+    needs: inputs
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -102,8 +53,8 @@ jobs:
           pattern: comparison-input-*
           merge-multiple: true
           path: comparison
-      - run: python scripts/cfsv2_method_comparison.py --init "${{ needs.select.outputs.init }}"
+      - run: python scripts/cfsv2_method_comparison.py --init 2026090612
       - uses: actions/upload-artifact@v4
         with:
-          name: same-cycle-DJF-method-comparison
+          name: matched-21-cycle-DJF-method-comparison
           path: comparison/
