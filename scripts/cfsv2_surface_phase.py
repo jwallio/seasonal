@@ -277,7 +277,7 @@ def load_reference(directory, init, target, cycles, member):
 
 def decode(args, init, target, members, rolling_inits, *unused):
     from cfsv2_seasonal import Grid
-    from cfsv2_native_snow import strict_mean, depth_grid
+    from cfsv2_native_snow import strict_mean
     import time
     if not rolling_inits or args.rolling_member != 1 or args.allow_partial_rolling:
         raise ValueError("Surface-phase reconstruction needs a complete member-1 rolling window")
@@ -294,7 +294,8 @@ def decode(args, init, target, members, rolling_inits, *unused):
                        observation_bias_adjustment=False)
     result = lwe
     if args.product == "snowfall_accumulation":
-        result = depth_grid(lwe)
+        # Bundles validate their own grid; the legacy SRWEQ lookup uses different axes.
+        result = Grid(lwe.lons[:], lwe.lats[:], (np.asarray(lwe.values) * 10.0).tolist())
         diagnostics["_native_lwe"] = lwe
     n = len(rolling_inits)
     diagnostics["excluded_cycles"] = getattr(args, "surface_phase_exclude_cycles", "")
