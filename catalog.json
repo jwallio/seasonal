@@ -2,7 +2,7 @@
   "schema_version": 1,
   "registry_version": 1,
   "kind": "seasonal_dashboard_catalog",
-  "generated_utc": "2026-09-08T23:19:17Z",
+  "generated_utc": "2026-09-08T23:23:14Z",
   "source_revision": "073272dc0044e6e7f78749dc17613bd7053ce161",
   "model_order": [
     "superensemble",
@@ -2466,7 +2466,7 @@
           }
         },
         {
-          "id": "c3s-ukmo-2026090100-500mb_height_anomaly",
+          "id": "c3s-ukmo-2026090100-500mb_height_anomaly_nh",
           "model": "C3S UK Met Office",
           "component": "ukmo",
           "component_label": "UK Met Office",
@@ -2476,7 +2476,7 @@
             "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-pressure-levels",
             "https://cds.climate.copernicus.eu/datasets/seasonal-monthly-pressure-levels"
           ],
-          "product": "500mb_height_anomaly",
+          "product": "500mb_height_anomaly_nh",
           "init_utc": "2026-09-01T00:00:00Z",
           "status": "failed",
           "statistic": "ensemble_mean",
@@ -2497,7 +2497,7 @@
           },
           "targets": [
             {
-              "id": "c3s-ukmo-2026090100-500mb_height_anomaly-lead04",
+              "id": "c3s-ukmo-2026090100-500mb_height_anomaly_nh-lead04",
               "target_month": "202701",
               "valid_start_utc": "2027-01-01T00:00:00Z",
               "valid_end_utc": "2027-02-01T00:00:00Z",
@@ -2505,16 +2505,16 @@
               "field": "z500_anomaly",
               "units": "m",
               "status": "failed",
-              "error": "C3S request failed for ukmo/610 geopotential_anomaly lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/af310be8-fe85-4a3f-a251-326cc9236a9d/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['90.0', '-170.0', '15.0', '0.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['4'], 'levelist': ['500'], 'levtype': ['pl'], 'method': ['1'], 'number': ['all'], 'origin': ['egrr'], 'param': ['171129'], 'stream': ['mmsa'], 'system': ['610'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260908.224241 - Mars server task finished in error\nmars - ERROR  - 20260908.224241 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260908.224241 - Error code is -2\nmars - ERROR  - 20260908.224241 - Request failed\nmars - ERROR  - 20260908.224241 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError",
+              "error": "C3S request failed for ukmo/610 geopotential_anomaly lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/95158886-7b03-41d4-8d90-1d2ab25dc0c2/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['90.0', '-180.0', '0.0', '180.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['4'], 'levelist': ['500'], 'levtype': ['pl'], 'method': ['1'], 'number': ['all'], 'origin': ['egrr'], 'param': ['171129'], 'stream': ['mmsa'], 'system': ['610'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260908.230424 - Mars server task finished in error\nmars - ERROR  - 20260908.230424 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260908.230424 - Error code is -2\nmars - ERROR  - 20260908.230424 - Request failed\nmars - ERROR  - 20260908.230424 - Some errors reported (last error -2)\n",
               "statistic": "ensemble_mean",
               "_catalog": {
-                "canonical_product": "500mb_height_anomaly",
+                "canonical_product": "500mb_height_anomaly_nh",
                 "comparable": true,
                 "quality_control": "legacy"
               }
             },
             {
-              "id": "c3s-ukmo-2026090100-500mb_height_anomaly-lead05",
+              "id": "c3s-ukmo-2026090100-500mb_height_anomaly_nh-lead05",
               "target_month": "202702",
               "valid_start_utc": "2027-02-01T00:00:00Z",
               "valid_end_utc": "2027-03-01T00:00:00Z",
@@ -2522,16 +2522,16 @@
               "field": "z500_anomaly",
               "units": "m",
               "status": "failed",
-              "error": "C3S request failed for ukmo/610 geopotential_anomaly lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/b87de028-c2a9-4fd7-a835-9be14b9a2fb8/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['90.0', '-170.0', '15.0', '0.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['5'], 'levelist': ['500'], 'levtype': ['pl'], 'method': ['1'], 'number': ['all'], 'origin': ['egrr'], 'param': ['171129'], 'stream': ['mmsa'], 'system': ['610'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260908.224336 - Mars server task finished in error\nmars - ERROR  - 20260908.224336 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260908.224336 - Error code is -2\nmars - ERROR  - 20260908.224336 - Request failed\nmars - ERROR  - 20260908.224336 - Some errors reported (last error -2)\n",
+              "error": "C3S request failed for ukmo/610 geopotential_anomaly lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/30c8e8ac-8713-475f-8376-87f769abdb39/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['90.0', '-180.0', '0.0', '180.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['5'], 'levelist': ['500'], 'levtype': ['pl'], 'method': ['1'], 'number': ['all'], 'origin': ['egrr'], 'param': ['171129'], 'stream': ['mmsa'], 'system': ['610'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260908.230526 - Mars server task finished in error\nmars - ERROR  - 20260908.230526 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260908.230526 - Error code is -2\nmars - ERROR  - 20260908.230526 - Request failed\nmars - ERROR  - 20260908.230526 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError",
               "statistic": "ensemble_mean",
               "_catalog": {
-                "canonical_product": "500mb_height_anomaly",
+                "canonical_product": "500mb_height_anomaly_nh",
                 "comparable": true,
                 "quality_control": "legacy"
               }
             },
             {
-              "id": "c3s-ukmo-2026090100-500mb_height_anomaly-lead06",
+              "id": "c3s-ukmo-2026090100-500mb_height_anomaly_nh-lead06",
               "target_month": "202703",
               "valid_start_utc": "2027-03-01T00:00:00Z",
               "valid_end_utc": "2027-04-01T00:00:00Z",
@@ -2539,16 +2539,16 @@
               "field": "z500_anomaly",
               "units": "m",
               "status": "failed",
-              "error": "C3S request failed for ukmo/610 geopotential_anomaly lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/a37d390d-b73a-46d7-b6ad-c447d3fb599c/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['90.0', '-170.0', '15.0', '0.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['6'], 'levelist': ['500'], 'levtype': ['pl'], 'method': ['1'], 'number': ['all'], 'origin': ['egrr'], 'param': ['171129'], 'stream': ['mmsa'], 'system': ['610'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260908.224359 - Mars server task finished in error\nmars - ERROR  - 20260908.224359 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260908.224359 - Error code is -2\nmars - ERROR  - 20260908.224359 - Request failed\nmars - ERROR  - 20260908.224359 - Some errors reported (last error -2)\n",
+              "error": "C3S request failed for ukmo/610 geopotential_anomaly lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/8c503cde-57b5-44a2-a12a-a314034ab7a4/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['90.0', '-180.0', '0.0', '180.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['6'], 'levelist': ['500'], 'levtype': ['pl'], 'method': ['1'], 'number': ['all'], 'origin': ['egrr'], 'param': ['171129'], 'stream': ['mmsa'], 'system': ['610'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260908.230617 - Mars server task finished in error\nmars - ERROR  - 20260908.230617 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260908.230617 - Error code is -2\nmars - ERROR  - 20260908.230617 - Request failed\nmars - ERROR  - 20260908.230617 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError",
               "statistic": "ensemble_mean",
               "_catalog": {
-                "canonical_product": "500mb_height_anomaly",
+                "canonical_product": "500mb_height_anomaly_nh",
                 "comparable": true,
                 "quality_control": "legacy"
               }
             },
             {
-              "id": "c3s-ukmo-2026090100-500mb_height_anomaly-202701-202703",
+              "id": "c3s-ukmo-2026090100-500mb_height_anomaly_nh-202701-202703",
               "target_month": "202701-202703",
               "valid_start_utc": "2027-01-01T00:00:00Z",
               "valid_end_utc": "2027-04-01T00:00:00Z",
@@ -2564,14 +2564,14 @@
               "error": "seasonal window is missing one or more component grids",
               "statistic": "ensemble_mean",
               "_catalog": {
-                "canonical_product": "500mb_height_anomaly",
+                "canonical_product": "500mb_height_anomaly_nh",
                 "comparable": true,
                 "quality_control": "legacy"
               }
             }
           ],
           "_catalog": {
-            "canonical_product": "500mb_height_anomaly",
+            "canonical_product": "500mb_height_anomaly_nh",
             "comparable": true
           }
         },
@@ -2702,7 +2702,7 @@
           }
         },
         {
-          "id": "c3s-ncep-2026090100-500mb_height_anomaly",
+          "id": "c3s-ncep-2026090100-500mb_height_anomaly_nh",
           "model": "C3S NCEP",
           "component": "ncep",
           "component_label": "NCEP",
@@ -2712,7 +2712,7 @@
             "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-pressure-levels",
             "https://cds.climate.copernicus.eu/datasets/seasonal-monthly-pressure-levels"
           ],
-          "product": "500mb_height_anomaly",
+          "product": "500mb_height_anomaly_nh",
           "init_utc": "2026-09-01T00:00:00Z",
           "status": "failed",
           "statistic": "ensemble_mean",
@@ -2733,7 +2733,7 @@
           },
           "targets": [
             {
-              "id": "c3s-ncep-2026090100-500mb_height_anomaly-lead04",
+              "id": "c3s-ncep-2026090100-500mb_height_anomaly_nh-lead04",
               "target_month": "202701",
               "valid_start_utc": "2027-01-01T00:00:00Z",
               "valid_end_utc": "2027-02-01T00:00:00Z",
@@ -2741,16 +2741,16 @@
               "field": "z500_anomaly",
               "units": "m",
               "status": "failed",
-              "error": "C3S request failed for ncep/2 geopotential_anomaly lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/8926648a-db91-4f8c-be2f-aacf47454eb3/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['90.0', '-170.0', '15.0', '0.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['4'], 'levelist': ['500'], 'levtype': ['pl'], 'method': ['1'], 'number': ['all'], 'origin': ['kwbc'], 'param': ['171129'], 'stream': ['mmsa'], 'system': ['2'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260908.225058 - Mars server task finished in error\nmars - ERROR  - 20260908.225058 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260908.225058 - Error code is -2\nmars - ERROR  - 20260908.225058 - Request failed\nmars - ERROR  - 20260908.225058 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError",
+              "error": "C3S request failed for ncep/2 geopotential_anomaly lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/5a70489e-408f-446f-867f-f52390f57ce9/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['90.0', '-180.0', '0.0', '180.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['4'], 'levelist': ['500'], 'levtype': ['pl'], 'method': ['1'], 'number': ['all'], 'origin': ['kwbc'], 'param': ['171129'], 'stream': ['mmsa'], 'system': ['2'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260908.231215 - Mars server task finished in error\nmars - ERROR  - 20260908.231215 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260908.231215 - Error code is -2\nmars - ERROR  - 20260908.231215 - Request failed\nmars - ERROR  - 20260908.231215 - Some errors reported (last error -2)\n",
               "statistic": "ensemble_mean",
               "_catalog": {
-                "canonical_product": "500mb_height_anomaly",
+                "canonical_product": "500mb_height_anomaly_nh",
                 "comparable": true,
                 "quality_control": "legacy"
               }
             },
             {
-              "id": "c3s-ncep-2026090100-500mb_height_anomaly-lead05",
+              "id": "c3s-ncep-2026090100-500mb_height_anomaly_nh-lead05",
               "target_month": "202702",
               "valid_start_utc": "2027-02-01T00:00:00Z",
               "valid_end_utc": "2027-03-01T00:00:00Z",
@@ -2758,16 +2758,16 @@
               "field": "z500_anomaly",
               "units": "m",
               "status": "failed",
-              "error": "C3S request failed for ncep/2 geopotential_anomaly lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/2d8e6c8e-e189-4ff0-bcd7-7cb94e804cfb/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['90.0', '-170.0', '15.0', '0.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['5'], 'levelist': ['500'], 'levtype': ['pl'], 'method': ['1'], 'number': ['all'], 'origin': ['kwbc'], 'param': ['171129'], 'stream': ['mmsa'], 'system': ['2'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260908.225140 - Mars server task finished in error\nmars - ERROR  - 20260908.225140 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260908.225140 - Error code is -2\nmars - ERROR  - 20260908.225140 - Request failed\nmars - ERROR  - 20260908.225140 - Some errors reported (last error -2)\n",
+              "error": "C3S request failed for ncep/2 geopotential_anomaly lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/91f98414-0a77-43da-af8c-88fff77cfa65/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['90.0', '-180.0', '0.0', '180.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['5'], 'levelist': ['500'], 'levtype': ['pl'], 'method': ['1'], 'number': ['all'], 'origin': ['kwbc'], 'param': ['171129'], 'stream': ['mmsa'], 'system': ['2'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260908.231239 - Mars server task finished in error\nmars - ERROR  - 20260908.231239 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260908.231239 - Error code is -2\nmars - ERROR  - 20260908.231239 - Request failed\nmars - ERROR  - 20260908.231239 - Some errors reported (last error -2)\n",
               "statistic": "ensemble_mean",
               "_catalog": {
-                "canonical_product": "500mb_height_anomaly",
+                "canonical_product": "500mb_height_anomaly_nh",
                 "comparable": true,
                 "quality_control": "legacy"
               }
             },
             {
-              "id": "c3s-ncep-2026090100-500mb_height_anomaly-lead06",
+              "id": "c3s-ncep-2026090100-500mb_height_anomaly_nh-lead06",
               "target_month": "202703",
               "valid_start_utc": "2027-03-01T00:00:00Z",
               "valid_end_utc": "2027-04-01T00:00:00Z",
@@ -2775,16 +2775,16 @@
               "field": "z500_anomaly",
               "units": "m",
               "status": "failed",
-              "error": "C3S request failed for ncep/2 geopotential_anomaly lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/19080d0d-f53c-419a-af66-fea29a05d9af/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['90.0', '-170.0', '15.0', '0.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['6'], 'levelist': ['500'], 'levtype': ['pl'], 'method': ['1'], 'number': ['all'], 'origin': ['kwbc'], 'param': ['171129'], 'stream': ['mmsa'], 'system': ['2'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260908.225226 - Mars server task finished in error\nmars - ERROR  - 20260908.225226 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260908.225226 - Error code is -2\nmars - ERROR  - 20260908.225226 - Request failed\nmars - ERROR  - 20260908.225226 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError",
+              "error": "C3S request failed for ncep/2 geopotential_anomaly lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/03bbbb90-a856-46b5-8a1c-fe06f5035cb3/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['90.0', '-180.0', '0.0', '180.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['6'], 'levelist': ['500'], 'levtype': ['pl'], 'method': ['1'], 'number': ['all'], 'origin': ['kwbc'], 'param': ['171129'], 'stream': ['mmsa'], 'system': ['2'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260908.231329 - Mars server task finished in error\nmars - ERROR  - 20260908.231329 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260908.231329 - Error code is -2\nmars - ERROR  - 20260908.231329 - Request failed\nmars - ERROR  - 20260908.231329 - Some errors reported (last error -2)\n",
               "statistic": "ensemble_mean",
               "_catalog": {
-                "canonical_product": "500mb_height_anomaly",
+                "canonical_product": "500mb_height_anomaly_nh",
                 "comparable": true,
                 "quality_control": "legacy"
               }
             },
             {
-              "id": "c3s-ncep-2026090100-500mb_height_anomaly-202701-202703",
+              "id": "c3s-ncep-2026090100-500mb_height_anomaly_nh-202701-202703",
               "target_month": "202701-202703",
               "valid_start_utc": "2027-01-01T00:00:00Z",
               "valid_end_utc": "2027-04-01T00:00:00Z",
@@ -2800,14 +2800,14 @@
               "error": "seasonal window is missing one or more component grids",
               "statistic": "ensemble_mean",
               "_catalog": {
-                "canonical_product": "500mb_height_anomaly",
+                "canonical_product": "500mb_height_anomaly_nh",
                 "comparable": true,
                 "quality_control": "legacy"
               }
             }
           ],
           "_catalog": {
-            "canonical_product": "500mb_height_anomaly",
+            "canonical_product": "500mb_height_anomaly_nh",
             "comparable": true
           }
         },
@@ -3221,7 +3221,7 @@
           }
         },
         {
-          "id": "c3s-multisystem-2026090100-500mb_height_anomaly",
+          "id": "c3s-multisystem-2026090100-500mb_height_anomaly_nh",
           "model": "C3S multi-system",
           "component": "multisystem",
           "component_label": "multi-system",
@@ -3231,7 +3231,7 @@
             "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-pressure-levels",
             "https://cds.climate.copernicus.eu/datasets/seasonal-monthly-pressure-levels"
           ],
-          "product": "500mb_height_anomaly",
+          "product": "500mb_height_anomaly_nh",
           "init_utc": "2026-09-01T00:00:00Z",
           "status": "rendered",
           "statistic": "multi-system mean of native ensemble-mean anomalies",
@@ -3252,7 +3252,7 @@
           },
           "targets": [
             {
-              "id": "c3s-multisystem-2026090100-500mb_height_anomaly-lead04",
+              "id": "c3s-multisystem-2026090100-500mb_height_anomaly_nh-lead04",
               "target_month": "202701",
               "valid_start_utc": "2027-01-01T00:00:00Z",
               "valid_end_utc": "2027-02-01T00:00:00Z",
@@ -3264,17 +3264,17 @@
               "statistic": "multi-system mean of native ensemble-mean anomalies",
               "quality_control": {
                 "registry_version": 1,
-                "product": "500mb_height_anomaly",
+                "product": "500mb_height_anomaly_nh",
                 "units": "m",
                 "field": "z500_anomaly",
                 "period": "monthly",
-                "total_points": 12750,
-                "finite_points": 12750,
+                "total_points": 32400,
+                "finite_points": 32400,
                 "finite_fraction": 1.0,
                 "minimum": -69.86729,
                 "maximum": 92.242095,
-                "p01": -63.42842,
-                "p99": 88.291013,
+                "p01": -53.363853,
+                "p99": 82.392592,
                 "display": {
                   "minimum": -200.0,
                   "maximum": 200.0,
@@ -3305,13 +3305,13 @@
                 "status": "passed"
               },
               "_catalog": {
-                "canonical_product": "500mb_height_anomaly",
+                "canonical_product": "500mb_height_anomaly_nh",
                 "comparable": true,
                 "quality_control": "passed"
               }
             },
             {
-              "id": "c3s-multisystem-2026090100-500mb_height_anomaly-lead05",
+              "id": "c3s-multisystem-2026090100-500mb_height_anomaly_nh-lead05",
               "target_month": "202702",
               "valid_start_utc": "2027-02-01T00:00:00Z",
               "valid_end_utc": "2027-03-01T00:00:00Z",
@@ -3323,17 +3323,17 @@
               "statistic": "multi-system mean of native ensemble-mean anomalies",
               "quality_control": {
                 "registry_version": 1,
-                "product": "500mb_height_anomaly",
+                "product": "500mb_height_anomaly_nh",
                 "units": "m",
                 "field": "z500_anomaly",
                 "period": "monthly",
-                "total_points": 12750,
-                "finite_points": 12750,
+                "total_points": 32400,
+                "finite_points": 32400,
                 "finite_fraction": 1.0,
                 "minimum": -97.944937,
                 "maximum": 92.114232,
-                "p01": -87.638634,
-                "p99": 89.168431,
+                "p01": -73.676106,
+                "p99": 84.794613,
                 "display": {
                   "minimum": -200.0,
                   "maximum": 200.0,
@@ -3364,13 +3364,13 @@
                 "status": "passed"
               },
               "_catalog": {
-                "canonical_product": "500mb_height_anomaly",
+                "canonical_product": "500mb_height_anomaly_nh",
                 "comparable": true,
                 "quality_control": "passed"
               }
             },
             {
-              "id": "c3s-multisystem-2026090100-500mb_height_anomaly-lead06",
+              "id": "c3s-multisystem-2026090100-500mb_height_anomaly_nh-lead06",
               "target_month": "202703",
               "valid_start_utc": "2027-03-01T00:00:00Z",
               "valid_end_utc": "2027-04-01T00:00:00Z",
@@ -3382,17 +3382,17 @@
               "statistic": "multi-system mean of native ensemble-mean anomalies",
               "quality_control": {
                 "registry_version": 1,
-                "product": "500mb_height_anomaly",
+                "product": "500mb_height_anomaly_nh",
                 "units": "m",
                 "field": "z500_anomaly",
                 "period": "monthly",
-                "total_points": 12750,
-                "finite_points": 12750,
+                "total_points": 32400,
+                "finite_points": 32400,
                 "finite_fraction": 1.0,
                 "minimum": -97.478895,
                 "maximum": 113.296446,
-                "p01": -90.322272,
-                "p99": 110.139086,
+                "p01": -79.404616,
+                "p99": 105.177657,
                 "display": {
                   "minimum": -200.0,
                   "maximum": 200.0,
@@ -3423,13 +3423,13 @@
                 "status": "passed"
               },
               "_catalog": {
-                "canonical_product": "500mb_height_anomaly",
+                "canonical_product": "500mb_height_anomaly_nh",
                 "comparable": true,
                 "quality_control": "passed"
               }
             },
             {
-              "id": "c3s-multisystem-2026090100-500mb_height_anomaly-202701-202703",
+              "id": "c3s-multisystem-2026090100-500mb_height_anomaly_nh-202701-202703",
               "target_month": "202701-202703",
               "valid_start_utc": "2027-01-01T00:00:00Z",
               "valid_end_utc": "2027-04-01T00:00:00Z",
@@ -3446,17 +3446,17 @@
               "statistic": "multi-system mean of native ensemble-mean anomalies",
               "quality_control": {
                 "registry_version": 1,
-                "product": "500mb_height_anomaly",
+                "product": "500mb_height_anomaly_nh",
                 "units": "m",
                 "field": "z500_anomaly",
                 "period": "seasonal",
-                "total_points": 12750,
-                "finite_points": 12750,
+                "total_points": 32400,
+                "finite_points": 32400,
                 "finite_fraction": 1.0,
                 "minimum": -87.381978,
                 "maximum": 97.375728,
-                "p01": -79.533934,
-                "p99": 94.150759,
+                "p01": -67.957489,
+                "p99": 89.72706,
                 "display": {
                   "minimum": -200.0,
                   "maximum": 200.0,
@@ -3487,14 +3487,14 @@
                 "status": "passed"
               },
               "_catalog": {
-                "canonical_product": "500mb_height_anomaly",
+                "canonical_product": "500mb_height_anomaly_nh",
                 "comparable": true,
                 "quality_control": "passed"
               }
             }
           ],
           "_catalog": {
-            "canonical_product": "500mb_height_anomaly",
+            "canonical_product": "500mb_height_anomaly_nh",
             "comparable": true
           }
         },
@@ -3625,7 +3625,7 @@
           }
         },
         {
-          "id": "c3s-meteo_france-2026090100-500mb_height_anomaly",
+          "id": "c3s-meteo_france-2026090100-500mb_height_anomaly_nh",
           "model": "C3S Météo-France",
           "component": "meteo_france",
           "component_label": "Météo-France",
@@ -3635,7 +3635,7 @@
             "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-pressure-levels",
             "https://cds.climate.copernicus.eu/datasets/seasonal-monthly-pressure-levels"
           ],
-          "product": "500mb_height_anomaly",
+          "product": "500mb_height_anomaly_nh",
           "init_utc": "2026-09-01T00:00:00Z",
           "status": "failed",
           "statistic": "ensemble_mean",
@@ -3656,7 +3656,7 @@
           },
           "targets": [
             {
-              "id": "c3s-meteo_france-2026090100-500mb_height_anomaly-lead04",
+              "id": "c3s-meteo_france-2026090100-500mb_height_anomaly_nh-lead04",
               "target_month": "202701",
               "valid_start_utc": "2027-01-01T00:00:00Z",
               "valid_end_utc": "2027-02-01T00:00:00Z",
@@ -3664,16 +3664,16 @@
               "field": "z500_anomaly",
               "units": "m",
               "status": "failed",
-              "error": "C3S request failed for meteo_france/9 geopotential_anomaly lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/3feae737-26ad-4cdc-a3b7-be3e729aca1a/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['90.0', '-170.0', '15.0', '0.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['4'], 'levelist': ['500'], 'levtype': ['pl'], 'method': ['1'], 'number': ['all'], 'origin': ['lfpw'], 'param': ['171129'], 'stream': ['mmsa'], 'system': ['9'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260908.224437 - Mars server task finished in error\nmars - ERROR  - 20260908.224437 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260908.224437 - Error code is -2\nmars - ERROR  - 20260908.224437 - Request failed\nmars - ERROR  - 20260908.224437 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError",
+              "error": "C3S request failed for meteo_france/9 geopotential_anomaly lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/30b57dd7-edcb-448c-b28c-12c2a1f6df68/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['90.0', '-180.0', '0.0', '180.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['4'], 'levelist': ['500'], 'levtype': ['pl'], 'method': ['1'], 'number': ['all'], 'origin': ['lfpw'], 'param': ['171129'], 'stream': ['mmsa'], 'system': ['9'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260908.230658 - Mars server task finished in error\nmars - ERROR  - 20260908.230658 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260908.230658 - Error code is -2\nmars - ERROR  - 20260908.230658 - Request failed\nmars - ERROR  - 20260908.230658 - Some errors reported (last error -2)\n",
               "statistic": "ensemble_mean",
               "_catalog": {
-                "canonical_product": "500mb_height_anomaly",
+                "canonical_product": "500mb_height_anomaly_nh",
                 "comparable": true,
                 "quality_control": "legacy"
               }
             },
             {
-              "id": "c3s-meteo_france-2026090100-500mb_height_anomaly-lead05",
+              "id": "c3s-meteo_france-2026090100-500mb_height_anomaly_nh-lead05",
               "target_month": "202702",
               "valid_start_utc": "2027-02-01T00:00:00Z",
               "valid_end_utc": "2027-03-01T00:00:00Z",
@@ -3681,16 +3681,16 @@
               "field": "z500_anomaly",
               "units": "m",
               "status": "failed",
-              "error": "C3S request failed for meteo_france/9 geopotential_anomaly lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/c8d8e035-f667-408c-a3c5-3f685bf8abc2/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['90.0', '-170.0', '15.0', '0.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['5'], 'levelist': ['500'], 'levtype': ['pl'], 'method': ['1'], 'number': ['all'], 'origin': ['lfpw'], 'param': ['171129'], 'stream': ['mmsa'], 'system': ['9'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260908.224518 - Mars server task finished in error\nmars - ERROR  - 20260908.224518 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260908.224518 - Error code is -2\nmars - ERROR  - 20260908.224518 - Request failed\nmars - ERROR  - 20260908.224518 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError",
+              "error": "C3S request failed for meteo_france/9 geopotential_anomaly lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/7e212787-fdfc-4e2f-87d2-a68e876943ba/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['90.0', '-180.0', '0.0', '180.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['5'], 'levelist': ['500'], 'levtype': ['pl'], 'method': ['1'], 'number': ['all'], 'origin': ['lfpw'], 'param': ['171129'], 'stream': ['mmsa'], 'system': ['9'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260908.230734 - Mars server task finished in error\nmars - ERROR  - 20260908.230734 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260908.230734 - Error code is -2\nmars - ERROR  - 20260908.230734 - Request failed\nmars - ERROR  - 20260908.230734 - Some errors reported (last error -2)\n",
               "statistic": "ensemble_mean",
               "_catalog": {
-                "canonical_product": "500mb_height_anomaly",
+                "canonical_product": "500mb_height_anomaly_nh",
                 "comparable": true,
                 "quality_control": "legacy"
               }
             },
             {
-              "id": "c3s-meteo_france-2026090100-500mb_height_anomaly-lead06",
+              "id": "c3s-meteo_france-2026090100-500mb_height_anomaly_nh-lead06",
               "target_month": "202703",
               "valid_start_utc": "2027-03-01T00:00:00Z",
               "valid_end_utc": "2027-04-01T00:00:00Z",
@@ -3698,16 +3698,16 @@
               "field": "z500_anomaly",
               "units": "m",
               "status": "failed",
-              "error": "C3S request failed for meteo_france/9 geopotential_anomaly lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/53e4a5f6-9bf3-456c-b113-a11751c213a2/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['90.0', '-170.0', '15.0', '0.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['6'], 'levelist': ['500'], 'levtype': ['pl'], 'method': ['1'], 'number': ['all'], 'origin': ['lfpw'], 'param': ['171129'], 'stream': ['mmsa'], 'system': ['9'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260908.224541 - Mars server task finished in error\nmars - ERROR  - 20260908.224541 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260908.224541 - Error code is -2\nmars - ERROR  - 20260908.224541 - Request failed\nmars - ERROR  - 20260908.224541 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError",
+              "error": "C3S request failed for meteo_france/9 geopotential_anomaly lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/b737cc62-d2ce-44fe-bf7b-aac7e144fb63/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['90.0', '-180.0', '0.0', '180.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['6'], 'levelist': ['500'], 'levtype': ['pl'], 'method': ['1'], 'number': ['all'], 'origin': ['lfpw'], 'param': ['171129'], 'stream': ['mmsa'], 'system': ['9'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260908.230802 - Mars server task finished in error\nmars - ERROR  - 20260908.230802 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260908.230802 - Error code is -2\nmars - ERROR  - 20260908.230802 - Request failed\nmars - ERROR  - 20260908.230802 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError",
               "statistic": "ensemble_mean",
               "_catalog": {
-                "canonical_product": "500mb_height_anomaly",
+                "canonical_product": "500mb_height_anomaly_nh",
                 "comparable": true,
                 "quality_control": "legacy"
               }
             },
             {
-              "id": "c3s-meteo_france-2026090100-500mb_height_anomaly-202701-202703",
+              "id": "c3s-meteo_france-2026090100-500mb_height_anomaly_nh-202701-202703",
               "target_month": "202701-202703",
               "valid_start_utc": "2027-01-01T00:00:00Z",
               "valid_end_utc": "2027-04-01T00:00:00Z",
@@ -3723,14 +3723,14 @@
               "error": "seasonal window is missing one or more component grids",
               "statistic": "ensemble_mean",
               "_catalog": {
-                "canonical_product": "500mb_height_anomaly",
+                "canonical_product": "500mb_height_anomaly_nh",
                 "comparable": true,
                 "quality_control": "legacy"
               }
             }
           ],
           "_catalog": {
-            "canonical_product": "500mb_height_anomaly",
+            "canonical_product": "500mb_height_anomaly_nh",
             "comparable": true
           }
         },
@@ -3861,7 +3861,7 @@
           }
         },
         {
-          "id": "c3s-jma-2026090100-500mb_height_anomaly",
+          "id": "c3s-jma-2026090100-500mb_height_anomaly_nh",
           "model": "C3S JMA",
           "component": "jma",
           "component_label": "JMA",
@@ -3871,7 +3871,7 @@
             "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-pressure-levels",
             "https://cds.climate.copernicus.eu/datasets/seasonal-monthly-pressure-levels"
           ],
-          "product": "500mb_height_anomaly",
+          "product": "500mb_height_anomaly_nh",
           "init_utc": "2026-09-01T00:00:00Z",
           "status": "failed",
           "statistic": "ensemble_mean",
@@ -3892,7 +3892,7 @@
           },
           "targets": [
             {
-              "id": "c3s-jma-2026090100-500mb_height_anomaly-lead04",
+              "id": "c3s-jma-2026090100-500mb_height_anomaly_nh-lead04",
               "target_month": "202701",
               "valid_start_utc": "2027-01-01T00:00:00Z",
               "valid_end_utc": "2027-02-01T00:00:00Z",
@@ -3900,16 +3900,16 @@
               "field": "z500_anomaly",
               "units": "m",
               "status": "failed",
-              "error": "C3S request failed for jma/4 geopotential_anomaly lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/cf6742bf-ffde-4f7d-ba25-a706ecaaba33/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['90.0', '-170.0', '15.0', '0.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['4'], 'levelist': ['500'], 'levtype': ['pl'], 'method': ['1'], 'number': ['all'], 'origin': ['rjtd'], 'param': ['171129'], 'stream': ['mmsa'], 'system': ['4'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260908.225253 - Mars server task finished in error\nmars - ERROR  - 20260908.225253 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260908.225253 - Error code is -2\nmars - ERROR  - 20260908.225253 - Request failed\nmars - ERROR  - 20260908.225253 - Some errors reported (last error -2)\n",
+              "error": "C3S request failed for jma/4 geopotential_anomaly lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/7d144594-f3c2-432d-ba29-78d5ef72ef62/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['90.0', '-180.0', '0.0', '180.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['4'], 'levelist': ['500'], 'levtype': ['pl'], 'method': ['1'], 'number': ['all'], 'origin': ['rjtd'], 'param': ['171129'], 'stream': ['mmsa'], 'system': ['4'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260908.231453 - Mars server task finished in error\nmars - ERROR  - 20260908.231453 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260908.231453 - Error code is -2\nmars - ERROR  - 20260908.231453 - Request failed\nmars - ERROR  - 20260908.231453 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError",
               "statistic": "ensemble_mean",
               "_catalog": {
-                "canonical_product": "500mb_height_anomaly",
+                "canonical_product": "500mb_height_anomaly_nh",
                 "comparable": true,
                 "quality_control": "legacy"
               }
             },
             {
-              "id": "c3s-jma-2026090100-500mb_height_anomaly-lead05",
+              "id": "c3s-jma-2026090100-500mb_height_anomaly_nh-lead05",
               "target_month": "202702",
               "valid_start_utc": "2027-02-01T00:00:00Z",
               "valid_end_utc": "2027-03-01T00:00:00Z",
@@ -3917,16 +3917,16 @@
               "field": "z500_anomaly",
               "units": "m",
               "status": "failed",
-              "error": "C3S request failed for jma/4 geopotential_anomaly lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/07f317cc-fdc3-409a-84ad-6c5d7c2cb1c1/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['90.0', '-170.0', '15.0', '0.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['5'], 'levelist': ['500'], 'levtype': ['pl'], 'method': ['1'], 'number': ['all'], 'origin': ['rjtd'], 'param': ['171129'], 'stream': ['mmsa'], 'system': ['4'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260908.225335 - Mars server task finished in error\nmars - ERROR  - 20260908.225335 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260908.225335 - Error code is -2\nmars - ERROR  - 20260908.225335 - Request failed\nmars - ERROR  - 20260908.225335 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError",
+              "error": "C3S request failed for jma/4 geopotential_anomaly lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/ca79d0b1-df88-46f7-b1f2-d90f27042d38/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['90.0', '-180.0', '0.0', '180.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['5'], 'levelist': ['500'], 'levtype': ['pl'], 'method': ['1'], 'number': ['all'], 'origin': ['rjtd'], 'param': ['171129'], 'stream': ['mmsa'], 'system': ['4'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260908.231548 - Mars server task finished in error\nmars - ERROR  - 20260908.231548 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260908.231548 - Error code is -2\nmars - ERROR  - 20260908.231548 - Request failed\nmars - ERROR  - 20260908.231548 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError",
               "statistic": "ensemble_mean",
               "_catalog": {
-                "canonical_product": "500mb_height_anomaly",
+                "canonical_product": "500mb_height_anomaly_nh",
                 "comparable": true,
                 "quality_control": "legacy"
               }
             },
             {
-              "id": "c3s-jma-2026090100-500mb_height_anomaly-lead06",
+              "id": "c3s-jma-2026090100-500mb_height_anomaly_nh-lead06",
               "target_month": "202703",
               "valid_start_utc": "2027-03-01T00:00:00Z",
               "valid_end_utc": "2027-04-01T00:00:00Z",
@@ -3934,16 +3934,16 @@
               "field": "z500_anomaly",
               "units": "m",
               "status": "failed",
-              "error": "C3S request failed for jma/4 geopotential_anomaly lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/42336bba-6d80-46d9-aa85-2467a29c7c50/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['90.0', '-170.0', '15.0', '0.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['6'], 'levelist': ['500'], 'levtype': ['pl'], 'method': ['1'], 'number': ['all'], 'origin': ['rjtd'], 'param': ['171129'], 'stream': ['mmsa'], 'system': ['4'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260908.225413 - Mars server task finished in error\nmars - ERROR  - 20260908.225413 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260908.225413 - Error code is -2\nmars - ERROR  - 20260908.225413 - Request failed\nmars - ERROR  - 20260908.225413 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError",
+              "error": "C3S request failed for jma/4 geopotential_anomaly lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/d8fbe9ad-f252-468c-81fd-84ba6d43f4dc/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['90.0', '-180.0', '0.0', '180.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['6'], 'levelist': ['500'], 'levtype': ['pl'], 'method': ['1'], 'number': ['all'], 'origin': ['rjtd'], 'param': ['171129'], 'stream': ['mmsa'], 'system': ['4'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260908.231619 - Mars server task finished in error\nmars - ERROR  - 20260908.231619 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260908.231619 - Error code is -2\nmars - ERROR  - 20260908.231619 - Request failed\nmars - ERROR  - 20260908.231619 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError",
               "statistic": "ensemble_mean",
               "_catalog": {
-                "canonical_product": "500mb_height_anomaly",
+                "canonical_product": "500mb_height_anomaly_nh",
                 "comparable": true,
                 "quality_control": "legacy"
               }
             },
             {
-              "id": "c3s-jma-2026090100-500mb_height_anomaly-202701-202703",
+              "id": "c3s-jma-2026090100-500mb_height_anomaly_nh-202701-202703",
               "target_month": "202701-202703",
               "valid_start_utc": "2027-01-01T00:00:00Z",
               "valid_end_utc": "2027-04-01T00:00:00Z",
@@ -3959,14 +3959,14 @@
               "error": "seasonal window is missing one or more component grids",
               "statistic": "ensemble_mean",
               "_catalog": {
-                "canonical_product": "500mb_height_anomaly",
+                "canonical_product": "500mb_height_anomaly_nh",
                 "comparable": true,
                 "quality_control": "legacy"
               }
             }
           ],
           "_catalog": {
-            "canonical_product": "500mb_height_anomaly",
+            "canonical_product": "500mb_height_anomaly_nh",
             "comparable": true
           }
         },
@@ -4380,7 +4380,7 @@
           }
         },
         {
-          "id": "c3s-ecmwf-2026090100-500mb_height_anomaly",
+          "id": "c3s-ecmwf-2026090100-500mb_height_anomaly_nh",
           "model": "C3S ECMWF",
           "component": "ecmwf",
           "component_label": "ECMWF",
@@ -4390,7 +4390,7 @@
             "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-pressure-levels",
             "https://cds.climate.copernicus.eu/datasets/seasonal-monthly-pressure-levels"
           ],
-          "product": "500mb_height_anomaly",
+          "product": "500mb_height_anomaly_nh",
           "init_utc": "2026-09-01T00:00:00Z",
           "status": "rendered",
           "statistic": "ensemble_mean",
@@ -4411,7 +4411,7 @@
           },
           "targets": [
             {
-              "id": "c3s-ecmwf-2026090100-500mb_height_anomaly-lead04",
+              "id": "c3s-ecmwf-2026090100-500mb_height_anomaly_nh-lead04",
               "target_month": "202701",
               "valid_start_utc": "2027-01-01T00:00:00Z",
               "valid_end_utc": "2027-02-01T00:00:00Z",
@@ -4423,17 +4423,17 @@
               "statistic": "ensemble_mean",
               "quality_control": {
                 "registry_version": 1,
-                "product": "500mb_height_anomaly",
+                "product": "500mb_height_anomaly_nh",
                 "units": "m",
                 "field": "z500_anomaly",
                 "period": "monthly",
-                "total_points": 12750,
-                "finite_points": 12750,
+                "total_points": 32400,
+                "finite_points": 32400,
                 "finite_fraction": 1.0,
                 "minimum": -69.86729,
                 "maximum": 92.242095,
-                "p01": -63.42842,
-                "p99": 88.291013,
+                "p01": -53.363853,
+                "p99": 82.392592,
                 "display": {
                   "minimum": -200.0,
                   "maximum": 200.0,
@@ -4464,13 +4464,13 @@
                 "status": "passed"
               },
               "_catalog": {
-                "canonical_product": "500mb_height_anomaly",
+                "canonical_product": "500mb_height_anomaly_nh",
                 "comparable": true,
                 "quality_control": "passed"
               }
             },
             {
-              "id": "c3s-ecmwf-2026090100-500mb_height_anomaly-lead05",
+              "id": "c3s-ecmwf-2026090100-500mb_height_anomaly_nh-lead05",
               "target_month": "202702",
               "valid_start_utc": "2027-02-01T00:00:00Z",
               "valid_end_utc": "2027-03-01T00:00:00Z",
@@ -4482,17 +4482,17 @@
               "statistic": "ensemble_mean",
               "quality_control": {
                 "registry_version": 1,
-                "product": "500mb_height_anomaly",
+                "product": "500mb_height_anomaly_nh",
                 "units": "m",
                 "field": "z500_anomaly",
                 "period": "monthly",
-                "total_points": 12750,
-                "finite_points": 12750,
+                "total_points": 32400,
+                "finite_points": 32400,
                 "finite_fraction": 1.0,
                 "minimum": -97.944937,
                 "maximum": 92.114232,
-                "p01": -87.638634,
-                "p99": 89.168431,
+                "p01": -73.676106,
+                "p99": 84.794613,
                 "display": {
                   "minimum": -200.0,
                   "maximum": 200.0,
@@ -4523,13 +4523,13 @@
                 "status": "passed"
               },
               "_catalog": {
-                "canonical_product": "500mb_height_anomaly",
+                "canonical_product": "500mb_height_anomaly_nh",
                 "comparable": true,
                 "quality_control": "passed"
               }
             },
             {
-              "id": "c3s-ecmwf-2026090100-500mb_height_anomaly-lead06",
+              "id": "c3s-ecmwf-2026090100-500mb_height_anomaly_nh-lead06",
               "target_month": "202703",
               "valid_start_utc": "2027-03-01T00:00:00Z",
               "valid_end_utc": "2027-04-01T00:00:00Z",
@@ -4541,17 +4541,17 @@
               "statistic": "ensemble_mean",
               "quality_control": {
                 "registry_version": 1,
-                "product": "500mb_height_anomaly",
+                "product": "500mb_height_anomaly_nh",
                 "units": "m",
                 "field": "z500_anomaly",
                 "period": "monthly",
-                "total_points": 12750,
-                "finite_points": 12750,
+                "total_points": 32400,
+                "finite_points": 32400,
                 "finite_fraction": 1.0,
                 "minimum": -97.478895,
                 "maximum": 113.296446,
-                "p01": -90.322272,
-                "p99": 110.139086,
+                "p01": -79.404616,
+                "p99": 105.177657,
                 "display": {
                   "minimum": -200.0,
                   "maximum": 200.0,
@@ -4582,13 +4582,13 @@
                 "status": "passed"
               },
               "_catalog": {
-                "canonical_product": "500mb_height_anomaly",
+                "canonical_product": "500mb_height_anomaly_nh",
                 "comparable": true,
                 "quality_control": "passed"
               }
             },
             {
-              "id": "c3s-ecmwf-2026090100-500mb_height_anomaly-202701-202703",
+              "id": "c3s-ecmwf-2026090100-500mb_height_anomaly_nh-202701-202703",
               "target_month": "202701-202703",
               "valid_start_utc": "2027-01-01T00:00:00Z",
               "valid_end_utc": "2027-04-01T00:00:00Z",
@@ -4605,17 +4605,17 @@
               "statistic": "ensemble_mean",
               "quality_control": {
                 "registry_version": 1,
-                "product": "500mb_height_anomaly",
+                "product": "500mb_height_anomaly_nh",
                 "units": "m",
                 "field": "z500_anomaly",
                 "period": "seasonal",
-                "total_points": 12750,
-                "finite_points": 12750,
+                "total_points": 32400,
+                "finite_points": 32400,
                 "finite_fraction": 1.0,
                 "minimum": -87.381978,
                 "maximum": 97.375728,
-                "p01": -79.533934,
-                "p99": 94.150759,
+                "p01": -67.957489,
+                "p99": 89.72706,
                 "display": {
                   "minimum": -200.0,
                   "maximum": 200.0,
@@ -4646,14 +4646,14 @@
                 "status": "passed"
               },
               "_catalog": {
-                "canonical_product": "500mb_height_anomaly",
+                "canonical_product": "500mb_height_anomaly_nh",
                 "comparable": true,
                 "quality_control": "passed"
               }
             }
           ],
           "_catalog": {
-            "canonical_product": "500mb_height_anomaly",
+            "canonical_product": "500mb_height_anomaly_nh",
             "comparable": true
           }
         },
@@ -4784,7 +4784,7 @@
           }
         },
         {
-          "id": "c3s-eccc-2026090100-500mb_height_anomaly",
+          "id": "c3s-eccc-2026090100-500mb_height_anomaly_nh",
           "model": "C3S ECCC",
           "component": "eccc",
           "component_label": "ECCC",
@@ -4794,7 +4794,7 @@
             "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-pressure-levels",
             "https://cds.climate.copernicus.eu/datasets/seasonal-monthly-pressure-levels"
           ],
-          "product": "500mb_height_anomaly",
+          "product": "500mb_height_anomaly_nh",
           "init_utc": "2026-09-01T00:00:00Z",
           "status": "failed",
           "statistic": "ensemble_mean",
@@ -4815,7 +4815,7 @@
           },
           "targets": [
             {
-              "id": "c3s-eccc-2026090100-500mb_height_anomaly-lead04",
+              "id": "c3s-eccc-2026090100-500mb_height_anomaly_nh-lead04",
               "target_month": "202701",
               "valid_start_utc": "2027-01-01T00:00:00Z",
               "valid_end_utc": "2027-02-01T00:00:00Z",
@@ -4823,16 +4823,16 @@
               "field": "z500_anomaly",
               "units": "m",
               "status": "failed",
-              "error": "C3S request failed for eccc/5 geopotential_anomaly lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/3a9e9358-0afc-4f4c-9275-94aa4e0e3759/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['90.0', '-170.0', '15.0', '0.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['4'], 'levelist': ['500'], 'levtype': ['pl'], 'method': ['1'], 'number': ['all'], 'origin': ['cwao'], 'param': ['171129'], 'stream': ['mmsa'], 'system': ['5'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260908.225455 - Mars server task finished in error\nmars - ERROR  - 20260908.225455 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260908.225455 - Error code is -2\nmars - ERROR  - 20260908.225455 - Request failed\nmars - ERROR  - 20260908.225455 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError",
+              "error": "C3S request failed for eccc/5 geopotential_anomaly lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/b6460019-0eef-4399-950f-48ed34ed5469/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['90.0', '-180.0', '0.0', '180.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['4'], 'levelist': ['500'], 'levtype': ['pl'], 'method': ['1'], 'number': ['all'], 'origin': ['cwao'], 'param': ['171129'], 'stream': ['mmsa'], 'system': ['5'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260908.231704 - Mars server task finished in error\nmars - ERROR  - 20260908.231704 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260908.231704 - Error code is -2\nmars - ERROR  - 20260908.231704 - Request failed\nmars - ERROR  - 20260908.231704 - Some errors reported (last error -2)\n",
               "statistic": "ensemble_mean",
               "_catalog": {
-                "canonical_product": "500mb_height_anomaly",
+                "canonical_product": "500mb_height_anomaly_nh",
                 "comparable": true,
                 "quality_control": "legacy"
               }
             },
             {
-              "id": "c3s-eccc-2026090100-500mb_height_anomaly-lead05",
+              "id": "c3s-eccc-2026090100-500mb_height_anomaly_nh-lead05",
               "target_month": "202702",
               "valid_start_utc": "2027-02-01T00:00:00Z",
               "valid_end_utc": "2027-03-01T00:00:00Z",
@@ -4840,16 +4840,16 @@
               "field": "z500_anomaly",
               "units": "m",
               "status": "failed",
-              "error": "C3S request failed for eccc/5 geopotential_anomaly lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/cece19c3-b08c-4858-9586-e27c9af73996/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['90.0', '-170.0', '15.0', '0.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['5'], 'levelist': ['500'], 'levtype': ['pl'], 'method': ['1'], 'number': ['all'], 'origin': ['cwao'], 'param': ['171129'], 'stream': ['mmsa'], 'system': ['5'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260908.225528 - Mars server task finished in error\nmars - ERROR  - 20260908.225528 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260908.225528 - Error code is -2\nmars - ERROR  - 20260908.225528 - Request failed\nmars - ERROR  - 20260908.225528 - Some errors reported (last error -2)\n",
+              "error": "C3S request failed for eccc/5 geopotential_anomaly lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/cf74b08f-bf13-41cc-8444-4629ff7e6d88/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['90.0', '-180.0', '0.0', '180.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['5'], 'levelist': ['500'], 'levtype': ['pl'], 'method': ['1'], 'number': ['all'], 'origin': ['cwao'], 'param': ['171129'], 'stream': ['mmsa'], 'system': ['5'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260908.231751 - Mars server task finished in error\nmars - ERROR  - 20260908.231751 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260908.231751 - Error code is -2\nmars - ERROR  - 20260908.231751 - Request failed\nmars - ERROR  - 20260908.231751 - Some errors reported (last error -2)\n",
               "statistic": "ensemble_mean",
               "_catalog": {
-                "canonical_product": "500mb_height_anomaly",
+                "canonical_product": "500mb_height_anomaly_nh",
                 "comparable": true,
                 "quality_control": "legacy"
               }
             },
             {
-              "id": "c3s-eccc-2026090100-500mb_height_anomaly-lead06",
+              "id": "c3s-eccc-2026090100-500mb_height_anomaly_nh-lead06",
               "target_month": "202703",
               "valid_start_utc": "2027-03-01T00:00:00Z",
               "valid_end_utc": "2027-04-01T00:00:00Z",
@@ -4857,16 +4857,16 @@
               "field": "z500_anomaly",
               "units": "m",
               "status": "failed",
-              "error": "C3S request failed for eccc/5 geopotential_anomaly lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/213f640f-af4c-4d7e-a101-58a1fefc1aa5/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['90.0', '-170.0', '15.0', '0.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['6'], 'levelist': ['500'], 'levtype': ['pl'], 'method': ['1'], 'number': ['all'], 'origin': ['cwao'], 'param': ['171129'], 'stream': ['mmsa'], 'system': ['5'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260908.225607 - Mars server task finished in error\nmars - ERROR  - 20260908.225607 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260908.225607 - Error code is -2\nmars - ERROR  - 20260908.225607 - Request failed\nmars - ERROR  - 20260908.225607 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError",
+              "error": "C3S request failed for eccc/5 geopotential_anomaly lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/8a0d27e9-e854-4bce-96fd-73219a2e0c4c/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['90.0', '-180.0', '0.0', '180.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['6'], 'levelist': ['500'], 'levtype': ['pl'], 'method': ['1'], 'number': ['all'], 'origin': ['cwao'], 'param': ['171129'], 'stream': ['mmsa'], 'system': ['5'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260908.231845 - Mars server task finished in error\nmars - ERROR  - 20260908.231845 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260908.231845 - Error code is -2\nmars - ERROR  - 20260908.231845 - Request failed\nmars - ERROR  - 20260908.231845 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError",
               "statistic": "ensemble_mean",
               "_catalog": {
-                "canonical_product": "500mb_height_anomaly",
+                "canonical_product": "500mb_height_anomaly_nh",
                 "comparable": true,
                 "quality_control": "legacy"
               }
             },
             {
-              "id": "c3s-eccc-2026090100-500mb_height_anomaly-202701-202703",
+              "id": "c3s-eccc-2026090100-500mb_height_anomaly_nh-202701-202703",
               "target_month": "202701-202703",
               "valid_start_utc": "2027-01-01T00:00:00Z",
               "valid_end_utc": "2027-04-01T00:00:00Z",
@@ -4882,14 +4882,14 @@
               "error": "seasonal window is missing one or more component grids",
               "statistic": "ensemble_mean",
               "_catalog": {
-                "canonical_product": "500mb_height_anomaly",
+                "canonical_product": "500mb_height_anomaly_nh",
                 "comparable": true,
                 "quality_control": "legacy"
               }
             }
           ],
           "_catalog": {
-            "canonical_product": "500mb_height_anomaly",
+            "canonical_product": "500mb_height_anomaly_nh",
             "comparable": true
           }
         },
@@ -5020,7 +5020,7 @@
           }
         },
         {
-          "id": "c3s-dwd-2026090100-500mb_height_anomaly",
+          "id": "c3s-dwd-2026090100-500mb_height_anomaly_nh",
           "model": "C3S DWD",
           "component": "dwd",
           "component_label": "DWD",
@@ -5030,7 +5030,7 @@
             "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-pressure-levels",
             "https://cds.climate.copernicus.eu/datasets/seasonal-monthly-pressure-levels"
           ],
-          "product": "500mb_height_anomaly",
+          "product": "500mb_height_anomaly_nh",
           "init_utc": "2026-09-01T00:00:00Z",
           "status": "failed",
           "statistic": "ensemble_mean",
@@ -5051,7 +5051,7 @@
           },
           "targets": [
             {
-              "id": "c3s-dwd-2026090100-500mb_height_anomaly-lead04",
+              "id": "c3s-dwd-2026090100-500mb_height_anomaly_nh-lead04",
               "target_month": "202701",
               "valid_start_utc": "2027-01-01T00:00:00Z",
               "valid_end_utc": "2027-02-01T00:00:00Z",
@@ -5059,16 +5059,16 @@
               "field": "z500_anomaly",
               "units": "m",
               "status": "failed",
-              "error": "C3S request failed for dwd/22 geopotential_anomaly lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/217c7ac4-d21e-4a67-815a-6274af77e219/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['90.0', '-170.0', '15.0', '0.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['4'], 'levelist': ['500'], 'levtype': ['pl'], 'method': ['1'], 'number': ['all'], 'origin': ['edzw'], 'param': ['171129'], 'stream': ['mmsa'], 'system': ['22'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260908.224619 - Mars server task finished in error\nmars - ERROR  - 20260908.224619 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260908.224619 - Error code is -2\nmars - ERROR  - 20260908.224619 - Request failed\nmars - ERROR  - 20260908.224619 - Some errors reported (last error -2)\n",
+              "error": "C3S request failed for dwd/22 geopotential_anomaly lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/cce9ce64-5d62-4935-b595-b3dc48572f2d/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['90.0', '-180.0', '0.0', '180.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['4'], 'levelist': ['500'], 'levtype': ['pl'], 'method': ['1'], 'number': ['all'], 'origin': ['edzw'], 'param': ['171129'], 'stream': ['mmsa'], 'system': ['22'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260908.230846 - Mars server task finished in error\nmars - ERROR  - 20260908.230846 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260908.230846 - Error code is -2\nmars - ERROR  - 20260908.230846 - Request failed\nmars - ERROR  - 20260908.230846 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError",
               "statistic": "ensemble_mean",
               "_catalog": {
-                "canonical_product": "500mb_height_anomaly",
+                "canonical_product": "500mb_height_anomaly_nh",
                 "comparable": true,
                 "quality_control": "legacy"
               }
             },
             {
-              "id": "c3s-dwd-2026090100-500mb_height_anomaly-lead05",
+              "id": "c3s-dwd-2026090100-500mb_height_anomaly_nh-lead05",
               "target_month": "202702",
               "valid_start_utc": "2027-02-01T00:00:00Z",
               "valid_end_utc": "2027-03-01T00:00:00Z",
@@ -5076,16 +5076,16 @@
               "field": "z500_anomaly",
               "units": "m",
               "status": "failed",
-              "error": "C3S request failed for dwd/22 geopotential_anomaly lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/8e4198c8-413f-4592-82cb-dfff81851947/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['90.0', '-170.0', '15.0', '0.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['5'], 'levelist': ['500'], 'levtype': ['pl'], 'method': ['1'], 'number': ['all'], 'origin': ['edzw'], 'param': ['171129'], 'stream': ['mmsa'], 'system': ['22'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260908.224658 - Mars server task finished in error\nmars - ERROR  - 20260908.224658 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260908.224658 - Error code is -2\nmars - ERROR  - 20260908.224658 - Request failed\nmars - ERROR  - 20260908.224658 - Some errors reported (last error -2)\n",
+              "error": "C3S request failed for dwd/22 geopotential_anomaly lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/89e172b4-9457-4f5c-9f48-21d02e735f4b/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['90.0', '-180.0', '0.0', '180.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['5'], 'levelist': ['500'], 'levtype': ['pl'], 'method': ['1'], 'number': ['all'], 'origin': ['edzw'], 'param': ['171129'], 'stream': ['mmsa'], 'system': ['22'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260908.230930 - Mars server task finished in error\nmars - ERROR  - 20260908.230930 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260908.230930 - Error code is -2\nmars - ERROR  - 20260908.230930 - Request failed\nmars - ERROR  - 20260908.230930 - Some errors reported (last error -2)\n",
               "statistic": "ensemble_mean",
               "_catalog": {
-                "canonical_product": "500mb_height_anomaly",
+                "canonical_product": "500mb_height_anomaly_nh",
                 "comparable": true,
                 "quality_control": "legacy"
               }
             },
             {
-              "id": "c3s-dwd-2026090100-500mb_height_anomaly-lead06",
+              "id": "c3s-dwd-2026090100-500mb_height_anomaly_nh-lead06",
               "target_month": "202703",
               "valid_start_utc": "2027-03-01T00:00:00Z",
               "valid_end_utc": "2027-04-01T00:00:00Z",
@@ -5093,16 +5093,16 @@
               "field": "z500_anomaly",
               "units": "m",
               "status": "failed",
-              "error": "C3S request failed for dwd/22 geopotential_anomaly lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/646d0eff-33f8-4f42-b202-a8a9584e7664/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['90.0', '-170.0', '15.0', '0.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['6'], 'levelist': ['500'], 'levtype': ['pl'], 'method': ['1'], 'number': ['all'], 'origin': ['edzw'], 'param': ['171129'], 'stream': ['mmsa'], 'system': ['22'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260908.224738 - Mars server task finished in error\nmars - ERROR  - 20260908.224738 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260908.224738 - Error code is -2\nmars - ERROR  - 20260908.224738 - Request failed\nmars - ERROR  - 20260908.224738 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError",
+              "error": "C3S request failed for dwd/22 geopotential_anomaly lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/0a6e7a8a-5958-48fe-8102-4466f6336119/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['90.0', '-180.0', '0.0', '180.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['6'], 'levelist': ['500'], 'levtype': ['pl'], 'method': ['1'], 'number': ['all'], 'origin': ['edzw'], 'param': ['171129'], 'stream': ['mmsa'], 'system': ['22'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260908.230952 - Mars server task finished in error\nmars - ERROR  - 20260908.230952 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260908.230952 - Error code is -2\nmars - ERROR  - 20260908.230952 - Request failed\nmars - ERROR  - 20260908.230952 - Some errors reported (last error -2)\n",
               "statistic": "ensemble_mean",
               "_catalog": {
-                "canonical_product": "500mb_height_anomaly",
+                "canonical_product": "500mb_height_anomaly_nh",
                 "comparable": true,
                 "quality_control": "legacy"
               }
             },
             {
-              "id": "c3s-dwd-2026090100-500mb_height_anomaly-202701-202703",
+              "id": "c3s-dwd-2026090100-500mb_height_anomaly_nh-202701-202703",
               "target_month": "202701-202703",
               "valid_start_utc": "2027-01-01T00:00:00Z",
               "valid_end_utc": "2027-04-01T00:00:00Z",
@@ -5118,14 +5118,14 @@
               "error": "seasonal window is missing one or more component grids",
               "statistic": "ensemble_mean",
               "_catalog": {
-                "canonical_product": "500mb_height_anomaly",
+                "canonical_product": "500mb_height_anomaly_nh",
                 "comparable": true,
                 "quality_control": "legacy"
               }
             }
           ],
           "_catalog": {
-            "canonical_product": "500mb_height_anomaly",
+            "canonical_product": "500mb_height_anomaly_nh",
             "comparable": true
           }
         },
@@ -5256,7 +5256,7 @@
           }
         },
         {
-          "id": "c3s-cmcc-2026090100-500mb_height_anomaly",
+          "id": "c3s-cmcc-2026090100-500mb_height_anomaly_nh",
           "model": "C3S CMCC",
           "component": "cmcc",
           "component_label": "CMCC",
@@ -5266,7 +5266,7 @@
             "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-pressure-levels",
             "https://cds.climate.copernicus.eu/datasets/seasonal-monthly-pressure-levels"
           ],
-          "product": "500mb_height_anomaly",
+          "product": "500mb_height_anomaly_nh",
           "init_utc": "2026-09-01T00:00:00Z",
           "status": "failed",
           "statistic": "ensemble_mean",
@@ -5287,7 +5287,7 @@
           },
           "targets": [
             {
-              "id": "c3s-cmcc-2026090100-500mb_height_anomaly-lead04",
+              "id": "c3s-cmcc-2026090100-500mb_height_anomaly_nh-lead04",
               "target_month": "202701",
               "valid_start_utc": "2027-01-01T00:00:00Z",
               "valid_end_utc": "2027-02-01T00:00:00Z",
@@ -5295,16 +5295,16 @@
               "field": "z500_anomaly",
               "units": "m",
               "status": "failed",
-              "error": "C3S request failed for cmcc/4 geopotential_anomaly lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/bf99dd5d-2262-4f37-9d4d-2e4a691b0f82/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['90.0', '-170.0', '15.0', '0.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['4'], 'levelist': ['500'], 'levtype': ['pl'], 'method': ['1'], 'number': ['all'], 'origin': ['cmcc'], 'param': ['171129'], 'stream': ['mmsa'], 'system': ['4'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260908.224829 - Mars server task finished in error\nmars - ERROR  - 20260908.224829 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260908.224829 - Error code is -2\nmars - ERROR  - 20260908.224829 - Request failed\nmars - ERROR  - 20260908.224829 - Some errors reported (last error -2)\n",
+              "error": "C3S request failed for cmcc/4 geopotential_anomaly lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/db149a67-e45a-4d69-90a8-8de162e29f55/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['90.0', '-180.0', '0.0', '180.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['4'], 'levelist': ['500'], 'levtype': ['pl'], 'method': ['1'], 'number': ['all'], 'origin': ['cmcc'], 'param': ['171129'], 'stream': ['mmsa'], 'system': ['4'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260908.231041 - Mars server task finished in error\nmars - ERROR  - 20260908.231041 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260908.231041 - Error code is -2\nmars - ERROR  - 20260908.231041 - Request failed\nmars - ERROR  - 20260908.231041 - Some errors reported (last error -2)\n",
               "statistic": "ensemble_mean",
               "_catalog": {
-                "canonical_product": "500mb_height_anomaly",
+                "canonical_product": "500mb_height_anomaly_nh",
                 "comparable": true,
                 "quality_control": "legacy"
               }
             },
             {
-              "id": "c3s-cmcc-2026090100-500mb_height_anomaly-lead05",
+              "id": "c3s-cmcc-2026090100-500mb_height_anomaly_nh-lead05",
               "target_month": "202702",
               "valid_start_utc": "2027-02-01T00:00:00Z",
               "valid_end_utc": "2027-03-01T00:00:00Z",
@@ -5312,16 +5312,16 @@
               "field": "z500_anomaly",
               "units": "m",
               "status": "failed",
-              "error": "C3S request failed for cmcc/4 geopotential_anomaly lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/7ad98690-3797-4ee3-a359-b851310f1912/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['90.0', '-170.0', '15.0', '0.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['5'], 'levelist': ['500'], 'levtype': ['pl'], 'method': ['1'], 'number': ['all'], 'origin': ['cmcc'], 'param': ['171129'], 'stream': ['mmsa'], 'system': ['4'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260908.224901 - Mars server task finished in error\nmars - ERROR  - 20260908.224901 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260908.224901 - Error code is -2\nmars - ERROR  - 20260908.224901 - Request failed\nmars - ERROR  - 20260908.224901 - Some errors reported (last error -2)\n",
+              "error": "C3S request failed for cmcc/4 geopotential_anomaly lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/0f5e428a-fd7f-4e6b-81f8-711f739cbe38/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['90.0', '-180.0', '0.0', '180.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['5'], 'levelist': ['500'], 'levtype': ['pl'], 'method': ['1'], 'number': ['all'], 'origin': ['cmcc'], 'param': ['171129'], 'stream': ['mmsa'], 'system': ['4'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260908.231120 - Mars server task finished in error\nmars - ERROR  - 20260908.231120 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260908.231120 - Error code is -2\nmars - ERROR  - 20260908.231120 - Request failed\nmars - ERROR  - 20260908.231120 - Some errors reported (last error -2)\n",
               "statistic": "ensemble_mean",
               "_catalog": {
-                "canonical_product": "500mb_height_anomaly",
+                "canonical_product": "500mb_height_anomaly_nh",
                 "comparable": true,
                 "quality_control": "legacy"
               }
             },
             {
-              "id": "c3s-cmcc-2026090100-500mb_height_anomaly-lead06",
+              "id": "c3s-cmcc-2026090100-500mb_height_anomaly_nh-lead06",
               "target_month": "202703",
               "valid_start_utc": "2027-03-01T00:00:00Z",
               "valid_end_utc": "2027-04-01T00:00:00Z",
@@ -5329,16 +5329,16 @@
               "field": "z500_anomaly",
               "units": "m",
               "status": "failed",
-              "error": "C3S request failed for cmcc/4 geopotential_anomaly lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/b734f546-348e-47a8-9761-f86153ecd436/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['90.0', '-170.0', '15.0', '0.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['6'], 'levelist': ['500'], 'levtype': ['pl'], 'method': ['1'], 'number': ['all'], 'origin': ['cmcc'], 'param': ['171129'], 'stream': ['mmsa'], 'system': ['4'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260908.224947 - Mars server task finished in error\nmars - ERROR  - 20260908.224947 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260908.224947 - Error code is -2\nmars - ERROR  - 20260908.224947 - Request failed\nmars - ERROR  - 20260908.224947 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError",
+              "error": "C3S request failed for cmcc/4 geopotential_anomaly lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/faeab31d-8f4e-4cab-913b-2d2a81718ddb/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['90.0', '-180.0', '0.0', '180.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['6'], 'levelist': ['500'], 'levtype': ['pl'], 'method': ['1'], 'number': ['all'], 'origin': ['cmcc'], 'param': ['171129'], 'stream': ['mmsa'], 'system': ['4'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260908.231151 - Mars server task finished in error\nmars - ERROR  - 20260908.231151 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260908.231151 - Error code is -2\nmars - ERROR  - 20260908.231151 - Request failed\nmars - ERROR  - 20260908.231151 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError",
               "statistic": "ensemble_mean",
               "_catalog": {
-                "canonical_product": "500mb_height_anomaly",
+                "canonical_product": "500mb_height_anomaly_nh",
                 "comparable": true,
                 "quality_control": "legacy"
               }
             },
             {
-              "id": "c3s-cmcc-2026090100-500mb_height_anomaly-202701-202703",
+              "id": "c3s-cmcc-2026090100-500mb_height_anomaly_nh-202701-202703",
               "target_month": "202701-202703",
               "valid_start_utc": "2027-01-01T00:00:00Z",
               "valid_end_utc": "2027-04-01T00:00:00Z",
@@ -5354,14 +5354,14 @@
               "error": "seasonal window is missing one or more component grids",
               "statistic": "ensemble_mean",
               "_catalog": {
-                "canonical_product": "500mb_height_anomaly",
+                "canonical_product": "500mb_height_anomaly_nh",
                 "comparable": true,
                 "quality_control": "legacy"
               }
             }
           ],
           "_catalog": {
-            "canonical_product": "500mb_height_anomaly",
+            "canonical_product": "500mb_height_anomaly_nh",
             "comparable": true
           }
         },
@@ -5492,7 +5492,7 @@
           }
         },
         {
-          "id": "c3s-bom-2026090100-500mb_height_anomaly",
+          "id": "c3s-bom-2026090100-500mb_height_anomaly_nh",
           "model": "C3S BOM",
           "component": "bom",
           "component_label": "BOM",
@@ -5502,7 +5502,7 @@
             "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-pressure-levels",
             "https://cds.climate.copernicus.eu/datasets/seasonal-monthly-pressure-levels"
           ],
-          "product": "500mb_height_anomaly",
+          "product": "500mb_height_anomaly_nh",
           "init_utc": "2026-09-01T00:00:00Z",
           "status": "failed",
           "statistic": "ensemble_mean",
@@ -5523,7 +5523,7 @@
           },
           "targets": [
             {
-              "id": "c3s-bom-2026090100-500mb_height_anomaly-lead04",
+              "id": "c3s-bom-2026090100-500mb_height_anomaly_nh-lead04",
               "target_month": "202701",
               "valid_start_utc": "2027-01-01T00:00:00Z",
               "valid_end_utc": "2027-02-01T00:00:00Z",
@@ -5531,16 +5531,16 @@
               "field": "z500_anomaly",
               "units": "m",
               "status": "failed",
-              "error": "C3S request failed for bom/2 geopotential_anomaly lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/8ae23f5c-9507-4986-8b5c-d05954ddf5e2/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['90.0', '-170.0', '15.0', '0.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['4'], 'levelist': ['500'], 'levtype': ['pl'], 'method': ['1'], 'number': ['all'], 'origin': ['ammc'], 'param': ['171129'], 'stream': ['mmsa'], 'system': ['2'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260908.225700 - Mars server task finished in error\nmars - ERROR  - 20260908.225700 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260908.225700 - Error code is -2\nmars - ERROR  - 20260908.225700 - Request failed\nmars - ERROR  - 20260908.225700 - Some errors reported (last error -2)\n",
+              "error": "C3S request failed for bom/2 geopotential_anomaly lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/c6a15941-70eb-4fe6-9ba6-fbc35e0acf92/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['90.0', '-180.0', '0.0', '180.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['4'], 'levelist': ['500'], 'levtype': ['pl'], 'method': ['1'], 'number': ['all'], 'origin': ['ammc'], 'param': ['171129'], 'stream': ['mmsa'], 'system': ['2'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260908.231926 - Mars server task finished in error\nmars - ERROR  - 20260908.231926 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260908.231926 - Error code is -2\nmars - ERROR  - 20260908.231926 - Request failed\nmars - ERROR  - 20260908.231926 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError",
               "statistic": "ensemble_mean",
               "_catalog": {
-                "canonical_product": "500mb_height_anomaly",
+                "canonical_product": "500mb_height_anomaly_nh",
                 "comparable": true,
                 "quality_control": "legacy"
               }
             },
             {
-              "id": "c3s-bom-2026090100-500mb_height_anomaly-lead05",
+              "id": "c3s-bom-2026090100-500mb_height_anomaly_nh-lead05",
               "target_month": "202702",
               "valid_start_utc": "2027-02-01T00:00:00Z",
               "valid_end_utc": "2027-03-01T00:00:00Z",
@@ -5548,16 +5548,16 @@
               "field": "z500_anomaly",
               "units": "m",
               "status": "failed",
-              "error": "C3S request failed for bom/2 geopotential_anomaly lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/dd9a5979-d016-413c-85c6-144a95e6af24/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['90.0', '-170.0', '15.0', '0.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['5'], 'levelist': ['500'], 'levtype': ['pl'], 'method': ['1'], 'number': ['all'], 'origin': ['ammc'], 'param': ['171129'], 'stream': ['mmsa'], 'system': ['2'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260908.225736 - Mars server task finished in error\nmars - ERROR  - 20260908.225736 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260908.225736 - Error code is -2\nmars - ERROR  - 20260908.225736 - Request failed\nmars - ERROR  - 20260908.225736 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError",
+              "error": "C3S request failed for bom/2 geopotential_anomaly lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/444dfa25-6ca2-4d0e-b646-433a83cda06e/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['90.0', '-180.0', '0.0', '180.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['5'], 'levelist': ['500'], 'levtype': ['pl'], 'method': ['1'], 'number': ['all'], 'origin': ['ammc'], 'param': ['171129'], 'stream': ['mmsa'], 'system': ['2'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260908.232022 - Mars server task finished in error\nmars - ERROR  - 20260908.232022 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260908.232022 - Error code is -2\nmars - ERROR  - 20260908.232022 - Request failed\nmars - ERROR  - 20260908.232022 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError",
               "statistic": "ensemble_mean",
               "_catalog": {
-                "canonical_product": "500mb_height_anomaly",
+                "canonical_product": "500mb_height_anomaly_nh",
                 "comparable": true,
                 "quality_control": "legacy"
               }
             },
             {
-              "id": "c3s-bom-2026090100-500mb_height_anomaly-lead06",
+              "id": "c3s-bom-2026090100-500mb_height_anomaly_nh-lead06",
               "target_month": "202703",
               "valid_start_utc": "2027-03-01T00:00:00Z",
               "valid_end_utc": "2027-04-01T00:00:00Z",
@@ -5565,16 +5565,16 @@
               "field": "z500_anomaly",
               "units": "m",
               "status": "failed",
-              "error": "C3S request failed for bom/2 geopotential_anomaly lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/681c3fb3-d824-426a-9101-39ab62c24819/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['90.0', '-170.0', '15.0', '0.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['6'], 'levelist': ['500'], 'levtype': ['pl'], 'method': ['1'], 'number': ['all'], 'origin': ['ammc'], 'param': ['171129'], 'stream': ['mmsa'], 'system': ['2'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260908.225807 - Mars server task finished in error\nmars - ERROR  - 20260908.225807 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260908.225807 - Error code is -2\nmars - ERROR  - 20260908.225807 - Request failed\nmars - ERROR  - 20260908.225807 - Some errors reported (last error -2)\n",
+              "error": "C3S request failed for bom/2 geopotential_anomaly lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/d4588013-35eb-464e-a1d1-52f69773329d/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['90.0', '-180.0', '0.0', '180.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['6'], 'levelist': ['500'], 'levtype': ['pl'], 'method': ['1'], 'number': ['all'], 'origin': ['ammc'], 'param': ['171129'], 'stream': ['mmsa'], 'system': ['2'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260908.232059 - Mars server task finished in error\nmars - ERROR  - 20260908.232059 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260908.232059 - Error code is -2\nmars - ERROR  - 20260908.232059 - Request failed\nmars - ERROR  - 20260908.232059 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError",
               "statistic": "ensemble_mean",
               "_catalog": {
-                "canonical_product": "500mb_height_anomaly",
+                "canonical_product": "500mb_height_anomaly_nh",
                 "comparable": true,
                 "quality_control": "legacy"
               }
             },
             {
-              "id": "c3s-bom-2026090100-500mb_height_anomaly-202701-202703",
+              "id": "c3s-bom-2026090100-500mb_height_anomaly_nh-202701-202703",
               "target_month": "202701-202703",
               "valid_start_utc": "2027-01-01T00:00:00Z",
               "valid_end_utc": "2027-04-01T00:00:00Z",
@@ -5590,14 +5590,14 @@
               "error": "seasonal window is missing one or more component grids",
               "statistic": "ensemble_mean",
               "_catalog": {
-                "canonical_product": "500mb_height_anomaly",
+                "canonical_product": "500mb_height_anomaly_nh",
                 "comparable": true,
                 "quality_control": "legacy"
               }
             }
           ],
           "_catalog": {
-            "canonical_product": "500mb_height_anomaly",
+            "canonical_product": "500mb_height_anomaly_nh",
             "comparable": true
           }
         },
@@ -18401,7 +18401,7 @@
       "status": "degraded",
       "schema_version": 1,
       "manifest_kind": "c3s_seasonal_manifest",
-      "generated_utc": "2026-09-08T22:58:37Z",
+      "generated_utc": "2026-09-08T23:21:28Z",
       "source_url": "https://climate.copernicus.eu/seasonal-forecasts",
       "product_labels": {
         "500mb_height_anomaly": "500-mb Height Anomaly",
@@ -18425,12 +18425,12 @@
           "reason": "Rendered target available.",
           "available": true,
           "comparable": true,
-          "latest_init_utc": "2026-09-01T00:00:00Z",
-          "run_id": "c3s-multisystem-2026090100-500mb_height_anomaly",
+          "latest_init_utc": "2026-08-01T00:00:00Z",
+          "run_id": "c3s-multisystem-2026080100-500mb_height_anomaly",
           "target_count": 4,
-          "latest_run_id": "c3s-multisystem-2026090100-500mb_height_anomaly",
+          "latest_run_id": "c3s-multisystem-2026080100-500mb_height_anomaly",
           "latest_run_status": "rendered",
-          "latest_run_init_utc": "2026-09-01T00:00:00Z",
+          "latest_run_init_utc": "2026-08-01T00:00:00Z",
           "retained_fallback": false
         },
         "850mb_temperature_anomaly": {
@@ -60375,7 +60375,7 @@
   },
   "health": {
     "status": "attention",
-    "generated_utc": "2026-09-08T23:19:17Z",
+    "generated_utc": "2026-09-08T23:23:14Z",
     "freshness_policy_days": {
       "default": {
         "fresh_days": 35,
@@ -60388,10 +60388,10 @@
     },
     "summary": {
       "surfaces": 60,
-      "attention_surfaces": 23,
+      "attention_surfaces": 24,
       "by_state": {
-        "healthy": 27,
-        "aging": 19,
+        "healthy": 26,
+        "aging": 20,
         "stale": 0,
         "partial": 3,
         "failed": 0,
@@ -60517,13 +60517,13 @@
         "surface_state": "available",
         "available": true,
         "comparable": true,
-        "health_state": "healthy",
-        "freshness": "fresh",
-        "age_days": 8.0,
+        "health_state": "aging",
+        "freshness": "aging",
+        "age_days": 39.0,
         "latest_status": "rendered",
-        "latest_init_utc": "2026-09-01T00:00:00Z",
-        "selected_init_utc": "2026-09-01T00:00:00Z",
-        "selected_run_id": "c3s-multisystem-2026090100-500mb_height_anomaly",
+        "latest_init_utc": "2026-08-01T00:00:00Z",
+        "selected_init_utc": "2026-08-01T00:00:00Z",
+        "selected_run_id": "c3s-multisystem-2026080100-500mb_height_anomaly",
         "retained_fallback": false,
         "reason": "Rendered target available."
       },
@@ -61588,6 +61588,24 @@
         "latest_init_utc": "2026-08-01T00:00:00Z",
         "selected_init_utc": "2026-08-01T00:00:00Z",
         "selected_run_id": "superensemble-2026080100-mslp_anomaly",
+        "retained_fallback": false,
+        "reason": "Rendered target available."
+      },
+      {
+        "model": "c3s",
+        "model_label": "C3S multi-system",
+        "product": "500mb_height_anomaly",
+        "product_label": "500-mb Height Anomaly",
+        "surface_state": "available",
+        "available": true,
+        "comparable": true,
+        "health_state": "aging",
+        "freshness": "aging",
+        "age_days": 39.0,
+        "latest_status": "rendered",
+        "latest_init_utc": "2026-08-01T00:00:00Z",
+        "selected_init_utc": "2026-08-01T00:00:00Z",
+        "selected_run_id": "c3s-multisystem-2026080100-500mb_height_anomaly",
         "retained_fallback": false,
         "reason": "Rendered target available."
       },
