@@ -1,11 +1,12 @@
 {
   "schema_version": 1,
   "kind": "seas5_seasonal_manifest",
-  "generated_utc": "2026-09-06T21:49:29Z",
+  "generated_utc": "2026-09-08T20:39:45Z",
   "source": "ECMWF SEAS5 / Copernicus CDS",
-  "source_url": "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-single-levels",
+  "source_url": "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-pressure-levels",
   "source_urls": [
-    "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-single-levels"
+    "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-pressure-levels",
+    "https://cds.climate.copernicus.eu/datasets/seasonal-monthly-pressure-levels"
   ],
   "archive_root": "https://cds.climate.copernicus.eu/api",
   "retention": {
@@ -1576,6 +1577,8 @@
       "raw_field": "z500 / geopotential",
       "raw_units": "m**2 s**-2",
       "conversion": "geopotential divided by standard gravity to convert m\u00b2 s\u207b\u00b2 to geopotential meters",
+      "lead_convention": "CDS forecast month 1 is the initialization month",
+      "display": null,
       "climatology": {
         "source": "C3S postprocessed anomaly field",
         "years_requested": "1981-2016",
@@ -1593,10 +1596,10 @@
       "targets": [
         {
           "id": "seas5-2026090100-500mb_height_anomaly-lead04",
-          "valid_start_utc": "2027-01-01T00:00:00Z",
-          "valid_end_utc": "2027-02-01T00:00:00Z",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-01-01T00:00:00Z",
           "lead_month": 4,
-          "target_month": "202701",
+          "target_month": "202612",
           "aggregation": "monthly mean",
           "field": "z500_anomaly",
           "units": "m",
@@ -1646,17 +1649,17 @@
             "issues": [],
             "status": "passed"
           },
-          "image": "public/seasonal/seas5/20260901/seas5_z500_202701.jpg",
+          "image": "public/seasonal/seas5/20260901/seas5_z500_202612.jpg",
           "comparison": {
             "common_1991_2020": {
-              "image": "public/seasonal/seas5/20260901/seas5_z500_202701_common-1991-2020.jpg",
+              "image": "public/seasonal/seas5/20260901/seas5_z500_202612_common-1991-2020.jpg",
               "status": "rendered",
               "baseline": {
                 "label": "Common 1991-2020 reference (CanSIPS v3 hindcast)",
                 "years": "1991-2020",
                 "source": "CanSIPS v3 hindcast climatology",
-                "file": ".cache/seas5/common-reference/z500_202701.csv.gz",
-                "url": "https://jwallio.github.io/seasonal/common_reference/1991-2020/z500_202701.csv.gz",
+                "file": ".cache/seas5/common-reference/z500_202612.csv.gz",
+                "url": "https://jwallio.github.io/seasonal/common_reference/1991-2020/z500_202612.csv.gz",
                 "downloaded": true
               }
             }
@@ -1664,10 +1667,10 @@
         },
         {
           "id": "seas5-2026090100-500mb_height_anomaly-lead05",
-          "valid_start_utc": "2027-02-01T00:00:00Z",
-          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "valid_start_utc": "2027-01-01T00:00:00Z",
+          "valid_end_utc": "2027-02-01T00:00:00Z",
           "lead_month": 5,
-          "target_month": "202702",
+          "target_month": "202701",
           "aggregation": "monthly mean",
           "field": "z500_anomaly",
           "units": "m",
@@ -1717,17 +1720,17 @@
             "issues": [],
             "status": "passed"
           },
-          "image": "public/seasonal/seas5/20260901/seas5_z500_202702.jpg",
+          "image": "public/seasonal/seas5/20260901/seas5_z500_202701.jpg",
           "comparison": {
             "common_1991_2020": {
-              "image": "public/seasonal/seas5/20260901/seas5_z500_202702_common-1991-2020.jpg",
+              "image": "public/seasonal/seas5/20260901/seas5_z500_202701_common-1991-2020.jpg",
               "status": "rendered",
               "baseline": {
                 "label": "Common 1991-2020 reference (CanSIPS v3 hindcast)",
                 "years": "1991-2020",
                 "source": "CanSIPS v3 hindcast climatology",
-                "file": ".cache/seas5/common-reference/z500_202702.csv.gz",
-                "url": "https://jwallio.github.io/seasonal/common_reference/1991-2020/z500_202702.csv.gz",
+                "file": ".cache/seas5/common-reference/z500_202701.csv.gz",
+                "url": "https://jwallio.github.io/seasonal/common_reference/1991-2020/z500_202701.csv.gz",
                 "downloaded": true
               }
             }
@@ -1735,10 +1738,10 @@
         },
         {
           "id": "seas5-2026090100-500mb_height_anomaly-lead06",
-          "valid_start_utc": "2027-03-01T00:00:00Z",
-          "valid_end_utc": "2027-04-01T00:00:00Z",
+          "valid_start_utc": "2027-02-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
           "lead_month": 6,
-          "target_month": "202703",
+          "target_month": "202702",
           "aggregation": "monthly mean",
           "field": "z500_anomaly",
           "units": "m",
@@ -1794,25 +1797,28 @@
             ],
             "status": "warning"
           },
-          "image": "public/seasonal/seas5/20260901/seas5_z500_202703.jpg",
+          "image": "public/seasonal/seas5/20260901/seas5_z500_202702.jpg",
           "comparison": {
             "common_1991_2020": {
-              "status": "unavailable",
+              "image": "public/seasonal/seas5/20260901/seas5_z500_202702_common-1991-2020.jpg",
+              "status": "rendered",
               "baseline": {
                 "label": "Common 1991-2020 reference (CanSIPS v3 hindcast)",
                 "years": "1991-2020",
-                "source": "CanSIPS v3 hindcast climatology"
-              },
-              "error": "404 Client Error: Not Found for url: https://jwallio.github.io/seasonal/common_reference/1991-2020/z500_202703.csv.gz"
+                "source": "CanSIPS v3 hindcast climatology",
+                "file": ".cache/seas5/common-reference/z500_202702.csv.gz",
+                "url": "https://jwallio.github.io/seasonal/common_reference/1991-2020/z500_202702.csv.gz",
+                "downloaded": true
+              }
             }
           }
         },
         {
-          "id": "seas5-2026090100-500mb_height_anomaly-202701-202703",
-          "valid_start_utc": "2027-01-01T00:00:00Z",
-          "valid_end_utc": "2027-04-01T00:00:00Z",
+          "id": "seas5-2026090100-500mb_height_anomaly-202612-202702",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
           "lead_month": "4-6",
-          "target_month": "202701-202703",
+          "target_month": "202612-202702",
           "aggregation": "3-month mean",
           "field": "z500_anomaly",
           "units": "m",
@@ -1852,7 +1858,7 @@
             "issues": [],
             "status": "passed"
           },
-          "image": "public/seasonal/seas5/20260901/seas5_z500_202701-202703.jpg",
+          "image": "public/seasonal/seas5/20260901/seas5_z500_202612-202702.jpg",
           "source_dataset": "seasonal-postprocessed-pressure-levels",
           "source_url": "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-pressure-levels",
           "baseline": {
@@ -1862,13 +1868,23 @@
           },
           "comparison": {
             "common_1991_2020": {
-              "status": "unavailable",
+              "image": "public/seasonal/seas5/20260901/seas5_z500_202612-202702_common-1991-2020.jpg",
+              "status": "rendered",
               "baseline": {
                 "label": "Common 1991-2020 reference (CanSIPS v3 hindcast)",
                 "years": "1991-2020",
-                "source": "CanSIPS v3 hindcast climatology"
-              },
-              "error": "404 Client Error: Not Found for url: https://jwallio.github.io/seasonal/common_reference/1991-2020/z500_202703.csv.gz"
+                "source": "CanSIPS v3 hindcast climatology",
+                "files": [
+                  ".cache/seas5/common-reference/z500_202612.csv.gz",
+                  ".cache/seas5/common-reference/z500_202701.csv.gz",
+                  ".cache/seas5/common-reference/z500_202702.csv.gz"
+                ],
+                "urls": [
+                  "https://jwallio.github.io/seasonal/common_reference/1991-2020/z500_202612.csv.gz",
+                  "https://jwallio.github.io/seasonal/common_reference/1991-2020/z500_202701.csv.gz",
+                  "https://jwallio.github.io/seasonal/common_reference/1991-2020/z500_202702.csv.gz"
+                ]
+              }
             }
           }
         }
@@ -1882,7 +1898,7 @@
         "url_root": "https://jwallio.github.io/seasonal/common_reference/1991-2020/"
       },
       "archive_latest_init": "2026090100",
-      "archive_age_days": 5,
+      "archive_age_days": 7,
       "output_dir": "public/seasonal/seas5"
     },
     {
