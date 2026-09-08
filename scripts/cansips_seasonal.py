@@ -12,6 +12,8 @@ native snowfall field.
 
 from __future__ import annotations
 
+from height_display import HEIGHT_ANOMALY_STYLE, HEIGHT_NH_FRAME
+
 import argparse
 import csv
 import datetime as dt
@@ -145,10 +147,7 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "region": CANSIPS_DEFAULT_REGION,
         "monthly_reducer": "mean",
         "seasonal_reducer": "mean",
-        "anomaly_min": -100.0,
-        "anomaly_max": 100.0,
-        "anomaly_ticks": ANOMALY_TICKS,
-        "anomaly_palette": ANOMALY_PALETTE,
+        **HEIGHT_ANOMALY_STYLE,
         "source_label": "ECCC MSC CanSIPS v3 / Datamart",
         "header_detail": "{source_label}  •  {baseline_label}  •  Height contours in dam",
     },
@@ -336,8 +335,7 @@ PRODUCT_SPECS[PRODUCT_Z500_ANOMALY_NH] = {
     "name": PRODUCT_Z500_ANOMALY_NH,
     "id_token": "z500a-nh",
     "region": NORTHERN_HEMISPHERE_REGION,
-    "projection": "north_polar_stereographic",
-    "projection_central_longitude": 0.0,
+    **HEIGHT_NH_FRAME,
     "title": "CanSIPS v3 Northern Hemisphere 500-mb Geopotential Height & Anomaly (m)",
     "absolute_title": "CanSIPS v3 Northern Hemisphere 500-mb Geopotential Height (m)",
     "header_detail": "{source_label}  •  {baseline_label}  •  Height contours in dam  •  Northern Hemisphere",

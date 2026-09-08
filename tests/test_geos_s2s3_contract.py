@@ -44,8 +44,8 @@ def main() -> int:
     check(module.EXPECTED_LONG_RANGE_MEMBERS == 10, "NASA long range must require ten selected members")
     check(module.PRODUCT_Z500_ANOMALY not in module.DEFAULT_PRODUCTS, "unverified z500 must not run by default")
     height_spec = module.PRODUCT_SPECS[module.PRODUCT_Z500_ANOMALY]
-    check((height_spec["anomaly_min"], height_spec["anomaly_max"]) == (-100.0, 100.0), "a future validated GEOS 500-mb map should use the shared ±100 m range")
-    check(height_spec["anomaly_ticks"] == list(range(-100, 101, 10)), "a future validated GEOS 500-mb map should use 10-metre labelled bounds")
+    check((height_spec["anomaly_min"], height_spec["anomaly_max"]) == (-200.0, 200.0), "a future validated GEOS 500-mb map should use the shared ±200 m range")
+    check(height_spec["anomaly_ticks"] == [-200, -150, -100, -75, -50, -30, -20, -10, 0, 10, 20, 30, 50, 75, 100, 150, 200], "a future validated GEOS 500-mb map should use reference-image labelled bounds")
     check(module.SUPERENSEMBLE_PRODUCTS == frozenset(module.DEFAULT_PRODUCTS), "only validated NASA products may enter the blend")
     for product in (module.PRODUCT_T850_ANOMALY, module.PRODUCT_T2M_ANOMALY):
         temperature_spec = module.PRODUCT_SPECS[product]

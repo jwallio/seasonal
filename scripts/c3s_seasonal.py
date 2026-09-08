@@ -9,6 +9,8 @@ transparent multi-system mean made from the native C3S anomaly fields.
 
 from __future__ import annotations
 
+from height_display import HEIGHT_ANOMALY_STYLE, HEIGHT_NH_FRAME
+
 import argparse
 import datetime as dt
 import json
@@ -99,8 +101,7 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "name": "500mb_height_anomaly", "variable": "z500", "field": "z500_anomaly",
         "raw_field": "geopotential anomaly", "raw_units": "m² s⁻²", "units": "m",
         "seasonal_units": "m", "height_contours": True, "region": DEFAULT_REGION,
-        "monthly_reducer": "mean", "seasonal_reducer": "mean", "anomaly_min": -100.0,
-        "anomaly_max": 100.0, "anomaly_ticks": ANOMALY_TICKS, "anomaly_palette": ANOMALY_PALETTE,
+        "monthly_reducer": "mean", "seasonal_reducer": "mean", **HEIGHT_ANOMALY_STYLE,
         "cds_dataset": PRESSURE_DATASET, "cds_variable": "geopotential_anomaly",
         "cds_pressure_level": "500", "cds_raw_dataset": RAW_PRESSURE_DATASET,
         "cds_raw_variable": "geopotential", "raw_field_name": "geopotential",
@@ -164,8 +165,7 @@ PRODUCT_SPECS["500mb_height_anomaly_nh"] = {
     **PRODUCT_SPECS["500mb_height_anomaly"],
     "name": "500mb_height_anomaly_nh",
     "region": NORTHERN_HEMISPHERE_REGION,
-    "projection": "north_polar_stereographic",
-    "projection_central_longitude": 0.0,
+    **HEIGHT_NH_FRAME,
 }
 
 

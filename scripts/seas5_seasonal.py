@@ -11,6 +11,8 @@ the two models as the same source.
 
 from __future__ import annotations
 
+from height_display import HEIGHT_ANOMALY_STYLE, HEIGHT_NH_FRAME
+
 import argparse
 import datetime as dt
 import json
@@ -144,10 +146,7 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "region": DEFAULT_REGION,
         "monthly_reducer": "mean",
         "seasonal_reducer": "mean",
-        "anomaly_min": -100.0,
-        "anomaly_max": 100.0,
-        "anomaly_ticks": ANOMALY_TICKS,
-        "anomaly_palette": ANOMALY_PALETTE,
+        **HEIGHT_ANOMALY_STYLE,
         "conversion": "geopotential divided by standard gravity to convert m² s⁻² to geopotential meters",
         "header_detail": "{source_label}  •  {baseline_label}  •  Height contours in dam",
         "cds_dataset": CDS_PRESSURE_ANOMALY_DATASET,
@@ -315,17 +314,7 @@ PRODUCT_SPECS["500mb_height_anomaly_nh"] = {
     **PRODUCT_SPECS[Z500_ANOMALY],
     "name": "500mb_height_anomaly_nh",
     "region": NORTHERN_HEMISPHERE_REGION,
-    "projection": "north_polar_stereographic",
-    "projection_central_longitude": -100.0,
-    "polar_frame_latitude": 30.0,
-    "anomaly_min": -200.0,
-    "anomaly_max": 200.0,
-    "anomaly_ticks": [-200,-150,-100,-75,-50,-30,-20,-10,0,10,20,30,50,75,100,150,200],
-    "anomaly_palette": ["#173b7a","#205daa","#2889c7","#65b6de",
-                        "#a6d9ec","#d4eaf2","#eef3f5","#ffffff",
-                        "#ffffff","#f2f2ed","#ffffc2","#ffe39a",
-                        "#ffbd72","#f5804b","#d94128","#9e1e20"],
-    "anomaly_endpoint_labels": {"minimum": "≤−200", "maximum": "≥+200"},
+    **HEIGHT_NH_FRAME,
     "title": "SEAS5 Northern Hemisphere 500-mb Height Anomaly (m)",
     "absolute_title": "SEAS5 Northern Hemisphere 500-mb Geopotential Height (m)",
     "header_detail": "{source_label}  •  {baseline_label}  •  Height contours in dam  •  Northern Hemisphere",

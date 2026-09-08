@@ -73,8 +73,8 @@ def main() -> int:
     check(module.target_month("2026080100", 4) == "202612", "C3S lead conversion should produce December")
     check(module.period_label("202612", "202702") == "DJF 2026–27", "C3S DJF period label should identify both winter years")
     height_spec = module.PRODUCT_SPECS["500mb_height_anomaly"]
-    check((height_spec["anomaly_min"], height_spec["anomaly_max"]) == (-100.0, 100.0), "C3S and JMA 500-mb maps should use the shared ±100 m range")
-    check(height_spec["anomaly_ticks"] == list(range(-100, 101, 10)), "C3S and JMA 500-mb maps should use 10-metre labelled bounds")
+    check((height_spec["anomaly_min"], height_spec["anomaly_max"]) == (-200.0, 200.0), "C3S and JMA 500-mb maps should use the shared ±200 m range")
+    check(height_spec["anomaly_ticks"] == [-200, -150, -100, -75, -50, -30, -20, -10, 0, 10, 20, 30, 50, 75, 100, 150, 200], "C3S and JMA 500-mb maps should use reference-image labelled bounds")
     check(len(height_spec["anomaly_ticks"]) == len(height_spec["anomaly_palette"]) + 1, "C3S 500-mb color bounds must align with swatches")
     northern_height = module.PRODUCT_SPECS["500mb_height_anomaly_nh"]
     check(northern_height["region"] == module.NORTHERN_HEMISPHERE_REGION, "C3S Northern Hemisphere 500-mb view must use the polar region")

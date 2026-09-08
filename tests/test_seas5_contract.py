@@ -115,14 +115,14 @@ def main() -> int:
     check("preferredTargetIndex" in page, "SEAS5 viewer should default to the seasonal aggregate when one is present")
     module = load_adapter()
     height_spec = module.PRODUCT_SPECS[module.Z500_ANOMALY]
-    check(height_spec["anomaly_palette"] == module.ANOMALY_PALETTE, "SEAS5 500-mb should use the shared 500-mb anomaly palette")
-    check((height_spec["anomaly_min"], height_spec["anomaly_max"]) == (-100.0, 100.0), "SEAS5 500-mb should use the shared ±100 m range")
-    check(height_spec["anomaly_ticks"] == list(range(-100, 101, 10)), "SEAS5 500-mb should use 10-metre labelled bounds")
+    check(height_spec["anomaly_palette"] == module.HEIGHT_ANOMALY_STYLE["anomaly_palette"], "SEAS5 500-mb should use the shared 500-mb anomaly palette")
+    check((height_spec["anomaly_min"], height_spec["anomaly_max"]) == (-200.0, 200.0), "SEAS5 500-mb should use the shared ±200 m range")
+    check(height_spec["anomaly_ticks"] == [-200, -150, -100, -75, -50, -30, -20, -10, 0, 10, 20, 30, 50, 75, 100, 150, 200], "SEAS5 500-mb should use reference-image labelled bounds")
     northern_height = module.PRODUCT_SPECS["500mb_height_anomaly_nh"]
     check(northern_height["region"] == module.NORTHERN_HEMISPHERE_REGION, "SEAS5 Northern Hemisphere 500-mb view must use the polar region")
     check(northern_height["projection"] == "north_polar_stereographic", "SEAS5 Northern Hemisphere 500-mb view must use the polar projection")
     check(northern_height["projection_central_longitude"] == -100., "North America must face the bottom")
-    check(northern_height["polar_frame_latitude"] == 30., "NH frame must zoom to 30N at edge midpoints")
+    check(northern_height["polar_frame_latitude"] == 24., "NH frame must include southern Texas and Florida")
     check(len(northern_height["anomaly_palette"])+1 == len(northern_height["anomaly_ticks"]), "NH colors must align with bounds")
     for product in (module.T850_ANOMALY, module.T2M_ANOMALY):
         temperature_spec = module.PRODUCT_SPECS[product]
