@@ -1,0 +1,51 @@
+name: Refresh approved 500-mb styling
+on:
+  push:
+    branches: [main]
+    paths: [".github/workflows/height-style-refresh.yml"]
+  workflow_dispatch:
+permissions:
+  actions: write
+  contents: read
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    strategy:
+      fail-fast: false
+      matrix:
+        workflow: [seas5.yml, cansips.yml, c3s.yml, jma.yml, cfsv2.yml, apcc.yml, cma-cpsv3.yml, superensemble.yml]
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      WORKFLOW: ${{ matrix.workflow }}
+    steps:
+      - name: Refresh both views sequentially
+        shell: bash
+        run: |
+          set -euo pipefail
+          failed=0
+          for product in 500mb_height_anomaly 500mb_height_anomaly_nh; do
+            # Do not supersede a producer already working on this provider.
+            while gh run list --workflow "$WORKFLOW" --limit 50 --json status --jq 'any(.[]; .status == "in_progress" or .status == "queued" or .status == "waiting" or .status == "pending")' | grep -qx true; do
+              sleep 30
+            done
+            started=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+            gh workflow run "$WORKFLOW" --ref main -f product="$product"
+            run_id=""
+            for attempt in {1..24}; do
+              run_id=$(gh run list --workflow "$WORKFLOW" --branch main --event workflow_dispatch --limit 20 --json databaseId,createdAt --jq ".[] | select(.createdAt >= \"$started\") | .databaseId" | head -1)
+              [[ -n "$run_id" ]] && break
+              sleep 5
+            done
+            test -n "$run_id"
+            echo "- $WORKFLOW / $product: https://github.com/$GH_REPO/actions/runs/$run_id" >> "$GITHUB_STEP_SUMMARY"
+            if gh run watch "$run_id" --exit-status --interval 30; then
+              source_name=$(gh run view "$run_id" --json workflowName --jq .workflowName)
+              gh workflow run publish-pages.yml --ref main -f source_workflow="$source_name" -f source_run_id="$run_id"
+            else
+              echo "::error::$WORKFLOW / $product failed; see run $run_id"
+              failed=1
+            fi
+          done
+          exit "$failed"
