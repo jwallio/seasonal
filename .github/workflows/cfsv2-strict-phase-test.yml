@@ -1,0 +1,62 @@
+name: CFSv2 strict snow-only sensitivity test
+on:
+  push:
+    branches: [test/strict-snow-only]
+    paths: ['scripts/cfsv2_strict_phase_test.py', '.github/workflows/cfsv2-strict-phase-test.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: strict-snow-only-test
+  cancel-in-progress: false
+jobs:
+  reconstruct:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        year: [2026, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install numpy requests eccodes matplotlib
+      - uses: actions/cache@v4
+        with:
+          path: strict-raw
+          key: strict-phase-2026090806-202702-${{ matrix.year }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: strict-phase-2026090806-202702-${{ matrix.year }}-
+      - run: python scripts/cfsv2_strict_phase_test.py --year ${{ matrix.year }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: strict-bundle-${{ matrix.year }}
+          path: strict-test/
+          if-no-files-found: ignore
+      - uses: actions/cache/save@v4
+        if: always()
+        with:
+          path: strict-raw
+          key: strict-phase-2026090806-202702-${{ matrix.year }}-${{ github.run_id }}-${{ github.run_attempt }}
+  compare:
+    needs: reconstruct
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install numpy requests eccodes matplotlib
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: strict-bundle-*
+          merge-multiple: true
+          path: strict-test
+      - run: python scripts/cfsv2_strict_phase_test.py --render
+      - uses: actions/upload-artifact@v4
+        with:
+          name: strict-snow-only-comparison
+          path: strict-test/results/
