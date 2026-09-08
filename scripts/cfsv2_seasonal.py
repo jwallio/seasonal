@@ -3862,7 +3862,7 @@ def _run_single_window(args: argparse.Namespace) -> int:
         except RuntimeError as exc:
             # The CLI runs as __main__; imported adapters have a distinct error class.
             raise CFSv2Error(str(exc)) from exc
-    wgrib2 = find_wgrib2(args.wgrib2)
+    wgrib2 = '' if getattr(args, 'surface_phase_bundle_dir', None) else find_wgrib2(args.wgrib2)
     cache_dir = resolve_repo_path(args.cache_dir, repo_root)
     state_dir = resolve_repo_path(args.rolling_state_dir, repo_root)
     output_dir = resolve_repo_path(args.output_dir, repo_root)
