@@ -1,0 +1,152 @@
+name: Recover Corrected CFSv2 Snowfall Publication
+run-name: Recover corrected snowfall from completed inputs
+permissions:
+  contents: write
+  actions: read
+  pages: write
+concurrency:
+  group: cfsv2-surface-recovery
+  cancel-in-progress: false
+jobs:
+  select:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      init: ${{ steps.plan.outputs.init }}
+      targets: ${{ steps.plan.outputs.targets }}
+      excluded: ${{ steps.plan.outputs.excluded }}
+      leads: ${{ steps.plan.outputs.leads }}
+      windows: ${{ steps.plan.outputs.windows }}
+      source_run: ${{ steps.plan.outputs.source_run }}
+    steps:
+    - uses: actions/download-artifact@v4
+      with:
+        github-token: ${{ github.token }}
+        run-id: ${{ inputs.source_run || '34229985480' }}
+        name: surface-phase-plan
+        path: .
+    - id: plan
+      env:
+        SOURCE_RUN: ${{ inputs.source_run || '34229985480' }}
+      run: |-
+        python - <<'PYCODE'
+        import json,os
+        p=json.load(open('surface-plan.json'))
+        values=dict(init=p['init'],targets=','.join(p['targets']),excluded=','.join(p['excluded']),leads=','.join(map(str,p['leads'])),windows=';'.join(','.join(map(str,w)) for w in p['windows']),source_run=os.environ['SOURCE_RUN'])
+        with open(os.environ['GITHUB_OUTPUT'],'a') as f:
+            for k,v in values.items(): f.write(f'{k}={v}\n')
+        print(json.dumps(p,indent=2))
+        PYCODE
+    - uses: actions/upload-artifact@v4
+      with:
+        name: surface-phase-plan
+        path: surface-plan.json
+  render:
+    needs:
+    - select
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      INIT: ${{ needs.select.outputs.init }}
+      TARGETS: ${{ needs.select.outputs.targets }}
+      EXCLUDED: ${{ needs.select.outputs.excluded }}
+      LEADS: ${{ needs.select.outputs.leads }}
+      WINDOWS: ${{ needs.select.outputs.windows }}
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+    - run: pip install numpy requests eccodes matplotlib Pillow
+    - uses: actions/download-artifact@v4
+      with:
+        pattern: surface-phase-inputs-*
+        merge-multiple: true
+        path: .cache/cfsv2-surface-phase/months
+        github-token: ${{ github.token }}
+        run-id: ${{ needs.select.outputs.source_run }}
+    - uses: actions/download-artifact@v4
+      with:
+        name: surface-phase-plan
+        path: .
+    - name: Assemble matching reference across all 15 years
+      run: python scripts/cfsv2_surface_phase_build.py --reference --init "$INIT" --targets "$TARGETS" --rolling-days 6 --exclude-cycles
+        "$EXCLUDED"
+    - name: Render paired monthly and seasonal maps
+      run: |
+        for product in snowfall_accumulation snowfall_anomaly; do
+          reference=()
+          if [[ "$product" == snowfall_anomaly ]]; then reference=(--snowfall-reference-dir .cache/cfsv2-surface-phase/reference); fi
+          python scripts/cfsv2_seasonal.py --product "$product" --init "$INIT" \
+            --lead-months "$LEADS" --seasonal-window "$WINDOWS" --rolling-days 6 \
+            --surface-phase-exclude-cycles "$EXCLUDED" \
+            --surface-phase-bundle-dir .cache/cfsv2-surface-phase/months "${reference[@]}"
+        done
+        python scripts/cfsv2_surface_schedule.py verify --manifest public/seasonal/cfsv2_manifest.json
+        mkdir -p payload/cfsv2
+        cp -r "public/seasonal/cfsv2/$INIT" payload/cfsv2/
+        cp public/seasonal/cfsv2_manifest.json surface-plan.json payload/
+    - uses: actions/upload-artifact@v4
+      with:
+        name: corrected-snowfall-ready
+        path: payload/
+    - uses: actions/upload-artifact@v4
+      with:
+        name: matched-surface-phase-reference
+        path: .cache/cfsv2-surface-phase/reference/
+        retention-days: 90
+  publish:
+    needs:
+    - select
+    - render
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    concurrency:
+      group: wn2-pages-publish
+      cancel-in-progress: false
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/checkout@v4
+      with:
+        ref: gh-pages
+        path: site
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+    - run: pip install numpy requests matplotlib Pillow
+    - uses: actions/download-artifact@v4
+      with:
+        name: corrected-snowfall-ready
+        path: incoming
+    - name: Merge only validated snowfall runs into current site
+      run: python scripts/merge_cfsv2_surface_release.py --incoming incoming --site site
+    - name: Rebuild catalog and display assets
+      run: |
+        python scripts/build_seasonal_catalog.py --site-root site --strict --source-revision "$GITHUB_SHA"
+        python scripts/build_seasonal_share_images.py --site-root site --strict
+        python scripts/build_seasonal_thumbnails.py --site-root site --max-width 560 --quality 82
+    - name: Publish corrected maps
+      uses: peaceiris/actions-gh-pages@v4
+      with:
+        github_token: ${{ github.token }}
+        publish_dir: ./site
+        publish_branch: gh-pages
+        keep_files: false
+        force_orphan: false
+        enable_jekyll: false
+    - name: Request Pages rebuild
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: gh api --method POST "repos/$GITHUB_REPOSITORY/pages/builds"
+'on':
+  push:
+    branches:
+    - main
+    paths:
+    - .github/workflows/cfsv2-snow-recover.yml
+  workflow_dispatch:
+    inputs:
+      source_run:
+        description: Completed acquisition run whose inputs and plan are reused; no downloads from NOAA
+        type: string
+        default: '34229985480'

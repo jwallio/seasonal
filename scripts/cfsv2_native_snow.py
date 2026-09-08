@@ -191,7 +191,7 @@ def accumulation_style(seasonal=False):
     return bounds, ticks, ['#ffffff',*palette]
 
 
-def render(lwe, init, target, lead, output, seasonal=False, period_label='', ensemble_label=''):
+def render(lwe, init, target, lead, output, seasonal=False, period_label='', ensemble_label='', input_label='Native model snowfall'):
     import matplotlib
     matplotlib.use('Agg')
     import matplotlib.pyplot as plt
@@ -223,7 +223,7 @@ def render(lwe, init, target, lead, output, seasonal=False, period_label='', ens
     fig.text(.962,.955,label,fontsize=13,weight='bold',ha='right',color='#172735')
     initialized=datetime.strptime(init,'%Y%m%d%H').strftime('%d %b %Y %HZ')
     fig.text(.038,.912,f'Init {initialized}  •  Lead {lead}  •  {ensemble_label}',fontsize=10,color='#43535d')
-    fig.text(.038,.878,'Native model snowfall • 10:1 snow-depth estimate',fontsize=9.5,color='#536875')
+    fig.text(.038,.878,input_label + ' • 10:1 snow-depth estimate',fontsize=9.5,color='#536875')
     fig.text(.5,.052,'Accumulated snowfall depth (inches)  •  Not standing snowpack',ha='center',fontsize=10,color='#43535d')
     fig.text(.5,.028,'Unadjusted estimate  •  Colors saturate at 200 in',ha='center',fontsize=8.5,color='#536875')
     output.parent.mkdir(parents=True,exist_ok=True)
