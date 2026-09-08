@@ -9,6 +9,8 @@ America map renderer used by the other seasonal models.
 
 from __future__ import annotations
 
+from height_display import HEIGHT_ANOMALY_STYLE, HEIGHT_NH_FRAME
+
 import argparse
 import calendar
 import datetime as dt
@@ -75,8 +77,7 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "api_variable": "z500", "field": "z500_anomaly", "raw_field": "geopotential height anomaly",
         "raw_units": "native APCC units", "units": "m", "title": "APCC MME 500-mb Geopotential Height Anomaly (m)",
         "absolute_title": "APCC MME 500-mb Geopotential Height (m)", "height_contours": False,
-        "region": DEFAULT_REGION, "anomaly_min": -100.0, "anomaly_max": 100.0,
-        "anomaly_ticks": APCC_Z500_TICKS, "anomaly_palette": ANOMALY_PALETTE,
+        "region": DEFAULT_REGION, **HEIGHT_ANOMALY_STYLE,
         "header_detail": "{source_label}  •  {baseline_label}  •  Native APCC seasonal MME anomaly",
         "id_token": "z500a",
     },
@@ -123,8 +124,7 @@ PRODUCT_SPECS["500mb_height_anomaly_nh"] = {
     **PRODUCT_SPECS["500mb_height_anomaly"],
     "name": "500mb_height_anomaly_nh",
     "region": NORTHERN_HEMISPHERE_REGION,
-    "projection": "north_polar_stereographic",
-    "projection_central_longitude": 0.0,
+    **HEIGHT_NH_FRAME,
     "title": "APCC MME Northern Hemisphere 500-mb Geopotential Height Anomaly (m)",
     "absolute_title": "APCC MME Northern Hemisphere 500-mb Geopotential Height (m)",
     "header_detail": "{source_label}  •  {baseline_label}  •  Native APCC seasonal MME anomaly  •  Northern Hemisphere",

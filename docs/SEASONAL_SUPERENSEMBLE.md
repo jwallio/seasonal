@@ -61,7 +61,7 @@ expected roster.
 
 The blend uses each source's native anomaly baseline. It is therefore labelled
 as a native-model-baseline anomaly blend, not as a common-climatology product.
-The blended 500-mb map uses the same -100 to +100 m scale and 10 m intervals
+The blended 500-mb map uses the same −200 to +200 m scale with nonuniform reference-image intervals
 as its verified component maps.
 The rolling CFSv2 contribution uses its official NCEI CFS reforecast
 calibration climatology and records its anchor cycle, available/expected cycle

@@ -135,8 +135,8 @@ def main() -> int:
     check(len(cold_diagnostics["snow_fraction"]["parameters"]) == 4, "snowfall diagnostics should record all Dai parameters")
     check([product["name"] for product in module.selected_products(module.PRODUCT_ALL)] == list(module.PRODUCT_SPECS), "all-product selection should include every CanSIPS scalar product")
     height_spec = module.PRODUCT_SPECS[module.PRODUCT_Z500_ANOMALY]
-    check((height_spec["anomaly_min"], height_spec["anomaly_max"]) == (-100.0, 100.0), "CanSIPS 500-mb should use the shared ±100 m range")
-    check(height_spec["anomaly_ticks"] == list(range(-100, 101, 10)), "CanSIPS 500-mb should use 10-metre labelled bounds")
+    check((height_spec["anomaly_min"], height_spec["anomaly_max"]) == (-200.0, 200.0), "CanSIPS 500-mb should use the shared ±200 m range")
+    check(height_spec["anomaly_ticks"] == [-200, -150, -100, -75, -50, -30, -20, -10, 0, 10, 20, 30, 50, 75, 100, 150, 200], "CanSIPS 500-mb should use reference-image labelled bounds")
     check(len(module.ANOMALY_PALETTE) == len(module.ANOMALY_TICKS) - 1, "CanSIPS height anomaly colors must align with labelled bounds")
     northern_height = module.PRODUCT_SPECS[module.PRODUCT_Z500_ANOMALY_NH]
     check(northern_height["projection"] == "north_polar_stereographic", "CanSIPS Northern Hemisphere 500-mb view must use the polar projection")

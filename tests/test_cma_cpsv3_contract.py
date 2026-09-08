@@ -93,8 +93,8 @@ def main() -> int:
     }, "CMA product suite must contain the five shared anomaly fields plus the Northern Hemisphere height view")
 
     height = module.PRODUCT_SPECS["500mb_height_anomaly"]
-    check((height["anomaly_min"], height["anomaly_max"]) == (-100.0, 100.0), "CMA 500-mb height must use the shared ±100 m scale")
-    check(height["anomaly_ticks"] == list(range(-100, 101, 10)), "CMA 500-mb height must use 10-m bounds")
+    check((height["anomaly_min"], height["anomaly_max"]) == (-200.0, 200.0), "CMA 500-mb height must use the shared ±200 m scale")
+    check(height["anomaly_ticks"] == [-200, -150, -100, -75, -50, -30, -20, -10, 0, 10, 20, 30, 50, 75, 100, 150, 200], "CMA 500-mb height must use reference-image bounds")
     check(height["height_contours"] is False, "CMA anomalies must not fabricate absolute-height contours")
     for product in ("850mb_temperature_anomaly", "2m_temperature_anomaly"):
         temperature_spec = module.PRODUCT_SPECS[product]

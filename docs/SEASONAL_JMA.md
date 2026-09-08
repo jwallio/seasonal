@@ -34,8 +34,7 @@ worker can also be started manually from Actions to choose:
 The workflow calls `scripts/c3s_seasonal.py --centres jma --no-blend`, so the
 standalone JMA page contains only the JMA component. The shared C3S workflow
 continues to publish all configured centres and its multi-system mean.
-Its 500-mb height-anomaly maps use the shared seasonal -100 to +100 m scale
-with 10 m intervals.
+Its 500-mb height-anomaly maps use the shared seasonal −200 to +200 m scale with nonuniform reference-image intervals.
 
 ## Outputs and retention
 

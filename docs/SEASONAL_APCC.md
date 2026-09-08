@@ -25,7 +25,7 @@ labels the map in seasonal accumulation `mm`. The manifest records the native
 units, conversion, source season, grid resolution, and rendered data range.
 
 The five products use the dashboard's canonical comparison units and scales.
-The 500-mb height product uses ±100 m; 850-mb and 2-m temperature use ±7°C;
+The 500-mb height product uses ±200 m; 850-mb and 2-m temperature use ±7°C;
 seasonal precipitation is accumulated and converted from the native APCC
 millimetres to inches with a ±8-inch scale; and MSLP uses ±10 hPa. APCC's
 z500 archive contains anomalies only, so no

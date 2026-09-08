@@ -37,6 +37,7 @@ from urllib.parse import urljoin
 SCRIPT_DIRECTORY = str(Path(__file__).resolve().parent)
 if SCRIPT_DIRECTORY not in sys.path:
     sys.path.insert(0, SCRIPT_DIRECTORY)
+from height_display import HEIGHT_ANOMALY_STYLE, HEIGHT_NH_FRAME
 from seasonal_products import grid_quality_control, is_retired_product, require_quality_control
 
 
@@ -60,15 +61,12 @@ GRID_LON_COUNT = 360
 GRID_LAT_COUNT = 181
 FLUX_GRID_LON_COUNT = 384
 FLUX_GRID_LAT_COUNT = 190
-# Shared fixed scale for every true seasonal 500-mb height-anomaly map.
-# Keeping one range across providers makes side-by-side comparisons honest and
-# gives the relatively small seasonal signal enough contrast to be readable.
+# Legacy generic anomaly defaults, also used by non-height products.
+# True seasonal 500-mb maps use HEIGHT_ANOMALY_STYLE.
 ANOMALY_MIN_M = -100.0
 ANOMALY_MAX_M = 100.0
 PRECIP_ANOMALY_MIN_IN = -8.0
 PRECIP_ANOMALY_MAX_IN = 8.0
-CFSV2_HEIGHT_ANOMALY_MIN_M = -100.0
-CFSV2_HEIGHT_ANOMALY_MAX_M = 100.0
 PRECIP_MONTHLY_ANOMALY_MIN_IN = -4.0
 PRECIP_MONTHLY_ANOMALY_MAX_IN = 4.0
 PRECIP_SEASONAL_ANOMALY_MIN_IN = -8.0
@@ -99,7 +97,6 @@ ANOMALY_PALETTE = [
 ]
 ANOMALY_TICKS = list(range(-100, 101, 10))
 PRECIP_ANOMALY_TICKS = list(range(-8, 9))
-CFSV2_HEIGHT_ANOMALY_TICKS = list(range(-100, 101, 10))
 PRECIP_MONTHLY_ANOMALY_TICKS = [value / 2.0 for value in range(-8, 9)]
 PRECIP_SEASONAL_ANOMALY_TICKS = list(range(-8, 9))
 PRECIP_ANOMALY_PALETTE = [
@@ -407,10 +404,7 @@ PRODUCT_SPECS = {
         "seasonal_aggregation": "seasonal mean",
         "seasonal_units": "m",
         "monthly_aggregation": "monthly forecast average",
-        "anomaly_min": CFSV2_HEIGHT_ANOMALY_MIN_M,
-        "anomaly_max": CFSV2_HEIGHT_ANOMALY_MAX_M,
-        "anomaly_ticks": CFSV2_HEIGHT_ANOMALY_TICKS,
-        "anomaly_palette": ANOMALY_PALETTE,
+        **HEIGHT_ANOMALY_STYLE,
     },
     PRODUCT_HEIGHT_ABSOLUTE: {
         "name": PRODUCT_HEIGHT_ABSOLUTE,
@@ -674,8 +668,7 @@ PRODUCT_SPECS[PRODUCT_HEIGHT_ANOMALY_NH] = {
     "id_token": "z500a-nh",
     "file_token": "z500a-nh",
     "region": NORTHERN_HEMISPHERE_REGION,
-    "projection": "north_polar_stereographic",
-    "projection_central_longitude": 0.0,
+    **HEIGHT_NH_FRAME,
     "title": "CFSv2 Northern Hemisphere 500-mb Geopotential Height & Anomaly (m)",
     "absolute_title": "CFSv2 Northern Hemisphere 500-mb Geopotential Height (m)",
     "header_detail": "{source_label}  •  {baseline_label}  •  Height contours in dam  •  Northern Hemisphere",
