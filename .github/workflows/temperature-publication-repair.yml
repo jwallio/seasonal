@@ -13,9 +13,9 @@ jobs:
     timeout-minutes: 360
     strategy:
       fail-fast: false
-      max-parallel: 3
+      max-parallel: 1
       matrix:
-        workflow: [seas5.yml, apcc.yml, geos-s2s3.yml]
+        workflow: [seas5.yml, cansips.yml, c3s.yml, jma.yml, cfsv2.yml, apcc.yml, cma-cpsv3.yml, geos-s2s3.yml, superensemble.yml, nmme.yml]
     env:
       GH_TOKEN: ${{ github.token }}
       GH_REPO: ${{ github.repository }}
@@ -53,7 +53,26 @@ jobs:
             test -n "$run_id"
             echo "- $WORKFLOW / $product: https://github.com/$GH_REPO/actions/runs/$run_id" >> "$GITHUB_STEP_SUMMARY"
             if gh run watch "$run_id" --exit-status --interval 30; then
-              echo "Producer completed; its existing publication trigger handles deployment."
+              # SEAS5/JMA/C3S already explicitly dispatch their publisher.
+              case "$WORKFLOW" in
+                seas5.yml|jma.yml|c3s.yml) ;;
+                *)
+                  # Token-dispatched producers need an explicit publication dispatch.
+                  while gh run list --workflow publish-pages.yml --limit 100 --json status --jq 'any(.[]; .status != "completed")' | grep -qx true; do sleep 30; done
+                  source_name=$(head -1 ".github/workflows/$WORKFLOW" | sed 's/^name: *//' | tr -d '\r')
+                  publish_started=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+                  gh workflow run publish-pages.yml --ref main -f source_workflow="$source_name" -f source_run_id="$run_id"
+                  publish_id=""
+                  for attempt in {1..24}; do
+                    publish_id=$(gh run list --workflow publish-pages.yml --event workflow_dispatch --limit 20 --json databaseId,createdAt --jq ".[] | select(.createdAt >= \"$publish_started\") | .databaseId" | head -1)
+                    [[ -n "$publish_id" ]] && break
+                    sleep 5
+                  done
+                  test -n "$publish_id"
+                  gh run watch "$publish_id" --exit-status --interval 30 || failed=1
+                  echo "- Publication: https://github.com/$GH_REPO/actions/runs/$publish_id" >> "$GITHUB_STEP_SUMMARY"
+                  ;;
+              esac
             else
               echo "::error::$WORKFLOW / $product failed; see run $run_id"
               failed=1
