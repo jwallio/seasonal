@@ -42,3 +42,6 @@ TEMPERATURE_ANOMALY_STYLE = {
     "anomaly_palette": TEMPERATURE_ANOMALY_PALETTE,
     "anomaly_endpoint_labels": {"minimum": "≤−6", "maximum": "≥+6"},
 }
+
+# Provider adapters import this module so a half-degree color means the same
+# thing in every seasonal model and in every publication path.

@@ -50,6 +50,8 @@ def main() -> int:
 
     publisher = (WORKFLOWS / "publish-pages.yml").read_text(encoding="utf-8")
     check("cancel-in-progress: false" in publisher, "Pages publishing must remain serialized")
+    check("cache-dependency-path: dashboard-source/scripts/temperature_display.py" in publisher,
+          "Pages pip cache must reference a file included in the sparse checkout")
     product_scoped = {
         "apcc.yml": "inputs.product",
         "cansips.yml": "inputs.product",
