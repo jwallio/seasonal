@@ -141,14 +141,22 @@ const COMPARE_PRODUCTS = [
   { value: 'snowfall_anomaly', label: 'CONUS Snowfall Departure (in)', aliases: ['snowfall_anomaly'] },
   { value: 'mslp_anomaly', label: 'MSLP Anomaly', aliases: ['mslp_anomaly'] },
 ];
-const OVERVIEW_FILTERS = ['all', 'fresh', 'aging', 'partial', 'attention'];
-const OVERVIEW_ATTENTION_CLASSES = ['status-aging', 'status-stale', 'status-partial', 'status-failed'];
+const OVERVIEW_FILTERS = ['all', 'fresh', 'partial', 'attention'];
+const OVERVIEW_ATTENTION_CLASSES = ['status-overdue', 'status-failed'];
 const OVERVIEW_PARAMETER_LABELS = {
   '500mb_height_anomaly': '500-mb height',
   '850mb_temperature_anomaly': '850-mb temp',
   '2m_temperature_anomaly': '2-m temp',
   'precipitation_anomaly': 'Precipitation',
   'snowfall_anomaly': 'Snowfall',
+  'mslp_anomaly': 'MSLP',
+};
+const OVERVIEW_PARAMETER_BUTTON_LABELS = {
+  '500mb_height_anomaly': '500mb',
+  '850mb_temperature_anomaly': '850mbT',
+  '2m_temperature_anomaly': '2mT',
+  'precipitation_anomaly': 'Precip',
+  'snowfall_anomaly': 'Snow',
   'mslp_anomaly': 'MSLP',
 };
 const COMPARE_BASELINES = [
@@ -569,10 +577,8 @@ function freshnessState(modelKey, productKey) {
   if (Number.isNaN(initialized.valueOf())) return { label: 'Available', className: 'status-fresh', title: titlePrefix, run, product: String(run.product || productKey), available: true, applicable: true };
   const ageDays = Math.max(0, (Date.now() - initialized.valueOf()) / 86400000);
   const freshDays = modelKey === 'cfsv2' ? 2 : 35;
-  const agingDays = modelKey === 'cfsv2' ? 4 : 50;
   if (ageDays <= freshDays) return { label: 'Fresh', className: 'status-fresh', title: `${titlePrefix} · ${Math.floor(ageDays)} day(s) old`, run, product: String(run.product || productKey), available: true, applicable: true };
-  if (ageDays <= agingDays) return { label: 'Aging', className: 'status-aging', title: `${titlePrefix} · ${Math.floor(ageDays)} day(s) old`, run, product: String(run.product || productKey), available: true, applicable: true };
-  return { label: 'Stale', className: 'status-stale', title: `${titlePrefix} · ${Math.floor(ageDays)} day(s) old`, run, product: String(run.product || productKey), available: true, applicable: true };
+  return { label: 'Overdue', className: 'status-overdue', title: `${titlePrefix} · ${Math.floor(ageDays)} day(s) old`, run, product: String(run.product || productKey), available: true, applicable: true };
 }
 function selectedRun(model) {
   const available = modelStates[selection.model].runs.filter(run => supportsProduct(model, run, selection.product));
@@ -737,7 +743,7 @@ function renderUnavailable(model) {
 }
 function overviewFilterMatches(filter, state, scheduleState) {
   if (filter === 'all') return true;
-  if (filter === 'attention') return OVERVIEW_ATTENTION_CLASSES.includes(state?.className) || ['overdue', 'processing'].includes(scheduleState?.key);
+  if (filter === 'attention') return OVERVIEW_ATTENTION_CLASSES.includes(state?.className) || scheduleState?.key === 'overdue';
   return state?.className === `status-${filter}`;
 }
 function renderOverviewFilters() {
@@ -806,7 +812,7 @@ function renderOverview() {
       const state = { ...freshnessState(modelKey, productConfig.value), modelKey, productKey: productConfig.value };
       states.push(state);
       const cell = document.createElement('td'); cell.className = 'availability-status-cell'; cell.dataset.parameter = OVERVIEW_PARAMETER_LABELS[productConfig.value] || productConfig.label;
-      const button = document.createElement('button'); button.type = 'button'; button.className = `status-pill ${state.className}`; button.textContent = state.label; button.title = state.title;
+      const button = document.createElement('button'); button.type = 'button'; button.className = `status-pill ${state.className}`; button.textContent = OVERVIEW_PARAMETER_BUTTON_LABELS[productConfig.value] || productConfig.label; button.title = `${productConfig.label}: ${state.label} · ${state.title}`;
       const lastInit = lastRun ? `Latest init ${compactUtc(lastRun.init_utc)}` : 'No usable initialization';
       const nextUpdate = scheduleState.next ? `Next expected update ${compactEdt(scheduleState.next.publish)}` : 'Next update unavailable';
       button.setAttribute('aria-label', `${model.label} ${productConfig.label}: ${state.label}. ${lastInit}. ${nextUpdate}. ${state.title}`);
@@ -818,7 +824,7 @@ function renderOverview() {
       cell.appendChild(button); row.appendChild(cell);
       rowStates.push({ cell, state });
     });
-    const scheduleMatches = filter === 'attention' && ['overdue', 'processing'].includes(scheduleState.key);
+    const scheduleMatches = filter === 'attention' && scheduleState.key === 'overdue';
     const rowMatches = filter === 'all' || scheduleMatches || rowStates.some(item => overviewFilterMatches(filter, item.state, scheduleState));
     row.hidden = !rowMatches;
     row.classList.toggle('availability-filter-match', filter !== 'all' && rowMatches);
@@ -870,7 +876,6 @@ function renderOverview() {
   updateOverviewFilterCounts({
     all: applicable.length,
     fresh: applicable.filter(state => state.className === 'status-fresh').length,
-    aging: applicable.filter(state => state.className === 'status-aging').length,
     partial: applicable.filter(state => state.className === 'status-partial').length,
     attention: needsAttention,
   });
@@ -878,7 +883,7 @@ function renderOverview() {
     { label: 'Models online', value: `${online}/${COMPARE_MODELS.length}`, detail: 'published manifests loaded' },
     { label: 'Map coverage', value: `${available}/${applicable.length}`, detail: 'supported model-parameter surfaces' },
     { label: 'On schedule', value: `${COMPARE_MODELS.length - overdueModels.length - processingModels.length}/${COMPARE_MODELS.length}`, detail: 'provider windows' },
-    { label: 'Needs attention', value: String(needsAttention), detail: 'aging, stale, partial, failed, or late surfaces' },
+    { label: 'Needs attention', value: String(needsAttention), detail: 'failed or overdue surfaces' },
   ];
   el('overview-stats').replaceChildren(...stats.map(stat => {
     const isAttention = stat.label === 'Needs attention';
@@ -895,13 +900,13 @@ function renderOverview() {
   }));
   const unavailableModels = COMPARE_MODELS.filter(modelKey => modelStates[modelKey].error).map(modelKey => MODEL_CONFIG[modelKey].label);
   const partialCount = states.filter(state => state.className === 'status-partial').length;
-  const staleCount = states.filter(state => state.className === 'status-stale').length;
+  const overdueCount = states.filter(state => state.className === 'status-overdue').length;
   const failedCount = states.filter(state => state.className === 'status-failed').length;
   const notices = [];
   if (unavailableModels.length) notices.push(`Manifest unavailable — ${unavailableModels.join(' · ')}`);
   if (partialCount) notices.push(`${partialCount} ${partialCount === 1 ? 'surface' : 'surfaces'} with partial ensemble coverage`);
   if (failedCount) notices.push(`${failedCount} ${failedCount === 1 ? 'surface' : 'surfaces'} failed to render`);
-  if (staleCount) notices.push(`${staleCount} ${staleCount === 1 ? 'surface' : 'surfaces'} beyond the expected refresh window`);
+  if (overdueCount) notices.push(`${overdueCount} ${overdueCount === 1 ? 'surface' : 'surfaces'} beyond the expected refresh window`);
   if (overdueModels.length) notices.push(`Late — ${overdueModels.map(item => MODEL_CONFIG[item.modelKey].label).join(' · ')} past the expected publication window`);
   if (processingModels.length) notices.push(`Processing — ${processingModels.map(item => MODEL_CONFIG[item.modelKey].label).join(' · ')} inside the expected publication grace window`);
   const noticesElement = el('overview-notices');
@@ -1515,5 +1520,4 @@ loadDashboardData().then(() => {
   if (!modelStates[selection.model].manifest) selection.model = Object.keys(MODEL_CONFIG).find(key => modelStates[key].manifest) || selection.model;
   setView(selection.view);
 });
-
 
