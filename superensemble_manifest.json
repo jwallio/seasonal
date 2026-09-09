@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "kind": "deduplicated_seasonal_superensemble_manifest",
-  "generated_utc": "2026-09-09T13:25:03Z",
+  "generated_utc": "2026-09-09T13:46:52Z",
   "source": "wall.cloud deduplicated seasonal super ensemble",
   "source_url": "https://climate.copernicus.eu/seasonal-forecasts",
   "source_urls": [
@@ -646,8 +646,8 @@
             {
               "key": "noaa_cfsv2_rolling",
               "source_package": "NOAA CFSv2 NOMADS",
-              "anchor_initialization": "2026090812",
-              "anchor_initialization_utc": "2026-09-08T12:00:00Z",
+              "anchor_initialization": "2026090900",
+              "anchor_initialization_utc": "2026-09-09T00:00:00Z",
               "rolling_window": {
                 "days": 6,
                 "cycle_interval_hours": 6,
@@ -658,42 +658,6 @@
                 "label": "24/24-cycle rolling mean"
               },
               "source_files": [
-                {
-                  "initialization": "2026090218",
-                  "initialization_utc": "2026-09-02T18:00:00Z",
-                  "lead_month": 4,
-                  "member": 1,
-                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260902/18/monthly_grib_01/flxf.01.2026090218.202701.avrg.grib.grb2",
-                  "cache_file": ".cache/cfsv2/2026090218/member_01/flxf.01.2026090218.202701.avrg.grib.grb2",
-                  "state_file": ".cache/cfsv2/rolling/tmp2m/202701/tmp2m.2026090218.m01.csv.gz",
-                  "storage": "retained_decoded_grid",
-                  "downloaded": false,
-                  "product": "2m_temperature_anomaly",
-                  "source_kind": "FLXF",
-                  "decoded_field": "TMP:2 m above ground",
-                  "raw_units": "K",
-                  "units": "\u00b0C",
-                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
-                  "status": "available"
-                },
-                {
-                  "initialization": "2026090300",
-                  "initialization_utc": "2026-09-03T00:00:00Z",
-                  "lead_month": 4,
-                  "member": 1,
-                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260903/00/monthly_grib_01/flxf.01.2026090300.202701.avrg.grib.grb2",
-                  "cache_file": ".cache/cfsv2/2026090300/member_01/flxf.01.2026090300.202701.avrg.grib.grb2",
-                  "state_file": ".cache/cfsv2/rolling/tmp2m/202701/tmp2m.2026090300.m01.csv.gz",
-                  "storage": "retained_decoded_grid",
-                  "downloaded": false,
-                  "product": "2m_temperature_anomaly",
-                  "source_kind": "FLXF",
-                  "decoded_field": "TMP:2 m above ground",
-                  "raw_units": "K",
-                  "units": "\u00b0C",
-                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
-                  "status": "available"
-                },
                 {
                   "initialization": "2026090306",
                   "initialization_utc": "2026-09-03T06:00:00Z",
@@ -1089,13 +1053,49 @@
                   "units": "\u00b0C",
                   "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
                   "status": "available"
+                },
+                {
+                  "initialization": "2026090818",
+                  "initialization_utc": "2026-09-08T18:00:00Z",
+                  "lead_month": 4,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260908/18/monthly_grib_01/flxf.01.2026090818.202701.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026090818/member_01/flxf.01.2026090818.202701.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202701/tmp2m.2026090818.m01.csv.gz",
+                  "storage": "retained_decoded_grid",
+                  "downloaded": false,
+                  "product": "2m_temperature_anomaly",
+                  "source_kind": "FLXF",
+                  "decoded_field": "TMP:2 m above ground",
+                  "raw_units": "K",
+                  "units": "\u00b0C",
+                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                  "status": "available"
+                },
+                {
+                  "initialization": "2026090900",
+                  "initialization_utc": "2026-09-09T00:00:00Z",
+                  "lead_month": 4,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260909/00/monthly_grib_01/flxf.01.2026090900.202701.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026090900/member_01/flxf.01.2026090900.202701.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202701/tmp2m.2026090900.m01.csv.gz",
+                  "storage": "retained_decoded_grid",
+                  "downloaded": false,
+                  "product": "2m_temperature_anomaly",
+                  "source_kind": "FLXF",
+                  "decoded_field": "TMP:2 m above ground",
+                  "raw_units": "K",
+                  "units": "\u00b0C",
+                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                  "status": "available"
                 }
               ],
               "baseline": {
                 "source": "NCEI CFS reforecast flux calibration climatology; 1982-2010",
                 "years": "1982-2010",
-                "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/09/flxf.09.08.12.l04.fclm.1982.2010.grb2",
-                "file": ".cache/cfsv2/calibration/flxf/2026090812/flxf.09.08.12.l04.fclm.1982.2010.grb2",
+                "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/09/flxf.09.09.00.l04.fclm.1982.2010.grb2",
+                "file": ".cache/cfsv2/calibration/flxf/2026090900/flxf.09.09.00.l04.fclm.1982.2010.grb2",
                 "downloaded": false,
                 "rolling_policy": "anchor_initialization"
               }
@@ -1172,12 +1172,12 @@
             }
           ],
           "member_errors": {
-            "c3s_ukmo_system610": "C3S request failed for ukmo/610 2m_temperature_anomaly lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/d070d83e-c004-4cfd-8e11-d5b0cac64ede/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['4'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['egrr'], 'param': ['171167'], 'stream': ['mmsa'], 'system': ['610'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260908.235508 - Mars server task finished in error\nmars - ERROR  - 20260908.235509 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260908.235509 - Error code is -2\nmars - ERROR  - 20260908.235509 - Request failed\nmars - ERROR  - 20260908.235509 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError",
-            "c3s_meteo_france_system9": "C3S request failed for meteo_france/9 2m_temperature_anomaly lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/3bfff427-f151-4565-8519-133e47c1ccc3/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['4'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['lfpw'], 'param': ['171167'], 'stream': ['mmsa'], 'system': ['9'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260908.235759 - Mars server task finished in error\nmars - ERROR  - 20260908.235759 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260908.235759 - Error code is -2\nmars - ERROR  - 20260908.235759 - Request failed\nmars - ERROR  - 20260908.235759 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError",
-            "c3s_dwd_system22": "C3S request failed for dwd/22 2m_temperature_anomaly lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/d9f6b410-3f2a-44d8-8c36-9687a43ec2c3/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['4'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['edzw'], 'param': ['171167'], 'stream': ['mmsa'], 'system': ['22'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260908.235913 - Mars server task finished in error\nmars - ERROR  - 20260908.235913 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260908.235913 - Error code is -2\nmars - ERROR  - 20260908.235913 - Request failed\nmars - ERROR  - 20260908.235913 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError",
-            "c3s_cmcc_system4": "C3S request failed for cmcc/4 2m_temperature_anomaly lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/dc49637c-1c21-4205-8f94-113b6ad1c721/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['4'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['cmcc'], 'param': ['171167'], 'stream': ['mmsa'], 'system': ['4'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260909.000304 - Mars server task finished in error\nmars - ERROR  - 20260909.000304 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260909.000304 - Error code is -2\nmars - ERROR  - 20260909.000304 - Request failed\nmars - ERROR  - 20260909.000304 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError",
-            "c3s_jma_system4": "C3S request failed for jma/4 2m_temperature_anomaly lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/973f379a-0d75-4da6-b457-2780ab1cabd9/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['4'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['rjtd'], 'param': ['171167'], 'stream': ['mmsa'], 'system': ['4'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260909.000517 - Mars server task finished in error\nmars - ERROR  - 20260909.000517 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260909.000517 - Error code is -2\nmars - ERROR  - 20260909.000517 - Request failed\nmars - ERROR  - 20260909.000517 - Some errors reported (last error -2)\n",
-            "c3s_bom_system2": "C3S request failed for bom/2 2m_temperature_anomaly lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/6ef868a6-a99c-44e2-8e79-9aafe97dee93/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['4'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['ammc'], 'param': ['171167'], 'stream': ['mmsa'], 'system': ['2'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260909.000758 - Mars server task finished in error\nmars - ERROR  - 20260909.000758 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260909.000758 - Error code is -2\nmars - ERROR  - 20260909.000758 - Request failed\nmars - ERROR  - 20260909.000758 - Some errors reported (last error -2)\n"
+            "c3s_ukmo_system610": "C3S request failed for ukmo/610 2m_temperature_anomaly lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/c9d4ec60-0c9f-4bdd-84f8-ca7cbf2b9447/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['4'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['egrr'], 'param': ['171167'], 'stream': ['mmsa'], 'system': ['610'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260909.132841 - Mars server task finished in error\nmars - ERROR  - 20260909.132841 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260909.132841 - Error code is -2\nmars - ERROR  - 20260909.132841 - Request failed\nmars - ERROR  - 20260909.132841 - Some errors reported (last error -2)\n",
+            "c3s_meteo_france_system9": "C3S request failed for meteo_france/9 2m_temperature_anomaly lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/336603cb-e5d9-45c4-b19e-4c2b922bf19b/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['4'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['lfpw'], 'param': ['171167'], 'stream': ['mmsa'], 'system': ['9'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260909.133132 - Mars server task finished in error\nmars - ERROR  - 20260909.133132 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260909.133132 - Error code is -2\nmars - ERROR  - 20260909.133132 - Request failed\nmars - ERROR  - 20260909.133132 - Some errors reported (last error -2)\n",
+            "c3s_dwd_system22": "C3S request failed for dwd/22 2m_temperature_anomaly lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/bc9b328f-f83c-437a-9f51-668ef5b28120/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['4'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['edzw'], 'param': ['171167'], 'stream': ['mmsa'], 'system': ['22'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260909.133349 - Mars server task finished in error\nmars - ERROR  - 20260909.133349 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260909.133349 - Error code is -2\nmars - ERROR  - 20260909.133349 - Request failed\nmars - ERROR  - 20260909.133349 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError",
+            "c3s_cmcc_system4": "C3S request failed for cmcc/4 2m_temperature_anomaly lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/c4913f15-5801-4553-a609-bb9cc5647da0/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['4'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['cmcc'], 'param': ['171167'], 'stream': ['mmsa'], 'system': ['4'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260909.133533 - Mars server task finished in error\nmars - ERROR  - 20260909.133533 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260909.133533 - Error code is -2\nmars - ERROR  - 20260909.133533 - Request failed\nmars - ERROR  - 20260909.133533 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError",
+            "c3s_jma_system4": "C3S request failed for jma/4 2m_temperature_anomaly lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/c4bcfa61-b626-4e73-aa50-4aa7fef0b4fb/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['4'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['rjtd'], 'param': ['171167'], 'stream': ['mmsa'], 'system': ['4'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260909.133745 - Mars server task finished in error\nmars - ERROR  - 20260909.133745 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260909.133745 - Error code is -2\nmars - ERROR  - 20260909.133745 - Request failed\nmars - ERROR  - 20260909.133745 - Some errors reported (last error -2)\n",
+            "c3s_bom_system2": "C3S request failed for bom/2 2m_temperature_anomaly lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/6f532b12-a9a9-42fe-8d44-9e9f1455f0c2/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['4'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['ammc'], 'param': ['171167'], 'stream': ['mmsa'], 'system': ['2'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260909.134033 - Mars server task finished in error\nmars - ERROR  - 20260909.134033 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260909.134033 - Error code is -2\nmars - ERROR  - 20260909.134033 - Request failed\nmars - ERROR  - 20260909.134033 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError"
           },
           "ensemble_scope": "6/12 canonical forecast families",
           "baseline": {
@@ -1194,10 +1194,10 @@
             "total_points": 3200,
             "finite_points": 3200,
             "finite_fraction": 1.0,
-            "minimum": -1.081722,
-            "maximum": 4.326565,
-            "p01": -0.924468,
-            "p99": 3.924768,
+            "minimum": -1.078365,
+            "maximum": 4.115487,
+            "p01": -0.886852,
+            "p99": 3.752309,
             "display": {
               "minimum": -6.0,
               "maximum": 6.0,
@@ -1283,8 +1283,8 @@
             {
               "key": "noaa_cfsv2_rolling",
               "source_package": "NOAA CFSv2 NOMADS",
-              "anchor_initialization": "2026090812",
-              "anchor_initialization_utc": "2026-09-08T12:00:00Z",
+              "anchor_initialization": "2026090900",
+              "anchor_initialization_utc": "2026-09-09T00:00:00Z",
               "rolling_window": {
                 "days": 6,
                 "cycle_interval_hours": 6,
@@ -1295,42 +1295,6 @@
                 "label": "24/24-cycle rolling mean"
               },
               "source_files": [
-                {
-                  "initialization": "2026090218",
-                  "initialization_utc": "2026-09-02T18:00:00Z",
-                  "lead_month": 5,
-                  "member": 1,
-                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260902/18/monthly_grib_01/flxf.01.2026090218.202702.avrg.grib.grb2",
-                  "cache_file": ".cache/cfsv2/2026090218/member_01/flxf.01.2026090218.202702.avrg.grib.grb2",
-                  "state_file": ".cache/cfsv2/rolling/tmp2m/202702/tmp2m.2026090218.m01.csv.gz",
-                  "storage": "retained_decoded_grid",
-                  "downloaded": false,
-                  "product": "2m_temperature_anomaly",
-                  "source_kind": "FLXF",
-                  "decoded_field": "TMP:2 m above ground",
-                  "raw_units": "K",
-                  "units": "\u00b0C",
-                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
-                  "status": "available"
-                },
-                {
-                  "initialization": "2026090300",
-                  "initialization_utc": "2026-09-03T00:00:00Z",
-                  "lead_month": 5,
-                  "member": 1,
-                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260903/00/monthly_grib_01/flxf.01.2026090300.202702.avrg.grib.grb2",
-                  "cache_file": ".cache/cfsv2/2026090300/member_01/flxf.01.2026090300.202702.avrg.grib.grb2",
-                  "state_file": ".cache/cfsv2/rolling/tmp2m/202702/tmp2m.2026090300.m01.csv.gz",
-                  "storage": "retained_decoded_grid",
-                  "downloaded": false,
-                  "product": "2m_temperature_anomaly",
-                  "source_kind": "FLXF",
-                  "decoded_field": "TMP:2 m above ground",
-                  "raw_units": "K",
-                  "units": "\u00b0C",
-                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
-                  "status": "available"
-                },
                 {
                   "initialization": "2026090306",
                   "initialization_utc": "2026-09-03T06:00:00Z",
@@ -1726,13 +1690,49 @@
                   "units": "\u00b0C",
                   "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
                   "status": "available"
+                },
+                {
+                  "initialization": "2026090818",
+                  "initialization_utc": "2026-09-08T18:00:00Z",
+                  "lead_month": 5,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260908/18/monthly_grib_01/flxf.01.2026090818.202702.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026090818/member_01/flxf.01.2026090818.202702.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202702/tmp2m.2026090818.m01.csv.gz",
+                  "storage": "retained_decoded_grid",
+                  "downloaded": false,
+                  "product": "2m_temperature_anomaly",
+                  "source_kind": "FLXF",
+                  "decoded_field": "TMP:2 m above ground",
+                  "raw_units": "K",
+                  "units": "\u00b0C",
+                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                  "status": "available"
+                },
+                {
+                  "initialization": "2026090900",
+                  "initialization_utc": "2026-09-09T00:00:00Z",
+                  "lead_month": 5,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260909/00/monthly_grib_01/flxf.01.2026090900.202702.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026090900/member_01/flxf.01.2026090900.202702.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202702/tmp2m.2026090900.m01.csv.gz",
+                  "storage": "retained_decoded_grid",
+                  "downloaded": false,
+                  "product": "2m_temperature_anomaly",
+                  "source_kind": "FLXF",
+                  "decoded_field": "TMP:2 m above ground",
+                  "raw_units": "K",
+                  "units": "\u00b0C",
+                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                  "status": "available"
                 }
               ],
               "baseline": {
                 "source": "NCEI CFS reforecast flux calibration climatology; 1982-2010",
                 "years": "1982-2010",
-                "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/09/flxf.09.08.12.l05.fclm.1982.2010.grb2",
-                "file": ".cache/cfsv2/calibration/flxf/2026090812/flxf.09.08.12.l05.fclm.1982.2010.grb2",
+                "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/09/flxf.09.09.00.l05.fclm.1982.2010.grb2",
+                "file": ".cache/cfsv2/calibration/flxf/2026090900/flxf.09.09.00.l05.fclm.1982.2010.grb2",
                 "downloaded": false,
                 "rolling_policy": "anchor_initialization"
               }
@@ -1809,12 +1809,12 @@
             }
           ],
           "member_errors": {
-            "c3s_ukmo_system610": "C3S request failed for ukmo/610 2m_temperature_anomaly lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/d846c686-a683-431a-95fd-a6a1ad2b7749/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['5'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['egrr'], 'param': ['171167'], 'stream': ['mmsa'], 'system': ['610'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260908.235548 - Mars server task finished in error\nmars - ERROR  - 20260908.235548 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260908.235548 - Error code is -2\nmars - ERROR  - 20260908.235548 - Request failed\nmars - ERROR  - 20260908.235548 - Some errors reported (last error -2)\n",
-            "c3s_meteo_france_system9": "C3S request failed for meteo_france/9 2m_temperature_anomaly lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/e69f1f92-4fec-48fa-a5da-b2e376b99196/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['5'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['lfpw'], 'param': ['171167'], 'stream': ['mmsa'], 'system': ['9'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260908.235819 - Mars server task finished in error\nmars - ERROR  - 20260908.235819 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260908.235819 - Error code is -2\nmars - ERROR  - 20260908.235819 - Request failed\nmars - ERROR  - 20260908.235819 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError",
-            "c3s_dwd_system22": "C3S request failed for dwd/22 2m_temperature_anomaly lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/07e0a2e3-eedd-45bc-94c9-5de337eada31/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['5'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['edzw'], 'param': ['171167'], 'stream': ['mmsa'], 'system': ['22'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260908.235950 - Mars server task finished in error\nmars - ERROR  - 20260908.235950 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260908.235950 - Error code is -2\nmars - ERROR  - 20260908.235950 - Request failed\nmars - ERROR  - 20260908.235950 - Some errors reported (last error -2)\n",
-            "c3s_cmcc_system4": "C3S request failed for cmcc/4 2m_temperature_anomaly lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/3befa043-fb39-45b2-8ef3-ae6e30fe5f40/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['5'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['cmcc'], 'param': ['171167'], 'stream': ['mmsa'], 'system': ['4'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260909.000358 - Mars server task finished in error\nmars - ERROR  - 20260909.000358 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260909.000358 - Error code is -2\nmars - ERROR  - 20260909.000358 - Request failed\nmars - ERROR  - 20260909.000358 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError",
-            "c3s_jma_system4": "C3S request failed for jma/4 2m_temperature_anomaly lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/ccdd816b-d56c-410c-8d04-dd26cab095a8/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['5'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['rjtd'], 'param': ['171167'], 'stream': ['mmsa'], 'system': ['4'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260909.000559 - Mars server task finished in error\nmars - ERROR  - 20260909.000559 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260909.000559 - Error code is -2\nmars - ERROR  - 20260909.000559 - Request failed\nmars - ERROR  - 20260909.000559 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError",
-            "c3s_bom_system2": "C3S request failed for bom/2 2m_temperature_anomaly lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/66b7f814-a71d-40cd-b8eb-91532dae6ccb/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['5'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['ammc'], 'param': ['171167'], 'stream': ['mmsa'], 'system': ['2'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260909.000838 - Mars server task finished in error\nmars - ERROR  - 20260909.000838 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260909.000838 - Error code is -2\nmars - ERROR  - 20260909.000838 - Request failed\nmars - ERROR  - 20260909.000838 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError"
+            "c3s_ukmo_system610": "C3S request failed for ukmo/610 2m_temperature_anomaly lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/de082b57-7fa0-4263-b9c3-2660b63cb83c/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['5'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['egrr'], 'param': ['171167'], 'stream': ['mmsa'], 'system': ['610'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260909.132942 - Mars server task finished in error\nmars - ERROR  - 20260909.132942 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260909.132942 - Error code is -2\nmars - ERROR  - 20260909.132942 - Request failed\nmars - ERROR  - 20260909.132942 - Some errors reported (last error -2)\n",
+            "c3s_meteo_france_system9": "C3S request failed for meteo_france/9 2m_temperature_anomaly lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/d404ed57-c5cf-4a11-a77b-e85ce3071ed2/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['5'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['lfpw'], 'param': ['171167'], 'stream': ['mmsa'], 'system': ['9'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260909.133222 - Mars server task finished in error\nmars - ERROR  - 20260909.133222 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260909.133222 - Error code is -2\nmars - ERROR  - 20260909.133222 - Request failed\nmars - ERROR  - 20260909.133222 - Some errors reported (last error -2)\n",
+            "c3s_dwd_system22": "C3S request failed for dwd/22 2m_temperature_anomaly lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/44c84baa-227e-4eab-b657-966d6b6e6719/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['5'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['edzw'], 'param': ['171167'], 'stream': ['mmsa'], 'system': ['22'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260909.133423 - Mars server task finished in error\nmars - ERROR  - 20260909.133423 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260909.133423 - Error code is -2\nmars - ERROR  - 20260909.133423 - Request failed\nmars - ERROR  - 20260909.133423 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError",
+            "c3s_cmcc_system4": "C3S request failed for cmcc/4 2m_temperature_anomaly lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/d32e1ab8-9e52-419f-85b9-83c98c2e4b54/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['5'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['cmcc'], 'param': ['171167'], 'stream': ['mmsa'], 'system': ['4'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260909.133601 - Mars server task finished in error\nmars - ERROR  - 20260909.133601 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260909.133601 - Error code is -2\nmars - ERROR  - 20260909.133601 - Request failed\nmars - ERROR  - 20260909.133601 - Some errors reported (last error -2)\n",
+            "c3s_jma_system4": "C3S request failed for jma/4 2m_temperature_anomaly lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/ca31a6c1-5659-4802-9210-31b4e16c3a9c/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['5'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['rjtd'], 'param': ['171167'], 'stream': ['mmsa'], 'system': ['4'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260909.133912 - Mars server task finished in error\nmars - ERROR  - 20260909.133912 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260909.133912 - Error code is -2\nmars - ERROR  - 20260909.133912 - Request failed\nmars - ERROR  - 20260909.133912 - Some errors reported (last error -2)\n",
+            "c3s_bom_system2": "C3S request failed for bom/2 2m_temperature_anomaly lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/f5f7c3be-c216-40cf-9016-04e07d23e6b3/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['5'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['ammc'], 'param': ['171167'], 'stream': ['mmsa'], 'system': ['2'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260909.134115 - Mars server task finished in error\nmars - ERROR  - 20260909.134115 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260909.134115 - Error code is -2\nmars - ERROR  - 20260909.134115 - Request failed\nmars - ERROR  - 20260909.134115 - Some errors reported (last error -2)\n"
           },
           "ensemble_scope": "6/12 canonical forecast families",
           "baseline": {
@@ -1831,10 +1831,10 @@
             "total_points": 3200,
             "finite_points": 3200,
             "finite_fraction": 1.0,
-            "minimum": -1.827104,
-            "maximum": 4.221122,
-            "p01": -1.631122,
-            "p99": 4.035315,
+            "minimum": -1.731652,
+            "maximum": 3.971156,
+            "p01": -1.517301,
+            "p99": 3.794987,
             "display": {
               "minimum": -6.0,
               "maximum": 6.0,
@@ -1920,8 +1920,8 @@
             {
               "key": "noaa_cfsv2_rolling",
               "source_package": "NOAA CFSv2 NOMADS",
-              "anchor_initialization": "2026090812",
-              "anchor_initialization_utc": "2026-09-08T12:00:00Z",
+              "anchor_initialization": "2026090900",
+              "anchor_initialization_utc": "2026-09-09T00:00:00Z",
               "rolling_window": {
                 "days": 6,
                 "cycle_interval_hours": 6,
@@ -1932,42 +1932,6 @@
                 "label": "24/24-cycle rolling mean"
               },
               "source_files": [
-                {
-                  "initialization": "2026090218",
-                  "initialization_utc": "2026-09-02T18:00:00Z",
-                  "lead_month": 6,
-                  "member": 1,
-                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260902/18/monthly_grib_01/flxf.01.2026090218.202703.avrg.grib.grb2",
-                  "cache_file": ".cache/cfsv2/2026090218/member_01/flxf.01.2026090218.202703.avrg.grib.grb2",
-                  "state_file": ".cache/cfsv2/rolling/tmp2m/202703/tmp2m.2026090218.m01.csv.gz",
-                  "storage": "retained_decoded_grid",
-                  "downloaded": false,
-                  "product": "2m_temperature_anomaly",
-                  "source_kind": "FLXF",
-                  "decoded_field": "TMP:2 m above ground",
-                  "raw_units": "K",
-                  "units": "\u00b0C",
-                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
-                  "status": "available"
-                },
-                {
-                  "initialization": "2026090300",
-                  "initialization_utc": "2026-09-03T00:00:00Z",
-                  "lead_month": 6,
-                  "member": 1,
-                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260903/00/monthly_grib_01/flxf.01.2026090300.202703.avrg.grib.grb2",
-                  "cache_file": ".cache/cfsv2/2026090300/member_01/flxf.01.2026090300.202703.avrg.grib.grb2",
-                  "state_file": ".cache/cfsv2/rolling/tmp2m/202703/tmp2m.2026090300.m01.csv.gz",
-                  "storage": "retained_decoded_grid",
-                  "downloaded": false,
-                  "product": "2m_temperature_anomaly",
-                  "source_kind": "FLXF",
-                  "decoded_field": "TMP:2 m above ground",
-                  "raw_units": "K",
-                  "units": "\u00b0C",
-                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
-                  "status": "available"
-                },
                 {
                   "initialization": "2026090306",
                   "initialization_utc": "2026-09-03T06:00:00Z",
@@ -2363,13 +2327,49 @@
                   "units": "\u00b0C",
                   "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
                   "status": "available"
+                },
+                {
+                  "initialization": "2026090818",
+                  "initialization_utc": "2026-09-08T18:00:00Z",
+                  "lead_month": 6,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260908/18/monthly_grib_01/flxf.01.2026090818.202703.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026090818/member_01/flxf.01.2026090818.202703.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202703/tmp2m.2026090818.m01.csv.gz",
+                  "storage": "retained_decoded_grid",
+                  "downloaded": false,
+                  "product": "2m_temperature_anomaly",
+                  "source_kind": "FLXF",
+                  "decoded_field": "TMP:2 m above ground",
+                  "raw_units": "K",
+                  "units": "\u00b0C",
+                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                  "status": "available"
+                },
+                {
+                  "initialization": "2026090900",
+                  "initialization_utc": "2026-09-09T00:00:00Z",
+                  "lead_month": 6,
+                  "member": 1,
+                  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260909/00/monthly_grib_01/flxf.01.2026090900.202703.avrg.grib.grb2",
+                  "cache_file": ".cache/cfsv2/2026090900/member_01/flxf.01.2026090900.202703.avrg.grib.grb2",
+                  "state_file": ".cache/cfsv2/rolling/tmp2m/202703/tmp2m.2026090900.m01.csv.gz",
+                  "storage": "retained_decoded_grid",
+                  "downloaded": false,
+                  "product": "2m_temperature_anomaly",
+                  "source_kind": "FLXF",
+                  "decoded_field": "TMP:2 m above ground",
+                  "raw_units": "K",
+                  "units": "\u00b0C",
+                  "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                  "status": "available"
                 }
               ],
               "baseline": {
                 "source": "NCEI CFS reforecast flux calibration climatology; 1982-2010",
                 "years": "1982-2010",
-                "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/09/flxf.09.08.12.l06.fclm.1982.2010.grb2",
-                "file": ".cache/cfsv2/calibration/flxf/2026090812/flxf.09.08.12.l06.fclm.1982.2010.grb2",
+                "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/09/flxf.09.09.00.l06.fclm.1982.2010.grb2",
+                "file": ".cache/cfsv2/calibration/flxf/2026090900/flxf.09.09.00.l06.fclm.1982.2010.grb2",
                 "downloaded": false,
                 "rolling_policy": "anchor_initialization"
               }
@@ -2446,12 +2446,12 @@
             }
           ],
           "member_errors": {
-            "c3s_ukmo_system610": "C3S request failed for ukmo/610 2m_temperature_anomaly lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/26c9fa2c-f87e-4f0f-be8b-c3d80cd49600/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['6'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['egrr'], 'param': ['171167'], 'stream': ['mmsa'], 'system': ['610'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260908.235630 - Mars server task finished in error\nmars - ERROR  - 20260908.235630 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260908.235630 - Error code is -2\nmars - ERROR  - 20260908.235630 - Request failed\nmars - ERROR  - 20260908.235630 - Some errors reported (last error -2)\n",
-            "c3s_meteo_france_system9": "C3S request failed for meteo_france/9 2m_temperature_anomaly lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/8d10b8bd-68d4-4cd7-9a94-c4fd7471ec06/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['6'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['lfpw'], 'param': ['171167'], 'stream': ['mmsa'], 'system': ['9'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260908.235842 - Mars server task finished in error\nmars - ERROR  - 20260908.235842 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260908.235842 - Error code is -2\nmars - ERROR  - 20260908.235842 - Request failed\nmars - ERROR  - 20260908.235842 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError",
-            "c3s_dwd_system22": "C3S request failed for dwd/22 2m_temperature_anomaly lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/a3ee61a1-9ab0-4517-b536-0ed987fd9ea6/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['6'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['edzw'], 'param': ['171167'], 'stream': ['mmsa'], 'system': ['22'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260909.000202 - Mars server task finished in error\nmars - ERROR  - 20260909.000202 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260909.000202 - Error code is -2\nmars - ERROR  - 20260909.000202 - Request failed\nmars - ERROR  - 20260909.000202 - Some errors reported (last error -2)\n",
-            "c3s_cmcc_system4": "C3S request failed for cmcc/4 2m_temperature_anomaly lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/28831ec9-b601-4e08-8c89-fcabe5ed243a/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['6'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['cmcc'], 'param': ['171167'], 'stream': ['mmsa'], 'system': ['4'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260909.000452 - Mars server task finished in error\nmars - ERROR  - 20260909.000452 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260909.000452 - Error code is -2\nmars - ERROR  - 20260909.000452 - Request failed\nmars - ERROR  - 20260909.000452 - Some errors reported (last error -2)\n",
-            "c3s_jma_system4": "C3S request failed for jma/4 2m_temperature_anomaly lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/420c8a51-c847-44bd-ad0c-9f356acad500/results\nThe job has failed\n",
-            "c3s_bom_system2": "C3S request failed for bom/2 2m_temperature_anomaly lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/8e129dcc-4a78-46ee-97a6-c6c4a4261d1c/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['6'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['ammc'], 'param': ['171167'], 'stream': ['mmsa'], 'system': ['2'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260909.000922 - Mars server task finished in error\nmars - ERROR  - 20260909.000922 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260909.000922 - Error code is -2\nmars - ERROR  - 20260909.000922 - Request failed\nmars - ERROR  - 20260909.000922 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError"
+            "c3s_ukmo_system610": "C3S request failed for ukmo/610 2m_temperature_anomaly lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/1d7d0ad6-1f46-44e6-9196-0cead12845b8/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['6'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['egrr'], 'param': ['171167'], 'stream': ['mmsa'], 'system': ['610'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260909.133047 - Mars server task finished in error\nmars - ERROR  - 20260909.133047 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260909.133047 - Error code is -2\nmars - ERROR  - 20260909.133047 - Request failed\nmars - ERROR  - 20260909.133047 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError",
+            "c3s_meteo_france_system9": "C3S request failed for meteo_france/9 2m_temperature_anomaly lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/057974e8-9189-4b27-9bde-2b67513d9f17/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['6'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['lfpw'], 'param': ['171167'], 'stream': ['mmsa'], 'system': ['9'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260909.133314 - Mars server task finished in error\nmars - ERROR  - 20260909.133314 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260909.133314 - Error code is -2\nmars - ERROR  - 20260909.133314 - Request failed\nmars - ERROR  - 20260909.133314 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError",
+            "c3s_dwd_system22": "C3S request failed for dwd/22 2m_temperature_anomaly lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/3d938367-f459-4bf4-b030-5bd8a0afbe50/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['6'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['edzw'], 'param': ['171167'], 'stream': ['mmsa'], 'system': ['22'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260909.133459 - Mars server task finished in error\nmars - ERROR  - 20260909.133459 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260909.133459 - Error code is -2\nmars - ERROR  - 20260909.133459 - Request failed\nmars - ERROR  - 20260909.133459 - Some errors reported (last error -2)\n",
+            "c3s_cmcc_system4": "C3S request failed for cmcc/4 2m_temperature_anomaly lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/e59bbb97-af8a-47cb-8481-04f81724e2c6/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['6'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['cmcc'], 'param': ['171167'], 'stream': ['mmsa'], 'system': ['4'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260909.133653 - Mars server task finished in error\nmars - ERROR  - 20260909.133653 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260909.133653 - Error code is -2\nmars - ERROR  - 20260909.133653 - Request failed\nmars - ERROR  - 20260909.133653 - Some errors reported (last error -2)\n",
+            "c3s_jma_system4": "C3S request failed for jma/4 2m_temperature_anomaly lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/361aeffa-1d1f-4bf6-9ef3-e76471eb9ae4/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['6'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['rjtd'], 'param': ['171167'], 'stream': ['mmsa'], 'system': ['4'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260909.133957 - Mars server task finished in error\nmars - ERROR  - 20260909.133957 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260909.133957 - Error code is -2\nmars - ERROR  - 20260909.133957 - Request failed\nmars - ERROR  - 20260909.133957 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError",
+            "c3s_bom_system2": "C3S request failed for bom/2 2m_temperature_anomaly lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/c52b52b1-fdcc-49e7-8dc2-845521b84b3b/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['6'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['ammc'], 'param': ['171167'], 'stream': ['mmsa'], 'system': ['2'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260909.134142 - Mars server task finished in error\nmars - ERROR  - 20260909.134142 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260909.134142 - Error code is -2\nmars - ERROR  - 20260909.134142 - Request failed\nmars - ERROR  - 20260909.134142 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError"
           },
           "ensemble_scope": "6/12 canonical forecast families",
           "baseline": {
@@ -2468,10 +2468,10 @@
             "total_points": 3200,
             "finite_points": 3200,
             "finite_fraction": 1.0,
-            "minimum": -1.843399,
-            "maximum": 3.881219,
-            "p01": -1.635294,
-            "p99": 3.799418,
+            "minimum": -1.764774,
+            "maximum": 3.753863,
+            "p01": -1.546939,
+            "p99": 3.623224,
             "display": {
               "minimum": -6.0,
               "maximum": 6.0,
@@ -2593,8 +2593,8 @@
               "monthly_sources": [
                 {
                   "source_package": "NOAA CFSv2 NOMADS",
-                  "anchor_initialization": "2026090812",
-                  "anchor_initialization_utc": "2026-09-08T12:00:00Z",
+                  "anchor_initialization": "2026090900",
+                  "anchor_initialization_utc": "2026-09-09T00:00:00Z",
                   "rolling_window": {
                     "days": 6,
                     "cycle_interval_hours": 6,
@@ -2605,42 +2605,6 @@
                     "label": "24/24-cycle rolling mean"
                   },
                   "source_files": [
-                    {
-                      "initialization": "2026090218",
-                      "initialization_utc": "2026-09-02T18:00:00Z",
-                      "lead_month": 4,
-                      "member": 1,
-                      "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260902/18/monthly_grib_01/flxf.01.2026090218.202701.avrg.grib.grb2",
-                      "cache_file": ".cache/cfsv2/2026090218/member_01/flxf.01.2026090218.202701.avrg.grib.grb2",
-                      "state_file": ".cache/cfsv2/rolling/tmp2m/202701/tmp2m.2026090218.m01.csv.gz",
-                      "storage": "retained_decoded_grid",
-                      "downloaded": false,
-                      "product": "2m_temperature_anomaly",
-                      "source_kind": "FLXF",
-                      "decoded_field": "TMP:2 m above ground",
-                      "raw_units": "K",
-                      "units": "\u00b0C",
-                      "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
-                      "status": "available"
-                    },
-                    {
-                      "initialization": "2026090300",
-                      "initialization_utc": "2026-09-03T00:00:00Z",
-                      "lead_month": 4,
-                      "member": 1,
-                      "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260903/00/monthly_grib_01/flxf.01.2026090300.202701.avrg.grib.grb2",
-                      "cache_file": ".cache/cfsv2/2026090300/member_01/flxf.01.2026090300.202701.avrg.grib.grb2",
-                      "state_file": ".cache/cfsv2/rolling/tmp2m/202701/tmp2m.2026090300.m01.csv.gz",
-                      "storage": "retained_decoded_grid",
-                      "downloaded": false,
-                      "product": "2m_temperature_anomaly",
-                      "source_kind": "FLXF",
-                      "decoded_field": "TMP:2 m above ground",
-                      "raw_units": "K",
-                      "units": "\u00b0C",
-                      "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
-                      "status": "available"
-                    },
                     {
                       "initialization": "2026090306",
                       "initialization_utc": "2026-09-03T06:00:00Z",
@@ -3036,21 +3000,57 @@
                       "units": "\u00b0C",
                       "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
                       "status": "available"
+                    },
+                    {
+                      "initialization": "2026090818",
+                      "initialization_utc": "2026-09-08T18:00:00Z",
+                      "lead_month": 4,
+                      "member": 1,
+                      "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260908/18/monthly_grib_01/flxf.01.2026090818.202701.avrg.grib.grb2",
+                      "cache_file": ".cache/cfsv2/2026090818/member_01/flxf.01.2026090818.202701.avrg.grib.grb2",
+                      "state_file": ".cache/cfsv2/rolling/tmp2m/202701/tmp2m.2026090818.m01.csv.gz",
+                      "storage": "retained_decoded_grid",
+                      "downloaded": false,
+                      "product": "2m_temperature_anomaly",
+                      "source_kind": "FLXF",
+                      "decoded_field": "TMP:2 m above ground",
+                      "raw_units": "K",
+                      "units": "\u00b0C",
+                      "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                      "status": "available"
+                    },
+                    {
+                      "initialization": "2026090900",
+                      "initialization_utc": "2026-09-09T00:00:00Z",
+                      "lead_month": 4,
+                      "member": 1,
+                      "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260909/00/monthly_grib_01/flxf.01.2026090900.202701.avrg.grib.grb2",
+                      "cache_file": ".cache/cfsv2/2026090900/member_01/flxf.01.2026090900.202701.avrg.grib.grb2",
+                      "state_file": ".cache/cfsv2/rolling/tmp2m/202701/tmp2m.2026090900.m01.csv.gz",
+                      "storage": "retained_decoded_grid",
+                      "downloaded": false,
+                      "product": "2m_temperature_anomaly",
+                      "source_kind": "FLXF",
+                      "decoded_field": "TMP:2 m above ground",
+                      "raw_units": "K",
+                      "units": "\u00b0C",
+                      "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                      "status": "available"
                     }
                   ],
                   "baseline": {
                     "source": "NCEI CFS reforecast flux calibration climatology; 1982-2010",
                     "years": "1982-2010",
-                    "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/09/flxf.09.08.12.l04.fclm.1982.2010.grb2",
-                    "file": ".cache/cfsv2/calibration/flxf/2026090812/flxf.09.08.12.l04.fclm.1982.2010.grb2",
+                    "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/09/flxf.09.09.00.l04.fclm.1982.2010.grb2",
+                    "file": ".cache/cfsv2/calibration/flxf/2026090900/flxf.09.09.00.l04.fclm.1982.2010.grb2",
                     "downloaded": false,
                     "rolling_policy": "anchor_initialization"
                   }
                 },
                 {
                   "source_package": "NOAA CFSv2 NOMADS",
-                  "anchor_initialization": "2026090812",
-                  "anchor_initialization_utc": "2026-09-08T12:00:00Z",
+                  "anchor_initialization": "2026090900",
+                  "anchor_initialization_utc": "2026-09-09T00:00:00Z",
                   "rolling_window": {
                     "days": 6,
                     "cycle_interval_hours": 6,
@@ -3061,42 +3061,6 @@
                     "label": "24/24-cycle rolling mean"
                   },
                   "source_files": [
-                    {
-                      "initialization": "2026090218",
-                      "initialization_utc": "2026-09-02T18:00:00Z",
-                      "lead_month": 5,
-                      "member": 1,
-                      "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260902/18/monthly_grib_01/flxf.01.2026090218.202702.avrg.grib.grb2",
-                      "cache_file": ".cache/cfsv2/2026090218/member_01/flxf.01.2026090218.202702.avrg.grib.grb2",
-                      "state_file": ".cache/cfsv2/rolling/tmp2m/202702/tmp2m.2026090218.m01.csv.gz",
-                      "storage": "retained_decoded_grid",
-                      "downloaded": false,
-                      "product": "2m_temperature_anomaly",
-                      "source_kind": "FLXF",
-                      "decoded_field": "TMP:2 m above ground",
-                      "raw_units": "K",
-                      "units": "\u00b0C",
-                      "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
-                      "status": "available"
-                    },
-                    {
-                      "initialization": "2026090300",
-                      "initialization_utc": "2026-09-03T00:00:00Z",
-                      "lead_month": 5,
-                      "member": 1,
-                      "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260903/00/monthly_grib_01/flxf.01.2026090300.202702.avrg.grib.grb2",
-                      "cache_file": ".cache/cfsv2/2026090300/member_01/flxf.01.2026090300.202702.avrg.grib.grb2",
-                      "state_file": ".cache/cfsv2/rolling/tmp2m/202702/tmp2m.2026090300.m01.csv.gz",
-                      "storage": "retained_decoded_grid",
-                      "downloaded": false,
-                      "product": "2m_temperature_anomaly",
-                      "source_kind": "FLXF",
-                      "decoded_field": "TMP:2 m above ground",
-                      "raw_units": "K",
-                      "units": "\u00b0C",
-                      "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
-                      "status": "available"
-                    },
                     {
                       "initialization": "2026090306",
                       "initialization_utc": "2026-09-03T06:00:00Z",
@@ -3492,21 +3456,57 @@
                       "units": "\u00b0C",
                       "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
                       "status": "available"
+                    },
+                    {
+                      "initialization": "2026090818",
+                      "initialization_utc": "2026-09-08T18:00:00Z",
+                      "lead_month": 5,
+                      "member": 1,
+                      "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260908/18/monthly_grib_01/flxf.01.2026090818.202702.avrg.grib.grb2",
+                      "cache_file": ".cache/cfsv2/2026090818/member_01/flxf.01.2026090818.202702.avrg.grib.grb2",
+                      "state_file": ".cache/cfsv2/rolling/tmp2m/202702/tmp2m.2026090818.m01.csv.gz",
+                      "storage": "retained_decoded_grid",
+                      "downloaded": false,
+                      "product": "2m_temperature_anomaly",
+                      "source_kind": "FLXF",
+                      "decoded_field": "TMP:2 m above ground",
+                      "raw_units": "K",
+                      "units": "\u00b0C",
+                      "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                      "status": "available"
+                    },
+                    {
+                      "initialization": "2026090900",
+                      "initialization_utc": "2026-09-09T00:00:00Z",
+                      "lead_month": 5,
+                      "member": 1,
+                      "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260909/00/monthly_grib_01/flxf.01.2026090900.202702.avrg.grib.grb2",
+                      "cache_file": ".cache/cfsv2/2026090900/member_01/flxf.01.2026090900.202702.avrg.grib.grb2",
+                      "state_file": ".cache/cfsv2/rolling/tmp2m/202702/tmp2m.2026090900.m01.csv.gz",
+                      "storage": "retained_decoded_grid",
+                      "downloaded": false,
+                      "product": "2m_temperature_anomaly",
+                      "source_kind": "FLXF",
+                      "decoded_field": "TMP:2 m above ground",
+                      "raw_units": "K",
+                      "units": "\u00b0C",
+                      "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                      "status": "available"
                     }
                   ],
                   "baseline": {
                     "source": "NCEI CFS reforecast flux calibration climatology; 1982-2010",
                     "years": "1982-2010",
-                    "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/09/flxf.09.08.12.l05.fclm.1982.2010.grb2",
-                    "file": ".cache/cfsv2/calibration/flxf/2026090812/flxf.09.08.12.l05.fclm.1982.2010.grb2",
+                    "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/09/flxf.09.09.00.l05.fclm.1982.2010.grb2",
+                    "file": ".cache/cfsv2/calibration/flxf/2026090900/flxf.09.09.00.l05.fclm.1982.2010.grb2",
                     "downloaded": false,
                     "rolling_policy": "anchor_initialization"
                   }
                 },
                 {
                   "source_package": "NOAA CFSv2 NOMADS",
-                  "anchor_initialization": "2026090812",
-                  "anchor_initialization_utc": "2026-09-08T12:00:00Z",
+                  "anchor_initialization": "2026090900",
+                  "anchor_initialization_utc": "2026-09-09T00:00:00Z",
                   "rolling_window": {
                     "days": 6,
                     "cycle_interval_hours": 6,
@@ -3517,42 +3517,6 @@
                     "label": "24/24-cycle rolling mean"
                   },
                   "source_files": [
-                    {
-                      "initialization": "2026090218",
-                      "initialization_utc": "2026-09-02T18:00:00Z",
-                      "lead_month": 6,
-                      "member": 1,
-                      "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260902/18/monthly_grib_01/flxf.01.2026090218.202703.avrg.grib.grb2",
-                      "cache_file": ".cache/cfsv2/2026090218/member_01/flxf.01.2026090218.202703.avrg.grib.grb2",
-                      "state_file": ".cache/cfsv2/rolling/tmp2m/202703/tmp2m.2026090218.m01.csv.gz",
-                      "storage": "retained_decoded_grid",
-                      "downloaded": false,
-                      "product": "2m_temperature_anomaly",
-                      "source_kind": "FLXF",
-                      "decoded_field": "TMP:2 m above ground",
-                      "raw_units": "K",
-                      "units": "\u00b0C",
-                      "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
-                      "status": "available"
-                    },
-                    {
-                      "initialization": "2026090300",
-                      "initialization_utc": "2026-09-03T00:00:00Z",
-                      "lead_month": 6,
-                      "member": 1,
-                      "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260903/00/monthly_grib_01/flxf.01.2026090300.202703.avrg.grib.grb2",
-                      "cache_file": ".cache/cfsv2/2026090300/member_01/flxf.01.2026090300.202703.avrg.grib.grb2",
-                      "state_file": ".cache/cfsv2/rolling/tmp2m/202703/tmp2m.2026090300.m01.csv.gz",
-                      "storage": "retained_decoded_grid",
-                      "downloaded": false,
-                      "product": "2m_temperature_anomaly",
-                      "source_kind": "FLXF",
-                      "decoded_field": "TMP:2 m above ground",
-                      "raw_units": "K",
-                      "units": "\u00b0C",
-                      "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
-                      "status": "available"
-                    },
                     {
                       "initialization": "2026090306",
                       "initialization_utc": "2026-09-03T06:00:00Z",
@@ -3948,13 +3912,49 @@
                       "units": "\u00b0C",
                       "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
                       "status": "available"
+                    },
+                    {
+                      "initialization": "2026090818",
+                      "initialization_utc": "2026-09-08T18:00:00Z",
+                      "lead_month": 6,
+                      "member": 1,
+                      "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260908/18/monthly_grib_01/flxf.01.2026090818.202703.avrg.grib.grb2",
+                      "cache_file": ".cache/cfsv2/2026090818/member_01/flxf.01.2026090818.202703.avrg.grib.grb2",
+                      "state_file": ".cache/cfsv2/rolling/tmp2m/202703/tmp2m.2026090818.m01.csv.gz",
+                      "storage": "retained_decoded_grid",
+                      "downloaded": false,
+                      "product": "2m_temperature_anomaly",
+                      "source_kind": "FLXF",
+                      "decoded_field": "TMP:2 m above ground",
+                      "raw_units": "K",
+                      "units": "\u00b0C",
+                      "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                      "status": "available"
+                    },
+                    {
+                      "initialization": "2026090900",
+                      "initialization_utc": "2026-09-09T00:00:00Z",
+                      "lead_month": 6,
+                      "member": 1,
+                      "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/cfs.20260909/00/monthly_grib_01/flxf.01.2026090900.202703.avrg.grib.grb2",
+                      "cache_file": ".cache/cfsv2/2026090900/member_01/flxf.01.2026090900.202703.avrg.grib.grb2",
+                      "state_file": ".cache/cfsv2/rolling/tmp2m/202703/tmp2m.2026090900.m01.csv.gz",
+                      "storage": "retained_decoded_grid",
+                      "downloaded": false,
+                      "product": "2m_temperature_anomaly",
+                      "source_kind": "FLXF",
+                      "decoded_field": "TMP:2 m above ground",
+                      "raw_units": "K",
+                      "units": "\u00b0C",
+                      "conversion": "Kelvin offset cancels in forecast-minus-calibration anomalies; displayed in \u00b0C",
+                      "status": "available"
                     }
                   ],
                   "baseline": {
                     "source": "NCEI CFS reforecast flux calibration climatology; 1982-2010",
                     "years": "1982-2010",
-                    "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/09/flxf.09.08.12.l06.fclm.1982.2010.grb2",
-                    "file": ".cache/cfsv2/calibration/flxf/2026090812/flxf.09.08.12.l06.fclm.1982.2010.grb2",
+                    "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs-allfile-reforecast/calibration-climatologies/flux-1982-2010/09/flxf.09.09.00.l06.fclm.1982.2010.grb2",
+                    "file": ".cache/cfsv2/calibration/flxf/2026090900/flxf.09.09.00.l06.fclm.1982.2010.grb2",
                     "downloaded": false,
                     "rolling_policy": "anchor_initialization"
                   }
@@ -4213,24 +4213,24 @@
             }
           ],
           "member_errors": {
-            "lead4_c3s_ukmo_system610": "C3S request failed for ukmo/610 2m_temperature_anomaly lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/d070d83e-c004-4cfd-8e11-d5b0cac64ede/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['4'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['egrr'], 'param': ['171167'], 'stream': ['mmsa'], 'system': ['610'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260908.235508 - Mars server task finished in error\nmars - ERROR  - 20260908.235509 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260908.235509 - Error code is -2\nmars - ERROR  - 20260908.235509 - Request failed\nmars - ERROR  - 20260908.235509 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError",
-            "lead4_c3s_meteo_france_system9": "C3S request failed for meteo_france/9 2m_temperature_anomaly lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/3bfff427-f151-4565-8519-133e47c1ccc3/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['4'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['lfpw'], 'param': ['171167'], 'stream': ['mmsa'], 'system': ['9'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260908.235759 - Mars server task finished in error\nmars - ERROR  - 20260908.235759 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260908.235759 - Error code is -2\nmars - ERROR  - 20260908.235759 - Request failed\nmars - ERROR  - 20260908.235759 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError",
-            "lead4_c3s_dwd_system22": "C3S request failed for dwd/22 2m_temperature_anomaly lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/d9f6b410-3f2a-44d8-8c36-9687a43ec2c3/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['4'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['edzw'], 'param': ['171167'], 'stream': ['mmsa'], 'system': ['22'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260908.235913 - Mars server task finished in error\nmars - ERROR  - 20260908.235913 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260908.235913 - Error code is -2\nmars - ERROR  - 20260908.235913 - Request failed\nmars - ERROR  - 20260908.235913 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError",
-            "lead4_c3s_cmcc_system4": "C3S request failed for cmcc/4 2m_temperature_anomaly lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/dc49637c-1c21-4205-8f94-113b6ad1c721/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['4'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['cmcc'], 'param': ['171167'], 'stream': ['mmsa'], 'system': ['4'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260909.000304 - Mars server task finished in error\nmars - ERROR  - 20260909.000304 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260909.000304 - Error code is -2\nmars - ERROR  - 20260909.000304 - Request failed\nmars - ERROR  - 20260909.000304 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError",
-            "lead4_c3s_jma_system4": "C3S request failed for jma/4 2m_temperature_anomaly lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/973f379a-0d75-4da6-b457-2780ab1cabd9/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['4'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['rjtd'], 'param': ['171167'], 'stream': ['mmsa'], 'system': ['4'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260909.000517 - Mars server task finished in error\nmars - ERROR  - 20260909.000517 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260909.000517 - Error code is -2\nmars - ERROR  - 20260909.000517 - Request failed\nmars - ERROR  - 20260909.000517 - Some errors reported (last error -2)\n",
-            "lead4_c3s_bom_system2": "C3S request failed for bom/2 2m_temperature_anomaly lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/6ef868a6-a99c-44e2-8e79-9aafe97dee93/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['4'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['ammc'], 'param': ['171167'], 'stream': ['mmsa'], 'system': ['2'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260909.000758 - Mars server task finished in error\nmars - ERROR  - 20260909.000758 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260909.000758 - Error code is -2\nmars - ERROR  - 20260909.000758 - Request failed\nmars - ERROR  - 20260909.000758 - Some errors reported (last error -2)\n",
-            "lead5_c3s_ukmo_system610": "C3S request failed for ukmo/610 2m_temperature_anomaly lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/d846c686-a683-431a-95fd-a6a1ad2b7749/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['5'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['egrr'], 'param': ['171167'], 'stream': ['mmsa'], 'system': ['610'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260908.235548 - Mars server task finished in error\nmars - ERROR  - 20260908.235548 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260908.235548 - Error code is -2\nmars - ERROR  - 20260908.235548 - Request failed\nmars - ERROR  - 20260908.235548 - Some errors reported (last error -2)\n",
-            "lead5_c3s_meteo_france_system9": "C3S request failed for meteo_france/9 2m_temperature_anomaly lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/e69f1f92-4fec-48fa-a5da-b2e376b99196/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['5'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['lfpw'], 'param': ['171167'], 'stream': ['mmsa'], 'system': ['9'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260908.235819 - Mars server task finished in error\nmars - ERROR  - 20260908.235819 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260908.235819 - Error code is -2\nmars - ERROR  - 20260908.235819 - Request failed\nmars - ERROR  - 20260908.235819 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError",
-            "lead5_c3s_dwd_system22": "C3S request failed for dwd/22 2m_temperature_anomaly lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/07e0a2e3-eedd-45bc-94c9-5de337eada31/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['5'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['edzw'], 'param': ['171167'], 'stream': ['mmsa'], 'system': ['22'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260908.235950 - Mars server task finished in error\nmars - ERROR  - 20260908.235950 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260908.235950 - Error code is -2\nmars - ERROR  - 20260908.235950 - Request failed\nmars - ERROR  - 20260908.235950 - Some errors reported (last error -2)\n",
-            "lead5_c3s_cmcc_system4": "C3S request failed for cmcc/4 2m_temperature_anomaly lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/3befa043-fb39-45b2-8ef3-ae6e30fe5f40/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['5'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['cmcc'], 'param': ['171167'], 'stream': ['mmsa'], 'system': ['4'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260909.000358 - Mars server task finished in error\nmars - ERROR  - 20260909.000358 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260909.000358 - Error code is -2\nmars - ERROR  - 20260909.000358 - Request failed\nmars - ERROR  - 20260909.000358 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError",
-            "lead5_c3s_jma_system4": "C3S request failed for jma/4 2m_temperature_anomaly lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/ccdd816b-d56c-410c-8d04-dd26cab095a8/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['5'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['rjtd'], 'param': ['171167'], 'stream': ['mmsa'], 'system': ['4'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260909.000559 - Mars server task finished in error\nmars - ERROR  - 20260909.000559 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260909.000559 - Error code is -2\nmars - ERROR  - 20260909.000559 - Request failed\nmars - ERROR  - 20260909.000559 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError",
-            "lead5_c3s_bom_system2": "C3S request failed for bom/2 2m_temperature_anomaly lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/66b7f814-a71d-40cd-b8eb-91532dae6ccb/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['5'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['ammc'], 'param': ['171167'], 'stream': ['mmsa'], 'system': ['2'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260909.000838 - Mars server task finished in error\nmars - ERROR  - 20260909.000838 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260909.000838 - Error code is -2\nmars - ERROR  - 20260909.000838 - Request failed\nmars - ERROR  - 20260909.000838 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError",
-            "lead6_c3s_ukmo_system610": "C3S request failed for ukmo/610 2m_temperature_anomaly lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/26c9fa2c-f87e-4f0f-be8b-c3d80cd49600/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['6'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['egrr'], 'param': ['171167'], 'stream': ['mmsa'], 'system': ['610'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260908.235630 - Mars server task finished in error\nmars - ERROR  - 20260908.235630 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260908.235630 - Error code is -2\nmars - ERROR  - 20260908.235630 - Request failed\nmars - ERROR  - 20260908.235630 - Some errors reported (last error -2)\n",
-            "lead6_c3s_meteo_france_system9": "C3S request failed for meteo_france/9 2m_temperature_anomaly lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/8d10b8bd-68d4-4cd7-9a94-c4fd7471ec06/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['6'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['lfpw'], 'param': ['171167'], 'stream': ['mmsa'], 'system': ['9'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260908.235842 - Mars server task finished in error\nmars - ERROR  - 20260908.235842 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260908.235842 - Error code is -2\nmars - ERROR  - 20260908.235842 - Request failed\nmars - ERROR  - 20260908.235842 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError",
-            "lead6_c3s_dwd_system22": "C3S request failed for dwd/22 2m_temperature_anomaly lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/a3ee61a1-9ab0-4517-b536-0ed987fd9ea6/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['6'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['edzw'], 'param': ['171167'], 'stream': ['mmsa'], 'system': ['22'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260909.000202 - Mars server task finished in error\nmars - ERROR  - 20260909.000202 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260909.000202 - Error code is -2\nmars - ERROR  - 20260909.000202 - Request failed\nmars - ERROR  - 20260909.000202 - Some errors reported (last error -2)\n",
-            "lead6_c3s_cmcc_system4": "C3S request failed for cmcc/4 2m_temperature_anomaly lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/28831ec9-b601-4e08-8c89-fcabe5ed243a/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['6'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['cmcc'], 'param': ['171167'], 'stream': ['mmsa'], 'system': ['4'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260909.000452 - Mars server task finished in error\nmars - ERROR  - 20260909.000452 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260909.000452 - Error code is -2\nmars - ERROR  - 20260909.000452 - Request failed\nmars - ERROR  - 20260909.000452 - Some errors reported (last error -2)\n",
-            "lead6_c3s_jma_system4": "C3S request failed for jma/4 2m_temperature_anomaly lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/420c8a51-c847-44bd-ad0c-9f356acad500/results\nThe job has failed\n",
-            "lead6_c3s_bom_system2": "C3S request failed for bom/2 2m_temperature_anomaly lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/8e129dcc-4a78-46ee-97a6-c6c4a4261d1c/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['6'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['ammc'], 'param': ['171167'], 'stream': ['mmsa'], 'system': ['2'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260909.000922 - Mars server task finished in error\nmars - ERROR  - 20260909.000922 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260909.000922 - Error code is -2\nmars - ERROR  - 20260909.000922 - Request failed\nmars - ERROR  - 20260909.000922 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError"
+            "lead4_c3s_ukmo_system610": "C3S request failed for ukmo/610 2m_temperature_anomaly lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/c9d4ec60-0c9f-4bdd-84f8-ca7cbf2b9447/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['4'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['egrr'], 'param': ['171167'], 'stream': ['mmsa'], 'system': ['610'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260909.132841 - Mars server task finished in error\nmars - ERROR  - 20260909.132841 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260909.132841 - Error code is -2\nmars - ERROR  - 20260909.132841 - Request failed\nmars - ERROR  - 20260909.132841 - Some errors reported (last error -2)\n",
+            "lead4_c3s_meteo_france_system9": "C3S request failed for meteo_france/9 2m_temperature_anomaly lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/336603cb-e5d9-45c4-b19e-4c2b922bf19b/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['4'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['lfpw'], 'param': ['171167'], 'stream': ['mmsa'], 'system': ['9'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260909.133132 - Mars server task finished in error\nmars - ERROR  - 20260909.133132 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260909.133132 - Error code is -2\nmars - ERROR  - 20260909.133132 - Request failed\nmars - ERROR  - 20260909.133132 - Some errors reported (last error -2)\n",
+            "lead4_c3s_dwd_system22": "C3S request failed for dwd/22 2m_temperature_anomaly lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/bc9b328f-f83c-437a-9f51-668ef5b28120/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['4'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['edzw'], 'param': ['171167'], 'stream': ['mmsa'], 'system': ['22'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260909.133349 - Mars server task finished in error\nmars - ERROR  - 20260909.133349 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260909.133349 - Error code is -2\nmars - ERROR  - 20260909.133349 - Request failed\nmars - ERROR  - 20260909.133349 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError",
+            "lead4_c3s_cmcc_system4": "C3S request failed for cmcc/4 2m_temperature_anomaly lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/c4913f15-5801-4553-a609-bb9cc5647da0/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['4'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['cmcc'], 'param': ['171167'], 'stream': ['mmsa'], 'system': ['4'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260909.133533 - Mars server task finished in error\nmars - ERROR  - 20260909.133533 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260909.133533 - Error code is -2\nmars - ERROR  - 20260909.133533 - Request failed\nmars - ERROR  - 20260909.133533 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError",
+            "lead4_c3s_jma_system4": "C3S request failed for jma/4 2m_temperature_anomaly lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/c4bcfa61-b626-4e73-aa50-4aa7fef0b4fb/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['4'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['rjtd'], 'param': ['171167'], 'stream': ['mmsa'], 'system': ['4'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260909.133745 - Mars server task finished in error\nmars - ERROR  - 20260909.133745 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260909.133745 - Error code is -2\nmars - ERROR  - 20260909.133745 - Request failed\nmars - ERROR  - 20260909.133745 - Some errors reported (last error -2)\n",
+            "lead4_c3s_bom_system2": "C3S request failed for bom/2 2m_temperature_anomaly lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/6f532b12-a9a9-42fe-8d44-9e9f1455f0c2/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['4'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['ammc'], 'param': ['171167'], 'stream': ['mmsa'], 'system': ['2'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260909.134033 - Mars server task finished in error\nmars - ERROR  - 20260909.134033 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260909.134033 - Error code is -2\nmars - ERROR  - 20260909.134033 - Request failed\nmars - ERROR  - 20260909.134033 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError",
+            "lead5_c3s_ukmo_system610": "C3S request failed for ukmo/610 2m_temperature_anomaly lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/de082b57-7fa0-4263-b9c3-2660b63cb83c/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['5'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['egrr'], 'param': ['171167'], 'stream': ['mmsa'], 'system': ['610'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260909.132942 - Mars server task finished in error\nmars - ERROR  - 20260909.132942 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260909.132942 - Error code is -2\nmars - ERROR  - 20260909.132942 - Request failed\nmars - ERROR  - 20260909.132942 - Some errors reported (last error -2)\n",
+            "lead5_c3s_meteo_france_system9": "C3S request failed for meteo_france/9 2m_temperature_anomaly lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/d404ed57-c5cf-4a11-a77b-e85ce3071ed2/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['5'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['lfpw'], 'param': ['171167'], 'stream': ['mmsa'], 'system': ['9'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260909.133222 - Mars server task finished in error\nmars - ERROR  - 20260909.133222 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260909.133222 - Error code is -2\nmars - ERROR  - 20260909.133222 - Request failed\nmars - ERROR  - 20260909.133222 - Some errors reported (last error -2)\n",
+            "lead5_c3s_dwd_system22": "C3S request failed for dwd/22 2m_temperature_anomaly lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/44c84baa-227e-4eab-b657-966d6b6e6719/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['5'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['edzw'], 'param': ['171167'], 'stream': ['mmsa'], 'system': ['22'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260909.133423 - Mars server task finished in error\nmars - ERROR  - 20260909.133423 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260909.133423 - Error code is -2\nmars - ERROR  - 20260909.133423 - Request failed\nmars - ERROR  - 20260909.133423 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError",
+            "lead5_c3s_cmcc_system4": "C3S request failed for cmcc/4 2m_temperature_anomaly lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/d32e1ab8-9e52-419f-85b9-83c98c2e4b54/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['5'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['cmcc'], 'param': ['171167'], 'stream': ['mmsa'], 'system': ['4'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260909.133601 - Mars server task finished in error\nmars - ERROR  - 20260909.133601 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260909.133601 - Error code is -2\nmars - ERROR  - 20260909.133601 - Request failed\nmars - ERROR  - 20260909.133601 - Some errors reported (last error -2)\n",
+            "lead5_c3s_jma_system4": "C3S request failed for jma/4 2m_temperature_anomaly lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/ca31a6c1-5659-4802-9210-31b4e16c3a9c/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['5'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['rjtd'], 'param': ['171167'], 'stream': ['mmsa'], 'system': ['4'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260909.133912 - Mars server task finished in error\nmars - ERROR  - 20260909.133912 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260909.133912 - Error code is -2\nmars - ERROR  - 20260909.133912 - Request failed\nmars - ERROR  - 20260909.133912 - Some errors reported (last error -2)\n",
+            "lead5_c3s_bom_system2": "C3S request failed for bom/2 2m_temperature_anomaly lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/f5f7c3be-c216-40cf-9016-04e07d23e6b3/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['5'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['ammc'], 'param': ['171167'], 'stream': ['mmsa'], 'system': ['2'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260909.134115 - Mars server task finished in error\nmars - ERROR  - 20260909.134115 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260909.134115 - Error code is -2\nmars - ERROR  - 20260909.134115 - Request failed\nmars - ERROR  - 20260909.134115 - Some errors reported (last error -2)\n",
+            "lead6_c3s_ukmo_system610": "C3S request failed for ukmo/610 2m_temperature_anomaly lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/1d7d0ad6-1f46-44e6-9196-0cead12845b8/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['6'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['egrr'], 'param': ['171167'], 'stream': ['mmsa'], 'system': ['610'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260909.133047 - Mars server task finished in error\nmars - ERROR  - 20260909.133047 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260909.133047 - Error code is -2\nmars - ERROR  - 20260909.133047 - Request failed\nmars - ERROR  - 20260909.133047 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError",
+            "lead6_c3s_meteo_france_system9": "C3S request failed for meteo_france/9 2m_temperature_anomaly lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/057974e8-9189-4b27-9bde-2b67513d9f17/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['6'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['lfpw'], 'param': ['171167'], 'stream': ['mmsa'], 'system': ['9'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260909.133314 - Mars server task finished in error\nmars - ERROR  - 20260909.133314 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260909.133314 - Error code is -2\nmars - ERROR  - 20260909.133314 - Request failed\nmars - ERROR  - 20260909.133314 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError",
+            "lead6_c3s_dwd_system22": "C3S request failed for dwd/22 2m_temperature_anomaly lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/3d938367-f459-4bf4-b030-5bd8a0afbe50/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['6'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['edzw'], 'param': ['171167'], 'stream': ['mmsa'], 'system': ['22'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260909.133459 - Mars server task finished in error\nmars - ERROR  - 20260909.133459 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260909.133459 - Error code is -2\nmars - ERROR  - 20260909.133459 - Request failed\nmars - ERROR  - 20260909.133459 - Some errors reported (last error -2)\n",
+            "lead6_c3s_cmcc_system4": "C3S request failed for cmcc/4 2m_temperature_anomaly lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/e59bbb97-af8a-47cb-8481-04f81724e2c6/results\nThe job has failed\nThe job failed with: MarsRuntimeError\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['6'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['cmcc'], 'param': ['171167'], 'stream': ['mmsa'], 'system': ['4'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260909.133653 - Mars server task finished in error\nmars - ERROR  - 20260909.133653 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260909.133653 - Error code is -2\nmars - ERROR  - 20260909.133653 - Request failed\nmars - ERROR  - 20260909.133653 - Some errors reported (last error -2)\n",
+            "lead6_c3s_jma_system4": "C3S request failed for jma/4 2m_temperature_anomaly lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/361aeffa-1d1f-4bf6-9ef3-e76471eb9ae4/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['6'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['rjtd'], 'param': ['171167'], 'stream': ['mmsa'], 'system': ['4'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260909.133957 - Mars server task finished in error\nmars - ERROR  - 20260909.133957 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260909.133957 - Error code is -2\nmars - ERROR  - 20260909.133957 - Request failed\nmars - ERROR  - 20260909.133957 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError",
+            "lead6_c3s_bom_system2": "C3S request failed for bom/2 2m_temperature_anomaly lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/c52b52b1-fdcc-49e7-8dc2-845521b84b3b/results\nThe job has failed\nMARS has returned an error, please check your selection.\nRequest submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['6'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['ammc'], 'param': ['171167'], 'stream': ['mmsa'], 'system': ['2'], 'time': ['all'], 'type': ['em']}]\nFull error message:\nmars - ERROR  - 20260909.134142 - Mars server task finished in error\nmars - ERROR  - 20260909.134142 - AccessError: Restricted access to current C3S seasonal forecast non-ECMWF contribution. Please check that your date selection is valid. For more information, visit https://climate.copernicus.eu/seasonal-forecasts [marser-ecmwf]\nmars - ERROR  - 20260909.134142 - Error code is -2\nmars - ERROR  - 20260909.134142 - Request failed\nmars - ERROR  - 20260909.134142 - Some errors reported (last error -2)\n\nThe job failed with: MarsRuntimeError"
           },
           "ensemble_scope": "6/12 canonical forecast families",
           "baseline": {
@@ -4253,10 +4253,10 @@
             "total_points": 3200,
             "finite_points": 3200,
             "finite_fraction": 1.0,
-            "minimum": -1.383503,
-            "maximum": 3.825296,
-            "p01": -1.273445,
-            "p99": 3.737313,
+            "minimum": -1.301966,
+            "maximum": 3.693247,
+            "p01": -1.194673,
+            "p99": 3.608449,
             "display": {
               "minimum": -6.0,
               "maximum": 6.0,
@@ -4273,7 +4273,7 @@
         }
       ],
       "status": "partial",
-      "generated_utc": "2026-09-09T00:13:44Z",
+      "generated_utc": "2026-09-09T13:46:19Z",
       "output_dir": "public/seasonal/superensemble"
     },
     {
@@ -17084,8 +17084,8 @@
                 "source_field": "AirTemp at 850 hPa",
                 "url": "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/2026/08/202608_MSC_CanSIPS_AirTemp_ISBL-0850_LatLon1.0_P04M.grib2",
                 "cache_file": ".cache/cansips/means/forecast/202608/t850_lead04.csv.gz",
-                "storage": "retained_ensemble_mean_grid",
-                "downloaded": false,
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
                 "ensemble_members": 40
               },
               "hindcast_file_count": 30,
@@ -17315,8 +17315,8 @@
                 "source_field": "AirTemp at 850 hPa",
                 "url": "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/2026/08/202608_MSC_CanSIPS_AirTemp_ISBL-0850_LatLon1.0_P05M.grib2",
                 "cache_file": ".cache/cansips/means/forecast/202608/t850_lead05.csv.gz",
-                "storage": "retained_ensemble_mean_grid",
-                "downloaded": false,
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
                 "ensemble_members": 40
               },
               "hindcast_file_count": 30,
@@ -17546,8 +17546,8 @@
                 "source_field": "AirTemp at 850 hPa",
                 "url": "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/2026/08/202608_MSC_CanSIPS_AirTemp_ISBL-0850_LatLon1.0_P06M.grib2",
                 "cache_file": ".cache/cansips/means/forecast/202608/t850_lead06.csv.gz",
-                "storage": "retained_ensemble_mean_grid",
-                "downloaded": false,
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
                 "ensemble_members": 40
               },
               "hindcast_file_count": 30,
@@ -17995,8 +17995,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/2026/08/202608_MSC_CanSIPS_AirTemp_ISBL-0850_LatLon1.0_P04M.grib2",
                     "cache_file": ".cache/cansips/means/forecast/202608/t850_lead04.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   "hindcast_file_count": 30,
@@ -18017,8 +18017,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/2026/08/202608_MSC_CanSIPS_AirTemp_ISBL-0850_LatLon1.0_P05M.grib2",
                     "cache_file": ".cache/cansips/means/forecast/202608/t850_lead05.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   "hindcast_file_count": 30,
@@ -18039,8 +18039,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/2026/08/202608_MSC_CanSIPS_AirTemp_ISBL-0850_LatLon1.0_P06M.grib2",
                     "cache_file": ".cache/cansips/means/forecast/202608/t850_lead06.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   "hindcast_file_count": 30,
@@ -18203,7 +18203,7 @@
         }
       ],
       "status": "rendered",
-      "generated_utc": "2026-09-09T13:24:40Z",
+      "generated_utc": "2026-09-09T01:35:11Z",
       "output_dir": "public/seasonal/superensemble"
     },
     {
