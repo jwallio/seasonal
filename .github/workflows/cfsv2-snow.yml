@@ -251,6 +251,8 @@ jobs:
           done
 
       - name: Dispatch shared Pages publisher
+        # The shared publisher validates and merges this payload with
+        # scripts/merge_cfsv2_surface_release.py before writing gh-pages.
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
