@@ -811,7 +811,7 @@ function renderOverview() {
     COMPARE_PRODUCTS.forEach(productConfig => {
       const state = { ...freshnessState(modelKey, productConfig.value), modelKey, productKey: productConfig.value };
       states.push(state);
-      const cell = document.createElement('td'); cell.className = 'availability-status-cell'; cell.dataset.parameter = OVERVIEW_PARAMETER_LABELS[productConfig.value] || productConfig.label;
+      const cell = document.createElement('td'); cell.className = 'availability-status-cell';
       const button = document.createElement('button'); button.type = 'button'; button.className = `status-pill ${state.className}`; button.textContent = OVERVIEW_PARAMETER_BUTTON_LABELS[productConfig.value] || productConfig.label; button.title = `${productConfig.label}: ${state.label} · ${state.title}`;
       const lastInit = lastRun ? `Latest init ${compactUtc(lastRun.init_utc)}` : 'No usable initialization';
       const nextUpdate = scheduleState.next ? `Next expected update ${compactEdt(scheduleState.next.publish)}` : 'Next update unavailable';
@@ -1520,4 +1520,3 @@ loadDashboardData().then(() => {
   if (!modelStates[selection.model].manifest) selection.model = Object.keys(MODEL_CONFIG).find(key => modelStates[key].manifest) || selection.model;
   setView(selection.view);
 });
-

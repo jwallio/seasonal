@@ -293,6 +293,8 @@ def main() -> int:
     check("['overdue', 'processing'].includes(scheduleState?.key)" not in page, "Attention filter must exclude processing schedules")
     check("detail: 'failed or overdue surfaces'" in page, "Attention summary must describe only failed or overdue surfaces")
     check(".overview-matrix th.overview-parameter-heading" in stylesheet, "parameter headings should be visually hidden above the labeled buttons")
+    check("data-parameter" not in page, "mobile availability cells should not render duplicate parameter labels above buttons")
+    check("content:attr(data-parameter)" not in stylesheet, "mobile availability cells should not generate duplicate parameter labels")
     check('class="overview-lead"' not in page_markup, "overview should not show the retired introductory lead card")
     check('data-overview-compare=' not in page_markup, "overview should not show duplicate Compare shortcuts")
     for retired_intro in (
@@ -352,4 +354,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
