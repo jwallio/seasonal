@@ -56,7 +56,16 @@ jobs:
             python scripts/temperature_refresh_plan.py published.json "$WORKFLOW" "$product" > dispatch.json
             cat dispatch.json >> "$GITHUB_STEP_SUMMARY"
             started=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-            gh workflow run "$WORKFLOW" --ref main --json < dispatch.json
+            for attempt in 1 2 3 4 5; do
+              if gh workflow run "$WORKFLOW" --ref main --json < dispatch.json; then
+                break
+              fi
+              if [[ "$attempt" == 5 ]]; then
+                echo "::error::$WORKFLOW dispatch failed after five attempts"
+                exit 1
+              fi
+              sleep $((attempt * 10))
+            done
             run_id=""
             for attempt in {1..24}; do
               run_id=$(gh run list --workflow "$WORKFLOW" --branch main --event workflow_dispatch --limit 20 --json databaseId,createdAt --jq ".[] | select(.createdAt >= \"$started\") | .databaseId" | head -1)
@@ -84,7 +93,16 @@ jobs:
                   done
                   source_name=$(head -1 ".github/workflows/$WORKFLOW" | sed 's/^name: *//' | tr -d '\r')
                   publish_started=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-                  gh workflow run publish-pages.yml --ref main -f source_workflow="$source_name" -f source_run_id="$run_id"
+                  for attempt in 1 2 3 4 5; do
+                    if gh workflow run publish-pages.yml --ref main -f source_workflow="$source_name" -f source_run_id="$run_id"; then
+                      break
+                    fi
+                    if [[ "$attempt" == 5 ]]; then
+                      echo "::error::Pages dispatch failed after five attempts"
+                      exit 1
+                    fi
+                    sleep $((attempt * 10))
+                  done
                   publish_id=""
                   for attempt in {1..24}; do
                     publish_id=$(gh run list --workflow publish-pages.yml --event workflow_dispatch --limit 20 --json databaseId,createdAt --jq ".[] | select(.createdAt >= \"$publish_started\") | .databaseId" | head -1)

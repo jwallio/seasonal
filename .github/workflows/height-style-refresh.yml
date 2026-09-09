@@ -39,7 +39,16 @@ jobs:
             echo "- $WORKFLOW / $product: https://github.com/$GH_REPO/actions/runs/$run_id" >> "$GITHUB_STEP_SUMMARY"
             if gh run watch "$run_id" --exit-status --interval 30; then
               source_name=$(gh run view "$run_id" --json workflowName --jq .workflowName)
-              gh workflow run publish-pages.yml --ref main -f source_workflow="$source_name" -f source_run_id="$run_id"
+              for attempt in 1 2 3 4 5; do
+                if gh workflow run publish-pages.yml --ref main -f source_workflow="$source_name" -f source_run_id="$run_id"; then
+                  break
+                fi
+                if [[ "$attempt" == 5 ]]; then
+                  echo "::error::Pages dispatch failed after five attempts"
+                  exit 1
+                fi
+                sleep $((attempt * 10))
+              done
             else
               echo "::error::$WORKFLOW / $product failed; see run $run_id"
               failed=1

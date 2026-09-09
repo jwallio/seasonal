@@ -173,8 +173,17 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          gh workflow run publish-pages.yml \
-            --ref "${{ github.event.repository.default_branch }}" \
-            -f source_workflow="ECMWF SEAS5 Seasonal Graphics" \
-            -f source_run_id="$GITHUB_RUN_ID"
+          for attempt in 1 2 3 4 5; do
+            if gh workflow run publish-pages.yml \
+              --ref "${{ github.event.repository.default_branch }}" \
+              -f source_workflow="ECMWF SEAS5 Seasonal Graphics" \
+              -f source_run_id="$GITHUB_RUN_ID"; then
+              break
+            fi
+            if [[ "$attempt" == 5 ]]; then
+              echo "::error::Pages dispatch failed after five attempts"
+              exit 1
+            fi
+            sleep $((attempt * 10))
+          done
 
