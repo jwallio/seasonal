@@ -2,8 +2,8 @@
   "schema_version": 1,
   "registry_version": 1,
   "kind": "seasonal_dashboard_catalog",
-  "generated_utc": "2026-09-09T20:38:29Z",
-  "source_revision": "670f3ecbe82ae1f7bac52452ca9fa0a69e2d4959",
+  "generated_utc": "2026-09-09T21:35:50Z",
+  "source_revision": "cdbc9d92d81cc645a906310a1cbc1b524f82dbaa",
   "model_order": [
     "superensemble",
     "c3s",
@@ -22926,8 +22926,8 @@
       },
       "schedule": {
         "cadence_group": "frequent",
-        "cadence_label": "Four times daily",
-        "official_schedule": "NCEP CFSv2 starts four 9-month forecasts daily at 00, 06, 12, and 18 UTC; wall.cloud checks each cycle after its NOMADS monthly files normally appear.",
+        "cadence_label": "Source-driven · 15-minute probe",
+        "official_schedule": "NCEP CFSv2 starts four 9-month forecasts daily at 00, 06, 12, and 18 UTC; wall.cloud probes NOAA NOMADS every 15 minutes and renders each cycle once its required files are complete.",
         "official_url": "https://cfs.ncep.noaa.gov/cfsv2.info/",
         "expected_cycle": {
           "kind": "daily_times",
@@ -22938,13 +22938,11 @@
             "18:00"
           ],
           "publish_times_utc": [
-            "11:45",
-            "17:45",
-            "23:45",
-            "05:45"
+            "source-ready"
           ],
-          "publish_lag_minutes": 45,
-          "late_after_minutes": 90
+          "availability_poll_minutes": 15,
+          "publish_lag_minutes": 15,
+          "late_after_minutes": 180
         }
       },
       "runs": [
@@ -45480,7 +45478,7 @@
       "status": "online",
       "schema_version": 1,
       "manifest_kind": "cfsv2_seasonal_manifest",
-      "generated_utc": "2026-09-09T20:18:48Z",
+      "generated_utc": "2026-09-09T21:34:19Z",
       "source_url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/",
       "product_labels": {},
       "validation": {
@@ -68866,7 +68864,7 @@
   },
   "health": {
     "status": "attention",
-    "generated_utc": "2026-09-09T20:38:29Z",
+    "generated_utc": "2026-09-09T21:35:50Z",
     "freshness_policy_days": {
       "default": {
         "fresh_days": 35,

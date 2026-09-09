@@ -47,7 +47,7 @@ const MODEL_SCHEDULE_FALLBACKS = {
   c3s: { cadenceGroup: 'monthly', cadenceLabel: 'Monthly · release window', officialSchedule: 'C3S seasonal data are released monthly; this multi-system suite uses the 10th-day window.', officialUrl: 'https://climate.copernicus.eu/seasonal-forecasts', expectedCycle: { kind: 'monthly_day', runDay: 1, runTimeUtc: '00:00', publishDay: 10, publishTimeUtc: '12:00', publishLagMinutes: 90, lateAfterMinutes: 360 } },
   apcc: { cadenceGroup: 'monthly', cadenceLabel: 'Monthly · mid-month', officialSchedule: 'APCC seasonal forecasts are issued around the 15th; wall.cloud targets the post-collection window on the 20th.', officialUrl: 'https://www.apcc21.org/prediction/global/outlook?lang=eng', expectedCycle: { kind: 'monthly_day', runDay: 15, runTimeUtc: '00:00', publishDay: 20, publishTimeUtc: '16:30', publishLagMinutes: 60, lateAfterMinutes: 360 } },
   nmme: { cadenceGroup: 'monthly', cadenceLabel: 'Monthly · CPC', officialSchedule: 'NMME inputs are delivered by 17:00 ET on the 8th; CPC publishes the graphics and data on the 9th.', officialUrl: 'https://www.cpc.ncep.noaa.gov/products/NMME/users_guide.html', expectedCycle: { kind: 'monthly_day', runDay: 8, runTimeUtc: '00:00', publishDay: 9, publishTimeUtc: '15:30', publishLagMinutes: 60, lateAfterMinutes: 360 } },
-  cfsv2: { cadenceGroup: 'frequent', cadenceLabel: 'Four times daily', officialSchedule: 'NCEP CFSv2 starts four 9-month forecasts daily at 00, 06, 12, and 18 UTC; wall.cloud checks each cycle after its NOMADS monthly files normally appear.', officialUrl: 'https://cfs.ncep.noaa.gov/cfsv2.info/', expectedCycle: { kind: 'daily_times', runTimesUtc: ['00:00', '06:00', '12:00', '18:00'], publishTimesUtc: ['11:45', '17:45', '23:45', '05:45'], publishLagMinutes: 45, lateAfterMinutes: 90 } },
+  cfsv2: { cadenceGroup: 'frequent', cadenceLabel: 'Source-driven · 15-minute probe', officialSchedule: 'NCEP CFSv2 starts four 9-month forecasts daily at 00, 06, 12, and 18 UTC; wall.cloud probes NOAA NOMADS every 15 minutes and renders each cycle once its required files are complete.', officialUrl: 'https://cfs.ncep.noaa.gov/cfsv2.info/', expectedCycle: { kind: 'daily_times', runTimesUtc: ['00:00', '06:00', '12:00', '18:00'], publishTimesUtc: ['11:45', '17:45', '23:45', '05:45'], availabilityPollMinutes: 15, publishLagMinutes: 15, lateAfterMinutes: 180 } },
   seas5: { cadenceGroup: 'monthly', cadenceLabel: 'Monthly · release window', officialSchedule: 'SEAS5 is disseminated on the 5th at 12 UTC; the CDS-backed suite is checked from the 6th.', officialUrl: 'https://www.ecmwf.int/en/forecasts/datasets/set-v', expectedCycle: { kind: 'monthly_day', runDay: 1, runTimeUtc: '00:00', publishDay: 6, publishTimeUtc: '12:00', publishLagMinutes: 90, lateAfterMinutes: 360 } },
   cansips: { cadenceGroup: 'monthly', cadenceLabel: 'Monthly · ECCC', officialSchedule: 'ECCC global seasonal forecasts are produced on the first day at 00 UTC; wall.cloud publishes after the Datamart window.', officialUrl: 'https://weather.gc.ca/saisons/GPC_Montreal_e.html', expectedCycle: { kind: 'monthly_day', runDay: 1, runTimeUtc: '00:00', publishDay: 2, publishTimeUtc: '16:30', publishLagMinutes: 60, lateAfterMinutes: 360 } },
   cma_cpsv3: { cadenceGroup: 'monthly', cadenceLabel: 'Monthly · WMO window', officialSchedule: 'CMA CPSv3 is a monthly seasonal system; wall.cloud targets the 21st after the WMO GPC Beijing exchange window.', officialUrl: 'https://www.wmolc.org/contents2/index/Beijing', expectedCycle: { kind: 'monthly_day', runDay: 1, runTimeUtc: '00:00', publishDay: 21, publishTimeUtc: '18:30', publishLagMinutes: 60, lateAfterMinutes: 360 } },
@@ -277,6 +277,7 @@ function scheduleFor(modelKey) {
       publishDay: cycle.publish_day ?? fallback.expectedCycle?.publishDay,
       publishTimeUtc: cycle.publish_time_utc || fallback.expectedCycle?.publishTimeUtc,
       publishTimesUtc: cycle.publish_times_utc || fallback.expectedCycle?.publishTimesUtc,
+      availabilityPollMinutes: Number(cycle.availability_poll_minutes ?? fallback.expectedCycle?.availabilityPollMinutes ?? 0),
       publishLagMinutes: Number(cycle.publish_lag_minutes ?? fallback.expectedCycle?.publishLagMinutes ?? 0),
       lateAfterMinutes: Number(cycle.late_after_minutes ?? fallback.expectedCycle?.lateAfterMinutes ?? 0),
     },
@@ -373,6 +374,11 @@ function latestUsableModelRun(modelKey) {
 }
 function availabilityScheduleState(modelKey, lastRun, now = new Date()) {
   const schedule = scheduleFor(modelKey);
+  const pollMinutes = Number(schedule.expectedCycle?.availabilityPollMinutes || 0);
+  if (pollMinutes > 0) return {
+    key: 'source_driven', label: 'Source-driven', className: 'schedule-on-time', previous: null, next: null,
+    title: `NOAA source availability is checked every ${pollMinutes} minutes; maps publish after the required files are complete.`,
+  };
   const previous = scheduleCycle(modelKey, 'previous', now);
   const next = scheduleCycle(modelKey, 'next', now);
   if (!previous || !next) return { key: 'unknown', label: 'Timing unavailable', className: 'schedule-unknown', previous, next, title: 'No expected release rule is configured for this model.' };
