@@ -1,15 +1,27 @@
 name: Maintenance - Refresh 500-mb styling
 on:
+  push:
+    branches: [main]
+    paths:
+      - scripts/height_display.py
+      - .github/workflows/height-style-refresh.yml
   workflow_dispatch:
 permissions:
   actions: write
   contents: read
+
+concurrency:
+  # A newer style refresh supersedes a stale fan-out.
+  group: height-maintenance-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   refresh:
     runs-on: ubuntu-latest
     timeout-minutes: 360
     strategy:
       fail-fast: false
+      max-parallel: 4
       matrix:
         workflow: [seas5.yml, cansips.yml, c3s.yml, jma.yml, cfsv2.yml, apcc.yml, cma-cpsv3.yml, superensemble.yml]
     env:
@@ -23,12 +35,28 @@ jobs:
           set -euo pipefail
           failed=0
           for product in 500mb_height_anomaly 500mb_height_anomaly_nh; do
-            # Do not supersede a producer already working on this provider.
+            # Give an existing producer a bounded hand-off window; the
+            # product-scoped producer key below prevents cross-product canceling.
+            wait_seconds=0
             while gh run list --workflow "$WORKFLOW" --limit 50 --json status --jq 'any(.[]; .status == "in_progress" or .status == "queued" or .status == "waiting" or .status == "pending")' | grep -qx true; do
+              if (( wait_seconds >= 900 )); then
+                echo "::warning::${WORKFLOW} has been active for 15 minutes; dispatching the scoped 500-mb refresh to replace the stale attempt."
+                break
+              fi
               sleep 30
+              wait_seconds=$((wait_seconds + 30))
             done
             started=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-            gh workflow run "$WORKFLOW" --ref main -f product="$product"
+            for attempt in 1 2 3 4 5; do
+              if gh workflow run "$WORKFLOW" --ref main -f product="$product"; then
+                break
+              fi
+              if [[ "$attempt" == 5 ]]; then
+                echo "::error::$WORKFLOW dispatch failed after five attempts"
+                exit 1
+              fi
+              sleep $((attempt * 10))
+            done
             run_id=""
             for attempt in {1..24}; do
               run_id=$(gh run list --workflow "$WORKFLOW" --branch main --event workflow_dispatch --limit 20 --json databaseId,createdAt --jq ".[] | select(.createdAt >= \"$started\") | .databaseId" | head -1)
@@ -38,7 +66,19 @@ jobs:
             test -n "$run_id"
             echo "- $WORKFLOW / $product: https://github.com/$GH_REPO/actions/runs/$run_id" >> "$GITHUB_STEP_SUMMARY"
             if gh run watch "$run_id" --exit-status --interval 30; then
+              # Pages accepts one running and one pending handoff. Drain the
+              # queue before dispatching so a later product cannot replace this one.
+              publish_wait=0
+              while gh run list --workflow publish-pages.yml --limit 100 --json status --jq 'any(.[]; .status != "completed")' | grep -qx true; do
+                if (( publish_wait >= 1800 )); then
+                  echo "::error::Pages publisher queue did not drain within 30 minutes"
+                  exit 1
+                fi
+                sleep 15
+                publish_wait=$((publish_wait + 15))
+              done
               source_name=$(gh run view "$run_id" --json workflowName --jq .workflowName)
+              publish_started=$(date -u +%Y-%m-%dT%H:%M:%SZ)
               for attempt in 1 2 3 4 5; do
                 if gh workflow run publish-pages.yml --ref main -f source_workflow="$source_name" -f source_run_id="$run_id"; then
                   break
@@ -49,6 +89,15 @@ jobs:
                 fi
                 sleep $((attempt * 10))
               done
+              publish_id=""
+              for attempt in {1..24}; do
+                publish_id=$(gh run list --workflow publish-pages.yml --event workflow_dispatch --limit 20 --json databaseId,createdAt --jq ".[] | select(.createdAt >= \"$publish_started\") | .databaseId" | head -1)
+                [[ -n "$publish_id" ]] && break
+                sleep 5
+              done
+              test -n "$publish_id"
+              gh run watch "$publish_id" --exit-status --interval 30 || failed=1
+              echo "- Publication: https://github.com/$GH_REPO/actions/runs/$publish_id" >> "$GITHUB_STEP_SUMMARY"
             else
               echo "::error::$WORKFLOW / $product failed; see run $run_id"
               failed=1
