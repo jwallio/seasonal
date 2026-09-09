@@ -72,6 +72,15 @@ def main() -> int:
     check("max-parallel: 4" in snow and "--workers 4" in snow, "snowfall acquisition should overlap bounded workers")
     check("run.get('conclusion') != 'success'" in snow and "No successful CFSv2 snowfall input artifact" in snow,
           "snowfall reuse must reject partial or failed source runs")
+    height = (WORKFLOWS / "height-style-refresh.yml").read_text(encoding="utf-8")
+    check("scripts/height_display.py" in height and "workflow_dispatch:" in height,
+          "500-mb styling should refresh when the shared height contract changes")
+    check("group: height-maintenance-" in height and "cancel-in-progress: true" in height,
+          "500-mb styling should supersede stale maintenance fan-out")
+    check("max-parallel: 4" in height and "500mb_height_anomaly_nh" in height,
+          "500-mb styling should refresh both views with bounded workers")
+    check("publish_wait >= 1800" in height and "Pages publisher queue did not drain" in height,
+          "500-mb handoff should wait for a bounded serialized Pages queue")
     print("SEASONAL ACTIONS CONTRACT OK: planned matrices, shared tools, product-scoped workers, and bounded publishers")
     return 0
 
