@@ -19,6 +19,12 @@ on:
           - 2m_temperature_anomaly
           - precipitation_anomaly
           - mslp_anomaly
+      style_refresh:
+        description: "Style maintenance should publish through its batch handoff"
+        required: false
+        default: false
+        type: boolean
+
       systems:
         description: "Optional JMA centre=system override"
         required: false
@@ -166,7 +172,7 @@ jobs:
       # completion cannot create a workflow_run publisher under GitHub's
       # recursion guard. An explicit workflow_dispatch remains permitted.
       - name: Dispatch JMA Pages publish
-        if: success()
+        if: ${{ success() && inputs.style_refresh != true }}
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
