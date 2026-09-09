@@ -31,7 +31,7 @@ jobs:
     steps:
       - name: Initialize serialized Pages handoff
         shell: bash
-        run: : > publish-refs.txt
+        run: ": > publish-refs.txt"
       - name: Refresh both views sequentially
         shell: bash
         run: |
