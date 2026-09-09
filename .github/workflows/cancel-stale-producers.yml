@@ -1,0 +1,25 @@
+name: Cancel stale producer runs
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/cancel-stale-producers.yml
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  cancel:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Force-cancel identified stale producer runs
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          for run_id in 34377719795 34378016630 34380309727; do
+            gh api --method POST "repos/$GH_REPO/actions/runs/$run_id/force-cancel"
+          done
