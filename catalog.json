@@ -2,7 +2,7 @@
   "schema_version": 1,
   "registry_version": 1,
   "kind": "seasonal_dashboard_catalog",
-  "generated_utc": "2026-09-09T12:28:27Z",
+  "generated_utc": "2026-09-09T12:32:14Z",
   "source_revision": "4969b3b777147cdbad64a048851587abb1e1f323",
   "model_order": [
     "superensemble",
@@ -20325,10 +20325,34 @@
               "ensemble_scope": "APCC MME seasonal product",
               "statistic": "APCC multi-model ensemble mean",
               "aggregation": "native APCC seasonal mean",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "850mb_temperature_anomaly",
+                "units": "°C",
+                "field": "t850_anomaly",
+                "period": "seasonal",
+                "total_points": 10512,
+                "finite_points": 10512,
+                "finite_fraction": 1.0,
+                "minimum": -1.439978,
+                "maximum": 4.086365,
+                "p01": -0.610344,
+                "p99": 3.490081,
+                "display": {
+                  "minimum": -6.0,
+                  "maximum": 6.0,
+                  "step": 0.5,
+                  "below_fraction": 0.0,
+                  "above_fraction": 0.0,
+                  "clipped_fraction": 0.0
+                },
+                "issues": [],
+                "status": "passed"
+              },
               "_catalog": {
                 "canonical_product": "850mb_temperature_anomaly",
                 "comparable": true,
-                "quality_control": "legacy"
+                "quality_control": "passed"
               }
             }
           ],
@@ -20614,10 +20638,11 @@
       "status": "degraded",
       "schema_version": 1,
       "manifest_kind": "apcc_seasonal_manifest",
-      "generated_utc": "2026-08-20T16:57:51Z",
+      "generated_utc": "2026-09-09T12:31:04Z",
       "source_url": "https://apcc21.org/clik/processing/prediction",
       "product_labels": {
         "500mb_height_anomaly": "500-mb Height Anomaly",
+        "500mb_height_anomaly_nh": "500-mb Height Anomaly · Northern Hemisphere",
         "850mb_temperature_anomaly": "850-mb Temperature Anomaly",
         "2m_temperature_anomaly": "2-m Temperature Anomaly",
         "precipitation_anomaly": "Precipitation Anomaly",
@@ -20655,12 +20680,6 @@
             "path": "runs[1].targets[0]"
           },
           {
-            "code": "legacy_qc_missing:850mb_temperature_anomaly",
-            "severity": "warning",
-            "message": "Retained 850mb_temperature_anomaly targets predate numerical grid QC; regenerate this product to certify it.",
-            "path": "runs[2].targets[0]"
-          },
-          {
             "code": "legacy_qc_missing:500mb_height_anomaly",
             "severity": "warning",
             "message": "Retained 500mb_height_anomaly targets predate numerical grid QC; regenerate this product to certify it.",
@@ -20671,6 +20690,12 @@
             "severity": "warning",
             "message": "Retained 2m_temperature_anomaly targets predate numerical grid QC; regenerate this product to certify it.",
             "path": "runs[4].targets[0]"
+          },
+          {
+            "code": "legacy_qc_missing:850mb_temperature_anomaly",
+            "severity": "warning",
+            "message": "Retained 850mb_temperature_anomaly targets predate numerical grid QC; regenerate this product to certify it.",
+            "path": "runs[7].targets[0]"
           }
         ]
       },
@@ -62429,7 +62454,7 @@
   },
   "health": {
     "status": "attention",
-    "generated_utc": "2026-09-09T12:28:27Z",
+    "generated_utc": "2026-09-09T12:32:14Z",
     "freshness_policy_days": {
       "default": {
         "fresh_days": 35,
