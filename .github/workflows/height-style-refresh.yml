@@ -52,6 +52,7 @@ jobs:
             init_arg=latest
             if [[ "$WORKFLOW" == "jma.yml" || "$WORKFLOW" == "c3s.yml" ]]; then
               provider="${WORKFLOW%.yml}"
+              init_arg=""
               pages_url="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/${provider}_manifest.json"
               if curl -fsSL --retry 2 --connect-timeout 10 "$pages_url" -o published.json; then
                 init_arg=$(PRODUCT="$product" python - <<'PY'
@@ -72,7 +73,10 @@ jobs:
           PY
                 )
               fi
-              [[ -n "$init_arg" ]] || init_arg=latest
+              if [[ -z "$init_arg" ]]; then
+                echo "::warning::No prior accessible $product cycle is published for $WORKFLOW; skipping this style-only product refresh."
+                continue
+              fi
             fi
             started=$(date -u +%Y-%m-%dT%H:%M:%SZ)
             for attempt in 1 2 3 4 5; do
