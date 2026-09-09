@@ -228,44 +228,58 @@ jobs:
           retention-days: 90
   publish:
     needs: [select, render]
+    if: needs.select.outputs.ready == 'true'
     runs-on: ubuntu-latest
-    timeout-minutes: 30
-    concurrency:
-      group: wn2-pages-publish
-      cancel-in-progress: false
+    timeout-minutes: 75
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/checkout@v4
-        with:
-          ref: gh-pages
-          path: site
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-          cache: pip
-          cache-dependency-path: .github/workflows/cfsv2-snow.yml
-      - run: pip install numpy requests matplotlib Pillow
-      - uses: actions/download-artifact@v4
-        with:
-          name: corrected-snowfall-ready
-          path: incoming
-      - name: Merge only validated snowfall runs into current site
-        run: python scripts/merge_cfsv2_surface_release.py --incoming incoming --site site
-      - name: Rebuild catalog and display assets
-        run: |
-          python scripts/build_seasonal_catalog.py --site-root site --strict --source-revision "$GITHUB_SHA"
-          python scripts/build_seasonal_share_images.py --site-root site --strict
-          python scripts/build_seasonal_thumbnails.py --site-root site --max-width 560 --quality 82
-      - name: Publish corrected maps
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ github.token }}
-          publish_dir: ./site
-          publish_branch: gh-pages
-          keep_files: false
-          force_orphan: false
-          enable_jekyll: false
-      - name: Request Pages rebuild
+      # The Pages publisher has a single writer and GitHub keeps one pending
+      # run. Drain that queue before dispatching so this snowfall payload cannot
+      # be replaced by another product while it is waiting.
+      - name: Wait for shared Pages publisher queue
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh api --method POST "repos/$GITHUB_REPOSITORY/pages/builds"
+        run: |
+          set -euo pipefail
+          publish_wait=0
+          while gh run list --repo "$GITHUB_REPOSITORY" --workflow publish-pages.yml --limit 100 --json status --jq 'any(.[]; .status != "completed")' | grep -qx true; do
+            if (( publish_wait >= 1800 )); then
+              echo "::error::Pages publisher queue did not drain within 30 minutes"
+              exit 1
+            fi
+            sleep 15
+            publish_wait=$((publish_wait + 15))
+          done
+
+      - name: Dispatch shared Pages publisher
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          publish_id=""
+          dispatch_started=""
+          for attempt in 1 2 3 4 5; do
+            dispatch_started="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            if gh workflow run publish-pages.yml --repo "$GITHUB_REPOSITORY" --ref main                 -f source_workflow="CFSv2 Snowfall Graphics"                 -f source_run_id="$GITHUB_RUN_ID"; then
+              break
+            fi
+            if (( attempt == 5 )); then
+              echo "::error::Unable to dispatch the shared Pages publisher after 5 attempts"
+              exit 1
+            fi
+            sleep $((attempt * 10))
+          done
+
+          # workflow_dispatch returns no run ID, so resolve the newly-created
+          # run by its event and creation time before watching it to completion.
+          for poll in $(seq 1 30); do
+            publish_id="$(gh run list --repo "$GITHUB_REPOSITORY" --workflow publish-pages.yml --limit 100 --json databaseId,createdAt,event --jq --arg since "$dispatch_started" 'map(select(.event == "workflow_dispatch" and .createdAt >= $since)) | sort_by(.createdAt) | reverse | .[0].databaseId // empty')"
+            if [ -n "$publish_id" ]; then
+              break
+            fi
+            sleep 5
+          done
+          if [ -z "$publish_id" ]; then
+            echo "::error::The shared Pages publisher run was not created"
+            exit 1
+          fi
+          gh run watch "$publish_id" --repo "$GITHUB_REPOSITORY" --exit-status --interval 30
