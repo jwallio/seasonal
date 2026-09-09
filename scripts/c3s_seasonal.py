@@ -173,14 +173,32 @@ class C3SError(RuntimeError):
     """A user-actionable C3S source or rendering error."""
 
 
+C3S_RELEASE_DAY = 10
+C3S_RELEASE_HOUR_UTC = 12
+
+
 def iso_utc(value: dt.datetime) -> str:
     return value.astimezone(dt.timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
 
 
+def latest_init(now: dt.datetime | None = None) -> str:
+    """Return the newest monthly issue that CDS can have released.
+
+    C3S/JMA current-month contributions are released on the 10th.  Selecting
+    the calendar month on the 1st–9th makes a manual ``latest`` run request a
+    known-restricted cycle and turns a harmless early-month refresh into a
+    failed Actions run.
+    """
+    now = now or dt.datetime.now(dt.timezone.utc)
+    year, month = now.year, now.month
+    if (now.day, now.hour) < (C3S_RELEASE_DAY, C3S_RELEASE_HOUR_UTC):
+        year, month = month_after(year, month, -1)
+    return f"{year:04d}{month:02d}0100"
+
+
 def parse_init(value: str) -> str:
     if value == "latest":
-        now = dt.datetime.now(dt.timezone.utc)
-        return f"{now.year:04d}{now.month:02d}0100"
+        return latest_init()
     if re.fullmatch(r"\d{6}", value):
         return f"{value}0100"
     if re.fullmatch(r"\d{8}", value):

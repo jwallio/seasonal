@@ -70,16 +70,22 @@ def main() -> int:
         workflow = (WORKFLOWS / name).read_text(encoding="utf-8")
         check(token in workflow.split("concurrency:", 1)[1].split("jobs:", 1)[0],
               f"{name} concurrency must include the requested product scope")
+    cfsv2 = (WORKFLOWS / "cfsv2.yml").read_text(encoding="utf-8")
+    check(cfsv2.count("- name: Render rolling CFSv2 products") == 1,
+          "CFSv2 workflow must not contain an incomplete duplicate render step")
+    check("actions: write" in cfsv2, "CFSv2 wrapper must allow the snowfall child to dispatch Pages")
     snow = (WORKFLOWS / "cfsv2-snow.yml").read_text(encoding="utf-8")
     check("cancel-in-progress: true" in snow, "snowfall acquisition must release stale locks")
     check("max-parallel: 4" in snow and "--workers 4" in snow, "snowfall acquisition should overlap bounded workers")
     check("run.get('conclusion') != 'success'" in snow and "No successful CFSv2 snowfall input artifact" in snow,
           "snowfall reuse must reject partial or failed source runs")
-    check("Wait for shared Pages publisher queue" in snow
-          and "gh workflow run publish-pages.yml" in snow
-          and "source_workflow=\"CFSv2 Snowfall Graphics\"" in snow
-          and "wn2-pages-publish" not in snow,
-          "snowfall publication must dispatch after draining the shared Pages queue")
+    handoff = (ROOT / ".github" / "actions" / "publish-pages" / "action.yml").read_text(encoding="utf-8")
+    check("./.github/actions/publish-pages" in snow
+          and "source-workflow: CFSv2 Snowfall Graphics" in snow
+          and "source-run-id: ${{ github.run_id }}" in snow
+          and "endswith" in handoff
+          and "conclusion" in handoff,
+          "snowfall publication must use the retrying, queue-safe Pages handoff")
     height = (WORKFLOWS / "height-style-refresh.yml").read_text(encoding="utf-8")
     check("scripts/height_display.py" in height and "workflow_dispatch:" in height,
           "500-mb styling should refresh when the shared height contract changes")
@@ -95,6 +101,8 @@ def main() -> int:
     for name, prefix in (("temperature-style-refresh.yml", "temperature-publish-refs-"),
                          ("height-style-refresh.yml", "height-publish-refs-")):
         maintenance = (WORKFLOWS / name).read_text(encoding="utf-8")
+        check("run: : > publish-refs.txt" not in maintenance,
+              f"{name} must use valid block-scalar YAML for its handoff file")
         check("style_refresh" in maintenance,
               f"{name} should suppress duplicate self-publishers during maintenance")
         check("Upload serialized Pages handoff" in maintenance
@@ -105,7 +113,7 @@ def main() -> int:
               and "actions/download-artifact@v4" in maintenance
               and "Publish self-dispatching provider payloads" in maintenance,
               f"{name} should publish self-publishing refs in one batch")
-        check("sort_by(.createdAt)" in maintenance and "Pages publisher queue did not drain" in maintenance,
+        check("displayTitle" in maintenance and "endswith" in maintenance and "Pages publisher queue did not drain" in maintenance,
               f"{name} should resolve and retry the serialized Pages handoff")
     print("SEASONAL ACTIONS CONTRACT OK: planned matrices, shared tools, product-scoped workers, and bounded publishers")
     return 0

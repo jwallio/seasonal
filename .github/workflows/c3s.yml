@@ -254,22 +254,8 @@ jobs:
       # recursion guard. An explicit workflow_dispatch remains permitted.
       - name: Dispatch C3S Pages publish
         if: ${{ success() && inputs.style_refresh != true }}
-        env:
-          GH_TOKEN: ${{ github.token }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          for attempt in 1 2 3 4 5; do
-            if gh workflow run publish-pages.yml \
-              --ref "${{ github.event.repository.default_branch }}" \
-              -f source_workflow="C3S Multi-System Seasonal Graphics" \
-              -f source_run_id="$GITHUB_RUN_ID"; then
-              break
-            fi
-            if [[ "$attempt" == 5 ]]; then
-              echo "::error::Pages dispatch failed after five attempts"
-              exit 1
-            fi
-            sleep $((attempt * 10))
-          done
+        uses: ./.github/actions/publish-pages
+        with:
+          source-workflow: C3S Multi-System Seasonal Graphics
+          source-run-id: ${{ github.run_id }}
 

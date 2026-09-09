@@ -167,7 +167,7 @@ jobs:
                 fi
                 publish_id=""
                 for lookup in {1..24}; do
-                  publish_id=$(gh run list --workflow publish-pages.yml --event workflow_dispatch --limit 20 --json databaseId,createdAt --jq "map(select(.event == \"workflow_dispatch\" and .createdAt >= \"$publish_started\")) | sort_by(.createdAt) | if length > 0 then .[-1].databaseId else empty end")
+                  publish_id=$(gh run list --workflow publish-pages.yml --event workflow_dispatch --limit 20 --json databaseId,createdAt,displayTitle,event --jq ".[] | select(.event == \"workflow_dispatch\" and .createdAt >= \"$publish_started\" and (.displayTitle | endswith(\" · $source_run_id\"))) | .databaseId" | head -1)
                   [[ -n "$publish_id" ]] && break
                   sleep 5
                 done
@@ -195,4 +195,3 @@ jobs:
             failed=1
           fi
           exit "$failed"
-

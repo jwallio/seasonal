@@ -2,6 +2,7 @@
 """Static C3S adapter, workflow, and dashboard contracts."""
 
 import importlib.util
+import datetime as dt
 import json
 from pathlib import Path
 import sys
@@ -71,6 +72,12 @@ def main() -> int:
     check(module.CENTRES["ukmo"]["system"] == "610", "C3S UKMO must use operational GloSea6-GC5.1 system 610")
     check(module.CENTRES["ukmo"]["model_version"] == "GloSea6-GC5.1", "C3S UKMO model version metadata is stale")
     check(module.target_month("2026080100", 4) == "202612", "C3S lead conversion should produce December")
+    check(module.latest_init(dt.datetime(2026, 9, 9, tzinfo=dt.timezone.utc)) == "2026080100",
+          "C3S/JMA latest must fall back before the documented day-10 release")
+    check(module.latest_init(dt.datetime(2026, 9, 10, 11, tzinfo=dt.timezone.utc)) == "2026080100",
+          "C3S/JMA latest must wait for the documented 12Z release")
+    check(module.latest_init(dt.datetime(2026, 9, 10, 12, tzinfo=dt.timezone.utc)) == "2026090100",
+          "C3S/JMA latest should select the current issue after release")
     check(module.period_label("202612", "202702") == "DJF 2026–27", "C3S DJF period label should identify both winter years")
     height_spec = module.PRODUCT_SPECS["500mb_height_anomaly"]
     check((height_spec["anomaly_min"], height_spec["anomaly_max"]) == (-200.0, 200.0), "C3S and JMA 500-mb maps should use the shared ±200 m range")

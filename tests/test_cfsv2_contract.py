@@ -695,9 +695,11 @@ def main() -> int:
     check("workflow_call:" in workflow, "CFSv2 workflow should be reusable by focused product menus")
     # Corrected surface-phase snowfall now has its own scheduled pipeline.
     for term in ("name: CFSv2 Snowfall Graphics", "cfsv2_surface_schedule.py select",
-                 "cfsv2_surface_phase_build.py", "merge_cfsv2_surface_release.py",
-                 "operational-winter", "DJF and JFM", "45 5,11,17,23 * * *"):
+                 "cfsv2_surface_phase_build.py", "operational-winter", "DJF and JFM",
+                 "45 5,11,17,23 * * *"):
         check(term in snow_workflow, f"corrected snowfall workflow missing term: {term}")
+    check("merge_cfsv2_surface_release.py" in pages_workflow,
+          "central Pages workflow must perform the corrected snowfall merge")
     check("uses: ./.github/workflows/cfsv2-snow.yml" in workflow,
           "manual snowfall selections must delegate to the corrected pipeline")
     check("uses: ./.github/workflows/cfsv2.yml" not in snow_workflow,

@@ -87,7 +87,7 @@ def main() -> int:
             footer_pixel = image.convert("RGB").getpixel((2, image.height - 2))
             check(all(abs(left - right) <= 8 for left, right in zip(footer_pixel, BRAND_BACKGROUND)), "share footer should use wall.cloud styling")
         second = build_share_images(site)
-        check(second["refreshed"] == 2, "repeat publication should refresh branded derivatives")
+        check(second["skipped"] == 2 and second["refreshed"] == 0, "repeat publication should reuse unchanged branded derivatives")
 
     with tempfile.TemporaryDirectory() as temporary:
         site = Path(temporary)
@@ -104,4 +104,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

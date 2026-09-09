@@ -119,9 +119,9 @@ def main() -> int:
     for relative_path, workflow_name in CDS_WORKER_PUBLISHERS.items():
         text = (ROOT / relative_path).read_text(encoding="utf-8")
         check("actions: write" in text, f"{relative_path} must be allowed to dispatch its Pages publisher")
-        check("gh workflow run publish-pages.yml" in text, f"{relative_path} must explicitly dispatch its Pages publisher")
-        check(f'-f source_workflow="{workflow_name}"' in text, f"{relative_path} must identify its publisher source")
-        check('-f source_run_id="$GITHUB_RUN_ID"' in text, f"{relative_path} must publish its own artifact run")
+        check("./.github/actions/publish-pages" in text, f"{relative_path} must use the queue-safe Pages handoff")
+        check(f"source-workflow: {workflow_name}" in text, f"{relative_path} must identify its publisher source")
+        check("source-run-id: ${{ github.run_id }}" in text, f"{relative_path} must publish its own artifact run")
         check(workflow_name not in workflow_run_triggers, f"{workflow_name} must not also create a duplicate workflow_run publish")
 
     for relative_path in HISTORY_WORKFLOWS:

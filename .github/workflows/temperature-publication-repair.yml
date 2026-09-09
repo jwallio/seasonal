@@ -103,7 +103,7 @@ jobs:
                   done
                   publish_id=""
                   for attempt in {1..24}; do
-                    publish_id=$(gh run list --workflow publish-pages.yml --event workflow_dispatch --limit 20 --json databaseId,createdAt --jq ".[] | select(.createdAt >= \"$publish_started\") | .databaseId" | head -1)
+                    publish_id=$(gh run list --workflow publish-pages.yml --event workflow_dispatch --limit 20 --json databaseId,createdAt,displayTitle,event --jq ".[] | select(.event == \"workflow_dispatch\" and .createdAt >= \"$publish_started\" and (.displayTitle | endswith(\" · $run_id\"))) | .databaseId" | head -1)
                     [[ -n "$publish_id" ]] && break
                     sleep 5
                   done

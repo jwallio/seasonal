@@ -76,13 +76,15 @@ def main() -> int:
         write_image(site / snowfall_asset, (1080, 1080), "lightgreen")
         second = build_thumbnails(site, max_width=560, quality=82)
         check(
-            second["created"] == 0 and second["refreshed"] == 3 and second["missing"] == 0,
-            "existing thumbnails should refresh from current source images",
+            second["created"] == 0 and second["refreshed"] == 1 and second["skipped"] == 2 and second["missing"] == 0,
+            "only thumbnails whose source images changed should refresh",
         )
         check(
             snowfall_thumbnail.read_bytes() != previous_snowfall_thumbnail,
             "thumbnail content should change when its source image changes",
         )
+        third = build_thumbnails(site, max_width=560, quality=82)
+        check(third["skipped"] == 3 and third["refreshed"] == 0, "unchanged thumbnails should reuse the source-hash cache")
         normalized = normalize_asset_path("public/seasonal/cfsv2/run/map.jpg")
         check(normalized is not None, "public seasonal path should normalize")
         check(str(thumbnail_asset_path(normalized)) == "seasonal/thumbnails/cfsv2/run/map.webp", "thumbnail path contract changed")

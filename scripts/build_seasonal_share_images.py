@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 from pathlib import Path, PurePosixPath
 from typing import Any, Iterable
@@ -20,6 +21,7 @@ IMAGE_SUFFIXES = frozenset({".jpg", ".jpeg", ".png", ".webp"})
 BRAND_BACKGROUND = (8, 20, 27)
 BRAND_FOREGROUND = (243, 247, 249)
 BRAND_ACCENT = (89, 212, 192)
+SHARE_IMAGE_CACHE_VERSION = 1
 
 
 def normalize_asset_path(value: Any) -> PurePosixPath | None:
@@ -102,6 +104,39 @@ def _published_share_path(site_root: Path, asset_path: PurePosixPath) -> PurePos
     return PurePosixPath(*share_path.parts[1:])
 
 
+def _cache_path(site_root: Path) -> Path:
+    share_root = site_root / "seasonal" / "share" if (site_root / "seasonal").is_dir() else site_root / "share"
+    return share_root / ".source-hashes.json"
+
+
+def _sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _load_cache(path: Path) -> dict[str, str]:
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+    if not isinstance(payload, dict) or payload.get("version") != SHARE_IMAGE_CACHE_VERSION or not isinstance(payload.get("assets"), dict):
+        return {}
+    return {str(key): str(value) for key, value in payload["assets"].items()}
+
+
+def _save_cache(path: Path, assets: dict[str, str]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_suffix(f"{path.suffix}.tmp")
+    temporary.write_text(
+        json.dumps({"version": SHARE_IMAGE_CACHE_VERSION, "assets": assets}, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    temporary.replace(path)
+
+
 def _brand_font(size: int) -> ImageFont.ImageFont:
     candidates = (
         "DejaVuSans-Bold.ttf",
@@ -162,7 +197,10 @@ def save_branded_image(source: Path, destination: Path) -> None:
 
 def build_share_images(site_root: Path) -> dict[str, Any]:
     site_root = site_root.resolve()
-    summary: dict[str, Any] = {"created": 0, "refreshed": 0, "missing": 0, "missing_assets": []}
+    cache_path = _cache_path(site_root)
+    previous_cache = _load_cache(cache_path)
+    current_cache: dict[str, str] = {}
+    summary: dict[str, Any] = {"created": 0, "refreshed": 0, "skipped": 0, "missing": 0, "missing_assets": []}
     for asset_path in sorted(load_share_assets(site_root), key=str):
         source_path = _published_asset_path(site_root, asset_path)
         source = site_root.joinpath(*source_path.parts)
@@ -173,8 +211,15 @@ def build_share_images(site_root: Path) -> dict[str, Any]:
             summary["missing_assets"].append(str(asset_path))
             continue
         existed = destination.is_file() and destination.stat().st_size > 0
+        source_hash = _sha256(source)
+        cache_key = asset_path.as_posix()
+        current_cache[cache_key] = source_hash
+        if existed and previous_cache.get(cache_key) == source_hash:
+            summary["skipped"] += 1
+            continue
         save_branded_image(source, destination)
         summary["refreshed" if existed else "created"] += 1
+    _save_cache(cache_path, current_cache)
     return summary
 
 
@@ -194,4 +239,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

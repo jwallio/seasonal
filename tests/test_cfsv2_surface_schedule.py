@@ -52,6 +52,18 @@ class PublicationTests(unittest.TestCase):
         native=deepcopy(self.runs[0]);native['raw_field']='SRWEQ'
         result=preserve_surface({'runs':self.runs},{'runs':[native]})
         self.assertEqual(result['runs'],self.runs)
+    def test_snowfall_payload_preserves_all_weather_products(self):
+        weather=dict(id='weather-500',product='500mb_height_anomaly',init_utc='2026-09-06T12:00:00Z')
+        incoming=deepcopy(self.runs)
+        for run in incoming:
+            run['id']=run['id'].replace('2026090612', '2026090806')
+            run['init_utc']='2026-09-08T06:00:00Z'
+        result=preserve_surface({'runs':[weather, *self.runs]}, {'runs':incoming})
+        self.assertIn(weather, result['runs'])
+        self.assertEqual(
+            {run['id'] for run in result['runs']},
+            {weather['id'], *(run['id'] for run in self.runs), *(run['id'] for run in incoming)},
+        )
     def test_reject_incomplete_pair(self):
         with self.assertRaises(ValueError): merge({'runs':[]},{'runs':self.runs[:1]},'2026090612')
 

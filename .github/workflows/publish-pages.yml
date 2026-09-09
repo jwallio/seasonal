@@ -1,4 +1,8 @@
 name: Publish Seasonal Model Dashboard Pages
+run-name: >-
+  Publish Pages ·
+  ${{ github.event_name == 'workflow_run' && github.event.workflow_run.name || inputs.source_workflow }} ·
+  ${{ github.event_name == 'workflow_run' && github.event.workflow_run.id || inputs.source_run_id }}
 
 on:
   workflow_run:
@@ -330,7 +334,7 @@ jobs:
                 cp -R "$payload_root/runs/." site/wn2/runs/
               fi
               ;;
-            "CFSv2 Rolling Seasonal Graphics"|"CFSv2 Snowfall Graphics")
+            "CFSv2 Rolling Seasonal Graphics")
               payload_root=incoming/cfsv2
               if [ -d "$payload_root/pages-payload" ]; then
                 payload_root="$payload_root/pages-payload"
@@ -340,6 +344,21 @@ jobs:
               test -f "$payload_root/cfsv2_manifest.json"
               mkdir -p site/cfsv2
               python dashboard-source/scripts/merge_cfsv2_surface_release.py --incoming "$payload_root" --site site --preserve
+              ;;
+            "CFSv2 Snowfall Graphics")
+              payload_root=incoming/cfsv2
+              if [ -d "$payload_root/pages-payload" ]; then
+                payload_root="$payload_root/pages-payload"
+              elif [ -d "$payload_root/.pages-payload" ]; then
+                payload_root="$payload_root/.pages-payload"
+              fi
+              test -f "$payload_root/cfsv2_manifest.json"
+              test -f "$payload_root/surface-plan.json"
+              mkdir -p site/cfsv2
+              # The corrected pair has a stricter contract than a normal
+              # weather overlay: validate the pair and its selected cycle,
+              # then merge it without replacing unrelated CFSv2 products.
+              python dashboard-source/scripts/merge_cfsv2_surface_release.py --incoming "$payload_root" --site site
               ;;
             "ECMWF SEAS5 Seasonal Graphics")
               payload_root=incoming/seas5
@@ -518,4 +537,3 @@ jobs:
           keep_files: false
           force_orphan: false
           enable_jekyll: false
-

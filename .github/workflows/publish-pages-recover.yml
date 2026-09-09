@@ -1,0 +1,54 @@
+name: Recover superseded Seasonal Pages publication
+run-name: "Recover Pages publisher #${{ github.event.workflow_run.id }}"
+
+on:
+  workflow_run:
+    workflows:
+      - Publish Seasonal Model Dashboard Pages
+    types:
+      - completed
+
+permissions:
+  actions: write
+  contents: read
+
+concurrency:
+  group: seasonal-pages-recovery-${{ github.event.workflow_run.id }}
+  cancel-in-progress: false
+
+jobs:
+  requeue:
+    if: ${{ github.event.workflow_run.conclusion == 'cancelled' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Requeue the cancelled source handoff
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RUN_TITLE: ${{ github.event.workflow_run.display_title }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          prefix="Publish Pages · "
+          if [[ "$RUN_TITLE" != "$prefix"* ]]; then
+            echo "::warning::Cancelled Pages run has no queue metadata; nothing to requeue: $RUN_TITLE"
+            exit 0
+          fi
+          payload="${RUN_TITLE#"$prefix"}"
+          source_workflow="${payload% · *}"
+          source_run_id="${payload##* · }"
+          if [[ -z "$source_workflow" || ! "$source_run_id" =~ ^[0-9]+$ ]]; then
+            echo "::warning::Could not parse cancelled Pages source: $RUN_TITLE"
+            exit 0
+          fi
+          case "$source_workflow" in
+            "WeatherNext Runner"|"WeatherNext Runner Custom"|"CFSv2 Rolling Seasonal Graphics"|"CFSv2 Snowfall Graphics"|"ECMWF SEAS5 Seasonal Graphics"|"CanSIPS v3 Seasonal Graphics"|"CMA CPSv3 Seasonal Graphics"|"C3S Multi-System Seasonal Graphics"|"JMA Seasonal Graphics"|"APCC MME Seasonal Graphics"|"NASA GEOS-S2S-3 Seasonal Graphics"|"NOAA NMME Seasonal Graphics"|"Deduplicated Seasonal Super Ensemble"|"Seasonal 500-mb Pattern Analogs") ;;
+            *)
+              echo "::warning::Cancelled Pages source is not a supported producer: $source_workflow"
+              exit 0
+              ;;
+          esac
+          gh workflow run publish-pages.yml --repo "$GH_REPO" --ref main \
+            -f source_workflow="$source_workflow" -f source_run_id="$source_run_id"
+          echo "Requeued $source_workflow run $source_run_id after Pages run ${{ github.event.workflow_run.id }} was superseded."
