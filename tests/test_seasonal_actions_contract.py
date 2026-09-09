@@ -52,6 +52,9 @@ def main() -> int:
     check("cancel-in-progress: false" in publisher, "Pages publishing must remain serialized")
     check("cache-dependency-path: dashboard-source/scripts/temperature_display.py" in publisher,
           "Pages pip cache must reference a file included in the sparse checkout")
+    check("CFSv2 Snowfall Graphics" in publisher and "name: corrected-snowfall-ready" in publisher
+          and "path: incoming/cfsv2" in publisher,
+          "shared Pages publisher must accept the corrected snowfall artifact")
     product_scoped = {
         "apcc.yml": "inputs.product",
         "cansips.yml": "inputs.product",
@@ -72,6 +75,11 @@ def main() -> int:
     check("max-parallel: 4" in snow and "--workers 4" in snow, "snowfall acquisition should overlap bounded workers")
     check("run.get('conclusion') != 'success'" in snow and "No successful CFSv2 snowfall input artifact" in snow,
           "snowfall reuse must reject partial or failed source runs")
+    check("Wait for shared Pages publisher queue" in snow
+          and "gh workflow run publish-pages.yml" in snow
+          and "source_workflow=\"CFSv2 Snowfall Graphics\"" in snow
+          and "wn2-pages-publish" not in snow,
+          "snowfall publication must dispatch after draining the shared Pages queue")
     height = (WORKFLOWS / "height-style-refresh.yml").read_text(encoding="utf-8")
     check("scripts/height_display.py" in height and "workflow_dispatch:" in height,
           "500-mb styling should refresh when the shared height contract changes")
