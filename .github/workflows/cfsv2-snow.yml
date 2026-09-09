@@ -274,7 +274,7 @@ jobs:
           # workflow_dispatch returns no run ID, so resolve the newly-created
           # run by its event and creation time before watching it to completion.
           for poll in $(seq 1 30); do
-            publish_id="$(gh run list --repo "$GITHUB_REPOSITORY" --workflow publish-pages.yml --limit 100 --json databaseId,createdAt,event --jq --arg since "$dispatch_started" 'map(select(.event == "workflow_dispatch" and .createdAt >= $since)) | sort_by(.createdAt) | reverse | .[0].databaseId // empty')"
+            publish_id="$(gh run list --repo "$GITHUB_REPOSITORY" --workflow publish-pages.yml --limit 100 --json databaseId,createdAt,event --jq "map(select(.event == \"workflow_dispatch\" and .createdAt >= \"$dispatch_started\")) | sort_by(.createdAt) | reverse | .[0].databaseId // empty")"
             if [ -n "$publish_id" ]; then
               break
             fi
