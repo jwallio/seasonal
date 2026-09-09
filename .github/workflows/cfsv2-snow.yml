@@ -6,7 +6,7 @@ on:
     - cron: '45 5,11,17,23 * * *'
   push:
     branches: [main]
-    paths: ['.github/workflows/cfsv2-snow.yml', 'scripts/cfsv2_surface_schedule.py', 'scripts/cfsv2_surface_phase_build.py']
+    paths: ['.github/workflows/cfsv2-snow.yml', 'scripts/cfsv2_surface_schedule.py', 'scripts/cfsv2_surface_phase_build.py', 'scripts/cfsv2_surface_phase.py']
   workflow_dispatch:
     inputs:
       product:

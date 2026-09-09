@@ -1,7 +1,8 @@
 """Estimated snowfall from six-hour APCP and surface precipitation type.
 
 Reconstruct each cycle before ensemble/reference averaging. The trapezoid
-uses the two endpoint CSNOW indicators; it is a sampling approximation,
+uses the two endpoint CSNOW indicators, excludes endpoint sleet, and
+zeros the entire interval if either endpoint flags rain or freezing rain; it is a sampling approximation,
 not a measured within-interval snow fraction. All amounts stay in inches
 water equivalent until the existing 10:1 display boundary.
 """
@@ -14,7 +15,7 @@ from pathlib import Path
 import eccodes as ec
 import numpy as np
 
-METHOD = "surface_phase_apcp_endpoint_trapezoid_v1"
+METHOD = "surface_phase_apcp_interval_rain_frzr_veto_v2"
 YEARS = list(range(2011, 2026))
 PARAMETERS = {"apcp": 8, "crain": 192, "cfrzr": 193, "cicep": 194, "csnow": 195}
 
@@ -51,6 +52,21 @@ def interval_amount(apcp, snow_start, snow_end):
     if not all(np.isin(x, [0., 1.]).all() for x in (a, b)):
         raise ValueError("CSNOW must contain categorical 0/1 values")
     return p * (a+b) / (2*25.4)
+
+
+
+def operational_interval_amount(apcp, previous, current):
+    """Veto the entire interval for endpoint rain/freezing rain; exclude endpoint sleet."""
+    previous, current = np.asarray(previous), np.asarray(current)
+    expected = (4, *np.asarray(apcp).shape)
+    if previous.shape != expected or current.shape != expected:
+        raise ValueError("Precipitation and phase grids differ")
+    if not all(np.isin(a, [0., 1.]).all() for a in (previous, current)):
+        raise ValueError("Phase flags must contain categorical 0/1 values")
+    a = previous[0] * ((previous[2] == 0) & (previous[3] == 0))
+    b = current[0] * ((current[2] == 0) & (current[3] == 0))
+    veto = (previous[1] > 0) | (current[1] > 0) | (previous[3] > 0) | (current[3] > 0)
+    return np.where(veto, 0., interval_amount(apcp, a, b))
 
 
 def read_field(path, field, init, valid):
@@ -116,7 +132,7 @@ def reconstruct(init, target, source):
     for valid in times[1:]:
         current = phase(valid)
         p = field(valid, "apcp")
-        amounts["lwe"] += interval_amount(p, previous[0], current[0])
+        amounts["lwe"] += operational_interval_amount(p, previous, current)
         amounts["precip_lwe"] += p/25.4
         amounts["start_phase_lwe"] += p*previous[0]/25.4
         amounts["end_phase_lwe"] += p*current[0]/25.4
@@ -133,7 +149,7 @@ def reconstruct(init, target, source):
                 interval_hours=6, intervals=len(times)-1,
                 first_endpoint=times[0], last_endpoint=times[-1],
                 source_records=records, quantity="estimated snowfall water equivalent",
-                temporal_assumption="linear interpolation of endpoint CSNOW indicators",
+                temporal_assumption="endpoint snow trapezoid with whole-interval rain/freezing-rain veto and endpoint sleet exclusion",
                 observation_bias_adjustment=False)
     return dict(lons=axes[0], lats=axes[1], **amounts), meta
 
@@ -290,7 +306,7 @@ def decode(args, init, target, members, rolling_inits, *unused):
         sources.append({k: meta[k] for k in ("initialization", "target_month", "method", "grid_sha256", "intervals")})
     lwe = strict_mean(grids, expected=len(rolling_inits))
     diagnostics = dict(method=METHOD, snow_to_liquid_ratio=10.,
-                       temporal_assumption="trapezoid of six-hour endpoint CSNOW flags",
+                       temporal_assumption="endpoint snow trapezoid with whole-interval rain/freezing-rain veto and endpoint sleet exclusion",
                        observation_bias_adjustment=False)
     result = lwe
     if args.product == "snowfall_accumulation":

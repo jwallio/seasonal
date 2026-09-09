@@ -2583,9 +2583,9 @@ def seasonal_baseline_manifest(
         metadata["rolling_policy"] = "anchor_initialization"
         metadata["anchor_init"] = rolling_init
 
-    if any(item.get("method") == "surface_phase_apcp_endpoint_trapezoid_v1" for item in monthly_baselines):
+    if any(item.get("method") == "surface_phase_apcp_interval_rain_frzr_veto_v2" for item in monthly_baselines):
         first = monthly_baselines[0]
-        if (any(item.get("method") != "surface_phase_apcp_endpoint_trapezoid_v1" for item in monthly_baselines)
+        if (any(item.get("method") != "surface_phase_apcp_interval_rain_frzr_veto_v2" for item in monthly_baselines)
                 or any(item.get("historical_years") != first.get("historical_years")
                        or item.get("forecast_cycles") != first.get("forecast_cycles") for item in monthly_baselines)):
             raise CFSv2Error("Seasonal surface-phase departures require identical methods, years, and cycle windows")
@@ -3822,7 +3822,7 @@ def _run_single_window(args: argparse.Namespace) -> int:
         product = dict(product, raw_field="APCP + CSNOW:surface", raw_units="kg m-2",
                        source_kind="pgbf", dependencies=(), estimated_snow_depth=True,
                        title="CFSv2 Estimated Snowfall " + ("Departure" if product_name == PRODUCT_SNOWFALL_ANOMALY else "Accumulation"),
-                       snowfall_input_kind="Surface precipitation type · six-hour reconstruction",
+                       snowfall_input_kind="Surface precipitation type · six-hour rain/freezing-rain exclusion",
                        monthly_aggregation="monthly accumulated surface-phase snowfall",
                        conversion="Six-hour APCP times mean endpoint CSNOW; matched-method reference; fixed 10:1 display")
     requires_baseline = bool(product.get("requires_baseline", not absolute))

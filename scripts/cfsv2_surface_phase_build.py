@@ -185,8 +185,11 @@ class Source:
 def build_month(cache, output, init, target, offline=False):
     stem = phase.month_stem(output, init, target)
     if stem.with_suffix(".npz").exists() and stem.with_suffix(".json").exists():
-        phase.load_month(output, init, target)
-        return
+        meta = json.loads(stem.with_suffix(".json").read_text())
+        if meta.get("method") == phase.METHOD:
+            phase.load_month(output, init, target)
+            return
+        print(f"Rebuilding obsolete method for {init}/{target}", flush=True)
     arrays, meta = phase.reconstruct(init, target, Source(cache, init, offline))
     phase.save_bundle(stem, arrays, meta)
     phase.load_month(output, init, target)
