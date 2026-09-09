@@ -7,7 +7,7 @@ Reviewed all 24 workflow files on main. 21 remain active; three obsolete/researc
 - Four source caches now save updated data under unique run/attempt keys; prior prefixes remain reusable. Fixed keys could restore old data forever without saving new downloads. See [GitHub cache behavior](https://docs.github.com/en/actions/reference/workflows-and-actions/dependency-caching).
 - A repeated scheduled snowfall plan skips all 16 acquisition jobs and rendering/publication when the full published plan and rendering signature match. Missing/unreadable state rebuilds normally; manual/push runs always rebuild. The acquisition lock now cancels stale progress, rejects failed/partial source artifacts, uses four workers, and bounds each download command. This is not a shortcut for the first new-method reference rebuild.
 - Raw-data concurrency stays bounded; product-scoped producer locks keep 500-mb, 850-mb, and 2-m temperature publications from canceling one another. No scientific checks, historical years, cycle membership, or snowfall formula changed.
-- The shared temperature palette refreshes automatically when its contract changes, with four-way provider fan-out, bounded producer handoffs, five-attempt dispatch retries, and a drained serialized Pages queue. The repair workflow is manual-only so one edit cannot launch duplicate fan-outs; operational schedules remain unchanged.
+- The shared temperature palette refreshes automatically when its contract changes, with four-way provider fan-out, bounded producer handoffs, five-attempt dispatch retries, and a drained serialized Pages queue. The shared 500-mb style refresh uses the same safeguards for both North America and Northern Hemisphere views. The repair workflow is manual-only so one edit cannot launch duplicate fan-outs; operational schedules remain unchanged.
 
 ## Workflow inventory
 
@@ -21,7 +21,7 @@ Reviewed all 24 workflow files on main. 21 remain active; three obsolete/researc
 | `cfsv2.yml` | Removed unused native-snow reference cache transfers; retry-specific rolling cache keys. Scheduled products already exclude snowfall, so no duplicate scheduled snow pipeline was found. |
 | `cma-cpsv3.yml` | Retained monthly schedule and per-run source cache. |
 | `geos-s2s3.yml` | Retained monthly schedule and per-run source cache. |
-| `height-style-refresh.yml` | Manual-only maintenance entry; no automatic fan-out on edits. |
+| `height-style-refresh.yml` | Automatic refresh on shared 500-mb style edits; four-way matrix, bounded waits, retries, and serialized Pages handoff for NA and NH views. |
 | `jma.yml` | Fixed immutable source cache key to save new downloads per run/attempt. |
 | `nmme.yml` | Fixed immutable source cache key to save new downloads per run/attempt. |
 | `publish-pages.yml` | Removed misleading operational-snow option (that workflow publishes its own differently named payload); added 30-minute timeout. Shared publish serialization preserved. |
