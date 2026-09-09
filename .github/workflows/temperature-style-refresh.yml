@@ -10,7 +10,7 @@ permissions:
 
 concurrency:
   # A newer maintenance run supersedes a stale fan-out.
-  group: temperature-style-refresh-${{ github.ref }}
+  group: temperature-maintenance-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:

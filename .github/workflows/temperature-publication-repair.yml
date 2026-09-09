@@ -1,8 +1,6 @@
 name: Maintenance - Repair temperature publication
 on:
-  push:
-    branches: [main]
-    paths: [.github/workflows/temperature-publication-repair.yml]
+  # Manual repair only; normal palette changes use the style-refresh fan-out.
   workflow_dispatch:
 permissions:
   actions: write
@@ -10,7 +8,7 @@ permissions:
 
 concurrency:
   # A newer maintenance run supersedes a stale fan-out.
-  group: temperature-publication-repair-${{ github.ref }}
+  group: temperature-maintenance-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
