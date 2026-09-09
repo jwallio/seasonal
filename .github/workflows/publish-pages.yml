@@ -25,6 +25,7 @@ on:
           - WeatherNext Runner
           - WeatherNext Runner Custom
           - CFSv2 Rolling Seasonal Graphics
+          - CFSv2 Snowfall Graphics
           - ECMWF SEAS5 Seasonal Graphics
           - CanSIPS v3 Seasonal Graphics
           - CMA CPSv3 Seasonal Graphics
@@ -140,6 +141,16 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: cfsv2-pages-${{ env.SOURCE_RUN_ID }}
+          path: incoming/cfsv2
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: ${{ env.SOURCE_RUN_ID }}
+
+      - name: Download corrected snowfall payload
+        if: ${{ env.SOURCE_WORKFLOW == 'CFSv2 Snowfall Graphics' }}
+        uses: actions/download-artifact@v4
+        with:
+          name: corrected-snowfall-ready
           path: incoming/cfsv2
           github-token: ${{ secrets.GITHUB_TOKEN }}
           repository: ${{ github.repository }}
