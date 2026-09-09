@@ -12,7 +12,9 @@ from cfsv2_surface_phase_build import Source
 def strict_amount(p, previous, current):
     a = previous[0] * ((previous[2] == 0) & (previous[3] == 0))
     b = current[0] * ((current[2] == 0) & (current[3] == 0))
-    return phase.interval_amount(p, a, b)
+    # Rain/freezing rain at either endpoint vetoes the whole interval.
+    veto = (previous[1] > 0) | (current[1] > 0) | (previous[3] > 0) | (current[3] > 0)
+    return np.where(veto, 0.0, phase.interval_amount(p, a, b))
 
 def acquire(init, target, year, output, raw):
     historical_init = str(year) + init[4:]
@@ -47,7 +49,7 @@ def acquire(init, target, year, output, raw):
     np.savez_compressed(path, lons=axes[0], lats=axes[1], baseline=baseline, strict=strict)
     path.with_suffix('.json').write_text(json.dumps(dict(init=historical_init,target=historical_target,
         year=year,forecast_init=init,forecast_target=target,intervals=len(times)-1,
-        sha256=phase.digest(path),records=records,method='endpoint_snow_excluding_icep_frzr_v1'),indent=2))
+        sha256=phase.digest(path),records=records,method='interval_rain_frzr_veto_endpoint_sleet_v2'),indent=2))
 
 def render(init, target, directory, output):
     import matplotlib
@@ -61,6 +63,7 @@ def render(init, target, directory, output):
         path=directory/f'{year}.npz';meta=json.loads(path.with_suffix('.json').read_text())
         assert meta['forecast_init']==init and meta['forecast_target']==target
         assert meta['sha256']==phase.digest(path)
+        assert meta['method']=='interval_rain_frzr_veto_endpoint_sleet_v2'
         with np.load(path) as z: bundles[year]={k:z[k].copy() for k in z.files}
         assert meta['intervals']==calendar.monthrange(int(meta['target'][:4]),int(target[4:]))[1]*4
     forecast=bundles[int(init[:4])]; days=calendar.monthrange(int(target[:4]),int(target[4:]))[1]
@@ -86,11 +89,21 @@ def render(init, target, directory, output):
                 xx,yy=n.project(pts[a:b,0],pts[a:b,1]);ax.plot(xx,yy,color='#172735',linewidth=.6);extent.extend(zip(xx,yy))
             extent=np.array(extent);ax.set_xlim(extent[:,0].min()-.006,extent[:,0].max()+.006);ax.set_ylim(extent[:,1].min()-.006,extent[:,1].max()+.006)
             ax.set_aspect('equal');ax.set_xticks([]);ax.set_yticks([])
-            ax.set_title(('Current method' if col==0 else 'Exclude sleet/freezing rain')+' — '+('accumulation' if row==0 else 'departure')+' (in)')
+            ax.set_title(('Current method' if col==0 else 'Whole-interval rain/freezing-rain veto')+' — '+('accumulation' if row==0 else 'departure')+' (in)')
             fig.colorbar(z,ax=ax,orientation='horizontal',ticks=bounds,spacing='uniform',fraction=.05,pad=.025).ax.tick_params(labelsize=6)
             stats[k]['accumulation' if row==0 else 'departure']={'min':float(np.nanmin(field)),'max':float(np.nanmax(field))}
     fig.suptitle(f'CFSv2 STRICT SNOW-ONLY TEST — NOT OPERATIONAL\nInit {init}; valid {target}; ONE forecast cycle; 15 matched historical initializations (2011–2025)\nEach method uses its own reference; fixed 10:1 ratio; endpoint transition approximation',fontsize=13)
     output.mkdir(parents=True,exist_ok=True);fig.savefig(output/'comparison.png',dpi=150,bbox_inches='tight');plt.close(fig)
+    stats['difference_inches_global_grid'] = {}
+    for name, delta in (
+        ('accumulation', (forecast['strict']-forecast['baseline'])*10),
+        ('reference', (references['strict']-references['baseline'])*10),
+        ('departure', ((forecast['strict']-references['strict'])-(forecast['baseline']-references['baseline']))*10),
+    ):
+        stats['difference_inches_global_grid'][name] = dict(
+            min=float(np.min(delta)), max=float(np.max(delta)),
+            changed_cells=int(np.count_nonzero(delta)), total_cells=int(delta.size))
+    print(json.dumps(stats, indent=2), flush=True)
     (output/'results.json').write_text(json.dumps(stats,indent=2))
 
 def main():
