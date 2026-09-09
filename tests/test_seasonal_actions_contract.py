@@ -89,8 +89,9 @@ def main() -> int:
           "500-mb styling should refresh both views with bounded workers")
     check("publish_wait >= 1800" in height and "Pages publisher queue did not drain" in height,
           "500-mb handoff should wait for a bounded serialized Pages queue")
-    check("${provider}_manifest.json" in height and "init_arg=$(PRODUCT=" in height,
-          "C3S/JMA style refresh should fall back to the last published accessible cycle")
+    check("${provider}_manifest.json" in height and "init_arg=$(PRODUCT=" in height
+          and "No prior accessible" in height,
+          "C3S/JMA style refresh should fall back or skip when no accessible cycle exists")
     print("SEASONAL ACTIONS CONTRACT OK: planned matrices, shared tools, product-scoped workers, and bounded publishers")
     return 0
 
