@@ -298,32 +298,7 @@ TEMPERATURE_ANOMALY_TICKS = [value / 2.0 for value in range(-12, 13)]
 # Retain the CFSv2 name for callers that imported the former model-specific
 # tick list; CFSv2 now uses the shared scale too.
 CFSV2_TEMPERATURE_ANOMALY_TICKS = TEMPERATURE_ANOMALY_TICKS
-TEMPERATURE_ANOMALY_PALETTE = [
-    "#173b7a",
-    "#1d5199",
-    "#2269b2",
-    "#2785c4",
-    "#49a2d4",
-    "#71bce1",
-    "#9ad3e9",
-    "#bbe1ef",
-    "#d6ebf2",
-    "#e7f1f4",
-    "#f4f7f9",
-    "#ffffff",
-    "#ffffff",
-    "#f7f7f4",
-    "#f6f6e1",
-    "#fefec6",
-    "#fff0ac",
-    "#ffdc93",
-    "#ffc479",
-    "#faa160",
-    "#f27a48",
-    "#e15232",
-    "#c43425",
-    "#9e1e20",
-]
+from temperature_display import TEMPERATURE_ANOMALY_PALETTE
 MSLP_ANOMALY_TICKS = list(range(-20, 21, 2))
 CFSV2_MSLP_ANOMALY_TICKS = list(range(-10, 11))
 MSLP_ANOMALY_PALETTE = ANOMALY_PALETTE

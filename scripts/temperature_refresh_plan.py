@@ -36,9 +36,15 @@ def plan(manifest, workflow, product):
         windows.append(','.join(map(str, window)))
     if len(set(windows)) != 1:
         raise ValueError('Expected one complete published seasonal window')
-    return {'products' if workflow == 'nmme.yml' else 'product': product,
+    result = {'products' if workflow == 'nmme.yml' else 'product': product,
             'init': init, 'lead_months': ','.join(map(str, leads)),
             'seasonal_window': windows[0]}
+    if workflow == 'cfsv2.yml':
+        result.pop('init')  # This dispatcher selects the latest available rolling cycle.
+    if workflow == 'apcc.yml':
+        result['target_window'] = result.pop('seasonal_window')
+        result.pop('lead_months')
+    return result
 
 
 if __name__ == '__main__':

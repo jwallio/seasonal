@@ -1,5 +1,8 @@
 name: Maintenance - Refresh temperature styling
 on:
+  push:
+    branches: [main]
+    paths: [scripts/temperature_display.py]
   workflow_dispatch:
 permissions:
   actions: write
@@ -10,8 +13,9 @@ jobs:
     timeout-minutes: 360
     strategy:
       fail-fast: false
+      max-parallel: 3
       matrix:
-        workflow: [jma.yml, superensemble.yml, nmme.yml]
+        workflow: [seas5.yml, cansips.yml, c3s.yml, jma.yml, cfsv2.yml, apcc.yml, cma-cpsv3.yml, geos-s2s3.yml, superensemble.yml, nmme.yml]
     env:
       GH_TOKEN: ${{ github.token }}
       GH_REPO: ${{ github.repository }}
@@ -23,9 +27,8 @@ jobs:
         run: |
           set -euo pipefail
           failed=0
-          # Retry only the products that failed in the initial refresh.
+          # Refresh both temperature products across every operational provider.
           for product in 850mb_temperature_anomaly 2m_temperature_anomaly; do
-            [[ "$WORKFLOW" == "superensemble.yml" && "$product" == "2m_temperature_anomaly" ]] && continue
             # NMME provides only 2-m temperature.
             [[ "$WORKFLOW" == "nmme.yml" && "$product" == "850mb_temperature_anomaly" ]] && continue
             # Do not supersede a producer already working on this provider.
@@ -33,6 +36,8 @@ jobs:
               sleep 30
             done
             provider="${WORKFLOW%.yml}"
+            [[ "$provider" == "cma-cpsv3" ]] && provider=cma_cpsv3
+            [[ "$provider" == "geos-s2s3" ]] && provider=geos_s2s3
             curl -fsSL --retry 3 --connect-timeout 15 --max-time 60 \
               "https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/${provider}_manifest.json" -o published.json
             python scripts/temperature_refresh_plan.py published.json "$WORKFLOW" "$product" > dispatch.json
@@ -48,8 +53,7 @@ jobs:
             test -n "$run_id"
             echo "- $WORKFLOW / $product: https://github.com/$GH_REPO/actions/runs/$run_id" >> "$GITHUB_STEP_SUMMARY"
             if gh run watch "$run_id" --exit-status --interval 30; then
-              source_name=$(gh run view "$run_id" --json workflowName --jq .workflowName)
-              gh workflow run publish-pages.yml --ref main -f source_workflow="$source_name" -f source_run_id="$run_id"
+              echo "Producer completed; its existing publication trigger handles deployment."
             else
               echo "::error::$WORKFLOW / $product failed; see run $run_id"
               failed=1
