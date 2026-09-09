@@ -43,8 +43,8 @@ def main() -> int:
     check("write_github_step_summary" in catalog_builder, "seasonal catalog must report health to the CI summary")
     check("freshness_policy_days" in catalog_builder, "seasonal health must disclose its freshness policy")
 
-    check('href="dashboard.css"' in page_markup, "dashboard must load its external stylesheet")
-    check('src="dashboard.js" defer' in page_markup, "dashboard must defer its external script")
+    check('href="dashboard.css?v=' in page_markup, "dashboard must load a cache-busted external stylesheet")
+    check('src="dashboard.js?v=' in page_markup and ' defer' in page_markup, "dashboard must defer its cache-busted external script")
     check("<style>" not in page_markup and "<script>" not in page_markup, "dashboard must not restore large inline assets")
 
     for term in (
