@@ -29,19 +29,19 @@ jobs:
           cache: pip
           cache-dependency-path: requirements.txt
       - name: Install probe dependencies
-        run: python -m pip install --disable-pip-version-check requests numpy
+        run: python -m pip install --disable-pip-version-check requests numpy eccodes
       - name: Probe NOAA source and published cycles
         id: probe
         env:
-          MANIFEST_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/cfsv2_manifest.json
+          MANIFEST_URL: https://\${{ github.repository_owner }}.github.io/\${{ github.event.repository.name }}/cfsv2_manifest.json
         run: python scripts/cfsv2_availability.py --manifest-url "$MANIFEST_URL"
       - name: Dispatch only newer complete cycles
         env:
-          GH_TOKEN: ${{ github.token }}
-          STANDARD_NEW_CYCLE: ${{ steps.probe.outputs.standard_new_cycle }}
-          SNOW_NEW_CYCLE: ${{ steps.probe.outputs.snow_new_cycle }}
-          STANDARD_READY_INIT: ${{ steps.probe.outputs.standard_ready_init }}
-          SNOW_READY_INIT: ${{ steps.probe.outputs.snow_ready_init }}
+          GH_TOKEN: \${{ github.token }}
+          STANDARD_NEW_CYCLE: \${{ steps.probe.outputs.standard_new_cycle }}
+          SNOW_NEW_CYCLE: \${{ steps.probe.outputs.snow_new_cycle }}
+          STANDARD_READY_INIT: \${{ steps.probe.outputs.standard_ready_init }}
+          SNOW_READY_INIT: \${{ steps.probe.outputs.snow_ready_init }}
         run: |
           set -euo pipefail
           active_run() {
