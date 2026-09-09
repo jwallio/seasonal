@@ -114,7 +114,9 @@ jobs:
           github-token: ${{ github.token }}
           run-id: ${{ needs.select.outputs.restore_run }}
           name: ${{ needs.select.outputs.bootstrap == 'true' && format('surface-phase-2026090612-{0}', matrix.year == 2026 && 'forecast' || matrix.year) || format('surface-phase-inputs-{0}', matrix.year) }}
-          path: .cache/cfsv2-surface-phase/months
+          path: restored-months
+      - name: Merge checkpoints without replacing newer method bundles
+        run: python scripts/cfsv2_restore_months.py restored-months .cache/cfsv2-surface-phase/months
       - name: Acquire and validate every required cycle-month
         run: |
           args=(--init "$INIT" --targets "$TARGETS" --rolling-days 6 --exclude-cycles "$EXCLUDED" --workers 2 --month-pause-seconds 0)

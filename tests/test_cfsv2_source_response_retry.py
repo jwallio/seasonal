@@ -21,4 +21,4 @@ class ResponseRetryTests(unittest.TestCase):
         client=Mock();client.get.return_value=self.response(200,b'bad index')
         with patch.object(build,'session',return_value=client),patch.object(build.time,'sleep'):
             with self.assertRaises(build.SourceResponseError):build.get('https://example.test/file.idx')
-        self.assertEqual(client.get.call_count,8)
+        self.assertEqual(client.get.call_count,3)

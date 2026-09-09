@@ -1,0 +1,62 @@
+name: Maintenance - Repair temperature publication
+on:
+  push:
+    branches: [main]
+    paths: [.github/workflows/temperature-publication-repair.yml]
+  workflow_dispatch:
+permissions:
+  actions: write
+  contents: read
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        workflow: [seas5.yml, apcc.yml, geos-s2s3.yml]
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      WORKFLOW: ${{ matrix.workflow }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Refresh temperature products sequentially
+        shell: bash
+        run: |
+          set -euo pipefail
+          failed=0
+          # Refresh both temperature products across every operational provider.
+          for product in 850mb_temperature_anomaly 2m_temperature_anomaly; do
+            # NMME provides only 2-m temperature.
+            [[ "$WORKFLOW" == "nmme.yml" && "$product" == "850mb_temperature_anomaly" ]] && continue
+            # Do not supersede a producer already working on this provider.
+            while gh run list --workflow "$WORKFLOW" --limit 50 --json status --jq 'any(.[]; .status == "in_progress" or .status == "queued" or .status == "waiting" or .status == "pending")' | grep -qx true; do
+              sleep 30
+            done
+            provider="${WORKFLOW%.yml}"
+            [[ "$provider" == "cma-cpsv3" ]] && provider=cma_cpsv3
+            [[ "$provider" == "geos-s2s3" ]] && provider=geos_s2s3
+            curl -fsSL --retry 3 --connect-timeout 15 --max-time 60 \
+              "https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/${provider}_manifest.json" -o published.json
+            python scripts/temperature_refresh_plan.py published.json "$WORKFLOW" "$product" > dispatch.json
+            cat dispatch.json >> "$GITHUB_STEP_SUMMARY"
+            started=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+            gh workflow run "$WORKFLOW" --ref main --json < dispatch.json
+            run_id=""
+            for attempt in {1..24}; do
+              run_id=$(gh run list --workflow "$WORKFLOW" --branch main --event workflow_dispatch --limit 20 --json databaseId,createdAt --jq ".[] | select(.createdAt >= \"$started\") | .databaseId" | head -1)
+              [[ -n "$run_id" ]] && break
+              sleep 5
+            done
+            test -n "$run_id"
+            echo "- $WORKFLOW / $product: https://github.com/$GH_REPO/actions/runs/$run_id" >> "$GITHUB_STEP_SUMMARY"
+            if gh run watch "$run_id" --exit-status --interval 30; then
+              echo "Producer completed; its existing publication trigger handles deployment."
+            else
+              echo "::error::$WORKFLOW / $product failed; see run $run_id"
+              failed=1
+            fi
+          done
+          exit "$failed"

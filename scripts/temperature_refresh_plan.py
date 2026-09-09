@@ -18,6 +18,15 @@ def plan(manifest, workflow, product):
     init = re.sub(r'[-:T]', '', run['init_utc'])[:10]
     if not re.fullmatch(r'\d{10}', init):
         raise ValueError('Invalid published initialization')
+    if workflow == 'apcc.yml':
+        request_month = run.get('request_target_month', '')
+        window = run.get('requested_target_window', '')
+        if not re.fullmatch(r'\d{6}', request_month) or not re.fullmatch(r'\d+,\d+,\d+', window):
+            raise ValueError('APCC requires its published request month and native target window')
+        return dict(product=product, init=request_month, target_window=window,
+                    dataset=run['dataset'], resolution=str(run['resolution']))
+    if workflow in ('seas5.yml', 'geos-s2s3.yml'):
+        init = init[:6]
     monthly = {str(t['target_month']): t['lead_month'] for t in targets
                if isinstance(t.get('lead_month'), int)}
     leads = sorted(set(monthly.values()))
@@ -41,9 +50,6 @@ def plan(manifest, workflow, product):
             'seasonal_window': windows[0]}
     if workflow == 'cfsv2.yml':
         result.pop('init')  # This dispatcher selects the latest available rolling cycle.
-    if workflow == 'apcc.yml':
-        result['target_window'] = result.pop('seasonal_window')
-        result.pop('lead_months')
     return result
 
 

@@ -35,7 +35,7 @@ def session():
 
 def get(url, start=None, end=None):
     headers = {} if start is None else {"Range": f"bytes={start}-{end}"}
-    for attempt in range(8):
+    for attempt in range(3):
         try:
             r = session().get(url, headers=headers, timeout=(10, 40))
             r.raise_for_status()
@@ -52,7 +52,7 @@ def get(url, start=None, end=None):
             status = response.status_code if response is not None else None
             if status is not None and status not in (408, 429, 500, 502, 503, 504):
                 raise
-            if attempt == 7:
+            if attempt == 2:
                 raise
             delay = min(60 * 2**attempt, 900)
             if response is not None:
@@ -64,7 +64,10 @@ def get(url, start=None, end=None):
                         delay = max(delay, parsedate_to_datetime(retry_after).timestamp()-time.time())
                     except (ValueError, TypeError, OverflowError):
                         pass
-            print(f"Transient download failure ({status or type(exc).__name__}); retry {attempt+1}/7 in {delay:.0f}s", flush=True)
+            if delay > 120:
+                # Honor long Retry-After by leaving this source, not retrying early.
+                raise
+            print(f"Transient download failure ({status or type(exc).__name__}); retry {attempt+1}/2 in {delay:.0f}s", flush=True)
             while delay > 0:
                 chunk = min(delay, 60)
                 time.sleep(chunk)

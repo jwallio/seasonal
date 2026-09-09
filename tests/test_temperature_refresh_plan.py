@@ -24,6 +24,20 @@ class RefreshTests(unittest.TestCase):
         self.assertEqual(result, {"product": PRODUCT, "init": "2026080100",
                                  "lead_months": "4,5,6", "seasonal_window": "4,5,6"})
 
+    def test_monthly_initialization_contracts(self):
+        for workflow in ('seas5.yml', 'geos-s2s3.yml'):
+            self.assertEqual(plan({'runs': [published()]}, workflow, PRODUCT)['init'], '202608')
+
+    def test_apcc_native_season_uses_request_month_not_issue_date(self):
+        run = published('2026-08-18T00:00:00Z')
+        run.update(request_target_month='202609', requested_target_window='3,4,5',
+                   dataset='MME_6MONTH', resolution='2.5')
+        run['targets'] = [dict(target_month='202612-202702', lead_month='6-MON',
+                               image='season.jpg', status='rendered')]
+        self.assertEqual(plan({'runs': [run]}, 'apcc.yml', PRODUCT),
+                         dict(product=PRODUCT, init='202609', target_window='3,4,5',
+                              dataset='MME_6MONTH', resolution='2.5'))
+
     def test_nmme_uses_plural_input(self):
         run = published("2026-08-08T00:00:00Z")
         result = plan({"runs": [run]}, "nmme.yml", PRODUCT)
