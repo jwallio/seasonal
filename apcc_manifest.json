@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "kind": "apcc_seasonal_manifest",
-  "generated_utc": "2026-09-09T12:35:06Z",
+  "generated_utc": "2026-09-09T12:52:26Z",
   "source": "APCC multi-model ensemble via CLIK",
   "source_url": "https://apcc21.org/clik/processing/prediction",
   "source_urls": [
@@ -237,8 +237,32 @@
           },
           "source_issue_utc": "2026-08-18T00:00:00Z",
           "status": "rendered",
+          "quality_control": {
+            "registry_version": 1,
+            "product": "850mb_temperature_anomaly",
+            "units": "\u00b0C",
+            "field": "t850_anomaly",
+            "period": "seasonal",
+            "total_points": 10512,
+            "finite_points": 10512,
+            "finite_fraction": 1.0,
+            "minimum": -1.439978,
+            "maximum": 4.086365,
+            "p01": -0.610344,
+            "p99": 3.490081,
+            "display": {
+              "minimum": -6.0,
+              "maximum": 6.0,
+              "step": 0.5,
+              "below_fraction": 0.0,
+              "above_fraction": 0.0,
+              "clipped_fraction": 0.0
+            },
+            "issues": [],
+            "status": "passed"
+          },
           "image": "public/seasonal/apcc/202609/apcc_t850a_202612-202702.jpg",
-          "source_file": ".cache/apcc/extracted/mme_6month_6-mon_202609_prec_slp_sst_t2m_t850_z500/FORECAST_SCM_SEP_DJF_2026_t850.nc",
+          "source_file": ".cache/apcc/extracted/mme_6month_6-mon_202609_t850/FORECAST_SCM_SEP_DJF_2026_t850.nc",
           "data_range": {
             "min": -1.44,
             "max": 4.0864,
