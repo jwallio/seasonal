@@ -50,7 +50,27 @@ def main() -> int:
 
     publisher = (WORKFLOWS / "publish-pages.yml").read_text(encoding="utf-8")
     check("cancel-in-progress: false" in publisher, "Pages publishing must remain serialized")
-    print("SEASONAL ACTIONS CONTRACT OK: planned matrices, shared tools, worker concurrency, and scoped WeatherNext triggers")
+    product_scoped = {
+        "apcc.yml": "inputs.product",
+        "cansips.yml": "inputs.product",
+        "c3s.yml": "inputs.product",
+        "cma-cpsv3.yml": "inputs.product",
+        "geos-s2s3.yml": "inputs.product",
+        "jma.yml": "inputs.product",
+        "seas5.yml": "inputs.product",
+        "superensemble.yml": "inputs.product",
+        "nmme.yml": "inputs.products",
+    }
+    for name, token in product_scoped.items():
+        workflow = (WORKFLOWS / name).read_text(encoding="utf-8")
+        check(token in workflow.split("concurrency:", 1)[1].split("jobs:", 1)[0],
+              f"{name} concurrency must include the requested product scope")
+    snow = (WORKFLOWS / "cfsv2-snow.yml").read_text(encoding="utf-8")
+    check("cancel-in-progress: true" in snow, "snowfall acquisition must release stale locks")
+    check("max-parallel: 4" in snow and "--workers 4" in snow, "snowfall acquisition should overlap bounded workers")
+    check("run.get('conclusion') != 'success'" in snow and "No successful CFSv2 snowfall input artifact" in snow,
+          "snowfall reuse must reject partial or failed source runs")
+    print("SEASONAL ACTIONS CONTRACT OK: planned matrices, shared tools, product-scoped workers, and bounded publishers")
     return 0
 
 

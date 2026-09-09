@@ -40,7 +40,7 @@ permissions:
 concurrency:
   # GEOS is a monthly package; keep the latest attempt for the same release
   # month and avoid duplicate archive downloads.
-  group: seasonal-geos-s2s3-${{ inputs.init || 'latest' }}
+  group: seasonal-geos-s2s3-${{ inputs.init || 'latest' }}-${{ inputs.product || 'all' }}
   cancel-in-progress: true
 
 jobs:

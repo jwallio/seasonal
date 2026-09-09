@@ -7,13 +7,19 @@ on:
 permissions:
   actions: write
   contents: read
+
+concurrency:
+  # A newer maintenance run supersedes a stale fan-out.
+  group: temperature-style-refresh-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   refresh:
     runs-on: ubuntu-latest
     timeout-minutes: 360
     strategy:
       fail-fast: false
-      max-parallel: 1
+      max-parallel: 4
       matrix:
         workflow: [seas5.yml, cansips.yml, c3s.yml, jma.yml, cfsv2.yml, apcc.yml, cma-cpsv3.yml, geos-s2s3.yml, superensemble.yml, nmme.yml]
     env:
@@ -31,9 +37,16 @@ jobs:
           for product in 850mb_temperature_anomaly 2m_temperature_anomaly; do
             # NMME provides only 2-m temperature.
             [[ "$WORKFLOW" == "nmme.yml" && "$product" == "850mb_temperature_anomaly" ]] && continue
-            # Do not supersede a producer already working on this provider.
+            # Give a live producer a bounded hand-off window. Product-scoped
+            # concurrency keys below let a stale attempt be superseded.
+            wait_seconds=0
             while gh run list --workflow "$WORKFLOW" --limit 50 --json status --jq 'any(.[]; .status == "in_progress" or .status == "queued" or .status == "waiting" or .status == "pending")' | grep -qx true; do
+              if (( wait_seconds >= 900 )); then
+                echo "::warning::${WORKFLOW} has been active for 15 minutes; dispatching the scoped refresh to replace the stale attempt."
+                break
+              fi
               sleep 30
+              wait_seconds=$((wait_seconds + 30))
             done
             provider="${WORKFLOW%.yml}"
             [[ "$provider" == "cma-cpsv3" ]] && provider=cma_cpsv3
@@ -57,8 +70,18 @@ jobs:
               case "$WORKFLOW" in
                 seas5.yml|jma.yml|c3s.yml) ;;
                 *)
-                  # Token-dispatched producers need an explicit publication dispatch.
-                  while gh run list --workflow publish-pages.yml --limit 100 --json status --jq 'any(.[]; .status != "completed")' | grep -qx true; do sleep 30; done
+                  # Pages has its own serialized queue. Avoid waiting behind
+                  # queued entries; only give a currently running publish a
+                  # short hand-off window.
+                  publish_wait=0
+                  while gh run list --workflow publish-pages.yml --limit 100 --json status --jq 'any(.[]; .status == "in_progress")' | grep -qx true; do
+                    if (( publish_wait >= 300 )); then
+                      echo "::warning::Pages publisher is still active; queueing this validated payload."
+                      break
+                    fi
+                    sleep 15
+                    publish_wait=$((publish_wait + 15))
+                  done
                   source_name=$(head -1 ".github/workflows/$WORKFLOW" | sed 's/^name: *//' | tr -d '\r')
                   publish_started=$(date -u +%Y-%m-%dT%H:%M:%SZ)
                   gh workflow run publish-pages.yml --ref main -f source_workflow="$source_name" -f source_run_id="$run_id"

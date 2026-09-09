@@ -54,7 +54,7 @@ concurrency:
   # A newer dispatch for the same initialization supersedes an older one. This
   # prevents a delayed full-suite run from occupying the queue after a repair
   # or release-check retry has already been launched.
-  group: seasonal-c3s-${{ inputs.init || 'latest' }}
+  group: seasonal-c3s-${{ inputs.init || 'latest' }}-${{ inputs.product || '500mb_height_anomaly' }}
   cancel-in-progress: true
 
 jobs:

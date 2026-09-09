@@ -110,7 +110,7 @@ sources are tightly cropped below the legend before the optional branding
 footer is added. The
 500-mb product uses the blue–white–yellow–orange–red scale from −200 to +200 metres with
 nonuniform reference-image intervals;
-850-mb and 2-m temperature products use the shared ±7 °C scale, sea-surface
+850-mb and 2-m temperature products use the shared ±6 °C scale in 0.5 °C bands, sea-surface
 temperature uses ±3 °C, MSLP uses ±10 hPa, precipitation uses the operational
 brown/green ±8-inch scale, snowfall uses nonlinear blue/brown ±2.0-inch
 monthly or ±4.0-inch seasonal scales with the documented breakpoints, and SSH

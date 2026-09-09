@@ -12,6 +12,7 @@ HEIGHT_ANOMALY_STYLE = {
     "anomaly_min": -200.0,
     "anomaly_max": 200.0,
     "anomaly_ticks": HEIGHT_ANOMALY_TICKS,
+    "anomaly_bounds": HEIGHT_ANOMALY_TICKS,
     "anomaly_palette": HEIGHT_ANOMALY_PALETTE,
     "anomaly_endpoint_labels": {"minimum": "≤−200", "maximum": "≥+200"},
 }

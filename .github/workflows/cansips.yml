@@ -65,7 +65,7 @@ permissions:
 concurrency:
   # A second dispatch for the same monthly initialization supersedes the
   # earlier attempt instead of competing for the same Datamart files.
-  group: seasonal-cansips-${{ inputs.init || 'latest' }}
+  group: seasonal-cansips-${{ inputs.init || 'latest' }}-${{ inputs.product || 'all' }}
   cancel-in-progress: true
 
 jobs:

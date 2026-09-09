@@ -50,7 +50,7 @@ permissions:
 
 concurrency:
   # A retry for the same CPC issue month replaces the older attempt.
-  group: seasonal-nmme-${{ inputs.init || 'latest' }}
+  group: seasonal-nmme-${{ inputs.init || 'latest' }}-${{ inputs.products || 'default' }}-${{ inputs.base_product || '2m_temperature_anomaly' }}
   cancel-in-progress: true
 
 jobs:

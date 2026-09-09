@@ -45,7 +45,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: seasonal-superensemble-${{ github.ref }}-${{ inputs.init || 'latest' }}
+  group: seasonal-superensemble-${{ github.ref }}-${{ inputs.init || 'latest' }}-${{ inputs.product || '500mb_height_anomaly' }}
   cancel-in-progress: true
 
 jobs:

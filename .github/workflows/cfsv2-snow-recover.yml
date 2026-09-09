@@ -6,7 +6,7 @@ permissions:
   pages: write
 concurrency:
   group: cfsv2-surface-recovery
-  cancel-in-progress: false
+  cancel-in-progress: true
 jobs:
   select:
     runs-on: ubuntu-latest
@@ -22,12 +22,12 @@ jobs:
     - uses: actions/download-artifact@v4
       with:
         github-token: ${{ github.token }}
-        run-id: ${{ inputs.source_run || '34229985480' }}
+        run-id: ${{ inputs.source_run || '34176070490' }}
         name: surface-phase-plan
         path: .
     - id: plan
       env:
-        SOURCE_RUN: ${{ inputs.source_run || '34229985480' }}
+        SOURCE_RUN: ${{ inputs.source_run || '34176070490' }}
       run: |-
         python - <<'PYCODE'
         import json,os
@@ -144,4 +144,4 @@ jobs:
       source_run:
         description: Completed acquisition run whose inputs and plan are reused; no downloads from NOAA
         type: string
-        default: '34229985480'
+        default: '34176070490'

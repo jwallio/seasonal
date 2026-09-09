@@ -26,8 +26,10 @@ permissions:
   actions: read
   pages: write
 concurrency:
+  # A new scheduled or repaired run supersedes an acquisition that has stopped
+  # making progress; this releases the lock for the next complete snowfall pair.
   group: cfsv2-corrected-snowfall-acquisition
-  cancel-in-progress: false
+  cancel-in-progress: true
 jobs:
   select:
     runs-on: ubuntu-latest
@@ -63,14 +65,42 @@ jobs:
           python - <<'PY'
           import json,os,subprocess
           found=None
+          bootstrap_run=None
           for run in json.load(open('previous-runs.json'))['workflow_runs']:
-              if str(run['id'])==os.environ['GITHUB_RUN_ID']: continue
-              result=subprocess.run(['gh','api',f"repos/{os.environ['GITHUB_REPOSITORY']}/actions/runs/{run['id']}/artifacts?per_page=100"],check=True,capture_output=True,text=True)
+              if str(run['id'])==os.environ['GITHUB_RUN_ID'] or run.get('conclusion') != 'success':
+                  continue
+              result=subprocess.run(
+                  ['gh','api',f"repos/{os.environ['GITHUB_REPOSITORY']}/actions/runs/{run['id']}/artifacts?per_page=100"],
+                  check=True,capture_output=True,text=True,
+              )
               artifacts=json.loads(result.stdout)['artifacts']
-              if any(a['name'].startswith('surface-phase-inputs-') and not a['expired'] for a in artifacts):
-                  found=run['id'];break
+              names={a['name'] for a in artifacts if not a.get('expired')}
+              # Reuse a complete successful run first. Failed runs can contain a
+              # partial 2026 artifact and must never become the input source.
+              if 'surface-phase-inputs-2026' in names:
+                  found=run['id']
+                  break
+              if bootstrap_run is None and any(
+                  name.startswith('surface-phase-2026090612-') for name in names
+              ):
+                  bootstrap_run=run['id']
+          restore_run=found or bootstrap_run
+          if restore_run is None:
+              # The checked-in bootstrap is only accepted after its artifact is
+              # verified, so an expired/deleted artifact fails with a clear error.
+              fallback='34176070490'
+              result=subprocess.run(
+                  ['gh','api',f"repos/{os.environ['GITHUB_REPOSITORY']}/actions/runs/{fallback}/artifacts?per_page=100"],
+                  check=True,capture_output=True,text=True,
+              )
+              names={a['name'] for a in json.loads(result.stdout)['artifacts'] if not a.get('expired')}
+              if any(name.startswith('surface-phase-2026090612-') for name in names):
+                  restore_run=fallback
+                  bootstrap_run=fallback
+          if restore_run is None:
+              raise SystemExit('No successful CFSv2 snowfall input artifact is available for reuse')
           with open(os.environ['GITHUB_OUTPUT'],'a') as f:
-              f.write(f'run={found or 34176070490}\nbootstrap={str(found is None).lower()}\n')
+              f.write(f'run={restore_run}\nbootstrap={str(found is None).lower()}\n')
           PY
       - uses: actions/upload-artifact@v4
         if: steps.plan.outputs.ready == 'true'
@@ -82,10 +112,12 @@ jobs:
     needs: select
     if: needs.select.outputs.ready == 'true'
     runs-on: ubuntu-latest
-    timeout-minutes: 350
+    timeout-minutes: 320
     strategy:
       fail-fast: false
-      max-parallel: 2
+      # Four year jobs overlap I/O and decoding while keeping each job's
+      # worker pool bounded; this cuts cold-start time without unbounded load.
+      max-parallel: 4
       matrix:
         year: ${{ fromJSON(needs.select.outputs.years) }}
     env:
@@ -119,9 +151,12 @@ jobs:
         run: python scripts/cfsv2_restore_months.py restored-months .cache/cfsv2-surface-phase/months
       - name: Acquire and validate every required cycle-month
         run: |
-          args=(--init "$INIT" --targets "$TARGETS" --rolling-days 6 --exclude-cycles "$EXCLUDED" --workers 2 --month-pause-seconds 0)
+          args=(--init "$INIT" --targets "$TARGETS" --rolling-days 6 --exclude-cycles "$EXCLUDED" --workers 4 --month-pause-seconds 0)
           if [[ "$YEAR" != "${INIT:0:4}" ]]; then args+=(--historical-year "$YEAR"); fi
-          timeout --signal=INT --kill-after=30s 300m python -u scripts/cfsv2_surface_phase_build.py "${args[@]}"
+          # Bound the Python process itself so a stalled NOAA request cannot
+          # hold the acquisition concurrency group indefinitely.
+          timeout --foreground --signal=TERM --kill-after=60s 270m \
+            python -u scripts/cfsv2_surface_phase_build.py "${args[@]}"
       - uses: actions/cache/save@v4
         if: always()
         with:

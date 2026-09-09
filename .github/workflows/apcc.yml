@@ -53,7 +53,7 @@ permissions:
 concurrency:
   # Keep one attempt per APCC initialization; a retry should replace a stale
   # run instead of downloading the same CLIK package twice.
-  group: seasonal-apcc-${{ inputs.init || 'latest' }}
+  group: seasonal-apcc-${{ inputs.init || 'latest' }}-${{ inputs.product || 'all' }}
   cancel-in-progress: true
 
 jobs:

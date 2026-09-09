@@ -41,7 +41,7 @@ permissions:
 
 concurrency:
   # A newer dispatch for the same release month supersedes a delayed retry.
-  group: seasonal-cma-cpsv3-${{ inputs.init || 'latest' }}
+  group: seasonal-cma-cpsv3-${{ inputs.init || 'latest' }}-${{ inputs.product || 'all' }}
   cancel-in-progress: true
 
 jobs:
