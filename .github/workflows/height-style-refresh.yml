@@ -75,7 +75,9 @@ jobs:
             fi
             started=$(date -u +%Y-%m-%dT%H:%M:%SZ)
             for attempt in 1 2 3 4 5; do
-              if gh workflow run "$WORKFLOW" --ref main -f product="$product" -f init="$init_arg"; then
+              dispatch_args=(-f product="$product")
+              [[ "$WORKFLOW" == "jma.yml" ]] && dispatch_args+=(-f init="$init_arg")
+              if gh workflow run "$WORKFLOW" --ref main "${dispatch_args[@]}"; then
                 break
               fi
               if [[ "$attempt" == 5 ]]; then
