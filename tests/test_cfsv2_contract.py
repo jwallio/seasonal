@@ -678,7 +678,7 @@ def main() -> int:
         check(term in workflow, f"workflow missing speed-up term: {term}")
     check("--allow-partial-rolling" not in workflow, "scheduled CFSv2 workflow must not publish an incomplete rolling blend")
     check("SCHEDULED_CFSV2_PRODUCTS: 500mb_height_anomaly,500mb_height_anomaly_nh,850mb_temperature_anomaly,2m_temperature_anomaly,mslp_anomaly,precipitation_anomaly" in workflow, "weather workflow should retain the six non-snow products")
-    check("ALL_CFSV2_PRODUCTS: 500mb_height_anomaly,500mb_height_anomaly_nh,500mb_height_absolute,850mb_temperature_anomaly,2m_temperature_anomaly,mslp_anomaly,precipitation_anomaly,snowfall_anomaly,snowfall_accumulation" in workflow, "manual all action should cover every validated CFSv2 menu field")
+    check("ALL_CFSV2_PRODUCTS: 500mb_height_anomaly,500mb_height_anomaly_nh,500mb_height_absolute,850mb_temperature_anomaly,2m_temperature_anomaly,mslp_anomaly,precipitation_anomaly" in workflow, "manual weather list should cover the non-snow fields; snowfall is delegated")
     check("- snow_water_equivalent_anomaly" not in workflow, "quarantined CFSv2 SWE must not appear in the Actions menu")
     check("is_retired_product(product_name)" in adapter, "the CFSv2 adapter must block quarantined products before downloading data")
     check("choices=tuple(product for product in PRODUCT_SPECS if not is_retired_product(product))" in adapter, "the CFSv2 CLI must hide quarantined products")

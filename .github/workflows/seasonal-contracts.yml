@@ -47,9 +47,16 @@ jobs:
 
       - name: Run repository contracts
         shell: bash
+        env:
+          PYTHONPATH: scripts
         run: |
           set -euo pipefail
+          failed=0
           for test in tests/test_*.py; do
             echo "Running $test"
-            python "$test"
+            if ! python "$test"; then
+              echo "::error::Failed $test"
+              failed=1
+            fi
           done
+          exit "$failed"
