@@ -46,9 +46,36 @@ jobs:
               sleep 30
               wait_seconds=$((wait_seconds + 30))
             done
+            # JMA pressure-level access can lag the current monthly issue.
+            # Re-render its last published height cycle so a style-only refresh
+            # stays green while the next restricted issue is unavailable.
+            init_arg=latest
+            if [[ "$WORKFLOW" == "jma.yml" ]]; then
+              pages_url="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/jma_manifest.json"
+              if curl -fsSL --retry 2 --connect-timeout 10 "$pages_url" -o published.json; then
+                init_arg=$(PRODUCT="$product" python - <<'PY'
+          import json, os, re
+          try:
+              payload = json.load(open("published.json", encoding="utf-8"))
+          except (OSError, ValueError):
+              payload = {}
+          for run in payload.get("runs", []):
+              if run.get("product") != os.environ["PRODUCT"]:
+                  continue
+              if run.get("status") not in {"rendered", "decoded", "partial"}:
+                  continue
+              digits = "".join(re.findall(r"\d", str(run.get("init_utc", ""))))
+              if len(digits) >= 10:
+                  print(digits[:10])
+                  break
+          PY
+                )
+              fi
+              [[ -n "$init_arg" ]] || init_arg=latest
+            fi
             started=$(date -u +%Y-%m-%dT%H:%M:%SZ)
             for attempt in 1 2 3 4 5; do
-              if gh workflow run "$WORKFLOW" --ref main -f product="$product"; then
+              if gh workflow run "$WORKFLOW" --ref main -f product="$product" -f init="$init_arg"; then
                 break
               fi
               if [[ "$attempt" == 5 ]]; then
