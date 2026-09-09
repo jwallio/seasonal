@@ -1,14 +1,6 @@
 name: CFSv2 Rolling Seasonal Graphics
 
 on:
-  schedule:
-    # CFSv2 runs every six hours, while its monthly_grib_01 files normally
-    # reach NOMADS about 11.5 hours after initialization. Check all four daily
-    # cycles at +11:45, then let the readiness probe retry a delayed file set
-    # before falling back to an older complete cycle.
-    # The six-day rolling window stays inside NOMADS's seven-day archive even
-    # when the selected anchor is delayed.
-    - cron: "45 5,11,17,23 * * *"
   workflow_dispatch:
     inputs:
       product:
@@ -18,6 +10,7 @@ on:
         type: choice
         options:
           - all
+          - weather_suite
           - 500mb_height_anomaly
           - 500mb_height_anomaly_nh
           - 500mb_height_absolute
@@ -66,10 +59,10 @@ permissions:
   pages: write
 
 concurrency:
-  # Supersede only an older run from the same entry point and product scope.
-  # A focused snowfall repair must never cancel the scheduled all-field suite.
+  # Availability polling dispatches only when NOAA has a newer complete cycle.
+  # Never cancel a renderer that has already started downloading or decoding.
   group: seasonal-cfsv2-${{ github.workflow }}-${{ github.event_name == 'schedule' && 'scheduled-suite' || (inputs.product || 'default') }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   corrected_snowfall:
@@ -87,7 +80,8 @@ jobs:
       LEAD_MONTHS: ${{ inputs.lead_months || '4,5,6' }}
       SEASONAL_WINDOW: ${{ inputs.seasonal_window || '4,5,6' }}
       ROLLING_DAYS: ${{ inputs.rolling_days || '6' }}
-      CFSV2_MINIMUM_ANCHOR_AGE_MINUTES: "660"
+      # Source readiness, not elapsed age, decides when a cycle can render.
+      CFSV2_MINIMUM_ANCHOR_AGE_MINUTES: "0"
     steps:
       - name: Validate archive-safe rolling window
         shell: bash
@@ -149,7 +143,7 @@ jobs:
           if [[ "${{ github.event_name }}" == "schedule" ]]; then
             IFS=',' read -r -a products <<< "$SCHEDULED_CFSV2_PRODUCTS"
             readiness_products="$SCHEDULED_CFSV2_PRODUCTS"
-          elif [[ "$CFSV2_PRODUCT" == "all" ]]; then
+          elif [[ "$CFSV2_PRODUCT" == "all" || "$CFSV2_PRODUCT" == "weather_suite" ]]; then
             IFS=',' read -r -a products <<< "$ALL_CFSV2_PRODUCTS"
             readiness_products="$ALL_CFSV2_PRODUCTS"
           elif [[ "$CFSV2_PRODUCT" == "snowfall_suite" ]]; then
@@ -163,12 +157,12 @@ jobs:
           readiness_retry_seconds=60
           minimum_anchor_age_minutes=0
           use_default_snowfall_windows=0
-          if [[ "${{ github.event_name }}" == "schedule" || "$CFSV2_PRODUCT" == "all" ]]; then
+          if [[ "${{ github.event_name }}" == "schedule" || "$CFSV2_PRODUCT" == "all" || "$CFSV2_PRODUCT" == "weather_suite" ]]; then
             use_default_snowfall_windows=1
           elif [[ ( "$CFSV2_PRODUCT" == "snowfall_anomaly" || "$CFSV2_PRODUCT" == "snowfall_accumulation" || "$CFSV2_PRODUCT" == "snowfall_suite" ) && ( "$LEAD_MONTHS" == "operational-winter" || "$SEASONAL_WINDOW" == "operational-winter" ) ]]; then
             use_default_snowfall_windows=1
           fi
-          if [[ "${{ github.event_name }}" == "schedule" || "$CFSV2_PRODUCT" == "all" ]]; then
+          if [[ "${{ github.event_name }}" == "schedule" || "$CFSV2_PRODUCT" == "all" || "$CFSV2_PRODUCT" == "weather_suite" ]]; then
             readiness_wait_minutes=30
             readiness_retry_seconds=180
             minimum_anchor_age_minutes="$CFSV2_MINIMUM_ANCHOR_AGE_MINUTES"
@@ -256,7 +250,7 @@ jobs:
             product_seasonal_window="$SEASONAL_WINDOW"
             if [[ ( "$product" == "snowfall_anomaly" || "$product" == "snowfall_accumulation" ) && "$use_default_snowfall_windows" == "1" ]]; then
               if [[ -z "$snowfall_lead_months" || -z "$snowfall_seasonal_windows" ]]; then
-                if [[ "${{ github.event_name }}" == "schedule" || "$CFSV2_PRODUCT" == "all" ]]; then
+                if [[ "${{ github.event_name }}" == "schedule" || "$CFSV2_PRODUCT" == "all" || "$CFSV2_PRODUCT" == "weather_suite" ]]; then
                   echo "CFSv2 snowfall is outside the complete December-March forecast horizon; retaining the last published snowfall run."
                   continue
                 fi

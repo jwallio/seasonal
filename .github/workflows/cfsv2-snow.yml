@@ -2,8 +2,6 @@ name: CFSv2 Snowfall Graphics
 run-name: Corrected CFSv2 snowfall · automatic matched reference
 on:
   workflow_call:
-  schedule:
-    - cron: '45 5,11,17,23 * * *'
   push:
     branches: [main]
     paths: ['.github/workflows/cfsv2-snow.yml', 'scripts/cfsv2_surface_schedule.py', 'scripts/cfsv2_surface_phase_build.py', 'scripts/cfsv2_surface_phase.py']
@@ -26,10 +24,10 @@ permissions:
   actions: write
   pages: write
 concurrency:
-  # A new scheduled or repaired run supersedes an acquisition that has stopped
-  # making progress; this releases the lock for the next complete snowfall pair.
+  # The availability dispatcher handles deduplication. Never cancel an active
+  # multi-hour acquisition when the next NOAA poll fires.
   group: cfsv2-corrected-snowfall-acquisition
-  cancel-in-progress: true
+  cancel-in-progress: false
 jobs:
   select:
     runs-on: ubuntu-latest

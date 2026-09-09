@@ -12,7 +12,7 @@ historical cycle or individual field needs to be regenerated.
 
 | Workflow | Provider release window | Automatic run (UTC) |
 | --- | --- | --- |
-| CFSv2 | New model cycles at 00Z, 06Z, 12Z, and 18Z | Four times daily at 05:45, 11:45, 17:45, and 23:45 UTC, about 11 hours 45 minutes after each initialization; maturity-gated with a 30-minute readiness retry |
+| CFSv2 | New model cycles at 00Z, 06Z, 12Z, and 18Z | NOAA source-availability probe every 15 minutes; dispatches each complete cycle as soon as the required files are published |
 | CanSIPS v3 | ECCC monthly refresh on the 1st | 2nd of each month at 16:30 |
 | CMA CPSv3 | WMO GPC Beijing exchange window on the 15th-20th | 21st of each month at 18:30 |
 | NOAA NMME | CPC public products update on the 9th | 9th of each month at 15:30 |
@@ -101,24 +101,22 @@ excluded land does not look like missing data. The rendered MRCC map remains
 available as the rank-1 reference. Composite source
 failures retain the previous good image and mark it stale.
 
-The CFSv2 readiness check ignores cycle directories younger than 11 hours,
-then retries the newest mature cycle for 30 minutes before falling back to the
-newest complete prior cycle. That prevents the normal NOMADS
-directory-versus-file publication gap from wasting the retry window on the
-next cycle, whose monthly files are not expected yet. Hosted CFSv2 jobs use the fixed
-six-day/24-cycle window that remains inside the seven-day NOMADS archive;
-longer rolling windows require a pre-populated external archive and are not
-offered in the Actions menus. Scheduled full-suite, manual all-fields, and
-focused snowfall runs have separate concurrency scopes, so a repair can no
-longer cancel an operational refresh. Every successful full CFSv2 refresh
+The CFSv2 availability dispatcher probes the exact NOAA NOMADS monthly and
+six-hourly files needed by each producer every 15 minutes. It dispatches only
+when a newer complete cycle exists, and active renderers use non-cancelling
+concurrency so the next poll cannot interrupt a download or decoder. Hosted
+CFSv2 jobs use the fixed six-day/24-cycle window that remains inside the
+seven-day NOMADS archive; longer rolling windows require a pre-populated
+external archive and are not offered in the Actions menus. Manual all-fields
+and focused snowfall runs have separate concurrency scopes. Every successful full CFSv2 refresh
 triggers the analog workflow; its twice-daily reconciliation additionally
 compares the current Pages source manifests with the analog manifest and only
 rebuilds when a source run is newer or changed. This covers delayed workflow
 events and Pages propagation without repeatedly regenerating unchanged MRCC
 maps.
 
-While the complete cold season fits the CFSv2 1-9 month horizon, every one of
-the four daily refreshes publishes snowfall departure maps for December,
+While the complete cold season fits the CFSv2 1-9 month horizon, every
+available CFSv2 refresh publishes snowfall departure maps for December,
 January, February, and March, plus accumulated DJF and JFM departures. The
 workflow derives the required leads from the chosen anchor cycle, so advancing
 from an August to a September initialization does not shift the requested
@@ -161,6 +159,8 @@ aging, stale, partial, failed, missing, non-comparable, and intentional
 not-applicable surfaces without blocking publication solely because a provider
 is late; strict publication failures remain driven by validation errors such as
 invalid manifests or missing rendered assets.
+
+The CFSv2 renderer is source-driven: a lightweight 15-minute source-availability probe checks the NOAA NOMADS files needed by the weather and corrected-snowfall suites, dispatches only for a newer complete cycle, and leaves an active renderer running. This replaces the old fixed six-hour trigger and 11-hour maturity gate, so maps can publish as soon as NOAA has finished the required files.
 
 ## Official timing references
 

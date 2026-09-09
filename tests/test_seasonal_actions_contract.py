@@ -39,7 +39,7 @@ def main() -> int:
         check("uses: ./.github/actions/setup-wgrib2" in workflow, f"{name} should use the shared wgrib2 action")
         check("sudo apt-get update" not in workflow, f"{name} should not duplicate the wgrib2 build")
 
-    for name in ("apcc.yml", "cansips.yml", "cma-cpsv3.yml", "cfsv2.yml", "geos-s2s3.yml", "jma.yml", "nmme.yml", "seas5.yml"):
+    for name in ("apcc.yml", "cansips.yml", "cma-cpsv3.yml", "geos-s2s3.yml", "jma.yml", "nmme.yml", "seas5.yml"):
         workflow = (WORKFLOWS / name).read_text(encoding="utf-8")
         check("concurrency:" in workflow, f"{name} should define a worker concurrency group")
         check("cancel-in-progress: true" in workflow, f"{name} should cancel superseded retries")
@@ -71,11 +71,12 @@ def main() -> int:
         check(token in workflow.split("concurrency:", 1)[1].split("jobs:", 1)[0],
               f"{name} concurrency must include the requested product scope")
     cfsv2 = (WORKFLOWS / "cfsv2.yml").read_text(encoding="utf-8")
+    check("cancel-in-progress: false" in cfsv2, "CFSv2 weather rendering must not be cancelled by the next availability poll")
     check(cfsv2.count("- name: Render rolling CFSv2 products") == 1,
           "CFSv2 workflow must not contain an incomplete duplicate render step")
     check("actions: write" in cfsv2, "CFSv2 wrapper must allow the snowfall child to dispatch Pages")
     snow = (WORKFLOWS / "cfsv2-snow.yml").read_text(encoding="utf-8")
-    check("cancel-in-progress: true" in snow, "snowfall acquisition must release stale locks")
+    check("cancel-in-progress: false" in snow, "snowfall acquisition must not be cancelled by the next availability poll")
     check("max-parallel: 4" in snow and "--workers 4" in snow, "snowfall acquisition should overlap bounded workers")
     check("run.get('conclusion') != 'success'" in snow and "No successful CFSv2 snowfall input artifact" in snow,
           "snowfall reuse must reject partial or failed source runs")

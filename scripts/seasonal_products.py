@@ -398,13 +398,14 @@ MODEL_SCHEDULES: dict[str, dict[str, Any]] = {
     },
     "cfsv2": {
         "cadence_group": "frequent",
-        "cadence_label": "Four times daily",
-        "official_schedule": "NCEP CFSv2 starts four 9-month forecasts daily at 00, 06, 12, and 18 UTC; wall.cloud checks each cycle after its NOMADS monthly files normally appear.",
+        "cadence_label": "Source-driven · 15-minute probe",
+        "official_schedule": "NCEP CFSv2 starts four 9-month forecasts daily at 00, 06, 12, and 18 UTC; wall.cloud probes NOAA NOMADS every 15 minutes and renders each cycle once its required files are complete.",
         "official_url": "https://cfs.ncep.noaa.gov/cfsv2.info/",
         "expected_cycle": {
             "kind": "daily_times", "run_times_utc": ["00:00", "06:00", "12:00", "18:00"],
-            "publish_times_utc": ["11:45", "17:45", "23:45", "05:45"],
-            "publish_lag_minutes": 45, "late_after_minutes": 90,
+            "publish_times_utc": ["source-ready"],
+            "availability_poll_minutes": 15,
+            "publish_lag_minutes": 15, "late_after_minutes": 180,
         },
     },
     "seas5": {

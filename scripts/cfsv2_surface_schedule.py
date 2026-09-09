@@ -81,7 +81,10 @@ def already_published(plan):
 
 
 def select():
-    candidates = cf.filter_mature_cycle_inits(cf.listed_cycle_inits(), 660)[:12]
+    # NOMADS readiness is the gate. A fixed age made the corrected snowfall
+    # workflow wait until 11 hours after init even when every required file was
+    # already published, and still did not prove the files were complete.
+    candidates = cf.listed_cycle_inits()[:12]
     plan = choose(candidates)
     output = Path(os.environ.get('GITHUB_OUTPUT', '/tmp/cfsv2-select-output'))
     if plan is None:

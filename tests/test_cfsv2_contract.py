@@ -660,7 +660,7 @@ def main() -> int:
         "retry_seconds",
         "filter_mature_cycle_inits",
         "minimum_anchor_age_minutes=\"$CFSV2_MINIMUM_ANCHOR_AGE_MINUTES\"",
-        '45 5,11,17,23 * * *',
+        'CFSV2_MINIMUM_ANCHOR_AGE_MINUTES: "0"',
         "default_winter_snowfall_windows",
         "snowfall_lead_months",
         "snowfall_seasonal_windows",
@@ -669,7 +669,7 @@ def main() -> int:
         check(term in workflow, f"workflow missing CFSv2 readiness term: {term}")
     for term in (
         "concurrency:",
-        "cancel-in-progress: true",
+        "cancel-in-progress: false",
         "Set up wgrib2",
         "./.github/actions/setup-wgrib2",
         "readiness_wait_minutes=30",
@@ -684,20 +684,32 @@ def main() -> int:
     check("choices=tuple(product for product in PRODUCT_SPECS if not is_retired_product(product))" in adapter, "the CFSv2 CLI must hide quarantined products")
     check("snow_water_equivalent_anomaly" not in WRAPPER.read_text(encoding="utf-8"), "the CFSv2 PowerShell menu must hide quarantined SWE")
     check('headers={"Range": "bytes=0-0"}' in adapter and "stream=True" in adapter, "CFSv2 readiness must fall back to a ranged GET when NOMADS rejects HEAD")
-    check('elif [[ "$CFSV2_PRODUCT" == "all" ]]' in workflow, "manual CFSv2 all action should expand to the full product list")
-    check('github.event_name }}" == "schedule" || "$CFSV2_PRODUCT" == "all"' in workflow, "manual CFSv2 all action should use delayed-file readiness retries")
-    check(workflow.count('github.event_name }}" == "schedule" || "$CFSV2_PRODUCT" == "all"') >= 2, "scheduled and manual all-field runs should both use the target-aware snowfall preset")
+    check('elif [[ "$CFSV2_PRODUCT" == "all" || "$CFSV2_PRODUCT" == "weather_suite" ]]' in workflow, "weather suite action should expand to the full product list")
+    check('github.event_name }}" == "schedule" || "$CFSV2_PRODUCT" == "all" || "$CFSV2_PRODUCT" == "weather_suite"' in workflow, "weather suite should use delayed-file readiness retries")
+    check(workflow.count('github.event_name }}" == "schedule" || "$CFSV2_PRODUCT" == "all" || "$CFSV2_PRODUCT" == "weather_suite"') >= 2, "weather suite should use the target-aware snowfall preset")
     check("ROLLING_DAYS: ${{ inputs.rolling_days || '6' }}" in workflow, "scheduled CFSv2 workflow should default to six rolling days")
     dispatch_inputs = workflow.split("  workflow_dispatch:", 1)[1].split("  workflow_call:", 1)[0]
     check("rolling_days:" not in dispatch_inputs, "manual CFSv2 Actions must not offer archive-unsafe rolling windows")
     check("Validate archive-safe rolling window" in workflow and "^[1-6]$" in workflow, "reusable CFSv2 calls must reject rolling windows outside the live archive before downloading")
     check("github.workflow" in workflow and "scheduled-suite" in workflow and "inputs.product" in workflow, "CFSv2 concurrency must isolate scheduled, all-fields, and focused product runs")
     check("workflow_call:" in workflow, "CFSv2 workflow should be reusable by focused product menus")
-    # Corrected surface-phase snowfall now has its own scheduled pipeline.
+    # Corrected surface-phase snowfall now has its own availability dispatch.
     for term in ("name: CFSv2 Snowfall Graphics", "cfsv2_surface_schedule.py select",
                  "cfsv2_surface_phase_build.py", "operational-winter", "DJF and JFM",
-                 "45 5,11,17,23 * * *"):
+                 "workflow_dispatch:"):
         check(term in snow_workflow, f"corrected snowfall workflow missing term: {term}")
+    watcher = (ROOT / ".github" / "workflows" / "cfsv2-availability.yml").read_text(encoding="utf-8")
+    for term in (
+        '*/15 * * * *',
+        "scripts/cfsv2_availability.py",
+        "standard_new_cycle",
+        "snow_new_cycle",
+        "gh workflow run cfsv2.yml",
+        "product=weather_suite",
+        "gh workflow run cfsv2-snow.yml",
+        "active_run",
+    ):
+        check(term in watcher, f"CFSv2 availability dispatcher missing term: {term}")
     check("merge_cfsv2_surface_release.py" in pages_workflow,
           "central Pages workflow must perform the corrected snowfall merge")
     check("uses: ./.github/workflows/cfsv2-snow.yml" in workflow,

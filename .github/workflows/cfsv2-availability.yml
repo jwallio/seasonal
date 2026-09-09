@@ -1,0 +1,77 @@
+name: CFSv2 Availability Dispatcher
+run-name: CFSv2 NOAA availability probe
+
+on:
+  # NOMADS publishes the required files at different times by cycle. Polling
+  # is intentionally lightweight; the expensive renderers run only after a
+  # complete newer cycle is visible at the source.
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: write
+
+concurrency:
+  group: cfsv2-availability-dispatcher
+  cancel-in-progress: true
+
+jobs:
+  dispatch-ready-cycles:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements.txt
+      - name: Install probe dependencies
+        run: python -m pip install --disable-pip-version-check requests numpy
+      - name: Probe NOAA source and published cycles
+        id: probe
+        env:
+          MANIFEST_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/cfsv2_manifest.json
+        run: python scripts/cfsv2_availability.py --manifest-url "$MANIFEST_URL"
+      - name: Dispatch only newer complete cycles
+        env:
+          GH_TOKEN: ${{ github.token }}
+          STANDARD_NEW_CYCLE: ${{ steps.probe.outputs.standard_new_cycle }}
+          SNOW_NEW_CYCLE: ${{ steps.probe.outputs.snow_new_cycle }}
+          STANDARD_READY_INIT: ${{ steps.probe.outputs.standard_ready_init }}
+          SNOW_READY_INIT: ${{ steps.probe.outputs.snow_ready_init }}
+        run: |
+          set -euo pipefail
+          active_run() {
+            local workflow="$1"
+            gh run list --workflow "$workflow" --branch main --limit 30 --json status \
+              --jq 'any(.[]; .status == "queued" or .status == "in_progress" or .status == "waiting" or .status == "pending")' \
+              | grep -qx true
+          }
+
+          if [[ "$STANDARD_NEW_CYCLE" == "true" ]]; then
+            if active_run cfsv2.yml; then
+              echo "CFSv2 weather renderer is already active; it will finish its selected cycle before the next poll advances it."
+            else
+              echo "Dispatching weather maps for NOAA cycle $STANDARD_READY_INIT."
+              gh workflow run cfsv2.yml --ref main \
+                -f product=weather_suite -f lead_months=4,5,6 -f seasonal_window=4,5,6
+            fi
+          else
+            echo "No newer complete NOAA monthly cycle for the weather suite."
+          fi
+
+          if [[ "$SNOW_NEW_CYCLE" == "true" ]]; then
+            if active_run cfsv2-snow.yml; then
+              echo "CFSv2 snowfall renderer is already active; deferring duplicate acquisition."
+            else
+              echo "Dispatching corrected snowfall maps for NOAA cycle $SNOW_READY_INIT."
+              gh workflow run cfsv2-snow.yml --ref main \
+                -f product=snowfall_suite -f lead_months=operational-winter \
+                -f seasonal_window=operational-winter
+            fi
+          else
+            echo "No newer complete NOAA six-hourly snowfall cycle."
+          fi

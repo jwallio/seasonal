@@ -12,11 +12,14 @@ sys.path.insert(0, str(ROOT / "scripts"))
 from seasonal_products import MODEL_SCHEDULES  # noqa: E402
 
 EXPECTED = {
-    ".github/workflows/cfsv2.yml": "45 5,11,17,23 * * *",
     ".github/workflows/cansips.yml": "30 16 2 * *",
     ".github/workflows/cma-cpsv3.yml": "30 18 21 * *",
     ".github/workflows/nmme.yml": "30 15 9 * *",
     ".github/workflows/superensemble.yml": "30 20 22 * *",
+}
+
+AVAILABILITY_WATCHERS = {
+    ".github/workflows/cfsv2-availability.yml": "*/15 * * * *",
 }
 
 RELEASE_CHECK_CRONS = {
@@ -74,6 +77,13 @@ def main() -> int:
     for relative_path, expected_cron in EXPECTED.items():
         path = ROOT / relative_path
         check(path.exists(), f"missing scheduled workflow: {relative_path}")
+        text = path.read_text(encoding="utf-8")
+        crons = re.findall(r'^\s*- cron:\s*"([^"]+)"', text, re.MULTILINE)
+        check(expected_cron in crons, f"{relative_path} is missing {expected_cron}")
+
+    for relative_path, expected_cron in AVAILABILITY_WATCHERS.items():
+        path = ROOT / relative_path
+        check(path.exists(), f"missing availability watcher: {relative_path}")
         text = path.read_text(encoding="utf-8")
         crons = re.findall(r'^\s*- cron:\s*"([^"]+)"', text, re.MULTILINE)
         check(expected_cron in crons, f"{relative_path} is missing {expected_cron}")
@@ -145,7 +155,7 @@ def main() -> int:
 
     check("22nd of each month at 20:30" in doc, "super-ensemble documentation must reflect its post-CMA schedule")
     check("full advertised anomaly suite" in doc, "schedule documentation must describe the multi-product refresh contract")
-    check("30-minute readiness retry" in doc, "schedule documentation must describe the CFSv2 delayed readiness retry")
+    check("15-minute source-availability probe" in doc, "schedule documentation must describe the CFSv2 source-driven dispatcher")
     check("scheduled reconciliation" in doc, "schedule documentation must describe the analog catch-up")
     check("explicitly dispatch that publisher" in doc, "schedule documentation must explain CDS worker publication")
 
