@@ -30,7 +30,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Initialize serialized Pages handoff
         shell: bash
-        run: : > publish-refs.txt
+        run: ": > publish-refs.txt"
       - name: Refresh temperature products sequentially
         shell: bash
         run: |
