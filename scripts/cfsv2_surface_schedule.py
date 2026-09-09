@@ -25,10 +25,18 @@ def exclusions(init, cycles, targets):
 
 def listed_complete(init, targets, get=requests.get):
     url = f'{cf.NOMADS_ROOT.rstrip("/")}/cfs.{init[:8]}/{init[8:]}/6hrly_grib_01/'
-    response = get(url, timeout=(10, 40))
-    if response.status_code == 404:
+    try:
+        response = get(url, timeout=(10, 40))
+        if response.status_code == 404:
+            return False
+        response.raise_for_status()
+    except requests.RequestException as exc:
+        # NOMADS may return 403/429/5xx while a fresh cycle is being indexed or
+        # while the public endpoint is rate-limiting the probe. This is source
+        # unavailability, not a renderer failure; the next availability poll
+        # must retry it instead of failing the snowfall workflow.
+        print(f'{init}: six-hourly source directory unavailable ({exc})', flush=True)
         return False
-    response.raise_for_status()
     available = set(re.findall(r'href="([^"/]+\.grb2)"', response.text))
     needed = {f'pgbf{valid}.01.{init}.grb2' for t in targets for valid in phase.endpoints(t)}
     # Listing is a readiness screen. Acquisition still validates every field and interval.

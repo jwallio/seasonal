@@ -37,6 +37,14 @@ class ScheduleTests(unittest.TestCase):
         r.text=r.text.replace(times[-1],'missing')
         self.assertFalse(schedule.listed_complete(init,['202702'],lambda *a,**k:r))
 
+    def test_listing_treats_transient_source_errors_as_not_ready(self):
+        class ErrorResponse:
+            status_code = 403
+            text = ''
+            def raise_for_status(self):
+                raise schedule.requests.HTTPError('source is still indexing')
+        self.assertFalse(schedule.listed_complete('2026090918', ['202701'], lambda *a, **k: ErrorResponse()))
+
 class PublicationTests(unittest.TestCase):
     def setUp(self):
         self.runs=[dict(id=f'cfsv2-2026090612-{p}',product=p,raw_field=FIELD,init_utc='2026-09-06T12:00:00Z',targets=[dict(ensemble_members=21)]) for p in ('snowfall_anomaly','snowfall_accumulation')]
