@@ -1,7 +1,7 @@
 {
   "schema_version": "seasonal_analog_products_v1",
   "kind": "seasonal_analog_products_manifest",
-  "generated_utc": "2026-09-09T07:49:24Z",
+  "generated_utc": "2026-09-09T10:36:47Z",
   "source": {
     "analog_manifest": "analog_z500_manifest.json",
     "climatology_years": "1981-2010",
@@ -31,7 +31,7 @@
       "snowfall_interpolation": "linear station interpolation with nearest-neighbor edge fill on a 0.25\u00b0 grid; NumPy inverse-distance fallback is recorded per product when SciPy is unavailable"
     }
   },
-  "status": "partial",
+  "status": "ready",
   "entries": [
     {
       "model": "superensemble",
@@ -2498,21 +2498,21 @@
       "model_label": "CFSv2",
       "target": "202702",
       "target_label": "February 2027",
-      "init_utc": "2026-09-08T12:00:00Z",
+      "init_utc": "2026-09-08T18:00:00Z",
       "top_analog_key": "cfsv2:202702:1998",
       "top_analog": {
         "label": "February 1998",
         "winter_year": 1998,
-        "pattern_correlation": 0.673037,
-        "nh_correlation": 0.61548,
-        "conus_correlation": 0.807336,
-        "amplitude_similarity": 0.720966,
-        "nh_amplitude_similarity": 0.729728,
-        "conus_amplitude_similarity": 0.70052,
+        "pattern_correlation": 0.713005,
+        "nh_correlation": 0.662239,
+        "conus_correlation": 0.831458,
+        "amplitude_similarity": 0.696234,
+        "nh_amplitude_similarity": 0.696967,
+        "conus_amplitude_similarity": 0.694523,
         "nh_valid_fraction": 1.0,
         "conus_valid_fraction": 1.0,
         "sample_count": 28,
-        "composite_weight": 0.249372,
+        "composite_weight": 0.256394,
         "rank": 1
       },
       "period": {
@@ -2657,41 +2657,41 @@
             "rank": 1,
             "label": "February 1998",
             "winter_year": 1998,
-            "pattern_correlation": 0.673037,
-            "amplitude_similarity": 0.720966,
-            "weight": 0.249372
+            "pattern_correlation": 0.713005,
+            "amplitude_similarity": 0.696234,
+            "weight": 0.256394
           },
           {
             "rank": 2,
             "label": "February 2010",
             "winter_year": 2010,
-            "pattern_correlation": 0.538774,
-            "amplitude_similarity": 0.687434,
-            "weight": 0.188381
+            "pattern_correlation": 0.548287,
+            "amplitude_similarity": 0.664613,
+            "weight": 0.181667
           },
           {
             "rank": 3,
             "label": "February 1960",
             "winter_year": 1960,
-            "pattern_correlation": 0.523926,
-            "amplitude_similarity": 0.820011,
-            "weight": 0.2055
+            "pattern_correlation": 0.541612,
+            "amplitude_similarity": 0.793,
+            "weight": 0.200263
           },
           {
             "rank": 4,
-            "label": "February 1969",
-            "winter_year": 1969,
-            "pattern_correlation": 0.510794,
-            "amplitude_similarity": 0.717059,
-            "weight": 0.184448
+            "label": "February 1983",
+            "winter_year": 1983,
+            "pattern_correlation": 0.493388,
+            "amplitude_similarity": 0.846341,
+            "weight": 0.192865
           },
           {
             "rank": 5,
-            "label": "February 1999",
-            "winter_year": 1999,
-            "pattern_correlation": 0.436209,
-            "amplitude_similarity": 0.777291,
-            "weight": 0.172299
+            "label": "February 1969",
+            "winter_year": 1969,
+            "pattern_correlation": 0.486578,
+            "amplitude_similarity": 0.693687,
+            "weight": 0.168811
           }
         ],
         "products": [
@@ -2707,7 +2707,7 @@
           "provider": "NOAA PSL WRIT",
           "status": "ready",
           "image": "analog_products/cfsv2/202702/composite/psl_500mb_height_anomaly.png",
-          "composite_key": "cfsv2:202702:top5:composite-8f7178cb5e88",
+          "composite_key": "cfsv2:202702:top5:composite-5f1e87cc58c4",
           "composite_method": "inverse similarity-distance weighting over the top analogs",
           "composite_pattern_weight": 0.8,
           "composite_amplitude_weight": 0.2,
@@ -2717,41 +2717,41 @@
               "rank": 1,
               "label": "February 1998",
               "winter_year": 1998,
-              "pattern_correlation": 0.673037,
-              "amplitude_similarity": 0.720966,
-              "weight": 0.249372
+              "pattern_correlation": 0.713005,
+              "amplitude_similarity": 0.696234,
+              "weight": 0.256394
             },
             {
               "rank": 2,
               "label": "February 2010",
               "winter_year": 2010,
-              "pattern_correlation": 0.538774,
-              "amplitude_similarity": 0.687434,
-              "weight": 0.188381
+              "pattern_correlation": 0.548287,
+              "amplitude_similarity": 0.664613,
+              "weight": 0.181667
             },
             {
               "rank": 3,
               "label": "February 1960",
               "winter_year": 1960,
-              "pattern_correlation": 0.523926,
-              "amplitude_similarity": 0.820011,
-              "weight": 0.2055
+              "pattern_correlation": 0.541612,
+              "amplitude_similarity": 0.793,
+              "weight": 0.200263
             },
             {
               "rank": 4,
-              "label": "February 1969",
-              "winter_year": 1969,
-              "pattern_correlation": 0.510794,
-              "amplitude_similarity": 0.717059,
-              "weight": 0.184448
+              "label": "February 1983",
+              "winter_year": 1983,
+              "pattern_correlation": 0.493388,
+              "amplitude_similarity": 0.846341,
+              "weight": 0.192865
             },
             {
               "rank": 5,
-              "label": "February 1999",
-              "winter_year": 1999,
-              "pattern_correlation": 0.436209,
-              "amplitude_similarity": 0.777291,
-              "weight": 0.172299
+              "label": "February 1969",
+              "winter_year": 1969,
+              "pattern_correlation": 0.486578,
+              "amplitude_similarity": 0.693687,
+              "weight": 0.168811
             }
           ],
           "valid_target": "202702",
@@ -2761,22 +2761,22 @@
             "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=Geopotential+Height&level=500mb&iy=1998&fmonth=1&fmonth2=1&type=1&map=0&mapt=6&proj=North+America&colortable=default&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
             "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=Geopotential+Height&level=500mb&iy=2010&fmonth=1&fmonth2=1&type=1&map=0&mapt=6&proj=North+America&colortable=default&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
             "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=20th+Century+Reanalysis+V3&var=Geopotential+Height&level=500mb&iy=1960&fmonth=1&fmonth2=1&type=1&map=0&mapt=6&proj=North+America&colortable=default&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
-            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=20th+Century+Reanalysis+V3&var=Geopotential+Height&level=500mb&iy=1969&fmonth=1&fmonth2=1&type=1&map=0&mapt=6&proj=North+America&colortable=default&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
-            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=Geopotential+Height&level=500mb&iy=1999&fmonth=1&fmonth2=1&type=1&map=0&mapt=6&proj=North+America&colortable=default&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot"
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=Geopotential+Height&level=500mb&iy=1983&fmonth=1&fmonth2=1&type=1&map=0&mapt=6&proj=North+America&colortable=default&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=20th+Century+Reanalysis+V3&var=Geopotential+Height&level=500mb&iy=1969&fmonth=1&fmonth2=1&type=1&map=0&mapt=6&proj=North+America&colortable=default&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot"
           ],
           "provider_asset_urls": [
-            "https://psl.noaa.gov/tmp/nclReOd8bKSgM.nc",
-            "https://psl.noaa.gov/tmp/nclSfoSg5vKjv.nc",
-            "https://psl.noaa.gov/tmp/nclPltM7SSWt1.nc",
-            "https://psl.noaa.gov/tmp/ncl0dEY_6CPfg.nc",
-            "https://psl.noaa.gov/tmp/nclZ5MruMvbou.nc"
+            "https://psl.noaa.gov/tmp/nclEdSK0tThFr.nc",
+            "https://psl.noaa.gov/tmp/nclTvNIK2G3SO.nc",
+            "https://psl.noaa.gov/tmp/ncloWgp9E_mOL.nc",
+            "https://psl.noaa.gov/tmp/ncl4P_yOV62Vi.nc",
+            "https://psl.noaa.gov/tmp/nclJFqW458Y9Q.nc"
           ],
           "provider_image_urls": [
-            "https://psl.noaa.gov/tmp/nclReOd8bKSgM.tmpqq.png",
-            "https://psl.noaa.gov/tmp/nclSfoSg5vKjv.tmpqq.png",
-            "https://psl.noaa.gov/tmp/nclPltM7SSWt1.tmpqq.png",
-            "https://psl.noaa.gov/tmp/ncl0dEY_6CPfg.tmpqq.png",
-            "https://psl.noaa.gov/tmp/nclZ5MruMvbou.tmpqq.png"
+            "https://psl.noaa.gov/tmp/nclEdSK0tThFr.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclTvNIK2G3SO.tmpqq.png",
+            "https://psl.noaa.gov/tmp/ncloWgp9E_mOL.tmpqq.png",
+            "https://psl.noaa.gov/tmp/ncl4P_yOV62Vi.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclJFqW458Y9Q.tmpqq.png"
           ],
           "dataset": "20CRv3 + NCEP CFSR",
           "datasets": [
@@ -2808,7 +2808,7 @@
             "source_smoothing_sigma_grid_cells": 0.85
           },
           "map_region": "North America",
-          "generated_utc": "2026-09-09T07:33:20Z"
+          "generated_utc": "2026-09-09T10:30:27Z"
         },
         "psl_2m_temperature_anomaly": {
           "product": "psl_2m_temperature_anomaly",
@@ -2816,7 +2816,7 @@
           "provider": "NOAA PSL WRIT",
           "status": "ready",
           "image": "analog_products/cfsv2/202702/composite/psl_2m_temperature_anomaly.png",
-          "composite_key": "cfsv2:202702:top5:composite-8f7178cb5e88",
+          "composite_key": "cfsv2:202702:top5:composite-5f1e87cc58c4",
           "composite_method": "inverse similarity-distance weighting over the top analogs",
           "composite_pattern_weight": 0.8,
           "composite_amplitude_weight": 0.2,
@@ -2826,41 +2826,41 @@
               "rank": 1,
               "label": "February 1998",
               "winter_year": 1998,
-              "pattern_correlation": 0.673037,
-              "amplitude_similarity": 0.720966,
-              "weight": 0.249372
+              "pattern_correlation": 0.713005,
+              "amplitude_similarity": 0.696234,
+              "weight": 0.256394
             },
             {
               "rank": 2,
               "label": "February 2010",
               "winter_year": 2010,
-              "pattern_correlation": 0.538774,
-              "amplitude_similarity": 0.687434,
-              "weight": 0.188381
+              "pattern_correlation": 0.548287,
+              "amplitude_similarity": 0.664613,
+              "weight": 0.181667
             },
             {
               "rank": 3,
               "label": "February 1960",
               "winter_year": 1960,
-              "pattern_correlation": 0.523926,
-              "amplitude_similarity": 0.820011,
-              "weight": 0.2055
+              "pattern_correlation": 0.541612,
+              "amplitude_similarity": 0.793,
+              "weight": 0.200263
             },
             {
               "rank": 4,
-              "label": "February 1969",
-              "winter_year": 1969,
-              "pattern_correlation": 0.510794,
-              "amplitude_similarity": 0.717059,
-              "weight": 0.184448
+              "label": "February 1983",
+              "winter_year": 1983,
+              "pattern_correlation": 0.493388,
+              "amplitude_similarity": 0.846341,
+              "weight": 0.192865
             },
             {
               "rank": 5,
-              "label": "February 1999",
-              "winter_year": 1999,
-              "pattern_correlation": 0.436209,
-              "amplitude_similarity": 0.777291,
-              "weight": 0.172299
+              "label": "February 1969",
+              "winter_year": 1969,
+              "pattern_correlation": 0.486578,
+              "amplitude_similarity": 0.693687,
+              "weight": 0.168811
             }
           ],
           "valid_target": "202702",
@@ -2870,22 +2870,22 @@
             "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=2m+Air+Temperature&level=1000mb&iy=1998&fmonth=1&fmonth2=1&type=1&map=0&mapt=6&proj=USA%28CONUS%29&colortable=testcmap&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
             "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=2m+Air+Temperature&level=1000mb&iy=2010&fmonth=1&fmonth2=1&type=1&map=0&mapt=6&proj=USA%28CONUS%29&colortable=testcmap&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
             "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=20th+Century+Reanalysis+V3&var=2m+Air+Temperature&level=1000mb&iy=1960&fmonth=1&fmonth2=1&type=1&map=0&mapt=6&proj=USA%28CONUS%29&colortable=testcmap&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
-            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=20th+Century+Reanalysis+V3&var=2m+Air+Temperature&level=1000mb&iy=1969&fmonth=1&fmonth2=1&type=1&map=0&mapt=6&proj=USA%28CONUS%29&colortable=testcmap&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
-            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=2m+Air+Temperature&level=1000mb&iy=1999&fmonth=1&fmonth2=1&type=1&map=0&mapt=6&proj=USA%28CONUS%29&colortable=testcmap&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot"
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=2m+Air+Temperature&level=1000mb&iy=1983&fmonth=1&fmonth2=1&type=1&map=0&mapt=6&proj=USA%28CONUS%29&colortable=testcmap&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=20th+Century+Reanalysis+V3&var=2m+Air+Temperature&level=1000mb&iy=1969&fmonth=1&fmonth2=1&type=1&map=0&mapt=6&proj=USA%28CONUS%29&colortable=testcmap&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot"
           ],
           "provider_asset_urls": [
-            "https://psl.noaa.gov/tmp/nclvq1wbn7px3.nc",
-            "https://psl.noaa.gov/tmp/nclcyRojmHMC3.nc",
-            "https://psl.noaa.gov/tmp/nclhHspDjRhrw.nc",
-            "https://psl.noaa.gov/tmp/nclTgVQCZRTSG.nc",
-            "https://psl.noaa.gov/tmp/nclzg0f1mNREl.nc"
+            "https://psl.noaa.gov/tmp/nclLRJgmSmsmL.nc",
+            "https://psl.noaa.gov/tmp/nclr1Mmgv0Vei.nc",
+            "https://psl.noaa.gov/tmp/ncl5Ienc2vf_0.nc",
+            "https://psl.noaa.gov/tmp/ncltQZazyE_WD.nc",
+            "https://psl.noaa.gov/tmp/ncl13cf9e_00W.nc"
           ],
           "provider_image_urls": [
-            "https://psl.noaa.gov/tmp/nclvq1wbn7px3.tmpqq.png",
-            "https://psl.noaa.gov/tmp/nclcyRojmHMC3.tmpqq.png",
-            "https://psl.noaa.gov/tmp/nclhHspDjRhrw.tmpqq.png",
-            "https://psl.noaa.gov/tmp/nclTgVQCZRTSG.tmpqq.png",
-            "https://psl.noaa.gov/tmp/nclzg0f1mNREl.tmpqq.png"
+            "https://psl.noaa.gov/tmp/nclLRJgmSmsmL.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclr1Mmgv0Vei.tmpqq.png",
+            "https://psl.noaa.gov/tmp/ncl5Ienc2vf_0.tmpqq.png",
+            "https://psl.noaa.gov/tmp/ncltQZazyE_WD.tmpqq.png",
+            "https://psl.noaa.gov/tmp/ncl13cf9e_00W.tmpqq.png"
           ],
           "dataset": "20CRv3 + NCEP CFSR",
           "datasets": [
@@ -2917,7 +2917,7 @@
             "source_smoothing_sigma_grid_cells": 0.85
           },
           "map_region": "USA(CONUS)",
-          "generated_utc": "2026-09-09T07:33:30Z"
+          "generated_utc": "2026-09-09T10:30:35Z"
         },
         "mrcc_snowfall_departure_composite": {
           "product": "mrcc_snowfall_departure_composite",
@@ -2925,7 +2925,7 @@
           "provider": "MRCC / ACIS",
           "status": "ready",
           "image": "analog_products/cfsv2/202702/composite/mrcc_snowfall_departure_composite.png",
-          "composite_key": "cfsv2:202702:top5:composite-8f7178cb5e88:mrcc-acis-snow-v6-eastern-domain-fit",
+          "composite_key": "cfsv2:202702:top5:composite-5f1e87cc58c4:mrcc-acis-snow-v6-eastern-domain-fit",
           "composite_method": "inverse similarity-distance weighting over the top analogs",
           "composite_version": "mrcc-acis-snow-v6-eastern-domain-fit",
           "composite_pattern_weight": 0.8,
@@ -2936,41 +2936,41 @@
               "rank": 1,
               "label": "February 1998",
               "winter_year": 1998,
-              "pattern_correlation": 0.673037,
-              "amplitude_similarity": 0.720966,
-              "weight": 0.249372
+              "pattern_correlation": 0.713005,
+              "amplitude_similarity": 0.696234,
+              "weight": 0.256394
             },
             {
               "rank": 2,
               "label": "February 2010",
               "winter_year": 2010,
-              "pattern_correlation": 0.538774,
-              "amplitude_similarity": 0.687434,
-              "weight": 0.188381
+              "pattern_correlation": 0.548287,
+              "amplitude_similarity": 0.664613,
+              "weight": 0.181667
             },
             {
               "rank": 3,
               "label": "February 1960",
               "winter_year": 1960,
-              "pattern_correlation": 0.523926,
-              "amplitude_similarity": 0.820011,
-              "weight": 0.2055
+              "pattern_correlation": 0.541612,
+              "amplitude_similarity": 0.793,
+              "weight": 0.200263
             },
             {
               "rank": 4,
-              "label": "February 1969",
-              "winter_year": 1969,
-              "pattern_correlation": 0.510794,
-              "amplitude_similarity": 0.717059,
-              "weight": 0.184448
+              "label": "February 1983",
+              "winter_year": 1983,
+              "pattern_correlation": 0.493388,
+              "amplitude_similarity": 0.846341,
+              "weight": 0.192865
             },
             {
               "rank": 5,
-              "label": "February 1999",
-              "winter_year": 1999,
-              "pattern_correlation": 0.436209,
-              "amplitude_similarity": 0.777291,
-              "weight": 0.172299
+              "label": "February 1969",
+              "winter_year": 1969,
+              "pattern_correlation": 0.486578,
+              "amplitude_similarity": 0.693687,
+              "weight": 0.168811
             }
           ],
           "valid_target": "202702",
@@ -2980,15 +2980,15 @@
             "https://data.rcc-acis.org/MultiStnData?params=%7B%22edate%22%3A%221998-02%22%2C%22elems%22%3A%5B%7B%22duration%22%3A%22mly%22%2C%22interval%22%3A%22mly%22%2C%22maxmissing%22%3A5%2C%22name%22%3A%22snow%22%2C%22normal%22%3A%22departure%22%2C%22reduce%22%3A%22sum%22%7D%5D%2C%22meta%22%3A%5B%22ll%22%5D%2C%22sdate%22%3A%221998-02%22%2C%22state%22%3A%5B%22ME%22%2C%22NH%22%2C%22VT%22%2C%22NY%22%2C%22MA%22%2C%22CT%22%2C%22RI%22%2C%22PA%22%2C%22NJ%22%2C%22DE%22%2C%22MD%22%2C%22VA%22%2C%22WV%22%2C%22NC%22%2C%22SC%22%2C%22OH%22%2C%22MI%22%2C%22IN%22%2C%22KY%22%2C%22TN%22%2C%22AL%22%2C%22GA%22%5D%7D",
             "https://data.rcc-acis.org/MultiStnData?params=%7B%22edate%22%3A%222010-02%22%2C%22elems%22%3A%5B%7B%22duration%22%3A%22mly%22%2C%22interval%22%3A%22mly%22%2C%22maxmissing%22%3A5%2C%22name%22%3A%22snow%22%2C%22normal%22%3A%22departure%22%2C%22reduce%22%3A%22sum%22%7D%5D%2C%22meta%22%3A%5B%22ll%22%5D%2C%22sdate%22%3A%222010-02%22%2C%22state%22%3A%5B%22ME%22%2C%22NH%22%2C%22VT%22%2C%22NY%22%2C%22MA%22%2C%22CT%22%2C%22RI%22%2C%22PA%22%2C%22NJ%22%2C%22DE%22%2C%22MD%22%2C%22VA%22%2C%22WV%22%2C%22NC%22%2C%22SC%22%2C%22OH%22%2C%22MI%22%2C%22IN%22%2C%22KY%22%2C%22TN%22%2C%22AL%22%2C%22GA%22%5D%7D",
             "https://data.rcc-acis.org/MultiStnData?params=%7B%22edate%22%3A%221960-02%22%2C%22elems%22%3A%5B%7B%22duration%22%3A%22mly%22%2C%22interval%22%3A%22mly%22%2C%22maxmissing%22%3A5%2C%22name%22%3A%22snow%22%2C%22normal%22%3A%22departure%22%2C%22reduce%22%3A%22sum%22%7D%5D%2C%22meta%22%3A%5B%22ll%22%5D%2C%22sdate%22%3A%221960-02%22%2C%22state%22%3A%5B%22ME%22%2C%22NH%22%2C%22VT%22%2C%22NY%22%2C%22MA%22%2C%22CT%22%2C%22RI%22%2C%22PA%22%2C%22NJ%22%2C%22DE%22%2C%22MD%22%2C%22VA%22%2C%22WV%22%2C%22NC%22%2C%22SC%22%2C%22OH%22%2C%22MI%22%2C%22IN%22%2C%22KY%22%2C%22TN%22%2C%22AL%22%2C%22GA%22%5D%7D",
-            "https://data.rcc-acis.org/MultiStnData?params=%7B%22edate%22%3A%221969-02%22%2C%22elems%22%3A%5B%7B%22duration%22%3A%22mly%22%2C%22interval%22%3A%22mly%22%2C%22maxmissing%22%3A5%2C%22name%22%3A%22snow%22%2C%22normal%22%3A%22departure%22%2C%22reduce%22%3A%22sum%22%7D%5D%2C%22meta%22%3A%5B%22ll%22%5D%2C%22sdate%22%3A%221969-02%22%2C%22state%22%3A%5B%22ME%22%2C%22NH%22%2C%22VT%22%2C%22NY%22%2C%22MA%22%2C%22CT%22%2C%22RI%22%2C%22PA%22%2C%22NJ%22%2C%22DE%22%2C%22MD%22%2C%22VA%22%2C%22WV%22%2C%22NC%22%2C%22SC%22%2C%22OH%22%2C%22MI%22%2C%22IN%22%2C%22KY%22%2C%22TN%22%2C%22AL%22%2C%22GA%22%5D%7D",
-            "https://data.rcc-acis.org/MultiStnData?params=%7B%22edate%22%3A%221999-02%22%2C%22elems%22%3A%5B%7B%22duration%22%3A%22mly%22%2C%22interval%22%3A%22mly%22%2C%22maxmissing%22%3A5%2C%22name%22%3A%22snow%22%2C%22normal%22%3A%22departure%22%2C%22reduce%22%3A%22sum%22%7D%5D%2C%22meta%22%3A%5B%22ll%22%5D%2C%22sdate%22%3A%221999-02%22%2C%22state%22%3A%5B%22ME%22%2C%22NH%22%2C%22VT%22%2C%22NY%22%2C%22MA%22%2C%22CT%22%2C%22RI%22%2C%22PA%22%2C%22NJ%22%2C%22DE%22%2C%22MD%22%2C%22VA%22%2C%22WV%22%2C%22NC%22%2C%22SC%22%2C%22OH%22%2C%22MI%22%2C%22IN%22%2C%22KY%22%2C%22TN%22%2C%22AL%22%2C%22GA%22%5D%7D"
+            "https://data.rcc-acis.org/MultiStnData?params=%7B%22edate%22%3A%221983-02%22%2C%22elems%22%3A%5B%7B%22duration%22%3A%22mly%22%2C%22interval%22%3A%22mly%22%2C%22maxmissing%22%3A5%2C%22name%22%3A%22snow%22%2C%22normal%22%3A%22departure%22%2C%22reduce%22%3A%22sum%22%7D%5D%2C%22meta%22%3A%5B%22ll%22%5D%2C%22sdate%22%3A%221983-02%22%2C%22state%22%3A%5B%22ME%22%2C%22NH%22%2C%22VT%22%2C%22NY%22%2C%22MA%22%2C%22CT%22%2C%22RI%22%2C%22PA%22%2C%22NJ%22%2C%22DE%22%2C%22MD%22%2C%22VA%22%2C%22WV%22%2C%22NC%22%2C%22SC%22%2C%22OH%22%2C%22MI%22%2C%22IN%22%2C%22KY%22%2C%22TN%22%2C%22AL%22%2C%22GA%22%5D%7D",
+            "https://data.rcc-acis.org/MultiStnData?params=%7B%22edate%22%3A%221969-02%22%2C%22elems%22%3A%5B%7B%22duration%22%3A%22mly%22%2C%22interval%22%3A%22mly%22%2C%22maxmissing%22%3A5%2C%22name%22%3A%22snow%22%2C%22normal%22%3A%22departure%22%2C%22reduce%22%3A%22sum%22%7D%5D%2C%22meta%22%3A%5B%22ll%22%5D%2C%22sdate%22%3A%221969-02%22%2C%22state%22%3A%5B%22ME%22%2C%22NH%22%2C%22VT%22%2C%22NY%22%2C%22MA%22%2C%22CT%22%2C%22RI%22%2C%22PA%22%2C%22NJ%22%2C%22DE%22%2C%22MD%22%2C%22VA%22%2C%22WV%22%2C%22NC%22%2C%22SC%22%2C%22OH%22%2C%22MI%22%2C%22IN%22%2C%22KY%22%2C%22TN%22%2C%22AL%22%2C%22GA%22%5D%7D"
           ],
           "provider_asset_urls": [
             "https://data.rcc-acis.org/MultiStnData?params=%7B%22edate%22%3A%221998-02%22%2C%22elems%22%3A%5B%7B%22duration%22%3A%22mly%22%2C%22interval%22%3A%22mly%22%2C%22maxmissing%22%3A5%2C%22name%22%3A%22snow%22%2C%22normal%22%3A%22departure%22%2C%22reduce%22%3A%22sum%22%7D%5D%2C%22meta%22%3A%5B%22ll%22%5D%2C%22sdate%22%3A%221998-02%22%2C%22state%22%3A%5B%22ME%22%2C%22NH%22%2C%22VT%22%2C%22NY%22%2C%22MA%22%2C%22CT%22%2C%22RI%22%2C%22PA%22%2C%22NJ%22%2C%22DE%22%2C%22MD%22%2C%22VA%22%2C%22WV%22%2C%22NC%22%2C%22SC%22%2C%22OH%22%2C%22MI%22%2C%22IN%22%2C%22KY%22%2C%22TN%22%2C%22AL%22%2C%22GA%22%5D%7D",
             "https://data.rcc-acis.org/MultiStnData?params=%7B%22edate%22%3A%222010-02%22%2C%22elems%22%3A%5B%7B%22duration%22%3A%22mly%22%2C%22interval%22%3A%22mly%22%2C%22maxmissing%22%3A5%2C%22name%22%3A%22snow%22%2C%22normal%22%3A%22departure%22%2C%22reduce%22%3A%22sum%22%7D%5D%2C%22meta%22%3A%5B%22ll%22%5D%2C%22sdate%22%3A%222010-02%22%2C%22state%22%3A%5B%22ME%22%2C%22NH%22%2C%22VT%22%2C%22NY%22%2C%22MA%22%2C%22CT%22%2C%22RI%22%2C%22PA%22%2C%22NJ%22%2C%22DE%22%2C%22MD%22%2C%22VA%22%2C%22WV%22%2C%22NC%22%2C%22SC%22%2C%22OH%22%2C%22MI%22%2C%22IN%22%2C%22KY%22%2C%22TN%22%2C%22AL%22%2C%22GA%22%5D%7D",
             "https://data.rcc-acis.org/MultiStnData?params=%7B%22edate%22%3A%221960-02%22%2C%22elems%22%3A%5B%7B%22duration%22%3A%22mly%22%2C%22interval%22%3A%22mly%22%2C%22maxmissing%22%3A5%2C%22name%22%3A%22snow%22%2C%22normal%22%3A%22departure%22%2C%22reduce%22%3A%22sum%22%7D%5D%2C%22meta%22%3A%5B%22ll%22%5D%2C%22sdate%22%3A%221960-02%22%2C%22state%22%3A%5B%22ME%22%2C%22NH%22%2C%22VT%22%2C%22NY%22%2C%22MA%22%2C%22CT%22%2C%22RI%22%2C%22PA%22%2C%22NJ%22%2C%22DE%22%2C%22MD%22%2C%22VA%22%2C%22WV%22%2C%22NC%22%2C%22SC%22%2C%22OH%22%2C%22MI%22%2C%22IN%22%2C%22KY%22%2C%22TN%22%2C%22AL%22%2C%22GA%22%5D%7D",
-            "https://data.rcc-acis.org/MultiStnData?params=%7B%22edate%22%3A%221969-02%22%2C%22elems%22%3A%5B%7B%22duration%22%3A%22mly%22%2C%22interval%22%3A%22mly%22%2C%22maxmissing%22%3A5%2C%22name%22%3A%22snow%22%2C%22normal%22%3A%22departure%22%2C%22reduce%22%3A%22sum%22%7D%5D%2C%22meta%22%3A%5B%22ll%22%5D%2C%22sdate%22%3A%221969-02%22%2C%22state%22%3A%5B%22ME%22%2C%22NH%22%2C%22VT%22%2C%22NY%22%2C%22MA%22%2C%22CT%22%2C%22RI%22%2C%22PA%22%2C%22NJ%22%2C%22DE%22%2C%22MD%22%2C%22VA%22%2C%22WV%22%2C%22NC%22%2C%22SC%22%2C%22OH%22%2C%22MI%22%2C%22IN%22%2C%22KY%22%2C%22TN%22%2C%22AL%22%2C%22GA%22%5D%7D",
-            "https://data.rcc-acis.org/MultiStnData?params=%7B%22edate%22%3A%221999-02%22%2C%22elems%22%3A%5B%7B%22duration%22%3A%22mly%22%2C%22interval%22%3A%22mly%22%2C%22maxmissing%22%3A5%2C%22name%22%3A%22snow%22%2C%22normal%22%3A%22departure%22%2C%22reduce%22%3A%22sum%22%7D%5D%2C%22meta%22%3A%5B%22ll%22%5D%2C%22sdate%22%3A%221999-02%22%2C%22state%22%3A%5B%22ME%22%2C%22NH%22%2C%22VT%22%2C%22NY%22%2C%22MA%22%2C%22CT%22%2C%22RI%22%2C%22PA%22%2C%22NJ%22%2C%22DE%22%2C%22MD%22%2C%22VA%22%2C%22WV%22%2C%22NC%22%2C%22SC%22%2C%22OH%22%2C%22MI%22%2C%22IN%22%2C%22KY%22%2C%22TN%22%2C%22AL%22%2C%22GA%22%5D%7D"
+            "https://data.rcc-acis.org/MultiStnData?params=%7B%22edate%22%3A%221983-02%22%2C%22elems%22%3A%5B%7B%22duration%22%3A%22mly%22%2C%22interval%22%3A%22mly%22%2C%22maxmissing%22%3A5%2C%22name%22%3A%22snow%22%2C%22normal%22%3A%22departure%22%2C%22reduce%22%3A%22sum%22%7D%5D%2C%22meta%22%3A%5B%22ll%22%5D%2C%22sdate%22%3A%221983-02%22%2C%22state%22%3A%5B%22ME%22%2C%22NH%22%2C%22VT%22%2C%22NY%22%2C%22MA%22%2C%22CT%22%2C%22RI%22%2C%22PA%22%2C%22NJ%22%2C%22DE%22%2C%22MD%22%2C%22VA%22%2C%22WV%22%2C%22NC%22%2C%22SC%22%2C%22OH%22%2C%22MI%22%2C%22IN%22%2C%22KY%22%2C%22TN%22%2C%22AL%22%2C%22GA%22%5D%7D",
+            "https://data.rcc-acis.org/MultiStnData?params=%7B%22edate%22%3A%221969-02%22%2C%22elems%22%3A%5B%7B%22duration%22%3A%22mly%22%2C%22interval%22%3A%22mly%22%2C%22maxmissing%22%3A5%2C%22name%22%3A%22snow%22%2C%22normal%22%3A%22departure%22%2C%22reduce%22%3A%22sum%22%7D%5D%2C%22meta%22%3A%5B%22ll%22%5D%2C%22sdate%22%3A%221969-02%22%2C%22state%22%3A%5B%22ME%22%2C%22NH%22%2C%22VT%22%2C%22NY%22%2C%22MA%22%2C%22CT%22%2C%22RI%22%2C%22PA%22%2C%22NJ%22%2C%22DE%22%2C%22MD%22%2C%22VA%22%2C%22WV%22%2C%22NC%22%2C%22SC%22%2C%22OH%22%2C%22MI%22%2C%22IN%22%2C%22KY%22%2C%22TN%22%2C%22AL%22%2C%22GA%22%5D%7D"
           ],
           "dataset": "MRCC / ACIS MultiStnData monthly snowfall departures",
           "climatology_years": "provider-defined",
@@ -2998,8 +2998,8 @@
             1367,
             1411,
             816,
-            982,
-            1378
+            1100,
+            982
           ],
           "station_states": [
             "ME",
@@ -3104,7 +3104,7 @@
             31.0,
             47.5
           ],
-          "generated_utc": "2026-09-09T07:38:09Z"
+          "generated_utc": "2026-09-09T10:33:20Z"
         }
       }
     },
@@ -3113,21 +3113,21 @@
       "model_label": "CFSv2",
       "target": "202701",
       "target_label": "January 2027",
-      "init_utc": "2026-09-08T12:00:00Z",
+      "init_utc": "2026-09-08T18:00:00Z",
       "top_analog_key": "cfsv2:202701:1958",
       "top_analog": {
         "label": "January 1958",
         "winter_year": 1958,
-        "pattern_correlation": 0.516445,
-        "nh_correlation": 0.487628,
-        "conus_correlation": 0.583683,
-        "amplitude_similarity": 0.781764,
-        "nh_amplitude_similarity": 0.775534,
-        "conus_amplitude_similarity": 0.796303,
+        "pattern_correlation": 0.506764,
+        "nh_correlation": 0.461367,
+        "conus_correlation": 0.61269,
+        "amplitude_similarity": 0.721734,
+        "nh_amplitude_similarity": 0.729348,
+        "conus_amplitude_similarity": 0.703968,
         "nh_valid_fraction": 1.0,
         "conus_valid_fraction": 1.0,
         "sample_count": 31,
-        "composite_weight": 0.205218,
+        "composite_weight": 0.205405,
         "rank": 1
       },
       "period": {
@@ -3272,41 +3272,41 @@
             "rank": 1,
             "label": "January 1958",
             "winter_year": 1958,
-            "pattern_correlation": 0.516445,
-            "amplitude_similarity": 0.781764,
-            "weight": 0.205218
+            "pattern_correlation": 0.506764,
+            "amplitude_similarity": 0.721734,
+            "weight": 0.205405
           },
           {
             "rank": 2,
-            "label": "January 1995",
-            "winter_year": 1995,
-            "pattern_correlation": 0.513843,
-            "amplitude_similarity": 0.820152,
-            "weight": 0.211129
+            "label": "January 1998",
+            "winter_year": 1998,
+            "pattern_correlation": 0.469443,
+            "amplitude_similarity": 0.80372,
+            "weight": 0.206604
           },
           {
             "rank": 3,
-            "label": "January 2024",
-            "winter_year": 2024,
-            "pattern_correlation": 0.477773,
-            "amplitude_similarity": 0.884146,
-            "weight": 0.209647
+            "label": "January 1995",
+            "winter_year": 1995,
+            "pattern_correlation": 0.437974,
+            "amplitude_similarity": 0.814394,
+            "weight": 0.19836
           },
           {
             "rank": 4,
-            "label": "January 1983",
-            "winter_year": 1983,
-            "pattern_correlation": 0.454436,
-            "amplitude_similarity": 0.744587,
-            "weight": 0.180652
+            "label": "January 2024",
+            "winter_year": 2024,
+            "pattern_correlation": 0.436053,
+            "amplitude_similarity": 0.905826,
+            "weight": 0.212577
           },
           {
             "rank": 5,
-            "label": "January 1998",
-            "winter_year": 1998,
-            "pattern_correlation": 0.435134,
-            "amplitude_similarity": 0.871654,
-            "weight": 0.193354
+            "label": "January 1983",
+            "winter_year": 1983,
+            "pattern_correlation": 0.397248,
+            "amplitude_similarity": 0.738253,
+            "weight": 0.177054
           }
         ],
         "products": [
@@ -3322,7 +3322,7 @@
           "provider": "NOAA PSL WRIT",
           "status": "ready",
           "image": "analog_products/cfsv2/202701/composite/psl_500mb_height_anomaly.png",
-          "composite_key": "cfsv2:202701:top5:composite-3e569be96513",
+          "composite_key": "cfsv2:202701:top5:composite-51f0c205af20",
           "composite_method": "inverse similarity-distance weighting over the top analogs",
           "composite_pattern_weight": 0.8,
           "composite_amplitude_weight": 0.2,
@@ -3332,41 +3332,41 @@
               "rank": 1,
               "label": "January 1958",
               "winter_year": 1958,
-              "pattern_correlation": 0.516445,
-              "amplitude_similarity": 0.781764,
-              "weight": 0.205218
+              "pattern_correlation": 0.506764,
+              "amplitude_similarity": 0.721734,
+              "weight": 0.205405
             },
             {
               "rank": 2,
-              "label": "January 1995",
-              "winter_year": 1995,
-              "pattern_correlation": 0.513843,
-              "amplitude_similarity": 0.820152,
-              "weight": 0.211129
+              "label": "January 1998",
+              "winter_year": 1998,
+              "pattern_correlation": 0.469443,
+              "amplitude_similarity": 0.80372,
+              "weight": 0.206604
             },
             {
               "rank": 3,
-              "label": "January 2024",
-              "winter_year": 2024,
-              "pattern_correlation": 0.477773,
-              "amplitude_similarity": 0.884146,
-              "weight": 0.209647
+              "label": "January 1995",
+              "winter_year": 1995,
+              "pattern_correlation": 0.437974,
+              "amplitude_similarity": 0.814394,
+              "weight": 0.19836
             },
             {
               "rank": 4,
-              "label": "January 1983",
-              "winter_year": 1983,
-              "pattern_correlation": 0.454436,
-              "amplitude_similarity": 0.744587,
-              "weight": 0.180652
+              "label": "January 2024",
+              "winter_year": 2024,
+              "pattern_correlation": 0.436053,
+              "amplitude_similarity": 0.905826,
+              "weight": 0.212577
             },
             {
               "rank": 5,
-              "label": "January 1998",
-              "winter_year": 1998,
-              "pattern_correlation": 0.435134,
-              "amplitude_similarity": 0.871654,
-              "weight": 0.193354
+              "label": "January 1983",
+              "winter_year": 1983,
+              "pattern_correlation": 0.397248,
+              "amplitude_similarity": 0.738253,
+              "weight": 0.177054
             }
           ],
           "valid_target": "202701",
@@ -3374,24 +3374,24 @@
           "source_url": "https://psl.noaa.gov/data/atmoswrit/map/",
           "source_urls": [
             "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=20th+Century+Reanalysis+V3&var=Geopotential+Height&level=500mb&iy=1958&fmonth=0&fmonth2=0&type=1&map=0&mapt=6&proj=North+America&colortable=default&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=Geopotential+Height&level=500mb&iy=1998&fmonth=0&fmonth2=0&type=1&map=0&mapt=6&proj=North+America&colortable=default&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
             "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=Geopotential+Height&level=500mb&iy=1995&fmonth=0&fmonth2=0&type=1&map=0&mapt=6&proj=North+America&colortable=default&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
             "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=Geopotential+Height&level=500mb&iy=2024&fmonth=0&fmonth2=0&type=1&map=0&mapt=6&proj=North+America&colortable=default&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
-            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=Geopotential+Height&level=500mb&iy=1983&fmonth=0&fmonth2=0&type=1&map=0&mapt=6&proj=North+America&colortable=default&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
-            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=Geopotential+Height&level=500mb&iy=1998&fmonth=0&fmonth2=0&type=1&map=0&mapt=6&proj=North+America&colortable=default&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot"
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=Geopotential+Height&level=500mb&iy=1983&fmonth=0&fmonth2=0&type=1&map=0&mapt=6&proj=North+America&colortable=default&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot"
           ],
           "provider_asset_urls": [
-            "https://psl.noaa.gov/tmp/nclDxhCUX_luR.nc",
-            "https://psl.noaa.gov/tmp/nclI5sH3BiZ6M.nc",
-            "https://psl.noaa.gov/tmp/ncl469CrDHu8s.nc",
-            "https://psl.noaa.gov/tmp/nclNmHsBR_rWD.nc",
-            "https://psl.noaa.gov/tmp/nclBUsDK86yvI.nc"
+            "https://psl.noaa.gov/tmp/ncl5rDLi4czvz.nc",
+            "https://psl.noaa.gov/tmp/nclWmuasN1VRd.nc",
+            "https://psl.noaa.gov/tmp/ncl557LrWb_ds.nc",
+            "https://psl.noaa.gov/tmp/ncln8fjwCodFV.nc",
+            "https://psl.noaa.gov/tmp/nclmlw7PqNkrz.nc"
           ],
           "provider_image_urls": [
-            "https://psl.noaa.gov/tmp/nclDxhCUX_luR.tmpqq.png",
-            "https://psl.noaa.gov/tmp/nclI5sH3BiZ6M.tmpqq.png",
-            "https://psl.noaa.gov/tmp/ncl469CrDHu8s.tmpqq.png",
-            "https://psl.noaa.gov/tmp/nclNmHsBR_rWD.tmpqq.png",
-            "https://psl.noaa.gov/tmp/nclBUsDK86yvI.tmpqq.png"
+            "https://psl.noaa.gov/tmp/ncl5rDLi4czvz.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclWmuasN1VRd.tmpqq.png",
+            "https://psl.noaa.gov/tmp/ncl557LrWb_ds.tmpqq.png",
+            "https://psl.noaa.gov/tmp/ncln8fjwCodFV.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclmlw7PqNkrz.tmpqq.png"
           ],
           "dataset": "20CRv3 + NCEP CFSR",
           "datasets": [
@@ -3423,7 +3423,7 @@
             "source_smoothing_sigma_grid_cells": 0.85
           },
           "map_region": "North America",
-          "generated_utc": "2026-09-09T07:39:36Z"
+          "generated_utc": "2026-09-09T10:33:29Z"
         },
         "psl_2m_temperature_anomaly": {
           "product": "psl_2m_temperature_anomaly",
@@ -3431,7 +3431,7 @@
           "provider": "NOAA PSL WRIT",
           "status": "ready",
           "image": "analog_products/cfsv2/202701/composite/psl_2m_temperature_anomaly.png",
-          "composite_key": "cfsv2:202701:top5:composite-3e569be96513",
+          "composite_key": "cfsv2:202701:top5:composite-51f0c205af20",
           "composite_method": "inverse similarity-distance weighting over the top analogs",
           "composite_pattern_weight": 0.8,
           "composite_amplitude_weight": 0.2,
@@ -3441,41 +3441,41 @@
               "rank": 1,
               "label": "January 1958",
               "winter_year": 1958,
-              "pattern_correlation": 0.516445,
-              "amplitude_similarity": 0.781764,
-              "weight": 0.205218
+              "pattern_correlation": 0.506764,
+              "amplitude_similarity": 0.721734,
+              "weight": 0.205405
             },
             {
               "rank": 2,
-              "label": "January 1995",
-              "winter_year": 1995,
-              "pattern_correlation": 0.513843,
-              "amplitude_similarity": 0.820152,
-              "weight": 0.211129
+              "label": "January 1998",
+              "winter_year": 1998,
+              "pattern_correlation": 0.469443,
+              "amplitude_similarity": 0.80372,
+              "weight": 0.206604
             },
             {
               "rank": 3,
-              "label": "January 2024",
-              "winter_year": 2024,
-              "pattern_correlation": 0.477773,
-              "amplitude_similarity": 0.884146,
-              "weight": 0.209647
+              "label": "January 1995",
+              "winter_year": 1995,
+              "pattern_correlation": 0.437974,
+              "amplitude_similarity": 0.814394,
+              "weight": 0.19836
             },
             {
               "rank": 4,
-              "label": "January 1983",
-              "winter_year": 1983,
-              "pattern_correlation": 0.454436,
-              "amplitude_similarity": 0.744587,
-              "weight": 0.180652
+              "label": "January 2024",
+              "winter_year": 2024,
+              "pattern_correlation": 0.436053,
+              "amplitude_similarity": 0.905826,
+              "weight": 0.212577
             },
             {
               "rank": 5,
-              "label": "January 1998",
-              "winter_year": 1998,
-              "pattern_correlation": 0.435134,
-              "amplitude_similarity": 0.871654,
-              "weight": 0.193354
+              "label": "January 1983",
+              "winter_year": 1983,
+              "pattern_correlation": 0.397248,
+              "amplitude_similarity": 0.738253,
+              "weight": 0.177054
             }
           ],
           "valid_target": "202701",
@@ -3483,24 +3483,24 @@
           "source_url": "https://psl.noaa.gov/data/atmoswrit/map/",
           "source_urls": [
             "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=20th+Century+Reanalysis+V3&var=2m+Air+Temperature&level=1000mb&iy=1958&fmonth=0&fmonth2=0&type=1&map=0&mapt=6&proj=USA%28CONUS%29&colortable=testcmap&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=2m+Air+Temperature&level=1000mb&iy=1998&fmonth=0&fmonth2=0&type=1&map=0&mapt=6&proj=USA%28CONUS%29&colortable=testcmap&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
             "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=2m+Air+Temperature&level=1000mb&iy=1995&fmonth=0&fmonth2=0&type=1&map=0&mapt=6&proj=USA%28CONUS%29&colortable=testcmap&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
             "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=2m+Air+Temperature&level=1000mb&iy=2024&fmonth=0&fmonth2=0&type=1&map=0&mapt=6&proj=USA%28CONUS%29&colortable=testcmap&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
-            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=2m+Air+Temperature&level=1000mb&iy=1983&fmonth=0&fmonth2=0&type=1&map=0&mapt=6&proj=USA%28CONUS%29&colortable=testcmap&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot",
-            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=2m+Air+Temperature&level=1000mb&iy=1998&fmonth=0&fmonth2=0&type=1&map=0&mapt=6&proj=USA%28CONUS%29&colortable=testcmap&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot"
+            "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=2m+Air+Temperature&level=1000mb&iy=1983&fmonth=0&fmonth2=0&type=1&map=0&mapt=6&proj=USA%28CONUS%29&colortable=testcmap&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot"
           ],
           "provider_asset_urls": [
-            "https://psl.noaa.gov/tmp/nclTim5MCQRFR.nc",
-            "https://psl.noaa.gov/tmp/nclTG7yKHn0Aa.nc",
-            "https://psl.noaa.gov/tmp/nclH_qnTEaHnj.nc",
-            "https://psl.noaa.gov/tmp/nclNUFWQhOAgF.nc",
-            "https://psl.noaa.gov/tmp/nclcRgQKToMpm.nc"
+            "https://psl.noaa.gov/tmp/nclCkGnQdZI7H.nc",
+            "https://psl.noaa.gov/tmp/nclqyUpsfTVof.nc",
+            "https://psl.noaa.gov/tmp/nclkTp2wICIlg.nc",
+            "https://psl.noaa.gov/tmp/ncleJRVKiGmB_.nc",
+            "https://psl.noaa.gov/tmp/nclHdFZYp0Qys.nc"
           ],
           "provider_image_urls": [
-            "https://psl.noaa.gov/tmp/nclTim5MCQRFR.tmpqq.png",
-            "https://psl.noaa.gov/tmp/nclTG7yKHn0Aa.tmpqq.png",
-            "https://psl.noaa.gov/tmp/nclH_qnTEaHnj.tmpqq.png",
-            "https://psl.noaa.gov/tmp/nclNUFWQhOAgF.tmpqq.png",
-            "https://psl.noaa.gov/tmp/nclcRgQKToMpm.tmpqq.png"
+            "https://psl.noaa.gov/tmp/nclCkGnQdZI7H.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclqyUpsfTVof.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclkTp2wICIlg.tmpqq.png",
+            "https://psl.noaa.gov/tmp/ncleJRVKiGmB_.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclHdFZYp0Qys.tmpqq.png"
           ],
           "dataset": "20CRv3 + NCEP CFSR",
           "datasets": [
@@ -3532,7 +3532,7 @@
             "source_smoothing_sigma_grid_cells": 0.85
           },
           "map_region": "USA(CONUS)",
-          "generated_utc": "2026-09-09T07:39:47Z"
+          "generated_utc": "2026-09-09T10:33:37Z"
         },
         "mrcc_snowfall_departure_composite": {
           "product": "mrcc_snowfall_departure_composite",
@@ -3540,7 +3540,7 @@
           "provider": "MRCC / ACIS",
           "status": "ready",
           "image": "analog_products/cfsv2/202701/composite/mrcc_snowfall_departure_composite.png",
-          "composite_key": "cfsv2:202701:top5:composite-3e569be96513:mrcc-acis-snow-v6-eastern-domain-fit",
+          "composite_key": "cfsv2:202701:top5:composite-51f0c205af20:mrcc-acis-snow-v6-eastern-domain-fit",
           "composite_method": "inverse similarity-distance weighting over the top analogs",
           "composite_version": "mrcc-acis-snow-v6-eastern-domain-fit",
           "composite_pattern_weight": 0.8,
@@ -3551,41 +3551,41 @@
               "rank": 1,
               "label": "January 1958",
               "winter_year": 1958,
-              "pattern_correlation": 0.516445,
-              "amplitude_similarity": 0.781764,
-              "weight": 0.205218
+              "pattern_correlation": 0.506764,
+              "amplitude_similarity": 0.721734,
+              "weight": 0.205405
             },
             {
               "rank": 2,
-              "label": "January 1995",
-              "winter_year": 1995,
-              "pattern_correlation": 0.513843,
-              "amplitude_similarity": 0.820152,
-              "weight": 0.211129
+              "label": "January 1998",
+              "winter_year": 1998,
+              "pattern_correlation": 0.469443,
+              "amplitude_similarity": 0.80372,
+              "weight": 0.206604
             },
             {
               "rank": 3,
-              "label": "January 2024",
-              "winter_year": 2024,
-              "pattern_correlation": 0.477773,
-              "amplitude_similarity": 0.884146,
-              "weight": 0.209647
+              "label": "January 1995",
+              "winter_year": 1995,
+              "pattern_correlation": 0.437974,
+              "amplitude_similarity": 0.814394,
+              "weight": 0.19836
             },
             {
               "rank": 4,
-              "label": "January 1983",
-              "winter_year": 1983,
-              "pattern_correlation": 0.454436,
-              "amplitude_similarity": 0.744587,
-              "weight": 0.180652
+              "label": "January 2024",
+              "winter_year": 2024,
+              "pattern_correlation": 0.436053,
+              "amplitude_similarity": 0.905826,
+              "weight": 0.212577
             },
             {
               "rank": 5,
-              "label": "January 1998",
-              "winter_year": 1998,
-              "pattern_correlation": 0.435134,
-              "amplitude_similarity": 0.871654,
-              "weight": 0.193354
+              "label": "January 1983",
+              "winter_year": 1983,
+              "pattern_correlation": 0.397248,
+              "amplitude_similarity": 0.738253,
+              "weight": 0.177054
             }
           ],
           "valid_target": "202701",
@@ -3593,17 +3593,17 @@
           "source_url": "https://mrcc.purdue.edu/CLIMATE/maps/interpolated",
           "source_urls": [
             "https://data.rcc-acis.org/MultiStnData?params=%7B%22edate%22%3A%221958-01%22%2C%22elems%22%3A%5B%7B%22duration%22%3A%22mly%22%2C%22interval%22%3A%22mly%22%2C%22maxmissing%22%3A5%2C%22name%22%3A%22snow%22%2C%22normal%22%3A%22departure%22%2C%22reduce%22%3A%22sum%22%7D%5D%2C%22meta%22%3A%5B%22ll%22%5D%2C%22sdate%22%3A%221958-01%22%2C%22state%22%3A%5B%22ME%22%2C%22NH%22%2C%22VT%22%2C%22NY%22%2C%22MA%22%2C%22CT%22%2C%22RI%22%2C%22PA%22%2C%22NJ%22%2C%22DE%22%2C%22MD%22%2C%22VA%22%2C%22WV%22%2C%22NC%22%2C%22SC%22%2C%22OH%22%2C%22MI%22%2C%22IN%22%2C%22KY%22%2C%22TN%22%2C%22AL%22%2C%22GA%22%5D%7D",
+            "https://data.rcc-acis.org/MultiStnData?params=%7B%22edate%22%3A%221998-01%22%2C%22elems%22%3A%5B%7B%22duration%22%3A%22mly%22%2C%22interval%22%3A%22mly%22%2C%22maxmissing%22%3A5%2C%22name%22%3A%22snow%22%2C%22normal%22%3A%22departure%22%2C%22reduce%22%3A%22sum%22%7D%5D%2C%22meta%22%3A%5B%22ll%22%5D%2C%22sdate%22%3A%221998-01%22%2C%22state%22%3A%5B%22ME%22%2C%22NH%22%2C%22VT%22%2C%22NY%22%2C%22MA%22%2C%22CT%22%2C%22RI%22%2C%22PA%22%2C%22NJ%22%2C%22DE%22%2C%22MD%22%2C%22VA%22%2C%22WV%22%2C%22NC%22%2C%22SC%22%2C%22OH%22%2C%22MI%22%2C%22IN%22%2C%22KY%22%2C%22TN%22%2C%22AL%22%2C%22GA%22%5D%7D",
             "https://data.rcc-acis.org/MultiStnData?params=%7B%22edate%22%3A%221995-01%22%2C%22elems%22%3A%5B%7B%22duration%22%3A%22mly%22%2C%22interval%22%3A%22mly%22%2C%22maxmissing%22%3A5%2C%22name%22%3A%22snow%22%2C%22normal%22%3A%22departure%22%2C%22reduce%22%3A%22sum%22%7D%5D%2C%22meta%22%3A%5B%22ll%22%5D%2C%22sdate%22%3A%221995-01%22%2C%22state%22%3A%5B%22ME%22%2C%22NH%22%2C%22VT%22%2C%22NY%22%2C%22MA%22%2C%22CT%22%2C%22RI%22%2C%22PA%22%2C%22NJ%22%2C%22DE%22%2C%22MD%22%2C%22VA%22%2C%22WV%22%2C%22NC%22%2C%22SC%22%2C%22OH%22%2C%22MI%22%2C%22IN%22%2C%22KY%22%2C%22TN%22%2C%22AL%22%2C%22GA%22%5D%7D",
             "https://data.rcc-acis.org/MultiStnData?params=%7B%22edate%22%3A%222024-01%22%2C%22elems%22%3A%5B%7B%22duration%22%3A%22mly%22%2C%22interval%22%3A%22mly%22%2C%22maxmissing%22%3A5%2C%22name%22%3A%22snow%22%2C%22normal%22%3A%22departure%22%2C%22reduce%22%3A%22sum%22%7D%5D%2C%22meta%22%3A%5B%22ll%22%5D%2C%22sdate%22%3A%222024-01%22%2C%22state%22%3A%5B%22ME%22%2C%22NH%22%2C%22VT%22%2C%22NY%22%2C%22MA%22%2C%22CT%22%2C%22RI%22%2C%22PA%22%2C%22NJ%22%2C%22DE%22%2C%22MD%22%2C%22VA%22%2C%22WV%22%2C%22NC%22%2C%22SC%22%2C%22OH%22%2C%22MI%22%2C%22IN%22%2C%22KY%22%2C%22TN%22%2C%22AL%22%2C%22GA%22%5D%7D",
-            "https://data.rcc-acis.org/MultiStnData?params=%7B%22edate%22%3A%221983-01%22%2C%22elems%22%3A%5B%7B%22duration%22%3A%22mly%22%2C%22interval%22%3A%22mly%22%2C%22maxmissing%22%3A5%2C%22name%22%3A%22snow%22%2C%22normal%22%3A%22departure%22%2C%22reduce%22%3A%22sum%22%7D%5D%2C%22meta%22%3A%5B%22ll%22%5D%2C%22sdate%22%3A%221983-01%22%2C%22state%22%3A%5B%22ME%22%2C%22NH%22%2C%22VT%22%2C%22NY%22%2C%22MA%22%2C%22CT%22%2C%22RI%22%2C%22PA%22%2C%22NJ%22%2C%22DE%22%2C%22MD%22%2C%22VA%22%2C%22WV%22%2C%22NC%22%2C%22SC%22%2C%22OH%22%2C%22MI%22%2C%22IN%22%2C%22KY%22%2C%22TN%22%2C%22AL%22%2C%22GA%22%5D%7D",
-            "https://data.rcc-acis.org/MultiStnData?params=%7B%22edate%22%3A%221998-01%22%2C%22elems%22%3A%5B%7B%22duration%22%3A%22mly%22%2C%22interval%22%3A%22mly%22%2C%22maxmissing%22%3A5%2C%22name%22%3A%22snow%22%2C%22normal%22%3A%22departure%22%2C%22reduce%22%3A%22sum%22%7D%5D%2C%22meta%22%3A%5B%22ll%22%5D%2C%22sdate%22%3A%221998-01%22%2C%22state%22%3A%5B%22ME%22%2C%22NH%22%2C%22VT%22%2C%22NY%22%2C%22MA%22%2C%22CT%22%2C%22RI%22%2C%22PA%22%2C%22NJ%22%2C%22DE%22%2C%22MD%22%2C%22VA%22%2C%22WV%22%2C%22NC%22%2C%22SC%22%2C%22OH%22%2C%22MI%22%2C%22IN%22%2C%22KY%22%2C%22TN%22%2C%22AL%22%2C%22GA%22%5D%7D"
+            "https://data.rcc-acis.org/MultiStnData?params=%7B%22edate%22%3A%221983-01%22%2C%22elems%22%3A%5B%7B%22duration%22%3A%22mly%22%2C%22interval%22%3A%22mly%22%2C%22maxmissing%22%3A5%2C%22name%22%3A%22snow%22%2C%22normal%22%3A%22departure%22%2C%22reduce%22%3A%22sum%22%7D%5D%2C%22meta%22%3A%5B%22ll%22%5D%2C%22sdate%22%3A%221983-01%22%2C%22state%22%3A%5B%22ME%22%2C%22NH%22%2C%22VT%22%2C%22NY%22%2C%22MA%22%2C%22CT%22%2C%22RI%22%2C%22PA%22%2C%22NJ%22%2C%22DE%22%2C%22MD%22%2C%22VA%22%2C%22WV%22%2C%22NC%22%2C%22SC%22%2C%22OH%22%2C%22MI%22%2C%22IN%22%2C%22KY%22%2C%22TN%22%2C%22AL%22%2C%22GA%22%5D%7D"
           ],
           "provider_asset_urls": [
             "https://data.rcc-acis.org/MultiStnData?params=%7B%22edate%22%3A%221958-01%22%2C%22elems%22%3A%5B%7B%22duration%22%3A%22mly%22%2C%22interval%22%3A%22mly%22%2C%22maxmissing%22%3A5%2C%22name%22%3A%22snow%22%2C%22normal%22%3A%22departure%22%2C%22reduce%22%3A%22sum%22%7D%5D%2C%22meta%22%3A%5B%22ll%22%5D%2C%22sdate%22%3A%221958-01%22%2C%22state%22%3A%5B%22ME%22%2C%22NH%22%2C%22VT%22%2C%22NY%22%2C%22MA%22%2C%22CT%22%2C%22RI%22%2C%22PA%22%2C%22NJ%22%2C%22DE%22%2C%22MD%22%2C%22VA%22%2C%22WV%22%2C%22NC%22%2C%22SC%22%2C%22OH%22%2C%22MI%22%2C%22IN%22%2C%22KY%22%2C%22TN%22%2C%22AL%22%2C%22GA%22%5D%7D",
+            "https://data.rcc-acis.org/MultiStnData?params=%7B%22edate%22%3A%221998-01%22%2C%22elems%22%3A%5B%7B%22duration%22%3A%22mly%22%2C%22interval%22%3A%22mly%22%2C%22maxmissing%22%3A5%2C%22name%22%3A%22snow%22%2C%22normal%22%3A%22departure%22%2C%22reduce%22%3A%22sum%22%7D%5D%2C%22meta%22%3A%5B%22ll%22%5D%2C%22sdate%22%3A%221998-01%22%2C%22state%22%3A%5B%22ME%22%2C%22NH%22%2C%22VT%22%2C%22NY%22%2C%22MA%22%2C%22CT%22%2C%22RI%22%2C%22PA%22%2C%22NJ%22%2C%22DE%22%2C%22MD%22%2C%22VA%22%2C%22WV%22%2C%22NC%22%2C%22SC%22%2C%22OH%22%2C%22MI%22%2C%22IN%22%2C%22KY%22%2C%22TN%22%2C%22AL%22%2C%22GA%22%5D%7D",
             "https://data.rcc-acis.org/MultiStnData?params=%7B%22edate%22%3A%221995-01%22%2C%22elems%22%3A%5B%7B%22duration%22%3A%22mly%22%2C%22interval%22%3A%22mly%22%2C%22maxmissing%22%3A5%2C%22name%22%3A%22snow%22%2C%22normal%22%3A%22departure%22%2C%22reduce%22%3A%22sum%22%7D%5D%2C%22meta%22%3A%5B%22ll%22%5D%2C%22sdate%22%3A%221995-01%22%2C%22state%22%3A%5B%22ME%22%2C%22NH%22%2C%22VT%22%2C%22NY%22%2C%22MA%22%2C%22CT%22%2C%22RI%22%2C%22PA%22%2C%22NJ%22%2C%22DE%22%2C%22MD%22%2C%22VA%22%2C%22WV%22%2C%22NC%22%2C%22SC%22%2C%22OH%22%2C%22MI%22%2C%22IN%22%2C%22KY%22%2C%22TN%22%2C%22AL%22%2C%22GA%22%5D%7D",
             "https://data.rcc-acis.org/MultiStnData?params=%7B%22edate%22%3A%222024-01%22%2C%22elems%22%3A%5B%7B%22duration%22%3A%22mly%22%2C%22interval%22%3A%22mly%22%2C%22maxmissing%22%3A5%2C%22name%22%3A%22snow%22%2C%22normal%22%3A%22departure%22%2C%22reduce%22%3A%22sum%22%7D%5D%2C%22meta%22%3A%5B%22ll%22%5D%2C%22sdate%22%3A%222024-01%22%2C%22state%22%3A%5B%22ME%22%2C%22NH%22%2C%22VT%22%2C%22NY%22%2C%22MA%22%2C%22CT%22%2C%22RI%22%2C%22PA%22%2C%22NJ%22%2C%22DE%22%2C%22MD%22%2C%22VA%22%2C%22WV%22%2C%22NC%22%2C%22SC%22%2C%22OH%22%2C%22MI%22%2C%22IN%22%2C%22KY%22%2C%22TN%22%2C%22AL%22%2C%22GA%22%5D%7D",
-            "https://data.rcc-acis.org/MultiStnData?params=%7B%22edate%22%3A%221983-01%22%2C%22elems%22%3A%5B%7B%22duration%22%3A%22mly%22%2C%22interval%22%3A%22mly%22%2C%22maxmissing%22%3A5%2C%22name%22%3A%22snow%22%2C%22normal%22%3A%22departure%22%2C%22reduce%22%3A%22sum%22%7D%5D%2C%22meta%22%3A%5B%22ll%22%5D%2C%22sdate%22%3A%221983-01%22%2C%22state%22%3A%5B%22ME%22%2C%22NH%22%2C%22VT%22%2C%22NY%22%2C%22MA%22%2C%22CT%22%2C%22RI%22%2C%22PA%22%2C%22NJ%22%2C%22DE%22%2C%22MD%22%2C%22VA%22%2C%22WV%22%2C%22NC%22%2C%22SC%22%2C%22OH%22%2C%22MI%22%2C%22IN%22%2C%22KY%22%2C%22TN%22%2C%22AL%22%2C%22GA%22%5D%7D",
-            "https://data.rcc-acis.org/MultiStnData?params=%7B%22edate%22%3A%221998-01%22%2C%22elems%22%3A%5B%7B%22duration%22%3A%22mly%22%2C%22interval%22%3A%22mly%22%2C%22maxmissing%22%3A5%2C%22name%22%3A%22snow%22%2C%22normal%22%3A%22departure%22%2C%22reduce%22%3A%22sum%22%7D%5D%2C%22meta%22%3A%5B%22ll%22%5D%2C%22sdate%22%3A%221998-01%22%2C%22state%22%3A%5B%22ME%22%2C%22NH%22%2C%22VT%22%2C%22NY%22%2C%22MA%22%2C%22CT%22%2C%22RI%22%2C%22PA%22%2C%22NJ%22%2C%22DE%22%2C%22MD%22%2C%22VA%22%2C%22WV%22%2C%22NC%22%2C%22SC%22%2C%22OH%22%2C%22MI%22%2C%22IN%22%2C%22KY%22%2C%22TN%22%2C%22AL%22%2C%22GA%22%5D%7D"
+            "https://data.rcc-acis.org/MultiStnData?params=%7B%22edate%22%3A%221983-01%22%2C%22elems%22%3A%5B%7B%22duration%22%3A%22mly%22%2C%22interval%22%3A%22mly%22%2C%22maxmissing%22%3A5%2C%22name%22%3A%22snow%22%2C%22normal%22%3A%22departure%22%2C%22reduce%22%3A%22sum%22%7D%5D%2C%22meta%22%3A%5B%22ll%22%5D%2C%22sdate%22%3A%221983-01%22%2C%22state%22%3A%5B%22ME%22%2C%22NH%22%2C%22VT%22%2C%22NY%22%2C%22MA%22%2C%22CT%22%2C%22RI%22%2C%22PA%22%2C%22NJ%22%2C%22DE%22%2C%22MD%22%2C%22VA%22%2C%22WV%22%2C%22NC%22%2C%22SC%22%2C%22OH%22%2C%22MI%22%2C%22IN%22%2C%22KY%22%2C%22TN%22%2C%22AL%22%2C%22GA%22%5D%7D"
           ],
           "dataset": "MRCC / ACIS MultiStnData monthly snowfall departures",
           "climatology_years": "provider-defined",
@@ -3611,10 +3611,10 @@
           "interpolation": "inverse-distance station interpolation (NumPy fallback; SciPy unavailable) on a 0.25\u00b0 grid",
           "station_counts": [
             816,
+            1362,
             1284,
             952,
-            1115,
-            1362
+            1115
           ],
           "station_states": [
             "ME",
@@ -3719,7 +3719,7 @@
             31.0,
             47.5
           ],
-          "generated_utc": "2026-09-09T07:42:39Z"
+          "generated_utc": "2026-09-09T10:36:28Z"
         }
       }
     },
@@ -3755,7 +3755,7 @@
         "psl_end_month": 2,
         "winter_year": 1943
       },
-      "status": "stale",
+      "status": "ready",
       "products": {
         "psl_500mb_height_anomaly": {
           "product": "psl_500mb_height_anomaly",
@@ -3935,9 +3935,9 @@
           "product": "psl_500mb_height_anomaly",
           "label": "Top 5 analog blend \u00b7 500-mb Geopotential Height Anomaly",
           "provider": "NOAA PSL WRIT",
-          "status": "stale",
+          "status": "ready",
           "image": "analog_products/cfsv2/202612-202702/composite/psl_500mb_height_anomaly.png",
-          "composite_key": "cfsv2:202612-202702:top5:composite-4a502a2c6fda",
+          "composite_key": "cfsv2:202612-202702:top5:composite-2592115f3274",
           "composite_method": "inverse similarity-distance weighting over the top analogs",
           "composite_pattern_weight": 0.8,
           "composite_amplitude_weight": 0.2,
@@ -3947,41 +3947,41 @@
               "rank": 1,
               "label": "DJF 1942-43",
               "winter_year": 1943,
-              "pattern_correlation": 0.29184,
-              "amplitude_similarity": 0.03463,
-              "weight": 0.209389
+              "pattern_correlation": 0.30045,
+              "amplitude_similarity": 0.035388,
+              "weight": 0.210184
             },
             {
               "rank": 2,
               "label": "DJF 1979-80",
               "winter_year": 1980,
-              "pattern_correlation": 0.234213,
-              "amplitude_similarity": 0.031217,
-              "weight": 0.199451
+              "pattern_correlation": 0.251465,
+              "amplitude_similarity": 0.031899,
+              "weight": 0.201533
             },
             {
               "rank": 3,
-              "label": "DJF 1956-57",
-              "winter_year": 1957,
-              "pattern_correlation": 0.228996,
-              "amplitude_similarity": 0.018803,
-              "weight": 0.197645
+              "label": "DJF 2024-25",
+              "winter_year": 2025,
+              "pattern_correlation": 0.238827,
+              "amplitude_similarity": 0.01817,
+              "weight": 0.198394
             },
             {
               "rank": 4,
-              "label": "DJF 2024-25",
-              "winter_year": 2025,
-              "pattern_correlation": 0.227449,
-              "amplitude_similarity": 0.017782,
-              "weight": 0.197323
+              "label": "DJF 1956-57",
+              "winter_year": 1957,
+              "pattern_correlation": 0.218539,
+              "amplitude_similarity": 0.019214,
+              "weight": 0.195311
             },
             {
               "rank": 5,
               "label": "DJF 2021-22",
               "winter_year": 2022,
-              "pattern_correlation": 0.220305,
-              "amplitude_similarity": 0.017503,
-              "weight": 0.196192
+              "pattern_correlation": 0.214416,
+              "amplitude_similarity": 0.017885,
+              "weight": 0.194578
             }
           ],
           "valid_target": "202612-202702",
@@ -3995,18 +3995,18 @@
             "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=Geopotential+Height&level=500mb&iy=2022&fmonth=11&fmonth2=1&type=1&map=0&mapt=6&proj=North+America&colortable=default&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot"
           ],
           "provider_asset_urls": [
-            "https://psl.noaa.gov/tmp/nclJtmE7LCoIP.nc",
-            "https://psl.noaa.gov/tmp/nclMD5sicEywn.nc",
-            "https://psl.noaa.gov/tmp/nclco2R3fk89r.nc",
-            "https://psl.noaa.gov/tmp/ncl2uM2NkT8OF.nc",
-            "https://psl.noaa.gov/tmp/ncltXy5ij6kpG.nc"
+            "https://psl.noaa.gov/tmp/nclSlF_D7baZt.nc",
+            "https://psl.noaa.gov/tmp/nclEXQhJD8Lvo.nc",
+            "https://psl.noaa.gov/tmp/nclujk7uPe7lw.nc",
+            "https://psl.noaa.gov/tmp/nclRf9O2hVLJC.nc",
+            "https://psl.noaa.gov/tmp/nclKzQZermAB5.nc"
           ],
           "provider_image_urls": [
-            "https://psl.noaa.gov/tmp/nclJtmE7LCoIP.tmpqq.png",
-            "https://psl.noaa.gov/tmp/nclMD5sicEywn.tmpqq.png",
-            "https://psl.noaa.gov/tmp/nclco2R3fk89r.tmpqq.png",
-            "https://psl.noaa.gov/tmp/ncl2uM2NkT8OF.tmpqq.png",
-            "https://psl.noaa.gov/tmp/ncltXy5ij6kpG.tmpqq.png"
+            "https://psl.noaa.gov/tmp/nclSlF_D7baZt.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclEXQhJD8Lvo.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclujk7uPe7lw.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclRf9O2hVLJC.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclKzQZermAB5.tmpqq.png"
           ],
           "dataset": "20CRv3 + NCEP CFSR",
           "datasets": [
@@ -4038,19 +4038,15 @@
             "source_smoothing_sigma_grid_cells": 0.85
           },
           "map_region": "North America",
-          "generated_utc": "2026-09-08T18:17:34Z",
-          "requested_composite_key": "cfsv2:202612-202702:top5:composite-2592115f3274",
-          "retained_composite_key": "cfsv2:202612-202702:top5:composite-4a502a2c6fda",
-          "checked_utc": "2026-09-09T07:43:00Z",
-          "error": "source request failed for https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=20th+Century+Reanalysis+V3&var=Geopotential+Height&level=500mb&iy=1943&fmonth=11&fmonth2=1&type=1&map=0&mapt=6&proj=North+America&colortable=default&labelc=0&contourtype=Shaded+w%2Foverlying+contours&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot: [WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond"
+          "generated_utc": "2026-09-09T10:36:37Z"
         },
         "psl_2m_temperature_anomaly": {
           "product": "psl_2m_temperature_anomaly",
           "label": "Top 5 analog blend \u00b7 2-m Temperature Anomaly",
           "provider": "NOAA PSL WRIT",
-          "status": "stale",
+          "status": "ready",
           "image": "analog_products/cfsv2/202612-202702/composite/psl_2m_temperature_anomaly.png",
-          "composite_key": "cfsv2:202612-202702:top5:composite-4a502a2c6fda",
+          "composite_key": "cfsv2:202612-202702:top5:composite-2592115f3274",
           "composite_method": "inverse similarity-distance weighting over the top analogs",
           "composite_pattern_weight": 0.8,
           "composite_amplitude_weight": 0.2,
@@ -4060,41 +4056,41 @@
               "rank": 1,
               "label": "DJF 1942-43",
               "winter_year": 1943,
-              "pattern_correlation": 0.29184,
-              "amplitude_similarity": 0.03463,
-              "weight": 0.209389
+              "pattern_correlation": 0.30045,
+              "amplitude_similarity": 0.035388,
+              "weight": 0.210184
             },
             {
               "rank": 2,
               "label": "DJF 1979-80",
               "winter_year": 1980,
-              "pattern_correlation": 0.234213,
-              "amplitude_similarity": 0.031217,
-              "weight": 0.199451
+              "pattern_correlation": 0.251465,
+              "amplitude_similarity": 0.031899,
+              "weight": 0.201533
             },
             {
               "rank": 3,
-              "label": "DJF 1956-57",
-              "winter_year": 1957,
-              "pattern_correlation": 0.228996,
-              "amplitude_similarity": 0.018803,
-              "weight": 0.197645
+              "label": "DJF 2024-25",
+              "winter_year": 2025,
+              "pattern_correlation": 0.238827,
+              "amplitude_similarity": 0.01817,
+              "weight": 0.198394
             },
             {
               "rank": 4,
-              "label": "DJF 2024-25",
-              "winter_year": 2025,
-              "pattern_correlation": 0.227449,
-              "amplitude_similarity": 0.017782,
-              "weight": 0.197323
+              "label": "DJF 1956-57",
+              "winter_year": 1957,
+              "pattern_correlation": 0.218539,
+              "amplitude_similarity": 0.019214,
+              "weight": 0.195311
             },
             {
               "rank": 5,
               "label": "DJF 2021-22",
               "winter_year": 2022,
-              "pattern_correlation": 0.220305,
-              "amplitude_similarity": 0.017503,
-              "weight": 0.196192
+              "pattern_correlation": 0.214416,
+              "amplitude_similarity": 0.017885,
+              "weight": 0.194578
             }
           ],
           "valid_target": "202612-202702",
@@ -4108,18 +4104,18 @@
             "https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=NCEP%2FCFSR&var=2m+Air+Temperature&level=1000mb&iy=2022&fmonth=11&fmonth2=1&type=1&map=0&mapt=6&proj=USA%28CONUS%29&colortable=testcmap&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot"
           ],
           "provider_asset_urls": [
-            "https://psl.noaa.gov/tmp/ncl2uO9TyQykr.nc",
-            "https://psl.noaa.gov/tmp/ncl9XUsvVPKke.nc",
-            "https://psl.noaa.gov/tmp/nclf6orVdgVS2.nc",
-            "https://psl.noaa.gov/tmp/ncl_KQ1tHXKrE.nc",
-            "https://psl.noaa.gov/tmp/ncl0e7BdHcKj6.nc"
+            "https://psl.noaa.gov/tmp/nclk0hR4lbooO.nc",
+            "https://psl.noaa.gov/tmp/ncld382Vft36h.nc",
+            "https://psl.noaa.gov/tmp/ncl0mnRozWHsd.nc",
+            "https://psl.noaa.gov/tmp/ncl6ONTliYD3N.nc",
+            "https://psl.noaa.gov/tmp/nclhma6hTi0bI.nc"
           ],
           "provider_image_urls": [
-            "https://psl.noaa.gov/tmp/ncl2uO9TyQykr.tmpqq.png",
-            "https://psl.noaa.gov/tmp/ncl9XUsvVPKke.tmpqq.png",
-            "https://psl.noaa.gov/tmp/nclf6orVdgVS2.tmpqq.png",
-            "https://psl.noaa.gov/tmp/ncl_KQ1tHXKrE.tmpqq.png",
-            "https://psl.noaa.gov/tmp/ncl0e7BdHcKj6.tmpqq.png"
+            "https://psl.noaa.gov/tmp/nclk0hR4lbooO.tmpqq.png",
+            "https://psl.noaa.gov/tmp/ncld382Vft36h.tmpqq.png",
+            "https://psl.noaa.gov/tmp/ncl0mnRozWHsd.tmpqq.png",
+            "https://psl.noaa.gov/tmp/ncl6ONTliYD3N.tmpqq.png",
+            "https://psl.noaa.gov/tmp/nclhma6hTi0bI.tmpqq.png"
           ],
           "dataset": "20CRv3 + NCEP CFSR",
           "datasets": [
@@ -4151,11 +4147,7 @@
             "source_smoothing_sigma_grid_cells": 0.85
           },
           "map_region": "USA(CONUS)",
-          "generated_utc": "2026-09-08T18:17:42Z",
-          "requested_composite_key": "cfsv2:202612-202702:top5:composite-2592115f3274",
-          "retained_composite_key": "cfsv2:202612-202702:top5:composite-4a502a2c6fda",
-          "checked_utc": "2026-09-09T07:43:21Z",
-          "error": "source request failed for https://psl.noaa.gov/cgi-bin/data/atmoswrit/map.proc.pl?dataset1=20th+Century+Reanalysis+V3&var=2m+Air+Temperature&level=1000mb&iy=1943&fmonth=11&fmonth2=1&type=1&map=0&mapt=6&proj=USA%28CONUS%29&colortable=testcmap&labelc=0&contourtype=Shaded&scale=100&labelcon=1&switch=0&gridfill=0&google=0&Submit=Create+Plot: [WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond"
+          "generated_utc": "2026-09-09T10:36:47Z"
         },
         "mrcc_snowfall_departure_composite": {
           "product": "mrcc_snowfall_departure_composite",
