@@ -77,14 +77,14 @@ jobs:
               case "$WORKFLOW" in
                 seas5.yml|jma.yml|c3s.yml) ;;
                 *)
-                  # Pages has its own serialized queue. Avoid waiting behind
-                  # queued entries; only give a currently running publish a
-                  # short hand-off window.
+                  # Pages keeps one running and one pending handoff. Drain the
+                  # queue before dispatching so a newer payload cannot replace
+                  # this product's pending publication.
                   publish_wait=0
-                  while gh run list --workflow publish-pages.yml --limit 100 --json status --jq 'any(.[]; .status == "in_progress")' | grep -qx true; do
-                    if (( publish_wait >= 300 )); then
-                      echo "::warning::Pages publisher is still active; queueing this validated payload."
-                      break
+                  while gh run list --workflow publish-pages.yml --limit 100 --json status --jq 'any(.[]; .status != "completed")' | grep -qx true; do
+                    if (( publish_wait >= 1800 )); then
+                      echo "::error::Pages publisher queue did not drain within 30 minutes"
+                      exit 1
                     fi
                     sleep 15
                     publish_wait=$((publish_wait + 15))

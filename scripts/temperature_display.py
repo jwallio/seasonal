@@ -45,3 +45,4 @@ TEMPERATURE_ANOMALY_STYLE = {
 
 # Provider adapters import this module so a half-degree color means the same
 # thing in every seasonal model and in every publication path.
+# Keep edits here as the trigger for the shared styling refresh.
