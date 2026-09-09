@@ -71,15 +71,14 @@ class BuilderTests(unittest.TestCase):
             np.testing.assert_array_equal(repeated['snow_per_day'], sample['snow_per_day'])
 
     def test_workflow_uses_correction_only_for_departure(self):
-        workflow = (Path(__file__).resolve().parents[1] / '.github/workflows/cfsv2.yml').read_text()
-        branch = workflow.split('elif [[ "$product" == "snowfall_anomaly" ]]; then')[1].split('\n            else')[0]
-        self.assertIn('cfsv2_native_reference.py', branch)
-        self.assertIn('--native-snowfall-departure', branch)
-        self.assertIn('--seasonal-window "$product_seasonal_window"', branch)
-        self.assertIn('--snowfall-reference-dir', branch)
-        self.assertNotIn('--ncei-calibration', branch)
-        self.assertIn('continue', branch)
-        self.assertIn('cfsv2-snow-reference-native-v1-', workflow)
+        workflow = (Path(__file__).resolve().parents[1] / '.github/workflows/cfsv2-snow.yml').read_text()
+        self.assertIn('cfsv2_surface_phase_build.py --reference', workflow)
+        self.assertIn('reference=()', workflow)
+        self.assertIn('if [[ "$product" == snowfall_anomaly ]]; then reference=(--snowfall-reference-dir .cache/cfsv2-surface-phase/reference); fi', workflow)
+        self.assertIn('--surface-phase-bundle-dir .cache/cfsv2-surface-phase/months "${reference[@]}"', workflow)
+        self.assertIn('--seasonal-window "$WINDOWS"', workflow)
+        self.assertNotIn('--ncei-calibration', workflow)
+        self.assertIn('cfsv2_surface_schedule.py verify', workflow)
 
     def test_missing_year_is_explicit_and_network_errors_are_fatal(self):
         cycles = cf.rolling_cycle_inits('2026090506', 24)

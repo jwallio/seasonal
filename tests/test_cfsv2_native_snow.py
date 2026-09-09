@@ -56,7 +56,7 @@ class NativeSnowTests(unittest.TestCase):
         for seasonal in [False,True]:
             bounds,ticks,palette=native.accumulation_style(seasonal)
             self.assertIn(1.0,ticks)
-            self.assertEqual(ticks,sorted(set([bounds[0],*bounds[1::2],bounds[-1]])))
+            self.assertEqual(ticks, bounds)  # Every approved color transition is labeled.
             norm=BoundaryNorm(bounds,len(palette),clip=False)
             cmap=ListedColormap(palette)
             self.assertEqual(cmap(norm(0.)),(1.,1.,1.,1.))
