@@ -112,6 +112,13 @@ def main() -> int:
         "common_1991_2020",
         "Common 1991–2020 (limited)",
         "function freshnessState(modelKey, productKey)",
+        "const OVERVIEW_FILTERS = ['all', 'fresh', 'partial', 'attention'];",
+        "const OVERVIEW_ATTENTION_CLASSES = ['status-overdue', 'status-failed'];",
+        "const OVERVIEW_PARAMETER_BUTTON_LABELS = {",
+        "'500mb_height_anomaly': '500mb'",
+        "'2m_temperature_anomaly': '2mT'",
+        "className: 'status-overdue'",
+        "button.textContent = OVERVIEW_PARAMETER_BUTTON_LABELS[productConfig.value] || productConfig.label",
         "const CATALOG_URL = assetPath('seasonal/catalog.json');",
         "function catalogProductConfig(productKey)",
         "function canonicalProductKey(productKey)",
@@ -278,6 +285,11 @@ def main() -> int:
     check("'model_spread': 'Model Spread'" not in page, "dashboard must not expose retired NMME model spread")
     check('id="map-title"' not in page, "map card should not duplicate titles already rendered in the image")
     check('id="run-status"' not in page, "map card should not duplicate image status in a header badge")
+    check('data-overview-filter="aging"' not in page_markup, "overview should not expose an Aging filter")
+    check("status-aging" not in page and "status-stale" not in page, "overview status model should not retain aging or stale states")
+    check("scheduleState?.key === 'overdue'" in page, "Attention filter must include overdue schedules")
+    check("['overdue', 'processing'].includes(scheduleState?.key)" not in page, "Attention filter must exclude processing schedules")
+    check("detail: 'failed or overdue surfaces'" in page, "Attention summary must describe only failed or overdue surfaces")
     check('class="overview-lead"' not in page_markup, "overview should not show the retired introductory lead card")
     check('data-overview-compare=' not in page_markup, "overview should not show duplicate Compare shortcuts")
     for retired_intro in (
@@ -337,6 +349,5 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
 
 
