@@ -2,7 +2,7 @@
   "schema_version": 1,
   "registry_version": 1,
   "kind": "seasonal_dashboard_catalog",
-  "generated_utc": "2026-09-09T11:12:42Z",
+  "generated_utc": "2026-09-09T11:21:09Z",
   "source_revision": "4969b3b777147cdbad64a048851587abb1e1f323",
   "model_order": [
     "superensemble",
@@ -42729,6 +42729,1254 @@
       },
       "runs": [
         {
+          "id": "cansips-2026090100-2m_temperature_anomaly",
+          "model": "CanSIPS v3",
+          "source": "ECCC MSC CanSIPS v3 / Datamart",
+          "source_url": "https://eccc-msc.github.io/open-data/msc-data/nwp_cansips/readme_cansips-datamart_en/",
+          "source_urls": [
+            "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/",
+            "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/",
+            "https://eccc-msc.github.io/open-data/msc-data/nwp_cansips/readme_cansips-datamart_en/"
+          ],
+          "product": "2m_temperature_anomaly",
+          "init_utc": "2026-09-01T00:00:00Z",
+          "generated_utc": "2026-09-09T11:19:34Z",
+          "status": "rendered",
+          "statistic": "ensemble_mean",
+          "aggregation": "3-month seasonal mean of monthly forecast anomalies",
+          "ensemble_scope": "40-member CanSIPS v3 blend",
+          "ensemble_members": 40,
+          "field": "temperature_2m_anomaly",
+          "units": "°C",
+          "raw_field": "AirTemp at 2 m",
+          "raw_units": "K",
+          "climatology": {
+            "source": "CanSIPS v3 hindcast ensemble means",
+            "years": "1991-2020",
+            "initialization_month": "09",
+            "method": "forecast 40-member mean minus the matching-initialization-month and lead hindcast climatology"
+          },
+          "conversion": null,
+          "display": null,
+          "targets": [
+            {
+              "id": "cansips-2026090100-2m_temperature_anomaly-lead03",
+              "target_month": "202612",
+              "valid_start_utc": "2026-12-01T00:00:00Z",
+              "valid_end_utc": "2027-01-01T00:00:00Z",
+              "lead_month": 3,
+              "field": "temperature_2m_anomaly",
+              "units": "°C",
+              "status": "rendered",
+              "image": "cansips/20260901/cansips_t2ma_202612.jpg",
+              "baseline": {
+                "source": "CanSIPS v3 hindcast climatology; 1991-2020",
+                "years": "1991-2020",
+                "initialization_month": "09",
+                "lead_month": 3,
+                "ensemble_members": 40,
+                "method": "forecast 40-member mean minus the matching-initialization-month and lead hindcast climatology",
+                "files": [
+                  {
+                    "initialization": "1991090100",
+                    "lead_month": 3,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1991/09/199109_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P03M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/199109/t2m_lead03.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "1992090100",
+                    "lead_month": 3,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1992/09/199209_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P03M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/199209/t2m_lead03.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "1993090100",
+                    "lead_month": 3,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1993/09/199309_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P03M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/199309/t2m_lead03.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "1994090100",
+                    "lead_month": 3,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1994/09/199409_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P03M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/199409/t2m_lead03.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "1995090100",
+                    "lead_month": 3,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1995/09/199509_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P03M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/199509/t2m_lead03.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "1996090100",
+                    "lead_month": 3,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1996/09/199609_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P03M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/199609/t2m_lead03.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "1997090100",
+                    "lead_month": 3,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1997/09/199709_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P03M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/199709/t2m_lead03.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "1998090100",
+                    "lead_month": 3,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1998/09/199809_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P03M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/199809/t2m_lead03.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "1999090100",
+                    "lead_month": 3,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1999/09/199909_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P03M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/199909/t2m_lead03.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "2000090100",
+                    "lead_month": 3,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2000/09/200009_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P03M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/200009/t2m_lead03.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "2001090100",
+                    "lead_month": 3,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2001/09/200109_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P03M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/200109/t2m_lead03.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "2002090100",
+                    "lead_month": 3,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2002/09/200209_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P03M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/200209/t2m_lead03.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "2003090100",
+                    "lead_month": 3,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2003/09/200309_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P03M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/200309/t2m_lead03.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "2004090100",
+                    "lead_month": 3,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2004/09/200409_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P03M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/200409/t2m_lead03.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "2005090100",
+                    "lead_month": 3,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2005/09/200509_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P03M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/200509/t2m_lead03.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "2006090100",
+                    "lead_month": 3,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2006/09/200609_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P03M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/200609/t2m_lead03.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "2007090100",
+                    "lead_month": 3,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2007/09/200709_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P03M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/200709/t2m_lead03.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "2008090100",
+                    "lead_month": 3,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2008/09/200809_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P03M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/200809/t2m_lead03.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "2009090100",
+                    "lead_month": 3,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2009/09/200909_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P03M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/200909/t2m_lead03.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "2010090100",
+                    "lead_month": 3,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2010/09/201009_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P03M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/201009/t2m_lead03.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "2011090100",
+                    "lead_month": 3,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2011/09/201109_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P03M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/201109/t2m_lead03.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "2012090100",
+                    "lead_month": 3,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2012/09/201209_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P03M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/201209/t2m_lead03.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "2013090100",
+                    "lead_month": 3,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2013/09/201309_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P03M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/201309/t2m_lead03.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "2014090100",
+                    "lead_month": 3,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2014/09/201409_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P03M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/201409/t2m_lead03.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "2015090100",
+                    "lead_month": 3,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2015/09/201509_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P03M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/201509/t2m_lead03.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "2016090100",
+                    "lead_month": 3,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2016/09/201609_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P03M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/201609/t2m_lead03.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "2017090100",
+                    "lead_month": 3,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2017/09/201709_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P03M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/201709/t2m_lead03.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "2018090100",
+                    "lead_month": 3,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2018/09/201809_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P03M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/201809/t2m_lead03.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "2019090100",
+                    "lead_month": 3,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2019/09/201909_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P03M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/201909/t2m_lead03.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "2020090100",
+                    "lead_month": 3,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2020/09/202009_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P03M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/202009/t2m_lead03.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  }
+                ]
+              },
+              "ensemble_members": 40,
+              "ensemble_complete": true,
+              "statistic": "ensemble_mean",
+              "aggregation": "monthly forecast anomaly",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "2m_temperature_anomaly",
+                "units": "°C",
+                "field": "temperature_2m_anomaly",
+                "period": "monthly",
+                "total_points": 64800,
+                "finite_points": 64800,
+                "finite_fraction": 1.0,
+                "minimum": -4.993233,
+                "maximum": 6.856133,
+                "p01": -0.7575,
+                "p99": 5.040552,
+                "display": {
+                  "minimum": -6.0,
+                  "maximum": 6.0,
+                  "step": 0.5,
+                  "below_fraction": 0.0,
+                  "above_fraction": 0.00159,
+                  "clipped_fraction": 0.00159
+                },
+                "issues": [],
+                "status": "passed"
+              },
+              "_catalog": {
+                "canonical_product": "2m_temperature_anomaly",
+                "comparable": true,
+                "quality_control": "passed"
+              }
+            },
+            {
+              "id": "cansips-2026090100-2m_temperature_anomaly-lead04",
+              "target_month": "202701",
+              "valid_start_utc": "2027-01-01T00:00:00Z",
+              "valid_end_utc": "2027-02-01T00:00:00Z",
+              "lead_month": 4,
+              "field": "temperature_2m_anomaly",
+              "units": "°C",
+              "status": "rendered",
+              "image": "cansips/20260901/cansips_t2ma_202701.jpg",
+              "baseline": {
+                "source": "CanSIPS v3 hindcast climatology; 1991-2020",
+                "years": "1991-2020",
+                "initialization_month": "09",
+                "lead_month": 4,
+                "ensemble_members": 40,
+                "method": "forecast 40-member mean minus the matching-initialization-month and lead hindcast climatology",
+                "files": [
+                  {
+                    "initialization": "1991090100",
+                    "lead_month": 4,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1991/09/199109_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P04M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/199109/t2m_lead04.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "1992090100",
+                    "lead_month": 4,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1992/09/199209_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P04M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/199209/t2m_lead04.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "1993090100",
+                    "lead_month": 4,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1993/09/199309_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P04M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/199309/t2m_lead04.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "1994090100",
+                    "lead_month": 4,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1994/09/199409_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P04M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/199409/t2m_lead04.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "1995090100",
+                    "lead_month": 4,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1995/09/199509_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P04M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/199509/t2m_lead04.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "1996090100",
+                    "lead_month": 4,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1996/09/199609_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P04M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/199609/t2m_lead04.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "1997090100",
+                    "lead_month": 4,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1997/09/199709_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P04M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/199709/t2m_lead04.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "1998090100",
+                    "lead_month": 4,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1998/09/199809_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P04M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/199809/t2m_lead04.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "1999090100",
+                    "lead_month": 4,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1999/09/199909_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P04M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/199909/t2m_lead04.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "2000090100",
+                    "lead_month": 4,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2000/09/200009_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P04M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/200009/t2m_lead04.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "2001090100",
+                    "lead_month": 4,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2001/09/200109_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P04M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/200109/t2m_lead04.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "2002090100",
+                    "lead_month": 4,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2002/09/200209_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P04M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/200209/t2m_lead04.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "2003090100",
+                    "lead_month": 4,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2003/09/200309_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P04M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/200309/t2m_lead04.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "2004090100",
+                    "lead_month": 4,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2004/09/200409_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P04M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/200409/t2m_lead04.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "2005090100",
+                    "lead_month": 4,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2005/09/200509_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P04M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/200509/t2m_lead04.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "2006090100",
+                    "lead_month": 4,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2006/09/200609_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P04M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/200609/t2m_lead04.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "2007090100",
+                    "lead_month": 4,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2007/09/200709_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P04M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/200709/t2m_lead04.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "2008090100",
+                    "lead_month": 4,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2008/09/200809_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P04M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/200809/t2m_lead04.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "2009090100",
+                    "lead_month": 4,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2009/09/200909_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P04M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/200909/t2m_lead04.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "2010090100",
+                    "lead_month": 4,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2010/09/201009_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P04M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/201009/t2m_lead04.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "2011090100",
+                    "lead_month": 4,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2011/09/201109_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P04M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/201109/t2m_lead04.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "2012090100",
+                    "lead_month": 4,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2012/09/201209_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P04M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/201209/t2m_lead04.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "2013090100",
+                    "lead_month": 4,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2013/09/201309_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P04M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/201309/t2m_lead04.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "2014090100",
+                    "lead_month": 4,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2014/09/201409_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P04M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/201409/t2m_lead04.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "2015090100",
+                    "lead_month": 4,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2015/09/201509_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P04M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/201509/t2m_lead04.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "2016090100",
+                    "lead_month": 4,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2016/09/201609_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P04M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/201609/t2m_lead04.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "2017090100",
+                    "lead_month": 4,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2017/09/201709_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P04M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/201709/t2m_lead04.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "2018090100",
+                    "lead_month": 4,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2018/09/201809_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P04M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/201809/t2m_lead04.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "2019090100",
+                    "lead_month": 4,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2019/09/201909_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P04M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/201909/t2m_lead04.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "2020090100",
+                    "lead_month": 4,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2020/09/202009_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P04M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/202009/t2m_lead04.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  }
+                ]
+              },
+              "ensemble_members": 40,
+              "ensemble_complete": true,
+              "statistic": "ensemble_mean",
+              "aggregation": "monthly forecast anomaly",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "2m_temperature_anomaly",
+                "units": "°C",
+                "field": "temperature_2m_anomaly",
+                "period": "monthly",
+                "total_points": 64800,
+                "finite_points": 64800,
+                "finite_fraction": 1.0,
+                "minimum": -4.091167,
+                "maximum": 7.2715,
+                "p01": -0.741868,
+                "p99": 4.277304,
+                "display": {
+                  "minimum": -6.0,
+                  "maximum": 6.0,
+                  "step": 0.5,
+                  "below_fraction": 0.0,
+                  "above_fraction": 0.000725,
+                  "clipped_fraction": 0.000725
+                },
+                "issues": [],
+                "status": "passed"
+              },
+              "_catalog": {
+                "canonical_product": "2m_temperature_anomaly",
+                "comparable": true,
+                "quality_control": "passed"
+              }
+            },
+            {
+              "id": "cansips-2026090100-2m_temperature_anomaly-lead05",
+              "target_month": "202702",
+              "valid_start_utc": "2027-02-01T00:00:00Z",
+              "valid_end_utc": "2027-03-01T00:00:00Z",
+              "lead_month": 5,
+              "field": "temperature_2m_anomaly",
+              "units": "°C",
+              "status": "rendered",
+              "image": "cansips/20260901/cansips_t2ma_202702.jpg",
+              "baseline": {
+                "source": "CanSIPS v3 hindcast climatology; 1991-2020",
+                "years": "1991-2020",
+                "initialization_month": "09",
+                "lead_month": 5,
+                "ensemble_members": 40,
+                "method": "forecast 40-member mean minus the matching-initialization-month and lead hindcast climatology",
+                "files": [
+                  {
+                    "initialization": "1991090100",
+                    "lead_month": 5,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1991/09/199109_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P05M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/199109/t2m_lead05.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "1992090100",
+                    "lead_month": 5,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1992/09/199209_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P05M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/199209/t2m_lead05.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "1993090100",
+                    "lead_month": 5,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1993/09/199309_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P05M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/199309/t2m_lead05.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "1994090100",
+                    "lead_month": 5,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1994/09/199409_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P05M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/199409/t2m_lead05.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "1995090100",
+                    "lead_month": 5,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1995/09/199509_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P05M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/199509/t2m_lead05.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "1996090100",
+                    "lead_month": 5,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1996/09/199609_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P05M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/199609/t2m_lead05.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "1997090100",
+                    "lead_month": 5,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1997/09/199709_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P05M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/199709/t2m_lead05.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "1998090100",
+                    "lead_month": 5,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1998/09/199809_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P05M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/199809/t2m_lead05.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "1999090100",
+                    "lead_month": 5,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1999/09/199909_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P05M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/199909/t2m_lead05.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "2000090100",
+                    "lead_month": 5,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2000/09/200009_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P05M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/200009/t2m_lead05.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "2001090100",
+                    "lead_month": 5,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2001/09/200109_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P05M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/200109/t2m_lead05.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "2002090100",
+                    "lead_month": 5,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2002/09/200209_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P05M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/200209/t2m_lead05.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "2003090100",
+                    "lead_month": 5,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2003/09/200309_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P05M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/200309/t2m_lead05.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "2004090100",
+                    "lead_month": 5,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2004/09/200409_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P05M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/200409/t2m_lead05.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "2005090100",
+                    "lead_month": 5,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2005/09/200509_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P05M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/200509/t2m_lead05.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "2006090100",
+                    "lead_month": 5,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2006/09/200609_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P05M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/200609/t2m_lead05.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "2007090100",
+                    "lead_month": 5,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2007/09/200709_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P05M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/200709/t2m_lead05.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "2008090100",
+                    "lead_month": 5,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2008/09/200809_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P05M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/200809/t2m_lead05.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "2009090100",
+                    "lead_month": 5,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2009/09/200909_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P05M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/200909/t2m_lead05.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "2010090100",
+                    "lead_month": 5,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2010/09/201009_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P05M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/201009/t2m_lead05.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "2011090100",
+                    "lead_month": 5,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2011/09/201109_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P05M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/201109/t2m_lead05.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "2012090100",
+                    "lead_month": 5,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2012/09/201209_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P05M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/201209/t2m_lead05.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "2013090100",
+                    "lead_month": 5,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2013/09/201309_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P05M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/201309/t2m_lead05.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "2014090100",
+                    "lead_month": 5,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2014/09/201409_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P05M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/201409/t2m_lead05.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "2015090100",
+                    "lead_month": 5,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2015/09/201509_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P05M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/201509/t2m_lead05.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "2016090100",
+                    "lead_month": 5,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2016/09/201609_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P05M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/201609/t2m_lead05.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "2017090100",
+                    "lead_month": 5,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2017/09/201709_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P05M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/201709/t2m_lead05.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "2018090100",
+                    "lead_month": 5,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2018/09/201809_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P05M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/201809/t2m_lead05.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "2019090100",
+                    "lead_month": 5,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2019/09/201909_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P05M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/201909/t2m_lead05.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  },
+                  {
+                    "initialization": "2020090100",
+                    "lead_month": 5,
+                    "product": "2m_temperature_anomaly",
+                    "source_field": "AirTemp at 2 m",
+                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2020/09/202009_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P05M.grib2",
+                    "cache_file": ".cache/cansips/means/hindcast/202009/t2m_lead05.csv.gz",
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
+                    "ensemble_members": 40
+                  }
+                ]
+              },
+              "ensemble_members": 40,
+              "ensemble_complete": true,
+              "statistic": "ensemble_mean",
+              "aggregation": "monthly forecast anomaly",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "2m_temperature_anomaly",
+                "units": "°C",
+                "field": "temperature_2m_anomaly",
+                "period": "monthly",
+                "total_points": 64800,
+                "finite_points": 64800,
+                "finite_fraction": 1.0,
+                "minimum": -3.476767,
+                "maximum": 6.2024,
+                "p01": -1.181221,
+                "p99": 3.5496,
+                "display": {
+                  "minimum": -6.0,
+                  "maximum": 6.0,
+                  "step": 0.5,
+                  "below_fraction": 0.0,
+                  "above_fraction": 4.6e-05,
+                  "clipped_fraction": 4.6e-05
+                },
+                "issues": [],
+                "status": "passed"
+              },
+              "_catalog": {
+                "canonical_product": "2m_temperature_anomaly",
+                "comparable": true,
+                "quality_control": "passed"
+              }
+            },
+            {
+              "id": "cansips-2026090100-2m_temperature_anomaly-202612-202702",
+              "target_month": "202612-202702",
+              "valid_start_utc": "2026-12-01T00:00:00Z",
+              "valid_end_utc": "2027-03-01T00:00:00Z",
+              "lead_month": "3-5",
+              "monthly_leads": [
+                3,
+                4,
+                5
+              ],
+              "field": "temperature_2m_anomaly",
+              "units": "°C",
+              "status": "rendered",
+              "image": "cansips/20260901/cansips_t2ma_202612-202702.jpg",
+              "baseline": {
+                "source": "CanSIPS v3 hindcast climatology; 1991-2020",
+                "years": "1991-2020",
+                "initialization_month": "09",
+                "lead_months": [
+                  3,
+                  4,
+                  5
+                ],
+                "method": "mean of monthly forecast-minus-hindcast anomalies"
+              },
+              "ensemble_members": 40,
+              "statistic": "ensemble_mean",
+              "aggregation": "3-month seasonal mean",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "2m_temperature_anomaly",
+                "units": "°C",
+                "field": "temperature_2m_anomaly",
+                "period": "seasonal",
+                "total_points": 64800,
+                "finite_points": 64800,
+                "finite_fraction": 1.0,
+                "minimum": -3.924744,
+                "maximum": 6.761833,
+                "p01": -0.758033,
+                "p99": 4.142278,
+                "display": {
+                  "minimum": -6.0,
+                  "maximum": 6.0,
+                  "step": 0.5,
+                  "below_fraction": 0.0,
+                  "above_fraction": 0.000309,
+                  "clipped_fraction": 0.000309
+                },
+                "issues": [],
+                "status": "passed"
+              },
+              "_catalog": {
+                "canonical_product": "2m_temperature_anomaly",
+                "comparable": true,
+                "quality_control": "passed"
+              }
+            }
+          ],
+          "_catalog": {
+            "canonical_product": "2m_temperature_anomaly",
+            "comparable": true
+          }
+        },
+        {
           "id": "cansips-2026090100-850mb_temperature_anomaly",
           "model": "CanSIPS v3",
           "source": "ECCC MSC CanSIPS v3 / Datamart",
@@ -42740,7 +43988,7 @@
           ],
           "product": "850mb_temperature_anomaly",
           "init_utc": "2026-09-01T00:00:00Z",
-          "generated_utc": "2026-09-09T11:10:38Z",
+          "generated_utc": "2026-09-08T23:24:05Z",
           "status": "rendered",
           "statistic": "ensemble_mean",
           "aggregation": "3-month seasonal mean of monthly forecast anomalies",
@@ -42784,8 +44032,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1991/09/199109_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P03M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/199109/t850_lead03.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -42795,8 +44043,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1992/09/199209_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P03M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/199209/t850_lead03.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -42806,8 +44054,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1993/09/199309_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P03M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/199309/t850_lead03.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -42817,8 +44065,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1994/09/199409_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P03M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/199409/t850_lead03.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -42828,8 +44076,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1995/09/199509_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P03M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/199509/t850_lead03.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -42839,8 +44087,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1996/09/199609_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P03M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/199609/t850_lead03.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -42850,8 +44098,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1997/09/199709_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P03M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/199709/t850_lead03.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -42861,8 +44109,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1998/09/199809_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P03M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/199809/t850_lead03.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -42872,8 +44120,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1999/09/199909_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P03M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/199909/t850_lead03.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -42883,8 +44131,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2000/09/200009_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P03M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/200009/t850_lead03.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -42894,8 +44142,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2001/09/200109_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P03M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/200109/t850_lead03.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -42905,8 +44153,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2002/09/200209_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P03M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/200209/t850_lead03.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -42916,8 +44164,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2003/09/200309_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P03M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/200309/t850_lead03.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -42927,8 +44175,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2004/09/200409_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P03M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/200409/t850_lead03.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -42938,8 +44186,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2005/09/200509_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P03M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/200509/t850_lead03.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -42949,8 +44197,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2006/09/200609_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P03M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/200609/t850_lead03.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -42960,8 +44208,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2007/09/200709_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P03M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/200709/t850_lead03.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -42971,8 +44219,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2008/09/200809_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P03M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/200809/t850_lead03.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -42982,8 +44230,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2009/09/200909_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P03M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/200909/t850_lead03.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -42993,8 +44241,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2010/09/201009_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P03M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/201009/t850_lead03.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -43004,8 +44252,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2011/09/201109_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P03M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/201109/t850_lead03.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -43015,8 +44263,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2012/09/201209_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P03M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/201209/t850_lead03.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -43026,8 +44274,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2013/09/201309_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P03M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/201309/t850_lead03.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -43037,8 +44285,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2014/09/201409_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P03M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/201409/t850_lead03.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -43048,8 +44296,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2015/09/201509_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P03M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/201509/t850_lead03.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -43059,8 +44307,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2016/09/201609_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P03M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/201609/t850_lead03.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -43070,8 +44318,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2017/09/201709_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P03M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/201709/t850_lead03.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -43081,8 +44329,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2018/09/201809_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P03M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/201809/t850_lead03.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -43092,8 +44340,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2019/09/201909_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P03M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/201909/t850_lead03.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -43103,8 +44351,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2020/09/202009_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P03M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/202009/t850_lead03.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   }
                 ]
@@ -43168,8 +44416,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1991/09/199109_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P04M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/199109/t850_lead04.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -43179,8 +44427,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1992/09/199209_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P04M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/199209/t850_lead04.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -43190,8 +44438,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1993/09/199309_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P04M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/199309/t850_lead04.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -43201,8 +44449,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1994/09/199409_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P04M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/199409/t850_lead04.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -43212,8 +44460,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1995/09/199509_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P04M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/199509/t850_lead04.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -43223,8 +44471,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1996/09/199609_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P04M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/199609/t850_lead04.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -43234,8 +44482,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1997/09/199709_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P04M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/199709/t850_lead04.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -43245,8 +44493,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1998/09/199809_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P04M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/199809/t850_lead04.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -43256,8 +44504,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1999/09/199909_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P04M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/199909/t850_lead04.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -43267,8 +44515,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2000/09/200009_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P04M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/200009/t850_lead04.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -43278,8 +44526,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2001/09/200109_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P04M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/200109/t850_lead04.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -43289,8 +44537,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2002/09/200209_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P04M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/200209/t850_lead04.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -43300,8 +44548,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2003/09/200309_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P04M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/200309/t850_lead04.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -43311,8 +44559,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2004/09/200409_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P04M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/200409/t850_lead04.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -43322,8 +44570,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2005/09/200509_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P04M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/200509/t850_lead04.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -43333,8 +44581,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2006/09/200609_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P04M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/200609/t850_lead04.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -43344,8 +44592,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2007/09/200709_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P04M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/200709/t850_lead04.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -43355,8 +44603,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2008/09/200809_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P04M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/200809/t850_lead04.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -43366,8 +44614,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2009/09/200909_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P04M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/200909/t850_lead04.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -43377,8 +44625,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2010/09/201009_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P04M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/201009/t850_lead04.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -43388,8 +44636,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2011/09/201109_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P04M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/201109/t850_lead04.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -43399,8 +44647,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2012/09/201209_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P04M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/201209/t850_lead04.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -43410,8 +44658,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2013/09/201309_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P04M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/201309/t850_lead04.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -43421,8 +44669,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2014/09/201409_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P04M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/201409/t850_lead04.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -43432,8 +44680,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2015/09/201509_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P04M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/201509/t850_lead04.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -43443,8 +44691,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2016/09/201609_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P04M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/201609/t850_lead04.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -43454,8 +44702,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2017/09/201709_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P04M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/201709/t850_lead04.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -43465,8 +44713,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2018/09/201809_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P04M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/201809/t850_lead04.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -43476,8 +44724,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2019/09/201909_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P04M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/201909/t850_lead04.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -43487,8 +44735,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2020/09/202009_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P04M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/202009/t850_lead04.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   }
                 ]
@@ -43552,8 +44800,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1991/09/199109_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P05M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/199109/t850_lead05.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -43563,8 +44811,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1992/09/199209_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P05M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/199209/t850_lead05.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -43574,8 +44822,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1993/09/199309_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P05M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/199309/t850_lead05.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -43585,8 +44833,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1994/09/199409_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P05M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/199409/t850_lead05.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -43596,8 +44844,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1995/09/199509_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P05M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/199509/t850_lead05.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -43607,8 +44855,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1996/09/199609_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P05M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/199609/t850_lead05.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -43618,8 +44866,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1997/09/199709_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P05M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/199709/t850_lead05.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -43629,8 +44877,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1998/09/199809_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P05M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/199809/t850_lead05.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -43640,8 +44888,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1999/09/199909_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P05M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/199909/t850_lead05.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -43651,8 +44899,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2000/09/200009_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P05M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/200009/t850_lead05.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -43662,8 +44910,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2001/09/200109_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P05M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/200109/t850_lead05.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -43673,8 +44921,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2002/09/200209_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P05M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/200209/t850_lead05.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -43684,8 +44932,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2003/09/200309_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P05M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/200309/t850_lead05.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -43695,8 +44943,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2004/09/200409_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P05M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/200409/t850_lead05.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -43706,8 +44954,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2005/09/200509_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P05M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/200509/t850_lead05.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -43717,8 +44965,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2006/09/200609_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P05M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/200609/t850_lead05.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -43728,8 +44976,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2007/09/200709_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P05M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/200709/t850_lead05.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -43739,8 +44987,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2008/09/200809_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P05M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/200809/t850_lead05.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -43750,8 +44998,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2009/09/200909_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P05M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/200909/t850_lead05.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -43761,8 +45009,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2010/09/201009_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P05M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/201009/t850_lead05.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -43772,8 +45020,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2011/09/201109_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P05M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/201109/t850_lead05.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -43783,8 +45031,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2012/09/201209_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P05M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/201209/t850_lead05.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -43794,8 +45042,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2013/09/201309_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P05M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/201309/t850_lead05.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -43805,8 +45053,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2014/09/201409_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P05M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/201409/t850_lead05.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -43816,8 +45064,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2015/09/201509_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P05M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/201509/t850_lead05.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -43827,8 +45075,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2016/09/201609_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P05M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/201609/t850_lead05.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -43838,8 +45086,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2017/09/201709_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P05M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/201709/t850_lead05.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -43849,8 +45097,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2018/09/201809_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P05M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/201809/t850_lead05.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -43860,8 +45108,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2019/09/201909_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P05M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/201909/t850_lead05.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   {
@@ -43871,8 +45119,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2020/09/202009_MSC_CanSIPS-Hindcast_AirTemp_ISBL-0850_LatLon1.0_P05M.grib2",
                     "cache_file": ".cache/cansips/means/hindcast/202009/t850_lead05.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   }
                 ]
@@ -49316,1153 +50564,6 @@
           ],
           "_catalog": {
             "canonical_product": "mslp_anomaly",
-            "comparable": true
-          }
-        },
-        {
-          "id": "cansips-2026090100-2m_temperature_anomaly",
-          "model": "CanSIPS v3",
-          "source": "ECCC MSC CanSIPS v3 / Datamart",
-          "source_url": "https://eccc-msc.github.io/open-data/msc-data/nwp_cansips/readme_cansips-datamart_en/",
-          "source_urls": [
-            "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/",
-            "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/",
-            "https://eccc-msc.github.io/open-data/msc-data/nwp_cansips/readme_cansips-datamart_en/"
-          ],
-          "product": "2m_temperature_anomaly",
-          "init_utc": "2026-09-01T00:00:00Z",
-          "generated_utc": "2026-09-01T12:34:51Z",
-          "status": "rendered",
-          "statistic": "ensemble_mean",
-          "aggregation": "3-month seasonal mean of monthly forecast anomalies",
-          "ensemble_scope": "40-member CanSIPS v3 blend",
-          "ensemble_members": 40,
-          "field": "temperature_2m_anomaly",
-          "units": "°C",
-          "raw_field": "AirTemp at 2 m",
-          "raw_units": "K",
-          "climatology": {
-            "source": "CanSIPS v3 hindcast ensemble means",
-            "years": "1991-2020",
-            "initialization_month": "09",
-            "method": "forecast 40-member mean minus the matching-initialization-month and lead hindcast climatology"
-          },
-          "targets": [
-            {
-              "id": "cansips-2026090100-2m_temperature_anomaly-lead03",
-              "target_month": "202612",
-              "valid_start_utc": "2026-12-01T00:00:00Z",
-              "valid_end_utc": "2027-01-01T00:00:00Z",
-              "lead_month": 3,
-              "field": "temperature_2m_anomaly",
-              "units": "°C",
-              "status": "rendered",
-              "image": "cansips/20260901/cansips_t2ma_202612.jpg",
-              "baseline": {
-                "source": "CanSIPS v3 hindcast climatology; 1991-2020",
-                "years": "1991-2020",
-                "initialization_month": "09",
-                "lead_month": 3,
-                "ensemble_members": 40,
-                "files": [
-                  {
-                    "initialization": "1991090100",
-                    "lead_month": 3,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1991/09/199109_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P03M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/199109/t2m_lead03.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "1992090100",
-                    "lead_month": 3,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1992/09/199209_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P03M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/199209/t2m_lead03.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "1993090100",
-                    "lead_month": 3,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1993/09/199309_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P03M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/199309/t2m_lead03.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "1994090100",
-                    "lead_month": 3,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1994/09/199409_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P03M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/199409/t2m_lead03.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "1995090100",
-                    "lead_month": 3,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1995/09/199509_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P03M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/199509/t2m_lead03.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "1996090100",
-                    "lead_month": 3,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1996/09/199609_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P03M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/199609/t2m_lead03.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "1997090100",
-                    "lead_month": 3,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1997/09/199709_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P03M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/199709/t2m_lead03.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "1998090100",
-                    "lead_month": 3,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1998/09/199809_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P03M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/199809/t2m_lead03.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "1999090100",
-                    "lead_month": 3,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1999/09/199909_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P03M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/199909/t2m_lead03.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "2000090100",
-                    "lead_month": 3,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2000/09/200009_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P03M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/200009/t2m_lead03.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "2001090100",
-                    "lead_month": 3,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2001/09/200109_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P03M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/200109/t2m_lead03.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "2002090100",
-                    "lead_month": 3,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2002/09/200209_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P03M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/200209/t2m_lead03.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "2003090100",
-                    "lead_month": 3,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2003/09/200309_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P03M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/200309/t2m_lead03.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "2004090100",
-                    "lead_month": 3,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2004/09/200409_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P03M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/200409/t2m_lead03.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "2005090100",
-                    "lead_month": 3,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2005/09/200509_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P03M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/200509/t2m_lead03.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "2006090100",
-                    "lead_month": 3,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2006/09/200609_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P03M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/200609/t2m_lead03.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "2007090100",
-                    "lead_month": 3,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2007/09/200709_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P03M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/200709/t2m_lead03.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "2008090100",
-                    "lead_month": 3,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2008/09/200809_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P03M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/200809/t2m_lead03.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "2009090100",
-                    "lead_month": 3,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2009/09/200909_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P03M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/200909/t2m_lead03.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "2010090100",
-                    "lead_month": 3,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2010/09/201009_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P03M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/201009/t2m_lead03.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "2011090100",
-                    "lead_month": 3,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2011/09/201109_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P03M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/201109/t2m_lead03.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "2012090100",
-                    "lead_month": 3,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2012/09/201209_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P03M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/201209/t2m_lead03.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "2013090100",
-                    "lead_month": 3,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2013/09/201309_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P03M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/201309/t2m_lead03.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "2014090100",
-                    "lead_month": 3,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2014/09/201409_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P03M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/201409/t2m_lead03.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "2015090100",
-                    "lead_month": 3,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2015/09/201509_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P03M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/201509/t2m_lead03.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "2016090100",
-                    "lead_month": 3,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2016/09/201609_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P03M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/201609/t2m_lead03.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "2017090100",
-                    "lead_month": 3,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2017/09/201709_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P03M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/201709/t2m_lead03.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "2018090100",
-                    "lead_month": 3,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2018/09/201809_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P03M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/201809/t2m_lead03.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "2019090100",
-                    "lead_month": 3,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2019/09/201909_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P03M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/201909/t2m_lead03.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "2020090100",
-                    "lead_month": 3,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2020/09/202009_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P03M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/202009/t2m_lead03.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  }
-                ]
-              },
-              "ensemble_members": 40,
-              "ensemble_complete": true,
-              "statistic": "ensemble_mean",
-              "aggregation": "monthly forecast anomaly",
-              "_catalog": {
-                "canonical_product": "2m_temperature_anomaly",
-                "comparable": true,
-                "quality_control": "legacy"
-              }
-            },
-            {
-              "id": "cansips-2026090100-2m_temperature_anomaly-lead04",
-              "target_month": "202701",
-              "valid_start_utc": "2027-01-01T00:00:00Z",
-              "valid_end_utc": "2027-02-01T00:00:00Z",
-              "lead_month": 4,
-              "field": "temperature_2m_anomaly",
-              "units": "°C",
-              "status": "rendered",
-              "image": "cansips/20260901/cansips_t2ma_202701.jpg",
-              "baseline": {
-                "source": "CanSIPS v3 hindcast climatology; 1991-2020",
-                "years": "1991-2020",
-                "initialization_month": "09",
-                "lead_month": 4,
-                "ensemble_members": 40,
-                "files": [
-                  {
-                    "initialization": "1991090100",
-                    "lead_month": 4,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1991/09/199109_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P04M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/199109/t2m_lead04.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "1992090100",
-                    "lead_month": 4,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1992/09/199209_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P04M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/199209/t2m_lead04.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "1993090100",
-                    "lead_month": 4,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1993/09/199309_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P04M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/199309/t2m_lead04.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "1994090100",
-                    "lead_month": 4,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1994/09/199409_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P04M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/199409/t2m_lead04.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "1995090100",
-                    "lead_month": 4,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1995/09/199509_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P04M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/199509/t2m_lead04.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "1996090100",
-                    "lead_month": 4,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1996/09/199609_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P04M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/199609/t2m_lead04.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "1997090100",
-                    "lead_month": 4,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1997/09/199709_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P04M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/199709/t2m_lead04.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "1998090100",
-                    "lead_month": 4,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1998/09/199809_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P04M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/199809/t2m_lead04.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "1999090100",
-                    "lead_month": 4,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1999/09/199909_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P04M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/199909/t2m_lead04.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "2000090100",
-                    "lead_month": 4,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2000/09/200009_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P04M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/200009/t2m_lead04.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "2001090100",
-                    "lead_month": 4,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2001/09/200109_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P04M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/200109/t2m_lead04.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "2002090100",
-                    "lead_month": 4,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2002/09/200209_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P04M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/200209/t2m_lead04.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "2003090100",
-                    "lead_month": 4,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2003/09/200309_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P04M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/200309/t2m_lead04.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "2004090100",
-                    "lead_month": 4,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2004/09/200409_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P04M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/200409/t2m_lead04.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "2005090100",
-                    "lead_month": 4,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2005/09/200509_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P04M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/200509/t2m_lead04.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "2006090100",
-                    "lead_month": 4,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2006/09/200609_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P04M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/200609/t2m_lead04.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "2007090100",
-                    "lead_month": 4,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2007/09/200709_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P04M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/200709/t2m_lead04.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "2008090100",
-                    "lead_month": 4,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2008/09/200809_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P04M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/200809/t2m_lead04.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "2009090100",
-                    "lead_month": 4,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2009/09/200909_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P04M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/200909/t2m_lead04.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "2010090100",
-                    "lead_month": 4,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2010/09/201009_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P04M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/201009/t2m_lead04.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "2011090100",
-                    "lead_month": 4,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2011/09/201109_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P04M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/201109/t2m_lead04.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "2012090100",
-                    "lead_month": 4,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2012/09/201209_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P04M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/201209/t2m_lead04.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "2013090100",
-                    "lead_month": 4,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2013/09/201309_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P04M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/201309/t2m_lead04.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "2014090100",
-                    "lead_month": 4,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2014/09/201409_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P04M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/201409/t2m_lead04.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "2015090100",
-                    "lead_month": 4,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2015/09/201509_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P04M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/201509/t2m_lead04.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "2016090100",
-                    "lead_month": 4,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2016/09/201609_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P04M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/201609/t2m_lead04.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "2017090100",
-                    "lead_month": 4,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2017/09/201709_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P04M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/201709/t2m_lead04.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "2018090100",
-                    "lead_month": 4,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2018/09/201809_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P04M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/201809/t2m_lead04.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "2019090100",
-                    "lead_month": 4,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2019/09/201909_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P04M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/201909/t2m_lead04.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "2020090100",
-                    "lead_month": 4,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2020/09/202009_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P04M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/202009/t2m_lead04.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  }
-                ]
-              },
-              "ensemble_members": 40,
-              "ensemble_complete": true,
-              "statistic": "ensemble_mean",
-              "aggregation": "monthly forecast anomaly",
-              "_catalog": {
-                "canonical_product": "2m_temperature_anomaly",
-                "comparable": true,
-                "quality_control": "legacy"
-              }
-            },
-            {
-              "id": "cansips-2026090100-2m_temperature_anomaly-lead05",
-              "target_month": "202702",
-              "valid_start_utc": "2027-02-01T00:00:00Z",
-              "valid_end_utc": "2027-03-01T00:00:00Z",
-              "lead_month": 5,
-              "field": "temperature_2m_anomaly",
-              "units": "°C",
-              "status": "rendered",
-              "image": "cansips/20260901/cansips_t2ma_202702.jpg",
-              "baseline": {
-                "source": "CanSIPS v3 hindcast climatology; 1991-2020",
-                "years": "1991-2020",
-                "initialization_month": "09",
-                "lead_month": 5,
-                "ensemble_members": 40,
-                "files": [
-                  {
-                    "initialization": "1991090100",
-                    "lead_month": 5,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1991/09/199109_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P05M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/199109/t2m_lead05.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "1992090100",
-                    "lead_month": 5,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1992/09/199209_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P05M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/199209/t2m_lead05.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "1993090100",
-                    "lead_month": 5,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1993/09/199309_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P05M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/199309/t2m_lead05.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "1994090100",
-                    "lead_month": 5,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1994/09/199409_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P05M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/199409/t2m_lead05.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "1995090100",
-                    "lead_month": 5,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1995/09/199509_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P05M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/199509/t2m_lead05.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "1996090100",
-                    "lead_month": 5,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1996/09/199609_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P05M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/199609/t2m_lead05.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "1997090100",
-                    "lead_month": 5,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1997/09/199709_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P05M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/199709/t2m_lead05.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "1998090100",
-                    "lead_month": 5,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1998/09/199809_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P05M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/199809/t2m_lead05.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "1999090100",
-                    "lead_month": 5,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/1999/09/199909_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P05M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/199909/t2m_lead05.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "2000090100",
-                    "lead_month": 5,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2000/09/200009_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P05M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/200009/t2m_lead05.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "2001090100",
-                    "lead_month": 5,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2001/09/200109_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P05M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/200109/t2m_lead05.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "2002090100",
-                    "lead_month": 5,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2002/09/200209_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P05M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/200209/t2m_lead05.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "2003090100",
-                    "lead_month": 5,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2003/09/200309_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P05M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/200309/t2m_lead05.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "2004090100",
-                    "lead_month": 5,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2004/09/200409_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P05M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/200409/t2m_lead05.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "2005090100",
-                    "lead_month": 5,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2005/09/200509_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P05M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/200509/t2m_lead05.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "2006090100",
-                    "lead_month": 5,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2006/09/200609_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P05M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/200609/t2m_lead05.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "2007090100",
-                    "lead_month": 5,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2007/09/200709_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P05M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/200709/t2m_lead05.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "2008090100",
-                    "lead_month": 5,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2008/09/200809_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P05M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/200809/t2m_lead05.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "2009090100",
-                    "lead_month": 5,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2009/09/200909_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P05M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/200909/t2m_lead05.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "2010090100",
-                    "lead_month": 5,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2010/09/201009_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P05M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/201009/t2m_lead05.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "2011090100",
-                    "lead_month": 5,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2011/09/201109_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P05M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/201109/t2m_lead05.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "2012090100",
-                    "lead_month": 5,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2012/09/201209_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P05M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/201209/t2m_lead05.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "2013090100",
-                    "lead_month": 5,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2013/09/201309_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P05M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/201309/t2m_lead05.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "2014090100",
-                    "lead_month": 5,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2014/09/201409_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P05M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/201409/t2m_lead05.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "2015090100",
-                    "lead_month": 5,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2015/09/201509_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P05M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/201509/t2m_lead05.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "2016090100",
-                    "lead_month": 5,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2016/09/201609_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P05M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/201609/t2m_lead05.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "2017090100",
-                    "lead_month": 5,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2017/09/201709_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P05M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/201709/t2m_lead05.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "2018090100",
-                    "lead_month": 5,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2018/09/201809_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P05M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/201809/t2m_lead05.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "2019090100",
-                    "lead_month": 5,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2019/09/201909_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P05M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/201909/t2m_lead05.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  },
-                  {
-                    "initialization": "2020090100",
-                    "lead_month": 5,
-                    "product": "2m_temperature_anomaly",
-                    "source_field": "AirTemp at 2 m",
-                    "url": "https://dd.weather.gc.ca/today/model_cansips/100km/hindcast/2020/09/202009_MSC_CanSIPS-Hindcast_AirTemp_AGL-2m_LatLon1.0_P05M.grib2",
-                    "cache_file": ".cache/cansips/means/hindcast/202009/t2m_lead05.csv.gz",
-                    "storage": "decoded_ensemble_mean_grid",
-                    "downloaded": true,
-                    "ensemble_members": 40
-                  }
-                ]
-              },
-              "ensemble_members": 40,
-              "ensemble_complete": true,
-              "statistic": "ensemble_mean",
-              "aggregation": "monthly forecast anomaly",
-              "_catalog": {
-                "canonical_product": "2m_temperature_anomaly",
-                "comparable": true,
-                "quality_control": "legacy"
-              }
-            },
-            {
-              "id": "cansips-2026090100-2m_temperature_anomaly-202612-202702",
-              "target_month": "202612-202702",
-              "valid_start_utc": "2026-12-01T00:00:00Z",
-              "valid_end_utc": "2027-03-01T00:00:00Z",
-              "lead_month": "3-5",
-              "monthly_leads": [
-                3,
-                4,
-                5
-              ],
-              "field": "temperature_2m_anomaly",
-              "units": "°C",
-              "status": "rendered",
-              "image": "cansips/20260901/cansips_t2ma_202612-202702.jpg",
-              "baseline": {
-                "source": "CanSIPS v3 hindcast climatology; 1991-2020",
-                "years": "1991-2020",
-                "initialization_month": "09",
-                "lead_months": [
-                  3,
-                  4,
-                  5
-                ],
-                "method": "mean of monthly forecast-minus-hindcast anomalies"
-              },
-              "ensemble_members": 40,
-              "statistic": "ensemble_mean",
-              "aggregation": "3-month seasonal mean",
-              "_catalog": {
-                "canonical_product": "2m_temperature_anomaly",
-                "comparable": true,
-                "quality_control": "legacy"
-              }
-            }
-          ],
-          "_catalog": {
-            "canonical_product": "2m_temperature_anomaly",
             "comparable": true
           }
         },
@@ -58941,7 +59042,7 @@
       "status": "degraded",
       "schema_version": 1,
       "manifest_kind": "cansips_seasonal_manifest",
-      "generated_utc": "2026-09-09T11:10:38Z",
+      "generated_utc": "2026-09-09T11:19:34Z",
       "source_url": "https://eccc-msc.github.io/open-data/msc-data/nwp_cansips/readme_cansips-datamart_en/",
       "product_labels": {
         "500mb_height_anomaly": "500-mb Height Anomaly",
@@ -58971,24 +59072,18 @@
             "code": "legacy_qc_missing:precipitation_anomaly",
             "severity": "warning",
             "message": "Retained precipitation_anomaly targets predate numerical grid QC; regenerate this product to certify it.",
-            "path": "runs[3].targets[0]"
+            "path": "runs[4].targets[0]"
           },
           {
             "code": "legacy_qc_missing:sea_surface_height_anomaly",
             "severity": "warning",
             "message": "Retained sea_surface_height_anomaly targets predate numerical grid QC; regenerate this product to certify it.",
-            "path": "runs[4].targets[0]"
+            "path": "runs[5].targets[0]"
           },
           {
             "code": "legacy_qc_missing:mslp_anomaly",
             "severity": "warning",
             "message": "Retained mslp_anomaly targets predate numerical grid QC; regenerate this product to certify it.",
-            "path": "runs[5].targets[0]"
-          },
-          {
-            "code": "legacy_qc_missing:2m_temperature_anomaly",
-            "severity": "warning",
-            "message": "Retained 2m_temperature_anomaly targets predate numerical grid QC; regenerate this product to certify it.",
             "path": "runs[6].targets[0]"
           },
           {
@@ -59002,6 +59097,12 @@
             "severity": "warning",
             "message": "Provider field QC uses an older registry version.",
             "path": "runs[8].targets[2]"
+          },
+          {
+            "code": "legacy_qc_missing:2m_temperature_anomaly",
+            "severity": "warning",
+            "message": "Retained 2m_temperature_anomaly targets predate numerical grid QC; regenerate this product to certify it.",
+            "path": "runs[12].targets[0]"
           },
           {
             "code": "legacy_qc_missing:850mb_temperature_anomaly",
@@ -62322,7 +62423,7 @@
   },
   "health": {
     "status": "attention",
-    "generated_utc": "2026-09-09T11:12:42Z",
+    "generated_utc": "2026-09-09T11:21:09Z",
     "freshness_policy_days": {
       "default": {
         "fresh_days": 35,
