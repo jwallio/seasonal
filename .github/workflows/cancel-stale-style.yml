@@ -1,0 +1,21 @@
+name: Cancel stale style refresh
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/cancel-stale-style.yml
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  cancel:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cancel stale 500-mb maintenance run
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: gh run cancel 34375963944 --repo "$GH_REPO"
