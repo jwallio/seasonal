@@ -46,12 +46,13 @@ jobs:
               sleep 30
               wait_seconds=$((wait_seconds + 30))
             done
-            # JMA pressure-level access can lag the current monthly issue.
+            # C3S/JMA pressure-level access can lag the current monthly issue.
             # Re-render its last published height cycle so a style-only refresh
             # stays green while the next restricted issue is unavailable.
             init_arg=latest
-            if [[ "$WORKFLOW" == "jma.yml" ]]; then
-              pages_url="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/jma_manifest.json"
+            if [[ "$WORKFLOW" == "jma.yml" || "$WORKFLOW" == "c3s.yml" ]]; then
+              provider="${WORKFLOW%.yml}"
+              pages_url="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/${provider}_manifest.json"
               if curl -fsSL --retry 2 --connect-timeout 10 "$pages_url" -o published.json; then
                 init_arg=$(PRODUCT="$product" python - <<'PY'
           import json, os, re
@@ -76,7 +77,7 @@ jobs:
             started=$(date -u +%Y-%m-%dT%H:%M:%SZ)
             for attempt in 1 2 3 4 5; do
               dispatch_args=(-f product="$product")
-              [[ "$WORKFLOW" == "jma.yml" ]] && dispatch_args+=(-f init="$init_arg")
+              [[ "$WORKFLOW" == "jma.yml" || "$WORKFLOW" == "c3s.yml" ]] && dispatch_args+=(-f init="$init_arg")
               if gh workflow run "$WORKFLOW" --ref main "${dispatch_args[@]}"; then
                 break
               fi
