@@ -62,11 +62,11 @@ class NativeSnowTests(unittest.TestCase):
             self.assertEqual(cmap(norm(0.)),(1.,1.,1.,1.))
             self.assertEqual(cmap(norm(0.999)),(1.,1.,1.,1.))
             self.assertNotEqual(cmap(norm(1.0)),(1.,1.,1.,1.))
-            old=cf.absolute_style(cf.get_product_spec('snowfall_accumulation'),seasonal)
-            oldnorm=BoundaryNorm(old[0],len(old[2]),clip=False)
-            oldcmap=ListedColormap(old[2])
-            for value in [1.,10.,50.,150.]:
-                self.assertEqual(cmap(norm(value)),oldcmap(oldnorm(value)))
+            # Native rendering has its own approved scale; the generic
+            # absolute metadata is no longer used on this route.
+            self.assertEqual(bounds[-1], 180)
+            self.assertEqual(palette[1], '#e1f2ff')
+            self.assertEqual(len(palette), len(bounds) - 1)
         data,meta=native.lookup()
         self.assertEqual(data['missing_points'].shape,(0,2))
         self.assertEqual(data['missing_offsets'].tolist(),[0])
