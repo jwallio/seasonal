@@ -14,26 +14,34 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        workflow: [seas5.yml, cansips.yml, c3s.yml, jma.yml, cfsv2.yml, apcc.yml, cma-cpsv3.yml, superensemble.yml, nmme.yml, geos-s2s3.yml]
+        workflow: [jma.yml, superensemble.yml, nmme.yml]
     env:
       GH_TOKEN: ${{ github.token }}
       GH_REPO: ${{ github.repository }}
       WORKFLOW: ${{ matrix.workflow }}
     steps:
+      - uses: actions/checkout@v4
       - name: Refresh temperature products sequentially
         shell: bash
         run: |
           set -euo pipefail
           failed=0
+          # Retry only the products that failed in the initial refresh.
           for product in 850mb_temperature_anomaly 2m_temperature_anomaly; do
+            [[ "$WORKFLOW" == "superensemble.yml" && "$product" == "2m_temperature_anomaly" ]] && continue
             # NMME provides only 2-m temperature.
             [[ "$WORKFLOW" == "nmme.yml" && "$product" == "850mb_temperature_anomaly" ]] && continue
             # Do not supersede a producer already working on this provider.
             while gh run list --workflow "$WORKFLOW" --limit 50 --json status --jq 'any(.[]; .status == "in_progress" or .status == "queued" or .status == "waiting" or .status == "pending")' | grep -qx true; do
               sleep 30
             done
+            provider="${WORKFLOW%.yml}"
+            curl -fsSL --retry 3 --connect-timeout 15 --max-time 60 \
+              "https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/${provider}_manifest.json" -o published.json
+            python scripts/temperature_refresh_plan.py published.json "$WORKFLOW" "$product" > dispatch.json
+            cat dispatch.json >> "$GITHUB_STEP_SUMMARY"
             started=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-            gh workflow run "$WORKFLOW" --ref main -f product="$product"
+            gh workflow run "$WORKFLOW" --ref main --json < dispatch.json
             run_id=""
             for attempt in {1..24}; do
               run_id=$(gh run list --workflow "$WORKFLOW" --branch main --event workflow_dispatch --limit 20 --json databaseId,createdAt --jq ".[] | select(.createdAt >= \"$started\") | .databaseId" | head -1)

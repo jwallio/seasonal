@@ -677,7 +677,7 @@ def main() -> int:
     ):
         check(term in workflow, f"workflow missing speed-up term: {term}")
     check("--allow-partial-rolling" not in workflow, "scheduled CFSv2 workflow must not publish an incomplete rolling blend")
-    check("SCHEDULED_CFSV2_PRODUCTS: 500mb_height_anomaly,500mb_height_anomaly_nh,850mb_temperature_anomaly,2m_temperature_anomaly,mslp_anomaly,precipitation_anomaly,snowfall_anomaly,snowfall_accumulation" in workflow, "four-times-daily workflow should refresh the complete CFSv2 anomaly and snowfall-estimate suite")
+    check("SCHEDULED_CFSV2_PRODUCTS: 500mb_height_anomaly,500mb_height_anomaly_nh,850mb_temperature_anomaly,2m_temperature_anomaly,mslp_anomaly,precipitation_anomaly" in workflow, "weather workflow should retain the six non-snow products")
     check("ALL_CFSV2_PRODUCTS: 500mb_height_anomaly,500mb_height_anomaly_nh,500mb_height_absolute,850mb_temperature_anomaly,2m_temperature_anomaly,mslp_anomaly,precipitation_anomaly,snowfall_anomaly,snowfall_accumulation" in workflow, "manual all action should cover every validated CFSv2 menu field")
     check("- snow_water_equivalent_anomaly" not in workflow, "quarantined CFSv2 SWE must not appear in the Actions menu")
     check("is_retired_product(product_name)" in adapter, "the CFSv2 adapter must block quarantined products before downloading data")
@@ -693,24 +693,17 @@ def main() -> int:
     check("Validate archive-safe rolling window" in workflow and "^[1-6]$" in workflow, "reusable CFSv2 calls must reject rolling windows outside the live archive before downloading")
     check("github.workflow" in workflow and "scheduled-suite" in workflow and "inputs.product" in workflow, "CFSv2 concurrency must isolate scheduled, all-fields, and focused product runs")
     check("workflow_call:" in workflow, "CFSv2 workflow should be reusable by focused product menus")
-    for term in (
-        "name: CFSv2 Snowfall Graphics",
-        "Snow product to generate",
-        "snowfall_suite",
-        "snowfall_anomaly",
-        "snowfall_accumulation",
-        "uses: ./.github/workflows/cfsv2.yml",
-        "product: ${{ inputs.product }}",
-        "lead_months: ${{ inputs.lead_months }}",
-        "seasonal_window: ${{ inputs.seasonal_window }}",
-        'rolling_days: "6"',
-    ):
-        check(term in snow_workflow, f"CFSv2 snow-products workflow missing term: {term}")
-    snow_dispatch_inputs = snow_workflow.split("  workflow_dispatch:", 1)[1].split("\npermissions:", 1)[0]
-    check(snow_dispatch_inputs.count('default: "operational-winter"') == 2, "focused snowfall Actions should default to Dec-Mar plus DJF/JFM")
-    check("semicolons" in snow_dispatch_inputs and "DJF and JFM" in snow_dispatch_inputs, "focused snowfall Actions should explain multiple seasonal windows")
-    check("rolling_days:" not in snow_dispatch_inputs, "focused snowfall Actions must always use the supported 24-cycle window")
-    check("snow_water_equivalent_anomaly" not in snow_workflow, "the focused snow workflow must not offer quarantined SWE")
+    # Corrected surface-phase snowfall now has its own scheduled pipeline.
+    for term in ("name: CFSv2 Snowfall Graphics", "cfsv2_surface_schedule.py select",
+                 "cfsv2_surface_phase_build.py", "merge_cfsv2_surface_release.py",
+                 "operational-winter", "DJF and JFM", "45 5,11,17,23 * * *"):
+        check(term in snow_workflow, f"corrected snowfall workflow missing term: {term}")
+    check("uses: ./.github/workflows/cfsv2-snow.yml" in workflow,
+          "manual snowfall selections must delegate to the corrected pipeline")
+    check("uses: ./.github/workflows/cfsv2.yml" not in snow_workflow,
+          "corrected snowfall must not recurse into the legacy renderer")
+    check("snow_water_equivalent_anomaly" not in snow_workflow,
+          "the corrected snow workflow must not offer quarantined SWE")
     check("actions/cache/save@v4" in workflow and "if: always()" in workflow, "CFSv2 workflow should retain warmed rolling state after failed attempts")
     check("--keep-source-cache" in workflow and "Trim transient CFSv2 source cache" in workflow, "scheduled CFSv2 products should reuse and then trim source downloads")
     check('if [[ "${{ github.event_name }}" == "schedule" ]]' in workflow, "scheduled suite should remain distinct from manual single-product dispatch")
