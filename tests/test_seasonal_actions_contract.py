@@ -92,6 +92,21 @@ def main() -> int:
     check("${provider}_manifest.json" in height and "init_arg=$(PRODUCT=" in height
           and "No prior accessible" in height,
           "C3S/JMA style refresh should fall back or skip when no accessible cycle exists")
+    for name, prefix in (("temperature-style-refresh.yml", "temperature-publish-refs-"),
+                         ("height-style-refresh.yml", "height-publish-refs-")):
+        maintenance = (WORKFLOWS / name).read_text(encoding="utf-8")
+        check("style_refresh" in maintenance,
+              f"{name} should suppress duplicate self-publishers during maintenance")
+        check("Upload serialized Pages handoff" in maintenance
+              and "actions/upload-artifact@v4" in maintenance
+              and f"name: {prefix}" in maintenance,
+              f"{name} should collect self-publishing producer refs")
+        check("Download serialized Pages handoffs" in maintenance
+              and "actions/download-artifact@v4" in maintenance
+              and "Publish self-dispatching provider payloads" in maintenance,
+              f"{name} should publish self-publishing refs in one batch")
+        check("sort_by(.createdAt)" in maintenance and "Pages publisher queue did not drain" in maintenance,
+              f"{name} should resolve and retry the serialized Pages handoff")
     print("SEASONAL ACTIONS CONTRACT OK: planned matrices, shared tools, product-scoped workers, and bounded publishers")
     return 0
 
