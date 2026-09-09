@@ -119,6 +119,8 @@ def main() -> int:
         "'2m_temperature_anomaly': '2mT'",
         "className: 'status-overdue'",
         "button.textContent = OVERVIEW_PARAMETER_BUTTON_LABELS[productConfig.value] || productConfig.label",
+        'class="overview-parameter-heading"',
+        'class="sr-only">500-mb height</span>',
         "const CATALOG_URL = assetPath('seasonal/catalog.json');",
         "function catalogProductConfig(productKey)",
         "function canonicalProductKey(productKey)",
@@ -290,6 +292,7 @@ def main() -> int:
     check("scheduleState?.key === 'overdue'" in page, "Attention filter must include overdue schedules")
     check("['overdue', 'processing'].includes(scheduleState?.key)" not in page, "Attention filter must exclude processing schedules")
     check("detail: 'failed or overdue surfaces'" in page, "Attention summary must describe only failed or overdue surfaces")
+    check(".overview-matrix th.overview-parameter-heading" in stylesheet, "parameter headings should be visually hidden above the labeled buttons")
     check('class="overview-lead"' not in page_markup, "overview should not show the retired introductory lead card")
     check('data-overview-compare=' not in page_markup, "overview should not show duplicate Compare shortcuts")
     for retired_intro in (
@@ -349,5 +352,4 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
 
