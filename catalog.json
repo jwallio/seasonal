@@ -2,7 +2,7 @@
   "schema_version": 1,
   "registry_version": 1,
   "kind": "seasonal_dashboard_catalog",
-  "generated_utc": "2026-09-09T00:04:57Z",
+  "generated_utc": "2026-09-09T00:16:07Z",
   "source_revision": "073272dc0044e6e7f78749dc17613bd7053ce161",
   "model_order": [
     "superensemble",
@@ -762,6 +762,299 @@
         }
       },
       "runs": [
+        {
+          "id": "superensemble-2026090100-2m_temperature_anomaly",
+          "model": "Seasonal Super Ensemble",
+          "source": "wall.cloud deduplicated seasonal super ensemble",
+          "source_url": "https://climate.copernicus.eu/seasonal-forecasts",
+          "source_urls": [
+            "https://climate.copernicus.eu/seasonal-forecasts",
+            "https://eccc-msc.github.io/open-data/msc-data/nwp_cansips/readme_cansips-datamart_en/",
+            "https://www.wmolc.org/contents2/index/Beijing",
+            "https://www.wmolc.org/seasonDownload/direct",
+            "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/",
+            "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs_refor_calclim_mm_9m_pgbf/",
+            "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/NRT/APCN/",
+            "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/Drift/for_APCN/",
+            "https://www.cpc.ncep.noaa.gov/products/NMME/data.html"
+          ],
+          "product": "2m_temperature_anomaly",
+          "init_utc": "2026-09-01T00:00:00Z",
+          "generated_utc": "2026-09-09T00:13:44Z",
+          "status": "partial",
+          "statistic": "equal_weight_deduplicated_family_mean",
+          "aggregation": "monthly or seasonal mean of canonical non-overlapping forecast-family anomalies",
+          "ensemble_scope": "up to 12 canonical forecast families",
+          "field": "t2m_anomaly",
+          "units": "°C",
+          "targets": [
+            {
+              "id": "superensemble-2026090100-2m_temperature_anomaly-202701",
+              "target_month": "202701",
+              "valid_start_utc": "2027-01-01T00:00:00Z",
+              "valid_end_utc": "2027-02-01T00:00:00Z",
+              "lead_month": 4,
+              "field": "t2m_anomaly",
+              "units": "°C",
+              "status": "partial",
+              "image": "superensemble/20260901/superensemble_t2m_202701.jpg",
+              "baseline": {
+                "status": "native_model_baselines",
+                "method": "equal mean of source-native anomaly fields; no common climatology imposed"
+              },
+              "ensemble_scope": "6/12 canonical forecast families",
+              "member_count": 6,
+              "expected_member_count": 12,
+              "included_members": [
+                "c3s_ecmwf_system51",
+                "noaa_cfsv2_rolling",
+                "eccc_cansips_v3",
+                "nasa_geos_s2s3",
+                "nmme_ncar_ccsm4",
+                "nmme_ncar_cesm1"
+              ],
+              "missing_members": [
+                "c3s_ukmo_system610",
+                "c3s_meteo_france_system9",
+                "c3s_dwd_system22",
+                "c3s_cmcc_system4",
+                "c3s_jma_system4",
+                "c3s_bom_system2"
+              ],
+              "statistic": "equal_weight_deduplicated_family_mean",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "2m_temperature_anomaly",
+                "units": "°C",
+                "field": "t2m_anomaly",
+                "period": "monthly",
+                "total_points": 3200,
+                "finite_points": 3200,
+                "finite_fraction": 1.0,
+                "minimum": -1.081722,
+                "maximum": 4.326565,
+                "p01": -0.924468,
+                "p99": 3.924768,
+                "display": {
+                  "minimum": -6.0,
+                  "maximum": 6.0,
+                  "step": 0.5,
+                  "below_fraction": 0.0,
+                  "above_fraction": 0.0,
+                  "clipped_fraction": 0.0
+                },
+                "issues": [],
+                "status": "passed"
+              },
+              "_catalog": {
+                "canonical_product": "2m_temperature_anomaly",
+                "comparable": true,
+                "quality_control": "passed"
+              }
+            },
+            {
+              "id": "superensemble-2026090100-2m_temperature_anomaly-202702",
+              "target_month": "202702",
+              "valid_start_utc": "2027-02-01T00:00:00Z",
+              "valid_end_utc": "2027-03-01T00:00:00Z",
+              "lead_month": 5,
+              "field": "t2m_anomaly",
+              "units": "°C",
+              "status": "partial",
+              "image": "superensemble/20260901/superensemble_t2m_202702.jpg",
+              "baseline": {
+                "status": "native_model_baselines",
+                "method": "equal mean of source-native anomaly fields; no common climatology imposed"
+              },
+              "ensemble_scope": "6/12 canonical forecast families",
+              "member_count": 6,
+              "expected_member_count": 12,
+              "included_members": [
+                "c3s_ecmwf_system51",
+                "noaa_cfsv2_rolling",
+                "eccc_cansips_v3",
+                "nasa_geos_s2s3",
+                "nmme_ncar_ccsm4",
+                "nmme_ncar_cesm1"
+              ],
+              "missing_members": [
+                "c3s_ukmo_system610",
+                "c3s_meteo_france_system9",
+                "c3s_dwd_system22",
+                "c3s_cmcc_system4",
+                "c3s_jma_system4",
+                "c3s_bom_system2"
+              ],
+              "statistic": "equal_weight_deduplicated_family_mean",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "2m_temperature_anomaly",
+                "units": "°C",
+                "field": "t2m_anomaly",
+                "period": "monthly",
+                "total_points": 3200,
+                "finite_points": 3200,
+                "finite_fraction": 1.0,
+                "minimum": -1.827104,
+                "maximum": 4.221122,
+                "p01": -1.631122,
+                "p99": 4.035315,
+                "display": {
+                  "minimum": -6.0,
+                  "maximum": 6.0,
+                  "step": 0.5,
+                  "below_fraction": 0.0,
+                  "above_fraction": 0.0,
+                  "clipped_fraction": 0.0
+                },
+                "issues": [],
+                "status": "passed"
+              },
+              "_catalog": {
+                "canonical_product": "2m_temperature_anomaly",
+                "comparable": true,
+                "quality_control": "passed"
+              }
+            },
+            {
+              "id": "superensemble-2026090100-2m_temperature_anomaly-202703",
+              "target_month": "202703",
+              "valid_start_utc": "2027-03-01T00:00:00Z",
+              "valid_end_utc": "2027-04-01T00:00:00Z",
+              "lead_month": 6,
+              "field": "t2m_anomaly",
+              "units": "°C",
+              "status": "partial",
+              "image": "superensemble/20260901/superensemble_t2m_202703.jpg",
+              "baseline": {
+                "status": "native_model_baselines",
+                "method": "equal mean of source-native anomaly fields; no common climatology imposed"
+              },
+              "ensemble_scope": "6/12 canonical forecast families",
+              "member_count": 6,
+              "expected_member_count": 12,
+              "included_members": [
+                "c3s_ecmwf_system51",
+                "noaa_cfsv2_rolling",
+                "eccc_cansips_v3",
+                "nasa_geos_s2s3",
+                "nmme_ncar_ccsm4",
+                "nmme_ncar_cesm1"
+              ],
+              "missing_members": [
+                "c3s_ukmo_system610",
+                "c3s_meteo_france_system9",
+                "c3s_dwd_system22",
+                "c3s_cmcc_system4",
+                "c3s_jma_system4",
+                "c3s_bom_system2"
+              ],
+              "statistic": "equal_weight_deduplicated_family_mean",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "2m_temperature_anomaly",
+                "units": "°C",
+                "field": "t2m_anomaly",
+                "period": "monthly",
+                "total_points": 3200,
+                "finite_points": 3200,
+                "finite_fraction": 1.0,
+                "minimum": -1.843399,
+                "maximum": 3.881219,
+                "p01": -1.635294,
+                "p99": 3.799418,
+                "display": {
+                  "minimum": -6.0,
+                  "maximum": 6.0,
+                  "step": 0.5,
+                  "below_fraction": 0.0,
+                  "above_fraction": 0.0,
+                  "clipped_fraction": 0.0
+                },
+                "issues": [],
+                "status": "passed"
+              },
+              "_catalog": {
+                "canonical_product": "2m_temperature_anomaly",
+                "comparable": true,
+                "quality_control": "passed"
+              }
+            },
+            {
+              "id": "superensemble-2026090100-2m_temperature_anomaly-202701-202703",
+              "target_month": "202701-202703",
+              "valid_start_utc": "2027-01-01T00:00:00Z",
+              "valid_end_utc": "2027-04-01T00:00:00Z",
+              "lead_month": "4–6",
+              "monthly_leads": [
+                4,
+                5,
+                6
+              ],
+              "field": "t2m_anomaly",
+              "units": "°C",
+              "status": "partial",
+              "image": "superensemble/20260901/superensemble_t2m_202701-202703.jpg",
+              "baseline": {
+                "status": "native_model_baselines",
+                "method": "equal mean of source-native anomaly fields; no common climatology imposed"
+              },
+              "ensemble_scope": "6/12 canonical forecast families",
+              "member_count": 6,
+              "expected_member_count": 12,
+              "included_members": [
+                "c3s_ecmwf_system51",
+                "noaa_cfsv2_rolling",
+                "eccc_cansips_v3",
+                "nasa_geos_s2s3",
+                "nmme_ncar_ccsm4",
+                "nmme_ncar_cesm1"
+              ],
+              "missing_members": [
+                "c3s_ukmo_system610",
+                "c3s_meteo_france_system9",
+                "c3s_dwd_system22",
+                "c3s_cmcc_system4",
+                "c3s_jma_system4",
+                "c3s_bom_system2"
+              ],
+              "statistic": "equal_weight_deduplicated_family_mean",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "2m_temperature_anomaly",
+                "units": "°C",
+                "field": "t2m_anomaly",
+                "period": "seasonal",
+                "total_points": 3200,
+                "finite_points": 3200,
+                "finite_fraction": 1.0,
+                "minimum": -1.383503,
+                "maximum": 3.825296,
+                "p01": -1.273445,
+                "p99": 3.737313,
+                "display": {
+                  "minimum": -6.0,
+                  "maximum": 6.0,
+                  "step": 0.5,
+                  "below_fraction": 0.0,
+                  "above_fraction": 0.0,
+                  "clipped_fraction": 0.0
+                },
+                "issues": [],
+                "status": "passed"
+              },
+              "_catalog": {
+                "canonical_product": "2m_temperature_anomaly",
+                "comparable": true,
+                "quality_control": "passed"
+              }
+            }
+          ],
+          "_catalog": {
+            "canonical_product": "2m_temperature_anomaly",
+            "comparable": true
+          }
+        },
         {
           "id": "superensemble-2026080100-snowfall_anomaly",
           "model": "Seasonal Super Ensemble",
@@ -2160,7 +2453,7 @@
       "status": "degraded",
       "schema_version": 1,
       "manifest_kind": "deduplicated_seasonal_superensemble_manifest",
-      "generated_utc": "2026-09-06T22:34:55Z",
+      "generated_utc": "2026-09-09T00:14:17Z",
       "source_url": "https://climate.copernicus.eu/seasonal-forecasts",
       "product_labels": {
         "500mb_height_anomaly": "500-mb Height Anomaly",
@@ -2186,25 +2479,25 @@
             "code": "legacy_qc_missing:precipitation_anomaly",
             "severity": "warning",
             "message": "Retained precipitation_anomaly targets predate numerical grid QC; regenerate this product to certify it.",
-            "path": "runs[1].targets[0]"
+            "path": "runs[2].targets[0]"
           },
           {
             "code": "legacy_qc_missing:mslp_anomaly",
             "severity": "warning",
             "message": "Retained mslp_anomaly targets predate numerical grid QC; regenerate this product to certify it.",
-            "path": "runs[2].targets[0]"
+            "path": "runs[3].targets[0]"
           },
           {
             "code": "legacy_qc_missing:850mb_temperature_anomaly",
             "severity": "warning",
             "message": "Retained 850mb_temperature_anomaly targets predate numerical grid QC; regenerate this product to certify it.",
-            "path": "runs[3].targets[0]"
+            "path": "runs[4].targets[0]"
           },
           {
             "code": "legacy_qc_missing:2m_temperature_anomaly",
             "severity": "warning",
             "message": "Retained 2m_temperature_anomaly targets predate numerical grid QC; regenerate this product to certify it.",
-            "path": "runs[5].targets[0]"
+            "path": "runs[6].targets[0]"
           }
         ]
       },
@@ -2236,16 +2529,16 @@
           "retained_fallback": false
         },
         "2m_temperature_anomaly": {
-          "state": "available",
-          "reason": "Rendered target available.",
+          "state": "partial",
+          "reason": "Rendered with partial ensemble coverage.",
           "available": true,
           "comparable": true,
-          "latest_init_utc": "2026-08-01T00:00:00Z",
-          "run_id": "superensemble-2026080100-2m_temperature_anomaly",
+          "latest_init_utc": "2026-09-01T00:00:00Z",
+          "run_id": "superensemble-2026090100-2m_temperature_anomaly",
           "target_count": 4,
-          "latest_run_id": "superensemble-2026080100-2m_temperature_anomaly",
-          "latest_run_status": "rendered",
-          "latest_run_init_utc": "2026-08-01T00:00:00Z",
+          "latest_run_id": "superensemble-2026090100-2m_temperature_anomaly",
+          "latest_run_status": "partial",
+          "latest_run_init_utc": "2026-09-01T00:00:00Z",
           "retained_fallback": false
         },
         "precipitation_anomaly": {
@@ -61754,7 +62047,7 @@
   },
   "health": {
     "status": "attention",
-    "generated_utc": "2026-09-09T00:04:57Z",
+    "generated_utc": "2026-09-09T00:16:07Z",
     "freshness_policy_days": {
       "default": {
         "fresh_days": 35,
@@ -61770,9 +62063,9 @@
       "attention_surfaces": 23,
       "by_state": {
         "healthy": 27,
-        "aging": 19,
+        "aging": 18,
         "stale": 0,
-        "partial": 3,
+        "partial": 4,
         "failed": 0,
         "missing": 0,
         "noncomparable": 1,
@@ -61821,18 +62114,18 @@
         "model_label": "Super Ensemble",
         "product": "2m_temperature_anomaly",
         "product_label": "2-m Temperature Anomaly",
-        "surface_state": "available",
+        "surface_state": "partial",
         "available": true,
         "comparable": true,
-        "health_state": "aging",
-        "freshness": "aging",
-        "age_days": 39.0,
-        "latest_status": "rendered",
-        "latest_init_utc": "2026-08-01T00:00:00Z",
-        "selected_init_utc": "2026-08-01T00:00:00Z",
-        "selected_run_id": "superensemble-2026080100-2m_temperature_anomaly",
+        "health_state": "partial",
+        "freshness": "fresh",
+        "age_days": 8.0,
+        "latest_status": "partial",
+        "latest_init_utc": "2026-09-01T00:00:00Z",
+        "selected_init_utc": "2026-09-01T00:00:00Z",
+        "selected_run_id": "superensemble-2026090100-2m_temperature_anomaly",
         "retained_fallback": false,
-        "reason": "Rendered target available."
+        "reason": "Rendered with partial ensemble coverage."
       },
       {
         "model": "superensemble",
@@ -62903,18 +63196,18 @@
         "model_label": "Super Ensemble",
         "product": "2m_temperature_anomaly",
         "product_label": "2-m Temperature Anomaly",
-        "surface_state": "available",
+        "surface_state": "partial",
         "available": true,
         "comparable": true,
-        "health_state": "aging",
-        "freshness": "aging",
-        "age_days": 39.0,
-        "latest_status": "rendered",
-        "latest_init_utc": "2026-08-01T00:00:00Z",
-        "selected_init_utc": "2026-08-01T00:00:00Z",
-        "selected_run_id": "superensemble-2026080100-2m_temperature_anomaly",
+        "health_state": "partial",
+        "freshness": "fresh",
+        "age_days": 8.0,
+        "latest_status": "partial",
+        "latest_init_utc": "2026-09-01T00:00:00Z",
+        "selected_init_utc": "2026-09-01T00:00:00Z",
+        "selected_run_id": "superensemble-2026090100-2m_temperature_anomaly",
         "retained_fallback": false,
-        "reason": "Rendered target available."
+        "reason": "Rendered with partial ensemble coverage."
       },
       {
         "model": "superensemble",
@@ -63283,7 +63576,7 @@
     "models_online": 10,
     "supported_surfaces": 50,
     "available_surfaces": 50,
-    "partial_surfaces": 3,
+    "partial_surfaces": 4,
     "intentional_unavailable_surfaces": 10
   },
   "validation": {
