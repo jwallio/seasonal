@@ -14,8 +14,8 @@ jobs:
   cancel:
     runs-on: ubuntu-latest
     steps:
-      - name: Cancel stale 500-mb maintenance run
+      - name: Force-cancel stale 500-mb maintenance run
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
-        run: gh run cancel 34375963944 --repo "$GH_REPO"
+        run: gh api --method POST "repos/$GH_REPO/actions/runs/34375963944/force-cancel"
