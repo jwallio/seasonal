@@ -2,8 +2,8 @@
   "schema_version": 1,
   "registry_version": 1,
   "kind": "seasonal_dashboard_catalog",
-  "generated_utc": "2026-09-09T01:16:09Z",
-  "source_revision": "e7f777f16b5f02906dd80fdd0ef3263ff6aa7bcf",
+  "generated_utc": "2026-09-09T01:37:17Z",
+  "source_revision": "ea521a415df54fe3d5bffb14f4a777b3c048d38f",
   "model_order": [
     "superensemble",
     "c3s",
@@ -1804,7 +1804,7 @@
           ],
           "product": "850mb_temperature_anomaly",
           "init_utc": "2026-08-01T00:00:00Z",
-          "generated_utc": "2026-08-20T00:38:39Z",
+          "generated_utc": "2026-09-09T01:35:11Z",
           "status": "rendered",
           "statistic": "equal_weight_deduplicated_family_mean",
           "aggregation": "monthly or seasonal mean of canonical non-overlapping forecast-family anomalies",
@@ -1843,10 +1843,34 @@
               ],
               "missing_members": [],
               "statistic": "equal_weight_deduplicated_family_mean",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "850mb_temperature_anomaly",
+                "units": "°C",
+                "field": "t850_anomaly",
+                "period": "monthly",
+                "total_points": 3200,
+                "finite_points": 3200,
+                "finite_fraction": 1.0,
+                "minimum": -0.486731,
+                "maximum": 2.590081,
+                "p01": -0.373435,
+                "p99": 2.551019,
+                "display": {
+                  "minimum": -6.0,
+                  "maximum": 6.0,
+                  "step": 0.5,
+                  "below_fraction": 0.0,
+                  "above_fraction": 0.0,
+                  "clipped_fraction": 0.0
+                },
+                "issues": [],
+                "status": "passed"
+              },
               "_catalog": {
                 "canonical_product": "850mb_temperature_anomaly",
                 "comparable": true,
-                "quality_control": "legacy"
+                "quality_control": "passed"
               }
             },
             {
@@ -1880,10 +1904,34 @@
               ],
               "missing_members": [],
               "statistic": "equal_weight_deduplicated_family_mean",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "850mb_temperature_anomaly",
+                "units": "°C",
+                "field": "t850_anomaly",
+                "period": "monthly",
+                "total_points": 3200,
+                "finite_points": 3200,
+                "finite_fraction": 1.0,
+                "minimum": -1.033035,
+                "maximum": 3.847164,
+                "p01": -0.923354,
+                "p99": 3.800927,
+                "display": {
+                  "minimum": -6.0,
+                  "maximum": 6.0,
+                  "step": 0.5,
+                  "below_fraction": 0.0,
+                  "above_fraction": 0.0,
+                  "clipped_fraction": 0.0
+                },
+                "issues": [],
+                "status": "passed"
+              },
               "_catalog": {
                 "canonical_product": "850mb_temperature_anomaly",
                 "comparable": true,
-                "quality_control": "legacy"
+                "quality_control": "passed"
               }
             },
             {
@@ -1917,10 +1965,34 @@
               ],
               "missing_members": [],
               "statistic": "equal_weight_deduplicated_family_mean",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "850mb_temperature_anomaly",
+                "units": "°C",
+                "field": "t850_anomaly",
+                "period": "monthly",
+                "total_points": 3200,
+                "finite_points": 3200,
+                "finite_fraction": 1.0,
+                "minimum": -1.647189,
+                "maximum": 4.470359,
+                "p01": -1.542575,
+                "p99": 4.350625,
+                "display": {
+                  "minimum": -6.0,
+                  "maximum": 6.0,
+                  "step": 0.5,
+                  "below_fraction": 0.0,
+                  "above_fraction": 0.0,
+                  "clipped_fraction": 0.0
+                },
+                "issues": [],
+                "status": "passed"
+              },
               "_catalog": {
                 "canonical_product": "850mb_temperature_anomaly",
                 "comparable": true,
-                "quality_control": "legacy"
+                "quality_control": "passed"
               }
             },
             {
@@ -1959,10 +2031,34 @@
               ],
               "missing_members": [],
               "statistic": "equal_weight_deduplicated_family_mean",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "850mb_temperature_anomaly",
+                "units": "°C",
+                "field": "t850_anomaly",
+                "period": "seasonal",
+                "total_points": 3200,
+                "finite_points": 3200,
+                "finite_fraction": 1.0,
+                "minimum": -1.019191,
+                "maximum": 3.47887,
+                "p01": -0.90142,
+                "p99": 3.441243,
+                "display": {
+                  "minimum": -6.0,
+                  "maximum": 6.0,
+                  "step": 0.5,
+                  "below_fraction": 0.0,
+                  "above_fraction": 0.0,
+                  "clipped_fraction": 0.0
+                },
+                "issues": [],
+                "status": "passed"
+              },
               "_catalog": {
                 "canonical_product": "850mb_temperature_anomaly",
                 "comparable": true,
-                "quality_control": "legacy"
+                "quality_control": "passed"
               }
             }
           ],
@@ -2453,7 +2549,7 @@
       "status": "degraded",
       "schema_version": 1,
       "manifest_kind": "deduplicated_seasonal_superensemble_manifest",
-      "generated_utc": "2026-09-09T00:14:17Z",
+      "generated_utc": "2026-09-09T01:35:30Z",
       "source_url": "https://climate.copernicus.eu/seasonal-forecasts",
       "product_labels": {
         "500mb_height_anomaly": "500-mb Height Anomaly",
@@ -2467,10 +2563,9 @@
       "validation": {
         "status": "warning",
         "error_count": 0,
-        "warning_count": 4,
+        "warning_count": 3,
         "issue_codes": [
           "legacy_qc_missing:2m_temperature_anomaly",
-          "legacy_qc_missing:850mb_temperature_anomaly",
           "legacy_qc_missing:mslp_anomaly",
           "legacy_qc_missing:precipitation_anomaly"
         ],
@@ -2486,12 +2581,6 @@
             "severity": "warning",
             "message": "Retained mslp_anomaly targets predate numerical grid QC; regenerate this product to certify it.",
             "path": "runs[3].targets[0]"
-          },
-          {
-            "code": "legacy_qc_missing:850mb_temperature_anomaly",
-            "severity": "warning",
-            "message": "Retained 850mb_temperature_anomaly targets predate numerical grid QC; regenerate this product to certify it.",
-            "path": "runs[4].targets[0]"
           },
           {
             "code": "legacy_qc_missing:2m_temperature_anomaly",
@@ -62036,7 +62125,7 @@
   },
   "health": {
     "status": "attention",
-    "generated_utc": "2026-09-09T01:16:09Z",
+    "generated_utc": "2026-09-09T01:37:17Z",
     "freshness_policy_days": {
       "default": {
         "fresh_days": 35,

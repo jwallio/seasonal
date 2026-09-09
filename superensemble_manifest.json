@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "kind": "deduplicated_seasonal_superensemble_manifest",
-  "generated_utc": "2026-09-09T00:14:17Z",
+  "generated_utc": "2026-09-09T01:35:30Z",
   "source": "wall.cloud deduplicated seasonal super ensemble",
   "source_url": "https://climate.copernicus.eu/seasonal-forecasts",
   "source_urls": [
@@ -16921,7 +16921,7 @@
           },
           {
             "package": "CFSv2 standalone",
-            "reason": "standalone rolling adapter does not currently expose this parameter",
+            "reason": "standalone CFSv2 exposes this parameter separately but is not currently included in this super-ensemble product",
             "represented_by": "c3s_ncep_system2"
           },
           {
@@ -17084,8 +17084,8 @@
                 "source_field": "AirTemp at 850 hPa",
                 "url": "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/2026/08/202608_MSC_CanSIPS_AirTemp_ISBL-0850_LatLon1.0_P04M.grib2",
                 "cache_file": ".cache/cansips/means/forecast/202608/t850_lead04.csv.gz",
-                "storage": "retained_ensemble_mean_grid",
-                "downloaded": false,
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
                 "ensemble_members": 40
               },
               "hindcast_file_count": 30,
@@ -17094,7 +17094,8 @@
               "internal_groups": [
                 "GEM5.2-NEMO",
                 "CanESM5"
-              ]
+              ],
+              "derivation": null
             },
             {
               "key": "nasa_geos_s2s3",
@@ -17136,6 +17137,30 @@
             "method": "equal mean of source-native anomaly fields; no common climatology imposed"
           },
           "status": "rendered",
+          "quality_control": {
+            "registry_version": 1,
+            "product": "850mb_temperature_anomaly",
+            "units": "\u00b0C",
+            "field": "t850_anomaly",
+            "period": "monthly",
+            "total_points": 3200,
+            "finite_points": 3200,
+            "finite_fraction": 1.0,
+            "minimum": -0.486731,
+            "maximum": 2.590081,
+            "p01": -0.373435,
+            "p99": 2.551019,
+            "display": {
+              "minimum": -6.0,
+              "maximum": 6.0,
+              "step": 0.5,
+              "below_fraction": 0.0,
+              "above_fraction": 0.0,
+              "clipped_fraction": 0.0
+            },
+            "issues": [],
+            "status": "passed"
+          },
           "height_member_count": 0,
           "image": "public/seasonal/superensemble/20260801/superensemble_t850_202612.jpg"
         },
@@ -17290,8 +17315,8 @@
                 "source_field": "AirTemp at 850 hPa",
                 "url": "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/2026/08/202608_MSC_CanSIPS_AirTemp_ISBL-0850_LatLon1.0_P05M.grib2",
                 "cache_file": ".cache/cansips/means/forecast/202608/t850_lead05.csv.gz",
-                "storage": "retained_ensemble_mean_grid",
-                "downloaded": false,
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
                 "ensemble_members": 40
               },
               "hindcast_file_count": 30,
@@ -17300,7 +17325,8 @@
               "internal_groups": [
                 "GEM5.2-NEMO",
                 "CanESM5"
-              ]
+              ],
+              "derivation": null
             },
             {
               "key": "nasa_geos_s2s3",
@@ -17342,6 +17368,30 @@
             "method": "equal mean of source-native anomaly fields; no common climatology imposed"
           },
           "status": "rendered",
+          "quality_control": {
+            "registry_version": 1,
+            "product": "850mb_temperature_anomaly",
+            "units": "\u00b0C",
+            "field": "t850_anomaly",
+            "period": "monthly",
+            "total_points": 3200,
+            "finite_points": 3200,
+            "finite_fraction": 1.0,
+            "minimum": -1.033035,
+            "maximum": 3.847164,
+            "p01": -0.923354,
+            "p99": 3.800927,
+            "display": {
+              "minimum": -6.0,
+              "maximum": 6.0,
+              "step": 0.5,
+              "below_fraction": 0.0,
+              "above_fraction": 0.0,
+              "clipped_fraction": 0.0
+            },
+            "issues": [],
+            "status": "passed"
+          },
           "height_member_count": 0,
           "image": "public/seasonal/superensemble/20260801/superensemble_t850_202701.jpg"
         },
@@ -17496,8 +17546,8 @@
                 "source_field": "AirTemp at 850 hPa",
                 "url": "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/2026/08/202608_MSC_CanSIPS_AirTemp_ISBL-0850_LatLon1.0_P06M.grib2",
                 "cache_file": ".cache/cansips/means/forecast/202608/t850_lead06.csv.gz",
-                "storage": "retained_ensemble_mean_grid",
-                "downloaded": false,
+                "storage": "decoded_ensemble_mean_grid",
+                "downloaded": true,
                 "ensemble_members": 40
               },
               "hindcast_file_count": 30,
@@ -17506,7 +17556,8 @@
               "internal_groups": [
                 "GEM5.2-NEMO",
                 "CanESM5"
-              ]
+              ],
+              "derivation": null
             },
             {
               "key": "nasa_geos_s2s3",
@@ -17548,6 +17599,30 @@
             "method": "equal mean of source-native anomaly fields; no common climatology imposed"
           },
           "status": "rendered",
+          "quality_control": {
+            "registry_version": 1,
+            "product": "850mb_temperature_anomaly",
+            "units": "\u00b0C",
+            "field": "t850_anomaly",
+            "period": "monthly",
+            "total_points": 3200,
+            "finite_points": 3200,
+            "finite_fraction": 1.0,
+            "minimum": -1.647189,
+            "maximum": 4.470359,
+            "p01": -1.542575,
+            "p99": 4.350625,
+            "display": {
+              "minimum": -6.0,
+              "maximum": 6.0,
+              "step": 0.5,
+              "below_fraction": 0.0,
+              "above_fraction": 0.0,
+              "clipped_fraction": 0.0
+            },
+            "issues": [],
+            "status": "passed"
+          },
           "height_member_count": 0,
           "image": "public/seasonal/superensemble/20260801/superensemble_t850_202702.jpg"
         },
@@ -17920,8 +17995,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/2026/08/202608_MSC_CanSIPS_AirTemp_ISBL-0850_LatLon1.0_P04M.grib2",
                     "cache_file": ".cache/cansips/means/forecast/202608/t850_lead04.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   "hindcast_file_count": 30,
@@ -17930,7 +18005,8 @@
                   "internal_groups": [
                     "GEM5.2-NEMO",
                     "CanESM5"
-                  ]
+                  ],
+                  "derivation": null
                 },
                 {
                   "source_package": "ECCC CanSIPS v3",
@@ -17941,8 +18017,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/2026/08/202608_MSC_CanSIPS_AirTemp_ISBL-0850_LatLon1.0_P05M.grib2",
                     "cache_file": ".cache/cansips/means/forecast/202608/t850_lead05.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   "hindcast_file_count": 30,
@@ -17951,7 +18027,8 @@
                   "internal_groups": [
                     "GEM5.2-NEMO",
                     "CanESM5"
-                  ]
+                  ],
+                  "derivation": null
                 },
                 {
                   "source_package": "ECCC CanSIPS v3",
@@ -17962,8 +18039,8 @@
                     "source_field": "AirTemp at 850 hPa",
                     "url": "https://dd.weather.gc.ca/today/model_cansips/100km/forecast/2026/08/202608_MSC_CanSIPS_AirTemp_ISBL-0850_LatLon1.0_P06M.grib2",
                     "cache_file": ".cache/cansips/means/forecast/202608/t850_lead06.csv.gz",
-                    "storage": "retained_ensemble_mean_grid",
-                    "downloaded": false,
+                    "storage": "decoded_ensemble_mean_grid",
+                    "downloaded": true,
                     "ensemble_members": 40
                   },
                   "hindcast_file_count": 30,
@@ -17972,7 +18049,8 @@
                   "internal_groups": [
                     "GEM5.2-NEMO",
                     "CanESM5"
-                  ]
+                  ],
+                  "derivation": null
                 }
               ]
             },
@@ -18096,12 +18174,36 @@
             6
           ],
           "composition_rule": "intersection of canonical members available for every month",
+          "quality_control": {
+            "registry_version": 1,
+            "product": "850mb_temperature_anomaly",
+            "units": "\u00b0C",
+            "field": "t850_anomaly",
+            "period": "seasonal",
+            "total_points": 3200,
+            "finite_points": 3200,
+            "finite_fraction": 1.0,
+            "minimum": -1.019191,
+            "maximum": 3.47887,
+            "p01": -0.90142,
+            "p99": 3.441243,
+            "display": {
+              "minimum": -6.0,
+              "maximum": 6.0,
+              "step": 0.5,
+              "below_fraction": 0.0,
+              "above_fraction": 0.0,
+              "clipped_fraction": 0.0
+            },
+            "issues": [],
+            "status": "passed"
+          },
           "height_member_count": 0,
           "image": "public/seasonal/superensemble/20260801/superensemble_t850_202612-202702.jpg"
         }
       ],
       "status": "rendered",
-      "generated_utc": "2026-08-20T00:38:39Z",
+      "generated_utc": "2026-09-09T01:35:11Z",
       "output_dir": "public/seasonal/superensemble"
     },
     {
