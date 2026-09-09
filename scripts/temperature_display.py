@@ -1,4 +1,4 @@
-"""Shared temperature-anomaly colors; each bin spans 0.5 degrees Celsius."""
+"""Shared temperature-anomaly colors; 0.5°C bins with white from -1°C to +1°C."""
 TEMPERATURE_ANOMALY_PALETTE = [
     "#082552",
     "#103870",
@@ -9,12 +9,12 @@ TEMPERATURE_ANOMALY_PALETTE = [
     "#3693d6",
     "#4ba6e2",
     "#66b8ea",
-    "#86c9f0",
-    "#a4d8f5",
     "#c7e8fa",
+    "#ffffff",
+    "#ffffff",
+    "#ffffff",
+    "#ffffff",
     "#f9d1c9",
-    "#f5aaa0",
-    "#ef877c",
     "#e7685f",
     "#dc4a44",
     "#cd3436",
