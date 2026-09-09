@@ -1,4 +1,4 @@
-name: Recover Corrected CFSv2 Snowfall Publication
+name: Maintenance - Recover CFSv2 snowfall publication
 run-name: Publish approved 180-inch monthly and seasonal snowfall palette
 permissions:
   contents: write
@@ -139,11 +139,6 @@ jobs:
         GH_TOKEN: ${{ github.token }}
       run: gh api --method POST "repos/$GITHUB_REPOSITORY/pages/builds"
 'on':
-  push:
-    branches:
-    - main
-    paths:
-    - .github/workflows/cfsv2-snow-recover.yml
   workflow_dispatch:
     inputs:
       source_run:

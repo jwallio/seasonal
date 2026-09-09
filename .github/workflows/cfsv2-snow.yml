@@ -49,6 +49,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+          cache: pip
+          cache-dependency-path: .github/workflows/cfsv2-snow.yml
       - run: pip install numpy requests eccodes
       - id: plan
         run: python -u scripts/cfsv2_surface_schedule.py select
@@ -73,6 +75,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: steps.plan.outputs.ready == 'true'
         with:
+          compression-level: 0
           name: surface-phase-plan
           path: surface-plan.json
   acquire:
@@ -96,6 +99,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+          cache: pip
+          cache-dependency-path: .github/workflows/cfsv2-snow.yml
       - run: pip install numpy requests eccodes
       - uses: actions/cache/restore@v4
         with:
@@ -123,6 +128,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
+          compression-level: 0
           name: surface-phase-inputs-${{ matrix.year }}
           path: .cache/cfsv2-surface-phase/months/
           if-no-files-found: warn
@@ -142,6 +148,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+          cache: pip
+          cache-dependency-path: .github/workflows/cfsv2-snow.yml
       - run: pip install numpy requests eccodes matplotlib Pillow
       - uses: actions/download-artifact@v4
         with:
@@ -172,10 +180,12 @@ jobs:
           cp public/seasonal/cfsv2_manifest.json surface-plan.json payload/
       - uses: actions/upload-artifact@v4
         with:
+          compression-level: 0
           name: corrected-snowfall-ready
           path: payload/
       - uses: actions/upload-artifact@v4
         with:
+          compression-level: 0
           name: matched-surface-phase-reference
           path: .cache/cfsv2-surface-phase/reference/
           retention-days: 90
@@ -195,6 +205,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+          cache: pip
+          cache-dependency-path: .github/workflows/cfsv2-snow.yml
       - run: pip install numpy requests matplotlib Pillow
       - uses: actions/download-artifact@v4
         with:

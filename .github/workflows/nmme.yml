@@ -82,7 +82,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: .cache/nmme
-          key: nmme-${{ runner.os }}-${{ env.NMME_BASE_PRODUCT }}-v1
+          key: nmme-${{ runner.os }}-${{ env.NMME_BASE_PRODUCT }}-v1-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys: |
             nmme-${{ runner.os }}-
 

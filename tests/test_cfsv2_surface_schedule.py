@@ -4,6 +4,17 @@ import cfsv2_surface_schedule as schedule
 from merge_cfsv2_surface_release import merge, preserve_surface, FIELD
 
 class ScheduleTests(unittest.TestCase):
+    def test_skip_requires_exact_method_and_rendering(self):
+        plan=schedule.choose(['2026090812'], lambda *_: True)
+        plan['render_signature']='current-code'
+        self.assertTrue(schedule.same_published_plan(plan, deepcopy(plan)))
+        for key in ('init', 'method', 'cycles', 'targets', 'render_signature'):
+            old=deepcopy(plan);old[key]='different'
+            self.assertFalse(schedule.same_published_plan(plan, old))
+        old=deepcopy(plan);del old['render_signature']
+        self.assertFalse(schedule.same_published_plan(plan, old))
+        self.assertFalse(schedule.same_published_plan(plan, None))
+
     def test_falls_back_from_incomplete_newest(self):
         plan=schedule.choose(['2026090700','2026090612'],lambda init,targets:init=='2026090612')
         self.assertEqual(plan['init'],'2026090612')

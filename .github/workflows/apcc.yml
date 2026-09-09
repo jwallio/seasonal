@@ -95,7 +95,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: .cache/apcc
-          key: apcc-${{ runner.os }}-${{ env.APCC_INIT }}-${{ env.APCC_PRODUCT }}-${{ env.APCC_DATASET }}-${{ env.APCC_RESOLUTION }}-v1
+          key: apcc-${{ runner.os }}-${{ env.APCC_INIT }}-${{ env.APCC_PRODUCT }}-${{ env.APCC_DATASET }}-${{ env.APCC_RESOLUTION }}-v1-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys: |
             apcc-${{ runner.os }}-${{ env.APCC_INIT }}-
             apcc-${{ runner.os }}-

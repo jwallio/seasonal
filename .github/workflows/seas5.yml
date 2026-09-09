@@ -93,7 +93,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: .cache/seas5
-          key: seas5-${{ runner.os }}-${{ env.SEAS5_PRODUCT }}-${{ env.CLIMO_YEARS }}-cds-v1
+          key: seas5-${{ runner.os }}-${{ env.SEAS5_PRODUCT }}-${{ env.CLIMO_YEARS }}-cds-v1-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys: |
             seas5-${{ runner.os }}-${{ env.SEAS5_PRODUCT }}-${{ env.CLIMO_YEARS }}-cds-
 

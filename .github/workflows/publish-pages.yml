@@ -25,7 +25,6 @@ on:
           - WeatherNext Runner
           - WeatherNext Runner Custom
           - CFSv2 Rolling Seasonal Graphics
-          - CFSv2 Snowfall Graphics
           - ECMWF SEAS5 Seasonal Graphics
           - CanSIPS v3 Seasonal Graphics
           - CMA CPSv3 Seasonal Graphics
@@ -54,6 +53,7 @@ jobs:
   publish:
     if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     env:
       SOURCE_WORKFLOW: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.name || inputs.source_workflow }}
       SOURCE_RUN_ID: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.id || inputs.source_run_id }}
@@ -131,7 +131,7 @@ jobs:
           run-id: ${{ env.SOURCE_RUN_ID }}
 
       - name: Download CFSv2 payload
-        if: ${{ env.SOURCE_WORKFLOW == 'CFSv2 Rolling Seasonal Graphics' || env.SOURCE_WORKFLOW == 'CFSv2 Snowfall Graphics' }}
+        if: ${{ env.SOURCE_WORKFLOW == 'CFSv2 Rolling Seasonal Graphics' }}
         uses: actions/download-artifact@v4
         with:
           name: cfsv2-pages-${{ env.SOURCE_RUN_ID }}

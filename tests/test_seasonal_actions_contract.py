@@ -45,7 +45,7 @@ def main() -> int:
         check("cancel-in-progress: true" in workflow, f"{name} should cancel superseded retries")
 
     runner = (WORKFLOWS / "runner.yml").read_text(encoding="utf-8")
-    check("paths:" in runner and "main.py" in runner and "public/**" in runner, "WeatherNext push runs should be path-scoped")
+    check("paths:" in runner and "main.py" in runner and "public/**" not in runner, "WeatherNext push runs should be path-scoped")
     check("group: weathernext-" in runner, "WeatherNext wrapper should define push concurrency")
 
     publisher = (WORKFLOWS / "publish-pages.yml").read_text(encoding="utf-8")

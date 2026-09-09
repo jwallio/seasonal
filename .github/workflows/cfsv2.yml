@@ -115,16 +115,9 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: .cache/cfsv2
-          key: cfsv2-rolling-${{ github.run_id }}
+          key: cfsv2-rolling-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys: |
             cfsv2-rolling-
-
-      - name: Restore model-only snowfall reference cache
-        uses: actions/cache/restore@v4
-        with:
-          path: .cache/cfsv2-snow-reference
-          key: cfsv2-snow-reference-native-v1-${{ github.run_id }}
-          restore-keys: cfsv2-snow-reference-native-v1-
 
       - name: Restore published CFSv2 run history
         shell: bash
@@ -321,14 +314,7 @@ jobs:
         uses: actions/cache/save@v4
         with:
           path: .cache/cfsv2
-          key: cfsv2-rolling-${{ github.run_id }}
-
-      - name: Save snowfall references after every attempt
-        if: always()
-        uses: actions/cache/save@v4
-        with:
-          path: .cache/cfsv2-snow-reference
-          key: cfsv2-snow-reference-native-v1-${{ github.run_id }}
+          key: cfsv2-rolling-${{ github.run_id }}-${{ github.run_attempt }}
 
       - name: Package CFSv2 Pages payload
         if: success()

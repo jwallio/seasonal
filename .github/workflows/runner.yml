@@ -6,11 +6,10 @@ on:
       - main
     # Seasonal workflow, script, documentation, and test changes do not need
     # a full WeatherNext render. Keep the automatic render for WN2 source or
-    # published-view changes only.
+    # renderer dependency changes only.
     paths:
       - main.py
       - requirements.txt
-      - public/**
   workflow_dispatch:
     inputs:
       run_target:

@@ -1,5 +1,6 @@
 """Select ready operational snowfall inputs and verify output before publication."""
 import argparse
+import hashlib
 from datetime import datetime, timezone
 import json
 import os
@@ -50,6 +51,35 @@ def choose(candidates, ready=listed_complete):
                     method=phase.METHOD, years=phase.YEARS)
     return None
 
+
+def render_signature():
+    root = Path(__file__).resolve().parent
+    names = ('cfsv2_surface_phase.py', 'cfsv2_surface_phase_build.py',
+             'cfsv2_seasonal.py', 'cfsv2_native_snow.py', 'cfsv2_surface_schedule.py',
+             'seasonal_products.py', 'height_display.py')
+    return hashlib.sha256(b''.join((root/name).read_bytes() for name in names)).hexdigest()
+
+
+def same_published_plan(plan, published):
+    keys = ('init', 'targets', 'leads', 'windows', 'excluded', 'cycles',
+            'method', 'years', 'render_signature')
+    return isinstance(published, dict) and all(k in plan and k in published and plan[k] == published[k] for k in keys)
+
+
+def already_published(plan):
+    repo = os.environ.get('GITHUB_REPOSITORY', '')
+    if '/' not in repo:
+        return False
+    owner, name = repo.split('/', 1)
+    try:
+        response = requests.get(f'https://{owner}.github.io/{name}/cfsv2/surface-phase-latest.json',
+                                timeout=(10, 20), headers={'Cache-Control': 'no-cache'})
+        response.raise_for_status()
+        return same_published_plan(plan, response.json())
+    except (requests.RequestException, ValueError):
+        return False
+
+
 def select():
     candidates = cf.filter_mature_cycle_inits(cf.listed_cycle_inits(), 660)[:12]
     plan = choose(candidates)
@@ -57,6 +87,11 @@ def select():
     if plan is None:
         with output.open('a') as f: f.write('ready=false\n')
         print('No complete winter forecast listed; retaining published corrected maps.')
+        return
+    plan['render_signature'] = render_signature()
+    if os.environ.get('GITHUB_EVENT_NAME') == 'schedule' and already_published(plan):
+        with output.open('a') as f: f.write('ready=false\n')
+        print('Same cycle, method, periods, and rendering code already published; skipping rebuild.')
         return
     Path('surface-plan.json').write_text(json.dumps(plan, indent=2))
     with output.open('a') as f:
