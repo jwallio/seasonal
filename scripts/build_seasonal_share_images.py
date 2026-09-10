@@ -22,7 +22,7 @@ IMAGE_SUFFIXES = frozenset({".jpg", ".jpeg", ".png", ".webp"})
 BRAND_FOREGROUND = (17, 24, 32)
 BRAND_ACCENT = (27, 181, 176)
 BRAND_STROKE = (247, 249, 251)
-SHARE_IMAGE_CACHE_VERSION = 4
+SHARE_IMAGE_CACHE_VERSION = 5
 
 
 def normalize_asset_path(value: Any) -> PurePosixPath | None:
@@ -176,9 +176,8 @@ def _longest_run(mask: np.ndarray) -> tuple[int, int] | None:
 def _map_corner(image: Image.Image) -> tuple[int, int]:
     """Find the lower-right inside corner of a seasonal map frame.
 
-    Seasonal maps place a dark rectangular frame above the legend. The frame
-    is the highest long dark run in the lower half of the canvas; selecting
-    that edge avoids confusing a broken-up colorbar edge with the map frame.
+    Require a neutral dark horizontal border with tall vertical sides at
+    both ends. Filled weather bands and short colorbar boxes are not frames.
     """
 
     rgb = np.asarray(image.convert("RGB"))
@@ -187,14 +186,25 @@ def _map_corner(image: Image.Image) -> tuple[int, int]:
     edge_margin = max(2, int(round(width * 0.01)))
     border_run_minimum = max(100, int(round(width * 0.40)))
 
+    pixels = rgb.astype(np.int16)
+    neutral_dark = (pixels.max(axis=2) <= 160) & (np.ptp(pixels, axis=2) <= 30)
+    side_height = max(20, int(round(height * 0.20)))
     candidates: list[tuple[int, tuple[int, int]]] = []
     for row_index in range(height - 2, scan_floor, -1):
-        row = rgb[row_index].astype(np.int16)
-        dark = row.max(axis=1) <= 130
+        dark = neutral_dark[row_index]
         run = _longest_run(dark)
         if run is None or run[1] - run[0] + 1 < border_run_minimum:
             continue
         if run[0] <= edge_margin or run[1] >= width - 1 - edge_margin:
+            continue
+        # A map frame has two near-continuous vertical sides extending well
+        # above its bottom edge. Allow a pixel of JPEG/antialiasing tolerance.
+        top = max(0, row_index - side_height)
+        if any(
+            neutral_dark[top:row_index, max(0, x - 1):min(width, x + 2)]
+            .any(axis=1).mean() < 0.95
+            for x in run
+        ):
             continue
         candidates.append((row_index, run))
 
