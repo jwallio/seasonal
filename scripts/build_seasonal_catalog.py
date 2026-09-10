@@ -46,13 +46,13 @@ FRESHNESS_WINDOWS = {
 RUN_FIELDS = (
     "id", "model", "component", "component_label", "model_role", "source", "source_url", "source_urls",
     "product", "base_product", "init_utc", "generated_utc", "status", "statistic", "aggregation", "ensemble_scope",
-    "ensemble_members", "field", "units", "raw_field", "raw_units", "climatology", "baseline",
+    "ensemble_members", "ensemble_expected_members", "rolling_window", "field", "units", "raw_field", "raw_units", "climatology", "baseline",
     "source_warning", "conversion", "display", "method", "presentation",
 )
 TARGET_FIELDS = (
     "id", "target_month", "label", "period_label", "valid_start_utc", "valid_end_utc", "lead_month",
     "monthly_leads", "field", "units", "status", "error", "image", "comparison", "baseline",
-    "ensemble_members", "ensemble_expected_members", "ensemble_complete", "ensemble_scope", "member_count",
+    "ensemble_members", "ensemble_expected_members", "ensemble_complete", "ensemble_label", "ensemble_scope", "member_count",
     "expected_member_count", "included_members", "missing_members", "statistic", "aggregation",
     "probability_integrity", "quality_control", "derivation", "source_warning", "numeric_grid", "native_lwe_grid",
 )

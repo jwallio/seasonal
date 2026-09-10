@@ -2,7 +2,12 @@ import unittest
 from copy import deepcopy
 from contextlib import redirect_stdout
 from io import StringIO
+from pathlib import Path
+from types import SimpleNamespace
+from unittest.mock import patch
+import numpy as np
 import cfsv2_surface_schedule as schedule
+import cfsv2_surface_phase as phase
 from merge_cfsv2_surface_release import merge, preserve_surface, FIELD
 
 class ScheduleTests(unittest.TestCase):
@@ -50,6 +55,23 @@ class ScheduleTests(unittest.TestCase):
             def raise_for_status(self):
                 raise schedule.requests.HTTPError('source is still indexing')
         self.assertFalse(schedule.listed_complete('2026090918', ['202701'], lambda *a, **k: ErrorResponse()))
+
+    def test_surface_phase_label_keeps_requested_denominator(self):
+        args = SimpleNamespace(
+            rolling_member=1,
+            allow_partial_rolling=False,
+            product='snowfall_anomaly',
+            surface_phase_exclude_cycles='2026090418',
+            surface_phase_bundle_dir=Path('.cache/test-surface-phase'),
+        )
+        cycles = ['2026090412', '2026090418', '2026090500']
+        month = ({'lons': np.array([0.0]), 'lats': np.array([0.0]), 'lwe': np.array([[1.0]])},
+                 {'initialization': 'cycle', 'target_month': '202612', 'method': phase.METHOD,
+                  'grid_sha256': 'hash', 'intervals': 1})
+        with patch.object(phase, 'load_month', return_value=month), \
+             patch('cfsv2_native_snow.strict_mean', side_effect=lambda grids, expected: grids[0]):
+            result = phase.decode(args, '2026091012', '202612', [1], cycles)
+        self.assertEqual(result[2:5], (2, 3, '2/3-cycle matched mean'))
 
 class PublicationTests(unittest.TestCase):
     def setUp(self):

@@ -163,11 +163,12 @@
       return seasonalIndex >= 0 ? seasonalIndex : 0;
     }
     function dateLabel(value) { if (!value) return '—'; const date = new Date(value); return Number.isNaN(date.valueOf()) ? value : new Intl.DateTimeFormat(undefined,{month:'short',year:'numeric',timeZone:'UTC'}).format(date); }
+    function expectedCyclesFor(target, run) { const label = String(target?.ensemble_label || ''); const match = label.match(/\b\d+\/(\d+)-cycle\b/); return Number(match?.[1]) || Number(run?.ensemble_expected_members) || Number(run?.rolling_window?.expected_cycles) || Number(target?.ensemble_expected_members) || Number(target?.ensemble_members) || 0; }
     function pick(index) {
       const target = targets[index], run = selectedRun; if (!target || !run) return;
       document.querySelectorAll('button[data-index]').forEach(button => button.classList.toggle('active', Number(button.dataset.index) === index));
       const label = productLabel(run, target);
-      const expectedCycles = target.ensemble_expected_members || run.rolling_window?.expected_cycles || 0;
+      const expectedCycles = expectedCyclesFor(target, run);
       el('map-title').textContent = `${targetLabel(target)} · ${label}`;
       el('target').textContent = targetLabel(target);
       el('lead').textContent = `Month ${target.lead_month ?? '—'}`;

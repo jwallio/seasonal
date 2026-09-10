@@ -3913,6 +3913,12 @@ def _run_single_window(args: argparse.Namespace) -> int:
     )
     rolling_mode = bool(rolling_inits)
     ensemble_expected = len(rolling_inits) if rolling_mode else len(members)
+    accepted_ensemble_count = ensemble_expected
+    if rolling_mode and getattr(args, "surface_phase_bundle_dir", None):
+        from cfsv2_surface_phase import selected_cycles
+        accepted_ensemble_count = len(
+            selected_cycles(rolling_inits, getattr(args, "surface_phase_exclude_cycles", ""))
+        )
     run_entry = {
         "id": run_id,
         "source": "NOAA CFSv2 NOMADS",
@@ -3925,6 +3931,7 @@ def _run_single_window(args: argparse.Namespace) -> int:
         "statistic": "ensemble_mean",
         "members": [args.rolling_member] if rolling_mode else members,
         "ensemble_members": ensemble_expected,
+        "ensemble_expected_members": ensemble_expected,
         "ensemble_scope": "rolling_initial_conditions" if rolling_mode else "single_initial_condition_cycle",
         "aggregation": (
             (f"{args.rolling_days}-day rolling initial-condition mean; " if rolling_mode else "")
@@ -4044,6 +4051,7 @@ def _run_single_window(args: argparse.Namespace) -> int:
             "statistic": "ensemble_mean",
             "members": [args.rolling_member] if rolling_mode else members,
             "ensemble_members": ensemble_expected,
+            "ensemble_expected_members": ensemble_expected,
             "ensemble_scope": "rolling_initial_conditions" if rolling_mode else "single_initial_condition_cycle",
             "source_files": [],
             "status": "planned",
@@ -4095,10 +4103,15 @@ def _run_single_window(args: argparse.Namespace) -> int:
             target_entry["source_files"] = source_files
             target_entry["ensemble_members"] = ensemble_count
             target_entry["ensemble_expected_members"] = ensemble_expected_for_target
-            target_entry["ensemble_complete"] = ensemble_count == ensemble_expected_for_target
+            # Surface-phase releases can intentionally omit a documented
+            # archive-gap cycle.  They are complete for the accepted sample,
+            # while the denominator remains the requested 24-cycle window.
+            target_entry["ensemble_complete"] = ensemble_count == ensemble_expected_for_target or (
+                rolling_mode and ensemble_count == accepted_ensemble_count
+            )
             target_entry["ensemble_label"] = ensemble_label
             forecast_grids[lead] = ensemble
-            target_entry["status"] = "partial" if ensemble_count < ensemble_expected_for_target else "decoded"
+            target_entry["status"] = "partial" if not target_entry["ensemble_complete"] else "decoded"
             if args.decode_only:
                 run_entry["targets"].append(target_entry)
                 target_entries_by_lead[lead] = target_entry
@@ -4337,6 +4350,7 @@ def _run_single_window(args: argparse.Namespace) -> int:
             "statistic": "ensemble_mean",
             "members": [args.rolling_member] if rolling_mode else members,
             "ensemble_members": ensemble_expected,
+            "ensemble_expected_members": ensemble_expected,
             "ensemble_scope": "rolling_initial_conditions" if rolling_mode else "single_initial_condition_cycle",
             "monthly_leads": seasonal_leads,
             "source_files": [],
@@ -4401,6 +4415,12 @@ def _run_single_window(args: argparse.Namespace) -> int:
             seasonal_entry["ensemble_members"] = min(
                 target_entries_by_lead[lead].get("ensemble_members", 0)
                 for lead in seasonal_leads
+            )
+            seasonal_entry["ensemble_expected_members"] = ensemble_expected
+            seasonal_entry["ensemble_label"] = (
+                f"{seasonal_entry['ensemble_members']}/{ensemble_expected}-cycle rolling mean"
+                if rolling_mode
+                else f"{len(members)}-member mean"
             )
             start_date = dt.datetime.strptime(first_target, "%Y%m")
             end_date = dt.datetime.strptime(last_target, "%Y%m")

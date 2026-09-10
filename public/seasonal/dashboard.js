@@ -236,11 +236,23 @@ function preferredComponent(modelKey, productKey) {
   }
   return MODEL_CONFIG[modelKey]?.preferredComponent || '';
 }
+function rollingExpectedCycles(run, targetValue = {}, fallback = 0) {
+  const label = String(targetValue?.ensemble_label || '');
+  const labelMatch = label.match(/\b\d+\/(\d+)-cycle\b/);
+  if (labelMatch) return Number(labelMatch[1]);
+  const candidates = [run?.ensemble_expected_members, run?.rolling_window?.expected_cycles, targetValue?.ensemble_expected_members, targetValue?.expected_cycles, fallback];
+  return candidates.map(Number).find(value => Number.isFinite(value) && value > 0) || 0;
+}
 function runCoverageCounts(run, target = null) {
   const targetValue = target?.value || target;
   const sources = [targetValue, ...(Array.isArray(run?.targets) ? run.targets : []), run].filter(Boolean);
   const availableKeys = ['ensemble_members', 'available_members', 'available_cycles', 'successful_exports'];
   const expectedKeys = ['ensemble_expected_members', 'expected_members', 'expected_cycles', 'expected_exports'];
+  if (run?.ensemble_scope === 'rolling_initial_conditions') {
+    const available = [targetValue?.ensemble_members, run?.ensemble_members].map(Number).find(Number.isFinite);
+    const expected = rollingExpectedCycles(run, targetValue, available);
+    if (Number.isFinite(available) && expected > 0) return { available, expected };
+  }
   for (const source of sources) {
     const available = availableKeys.map(key => Number(source[key])).find(Number.isFinite);
     const expected = expectedKeys.map(key => Number(source[key])).find(value => Number.isFinite(value) && value > 0);
@@ -622,7 +634,7 @@ function ensembleText(model, run, target) {
   const source = target?.value || {};
   const members = source.ensemble_members || run.ensemble_members;
   if (run.ensemble_scope === 'rolling_initial_conditions') {
-    const expected = source.ensemble_expected_members || run.rolling_window?.expected_cycles || members || 0;
+    const expected = rollingExpectedCycles(run, source, members);
     return `${source.ensemble_members || members || 0}/${expected} cycles`;
   }
   return members ? `${members} members` : pretty(source.ensemble_scope || run.ensemble_scope || 'ensemble');

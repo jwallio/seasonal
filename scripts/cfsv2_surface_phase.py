@@ -316,4 +316,7 @@ def decode(args, init, target, members, rolling_inits, *unused):
     n = len(rolling_inits)
     diagnostics["excluded_cycles"] = getattr(args, "surface_phase_exclude_cycles", "")
     label = f"{n}/{requested_count}-cycle matched mean" if n != requested_count else f"{n}/{n}-cycle rolling mean"
-    return result, sources, n, n, label, time.monotonic(), diagnostics
+    # Keep the denominator tied to the requested rolling window.  A known
+    # archive-gap cycle may be intentionally excluded from the usable mean,
+    # but the published map still needs to say 23/24 rather than 23/23.
+    return result, sources, n, requested_count, label, time.monotonic(), diagnostics
