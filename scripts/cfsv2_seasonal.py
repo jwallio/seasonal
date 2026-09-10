@@ -3298,9 +3298,6 @@ def render_map(
             current.append((float(point_x[0]), float(point_y[0])))
             previous_lon = longitude
         if len(current) > 1:
-Warning: truncated output (original token count: 17010)
-Total output lines: 1342
-
             segments.append(current)
         return segments
 
@@ -3933,7 +3930,94 @@ def _run_single_window(args: argparse.Namespace) -> int:
         "targets": [],
     }
     if product_name == PRODUCT_SNOWFALL_ACCUMULATION:
-        run_entry["display"] = {"quantity": "estimated accumulated snowfall depth", "units": "…1010 tokens truncated…ld"],
+        run_entry["display"] = {"quantity": "estimated accumulated snowfall depth", "units": "in", "snow_to_liquid_ratio": 10, "white_below_inches": 1}
+        run_entry["source_warning"] = "Unadjusted native snowfall × fixed 10:1 ratio. The separate phase-derived departure is not a reference for this accumulation."
+    common_reference_enabled = bool(common_reference_dir or args.common_reference_url) and product_name == PRODUCT_HEIGHT_ANOMALY
+    if common_reference_enabled:
+        run_entry["comparison_reference"] = {
+            "id": "common_1991_2020",
+            "label": COMMON_REFERENCE_LABEL,
+            "years": COMMON_REFERENCE_YEARS,
+            "source": "CanSIPS v3 hindcast climatology",
+            "url_root": args.common_reference_url or None,
+        }
+    if rolling_mode:
+        run_entry["rolling_window"] = {
+            "days": args.rolling_days,
+            "expected_cycles": len(rolling_inits),
+            "cycle_interval_hours": 6,
+            "member": args.rolling_member,
+            "start_init_utc": iso_utc(dt.datetime.strptime(rolling_inits[0], "%Y%m%d%H").replace(tzinfo=dt.timezone.utc)),
+            "end_init_utc": iso_utc(dt.datetime.strptime(rolling_inits[-1], "%Y%m%d%H").replace(tzinfo=dt.timezone.utc)),
+            "source": "lagged CFSv2 initial conditions",
+        }
+    if product.get("conversion"):
+        run_entry["conversion"] = product["conversion"]
+    if not requires_baseline:
+        run_entry["baseline"] = {
+            "status": "not_applicable",
+            "reason": (
+                "unadjusted native snowfall × fixed 10:1 ratio; native departure unavailable"
+                if product_name == PRODUCT_SNOWFALL_ACCUMULATION
+                else "absolute smoke output"
+            ),
+        }
+    elif absolute:
+        run_entry["baseline"] = {"status": "not_applicable", "reason": "absolute smoke output"}
+    elif args.decode_only:
+        run_entry["baseline"] = {
+            "source": configured_baseline_label(args),
+            "years": args.baseline_years or None,
+            "required": True,
+            "status": "not_applied_decode_only",
+        }
+    elif args.ncei_calibration:
+        run_entry["baseline"] = {
+            "source": product["baseline_label"],
+            "years": NCEI_CALIBRATION_YEARS,
+            "required": True,
+        }
+        if product.get("dependencies"):
+            run_entry["baseline"]["dependencies"] = [
+                {
+                    "product": dependency,
+                    "source_kind": get_product_spec(dependency)["source_kind"],
+                    "url_root": get_product_spec(dependency)["baseline_root"],
+                }
+                for dependency in product["dependencies"]
+            ]
+        else:
+            run_entry["baseline"]["url_root"] = product["baseline_root"]
+    else:
+        run_entry["baseline"] = {
+            "source": configured_baseline_label(args),
+            "years": args.baseline_years or None,
+            "required": True,
+        }
+    if rolling_mode and requires_baseline:
+        run_entry["baseline"]["rolling_policy"] = (
+            "reference_matched_to_each_forecast_cycle" if getattr(args, "snowfall_reference_dir", None)
+            else "anchor_initialization")
+
+    last_request = 0.0
+    failures = 0
+    native_lwe_grids: dict[int, Grid] = {}
+    forecast_grids: dict[int, Grid] = {}
+    baseline_grids: dict[int, Grid] = {}
+    target_entries_by_lead: dict[int, dict] = {}
+    for lead in leads:
+        target = target_month(init, lead)
+        valid_start, valid_end = target_period(target)
+        target_entry = {
+            "id": f"cfsv2-{target}-{product['id_token']}-lead{lead:02d}",
+            "valid_start_utc": valid_start,
+            "valid_end_utc": valid_end,
+            "lead_month": lead,
+            "target_month": target,
+            "aggregation": product.get("monthly_aggregation", "monthly forecast average"),
+            "field": product["field"],
+            "units": product["units"],
+            "raw_field": product["raw_field"],
             "raw_units": product["raw_units"],
             "statistic": "ensemble_mean",
             "members": [args.rolling_member] if rolling_mode else members,
