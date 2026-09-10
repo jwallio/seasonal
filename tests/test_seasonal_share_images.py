@@ -12,7 +12,8 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from scripts.build_seasonal_share_images import (
-    BRAND_BACKGROUND,
+    BRAND_ACCENT,
+    BRAND_FOREGROUND,
     build_share_images,
     normalize_asset_path,
     share_asset_path,
@@ -83,9 +84,15 @@ def main() -> int:
         analog_share = site / "seasonal/share/analog_products/model/map.png"
         check(native_share.is_file() and analog_share.is_file(), "branded images should use deterministic paths")
         with Image.open(native_share) as image:
-            check(image.size == (120, 120), "branding should add a footer without cropping the source image")
+            check(image.size == (120, 90), "branding must preserve the source canvas without adding a footer")
+            pixels = list(image.convert("RGB").crop((70, 45, 120, 90)).getdata())
+            has_teal_brand_dot = any(
+                pixel[0] < 100 and pixel[1] > 100 and pixel[2] > 100
+                for pixel in pixels
+            )
+            check(has_teal_brand_dot, "share image should contain the teal in-map brand dot")
             footer_pixel = image.convert("RGB").getpixel((2, image.height - 2))
-            check(all(abs(left - right) <= 8 for left, right in zip(footer_pixel, BRAND_BACKGROUND)), "share footer should use wall.cloud styling")
+            check(footer_pixel != BRAND_FOREGROUND, "share image must not replace the source bottom row with a footer")
         second = build_share_images(site)
         check(second["skipped"] == 2 and second["refreshed"] == 0, "repeat publication should reuse unchanged branded derivatives")
 
