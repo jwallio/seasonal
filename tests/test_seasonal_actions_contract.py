@@ -75,6 +75,11 @@ def main() -> int:
     check(cfsv2.count("- name: Render rolling CFSv2 products") == 1,
           "CFSv2 workflow must not contain an incomplete duplicate render step")
     check("actions: write" in cfsv2, "CFSv2 wrapper must allow the snowfall child to dispatch Pages")
+    check("Dispatch Pages publisher for token-launched render" in cfsv2
+          and "gh workflow run publish-pages.yml" in cfsv2
+          and "source_run_id=" in cfsv2
+          and "github.actor == 'github-actions[bot]'" in cfsv2,
+          "token-launched CFSv2 renders must hand off their artifact to the Pages publisher")
     snow = (WORKFLOWS / "cfsv2-snow.yml").read_text(encoding="utf-8")
     check("cancel-in-progress: false" in snow, "snowfall acquisition must not be cancelled by the next availability poll")
     check("max-parallel: 4" in snow and "--workers 4" in snow, "snowfall acquisition should overlap bounded workers")
