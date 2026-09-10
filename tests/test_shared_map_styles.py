@@ -74,9 +74,9 @@ class SharedMapStyleTests(unittest.TestCase):
                         (spec["anomaly_min"], spec["anomaly_max"], tuple(spec["anomaly_ticks"]), tuple(spec["anomaly_palette"])),
                         expected_style,
                     )
-                    self.assertTrue(
+                    self.assertFalse(
                         spec.get("anomaly_continuous"),
-                        "500-mb anomaly fills should interpolate between the shared palette colors",
+                        "500-mb anomaly fills must retain discrete contour bands",
                     )
                     if product.endswith("_nh"):
                         self.assertEqual(spec["region"], cfsv2.NORTHERN_HEMISPHERE_REGION)
@@ -100,11 +100,25 @@ class SharedMapStyleTests(unittest.TestCase):
                 spec = superensemble.product_spec(product)
                 if product == "500mb_height_anomaly":
                     self.assertEqual(tuple(spec["anomaly_ticks"]), tuple(HEIGHT_ANOMALY_STYLE["anomaly_ticks"]))
-                    self.assertTrue(spec.get("anomaly_continuous"))
+                    self.assertFalse(spec.get("anomaly_continuous"))
                     self.assertEqual(spec["region"], cfsv2.DEFAULT_REGION)
                 else:
                     self.assertEqual(tuple(spec["anomaly_ticks"]), tuple(TEMPERATURE_ANOMALY_TICKS))
                     self.assertEqual(spec["region"], cfsv2.CONUS_REGION)
+
+
+    def test_height_palette_darkens_toward_both_extremes(self):
+        def luminance(color):
+            channels = [int(color[i:i + 2], 16) / 255 for i in (1, 3, 5)]
+            linear = [v / 12.92 if v <= 0.04045 else ((v + 0.055) / 1.055) ** 2.4 for v in channels]
+            return sum(v * w for v, w in zip(linear, (0.2126, 0.7152, 0.0722)))
+
+        palette = HEIGHT_ANOMALY_STYLE["anomaly_palette"]
+        self.assertEqual(len(palette), 24)
+        negative = [luminance(c) for c in palette[:12]]
+        positive = [luminance(c) for c in palette[12:]]
+        self.assertTrue(all(a < b for a, b in zip(negative, negative[1:])))
+        self.assertTrue(all(a > b for a, b in zip(positive, positive[1:])))
 
 
 if __name__ == "__main__":
