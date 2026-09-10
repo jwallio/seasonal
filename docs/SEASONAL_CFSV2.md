@@ -43,7 +43,7 @@ official `PRES:mean sea level` field and converted from Pa to hPa before the
 forecast-minus-reforecast difference is calculated. Both products use the
 official NCEI CFS reforecast calibration climatology. Fixed scales keep runs
 directly comparable while resolving the relatively small rolling-mean signal:
-500-mb height uses ±200 m with nonuniform reference-image intervals; 850-mb and 2-m temperature use the shared ±6 °C scale with 0.5 °C intervals; and MSLP uses ±10 hPa with 1 hPa intervals. Values outside
+500-mb height uses ±120 m in 10-metre intervals; 850-mb and 2-m temperature use the shared ±6 °C scale with 0.5 °C intervals; and MSLP uses ±10 hPa with 1 hPa intervals. Values outside
 the displayed range use the saturated end color.
 
 For precipitation, the source rate (`kg m-2 s-1`) is multiplied by the actual

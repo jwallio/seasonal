@@ -69,8 +69,8 @@ def main() -> int:
     fallback_issue = module.source_issue_datetime({}, "202609")
     check(fallback_issue.isoformat() == "2026-08-15T00:00:00+00:00", "APCC issue fallback must precede the API target month")
     height_spec = module.PRODUCT_SPECS["500mb_height_anomaly"]
-    check((height_spec["anomaly_min"], height_spec["anomaly_max"]) == (-200.0, 200.0), "APCC 500-mb should retain the shared ±200 m range")
-    check(height_spec["anomaly_ticks"] == [-200, -150, -100, -75, -50, -30, -20, -10, 0, 10, 20, 30, 50, 75, 100, 150, 200], "APCC 500-mb should retain reference-image labelled bounds")
+    check((height_spec["anomaly_min"], height_spec["anomaly_max"]) == (-120.0, 120.0), "APCC 500-mb should retain the shared ±120 m range")
+    check(height_spec["anomaly_ticks"] == list(range(-120, 121, 10)), "APCC 500-mb should use the shared 10-m labelled bounds")
     for product in ("850mb_temperature_anomaly", "2m_temperature_anomaly"):
         temperature_spec = module.PRODUCT_SPECS[product]
         check((temperature_spec["anomaly_min"], temperature_spec["anomaly_max"]) == (-6.0, 6.0), f"APCC {product} should use the shared ±6 °C range")

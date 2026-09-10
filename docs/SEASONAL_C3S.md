@@ -18,7 +18,7 @@ records its actual available component list and count for every target. A
 seasonal blend uses only systems that supplied every month in that window, so
 the image label and data always describe the same ensemble.
 All component maps, including JMA/MRI-CPS4, and the C3S multi-system mean use
-the shared seasonal 500-mb scale of −200 to +200 m with nonuniform reference-image intervals.
+the shared seasonal 500-mb scale of −120 to +120 m in 10-metre intervals.
 
 The scheduled suite also renders `snowfall_anomaly` for the C3S centres and
 multi-system blend. It is a CONUS monthly total or DJF three-month sum of the

@@ -54,7 +54,7 @@ nonlinear ±2.0-inch monthly display range and ±4.0-inch seasonal/DJF range.
 Every native monthly anomaly and seasonal aggregate passes numeric coverage
 and physical-range QC before rendering.
 
-The 500-mb anomaly fill uses the shared seasonal −200 to +200 m scale with nonuniform reference-image intervals, matching the other verified 500-mb model maps.
+The 500-mb anomaly fill uses the shared seasonal −120 to +120 m scale in 10-metre intervals, matching the other verified 500-mb model maps.
 
 For the unified dashboard's Compare tab, the 500-mb product also supports a
 shared reference mode. The workflow reads the CanSIPS v3 1991-2020 hindcast

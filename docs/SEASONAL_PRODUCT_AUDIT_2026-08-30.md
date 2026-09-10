@@ -178,7 +178,7 @@ mobile so they do not consume map width.
 ### Strengths
 
 - A canonical registry now defines names, units, scales, support, and QC.
-- 500-mb maps use the shared ±200 m anomaly scale with the reference-image intervals.
+- 500-mb maps use the shared ±120 m anomaly scale in 10-metre intervals.
 - 2-m and 850-mb temperature use the shared ±6 °C scale in 0.5 °C intervals.
 - MSLP and SST have common signed scales, and land/ocean masks are explicit.
 - Failed and unavailable fields remain visible rather than being silently

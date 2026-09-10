@@ -1,20 +1,27 @@
-"""Shared 500-mb display styling; values and regional NA framing are unchanged."""
+"""Shared 500-mb display styling for all seasonal provider adapters.
 
-HEIGHT_ANOMALY_TICKS = [-200, -150, -100, -75, -50, -30, -20, -10, 0,
-                        10, 20, 30, 50, 75, 100, 150, 200]
+The map uses 10-metre labelled transitions so the near-zero signal remains
+visible instead of being swallowed by a broad neutral swatch.  The fixed
+range is deliberately symmetric and shared by monthly, seasonal, CONUS, and
+northern-hemisphere views.
+"""
+
+HEIGHT_ANOMALY_TICKS = list(range(-120, 121, 10))
 HEIGHT_ANOMALY_PALETTE = [
-    "#173b7a", "#205daa", "#2889c7", "#65b6de",
-    "#a6d9ec", "#d4eaf2", "#eef3f5", "#ffffff",
-    "#ffffff", "#f2f2ed", "#ffffc2", "#ffe39a",
-    "#ffbd72", "#f5804b", "#d94128", "#9e1e20",
+    "#0f2b60", "#173b7a", "#173b7a", "#205dad",
+    "#2889c7", "#3e9acf", "#6fbce0", "#91cce8",
+    "#aed9ed", "#c6e4f2", "#cce7f4", "#eef6f9",
+    "#fffbe0", "#ffeebe", "#ffe29e", "#ffd284",
+    "#ffbe69", "#ffa34e", "#f68443", "#e15b31",
+    "#c63525", "#9e1e1f", "#b71f22", "#84181d",
 ]
 HEIGHT_ANOMALY_STYLE = {
-    "anomaly_min": -200.0,
-    "anomaly_max": 200.0,
+    "anomaly_min": -120.0,
+    "anomaly_max": 120.0,
     "anomaly_ticks": HEIGHT_ANOMALY_TICKS,
     "anomaly_bounds": HEIGHT_ANOMALY_TICKS,
     "anomaly_palette": HEIGHT_ANOMALY_PALETTE,
-    "anomaly_endpoint_labels": {"minimum": "≤−200", "maximum": "≥+200"},
+    "anomaly_endpoint_labels": {"minimum": "≤−120", "maximum": "≥+120"},
 }
 # Same pole orientation as the approved SEAS5 image, with room for the Keys
 # and southern Texas at the lower edge. Source coverage remains hemispheric.

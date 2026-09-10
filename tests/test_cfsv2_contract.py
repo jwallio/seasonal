@@ -416,7 +416,7 @@ def main() -> int:
     check(t2m_spec["region"] == adapter_module.CONUS_REGION, "non-height CFSv2 maps must use the CONUS frame")
     check(t850_spec["region"] == adapter_module.CONUS_REGION, "non-height CFSv2 maps must use the CONUS frame")
     check(mslp_spec["region"] == adapter_module.CONUS_REGION, "non-height CFSv2 maps must use the CONUS frame")
-    check(adapter_module.anomaly_style(height_spec)[:2] == (-200.0, 200.0), "height anomaly style should use the tighter ±200 m range")
+    check(adapter_module.anomaly_style(height_spec)[:2] == (-120.0, 120.0), "height anomaly style should use the shared ±120 m range")
     check(adapter_module.anomaly_style(t2m_spec)[:2] == (-6.0, 6.0), "temperature anomaly style should use the shared ±6 °C range")
     check(t2m_spec["anomaly_ticks"] == [value / 2.0 for value in range(-12, 13)], "temperature anomaly style should use 0.5 °C labelled bounds")
     check(adapter_module.anomaly_style(mslp_spec)[:2] == (-10.0, 10.0), "MSLP anomaly style should use the tighter ±10 hPa range")

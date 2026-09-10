@@ -108,7 +108,7 @@ example, an August 2026 initialization uses leads 4, 5, and 6 for December
 The maps use the shared operational renderer at 1080 pixels wide. Snowfall
 sources are tightly cropped below the legend before the optional branding
 footer is added. The
-500-mb product uses the blue–white–yellow–orange–red scale from −200 to +200 metres with
+500-mb product uses the blue–white–yellow–orange–red scale from −120 to +120 metres with
 nonuniform reference-image intervals;
 850-mb and 2-m temperature products use the shared ±6 °C scale in 0.5 °C bands, sea-surface
 temperature uses ±3 °C, MSLP uses ±10 hPa, precipitation uses the operational

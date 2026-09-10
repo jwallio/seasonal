@@ -40,8 +40,8 @@ PRODUCTS: dict[str, dict[str, Any]] = {
         "level": {"type": "pressure", "value_hpa": 500},
         "aggregation": {"monthly": "mean", "seasonal": "mean"},
         "display": {
-            "monthly": {"minimum": -200.0, "maximum": 200.0, "breakpoints": HEIGHT_ANOMALY_TICKS},
-            "seasonal": {"minimum": -200.0, "maximum": 200.0, "breakpoints": HEIGHT_ANOMALY_TICKS},
+            "monthly": {"minimum": -120.0, "maximum": 120.0, "breakpoints": HEIGHT_ANOMALY_TICKS},
+            "seasonal": {"minimum": -120.0, "maximum": 120.0, "breakpoints": HEIGHT_ANOMALY_TICKS},
         },
         "hard_range": {"minimum": -500.0, "maximum": 500.0},
         "minimum_finite_fraction": 0.2,
