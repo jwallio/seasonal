@@ -330,6 +330,10 @@ CONUS_STATE_NAMES = (
 # Shift the projected window slightly west so the CONUS sits at the visual
 # center of the square canvas while preserving Alaska and all of Greenland.
 PROJECTED_X_SHIFT_FRACTION = 0.035
+# The tighter CONUS frame needs a smaller westward shift. A 3.5% shift places
+# eastern Maine beyond the right spine; 1% keeps both Maine and the Pacific
+# coast visibly inside the frame.
+CONUS_PROJECTED_X_SHIFT_FRACTION = 0.010
 # Keep the projection definition named and shared with other seasonal
 # renderers. Analog products are re-rendered through this same function so
 # their geometry cannot drift from the operational seasonal maps.
@@ -2917,9 +2921,17 @@ def render_map(
     else:
         raise CFSv2Error(f"unsupported seasonal map projection {projection_kind!r}")
 
+    default_projected_x_shift_fraction = (
+        CONUS_PROJECTED_X_SHIFT_FRACTION
+        if tuple(region) == tuple(CONUS_REGION)
+        else PROJECTED_X_SHIFT_FRACTION
+    )
     projected_x_shift = (
         (x_max - x_min) * float(
-            product_spec.get("projected_x_shift_fraction", PROJECTED_X_SHIFT_FRACTION)
+            product_spec.get(
+                "projected_x_shift_fraction",
+                default_projected_x_shift_fraction,
+            )
         )
         if projection_kind == "lambert_conformal_conic"
         else 0.0
@@ -2929,13 +2941,23 @@ def render_map(
     x_pad = max(0.01, (x_max - x_min) * 0.006)
     y_pad = max(0.01, (y_max - y_min) * 0.006)
 
-    # Resample the full global field onto a regular projected canvas. Using
-    # only the source cells inside the lon/lat box leaves the corners of a
-    # projected map empty; inverse projection keeps those corners data-filled.
+    # Resample the full global field onto a regular projected canvas. Include
+    # the same small projected padding used by the axes: the source field is
+    # global and finite, so sampling this frame prevents a false-looking
+    # no-data strip just inside the map spine (not an extrapolation).
     canvas_columns = 520
-    canvas_rows = max(260, int(round(canvas_columns * (y_max - y_min) / (x_max - x_min))))
-    canvas_x = np.linspace(x_min, x_max, canvas_columns)
-    canvas_y = np.linspace(y_min, y_max, canvas_rows)
+    canvas_x_min, canvas_x_max = x_min - x_pad, x_max + x_pad
+    canvas_y_min, canvas_y_max = y_min - y_pad, y_max + y_pad
+    canvas_rows = max(
+        260,
+        int(round(
+            canvas_columns
+            * (canvas_y_max - canvas_y_min)
+            / (canvas_x_max - canvas_x_min)
+        )),
+    )
+    canvas_x = np.linspace(canvas_x_min, canvas_x_max, canvas_columns)
+    canvas_y = np.linspace(canvas_y_min, canvas_y_max, canvas_rows)
     canvas_x_mesh, canvas_y_mesh = np.meshgrid(canvas_x, canvas_y)
     resampling_method = str(product_spec.get("resampling_method", "bilinear")).lower()
     if resampling_method not in {"bilinear", "bicubic"}:
@@ -4639,4 +4661,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
