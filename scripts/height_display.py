@@ -21,6 +21,10 @@ HEIGHT_ANOMALY_STYLE = {
     "anomaly_ticks": HEIGHT_ANOMALY_TICKS,
     "anomaly_bounds": HEIGHT_ANOMALY_TICKS,
     "anomaly_palette": HEIGHT_ANOMALY_PALETTE,
+    # Keep the approved palette as the control points, but interpolate
+    # between them in the field so adjacent 10-m bands do not render as
+    # hard-edged swatches.
+    "anomaly_continuous": True,
     "anomaly_endpoint_labels": {"minimum": "≤−120", "maximum": "≥+120"},
 }
 # Same pole orientation as the approved SEAS5 image, with room for the Keys

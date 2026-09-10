@@ -74,6 +74,10 @@ class SharedMapStyleTests(unittest.TestCase):
                         (spec["anomaly_min"], spec["anomaly_max"], tuple(spec["anomaly_ticks"]), tuple(spec["anomaly_palette"])),
                         expected_style,
                     )
+                    self.assertTrue(
+                        spec.get("anomaly_continuous"),
+                        "500-mb anomaly fills should interpolate between the shared palette colors",
+                    )
                     if product.endswith("_nh"):
                         self.assertEqual(spec["region"], cfsv2.NORTHERN_HEMISPHERE_REGION)
                         for key, value in HEIGHT_NH_FRAME.items():
@@ -96,6 +100,7 @@ class SharedMapStyleTests(unittest.TestCase):
                 spec = superensemble.product_spec(product)
                 if product == "500mb_height_anomaly":
                     self.assertEqual(tuple(spec["anomaly_ticks"]), tuple(HEIGHT_ANOMALY_STYLE["anomaly_ticks"]))
+                    self.assertTrue(spec.get("anomaly_continuous"))
                     self.assertEqual(spec["region"], cfsv2.DEFAULT_REGION)
                 else:
                     self.assertEqual(tuple(spec["anomaly_ticks"]), tuple(TEMPERATURE_ANOMALY_TICKS))

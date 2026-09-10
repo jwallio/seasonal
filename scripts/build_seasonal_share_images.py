@@ -187,7 +187,10 @@ def _map_corner(image: Image.Image) -> tuple[int, int]:
     border_run_minimum = max(100, int(round(width * 0.40)))
 
     pixels = rgb.astype(np.int16)
-    neutral_dark = (pixels.max(axis=2) <= 160) & (np.ptp(pixels, axis=2) <= 30)
+    # JPEG/PNG antialiasing can lift a one-pixel frame line well above the
+    # original spine color. Keep the neutral-color test strict enough to
+    # reject weather shading while allowing that edge smoothing.
+    neutral_dark = (pixels.max(axis=2) <= 190) & (np.ptp(pixels, axis=2) <= 45)
     side_height = max(20, int(round(height * 0.20)))
     candidates: list[tuple[int, tuple[int, int]]] = []
     for row_index in range(height - 2, scan_floor, -1):
@@ -200,23 +203,36 @@ def _map_corner(image: Image.Image) -> tuple[int, int]:
         # A map frame has two near-continuous vertical sides extending well
         # above its bottom edge. Allow a pixel of JPEG/antialiasing tolerance.
         top = max(0, row_index - side_height)
+        side_window = max(1, row_index - top)
         if any(
-            neutral_dark[top:row_index, max(0, x - 1):min(width, x + 2)]
-            .any(axis=1).mean() < 0.95
+            (
+                (side_run := _longest_run(
+                    neutral_dark[top:row_index, max(0, x - 1):min(width, x + 2)]
+                    .any(axis=1)
+                ))
+                is None
+                or side_run[1] - side_run[0] + 1 < round(side_window * 0.90)
+            )
             for x in run
         ):
             continue
         candidates.append((row_index, run))
 
     if candidates:
-        row_index, run = min(candidates, key=lambda item: item[0])
+        # Choose the lowest valid frame, not the first candidate encountered
+        # above it. This matters when an image also contains a long internal
+        # contour or a second panel with a partial border.
+        row_index, run = max(candidates, key=lambda item: item[0])
         return run[1], row_index
 
     # Fallback for non-seasonal or diagnostic images without a detectable map
     # frame. This still preserves the source canvas and keeps the mark visible.
+    # Seasonal source canvases reserve the lower strip for the color scale;
+    # keep the fallback on the map frame rather than placing the mark in that
+    # strip. The estimate is only used when a frame is too faint to detect.
     return (
-        width - max(6, int(round(width * 0.012))),
-        height - max(8, int(round(height * (0.16 if height / max(width, 1) < 0.9 else 0.23)))),
+        width - max(4, int(round(width * 0.045))),
+        height - max(8, int(round(height * 0.115))),
     )
 
 def save_branded_image(source: Path, destination: Path) -> None:
@@ -242,8 +258,10 @@ def save_branded_image(source: Path, destination: Path) -> None:
 
         # Anchor to the detected map frame, not the full image canvas.
         map_right, map_bottom = _map_corner(canvas)
-        right_inset = max(4, round(font_size * 0.28))
-        bottom_inset = max(4, round(font_size * 0.22))
+        # Keep the wordmark just inside the frame corner; the small inset is
+        # intentional so the outline does not get clipped by the spine.
+        right_inset = max(2, round(font_size * 0.10))
+        bottom_inset = max(2, round(font_size * 0.10))
         x = map_right - right_inset - text_width
         y = map_bottom - bottom_inset - text_height - text_box[1]
         stroke_width = max(1, round(font_size * 0.06))
