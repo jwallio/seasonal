@@ -330,3 +330,15 @@ jobs:
           path: pages-payload
           if-no-files-found: error
           retention-days: 14
+
+      # workflow_run does not fire when this renderer was dispatched with the
+      # Actions token. Hand off directly in that case; UI/manual runs still
+      # use the existing workflow_run publisher and are not duplicated.
+      - name: Dispatch Pages publisher for token-launched render
+        if: success() && github.actor == 'github-actions[bot]'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh workflow run publish-pages.yml --ref main \
+            -f source_workflow="CFSv2 Rolling Seasonal Graphics" \
+            -f source_run_id="${{ github.run_id }}"
