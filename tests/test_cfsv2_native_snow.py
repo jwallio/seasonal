@@ -77,6 +77,16 @@ class NativeSnowTests(unittest.TestCase):
         x=np.abs(data['lons']+80.19).argmin();y=np.abs(data['lats']-25.76).argmin()
         self.assertGreater(g.values[y][x],0.)
 
+    def test_map_labels_and_branding_contract(self):
+        source = Path(native.__file__).read_text(encoding="utf-8")
+        self.assertIn("AnnotationBbox", source)
+        self.assertIn("TextArea('wall'", source)
+        self.assertIn("TextArea('.',", source)
+        self.assertIn("converted to snow depth at a fixed 10:1 snow-to-liquid ratio", source)
+        self.assertIn("Accumulated snowfall depth (inches)", source)
+        self.assertNotIn("Not standing snowpack", source)
+        self.assertNotIn("Final color includes 180+ in", source)
+
     def test_missing_values_and_members_fail_closed(self):
         for value in [float('nan'),-1,float('inf')]:
             with self.assertRaises(ValueError):native.depth_grid(self.grid(value))
