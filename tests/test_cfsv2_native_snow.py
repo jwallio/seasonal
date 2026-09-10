@@ -79,11 +79,9 @@ class NativeSnowTests(unittest.TestCase):
 
     def test_map_labels_and_branding_contract(self):
         source = Path(native.__file__).read_text(encoding="utf-8")
-        self.assertIn("AnnotationBbox", source)
-        self.assertIn("TextArea('wall'", source)
-        self.assertIn("TextArea('.',", source)
-        self.assertIn("(0.985, 0.02)", source)
-        self.assertIn("box_alignment=(1.0, 0.0)", source)
+        self.assertIn("shared seasonal share-image", source)
+        self.assertNotIn("AnnotationBbox", source)
+        self.assertNotIn("TextArea('wall'", source)
         self.assertIn("converted to snow depth at a fixed 10:1 snow-to-liquid ratio", source)
         self.assertIn("Accumulated snowfall depth (inches)", source)
         self.assertNotIn("Not standing snowpack", source)
