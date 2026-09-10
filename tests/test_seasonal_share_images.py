@@ -6,7 +6,7 @@ import sys
 import tempfile
 from pathlib import Path, PurePosixPath
 
-from PIL import Image
+from PIL import Image, ImageDraw
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
@@ -14,6 +14,7 @@ sys.path.insert(0, str(ROOT))
 from scripts.build_seasonal_share_images import (
     BRAND_ACCENT,
     BRAND_FOREGROUND,
+    _map_corner,
     build_share_images,
     normalize_asset_path,
     share_asset_path,
@@ -54,6 +55,14 @@ def main() -> int:
         == PurePosixPath("seasonal/share/cfsv2/run/map.jpg"),
         "share paths should retain the source hierarchy",
     )
+
+    frame = Image.new("RGB", (240, 200), "white")
+    frame_draw = ImageDraw.Draw(frame)
+    frame_draw.rectangle((20, 30, 220, 160), outline=(20, 25, 30), width=2)
+    for x in range(20, 221, 10):
+        frame_draw.rectangle((x, 165, min(x + 9, 220), 175), fill=(40 + (x % 180), 80, 180))
+    map_right, map_bottom = _map_corner(frame)
+    check((map_right, map_bottom) == (220, 160), "branding anchor should follow the map frame corner")
 
     with tempfile.TemporaryDirectory() as temporary:
         site = Path(temporary)
