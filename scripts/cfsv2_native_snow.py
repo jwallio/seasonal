@@ -217,8 +217,9 @@ def render(lwe, init, target, lead, output, seasonal=False, period_label='', ens
     ax.set_aspect('equal');ax.set_xticks([]);ax.set_yticks([])
 
     # Keep the source mark inside the map frame so it survives social-media
-    # crops. The light stroke preserves readability over both snow and ocean
-    # colors while the teal period remains the brand cue.
+    # crops. Right-align it against the lower-right frame corner, with a small
+    # inset so it stays fully visible and clear of Florida. The light stroke
+    # preserves readability over both snow and ocean colors.
     logo_stroke = [path_effects.withStroke(linewidth=2.8, foreground='#f7f9fb', alpha=0.92)]
     logo = HPacker(
         children=[
@@ -232,9 +233,9 @@ def render(lwe, init, target, lead, output, seasonal=False, period_label='', ens
     )
     ax.add_artist(AnnotationBbox(
         logo,
-        (0.78, 0.055),
+        (0.985, 0.02),
         xycoords=ax.transAxes,
-        box_alignment=(0.0, 0.0),
+        box_alignment=(1.0, 0.0),
         frameon=False,
         pad=0,
         annotation_clip=True,
