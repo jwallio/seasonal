@@ -61,6 +61,10 @@ def main() -> int:
     frame_draw.rectangle((20, 30, 220, 160), outline=(20, 25, 30), width=2)
     for x in range(20, 221, 10):
         frame_draw.rectangle((x, 165, min(x + 9, 220), 175), fill=(40 + (x % 180), 80, 180))
+    # Wide saturated snowfall shading used to be mistaken for the border.
+    frame_draw.rectangle((45, 110, 195, 135), fill=(20, 55, 78))
+    # Even a neutral dark patch must not qualify without tall frame sides.
+    frame_draw.rectangle((45, 140, 195, 145), fill=(30, 30, 30))
     map_right, map_bottom = _map_corner(frame)
     check(map_right == 220 and map_bottom in {159, 160}, "branding anchor should follow the map frame corner")
 
