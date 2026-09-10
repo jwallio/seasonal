@@ -25,7 +25,7 @@ IMAGE_SUFFIXES = frozenset({".jpg", ".jpeg", ".png", ".webp"})
 BRAND_FOREGROUND = (17, 24, 32)
 BRAND_ACCENT = (27, 181, 176)
 BRAND_STROKE = (247, 249, 251)
-SHARE_IMAGE_CACHE_VERSION = 5
+SHARE_IMAGE_CACHE_VERSION = 6
 
 
 def normalize_asset_path(value: Any) -> PurePosixPath | None:
