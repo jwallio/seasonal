@@ -193,6 +193,8 @@ def render(lwe, init, target, lead, output, seasonal=False, period_label='', ens
     matplotlib.use('Agg')
     import matplotlib.pyplot as plt
     from matplotlib.colors import BoundaryNorm, ListedColormap
+    from matplotlib.offsetbox import AnnotationBbox, HPacker, TextArea
+    import matplotlib.patheffects as path_effects
     # Pure NumPy sampling/projection helpers from the approved offline renderer.
     data, _ = lookup()
     xlon, ylat = np.meshgrid(data['display_lons'], data['display_lats'])
@@ -213,6 +215,32 @@ def render(lwe, init, target, lead, output, seasonal=False, period_label='', ens
     extent=np.concatenate(state_points)
     ax.set_xlim(extent[:,0].min()-.006,extent[:,0].max()+.006);ax.set_ylim(extent[:,1].min()-.006,extent[:,1].max()+.006)
     ax.set_aspect('equal');ax.set_xticks([]);ax.set_yticks([])
+
+    # Keep the source mark inside the map frame so it survives social-media
+    # crops. The light stroke preserves readability over both snow and ocean
+    # colors while the teal period remains the brand cue.
+    logo_stroke = [path_effects.withStroke(linewidth=2.8, foreground='#f7f9fb', alpha=0.92)]
+    logo = HPacker(
+        children=[
+            TextArea('wall', textprops={'fontsize': 12.5, 'fontweight': 'bold', 'color': '#111820', 'path_effects': logo_stroke}),
+            TextArea('.', textprops={'fontsize': 12.5, 'fontweight': 'bold', 'color': '#1bb5b0', 'path_effects': logo_stroke}),
+            TextArea('cloud', textprops={'fontsize': 12.5, 'fontweight': 'bold', 'color': '#111820', 'path_effects': logo_stroke}),
+        ],
+        align='baseline',
+        pad=0,
+        sep=0,
+    )
+    ax.add_artist(AnnotationBbox(
+        logo,
+        (0.78, 0.055),
+        xycoords=ax.transAxes,
+        box_alignment=(0.0, 0.0),
+        frameon=False,
+        pad=0,
+        annotation_clip=True,
+        zorder=8,
+    ))
+
     cb=fig.colorbar(filled,cax=fig.add_axes([.038,.100,.924,.034]),orientation='horizontal',ticks=ticks,spacing='uniform',drawedges=True,extendrect=True,extendfrac=0)
     cb.ax.tick_params(labelsize=7,length=3);cb.outline.set_linewidth(.5)
     label=period_label or datetime.strptime(target,'%Y%m').strftime('%b %Y')
@@ -220,9 +248,8 @@ def render(lwe, init, target, lead, output, seasonal=False, period_label='', ens
     fig.text(.962,.955,label,fontsize=13,weight='bold',ha='right',color='#172735')
     initialized=datetime.strptime(init,'%Y%m%d%H').strftime('%d %b %Y %HZ')
     fig.text(.038,.912,f'Init {initialized}  •  Lead {lead}  •  {ensemble_label}',fontsize=10,color='#43535d')
-    fig.text(.038,.878,input_label + ' • 10:1 snow-depth estimate',fontsize=9.5,color='#536875')
-    fig.text(.5,.052,'Accumulated snowfall depth (inches)  •  Not standing snowpack',ha='center',fontsize=10,color='#43535d')
-    fig.text(.5,.028,'Unadjusted estimate  •  White below 1 in  •  Final color includes 180+ in',ha='center',fontsize=8.5,color='#536875')
+    fig.text(.038,.878,f'{input_label} • converted to snow depth at a fixed 10:1 snow-to-liquid ratio',fontsize=9.5,color='#536875')
+    fig.text(.5,.052,'Accumulated snowfall depth (inches)',ha='center',fontsize=10,color='#43535d')
     output.parent.mkdir(parents=True,exist_ok=True)
     fig.savefig(output,dpi=120,pil_kwargs={'quality':95,'subsampling':0} if output.suffix=='.jpg' else {})
     plt.close(fig)
