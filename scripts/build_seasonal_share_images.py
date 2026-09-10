@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build wall.cloud-branded copies of every seasonal map referenced by a manifest."""
+"""Build protected in-map-branded copies of every seasonal map referenced by a manifest."""
 
 from __future__ import annotations
 
@@ -18,10 +18,10 @@ except ModuleNotFoundError:  # Imported as ``scripts.build_seasonal_share_images
 
 
 IMAGE_SUFFIXES = frozenset({".jpg", ".jpeg", ".png", ".webp"})
-BRAND_BACKGROUND = (8, 20, 27)
-BRAND_FOREGROUND = (243, 247, 249)
-BRAND_ACCENT = (89, 212, 192)
-SHARE_IMAGE_CACHE_VERSION = 1
+BRAND_FOREGROUND = (17, 24, 32)
+BRAND_ACCENT = (27, 181, 176)
+BRAND_STROKE = (247, 249, 251)
+SHARE_IMAGE_CACHE_VERSION = 2
 
 
 def normalize_asset_path(value: Any) -> PurePosixPath | None:
@@ -161,15 +161,16 @@ def _rgb_image(opened: Image.Image) -> Image.Image:
 
 
 def save_branded_image(source: Path, destination: Path) -> None:
+    """Preserve the source canvas and add the protected in-map wall.cloud mark."""
+
     with Image.open(source) as opened:
         image = _rgb_image(opened)
         width, height = image.size
-        footer_height = max(30, round(height * 0.036))
-        canvas = Image.new("RGB", (width, height + footer_height), BRAND_BACKGROUND)
-        canvas.paste(image, (0, 0))
+        canvas = image.copy()
         draw = ImageDraw.Draw(canvas)
-        draw.line((0, height, width, height), fill=(43, 72, 85), width=max(1, width // 900))
-        font = _brand_font(max(14, round(footer_height * 0.48)))
+
+        font_size = max(14, round(min(width, height) * 0.019))
+        font = _brand_font(font_size)
         wall = "wall"
         dot = "."
         cloud = "cloud"
@@ -179,11 +180,40 @@ def save_branded_image(source: Path, destination: Path) -> None:
         text_width = wall_width + dot_width + cloud_width
         text_box = draw.textbbox((0, 0), "wall.cloud", font=font)
         text_height = text_box[3] - text_box[1]
-        x = width - max(14, round(width * 0.016)) - text_width
-        y = height + (footer_height - text_height) / 2 - text_box[1]
-        draw.text((x, y), wall, fill=BRAND_FOREGROUND, font=font)
-        draw.text((x + wall_width, y), dot, fill=BRAND_ACCENT, font=font)
-        draw.text((x + wall_width + dot_width, y), cloud, fill=BRAND_FOREGROUND, font=font)
+
+        # Seasonal source maps place the map above a legend/metadata band.
+        # Use the lower-right map-safe zone rather than adding a new footer.
+        map_band_fraction = 0.16 if height / max(width, 1) < 0.9 else 0.23
+        right_inset = max(6, round(width * 0.012))
+        bottom_inset = max(8, round(height * map_band_fraction))
+        x = width - right_inset - text_width
+        y = height - bottom_inset - text_height - text_box[1]
+        stroke_width = max(1, round(font_size * 0.06))
+
+        draw.text(
+            (x, y),
+            wall,
+            fill=BRAND_FOREGROUND,
+            font=font,
+            stroke_width=stroke_width,
+            stroke_fill=BRAND_STROKE,
+        )
+        draw.text(
+            (x + wall_width, y),
+            dot,
+            fill=BRAND_ACCENT,
+            font=font,
+            stroke_width=stroke_width,
+            stroke_fill=BRAND_STROKE,
+        )
+        draw.text(
+            (x + wall_width + dot_width, y),
+            cloud,
+            fill=BRAND_FOREGROUND,
+            font=font,
+            stroke_width=stroke_width,
+            stroke_fill=BRAND_STROKE,
+        )
 
         destination.parent.mkdir(parents=True, exist_ok=True)
         suffix = destination.suffix.lower()
@@ -193,7 +223,6 @@ def save_branded_image(source: Path, destination: Path) -> None:
             canvas.save(destination, format="WEBP", quality=94, method=6)
         else:
             canvas.save(destination, format="JPEG", quality=95, subsampling=0, optimize=True)
-
 
 def build_share_images(site_root: Path) -> dict[str, Any]:
     site_root = site_root.resolve()
