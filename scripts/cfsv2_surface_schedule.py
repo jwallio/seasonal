@@ -47,7 +47,20 @@ def listed_complete(init, targets, get=requests.get, sleep=time.sleep):
             sleep(delay)
     available = set(re.findall(r'href="([^"/]+\.grb2)"', response.text))
     needed = {f'pgbf{valid}.01.{init}.grb2' for t in targets for valid in phase.endpoints(t)}
-    return needed.issubset(available)
+    missing = sorted(needed - available)
+    if missing:
+        print(
+            f'{init}: snowfall source is still publishing '
+            f'({len(missing)}/{len(needed)} required pgbf files missing; '
+            f'first={missing[0]}; last={missing[-1]})',
+            flush=True,
+        )
+        return False
+    print(
+        f'{init}: snowfall source complete ({len(needed)}/{len(needed)} required pgbf files)',
+        flush=True,
+    )
+    return True
 
 
 def choose(candidates, ready=listed_complete):

@@ -700,7 +700,7 @@ def main() -> int:
         check(term in snow_workflow, f"corrected snowfall workflow missing term: {term}")
     watcher = (ROOT / ".github" / "workflows" / "cfsv2-availability.yml").read_text(encoding="utf-8")
     for term in (
-        '*/15 * * * *',
+        '7,22,37,52 * * * *',
         "scripts/cfsv2_availability.py",
         "standard_new_cycle",
         "snow_new_cycle",

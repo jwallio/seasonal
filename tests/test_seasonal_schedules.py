@@ -19,7 +19,7 @@ EXPECTED = {
 }
 
 AVAILABILITY_WATCHERS = {
-    ".github/workflows/cfsv2-availability.yml": "*/15 * * * *",
+    ".github/workflows/cfsv2-availability.yml": "7,22,37,52 * * * *",
 }
 
 RELEASE_CHECK_CRONS = {

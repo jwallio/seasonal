@@ -1,5 +1,7 @@
 import unittest
 from copy import deepcopy
+from contextlib import redirect_stdout
+from io import StringIO
 import cfsv2_surface_schedule as schedule
 from merge_cfsv2_surface_release import merge, preserve_surface, FIELD
 
@@ -35,7 +37,11 @@ class ScheduleTests(unittest.TestCase):
         r.text=''.join(f'<a href="pgbf{v}.01.{init}.grb2">file</a>' for v in times)
         self.assertTrue(schedule.listed_complete(init,['202702'],lambda *a,**k:r))
         r.text=r.text.replace(times[-1],'missing')
-        self.assertFalse(schedule.listed_complete(init,['202702'],lambda *a,**k:r))
+        output=StringIO()
+        with redirect_stdout(output):
+            self.assertFalse(schedule.listed_complete(init,['202702'],lambda *a,**k:r))
+        self.assertIn('1/113 required pgbf files missing', output.getvalue())
+        self.assertIn(f'first=pgbf{times[-1]}.01.{init}.grb2', output.getvalue())
 
     def test_listing_treats_transient_source_errors_as_not_ready(self):
         class ErrorResponse:

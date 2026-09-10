@@ -25,7 +25,7 @@ $active = @($runs | Where-Object { $_.status -in @('queued','in_progress','waiti
 if ($active.Count -gt 0) { Write-Output 'Availability probe already active.'; exit }
 $recent = @($runs | Where-Object {
     $_.conclusion -eq 'success' -and
-    [DateTimeOffset]::Parse($_.updated_at) -gt [DateTimeOffset]::UtcNow.AddMinutes(-30)
+    [DateTimeOffset]::Parse($_.updated_at) -gt [DateTimeOffset]::UtcNow.AddMinutes(-20)
 })
 if ($recent.Count -gt 0) { Write-Output 'GitHub availability checks are current.'; exit }
 gh workflow run cfsv2-availability.yml --repo $repo --ref main
