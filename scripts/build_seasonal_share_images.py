@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""Build protected in-map-branded copies of every seasonal map referenced by a manifest."""
+"""Build protected in-map-branded copies of every seasonal map referenced by a manifest.
+
+The wordmark is anchored to the detected map frame rather than the legend.
+"""
 
 from __future__ import annotations
 
