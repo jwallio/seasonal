@@ -193,8 +193,6 @@ def render(lwe, init, target, lead, output, seasonal=False, period_label='', ens
     matplotlib.use('Agg')
     import matplotlib.pyplot as plt
     from matplotlib.colors import BoundaryNorm, ListedColormap
-    from matplotlib.offsetbox import AnnotationBbox, HPacker, TextArea
-    import matplotlib.patheffects as path_effects
     # Pure NumPy sampling/projection helpers from the approved offline renderer.
     data, _ = lookup()
     xlon, ylat = np.meshgrid(data['display_lons'], data['display_lats'])
@@ -216,31 +214,8 @@ def render(lwe, init, target, lead, output, seasonal=False, period_label='', ens
     ax.set_xlim(extent[:,0].min()-.006,extent[:,0].max()+.006);ax.set_ylim(extent[:,1].min()-.006,extent[:,1].max()+.006)
     ax.set_aspect('equal');ax.set_xticks([]);ax.set_yticks([])
 
-    # Keep the source mark inside the map frame so it survives social-media
-    # crops. Right-align it against the lower-right frame corner, with a small
-    # inset so it stays fully visible and clear of Florida. The light stroke
-    # preserves readability over both snow and ocean colors.
-    logo_stroke = [path_effects.withStroke(linewidth=2.8, foreground='#f7f9fb', alpha=0.92)]
-    logo = HPacker(
-        children=[
-            TextArea('wall', textprops={'fontsize': 12.5, 'fontweight': 'bold', 'color': '#111820', 'path_effects': logo_stroke}),
-            TextArea('.', textprops={'fontsize': 12.5, 'fontweight': 'bold', 'color': '#1bb5b0', 'path_effects': logo_stroke}),
-            TextArea('cloud', textprops={'fontsize': 12.5, 'fontweight': 'bold', 'color': '#111820', 'path_effects': logo_stroke}),
-        ],
-        align='baseline',
-        pad=0,
-        sep=0,
-    )
-    ax.add_artist(AnnotationBbox(
-        logo,
-        (0.985, 0.02),
-        xycoords=ax.transAxes,
-        box_alignment=(1.0, 0.0),
-        frameon=False,
-        pad=0,
-        annotation_clip=True,
-        zorder=8,
-    ))
+    # In-map branding is applied once by the shared seasonal share-image
+    # builder so every model uses the same protected mark without duplicates.
 
     cb=fig.colorbar(filled,cax=fig.add_axes([.038,.100,.924,.034]),orientation='horizontal',ticks=ticks,spacing='uniform',drawedges=True,extendrect=True,extendfrac=0)
     cb.ax.tick_params(labelsize=7,length=3);cb.outline.set_linewidth(.5)
