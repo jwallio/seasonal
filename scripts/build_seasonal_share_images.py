@@ -176,61 +176,31 @@ def _longest_run(mask: np.ndarray) -> tuple[int, int] | None:
 def _map_corner(image: Image.Image) -> tuple[int, int]:
     """Find the lower-right inside corner of a seasonal map frame.
 
-    The shared seasonal renderer draws a dark rectangular map border above a
-    horizontal colorbar. Detecting those two stable layout features keeps the
-    watermark in the map on square, CONUS, and Northern Hemisphere variants.
+    Seasonal maps place a dark rectangular frame above the legend. The frame
+    is the highest long dark run in the lower half of the canvas; selecting
+    that edge avoids confusing a broken-up colorbar edge with the map frame.
     """
 
     rgb = np.asarray(image.convert("RGB"))
     height, width = rgb.shape[:2]
     scan_floor = max(1, int(round(height * 0.52)))
-    minimum_run = max(80, int(round(width * 0.35)))
-    colorbar_top = None
+    edge_margin = max(2, int(round(width * 0.01)))
+    border_run_minimum = max(100, int(round(width * 0.40)))
 
+    candidates: list[tuple[int, tuple[int, int]]] = []
     for row_index in range(height - 2, scan_floor, -1):
         row = rgb[row_index].astype(np.int16)
-        spread = row.max(axis=1) - row.min(axis=1)
-        brightness = row.mean(axis=1)
-        colored = (spread >= 12) | (brightness <= 235)
-        run = _longest_run(colored)
-        if run is None or run[1] - run[0] + 1 < minimum_run:
+        dark = row.max(axis=1) <= 130
+        run = _longest_run(dark)
+        if run is None or run[1] - run[0] + 1 < border_run_minimum:
             continue
-        edge_margin = max(2, int(round(width * 0.01)))
         if run[0] <= edge_margin or run[1] >= width - 1 - edge_margin:
             continue
-        colorbar_top = row_index
-        for upper in range(row_index - 1, scan_floor, -1):
-            upper_row = rgb[upper].astype(np.int16)
-            upper_spread = upper_row.max(axis=1) - upper_row.min(axis=1)
-            upper_brightness = upper_row.mean(axis=1)
-            upper_colored = (upper_spread >= 12) | (upper_brightness <= 235)
-            upper_run = _longest_run(upper_colored)
-            if upper_run is None or upper_run[1] - upper_run[0] + 1 < minimum_run:
-                break
-            if upper_run[0] <= edge_margin or upper_run[1] >= width - 1 - edge_margin:
-                break
-            colorbar_top = upper
-        break
+        candidates.append((row_index, run))
 
-    if colorbar_top is not None:
-        border_floor = max(scan_floor, colorbar_top - int(round(height * 0.22)))
-        border_run_minimum = max(100, int(round(width * 0.40)))
-        for row_index in range(colorbar_top - 2, border_floor, -1):
-            row = rgb[row_index].astype(np.int16)
-            dark = row.max(axis=1) <= 130
-            run = _longest_run(dark)
-            if run is not None and run[1] - run[0] + 1 >= border_run_minimum:
-                return run[1], row_index
-
-        colorbar_row = rgb[colorbar_top].astype(np.int16)
-        spread = colorbar_row.max(axis=1) - colorbar_row.min(axis=1)
-        brightness = colorbar_row.mean(axis=1)
-        run = _longest_run((spread >= 12) | (brightness <= 235))
-        if run is not None:
-            right = run[1]
-            if height / max(width, 1) < 0.9:
-                right -= int(round(width * 0.015))
-            return right, colorbar_top - max(8, int(round(height * 0.012)))
+    if candidates:
+        row_index, run = min(candidates, key=lambda item: item[0])
+        return run[1], row_index
 
     # Fallback for non-seasonal or diagnostic images without a detectable map
     # frame. This still preserves the source canvas and keeps the mark visible.
@@ -238,7 +208,6 @@ def _map_corner(image: Image.Image) -> tuple[int, int]:
         width - max(6, int(round(width * 0.012))),
         height - max(8, int(round(height * (0.16 if height / max(width, 1) < 0.9 else 0.23)))),
     )
-
 
 def save_branded_image(source: Path, destination: Path) -> None:
     """Preserve the source canvas and add the protected in-map wall.cloud mark."""
