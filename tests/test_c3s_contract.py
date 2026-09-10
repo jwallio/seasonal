@@ -58,6 +58,7 @@ def main() -> int:
         "ensemble_mean", "multi-system", "component", "CDS_API_KEY",
         "snowfall_anomalous_rate_of_accumulation", "snowfall_anomaly",
         "retain-cycles", "systems", "system", "cds_client", "retry_max", "sleep_max",
+        "retrieve_with_queue_retry", "CDS_QUEUE_RETRY_MAX", "CDS_QUEUE_RETRY_SLEEP_SECONDS",
     ):
         check(term in adapter or term in workflow or term in pages or term in cds_client, f"missing C3S term: {term}")
     check("cfgrib.open_datasets" in grib_adapter, "C3S/JMA GRIB decoder should discover heterogeneous raw pressure-level groups")

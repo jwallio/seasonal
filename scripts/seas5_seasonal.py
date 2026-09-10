@@ -25,7 +25,7 @@ from typing import Any
 
 import numpy as np
 
-from cds_client import client_options
+from cds_client import client_options, retrieve_with_queue_retry
 from cfsv2_seasonal import (
     ANOMALY_PALETTE,
     ANOMALY_TICKS,
@@ -661,7 +661,10 @@ class CDSArchive:
         temporary = path.with_name(path.name + ".tmp")
         try:
             temporary.unlink(missing_ok=True)
-            self._client_or_raise().retrieve(dataset, request, str(temporary))
+            retrieve_with_queue_retry(
+                lambda: self._client_or_raise().retrieve(dataset, request, str(temporary)),
+                label=f"SEAS5 {dataset}/{variable} lead {lead}",
+            )
             if not temporary.exists() or temporary.stat().st_size == 0:
                 raise SEAS5Error(f"CDS returned no data for {dataset} {variable} lead {lead}")
             temporary.replace(path)

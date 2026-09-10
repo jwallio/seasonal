@@ -22,7 +22,7 @@ from typing import Any, Iterable
 
 import numpy as np
 
-from cds_client import client_options
+from cds_client import client_options, retrieve_with_queue_retry
 from cfsv2_seasonal import (
     ANOMALY_PALETTE,
     ANOMALY_TICKS,
@@ -407,7 +407,10 @@ class CDSArchive:
         temporary = path.with_name("field.grib.tmp")
         try:
             temporary.unlink(missing_ok=True)
-            self.client().retrieve(dataset, request, str(temporary))
+            retrieve_with_queue_retry(
+                lambda: self.client().retrieve(dataset, request, str(temporary)),
+                label=f"C3S {self.centre}/{self.system} {variable} lead {lead}",
+            )
             if not temporary.exists() or temporary.stat().st_size == 0:
                 raise C3SError(f"CDS returned no data for {self.centre}/{self.system} {variable} lead {lead}")
             temporary.replace(path)
