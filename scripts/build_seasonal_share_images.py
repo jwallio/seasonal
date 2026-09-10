@@ -195,6 +195,9 @@ def _map_corner(image: Image.Image) -> tuple[int, int]:
         run = _longest_run(colored)
         if run is None or run[1] - run[0] + 1 < minimum_run:
             continue
+        edge_margin = max(2, int(round(width * 0.01)))
+        if run[0] <= edge_margin or run[1] >= width - 1 - edge_margin:
+            continue
         colorbar_top = row_index
         for upper in range(row_index - 1, scan_floor, -1):
             upper_row = rgb[upper].astype(np.int16)
@@ -203,6 +206,8 @@ def _map_corner(image: Image.Image) -> tuple[int, int]:
             upper_colored = (upper_spread >= 12) | (upper_brightness <= 235)
             upper_run = _longest_run(upper_colored)
             if upper_run is None or upper_run[1] - upper_run[0] + 1 < minimum_run:
+                break
+            if upper_run[0] <= edge_margin or upper_run[1] >= width - 1 - edge_margin:
                 break
             colorbar_top = upper
         break
