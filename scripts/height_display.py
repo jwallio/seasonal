@@ -3,7 +3,8 @@
 The map uses 10-metre labelled transitions so the near-zero signal remains
 visible instead of being swallowed by a broad neutral swatch.  The fixed
 range is deliberately symmetric and shared by monthly, seasonal, CONUS, and
-northern-hemisphere views.
+northern-hemisphere views.  Fields interpolate smoothly between the shared
+control colors at render time.
 """
 
 HEIGHT_ANOMALY_TICKS = list(range(-120, 121, 10))
