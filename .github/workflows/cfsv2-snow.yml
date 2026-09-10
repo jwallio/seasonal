@@ -28,7 +28,7 @@ concurrency:
 jobs:
   select:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     outputs:
       ready: ${{ steps.plan.outputs.ready }}
       init: ${{ steps.plan.outputs.init }}

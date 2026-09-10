@@ -6,7 +6,7 @@ on:
   # is intentionally lightweight; the expensive renderers run only after a
   # complete newer cycle is visible at the source.
   schedule:
-    - cron: "*/15 * * * *"
+    - cron: "7,22,37,52 * * * *"
   workflow_dispatch:
 
 permissions:
@@ -20,7 +20,7 @@ concurrency:
 jobs:
   dispatch-ready-cycles:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5

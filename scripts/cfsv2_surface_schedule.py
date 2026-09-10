@@ -7,6 +7,7 @@ import os
 from pathlib import Path
 import re
 import requests
+import time
 import cfsv2_seasonal as cf
 import cfsv2_surface_phase as phase
 from cfsv2_native_reference import historical_cycle
@@ -23,24 +24,31 @@ def exclusions(init, cycles, targets):
             excluded.append(cycle)
     return excluded
 
-def listed_complete(init, targets, get=requests.get):
+def listed_complete(init, targets, get=requests.get, sleep=time.sleep):
     url = f'{cf.NOMADS_ROOT.rstrip("/")}/cfs.{init[:8]}/{init[8:]}/6hrly_grib_01/'
-    try:
-        response = get(url, timeout=(10, 40))
-        if response.status_code == 404:
-            return False
-        response.raise_for_status()
-    except requests.RequestException as exc:
-        # NOMADS may return 403/429/5xx while a fresh cycle is being indexed or
-        # while the public endpoint is rate-limiting the probe. This is source
-        # unavailability, not a renderer failure; the next availability poll
-        # must retry it instead of failing the snowfall workflow.
-        print(f'{init}: six-hourly source directory unavailable ({exc})', flush=True)
-        return False
+    # Retry temporary source failures, but never infer readiness from an error.
+    for attempt in range(3):
+        try:
+            response = get(url, timeout=(5, 15))
+            if response.status_code == 404:
+                return False
+            response.raise_for_status()
+            break
+        except requests.RequestException as exc:
+            status = getattr(getattr(exc, 'response', None), 'status_code', None)
+            if status is not None and status not in (403, 408, 429, 500, 502, 503, 504):
+                print(f'{init}: source unavailable ({exc})', flush=True)
+                return False
+            if attempt == 2:
+                print(f'{init}: source unavailable after 3 attempts ({exc})', flush=True)
+                return False
+            delay = (15, 30)[attempt]
+            print(f'{init}: temporary source error; retrying in {delay}s', flush=True)
+            sleep(delay)
     available = set(re.findall(r'href="([^"/]+\.grb2)"', response.text))
     needed = {f'pgbf{valid}.01.{init}.grb2' for t in targets for valid in phase.endpoints(t)}
-    # Listing is a readiness screen. Acquisition still validates every field and interval.
     return needed.issubset(available)
+
 
 def choose(candidates, ready=listed_complete):
     for init in candidates:
