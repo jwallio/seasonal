@@ -97,8 +97,8 @@ def main() -> int:
           "500-mb styling should refresh when the shared height contract changes")
     check("group: height-maintenance-" in height and "cancel-in-progress: true" in height,
           "500-mb styling should supersede stale maintenance fan-out")
-    check("max-parallel: 4" in height and "500mb_height_anomaly_nh" in height,
-          "500-mb styling should refresh both views with bounded workers")
+    check("max-parallel: 1" in height and "500mb_height_anomaly_nh" in height,
+          "500-mb styling should serialize provider refreshes to respect CDS queue limits")
     check("publish_wait >= 1800" in height and "Pages publisher queue did not drain" in height,
           "500-mb handoff should wait for a bounded serialized Pages queue")
     check("${provider}_manifest.json" in height and "init_arg=$(PRODUCT=" in height

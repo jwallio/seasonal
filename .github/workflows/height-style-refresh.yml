@@ -21,7 +21,10 @@ jobs:
     timeout-minutes: 360
     strategy:
       fail-fast: false
-      max-parallel: 4
+      # CDS-backed providers share a queue quota.  Serializing this small
+      # maintenance fan-out avoids rejected SEAS5/C3S/JMA requests while
+      # preserving parallelism inside each provider's own rendering job.
+      max-parallel: 1
       matrix:
         workflow: [seas5.yml, cansips.yml, c3s.yml, jma.yml, cfsv2.yml, apcc.yml, cma-cpsv3.yml, superensemble.yml]
     env:
