@@ -9,6 +9,7 @@ import json
 from pathlib import Path, PurePosixPath
 from typing import Any, Iterable
 
+import numpy as np
 from PIL import Image, ImageDraw, ImageFont, ImageOps
 
 try:
@@ -160,6 +161,80 @@ def _rgb_image(opened: Image.Image) -> Image.Image:
     return image.convert("RGB")
 
 
+def _longest_run(mask: np.ndarray) -> tuple[int, int] | None:
+    indices = np.flatnonzero(mask)
+    if indices.size == 0:
+        return None
+    breaks = np.flatnonzero(np.diff(indices) > 1)
+    starts = np.concatenate(([0], breaks + 1))
+    ends = np.concatenate((breaks, [indices.size - 1]))
+    lengths = indices[ends] - indices[starts] + 1
+    choice = int(np.argmax(lengths))
+    return int(indices[starts[choice]]), int(indices[ends[choice]])
+
+
+def _map_corner(image: Image.Image) -> tuple[int, int]:
+    """Find the lower-right inside corner of a seasonal map frame.
+
+    The shared seasonal renderer draws a dark rectangular map border above a
+    horizontal colorbar. Detecting those two stable layout features keeps the
+    watermark in the map on square, CONUS, and Northern Hemisphere variants.
+    """
+
+    rgb = np.asarray(image.convert("RGB"))
+    height, width = rgb.shape[:2]
+    scan_floor = max(1, int(round(height * 0.52)))
+    minimum_run = max(80, int(round(width * 0.35)))
+    colorbar_top = None
+
+    for row_index in range(height - 2, scan_floor, -1):
+        row = rgb[row_index].astype(np.int16)
+        spread = row.max(axis=1) - row.min(axis=1)
+        brightness = row.mean(axis=1)
+        colored = (spread >= 12) | (brightness <= 235)
+        run = _longest_run(colored)
+        if run is None or run[1] - run[0] + 1 < minimum_run:
+            continue
+        colorbar_top = row_index
+        for upper in range(row_index - 1, scan_floor, -1):
+            upper_row = rgb[upper].astype(np.int16)
+            upper_spread = upper_row.max(axis=1) - upper_row.min(axis=1)
+            upper_brightness = upper_row.mean(axis=1)
+            upper_colored = (upper_spread >= 12) | (upper_brightness <= 235)
+            upper_run = _longest_run(upper_colored)
+            if upper_run is None or upper_run[1] - upper_run[0] + 1 < minimum_run:
+                break
+            colorbar_top = upper
+        break
+
+    if colorbar_top is not None:
+        border_floor = max(scan_floor, colorbar_top - int(round(height * 0.22)))
+        border_run_minimum = max(100, int(round(width * 0.40)))
+        for row_index in range(colorbar_top - 2, border_floor, -1):
+            row = rgb[row_index].astype(np.int16)
+            dark = row.max(axis=1) <= 130
+            run = _longest_run(dark)
+            if run is not None and run[1] - run[0] + 1 >= border_run_minimum:
+                return run[1], row_index
+
+        colorbar_row = rgb[colorbar_top].astype(np.int16)
+        spread = colorbar_row.max(axis=1) - colorbar_row.min(axis=1)
+        brightness = colorbar_row.mean(axis=1)
+        run = _longest_run((spread >= 12) | (brightness <= 235))
+        if run is not None:
+            right = run[1]
+            if height / max(width, 1) < 0.9:
+                right -= int(round(width * 0.015))
+            return right, colorbar_top - max(8, int(round(height * 0.012)))
+
+    # Fallback for non-seasonal or diagnostic images without a detectable map
+    # frame. This still preserves the source canvas and keeps the mark visible.
+    return (
+        width - max(6, int(round(width * 0.012))),
+        height - max(8, int(round(height * (0.16 if height / max(width, 1) < 0.9 else 0.23)))),
+    )
+
+
 def save_branded_image(source: Path, destination: Path) -> None:
     """Preserve the source canvas and add the protected in-map wall.cloud mark."""
 
@@ -181,13 +256,12 @@ def save_branded_image(source: Path, destination: Path) -> None:
         text_box = draw.textbbox((0, 0), "wall.cloud", font=font)
         text_height = text_box[3] - text_box[1]
 
-        # Seasonal source maps place the map above a legend/metadata band.
-        # Use the lower-right map-safe zone rather than adding a new footer.
-        map_band_fraction = 0.16 if height / max(width, 1) < 0.9 else 0.23
-        right_inset = max(6, round(width * 0.012))
-        bottom_inset = max(8, round(height * map_band_fraction))
-        x = width - right_inset - text_width
-        y = height - bottom_inset - text_height - text_box[1]
+        # Anchor to the detected map frame, not the full image canvas.
+        map_right, map_bottom = _map_corner(canvas)
+        right_inset = max(4, round(font_size * 0.28))
+        bottom_inset = max(4, round(font_size * 0.22))
+        x = map_right - right_inset - text_width
+        y = map_bottom - bottom_inset - text_height - text_box[1]
         stroke_width = max(1, round(font_size * 0.06))
 
         draw.text(
