@@ -555,10 +555,17 @@ jobs:
 
       - name: Validate seasonal manifests and build catalog
         run: |
-          python dashboard-source/scripts/build_seasonal_catalog.py \
-            --site-root site \
-            --strict \
+          set -euo pipefail
+          catalog_args=(
+            --site-root site
             --source-revision "${GITHUB_SHA}"
+          )
+          if [[ "$SOURCE_WORKFLOW" != "Native Snowfall Estimate Page" || -f site/sfs_manifest.json ]]; then
+            catalog_args+=(--strict)
+          else
+            echo "SFS bootstrap: publishing the existing tree while the first SFS payload is rendering."
+          fi
+          python dashboard-source/scripts/build_seasonal_catalog.py "${catalog_args[@]}"
 
       - name: Build wall.cloud share images
         run: python dashboard-source/scripts/build_seasonal_share_images.py --site-root site --strict
