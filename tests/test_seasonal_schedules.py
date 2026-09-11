@@ -100,6 +100,9 @@ def main() -> int:
         'init="$TARGET"',
         "Existing run is active",
         "Current suite is already live",
+        "one CDS worker per check",
+        "Another CDS worker is active",
+        "dispatched=1",
         "2700",
     ):
         check(term in release_text, f"seasonal release checker is missing its {term!r} contract")
@@ -118,7 +121,7 @@ def main() -> int:
         check(re.search(r"^\s+- all$", text, re.MULTILINE) is not None, f"{relative_path} must expose full-suite dispatch mode")
         check('== "all"' in text or "== 'all'" in text, f"{relative_path} must distinguish full-suite from targeted reruns")
         if relative_path == ".github/workflows/c3s.yml":
-            for term in ("strategy:", "max-parallel: 4", "matrix:", "c3s-product-", "merge_seasonal_payloads.py"):
+            for term in ("strategy:", "max-parallel: 2", "matrix:", "c3s-product-", "merge_seasonal_payloads.py"):
                 check(term in text, f"{relative_path} must use the product matrix merge path ({term})")
         else:
             check('for product in "${products[@]}"' in text, f"{relative_path} must render every scheduled product")

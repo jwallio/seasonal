@@ -21,7 +21,7 @@ on:
           - snowfall_anomaly
           - mslp_anomaly
       style_refresh:
-        description: "Style maintenance should publish through its batch handoff"
+        description: "Automated style children publish their own Pages payload"
         required: false
         default: false
         type: boolean
@@ -95,9 +95,9 @@ jobs:
     needs: plan
     strategy:
       fail-fast: false
-      # Four independent product requests materially reduce wall-clock time
-      # while keeping CDS request concurrency below an account-wide stampede.
-      max-parallel: 4
+      # C3S shares the Copernicus queue with JMA and SEAS5. Two product
+      # workers balance suite duration against concurrent lead submissions.
+      max-parallel: 2
       matrix:
         product: ${{ fromJSON(needs.plan.outputs.products) }}
     runs-on: ubuntu-latest
@@ -253,7 +253,7 @@ jobs:
       # completion cannot create a workflow_run publisher under GitHub's
       # recursion guard. An explicit workflow_dispatch remains permitted.
       - name: Dispatch C3S Pages publish
-        if: ${{ success() && inputs.style_refresh != true }}
+        if: ${{ success() && github.actor == 'github-actions[bot]' }}
         uses: ./.github/actions/publish-pages
         with:
           source-workflow: C3S Multi-System Seasonal Graphics

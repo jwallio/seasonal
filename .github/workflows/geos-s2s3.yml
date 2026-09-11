@@ -35,6 +35,7 @@ on:
         type: string
 
 permissions:
+  actions: write
   contents: read
 
 concurrency:
@@ -129,4 +130,13 @@ jobs:
           path: pages-payload
           if-no-files-found: error
           retention-days: 14
+      # workflow_run is suppressed for workflow_dispatch calls made with the
+      # repository Actions token. Publish this child directly so maintenance
+      # cannot strand a successful artifact.
+      - name: Dispatch Pages publisher for token-launched render
+        if: ${{ success() && github.actor == 'github-actions[bot]' }}
+        uses: ./.github/actions/publish-pages
+        with:
+          source-workflow: NASA GEOS-S2S-3 Seasonal Graphics
+          source-run-id: ${{ github.run_id }}
 

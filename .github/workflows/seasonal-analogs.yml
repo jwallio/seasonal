@@ -57,7 +57,7 @@ jobs:
 
       - name: Check source artifact availability
         id: source_payload
-        if: ${{ env.SOURCE_WORKFLOW != '' && steps.source_payload.outputs.available == 'true' }}
+        if: ${{ env.SOURCE_WORKFLOW != '' }}
         shell: powershell
         env:
           GH_TOKEN: ${{ github.token }}
@@ -102,7 +102,7 @@ jobs:
           run-id: ${{ env.SOURCE_RUN_ID }}
 
       - name: Overlay fresh source payload
-        if: ${{ env.SOURCE_WORKFLOW != '' }}
+        if: ${{ env.SOURCE_WORKFLOW != '' && steps.source_payload.outputs.available == 'true' }}
         shell: powershell
         run: |
           $source = $env:SOURCE_WORKFLOW

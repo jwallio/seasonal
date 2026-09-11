@@ -34,13 +34,24 @@ jobs:
         shell: bash
         run: ": > publish-refs.txt"
       - name: Refresh temperature products sequentially
+        id: refresh_products
         shell: bash
         run: |
           set -euo pipefail
           failed=0
           deferred=0
           # Refresh both temperature products across every operational provider.
-          for product in 850mb_temperature_anomaly 2m_temperature_anomaly; do
+          # The CDS-backed workers can render their complete suite from one
+          # representative published cycle; this keeps their account queue
+          # serialized while still refreshing both temperature views.
+          products=(850mb_temperature_anomaly 2m_temperature_anomaly)
+          plan_product=850mb_temperature_anomaly
+          if [[ "$WORKFLOW" == "seas5.yml" || "$WORKFLOW" == "c3s.yml" || "$WORKFLOW" == "jma.yml" ]]; then
+            products=(all)
+          fi
+          for product in "${products[@]}"; do
+            request_product="$product"
+            [[ "$product" == "all" ]] && request_product="$plan_product
             # NMME provides only 2-m temperature.
             [[ "$WORKFLOW" == "nmme.yml" && "$product" == "850mb_temperature_anomaly" ]] && continue
             # Give a live producer a bounded hand-off window. Product-scoped
@@ -65,8 +76,19 @@ jobs:
             [[ "$provider" == "geos-s2s3" ]] && provider=geos_s2s3
             curl -fsSL --retry 3 --connect-timeout 15 --max-time 60 \
               "https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/${provider}_manifest.json" -o published.json
-            python scripts/temperature_refresh_plan.py published.json "$WORKFLOW" "$product" > dispatch.json
+            python scripts/temperature_refresh_plan.py published.json "$WORKFLOW" "$request_product" > dispatch.json
             cat dispatch.json >> "$GITHUB_STEP_SUMMARY"
+            if [[ "$product" == "all" ]]; then
+              python - <<'PY'
+          import json
+          with open("dispatch.json", encoding="utf-8") as handle:
+              payload = json.load(handle)
+          payload["product"] = "all"
+          with open("dispatch.json", "w", encoding="utf-8") as handle:
+              json.dump(payload, handle)
+              handle.write("\n")
+          PY
+            fi
             if [[ "$WORKFLOW" == "seas5.yml" || "$WORKFLOW" == "jma.yml" || "$WORKFLOW" == "c3s.yml" ]]; then
               WORKFLOW="$WORKFLOW" python - <<'PY'
           import json
@@ -107,26 +129,11 @@ jobs:
             done
             test -n "$run_id"
             echo "- $WORKFLOW / $product: https://github.com/$GH_REPO/actions/runs/$run_id" >> "$GITHUB_STEP_SUMMARY"
-            if gh run watch "$run_id" --exit-status --interval 30; then
-              case "$WORKFLOW" in
-                seas5.yml)
-                  printf '%s\t%s\n' "ECMWF SEAS5 Seasonal Graphics" "$run_id" >> publish-refs.txt
-                  ;;
-                jma.yml)
-                  printf '%s\t%s\n' "JMA Seasonal Graphics" "$run_id" >> publish-refs.txt
-                  ;;
-                c3s.yml)
-                  printf '%s\t%s\n' "C3S Multi-System Seasonal Graphics" "$run_id" >> publish-refs.txt
-                  ;;
-                *)
-                  # Other providers publish through publish-pages workflow_run.
-                  ;;
-              esac
-            else
-              echo "::error::$WORKFLOW / $product failed; see run $run_id"
-              failed=1
-            fi
+            echo "::notice::$WORKFLOW / $product dispatched as run $run_id; the provider will publish its Pages artifact on completion."
           done
+          if (( deferred )); then
+            echo "::warning::$deferred temperature style refresh product(s) were deferred because a live producer was already active."
+          fi
           exit "$failed"
       - name: Upload serialized Pages handoff
         if: always()
@@ -212,8 +219,5 @@ jobs:
           if [[ "$REFRESH_RESULT" != "success" ]]; then
             echo "::error::At least one producer refresh failed"
             failed=1
-          fi
-          if (( deferred )); then
-            echo "::warning::$deferred temperature style refresh product(s) were deferred because a live producer was already active."
           fi
           exit "$failed"

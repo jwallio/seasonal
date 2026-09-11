@@ -36,12 +36,23 @@ jobs:
         shell: bash
         run: ": > publish-refs.txt"
       - name: Refresh both views sequentially
+        id: refresh_products
         shell: bash
         run: |
           set -euo pipefail
           failed=0
           deferred=0
-          for product in 500mb_height_anomaly 500mb_height_anomaly_nh; do
+          # The CDS-backed workers can render their complete suite from one
+          # representative published cycle; this keeps their account queue
+          # serialized while still refreshing both requested height views.
+          products=(500mb_height_anomaly 500mb_height_anomaly_nh)
+          plan_product=500mb_height_anomaly
+          if [[ "$WORKFLOW" == "seas5.yml" || "$WORKFLOW" == "c3s.yml" || "$WORKFLOW" == "jma.yml" ]]; then
+            products=(all)
+          fi
+          for product in "${products[@]}"; do
+            request_product="$product"
+            [[ "$product" == "all" ]] && request_product="$plan_product
             # Give an existing producer a bounded hand-off window; the
             # product-scoped producer key below prevents cross-product canceling.
             wait_seconds=0
@@ -68,7 +79,7 @@ jobs:
               init_arg=""
               pages_url="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/${provider}_manifest.json"
               if curl -fsSL --retry 2 --connect-timeout 10 "$pages_url" -o published.json; then
-                init_arg=$(PRODUCT="$product" python - <<'PY'
+                init_arg=$(PRODUCT="$request_product" python - <<'PY'
           import json, os, re
           try:
               payload = json.load(open("published.json", encoding="utf-8"))
@@ -93,7 +104,11 @@ jobs:
             fi
             started=$(date -u +%Y-%m-%dT%H:%M:%SZ)
             for attempt in 1 2 3 4 5; do
-              dispatch_args=(-f product="$product")
+              if [[ "$product" == "all" ]]; then
+                dispatch_args=(-f product=all)
+              else
+                dispatch_args=(-f product="$product")
+              fi
               [[ "$WORKFLOW" == "jma.yml" || "$WORKFLOW" == "c3s.yml" ]] && dispatch_args+=(-f init="$init_arg")
               [[ "$WORKFLOW" == "seas5.yml" || "$WORKFLOW" == "jma.yml" || "$WORKFLOW" == "c3s.yml" ]] && dispatch_args+=(-f style_refresh=true)
               if gh workflow run "$WORKFLOW" --ref main "${dispatch_args[@]}"; then
@@ -113,26 +128,11 @@ jobs:
             done
             test -n "$run_id"
             echo "- $WORKFLOW / $product: https://github.com/$GH_REPO/actions/runs/$run_id" >> "$GITHUB_STEP_SUMMARY"
-            if gh run watch "$run_id" --exit-status --interval 30; then
-              case "$WORKFLOW" in
-                seas5.yml)
-                  printf '%s\t%s\n' "ECMWF SEAS5 Seasonal Graphics" "$run_id" >> publish-refs.txt
-                  ;;
-                jma.yml)
-                  printf '%s\t%s\n' "JMA Seasonal Graphics" "$run_id" >> publish-refs.txt
-                  ;;
-                c3s.yml)
-                  printf '%s\t%s\n' "C3S Multi-System Seasonal Graphics" "$run_id" >> publish-refs.txt
-                  ;;
-                *)
-                  # Other providers publish through publish-pages workflow_run.
-                  ;;
-              esac
-            else
-              echo "::error::$WORKFLOW / $product failed; see run $run_id"
-              failed=1
-            fi
+            echo "::notice::$WORKFLOW / $product dispatched as run $run_id; the provider will publish its Pages artifact on completion."
           done
+          if (( deferred )); then
+            echo "::warning::$deferred 500-mb style refresh product(s) were deferred because a live producer was already active."
+          fi
           exit "$failed"
       - name: Upload serialized Pages handoff
         if: always()
@@ -218,8 +218,5 @@ jobs:
           if [[ "$REFRESH_RESULT" != "success" ]]; then
             echo "::error::At least one producer refresh failed"
             failed=1
-          fi
-          if (( deferred )); then
-            echo "::warning::$deferred 500-mb style refresh product(s) were deferred because a live producer was already active."
           fi
           exit "$failed"

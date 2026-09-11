@@ -101,6 +101,9 @@ def main() -> int:
           "500-mb styling should bound provider refreshes without serializing the whole fan-out")
     check("deferring this style refresh" in height,
           "500-mb styling must not cancel an active scheduled or release run")
+    check("the provider will publish its Pages artifact on completion" in height
+          and height.count("if (( deferred ));") == 1,
+          "500-mb maintenance must not wait on child runs or use an out-of-scope deferred variable")
     check("publish_wait >= 1800" in height and "Pages publisher queue did not drain" in height,
           "500-mb handoff should wait for a bounded serialized Pages queue")
     check("${provider}_manifest.json" in height and "init_arg=$(PRODUCT=" in height
@@ -128,12 +131,36 @@ def main() -> int:
           "temperature maintenance changes must trigger a replacement run")
     check("isinstance(value, bool)" in temperature and 'payload["style_refresh"] = True' in temperature,
           "temperature maintenance must stringify boolean workflow inputs before gh dispatch")
+    check("the provider will publish its Pages artifact on completion" in temperature
+          and temperature.count("if (( deferred ));") == 1,
+          "temperature maintenance must not wait on child runs or use an out-of-scope deferred variable")
     check("deferring this style refresh" in temperature,
           "temperature styling must not cancel an active scheduled or release run")
     analogs = (WORKFLOWS / "seasonal-analogs.yml").read_text(encoding="utf-8")
     check("id: source_payload" in analogs and "actions/runs/{1}/artifacts" in analogs
-          and "steps.source_payload.outputs.available == 'true'" in analogs,
+          and "steps.source_payload.outputs.available == 'true'" in analogs
+          and "if: ${{ env.SOURCE_WORKFLOW != '' }}" in analogs
+          and "if: ${{ env.SOURCE_WORKFLOW != '' && steps.source_payload.outputs.available == 'true' }}" in analogs,
           "analog source-triggered builds must verify artifacts and tolerate source runs without Pages payloads")
+    token_publishers = {
+        "cansips.yml": "CanSIPS v3 Seasonal Graphics",
+        "apcc.yml": "APCC MME Seasonal Graphics",
+        "cma-cpsv3.yml": "CMA CPSv3 Seasonal Graphics",
+        "geos-s2s3.yml": "NASA GEOS-S2S-3 Seasonal Graphics",
+        "nmme.yml": "NOAA NMME Seasonal Graphics",
+        "superensemble.yml": "Deduplicated Seasonal Super Ensemble",
+    }
+    for name, source_name in token_publishers.items():
+        workflow = (WORKFLOWS / name).read_text(encoding="utf-8")
+        check("actions: write" in workflow, f"{name} must allow token-launched Pages publication")
+        check("Dispatch Pages publisher for token-launched render" in workflow,
+              f"{name} must directly publish token-launched artifacts")
+        check("uses: ./.github/actions/publish-pages" in workflow,
+              f"{name} must use the shared Pages handoff")
+        check(f"source-workflow: {source_name}" in workflow,
+              f"{name} must identify its Pages source")
+        check("github.actor == 'github-actions[bot]'" in workflow,
+              f"{name} must guard direct publication to token-launched runs")
     print("SEASONAL ACTIONS CONTRACT OK: planned matrices, shared tools, product-scoped workers, and bounded publishers")
     return 0
 

@@ -42,6 +42,7 @@ on:
         type: string
 
 permissions:
+  actions: write
   contents: read
 
 concurrency:
@@ -316,4 +317,12 @@ jobs:
           path: pages-payload
           if-no-files-found: error
           retention-days: 14
+      # workflow_run is suppressed for workflow_dispatch calls made with the
+      # repository Actions token. Publish this merged child directly.
+      - name: Dispatch Pages publisher for token-launched render
+        if: ${{ success() && github.actor == 'github-actions[bot]' }}
+        uses: ./.github/actions/publish-pages
+        with:
+          source-workflow: Deduplicated Seasonal Super Ensemble
+          source-run-id: ${{ github.run_id }}
 
