@@ -72,8 +72,9 @@ climatology using its common **1993–2016** reference. Do not subtract the old
 continue to govern Datamart products; they do not change the native C3S baseline.
 
 The 10:1 ratio remains an explicit depth estimate, not an observed accumulation
-or snowpack depth. The maps use whole-inch bins through ±10, white between -1
-and +1, and report the actual displayed clipped fraction. Data-integrity QC is
+or snowpack depth. The maps use the shared nonlinear snow-depth bands from −100 to +100 inches,
+with white between −1 and +1 inches, and report the actual displayed clipped
+fraction. Data-integrity QC is
 not a claim of observed seasonal snowfall forecast skill.
 
 C3S forecast months 1–6 correspond to CanSIPS leads 0–5. September leads 3,4,5

@@ -50,9 +50,10 @@ anomalies. WN2 therefore does not subtract a second local hindcast
 climatology. Geopotential is divided by standard gravity (`9.80665 m s⁻²`);
 precipitation and snowfall anomaly rates are multiplied by the actual seconds
 in the target month and converted from metres to inches. Snowfall uses a
-nonlinear ±2.0-inch monthly display range and ±4.0-inch seasonal/DJF range.
-Every native monthly anomaly and seasonal aggregate passes numeric coverage
-and physical-range QC before rendering.
+shared nonlinear estimated snow-depth display bands from −100 to +100 inches,
+with a white −1 to +1 inch center band. The canonical grids remain LWE, and
+every native monthly anomaly and seasonal aggregate passes numeric coverage and
+physical-range QC before rendering.
 
 The 500-mb anomaly fill uses the shared seasonal −120 to +120 m scale in 10-metre intervals, matching the other verified 500-mb model maps.
 
@@ -134,10 +135,10 @@ Both forecast and reference are implicitly assigned the same fixed ratio.
 The decoder and grids used in multi-model comparisons remain in LWE inches;
 run metadata records the image quantity, ratio, and white band separately.
 
-The display matches the owner-provided CFSv2 graphic, extended to ±7 inch endpoints,
-nonlinear quarter-inch breakpoints, and a white -0.5 to +0.5 inch band.
-This scale applies to monthly and seasonal SEAS5 snow-depth images. Endpoint
-labels indicate saturation beyond ±7 inches; source values remain unchanged.
+The display uses the shared nonlinear estimated snow-depth bands from −100 to
++100 inches, with a white −1 to +1 inch center band. This scale applies to
+monthly and seasonal SEAS5 snow-depth images; endpoint labels indicate
+saturation beyond ±100 inches and source LWE values remain unchanged.
 The white band is in estimated snow inches, not LWE inches.
 
 CDS forecast month 1 is the initialization month. For September 2026,
