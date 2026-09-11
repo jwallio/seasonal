@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "kind": "cansips_seasonal_manifest",
-  "generated_utc": "2026-09-11T17:04:26Z",
+  "generated_utc": "2026-09-11T20:43:38Z",
   "source": "ECCC MSC CanSIPS v3 / Datamart",
   "source_url": "https://eccc-msc.github.io/open-data/msc-data/nwp_cansips/readme_cansips-datamart_en/",
   "source_urls": [
@@ -33,7 +33,7 @@
       "source": "ECCC CanSIPS v3 / Copernicus C3S",
       "source_url": "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-single-levels",
       "init_utc": "2026-09-01T00:00:00Z",
-      "generated_utc": "2026-09-11T17:04:18Z",
+      "generated_utc": "2026-09-11T20:43:30Z",
       "field": "snowfall_anomaly",
       "units": "in",
       "raw_field": "snowfall_anomalous_rate_of_accumulation",
@@ -59,15 +59,17 @@
           -1,
           1
         ],
-        "numeric_grid_quantity": "snowfall LWE departure"
+        "numeric_grid_quantity": "estimated snowfall depth departure",
+        "numeric_grid_units": "inches snow",
+        "canonical_grid_quantity": "snowfall LWE departure"
       },
-      "conversion": "Native snowfall anomalous rate \u00d7 target-month seconds \u00f7 0.0254; equal component mean; sum months; display only \u00d710.",
+      "conversion": "Native snowfall anomalous rate \u00d7 target-month seconds \u00f7 0.0254 to obtain LWE inches; equal component mean; sum months; multiply signed departures by 10 for estimated snow-depth inches.",
       "targets": [
         {
           "id": "cansips-2026090100-snowfall_anomaly-202612-202702",
           "target_month": "202612-202702",
           "lead_month": "3\u20135",
-          "field": "snowfall_anomaly",
+          "field": "snowfall_depth_anomaly",
           "units": "in",
           "valid_start_utc": "2026-12-01T00:00:00Z",
           "valid_end_utc": "2027-03-01T00:00:00Z",
@@ -86,12 +88,14 @@
           "aggregation": "ensemble-mean 3-month total departure",
           "quality_control": {
             "status": "passed",
-            "field": "snowfall_anomaly",
+            "field": "snowfall_depth_anomaly",
             "units": "in",
-            "quantity": "snowfall LWE departure",
-            "minimum": -4.839817759537391,
-            "maximum": 2.537483609563338,
+            "quantity": "estimated snowfall depth departure",
+            "minimum": -48.39817759537391,
+            "maximum": 25.37483609563338,
             "finite_fraction": 1.0,
+            "source_minimum": -4.839817759537391,
+            "source_maximum": 2.537483609563338,
             "display": {
               "quantity": "estimated snowfall depth departure",
               "units": "in",
@@ -103,16 +107,38 @@
             "issues": [],
             "validation_scope": "data integrity and units; not observational forecast skill"
           },
+          "display": {
+            "quantity": "estimated snowfall depth departure",
+            "units": "in",
+            "snow_to_liquid_ratio": 10.0,
+            "scale_inches": [
+              -10,
+              10
+            ],
+            "white_band_inches": [
+              -1,
+              1
+            ],
+            "canonical_grid_quantity": "snowfall liquid-water-equivalent departure",
+            "canonical_grid_units": "inches liquid-water equivalent",
+            "numeric_grid_quantity": "estimated snowfall depth departure",
+            "numeric_grid_units": "inches snow",
+            "conversion_kind": "snowfall_lwe_to_snow_depth_10_to_1",
+            "conversion": "estimated snow-depth departure (in) = snowfall LWE departure (in) \u00d7 10.0",
+            "calendar_alignment_version": 2,
+            "native_blend_version": 1
+          },
           "ensemble_complete": true,
           "status": "rendered",
           "numeric_grid": "public/seasonal/cansips/20260901/cansips_native_snow_202612-202702.csv.gz",
+          "native_lwe_grid": "public/seasonal/cansips/20260901/cansips_native_snow_202612-202702.lwe.csv.gz",
           "image": "public/seasonal/cansips/20260901/cansips_native_snowfalla_winter_202612-202702.jpg"
         },
         {
           "id": "cansips-2026090100-snowfall_anomaly-202701-202703",
           "target_month": "202701-202703",
           "lead_month": "4\u20136",
-          "field": "snowfall_anomaly",
+          "field": "snowfall_depth_anomaly",
           "units": "in",
           "valid_start_utc": "2027-01-01T00:00:00Z",
           "valid_end_utc": "2027-04-01T00:00:00Z",
@@ -139,7 +165,7 @@
           "id": "cansips-2026090100-snowfall_anomaly-202612-202701",
           "target_month": "202612-202701",
           "lead_month": "3\u20134",
-          "field": "snowfall_anomaly",
+          "field": "snowfall_depth_anomaly",
           "units": "in",
           "valid_start_utc": "2026-12-01T00:00:00Z",
           "valid_end_utc": "2027-02-01T00:00:00Z",
@@ -158,12 +184,14 @@
           "label": "D+J 2026\u201327",
           "quality_control": {
             "status": "passed",
-            "field": "snowfall_anomaly",
+            "field": "snowfall_depth_anomaly",
             "units": "in",
-            "quantity": "snowfall LWE departure",
-            "minimum": -2.753146198075214,
-            "maximum": 1.7312831840899174,
+            "quantity": "estimated snowfall depth departure",
+            "minimum": -27.53146198075214,
+            "maximum": 17.312831840899175,
             "finite_fraction": 1.0,
+            "source_minimum": -2.753146198075214,
+            "source_maximum": 1.7312831840899174,
             "display": {
               "quantity": "estimated snowfall depth departure",
               "units": "in",
@@ -175,16 +203,38 @@
             "issues": [],
             "validation_scope": "data integrity and units; not observational forecast skill"
           },
+          "display": {
+            "quantity": "estimated snowfall depth departure",
+            "units": "in",
+            "snow_to_liquid_ratio": 10.0,
+            "scale_inches": [
+              -10,
+              10
+            ],
+            "white_band_inches": [
+              -1,
+              1
+            ],
+            "canonical_grid_quantity": "snowfall liquid-water-equivalent departure",
+            "canonical_grid_units": "inches liquid-water equivalent",
+            "numeric_grid_quantity": "estimated snowfall depth departure",
+            "numeric_grid_units": "inches snow",
+            "conversion_kind": "snowfall_lwe_to_snow_depth_10_to_1",
+            "conversion": "estimated snow-depth departure (in) = snowfall LWE departure (in) \u00d7 10.0",
+            "calendar_alignment_version": 2,
+            "native_blend_version": 1
+          },
           "ensemble_complete": true,
           "status": "rendered",
           "numeric_grid": "public/seasonal/cansips/20260901/cansips_native_snow_202612-202701.csv.gz",
+          "native_lwe_grid": "public/seasonal/cansips/20260901/cansips_native_snow_202612-202701.lwe.csv.gz",
           "image": "public/seasonal/cansips/20260901/cansips_native_snowfalla_winter_202612-202701.jpg"
         },
         {
           "id": "cansips-2026090100-snowfall_anomaly-lead03",
           "target_month": "202612",
           "lead_month": 3,
-          "field": "snowfall_anomaly",
+          "field": "snowfall_depth_anomaly",
           "units": "in",
           "valid_start_utc": "2026-12-01T00:00:00Z",
           "valid_end_utc": "2027-01-01T00:00:00Z",
@@ -234,12 +284,14 @@
           ],
           "quality_control": {
             "status": "passed",
-            "field": "snowfall_anomaly",
+            "field": "snowfall_depth_anomaly",
             "units": "in",
-            "quantity": "snowfall LWE departure",
-            "minimum": -1.529039469401177,
-            "maximum": 0.7716486523772408,
+            "quantity": "estimated snowfall depth departure",
+            "minimum": -15.29039469401177,
+            "maximum": 7.716486523772408,
             "finite_fraction": 1.0,
+            "source_minimum": -1.529039469401177,
+            "source_maximum": 0.7716486523772408,
             "display": {
               "quantity": "estimated snowfall depth departure",
               "units": "in",
@@ -251,16 +303,38 @@
             "issues": [],
             "validation_scope": "data integrity and units; not observational forecast skill"
           },
+          "display": {
+            "quantity": "estimated snowfall depth departure",
+            "units": "in",
+            "snow_to_liquid_ratio": 10.0,
+            "scale_inches": [
+              -10,
+              10
+            ],
+            "white_band_inches": [
+              -1,
+              1
+            ],
+            "canonical_grid_quantity": "snowfall liquid-water-equivalent departure",
+            "canonical_grid_units": "inches liquid-water equivalent",
+            "numeric_grid_quantity": "estimated snowfall depth departure",
+            "numeric_grid_units": "inches snow",
+            "conversion_kind": "snowfall_lwe_to_snow_depth_10_to_1",
+            "conversion": "estimated snow-depth departure (in) = snowfall LWE departure (in) \u00d7 10.0",
+            "calendar_alignment_version": 2,
+            "native_blend_version": 1
+          },
           "ensemble_complete": true,
           "status": "rendered",
           "numeric_grid": "public/seasonal/cansips/20260901/cansips_native_snow_202612.csv.gz",
+          "native_lwe_grid": "public/seasonal/cansips/20260901/cansips_native_snow_202612.lwe.csv.gz",
           "image": "public/seasonal/cansips/20260901/cansips_native_snowfalla_winter_202612.jpg"
         },
         {
           "id": "cansips-2026090100-snowfall_anomaly-lead04",
           "target_month": "202701",
           "lead_month": 4,
-          "field": "snowfall_anomaly",
+          "field": "snowfall_depth_anomaly",
           "units": "in",
           "valid_start_utc": "2027-01-01T00:00:00Z",
           "valid_end_utc": "2027-02-01T00:00:00Z",
@@ -310,12 +384,14 @@
           ],
           "quality_control": {
             "status": "passed",
-            "field": "snowfall_anomaly",
+            "field": "snowfall_depth_anomaly",
             "units": "in",
-            "quantity": "snowfall LWE departure",
-            "minimum": -1.5259916714186814,
-            "maximum": 0.9596345317126767,
+            "quantity": "estimated snowfall depth departure",
+            "minimum": -15.259916714186815,
+            "maximum": 9.596345317126767,
             "finite_fraction": 1.0,
+            "source_minimum": -1.5259916714186814,
+            "source_maximum": 0.9596345317126767,
             "display": {
               "quantity": "estimated snowfall depth departure",
               "units": "in",
@@ -327,16 +403,38 @@
             "issues": [],
             "validation_scope": "data integrity and units; not observational forecast skill"
           },
+          "display": {
+            "quantity": "estimated snowfall depth departure",
+            "units": "in",
+            "snow_to_liquid_ratio": 10.0,
+            "scale_inches": [
+              -10,
+              10
+            ],
+            "white_band_inches": [
+              -1,
+              1
+            ],
+            "canonical_grid_quantity": "snowfall liquid-water-equivalent departure",
+            "canonical_grid_units": "inches liquid-water equivalent",
+            "numeric_grid_quantity": "estimated snowfall depth departure",
+            "numeric_grid_units": "inches snow",
+            "conversion_kind": "snowfall_lwe_to_snow_depth_10_to_1",
+            "conversion": "estimated snow-depth departure (in) = snowfall LWE departure (in) \u00d7 10.0",
+            "calendar_alignment_version": 2,
+            "native_blend_version": 1
+          },
           "ensemble_complete": true,
           "status": "rendered",
           "numeric_grid": "public/seasonal/cansips/20260901/cansips_native_snow_202701.csv.gz",
+          "native_lwe_grid": "public/seasonal/cansips/20260901/cansips_native_snow_202701.lwe.csv.gz",
           "image": "public/seasonal/cansips/20260901/cansips_native_snowfalla_winter_202701.jpg"
         },
         {
           "id": "cansips-2026090100-snowfall_anomaly-lead05",
           "target_month": "202702",
           "lead_month": 5,
-          "field": "snowfall_anomaly",
+          "field": "snowfall_depth_anomaly",
           "units": "in",
           "valid_start_utc": "2027-02-01T00:00:00Z",
           "valid_end_utc": "2027-03-01T00:00:00Z",
@@ -386,12 +484,14 @@
           ],
           "quality_control": {
             "status": "passed",
-            "field": "snowfall_anomaly",
+            "field": "snowfall_depth_anomaly",
             "units": "in",
-            "quantity": "snowfall LWE departure",
-            "minimum": -2.0866715614621767,
-            "maximum": 0.8062004254734205,
+            "quantity": "estimated snowfall depth departure",
+            "minimum": -20.866715614621768,
+            "maximum": 8.062004254734205,
             "finite_fraction": 1.0,
+            "source_minimum": -2.0866715614621767,
+            "source_maximum": 0.8062004254734205,
             "display": {
               "quantity": "estimated snowfall depth departure",
               "units": "in",
@@ -403,16 +503,38 @@
             "issues": [],
             "validation_scope": "data integrity and units; not observational forecast skill"
           },
+          "display": {
+            "quantity": "estimated snowfall depth departure",
+            "units": "in",
+            "snow_to_liquid_ratio": 10.0,
+            "scale_inches": [
+              -10,
+              10
+            ],
+            "white_band_inches": [
+              -1,
+              1
+            ],
+            "canonical_grid_quantity": "snowfall liquid-water-equivalent departure",
+            "canonical_grid_units": "inches liquid-water equivalent",
+            "numeric_grid_quantity": "estimated snowfall depth departure",
+            "numeric_grid_units": "inches snow",
+            "conversion_kind": "snowfall_lwe_to_snow_depth_10_to_1",
+            "conversion": "estimated snow-depth departure (in) = snowfall LWE departure (in) \u00d7 10.0",
+            "calendar_alignment_version": 2,
+            "native_blend_version": 1
+          },
           "ensemble_complete": true,
           "status": "rendered",
           "numeric_grid": "public/seasonal/cansips/20260901/cansips_native_snow_202702.csv.gz",
+          "native_lwe_grid": "public/seasonal/cansips/20260901/cansips_native_snow_202702.lwe.csv.gz",
           "image": "public/seasonal/cansips/20260901/cansips_native_snowfalla_winter_202702.jpg"
         },
         {
           "id": "cansips-2026090100-snowfall_anomaly-lead06",
           "target_month": "202703",
           "lead_month": 6,
-          "field": "snowfall_anomaly",
+          "field": "snowfall_depth_anomaly",
           "units": "in",
           "valid_start_utc": "2027-03-01T00:00:00Z",
           "valid_end_utc": "2027-04-01T00:00:00Z",
