@@ -2,8 +2,8 @@
   "schema_version": 1,
   "registry_version": 1,
   "kind": "seasonal_dashboard_catalog",
-  "generated_utc": "2026-09-11T20:53:46Z",
-  "source_revision": "f7d05d2ed57aef4c97699632f9db7fb78cc97d0a",
+  "generated_utc": "2026-09-11T21:43:59Z",
+  "source_revision": "7b388e16fd0496a8e4da7479224472f33a052335",
   "model_order": [
     "superensemble",
     "c3s",
@@ -113003,14 +113003,14 @@
           "raw_field": "tsnowpsfc / TSNOWP_surface",
           "raw_units": "kg/m^2",
           "source_warning": "NOAA SFS beta2 is an experimental development archive; source fields are schema-validated before publication.",
-          "conversion": "Native TSNOWP total snow precipitation converted from kg m-2 to liquid-water-equivalent inches, then multiplied by 10.0; published snowfall departure is estimated snow depth in inches",
+          "conversion": "Native TSNOWP monthly-mean daily snow precipitation multiplied by calendar-month days, converted from kg m-2 to liquid-water-equivalent inches, then multiplied by 10.0; published snowfall departure is estimated snow depth in inches",
           "display": {
             "quantity": "estimated snowfall depth departure",
             "units": "in",
             "snow_to_liquid_ratio": 10.0,
             "scale_inches": [
-              -10,
-              10
+              -100,
+              100
             ],
             "white_band_inches": [
               -1,
@@ -113063,10 +113063,10 @@
                 "total_points": 6413,
                 "finite_points": 6413,
                 "finite_fraction": 1.0,
-                "minimum": -0.450447,
-                "maximum": 0.902046,
-                "p01": -0.163158,
-                "p99": 0.199226,
+                "minimum": -1.396385,
+                "maximum": 2.796343,
+                "p01": -0.505789,
+                "p99": 0.617601,
                 "display": {
                   "minimum": -10.0,
                   "maximum": 10.0,
@@ -113093,24 +113093,24 @@
                     9,
                     10
                   ],
-                  "below_fraction": 0.0,
-                  "above_fraction": 0.0,
-                  "clipped_fraction": 0.0
+                  "below_fraction": 0.000468,
+                  "above_fraction": 0.004054,
+                  "clipped_fraction": 0.004522
                 },
                 "issues": [],
                 "status": "passed"
               },
               "derivation": {
                 "method": "snowfall_lwe_to_snow_depth_10_to_1",
-                "description": "Native TSNOWP total snow precipitation converted from kg m-2 to liquid-water-equivalent inches, then multiplied by 10.0; published snowfall departure is estimated snow depth in inches"
+                "description": "Native TSNOWP monthly-mean daily snow precipitation multiplied by calendar-month days, converted from kg m-2 to liquid-water-equivalent inches, then multiplied by 10.0; published snowfall departure is estimated snow depth in inches"
               },
               "display": {
                 "quantity": "estimated snowfall depth departure",
                 "units": "in",
                 "snow_to_liquid_ratio": 10.0,
                 "scale_inches": [
-                  -10,
-                  10
+                  -100,
+                  100
                 ],
                 "white_band_inches": [
                   -1,
@@ -113170,10 +113170,10 @@
                 "total_points": 6413,
                 "finite_points": 6413,
                 "finite_fraction": 1.0,
-                "minimum": -0.222496,
-                "maximum": 1.942075,
-                "p01": -0.134531,
-                "p99": 0.536125,
+                "minimum": -0.689738,
+                "maximum": 6.020433,
+                "p01": -0.417047,
+                "p99": 1.661987,
                 "display": {
                   "minimum": -10.0,
                   "maximum": 10.0,
@@ -113201,23 +113201,29 @@
                     10
                   ],
                   "below_fraction": 0.0,
-                  "above_fraction": 0.003431,
-                  "clipped_fraction": 0.003431
+                  "above_fraction": 0.020739,
+                  "clipped_fraction": 0.020739
                 },
-                "issues": [],
-                "status": "passed"
+                "issues": [
+                  {
+                    "code": "display_scale_clipping",
+                    "severity": "warning",
+                    "message": "2.1% of finite cells exceed the fixed display scale."
+                  }
+                ],
+                "status": "warning"
               },
               "derivation": {
                 "method": "snowfall_lwe_to_snow_depth_10_to_1",
-                "description": "Native TSNOWP total snow precipitation converted from kg m-2 to liquid-water-equivalent inches, then multiplied by 10.0; published snowfall departure is estimated snow depth in inches"
+                "description": "Native TSNOWP monthly-mean daily snow precipitation multiplied by calendar-month days, converted from kg m-2 to liquid-water-equivalent inches, then multiplied by 10.0; published snowfall departure is estimated snow depth in inches"
               },
               "display": {
                 "quantity": "estimated snowfall depth departure",
                 "units": "in",
                 "snow_to_liquid_ratio": 10.0,
                 "scale_inches": [
-                  -10,
-                  10
+                  -100,
+                  100
                 ],
                 "white_band_inches": [
                   -1,
@@ -113237,7 +113243,7 @@
               "_catalog": {
                 "canonical_product": "snowfall_anomaly",
                 "comparable": true,
-                "quality_control": "passed"
+                "quality_control": "warning"
               }
             },
             {
@@ -113277,10 +113283,10 @@
                 "total_points": 6413,
                 "finite_points": 6413,
                 "finite_fraction": 1.0,
-                "minimum": -0.606734,
-                "maximum": 1.577188,
-                "p01": -0.231804,
-                "p99": 0.301484,
+                "minimum": -1.698856,
+                "maximum": 4.416127,
+                "p01": -0.64905,
+                "p99": 0.844154,
                 "display": {
                   "minimum": -10.0,
                   "maximum": 10.0,
@@ -113307,24 +113313,24 @@
                     9,
                     10
                   ],
-                  "below_fraction": 0.0,
-                  "above_fraction": 0.001871,
-                  "clipped_fraction": 0.001871
+                  "below_fraction": 0.001403,
+                  "above_fraction": 0.008109,
+                  "clipped_fraction": 0.009512
                 },
                 "issues": [],
                 "status": "passed"
               },
               "derivation": {
                 "method": "snowfall_lwe_to_snow_depth_10_to_1",
-                "description": "Native TSNOWP total snow precipitation converted from kg m-2 to liquid-water-equivalent inches, then multiplied by 10.0; published snowfall departure is estimated snow depth in inches"
+                "description": "Native TSNOWP monthly-mean daily snow precipitation multiplied by calendar-month days, converted from kg m-2 to liquid-water-equivalent inches, then multiplied by 10.0; published snowfall departure is estimated snow depth in inches"
               },
               "display": {
                 "quantity": "estimated snowfall depth departure",
                 "units": "in",
                 "snow_to_liquid_ratio": 10.0,
                 "scale_inches": [
-                  -10,
-                  10
+                  -100,
+                  100
                 ],
                 "white_band_inches": [
                   -1,
@@ -113384,10 +113390,10 @@
                 "total_points": 6413,
                 "finite_points": 6413,
                 "finite_fraction": 1.0,
-                "minimum": -0.974432,
-                "maximum": 4.419483,
-                "p01": -0.465634,
-                "p99": 0.940022,
+                "minimum": -2.83872,
+                "maximum": 13.227242,
+                "p01": -1.362447,
+                "p99": 2.818953,
                 "display": {
                   "minimum": -10.0,
                   "maximum": 10.0,
@@ -113414,24 +113420,30 @@
                     9,
                     10
                   ],
-                  "below_fraction": 0.0,
-                  "above_fraction": 0.009512,
-                  "clipped_fraction": 0.009512
+                  "below_fraction": 0.024482,
+                  "above_fraction": 0.087011,
+                  "clipped_fraction": 0.111492
                 },
-                "issues": [],
-                "status": "passed"
+                "issues": [
+                  {
+                    "code": "display_scale_clipping",
+                    "severity": "warning",
+                    "message": "11.1% of finite cells exceed the fixed display scale."
+                  }
+                ],
+                "status": "warning"
               },
               "derivation": {
                 "method": "snowfall_lwe_to_snow_depth_10_to_1",
-                "description": "Native TSNOWP total snow precipitation converted from kg m-2 to liquid-water-equivalent inches, then multiplied by 10.0; published snowfall departure is estimated snow depth in inches"
+                "description": "Native TSNOWP monthly-mean daily snow precipitation multiplied by calendar-month days, converted from kg m-2 to liquid-water-equivalent inches, then multiplied by 10.0; published snowfall departure is estimated snow depth in inches"
               },
               "display": {
                 "quantity": "estimated snowfall depth departure",
                 "units": "in",
                 "snow_to_liquid_ratio": 10.0,
                 "scale_inches": [
-                  -10,
-                  10
+                  -100,
+                  100
                 ],
                 "white_band_inches": [
                   -1,
@@ -113451,7 +113463,7 @@
               "_catalog": {
                 "canonical_product": "snowfall_anomaly",
                 "comparable": true,
-                "quality_control": "passed"
+                "quality_control": "warning"
               }
             }
           ],
@@ -114923,7 +114935,7 @@
       "status": "online",
       "schema_version": 1,
       "manifest_kind": "noaa_sfs_seasonal_manifest",
-      "generated_utc": "2026-09-11T20:44:35Z",
+      "generated_utc": "2026-09-11T21:41:59Z",
       "source_url": "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/index.html",
       "product_labels": {
         "500mb_height_anomaly": "500-mb Height Anomaly",
@@ -117727,7 +117739,7 @@
   },
   "health": {
     "status": "attention",
-    "generated_utc": "2026-09-11T20:53:46Z",
+    "generated_utc": "2026-09-11T21:43:59Z",
     "freshness_policy_days": {
       "default": {
         "fresh_days": 35,
@@ -118195,7 +118207,7 @@
         "comparable": true,
         "health_state": "healthy",
         "freshness": "fresh",
-        "age_days": 0.6,
+        "age_days": 0.7,
         "latest_status": "rendered",
         "latest_init_utc": "2026-09-11T06:00:00Z",
         "selected_init_utc": "2026-09-11T06:00:00Z",
@@ -118213,7 +118225,7 @@
         "comparable": true,
         "health_state": "healthy",
         "freshness": "fresh",
-        "age_days": 0.6,
+        "age_days": 0.7,
         "latest_status": "rendered",
         "latest_init_utc": "2026-09-11T06:00:00Z",
         "selected_init_utc": "2026-09-11T06:00:00Z",
@@ -118231,7 +118243,7 @@
         "comparable": true,
         "health_state": "healthy",
         "freshness": "fresh",
-        "age_days": 0.6,
+        "age_days": 0.7,
         "latest_status": "rendered",
         "latest_init_utc": "2026-09-11T06:00:00Z",
         "selected_init_utc": "2026-09-11T06:00:00Z",
@@ -118249,7 +118261,7 @@
         "comparable": true,
         "health_state": "healthy",
         "freshness": "fresh",
-        "age_days": 0.6,
+        "age_days": 0.7,
         "latest_status": "rendered",
         "latest_init_utc": "2026-09-11T06:00:00Z",
         "selected_init_utc": "2026-09-11T06:00:00Z",
@@ -118267,7 +118279,7 @@
         "comparable": true,
         "health_state": "healthy",
         "freshness": "fresh",
-        "age_days": 0.6,
+        "age_days": 0.7,
         "latest_status": "rendered",
         "latest_init_utc": "2026-09-11T06:00:00Z",
         "selected_init_utc": "2026-09-11T06:00:00Z",
@@ -118285,7 +118297,7 @@
         "comparable": true,
         "health_state": "healthy",
         "freshness": "fresh",
-        "age_days": 0.6,
+        "age_days": 0.7,
         "latest_status": "rendered",
         "latest_init_utc": "2026-09-11T06:00:00Z",
         "selected_init_utc": "2026-09-11T06:00:00Z",

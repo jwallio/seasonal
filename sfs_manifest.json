@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "kind": "noaa_sfs_seasonal_manifest",
-  "generated_utc": "2026-09-11T20:44:35Z",
+  "generated_utc": "2026-09-11T21:41:59Z",
   "source": "NOAA SFS beta2 development archive",
   "source_url": "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/index.html",
   "source_urls": [
@@ -34,7 +34,7 @@
   "source_quality": {
     "forecast_store": "31-member 0.5-degree global atm_monthly.zarr",
     "reforecast_store": "same-calendar-month 11-member reforecast climatology with at least 30 initializations",
-    "snowfall": "native TSNOWP_surface total snow precipitation converted from LWE to estimated snow-depth inches at a fixed 10:1 ratio",
+    "snowfall": "native TSNOWP_surface monthly mean daily accumulation multiplied by calendar-month days, then converted from LWE to estimated snow-depth inches at a fixed 10:1 ratio",
     "map_bands": "discrete BoundaryNorm intervals; no smooth interpolation between palette colors"
   },
   "runs": [
@@ -92,10 +92,10 @@
             "total_points": 6413,
             "finite_points": 6413,
             "finite_fraction": 1.0,
-            "minimum": -0.450447,
-            "maximum": 0.902046,
-            "p01": -0.163158,
-            "p99": 0.199226,
+            "minimum": -1.396385,
+            "maximum": 2.796343,
+            "p01": -0.505789,
+            "p99": 0.617601,
             "display": {
               "minimum": -10.0,
               "maximum": 10.0,
@@ -122,9 +122,9 @@
                 9,
                 10
               ],
-              "below_fraction": 0.0,
-              "above_fraction": 0.0,
-              "clipped_fraction": 0.0
+              "below_fraction": 0.000468,
+              "above_fraction": 0.004054,
+              "clipped_fraction": 0.004522
             },
             "issues": [],
             "status": "passed"
@@ -135,8 +135,8 @@
             "units": "in",
             "snow_to_liquid_ratio": 10.0,
             "scale_inches": [
-              -10,
-              10
+              -100,
+              100
             ],
             "white_band_inches": [
               -1,
@@ -153,7 +153,7 @@
           },
           "derivation": {
             "method": "snowfall_lwe_to_snow_depth_10_to_1",
-            "description": "Native TSNOWP total snow precipitation converted from kg m-2 to liquid-water-equivalent inches, then multiplied by 10.0; published snowfall departure is estimated snow depth in inches"
+            "description": "Native TSNOWP monthly-mean daily snow precipitation multiplied by calendar-month days, converted from kg m-2 to liquid-water-equivalent inches, then multiplied by 10.0; published snowfall departure is estimated snow depth in inches"
           },
           "image": "public/seasonal/sfs/202609/sfs_snowfall_anomaly_202612.jpg"
         },
@@ -196,10 +196,10 @@
             "total_points": 6413,
             "finite_points": 6413,
             "finite_fraction": 1.0,
-            "minimum": -0.222496,
-            "maximum": 1.942075,
-            "p01": -0.134531,
-            "p99": 0.536125,
+            "minimum": -0.689738,
+            "maximum": 6.020433,
+            "p01": -0.417047,
+            "p99": 1.661987,
             "display": {
               "minimum": -10.0,
               "maximum": 10.0,
@@ -227,11 +227,17 @@
                 10
               ],
               "below_fraction": 0.0,
-              "above_fraction": 0.003431,
-              "clipped_fraction": 0.003431
+              "above_fraction": 0.020739,
+              "clipped_fraction": 0.020739
             },
-            "issues": [],
-            "status": "passed"
+            "issues": [
+              {
+                "code": "display_scale_clipping",
+                "severity": "warning",
+                "message": "2.1% of finite cells exceed the fixed display scale."
+              }
+            ],
+            "status": "warning"
           },
           "status": "rendered",
           "display": {
@@ -239,8 +245,8 @@
             "units": "in",
             "snow_to_liquid_ratio": 10.0,
             "scale_inches": [
-              -10,
-              10
+              -100,
+              100
             ],
             "white_band_inches": [
               -1,
@@ -257,7 +263,7 @@
           },
           "derivation": {
             "method": "snowfall_lwe_to_snow_depth_10_to_1",
-            "description": "Native TSNOWP total snow precipitation converted from kg m-2 to liquid-water-equivalent inches, then multiplied by 10.0; published snowfall departure is estimated snow depth in inches"
+            "description": "Native TSNOWP monthly-mean daily snow precipitation multiplied by calendar-month days, converted from kg m-2 to liquid-water-equivalent inches, then multiplied by 10.0; published snowfall departure is estimated snow depth in inches"
           },
           "image": "public/seasonal/sfs/202609/sfs_snowfall_anomaly_202701.jpg"
         },
@@ -300,10 +306,10 @@
             "total_points": 6413,
             "finite_points": 6413,
             "finite_fraction": 1.0,
-            "minimum": -0.606734,
-            "maximum": 1.577188,
-            "p01": -0.231804,
-            "p99": 0.301484,
+            "minimum": -1.698856,
+            "maximum": 4.416127,
+            "p01": -0.64905,
+            "p99": 0.844154,
             "display": {
               "minimum": -10.0,
               "maximum": 10.0,
@@ -330,9 +336,9 @@
                 9,
                 10
               ],
-              "below_fraction": 0.0,
-              "above_fraction": 0.001871,
-              "clipped_fraction": 0.001871
+              "below_fraction": 0.001403,
+              "above_fraction": 0.008109,
+              "clipped_fraction": 0.009512
             },
             "issues": [],
             "status": "passed"
@@ -343,8 +349,8 @@
             "units": "in",
             "snow_to_liquid_ratio": 10.0,
             "scale_inches": [
-              -10,
-              10
+              -100,
+              100
             ],
             "white_band_inches": [
               -1,
@@ -361,7 +367,7 @@
           },
           "derivation": {
             "method": "snowfall_lwe_to_snow_depth_10_to_1",
-            "description": "Native TSNOWP total snow precipitation converted from kg m-2 to liquid-water-equivalent inches, then multiplied by 10.0; published snowfall departure is estimated snow depth in inches"
+            "description": "Native TSNOWP monthly-mean daily snow precipitation multiplied by calendar-month days, converted from kg m-2 to liquid-water-equivalent inches, then multiplied by 10.0; published snowfall departure is estimated snow depth in inches"
           },
           "image": "public/seasonal/sfs/202609/sfs_snowfall_anomaly_202702.jpg"
         },
@@ -404,10 +410,10 @@
             "total_points": 6413,
             "finite_points": 6413,
             "finite_fraction": 1.0,
-            "minimum": -0.974432,
-            "maximum": 4.419483,
-            "p01": -0.465634,
-            "p99": 0.940022,
+            "minimum": -2.83872,
+            "maximum": 13.227242,
+            "p01": -1.362447,
+            "p99": 2.818953,
             "display": {
               "minimum": -10.0,
               "maximum": 10.0,
@@ -434,12 +440,18 @@
                 9,
                 10
               ],
-              "below_fraction": 0.0,
-              "above_fraction": 0.009512,
-              "clipped_fraction": 0.009512
+              "below_fraction": 0.024482,
+              "above_fraction": 0.087011,
+              "clipped_fraction": 0.111492
             },
-            "issues": [],
-            "status": "passed"
+            "issues": [
+              {
+                "code": "display_scale_clipping",
+                "severity": "warning",
+                "message": "11.1% of finite cells exceed the fixed display scale."
+              }
+            ],
+            "status": "warning"
           },
           "status": "rendered",
           "display": {
@@ -447,8 +459,8 @@
             "units": "in",
             "snow_to_liquid_ratio": 10.0,
             "scale_inches": [
-              -10,
-              10
+              -100,
+              100
             ],
             "white_band_inches": [
               -1,
@@ -465,7 +477,7 @@
           },
           "derivation": {
             "method": "snowfall_lwe_to_snow_depth_10_to_1",
-            "description": "Native TSNOWP total snow precipitation converted from kg m-2 to liquid-water-equivalent inches, then multiplied by 10.0; published snowfall departure is estimated snow depth in inches"
+            "description": "Native TSNOWP monthly-mean daily snow precipitation multiplied by calendar-month days, converted from kg m-2 to liquid-water-equivalent inches, then multiplied by 10.0; published snowfall departure is estimated snow depth in inches"
           },
           "image": "public/seasonal/sfs/202609/sfs_snowfall_anomaly_202612-202702.jpg"
         }
@@ -477,15 +489,15 @@
       "raw_units": "kg/m^2",
       "field": "snowfall_depth_anomaly",
       "units": "in",
-      "conversion": "Native TSNOWP total snow precipitation converted from kg m-2 to liquid-water-equivalent inches, then multiplied by 10.0; published snowfall departure is estimated snow depth in inches",
+      "conversion": "Native TSNOWP monthly-mean daily snow precipitation multiplied by calendar-month days, converted from kg m-2 to liquid-water-equivalent inches, then multiplied by 10.0; published snowfall departure is estimated snow depth in inches",
       "source_warning": "NOAA SFS beta2 is an experimental development archive; source fields are schema-validated before publication.",
       "display": {
         "quantity": "estimated snowfall depth departure",
         "units": "in",
         "snow_to_liquid_ratio": 10.0,
         "scale_inches": [
-          -10,
-          10
+          -100,
+          100
         ],
         "white_band_inches": [
           -1,
