@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "kind": "cma_cpsv3_seasonal_manifest",
-  "generated_utc": "2026-09-11T11:42:58Z",
+  "generated_utc": "2026-09-11T12:22:43Z",
   "source": "WMO LC-SPMME / GPC Beijing CMA CPSv3",
   "source_url": "https://www.wmolc.org/contents2/index/Beijing",
   "source_urls": [
@@ -31,6 +31,118 @@
     "history_cycles": 3
   },
   "runs": [
+    {
+      "id": "cma-cpsv3-2026090100-500mb_height_anomaly_nh",
+      "model": "CMA CPSv3",
+      "component": "cma_cpsv3",
+      "component_label": "CMA CPSv3",
+      "source": "WMO LC-SPMME / GPC Beijing",
+      "source_url": "https://www.wmolc.org/contents2/index/Beijing",
+      "source_urls": [
+        "https://www.wmolc.org/contents2/index/Beijing",
+        "https://www.wmolc.org/seasonDownload/direct",
+        "https://www.wmolc.org/contents/index/Data%2BExchange%2BPolicy"
+      ],
+      "archive_root": "https://www.wmolc.org/seasonDownload/direct",
+      "archive_directory": "/forecast/Beijing/2026/09",
+      "archive_file": "beijing_202609_202610_202612.nc",
+      "archive_token": "beijing_202609_202610_202612.nc|1012572",
+      "product": "500mb_height_anomaly_nh",
+      "variable": "z500",
+      "source_variable": "h500",
+      "init_utc": "2026-09-01T00:00:00Z",
+      "statistic": "provider ensemble-mean anomaly",
+      "ensemble_scope": "CMA CPSv3 21-member forecast ensemble",
+      "ensemble_members": 21,
+      "aggregation": "WMO monthly anomaly",
+      "field": "z500_anomaly",
+      "units": "m",
+      "raw_field": "500-hPa geopotential-height anomaly",
+      "raw_units": "gpm",
+      "source_declared_units": "gpm",
+      "conversion": "1 gpm anomaly is treated as 1 m geopotential-height anomaly",
+      "source_grid": "2.5\u00b0 global (144 \u00d7 73)",
+      "source_forecast_months": [
+        1,
+        2,
+        3
+      ],
+      "baseline": {
+        "status": "provider_anomaly",
+        "method": "provider forecast anomaly relative to the CMA CPSv3 hindcast climatology",
+        "years": "2001-2024",
+        "label": "CMA CPSv3 2001-2024 hindcast climatology"
+      },
+      "source_metadata": {
+        "hindcast_start_year": "2001",
+        "hindcast_end_year": "2024",
+        "title": "Anomaly",
+        "model": "GPC beijing",
+        "creation_date": "Thu Sep  10 07:32:03 KST 2026"
+      },
+      "targets": [
+        {
+          "id": "cma-cpsv3-2026090100-500mb_height_anomaly_nh-lead01",
+          "target_month": "202610",
+          "valid_start_utc": "2026-10-01T00:00:00Z",
+          "valid_end_utc": "2026-11-01T00:00:00Z",
+          "lead_month": 1,
+          "field": "z500_anomaly",
+          "units": "m",
+          "statistic": "provider ensemble-mean anomaly",
+          "source_file": ".cache/cma-cpsv3/wmolc/202609/beijing_202609_202610_202612.nc",
+          "status": "rendered",
+          "image": "public/seasonal/cma_cpsv3/20260901/cma_cpsv3_z500_202610.jpg"
+        },
+        {
+          "id": "cma-cpsv3-2026090100-500mb_height_anomaly_nh-lead02",
+          "target_month": "202611",
+          "valid_start_utc": "2026-11-01T00:00:00Z",
+          "valid_end_utc": "2026-12-01T00:00:00Z",
+          "lead_month": 2,
+          "field": "z500_anomaly",
+          "units": "m",
+          "statistic": "provider ensemble-mean anomaly",
+          "source_file": ".cache/cma-cpsv3/wmolc/202609/beijing_202609_202610_202612.nc",
+          "status": "rendered",
+          "image": "public/seasonal/cma_cpsv3/20260901/cma_cpsv3_z500_202611.jpg"
+        },
+        {
+          "id": "cma-cpsv3-2026090100-500mb_height_anomaly_nh-lead03",
+          "target_month": "202612",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-01-01T00:00:00Z",
+          "lead_month": 3,
+          "field": "z500_anomaly",
+          "units": "m",
+          "statistic": "provider ensemble-mean anomaly",
+          "source_file": ".cache/cma-cpsv3/wmolc/202609/beijing_202609_202610_202612.nc",
+          "status": "rendered",
+          "image": "public/seasonal/cma_cpsv3/20260901/cma_cpsv3_z500_202612.jpg"
+        },
+        {
+          "id": "cma-cpsv3-2026090100-500mb_height_anomaly_nh-202610-202612",
+          "target_month": "202610-202612",
+          "valid_start_utc": "2026-10-01T00:00:00Z",
+          "valid_end_utc": "2027-01-01T00:00:00Z",
+          "lead_month": "1\u20133",
+          "monthly_leads": [
+            1,
+            2,
+            3
+          ],
+          "field": "z500_anomaly",
+          "units": "m",
+          "statistic": "provider ensemble-mean anomaly",
+          "aggregation": "3-month mean anomaly",
+          "source_file": ".cache/cma-cpsv3/wmolc/202609/beijing_202609_202610_202612.nc",
+          "status": "rendered",
+          "image": "public/seasonal/cma_cpsv3/20260901/cma_cpsv3_z500_202610-202612.jpg"
+        }
+      ],
+      "status": "rendered",
+      "output_dir": "public/seasonal/cma_cpsv3"
+    },
     {
       "id": "cma-cpsv3-2026080100-precipitation_anomaly",
       "model": "CMA CPSv3",
@@ -494,7 +606,7 @@
       "archive_root": "https://www.wmolc.org/seasonDownload/direct",
       "archive_directory": "/forecast/Beijing/2026/08",
       "archive_file": "beijing_202608_202609_202611.nc",
-      "archive_token": "beijing_202608_202609_202611.nc|1012572",
+      "archive_token": "beijing_202608_202609_202611.nc",
       "product": "2m_temperature_anomaly",
       "variable": "t2m",
       "source_variable": "t02m",
