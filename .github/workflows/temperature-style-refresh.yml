@@ -67,6 +67,7 @@ jobs:
             [[ "$WORKFLOW" == "nmme.yml" && "$product" == "850mb_temperature_anomaly" ]] && continue
             # Give a live producer a bounded hand-off window. Product-scoped
             # concurrency keys below let a stale attempt be superseded.
+            blocked=0
             if (( started_products == 0 )); then
               wait_seconds=0
               blocked=0

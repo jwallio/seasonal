@@ -58,6 +58,7 @@ jobs:
             [[ "$product" == "all" ]] && request_product="$plan_product"
             # Give an existing producer a bounded hand-off window; the
             # product-scoped producer key below prevents cross-product canceling.
+            blocked=0
             if (( started_products == 0 )); then
               wait_seconds=0
               blocked=0

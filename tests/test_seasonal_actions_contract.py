@@ -121,6 +121,8 @@ def main() -> int:
         check("if (( started_products == 0 )); then" in maintenance
               and "started_products=$((started_products + 1))" in maintenance,
               f"{name} must not self-block its second product after launching the first")
+        check("            blocked=0\n            if (( started_products == 0 )); then" in maintenance,
+              f"{name} must initialize its handoff guard for every product iteration")
         check("Upload serialized Pages handoff" in maintenance
               and "actions/upload-artifact@v4" in maintenance
               and f"name: {prefix}" in maintenance,
