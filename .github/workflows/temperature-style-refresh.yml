@@ -2,7 +2,9 @@ name: Maintenance - Refresh temperature styling
 on:
   push:
     branches: [main]
-    paths: [scripts/temperature_display.py]
+    paths:
+      - scripts/temperature_display.py
+      - .github/workflows/temperature-style-refresh.yml
   workflow_dispatch:
 permissions:
   actions: write
@@ -36,6 +38,7 @@ jobs:
         run: |
           set -euo pipefail
           failed=0
+          deferred=0
           # Refresh both temperature products across every operational provider.
           for product in 850mb_temperature_anomaly 2m_temperature_anomaly; do
             # NMME provides only 2-m temperature.
@@ -43,14 +46,21 @@ jobs:
             # Give a live producer a bounded hand-off window. Product-scoped
             # concurrency keys below let a stale attempt be superseded.
             wait_seconds=0
+            blocked=0
             while gh run list --workflow "$WORKFLOW" --limit 50 --json status --jq 'any(.[]; .status == "in_progress" or .status == "queued" or .status == "waiting" or .status == "pending")' | grep -qx true; do
               if (( wait_seconds >= 900 )); then
-                echo "::warning::${WORKFLOW} has been active for 15 minutes; dispatching the scoped refresh to replace the stale attempt."
+                echo "::warning::${WORKFLOW} is still active after 15 minutes; deferring this style refresh so it cannot cancel a scheduled or release run."
+                blocked=1
                 break
               fi
               sleep 30
               wait_seconds=$((wait_seconds + 30))
             done
+            if (( blocked )); then
+              deferred=$((deferred + 1))
+              continue
+            fi
+            provider="${WORKFLOW%.yml}"
             provider="${WORKFLOW%.yml}"
             [[ "$provider" == "cma-cpsv3" ]] && provider=cma_cpsv3
             [[ "$provider" == "geos-s2s3" ]] && provider=geos_s2s3
@@ -64,6 +74,16 @@ jobs:
           with open("dispatch.json", encoding="utf-8") as handle:
               payload = json.load(handle)
           payload["style_refresh"] = True
+          # gh workflow run --json accepts string values on stdin. GitHub's
+          # workflow_dispatch boolean input is still parsed from the string
+          # "true" by the called workflow.
+          for key, value in list(payload.items()):
+              if isinstance(value, bool):
+                  payload[key] = "true" if value else "false"
+              elif value is None:
+                  payload[key] = ""
+              elif not isinstance(value, str):
+                  payload[key] = str(value)
           with open("dispatch.json", "w", encoding="utf-8") as handle:
               json.dump(payload, handle)
               handle.write("\n")
@@ -193,5 +213,8 @@ jobs:
           if [[ "$REFRESH_RESULT" != "success" ]]; then
             echo "::error::At least one producer refresh failed"
             failed=1
+          fi
+          if (( deferred )); then
+            echo "::warning::$deferred temperature style refresh product(s) were deferred because a live producer was already active."
           fi
           exit "$failed"

@@ -21,9 +21,10 @@ jobs:
     timeout-minutes: 360
     strategy:
       fail-fast: false
-      # CDS-backed providers share a queue quota.  Serializing this small
-      # maintenance fan-out avoids rejected SEAS5/C3S/JMA requests while
-      # preserving parallelism inside each provider's own rendering job.
+      # Keep the maintenance fan-out bounded, but do not serialize every
+      # provider behind one six-hour provider attempt.  The provider workers
+      # already scope their own data requests and concurrency groups.
+      max-parallel: 4
       max-parallel: 1
       matrix:
         workflow: [seas5.yml, cansips.yml, c3s.yml, jma.yml, cfsv2.yml, apcc.yml, cma-cpsv3.yml, superensemble.yml]
@@ -40,18 +41,26 @@ jobs:
         run: |
           set -euo pipefail
           failed=0
+          deferred=0
           for product in 500mb_height_anomaly 500mb_height_anomaly_nh; do
             # Give an existing producer a bounded hand-off window; the
             # product-scoped producer key below prevents cross-product canceling.
             wait_seconds=0
+            blocked=0
             while gh run list --workflow "$WORKFLOW" --limit 50 --json status --jq 'any(.[]; .status == "in_progress" or .status == "queued" or .status == "waiting" or .status == "pending")' | grep -qx true; do
               if (( wait_seconds >= 900 )); then
-                echo "::warning::${WORKFLOW} has been active for 15 minutes; dispatching the scoped 500-mb refresh to replace the stale attempt."
+                echo "::warning::${WORKFLOW} is still active after 15 minutes; deferring this style refresh so it cannot cancel a scheduled or release run."
+                blocked=1
                 break
               fi
               sleep 30
               wait_seconds=$((wait_seconds + 30))
             done
+            if (( blocked )); then
+              deferred=$((deferred + 1))
+              continue
+            fi
+            # C3S/JMA pressure-level access can lag the current monthly issue.
             # C3S/JMA pressure-level access can lag the current monthly issue.
             # Re-render its last published height cycle so a style-only refresh
             # stays green while the next restricted issue is unavailable.
@@ -211,5 +220,8 @@ jobs:
           if [[ "$REFRESH_RESULT" != "success" ]]; then
             echo "::error::At least one producer refresh failed"
             failed=1
+          fi
+          if (( deferred )); then
+            echo "::warning::$deferred 500-mb style refresh product(s) were deferred because a live producer was already active."
           fi
           exit "$failed"

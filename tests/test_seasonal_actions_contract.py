@@ -97,8 +97,10 @@ def main() -> int:
           "500-mb styling should refresh when the shared height contract changes")
     check("group: height-maintenance-" in height and "cancel-in-progress: true" in height,
           "500-mb styling should supersede stale maintenance fan-out")
-    check("max-parallel: 1" in height and "500mb_height_anomaly_nh" in height,
-          "500-mb styling should serialize provider refreshes to respect CDS queue limits")
+    check("max-parallel: 4" in height and "500mb_height_anomaly_nh" in height,
+          "500-mb styling should bound provider refreshes without serializing the whole fan-out")
+    check("deferring this style refresh" in height,
+          "500-mb styling must not cancel an active scheduled or release run")
     check("publish_wait >= 1800" in height and "Pages publisher queue did not drain" in height,
           "500-mb handoff should wait for a bounded serialized Pages queue")
     check("${provider}_manifest.json" in height and "init_arg=$(PRODUCT=" in height
@@ -121,6 +123,17 @@ def main() -> int:
               f"{name} should publish self-publishing refs in one batch")
         check("displayTitle" in maintenance and "endswith" in maintenance and "Pages publisher queue did not drain" in maintenance,
               f"{name} should resolve and retry the serialized Pages handoff")
+    temperature = (WORKFLOWS / "temperature-style-refresh.yml").read_text(encoding="utf-8")
+    check(".github/workflows/temperature-style-refresh.yml" in temperature,
+          "temperature maintenance changes must trigger a replacement run")
+    check("isinstance(value, bool)" in temperature and 'payload["style_refresh"] = True' in temperature,
+          "temperature maintenance must stringify boolean workflow inputs before gh dispatch")
+    check("deferring this style refresh" in temperature,
+          "temperature styling must not cancel an active scheduled or release run")
+    analogs = (WORKFLOWS / "seasonal-analogs.yml").read_text(encoding="utf-8")
+    check("id: source_payload" in analogs and "actions/runs/{1}/artifacts" in analogs
+          and "steps.source_payload.outputs.available == 'true'" in analogs,
+          "analog source-triggered builds must verify artifacts and tolerate source runs without Pages payloads")
     print("SEASONAL ACTIONS CONTRACT OK: planned matrices, shared tools, product-scoped workers, and bounded publishers")
     return 0
 
