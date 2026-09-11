@@ -57,7 +57,8 @@ SFS beta2 uses the same fixed discrete bands and full CONUS framing, including
 the eastern Maine border, rather than a smooth gradient.
 Snowfall departure maps use the native/derived accumulation rate for each
 provider, retain LWE for comparison math, and convert the signed departure once
-to estimated snow-depth inches at a fixed 10:1 ratio. Their published numeric
+to estimated snow-depth inches at a fixed 10:1 ratio. NOAA SFS TSNOWP monthly mean daily accumulations are first
+weighted by the target calendar month's number of days. Their published numeric
 `.snow.csv.gz` grids therefore contain inches of snow, while `.lwe.csv.gz`
 sidecars retain the source LWE values. The maps provide CONUS monthly totals
 and DJF three-month sums. CanSIPS v3 adds a transparent derived estimate from

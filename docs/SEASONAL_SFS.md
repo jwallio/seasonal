@@ -32,11 +32,13 @@ February, and the three-month target is labelled DJF across the calendar year.
 ## Snowfall
 
 SFS supplies `tsnowpsfc` / `TSNOWP_surface`, total snow precipitation in
-`kg m-2`, which is liquid-water equivalent. It is converted to LWE inches
-for the anomaly calculation and then once to estimated snow-depth inches at a
-fixed 10:1 ratio for the mapped product. The published `.snow.csv.gz` grid is
-the snow-inch product; the `.lwe.csv.gz` sidecar remains for auditability. The
-adapter does not treat `swe` / snow-water equivalent as snowfall.
+`kg m-2`, which is liquid-water equivalent. In the `atm_monthly` archive the
+values behave as monthly mean daily accumulation, so the adapter multiplies
+each value by the target calendar month's number of days before converting to
+LWE inches and then once to estimated snow-depth inches at a fixed 10:1 ratio.
+The published `.snow.csv.gz` grid is the snow-inch product; the `.lwe.csv.gz`
+sidecar remains for auditability. The adapter does not treat `swe` /
+snow-water equivalent as snowfall.
 
 ## Map rendering
 

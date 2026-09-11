@@ -47,7 +47,10 @@ class SFSContractTests(unittest.TestCase):
         self.assertTrue(snowfall["snowfall_values_are_depth"])
         self.assertEqual(snowfall["field"], "snowfall_depth_anomaly")
         self.assertEqual(snowfall["conversion_kind"], "snowfall_lwe_to_snow_depth_10_to_1")
-        self.assertEqual(sfs._convert_anomaly(25.4, sfs.PRODUCT_SNOWFALL_ANOMALY, "202612"), 10.0)
+        self.assertEqual(snowfall["source_accumulation"], "TSNOWP monthly mean daily accumulation × calendar-month days")
+        self.assertIn("calendar-month days", snowfall["conversion"])
+        self.assertEqual(sfs._convert_anomaly(25.4, sfs.PRODUCT_SNOWFALL_ANOMALY, "202612"), 310.0)
+        self.assertEqual(sfs._convert_anomaly(25.4, sfs.PRODUCT_SNOWFALL_ANOMALY, "202702"), 280.0)
         self.assertEqual(sfs.PRODUCT_SPECS["500mb_height_anomaly"]["region"], cfsv2.DEFAULT_REGION)
         self.assertEqual(sfs.PRODUCT_SPECS["500mb_height_anomaly_nh"]["region"], cfsv2.NORTHERN_HEMISPHERE_REGION)
 

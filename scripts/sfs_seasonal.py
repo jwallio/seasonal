@@ -10,9 +10,11 @@ shared seasonal renderer.
 The archive is a development product.  Every field is checked against its
 declared variable name, units, dimensions, member count, and global 0.5-degree
 grid before it can be rendered.  Snowfall uses the native total-snow-
-precipitation field as liquid-water equivalent, converts it to inches of
-estimated snow depth at a fixed 10:1 ratio, and publishes that converted
-quantity while retaining the source units in the provenance metadata.
+precipitation field as liquid-water equivalent, treats the archive values as
+monthly mean daily accumulation, applies the calendar-month length, converts it
+to inches of estimated snow depth at a fixed 10:1 ratio, and publishes that
+converted quantity while retaining the source units in the provenance
+metadata.
 """
 
 from __future__ import annotations
@@ -178,7 +180,7 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "region": CONUS_PRECIP_REGION,
         "seasonal_reducer": "sum",
         "conversion_kind": "snowfall_lwe_to_snow_depth_10_to_1",
-        "conversion": "Native TSNOWP total snow precipitation converted from kg m-2 to liquid-water-equivalent inches, then multiplied by 10.0; published snowfall departure is estimated snow depth in inches",
+        "conversion": "Native TSNOWP monthly-mean daily snow precipitation multiplied by calendar-month days, converted from kg m-2 to liquid-water-equivalent inches, then multiplied by 10.0; published snowfall departure is estimated snow depth in inches",
         "anomaly_min": SNOWFALL_ANOMALY_MIN_IN,
         "anomaly_max": SNOWFALL_ANOMALY_MAX_IN,
         "anomaly_ticks": SNOWFALL_ANOMALY_TICKS,
@@ -197,6 +199,7 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "border_files": ("us-states.geojson",),
         "snowfall_input_kind": "Native NOAA SFS TSNOWP snowfall",
         "snowfall_values_are_depth": True,
+        "source_accumulation": "TSNOWP monthly mean daily accumulation × calendar-month days",
         "source_label": "NOAA SFS beta2 / SFS development archive",
         "scheduled": True,
     },
@@ -593,15 +596,21 @@ def _month_seconds(target: str) -> float:
     return (dt.datetime(year, month, 1) - start).total_seconds()
 
 
+def _month_days(target: str) -> int:
+    start = dt.datetime.strptime(target, "%Y%m")
+    year, month = month_after(start.year, start.month, 1)
+    return (dt.datetime(year, month, 1) - start).days
+
+
 def _convert_anomaly(values: Any, product: str, target: str) -> Any:
     if product == PRODUCT_PRECIPITATION_ANOMALY:
         return values * _month_seconds(target) / 25.4
     if product == PRODUCT_SNOWFALL_ANOMALY:
-        # TSNOWP is kg m-2 of liquid-water equivalent. Convert to LWE
-        # inches first, then convert the signed departure to estimated snow
-        # depth inches. Multiplication is valid before/after the anomaly
-        # subtraction because the operational ratio is fixed at 10:1.
-        return values / 25.4 * SNOW_TO_LIQUID_RATIO
+        # TSNOWP is published in kg m-2 but the monthly archive value behaves
+        # as a mean daily accumulation. Convert each calendar month's mean
+        # daily liquid-water equivalent to a monthly total before applying the
+        # fixed 10:1 estimated snow-depth ratio.
+        return values * _month_days(target) / 25.4 * SNOW_TO_LIQUID_RATIO
     if product == PRODUCT_MSLP_ANOMALY:
         return values / 100.0
     return values
@@ -849,7 +858,7 @@ def write_manifest(
         "source_quality": {
             "forecast_store": f"31-member 0.5-degree global {SFS_FORECAST_DATASET}",
             "reforecast_store": "same-calendar-month 11-member reforecast climatology with at least 30 initializations",
-            "snowfall": "native TSNOWP_surface total snow precipitation converted from LWE to estimated snow-depth inches at a fixed 10:1 ratio",
+            "snowfall": "native TSNOWP_surface monthly mean daily accumulation multiplied by calendar-month days, then converted from LWE to estimated snow-depth inches at a fixed 10:1 ratio",
             "map_bands": "discrete BoundaryNorm intervals; no smooth interpolation between palette colors",
         },
         "runs": retained,
