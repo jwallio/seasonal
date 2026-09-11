@@ -903,7 +903,7 @@ function renderOverview() {
   const overdueModels = scheduleRows.filter(item => item.scheduleState.key === 'overdue');
   const processingModels = scheduleRows.filter(item => item.scheduleState.key === 'processing');
   const attention = applicable.filter(state => overviewAttentionMatches(state, scheduleRows.find(item => item.modelKey === state.modelKey)?.scheduleState)).length;
-  const needsAttention = attention + overdueModels.length + processingModels.length;
+  const needsAttention = attention;
   updateOverviewFilterCounts({
     all: applicable.length,
     fresh: applicable.filter(state => state.className === 'status-fresh').length,
