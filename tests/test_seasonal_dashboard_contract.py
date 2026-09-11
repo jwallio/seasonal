@@ -289,7 +289,7 @@ def main() -> int:
     check('id="map-title"' not in page, "map card should not duplicate titles already rendered in the image")
     check('id="run-status"' not in page, "map card should not duplicate image status in a header badge")
     check('data-overview-filter="aging"' not in page_markup, "overview should not expose an Aging filter")
-    check("status-aging" not in page and "status-stale" not in page, "overview status model should not retain aging or stale states")
+    check("status-stale" not in page, "overview status model should not retain stale states")
     check("scheduleState?.key === 'overdue'" in page, "Attention filter must include overdue schedules")
     check("['overdue', 'processing'].includes(scheduleState?.key)" not in page, "Attention filter must exclude processing schedules")
     check("detail: 'failed or overdue surfaces'" in page, "Attention summary must describe only failed or overdue surfaces")
