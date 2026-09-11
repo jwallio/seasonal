@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "kind": "cansips_seasonal_manifest",
-  "generated_utc": "2026-09-11T12:09:06Z",
+  "generated_utc": "2026-09-11T16:37:42Z",
   "source": "ECCC MSC CanSIPS v3 / Datamart",
   "source_url": "https://eccc-msc.github.io/open-data/msc-data/nwp_cansips/readme_cansips-datamart_en/",
   "source_urls": [
@@ -24,6 +24,410 @@
     "history_runs": 3
   },
   "runs": [
+    {
+      "id": "cansips-2026090100-snowfall_anomaly",
+      "model": "CanSIPS v3",
+      "product": "snowfall_anomaly",
+      "presentation": "winter_djf_jfm_v1",
+      "method": "eccc_native_snowfall_c3s_v1",
+      "source": "ECCC CanSIPS v3 / Copernicus C3S",
+      "source_url": "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-single-levels",
+      "init_utc": "2026-09-01T00:00:00Z",
+      "generated_utc": "2026-09-11T16:31:28Z",
+      "field": "snowfall_anomaly",
+      "units": "in",
+      "raw_field": "snowfall_anomalous_rate_of_accumulation",
+      "raw_units": "m s-1",
+      "statistic": "ensemble_mean",
+      "ensemble_members": 40,
+      "aggregation": "ensemble-mean period total departure; sum included monthly departures",
+      "ensemble_scope": "20 CanESM5 + 20 GEM5.2-NEMO members; equal component weights",
+      "climatology": {
+        "source": "C3S 1993\u20132016 system-matched hindcast climatology",
+        "years": "1993-2016",
+        "method": "provider postprocessed; no second subtraction"
+      },
+      "display": {
+        "quantity": "estimated snowfall depth departure",
+        "units": "in",
+        "snow_to_liquid_ratio": 10,
+        "scale_inches": [
+          -10,
+          10
+        ],
+        "white_band_inches": [
+          -1,
+          1
+        ],
+        "numeric_grid_quantity": "snowfall LWE departure"
+      },
+      "conversion": "Native snowfall anomalous rate \u00d7 target-month seconds \u00f7 0.0254; equal component mean; sum months; display only \u00d710.",
+      "targets": [
+        {
+          "id": "cansips-2026090100-snowfall_anomaly-202612-202702",
+          "target_month": "202612-202702",
+          "lead_month": "3\u20135",
+          "field": "snowfall_anomaly",
+          "units": "in",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "ensemble_members": 40,
+          "statistic": "ensemble_mean",
+          "baseline": {
+            "source": "C3S 1993\u20132016 system-matched hindcast climatology",
+            "method": "eccc_native_snowfall_c3s_v1"
+          },
+          "monthly_leads": [
+            3,
+            4,
+            5
+          ],
+          "season": "DJF",
+          "aggregation": "ensemble-mean 3-month total departure",
+          "quality_control": {
+            "status": "passed",
+            "field": "snowfall_anomaly",
+            "units": "in",
+            "quantity": "snowfall LWE departure",
+            "minimum": -4.839817759537391,
+            "maximum": 2.537483609563338,
+            "finite_fraction": 1.0,
+            "display": {
+              "quantity": "estimated snowfall depth departure",
+              "units": "in",
+              "snow_to_liquid_ratio": 10,
+              "minimum": -10,
+              "maximum": 10,
+              "clipped_fraction": 0.084375
+            },
+            "issues": [],
+            "validation_scope": "data integrity and units; not observational forecast skill"
+          },
+          "ensemble_complete": true,
+          "status": "rendered",
+          "numeric_grid": "public/seasonal/cansips/20260901/cansips_native_snow_202612-202702.csv.gz",
+          "image": "public/seasonal/cansips/20260901/cansips_native_snowfalla_winter_202612-202702.jpg"
+        },
+        {
+          "id": "cansips-2026090100-snowfall_anomaly-202701-202703",
+          "target_month": "202701-202703",
+          "lead_month": "4\u20136",
+          "field": "snowfall_anomaly",
+          "units": "in",
+          "valid_start_utc": "2027-01-01T00:00:00Z",
+          "valid_end_utc": "2027-04-01T00:00:00Z",
+          "ensemble_members": 40,
+          "statistic": "ensemble_mean",
+          "baseline": {
+            "source": "C3S 1993\u20132016 system-matched hindcast climatology",
+            "method": "eccc_native_snowfall_c3s_v1"
+          },
+          "monthly_leads": [
+            4,
+            5,
+            6
+          ],
+          "season": "JFM",
+          "aggregation": "ensemble-mean 3-month total departure",
+          "status": "pending",
+          "missing_months": [
+            "202703"
+          ],
+          "error": "JFM unavailable: missing Mar 2027. This initialization does not cover the complete period; use a run covering every included month."
+        },
+        {
+          "id": "cansips-2026090100-snowfall_anomaly-202612-202701",
+          "target_month": "202612-202701",
+          "lead_month": "3\u20134",
+          "field": "snowfall_anomaly",
+          "units": "in",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-02-01T00:00:00Z",
+          "ensemble_members": 40,
+          "statistic": "ensemble_mean",
+          "baseline": {
+            "source": "C3S 1993\u20132016 system-matched hindcast climatology",
+            "method": "eccc_native_snowfall_c3s_v1"
+          },
+          "monthly_leads": [
+            3,
+            4
+          ],
+          "season": "D+J",
+          "aggregation": "ensemble-mean 2-month total departure",
+          "label": "D+J 2026\u201327",
+          "quality_control": {
+            "status": "passed",
+            "field": "snowfall_anomaly",
+            "units": "in",
+            "quantity": "snowfall LWE departure",
+            "minimum": -2.753146198075214,
+            "maximum": 1.7312831840899174,
+            "finite_fraction": 1.0,
+            "display": {
+              "quantity": "estimated snowfall depth departure",
+              "units": "in",
+              "snow_to_liquid_ratio": 10,
+              "minimum": -10,
+              "maximum": 10,
+              "clipped_fraction": 0.0478125
+            },
+            "issues": [],
+            "validation_scope": "data integrity and units; not observational forecast skill"
+          },
+          "ensemble_complete": true,
+          "status": "rendered",
+          "numeric_grid": "public/seasonal/cansips/20260901/cansips_native_snow_202612-202701.csv.gz",
+          "image": "public/seasonal/cansips/20260901/cansips_native_snowfalla_winter_202612-202701.jpg"
+        },
+        {
+          "id": "cansips-2026090100-snowfall_anomaly-lead03",
+          "target_month": "202612",
+          "lead_month": 3,
+          "field": "snowfall_anomaly",
+          "units": "in",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-01-01T00:00:00Z",
+          "ensemble_members": 40,
+          "statistic": "ensemble_mean",
+          "baseline": {
+            "source": "C3S 1993\u20132016 system-matched hindcast climatology",
+            "method": "eccc_native_snowfall_c3s_v1"
+          },
+          "source_files": [
+            {
+              "system": "4",
+              "model": "CanESM5.1p1bc",
+              "members": 20,
+              "weight": 0.5,
+              "dataset": "seasonal-postprocessed-single-levels",
+              "variable": "snowfall_anomalous_rate_of_accumulation",
+              "init": "2026090100",
+              "cds_lead": 4,
+              "metadata": {
+                "name": "Snowfall (convective + stratiform) anomalous rate of accumulation",
+                "units": "m of water equivalent s**-1",
+                "systemNumber": 4,
+                "dataDate": 20260901,
+                "forecastMonth": 4,
+                "dataType": "em"
+              }
+            },
+            {
+              "system": "5",
+              "model": "GEM5.2-NEMO",
+              "members": 20,
+              "weight": 0.5,
+              "dataset": "seasonal-postprocessed-single-levels",
+              "variable": "snowfall_anomalous_rate_of_accumulation",
+              "init": "2026090100",
+              "cds_lead": 4,
+              "metadata": {
+                "name": "Snowfall (convective + stratiform) anomalous rate of accumulation",
+                "units": "m of water equivalent s**-1",
+                "systemNumber": 5,
+                "dataDate": 20260901,
+                "forecastMonth": 4,
+                "dataType": "em"
+              }
+            }
+          ],
+          "quality_control": {
+            "status": "passed",
+            "field": "snowfall_anomaly",
+            "units": "in",
+            "quantity": "snowfall LWE departure",
+            "minimum": -1.529039469401177,
+            "maximum": 0.7716486523772408,
+            "finite_fraction": 1.0,
+            "display": {
+              "quantity": "estimated snowfall depth departure",
+              "units": "in",
+              "snow_to_liquid_ratio": 10,
+              "minimum": -10,
+              "maximum": 10,
+              "clipped_fraction": 0.005
+            },
+            "issues": [],
+            "validation_scope": "data integrity and units; not observational forecast skill"
+          },
+          "ensemble_complete": true,
+          "status": "rendered",
+          "numeric_grid": "public/seasonal/cansips/20260901/cansips_native_snow_202612.csv.gz",
+          "image": "public/seasonal/cansips/20260901/cansips_native_snowfalla_winter_202612.jpg"
+        },
+        {
+          "id": "cansips-2026090100-snowfall_anomaly-lead04",
+          "target_month": "202701",
+          "lead_month": 4,
+          "field": "snowfall_anomaly",
+          "units": "in",
+          "valid_start_utc": "2027-01-01T00:00:00Z",
+          "valid_end_utc": "2027-02-01T00:00:00Z",
+          "ensemble_members": 40,
+          "statistic": "ensemble_mean",
+          "baseline": {
+            "source": "C3S 1993\u20132016 system-matched hindcast climatology",
+            "method": "eccc_native_snowfall_c3s_v1"
+          },
+          "source_files": [
+            {
+              "system": "4",
+              "model": "CanESM5.1p1bc",
+              "members": 20,
+              "weight": 0.5,
+              "dataset": "seasonal-postprocessed-single-levels",
+              "variable": "snowfall_anomalous_rate_of_accumulation",
+              "init": "2026090100",
+              "cds_lead": 5,
+              "metadata": {
+                "name": "Snowfall (convective + stratiform) anomalous rate of accumulation",
+                "units": "m of water equivalent s**-1",
+                "systemNumber": 4,
+                "dataDate": 20260901,
+                "forecastMonth": 5,
+                "dataType": "em"
+              }
+            },
+            {
+              "system": "5",
+              "model": "GEM5.2-NEMO",
+              "members": 20,
+              "weight": 0.5,
+              "dataset": "seasonal-postprocessed-single-levels",
+              "variable": "snowfall_anomalous_rate_of_accumulation",
+              "init": "2026090100",
+              "cds_lead": 5,
+              "metadata": {
+                "name": "Snowfall (convective + stratiform) anomalous rate of accumulation",
+                "units": "m of water equivalent s**-1",
+                "systemNumber": 5,
+                "dataDate": 20260901,
+                "forecastMonth": 5,
+                "dataType": "em"
+              }
+            }
+          ],
+          "quality_control": {
+            "status": "passed",
+            "field": "snowfall_anomaly",
+            "units": "in",
+            "quantity": "snowfall LWE departure",
+            "minimum": -1.5259916714186814,
+            "maximum": 0.9596345317126767,
+            "finite_fraction": 1.0,
+            "display": {
+              "quantity": "estimated snowfall depth departure",
+              "units": "in",
+              "snow_to_liquid_ratio": 10,
+              "minimum": -10,
+              "maximum": 10,
+              "clipped_fraction": 0.0084375
+            },
+            "issues": [],
+            "validation_scope": "data integrity and units; not observational forecast skill"
+          },
+          "ensemble_complete": true,
+          "status": "rendered",
+          "numeric_grid": "public/seasonal/cansips/20260901/cansips_native_snow_202701.csv.gz",
+          "image": "public/seasonal/cansips/20260901/cansips_native_snowfalla_winter_202701.jpg"
+        },
+        {
+          "id": "cansips-2026090100-snowfall_anomaly-lead05",
+          "target_month": "202702",
+          "lead_month": 5,
+          "field": "snowfall_anomaly",
+          "units": "in",
+          "valid_start_utc": "2027-02-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "ensemble_members": 40,
+          "statistic": "ensemble_mean",
+          "baseline": {
+            "source": "C3S 1993\u20132016 system-matched hindcast climatology",
+            "method": "eccc_native_snowfall_c3s_v1"
+          },
+          "source_files": [
+            {
+              "system": "4",
+              "model": "CanESM5.1p1bc",
+              "members": 20,
+              "weight": 0.5,
+              "dataset": "seasonal-postprocessed-single-levels",
+              "variable": "snowfall_anomalous_rate_of_accumulation",
+              "init": "2026090100",
+              "cds_lead": 6,
+              "metadata": {
+                "name": "Snowfall (convective + stratiform) anomalous rate of accumulation",
+                "units": "m of water equivalent s**-1",
+                "systemNumber": 4,
+                "dataDate": 20260901,
+                "forecastMonth": 6,
+                "dataType": "em"
+              }
+            },
+            {
+              "system": "5",
+              "model": "GEM5.2-NEMO",
+              "members": 20,
+              "weight": 0.5,
+              "dataset": "seasonal-postprocessed-single-levels",
+              "variable": "snowfall_anomalous_rate_of_accumulation",
+              "init": "2026090100",
+              "cds_lead": 6,
+              "metadata": {
+                "name": "Snowfall (convective + stratiform) anomalous rate of accumulation",
+                "units": "m of water equivalent s**-1",
+                "systemNumber": 5,
+                "dataDate": 20260901,
+                "forecastMonth": 6,
+                "dataType": "em"
+              }
+            }
+          ],
+          "quality_control": {
+            "status": "passed",
+            "field": "snowfall_anomaly",
+            "units": "in",
+            "quantity": "snowfall LWE departure",
+            "minimum": -2.0866715614621767,
+            "maximum": 0.8062004254734205,
+            "finite_fraction": 1.0,
+            "display": {
+              "quantity": "estimated snowfall depth departure",
+              "units": "in",
+              "snow_to_liquid_ratio": 10,
+              "minimum": -10,
+              "maximum": 10,
+              "clipped_fraction": 0.0121875
+            },
+            "issues": [],
+            "validation_scope": "data integrity and units; not observational forecast skill"
+          },
+          "ensemble_complete": true,
+          "status": "rendered",
+          "numeric_grid": "public/seasonal/cansips/20260901/cansips_native_snow_202702.csv.gz",
+          "image": "public/seasonal/cansips/20260901/cansips_native_snowfalla_winter_202702.jpg"
+        },
+        {
+          "id": "cansips-2026090100-snowfall_anomaly-lead06",
+          "target_month": "202703",
+          "lead_month": 6,
+          "field": "snowfall_anomaly",
+          "units": "in",
+          "valid_start_utc": "2027-03-01T00:00:00Z",
+          "valid_end_utc": "2027-04-01T00:00:00Z",
+          "ensemble_members": 40,
+          "statistic": "ensemble_mean",
+          "baseline": {
+            "source": "C3S 1993\u20132016 system-matched hindcast climatology",
+            "method": "eccc_native_snowfall_c3s_v1"
+          },
+          "status": "pending",
+          "error": "202703 is outside this initialization\u2019s native snowfall range. Use an initialization covering this month; months from different runs are not combined."
+        }
+      ],
+      "status": "partial"
+    },
     {
       "id": "cansips-2026090100-2m_temperature_anomaly",
       "source": "ECCC MSC CanSIPS v3 / Datamart",
@@ -5562,202 +5966,6 @@
       "status": "rendered",
       "output_dir": "public/seasonal/cansips",
       "generated_utc": "2026-09-08T22:49:53Z"
-    },
-    {
-      "id": "cansips-2026090100-snowfall_anomaly",
-      "model": "CanSIPS v3",
-      "product": "snowfall_anomaly",
-      "presentation": "winter_djf_jfm_v1",
-      "method": "eccc_native_snowfall_c3s_v1",
-      "source": "ECCC CanSIPS v3 / Copernicus C3S",
-      "source_url": "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-single-levels",
-      "init_utc": "2026-09-01T00:00:00Z",
-      "generated_utc": "2026-09-07T22:06:25Z",
-      "field": "snowfall_anomaly",
-      "units": "in",
-      "raw_field": "snowfall_anomalous_rate_of_accumulation",
-      "raw_units": "m s-1",
-      "statistic": "ensemble_mean",
-      "ensemble_members": 40,
-      "aggregation": "ensemble-mean period total departure; sum included monthly departures",
-      "ensemble_scope": "20 CanESM5 + 20 GEM5.2-NEMO members; equal component weights",
-      "climatology": {
-        "source": "C3S 1993\u20132016 system-matched hindcast climatology",
-        "years": "1993-2016",
-        "method": "provider postprocessed; no second subtraction"
-      },
-      "display": {
-        "quantity": "estimated snowfall depth departure",
-        "units": "in",
-        "snow_to_liquid_ratio": 10,
-        "scale_inches": [
-          -10,
-          10
-        ],
-        "white_band_inches": [
-          -1,
-          1
-        ],
-        "numeric_grid_quantity": "snowfall LWE departure"
-      },
-      "conversion": "Native snowfall anomalous rate \u00d7 target-month seconds \u00f7 0.0254; equal component mean; sum months; display only \u00d710.",
-      "targets": [
-        {
-          "id": "cansips-2026090100-snowfall_anomaly-202612-202702",
-          "target_month": "202612-202702",
-          "lead_month": "3\u20135",
-          "field": "snowfall_anomaly",
-          "units": "in",
-          "valid_start_utc": "2026-12-01T00:00:00Z",
-          "valid_end_utc": "2027-03-01T00:00:00Z",
-          "ensemble_members": 40,
-          "statistic": "ensemble_mean",
-          "baseline": {
-            "source": "C3S 1993\u20132016 system-matched hindcast climatology",
-            "method": "eccc_native_snowfall_c3s_v1"
-          },
-          "monthly_leads": [
-            3,
-            4,
-            5
-          ],
-          "season": "DJF",
-          "aggregation": "ensemble-mean 3-month total departure",
-          "status": "pending",
-          "missing_months": [
-            "202612",
-            "202701",
-            "202702"
-          ],
-          "error": "DJF unavailable: missing Dec 2026, Jan 2027, Feb 2027. Awaiting native snowfall from both Canadian models."
-        },
-        {
-          "id": "cansips-2026090100-snowfall_anomaly-202701-202703",
-          "target_month": "202701-202703",
-          "lead_month": "4\u20136",
-          "field": "snowfall_anomaly",
-          "units": "in",
-          "valid_start_utc": "2027-01-01T00:00:00Z",
-          "valid_end_utc": "2027-04-01T00:00:00Z",
-          "ensemble_members": 40,
-          "statistic": "ensemble_mean",
-          "baseline": {
-            "source": "C3S 1993\u20132016 system-matched hindcast climatology",
-            "method": "eccc_native_snowfall_c3s_v1"
-          },
-          "monthly_leads": [
-            4,
-            5,
-            6
-          ],
-          "season": "JFM",
-          "aggregation": "ensemble-mean 3-month total departure",
-          "status": "pending",
-          "missing_months": [
-            "202701",
-            "202702",
-            "202703"
-          ],
-          "error": "JFM unavailable: missing Jan 2027, Feb 2027, Mar 2027. This initialization does not cover the complete period; use a run covering every included month."
-        },
-        {
-          "id": "cansips-2026090100-snowfall_anomaly-202612-202701",
-          "target_month": "202612-202701",
-          "lead_month": "3\u20134",
-          "field": "snowfall_anomaly",
-          "units": "in",
-          "valid_start_utc": "2026-12-01T00:00:00Z",
-          "valid_end_utc": "2027-02-01T00:00:00Z",
-          "ensemble_members": 40,
-          "statistic": "ensemble_mean",
-          "baseline": {
-            "source": "C3S 1993\u20132016 system-matched hindcast climatology",
-            "method": "eccc_native_snowfall_c3s_v1"
-          },
-          "monthly_leads": [
-            3,
-            4
-          ],
-          "season": "D+J",
-          "aggregation": "ensemble-mean 2-month total departure",
-          "label": "D+J 2026\u201327",
-          "status": "pending",
-          "missing_months": [
-            "202612",
-            "202701"
-          ],
-          "error": "D+J unavailable: missing Dec 2026, Jan 2027. Awaiting native snowfall from both Canadian models."
-        },
-        {
-          "id": "cansips-2026090100-snowfall_anomaly-lead03",
-          "target_month": "202612",
-          "lead_month": 3,
-          "field": "snowfall_anomaly",
-          "units": "in",
-          "valid_start_utc": "2026-12-01T00:00:00Z",
-          "valid_end_utc": "2027-01-01T00:00:00Z",
-          "ensemble_members": 40,
-          "statistic": "ensemble_mean",
-          "baseline": {
-            "source": "C3S 1993\u20132016 system-matched hindcast climatology",
-            "method": "eccc_native_snowfall_c3s_v1"
-          },
-          "status": "pending",
-          "error": "Native snowfall for 202609 / 202612 is not yet available for ECCC system 4. C3S normally releases on the 10th at 12 UTC."
-        },
-        {
-          "id": "cansips-2026090100-snowfall_anomaly-lead04",
-          "target_month": "202701",
-          "lead_month": 4,
-          "field": "snowfall_anomaly",
-          "units": "in",
-          "valid_start_utc": "2027-01-01T00:00:00Z",
-          "valid_end_utc": "2027-02-01T00:00:00Z",
-          "ensemble_members": 40,
-          "statistic": "ensemble_mean",
-          "baseline": {
-            "source": "C3S 1993\u20132016 system-matched hindcast climatology",
-            "method": "eccc_native_snowfall_c3s_v1"
-          },
-          "status": "pending",
-          "error": "Native snowfall for 202609 / 202701 is not yet available for ECCC system 4. C3S normally releases on the 10th at 12 UTC."
-        },
-        {
-          "id": "cansips-2026090100-snowfall_anomaly-lead05",
-          "target_month": "202702",
-          "lead_month": 5,
-          "field": "snowfall_anomaly",
-          "units": "in",
-          "valid_start_utc": "2027-02-01T00:00:00Z",
-          "valid_end_utc": "2027-03-01T00:00:00Z",
-          "ensemble_members": 40,
-          "statistic": "ensemble_mean",
-          "baseline": {
-            "source": "C3S 1993\u20132016 system-matched hindcast climatology",
-            "method": "eccc_native_snowfall_c3s_v1"
-          },
-          "status": "pending",
-          "error": "Native snowfall for 202609 / 202702 is not yet available for ECCC system 4. C3S normally releases on the 10th at 12 UTC."
-        },
-        {
-          "id": "cansips-2026090100-snowfall_anomaly-lead06",
-          "target_month": "202703",
-          "lead_month": 6,
-          "field": "snowfall_anomaly",
-          "units": "in",
-          "valid_start_utc": "2027-03-01T00:00:00Z",
-          "valid_end_utc": "2027-04-01T00:00:00Z",
-          "ensemble_members": 40,
-          "statistic": "ensemble_mean",
-          "baseline": {
-            "source": "C3S 1993\u20132016 system-matched hindcast climatology",
-            "method": "eccc_native_snowfall_c3s_v1"
-          },
-          "status": "pending",
-          "error": "202703 is outside this initialization\u2019s native snowfall range. Use an initialization covering this month; months from different runs are not combined."
-        }
-      ],
-      "status": "pending"
     },
     {
       "id": "cansips-2026090100-precipitation_anomaly",
