@@ -4,7 +4,9 @@ on:
     branches: [main]
     paths:
       - scripts/height_display.py
+      - scripts/temperature_display.py
       - .github/workflows/height-style-refresh.yml
+      - .github/workflows/temperature-style-refresh.yml
   workflow_dispatch:
 permissions:
   actions: write
@@ -42,6 +44,7 @@ jobs:
           set -euo pipefail
           failed=0
           deferred=0
+          started_products=0
           # The CDS-backed workers can render their complete suite from one
           # representative published cycle; this keeps their account queue
           # serialized while still refreshing both requested height views.
@@ -55,17 +58,19 @@ jobs:
             [[ "$product" == "all" ]] && request_product="$plan_product"
             # Give an existing producer a bounded hand-off window; the
             # product-scoped producer key below prevents cross-product canceling.
-            wait_seconds=0
-            blocked=0
-            while gh run list --workflow "$WORKFLOW" --limit 50 --json status --jq 'any(.[]; .status == "in_progress" or .status == "queued" or .status == "waiting" or .status == "pending")' | grep -qx true; do
-              if (( wait_seconds >= 900 )); then
-                echo "::warning::${WORKFLOW} is still active after 15 minutes; deferring this style refresh so it cannot cancel a scheduled or release run."
-                blocked=1
-                break
+            if (( started_products == 0 )); then
+              wait_seconds=0
+              blocked=0
+              while gh run list --workflow "$WORKFLOW" --limit 50 --json status --jq 'any(.[]; .status == "in_progress" or .status == "queued" or .status == "waiting" or .status == "pending")' | grep -qx true; do
+                if (( wait_seconds >= 900 )); then
+                  echo "::warning::${WORKFLOW} is still active after 15 minutes; deferring this style refresh so it cannot cancel a scheduled or release run."
+                  blocked=1
+                  break
+                fi
+                sleep 30
+                wait_seconds=$((wait_seconds + 30))
+              done
               fi
-              sleep 30
-              wait_seconds=$((wait_seconds + 30))
-            done
             if (( blocked )); then
               deferred=$((deferred + 1))
               continue
@@ -129,6 +134,7 @@ jobs:
             test -n "$run_id"
             echo "- $WORKFLOW / $product: https://github.com/$GH_REPO/actions/runs/$run_id" >> "$GITHUB_STEP_SUMMARY"
             echo "::notice::$WORKFLOW / $product dispatched as run $run_id; the provider will publish its Pages artifact on completion."
+            started_products=$((started_products + 1))
           done
           if (( deferred )); then
             echo "::warning::$deferred 500-mb style refresh product(s) were deferred because a live producer was already active."

@@ -28,6 +28,7 @@ jobs:
       GH_TOKEN: ${{ github.token }}
       GH_REPO: ${{ github.repository }}
       WORKFLOW: ${{ matrix.workflow }}
+      EVENT_NAME: ${{ github.event_name }}
     steps:
       - uses: actions/checkout@v4
       - name: Initialize serialized Pages handoff
@@ -40,6 +41,16 @@ jobs:
           set -euo pipefail
           failed=0
           deferred=0
+          started_products=0
+          # CDS workers render the complete suite from one representative
+          # cycle. The height maintenance fan-out owns that single CDS
+          # refresh on push so a temperature and height push cannot race
+          # identical full-suite children. Manual temperature dispatches
+          # still refresh CDS workers directly.
+          if [[ "$EVENT_NAME" == "push" && ( "$WORKFLOW" == "seas5.yml" || "$WORKFLOW" == "c3s.yml" || "$WORKFLOW" == "jma.yml" ) ]]; then
+            echo "::notice::CDS full-suite style refresh is owned by the height maintenance fan-out on push; skipping this duplicate child."
+            exit 0
+          fi
           # Refresh both temperature products across every operational provider.
           # The CDS-backed workers can render their complete suite from one
           # representative published cycle; this keeps their account queue
@@ -56,17 +67,19 @@ jobs:
             [[ "$WORKFLOW" == "nmme.yml" && "$product" == "850mb_temperature_anomaly" ]] && continue
             # Give a live producer a bounded hand-off window. Product-scoped
             # concurrency keys below let a stale attempt be superseded.
-            wait_seconds=0
-            blocked=0
-            while gh run list --workflow "$WORKFLOW" --limit 50 --json status --jq 'any(.[]; .status == "in_progress" or .status == "queued" or .status == "waiting" or .status == "pending")' | grep -qx true; do
-              if (( wait_seconds >= 900 )); then
-                echo "::warning::${WORKFLOW} is still active after 15 minutes; deferring this style refresh so it cannot cancel a scheduled or release run."
-                blocked=1
-                break
+            if (( started_products == 0 )); then
+              wait_seconds=0
+              blocked=0
+              while gh run list --workflow "$WORKFLOW" --limit 50 --json status --jq 'any(.[]; .status == "in_progress" or .status == "queued" or .status == "waiting" or .status == "pending")' | grep -qx true; do
+                if (( wait_seconds >= 900 )); then
+                  echo "::warning::${WORKFLOW} is still active after 15 minutes; deferring this style refresh so it cannot cancel a scheduled or release run."
+                  blocked=1
+                  break
+                fi
+                sleep 30
+                wait_seconds=$((wait_seconds + 30))
+              done
               fi
-              sleep 30
-              wait_seconds=$((wait_seconds + 30))
-            done
             if (( blocked )); then
               deferred=$((deferred + 1))
               continue
@@ -130,6 +143,7 @@ jobs:
             test -n "$run_id"
             echo "- $WORKFLOW / $product: https://github.com/$GH_REPO/actions/runs/$run_id" >> "$GITHUB_STEP_SUMMARY"
             echo "::notice::$WORKFLOW / $product dispatched as run $run_id; the provider will publish its Pages artifact on completion."
+            started_products=$((started_products + 1))
           done
           if (( deferred )); then
             echo "::warning::$deferred temperature style refresh product(s) were deferred because a live producer was already active."

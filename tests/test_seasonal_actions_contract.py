@@ -118,6 +118,9 @@ def main() -> int:
               f"{name} should suppress duplicate self-publishers during maintenance")
         check('request_product="$plan_product"' in maintenance,
               f"{name} must quote the representative plan product assignment")
+        check("if (( started_products == 0 )); then" in maintenance
+              and "started_products=$((started_products + 1))" in maintenance,
+              f"{name} must not self-block its second product after launching the first")
         check("Upload serialized Pages handoff" in maintenance
               and "actions/upload-artifact@v4" in maintenance
               and f"name: {prefix}" in maintenance,
