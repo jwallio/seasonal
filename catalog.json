@@ -2,7 +2,7 @@
   "schema_version": 1,
   "registry_version": 1,
   "kind": "seasonal_dashboard_catalog",
-  "generated_utc": "2026-09-11T03:48:46Z",
+  "generated_utc": "2026-09-11T03:51:30Z",
   "source_revision": "06f97c30ab90cbb46e4e83bdd9e22b4defbc8a83",
   "model_order": [
     "superensemble",
@@ -25501,6 +25501,7 @@
           "aggregation": "6-day rolling initial-condition mean; 3-month seasonal mean",
           "ensemble_scope": "rolling_initial_conditions",
           "ensemble_members": 24,
+          "ensemble_expected_members": 24,
           "rolling_window": {
             "days": 6,
             "expected_cycles": 24,
@@ -25801,7 +25802,9 @@
                 ]
               },
               "ensemble_members": 24,
+              "ensemble_expected_members": 24,
               "ensemble_complete": true,
+              "ensemble_label": "24/24-cycle rolling mean",
               "ensemble_scope": "rolling_initial_conditions",
               "statistic": "ensemble_mean",
               "aggregation": "3-month seasonal mean",
@@ -26354,7 +26357,6 @@
           "aggregation": "6-day rolling initial-condition mean; 3-month seasonal mean",
           "ensemble_scope": "rolling_initial_conditions",
           "ensemble_members": 24,
-          "ensemble_expected_members": 24,
           "rolling_window": {
             "days": 6,
             "expected_cycles": 24,
@@ -26446,7 +26448,7 @@
                     "source": "CanSIPS v3 hindcast climatology",
                     "file": ".cache/cfsv2/common-reference/z500_202701.csv.gz",
                     "url": "https://jwallio.github.io/seasonal/common_reference/1991-2020/z500_202701.csv.gz",
-                    "downloaded": true
+                    "downloaded": false
                   }
                 }
               },
@@ -26457,7 +26459,7 @@
                 "rolling_policy": "anchor_initialization",
                 "anchor_init": "2026091012",
                 "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs_refor_calclim_mm_9m_pgbf/09/pgbf.09.10.12.l04.fclm.1982.2010.grb2",
-                "downloaded": true
+                "downloaded": false
               },
               "ensemble_members": 24,
               "ensemble_expected_members": 24,
@@ -26599,7 +26601,7 @@
                     "source": "CanSIPS v3 hindcast climatology",
                     "file": ".cache/cfsv2/common-reference/z500_202702.csv.gz",
                     "url": "https://jwallio.github.io/seasonal/common_reference/1991-2020/z500_202702.csv.gz",
-                    "downloaded": true
+                    "downloaded": false
                   }
                 }
               },
@@ -26610,7 +26612,7 @@
                 "rolling_policy": "anchor_initialization",
                 "anchor_init": "2026091012",
                 "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs_refor_calclim_mm_9m_pgbf/09/pgbf.09.10.12.l05.fclm.1982.2010.grb2",
-                "downloaded": true
+                "downloaded": false
               },
               "ensemble_members": 24,
               "ensemble_expected_members": 24,
@@ -26704,7 +26706,7 @@
                 "rolling_policy": "anchor_initialization",
                 "anchor_init": "2026091012",
                 "url": "https://www.ncei.noaa.gov/thredds/fileServer/model-cfs_refor_calclim_mm_9m_pgbf/09/pgbf.09.10.12.l06.fclm.1982.2010.grb2",
-                "downloaded": true
+                "downloaded": false
               },
               "ensemble_members": 24,
               "ensemble_expected_members": 24,
@@ -26814,9 +26816,7 @@
                 ]
               },
               "ensemble_members": 24,
-              "ensemble_expected_members": 24,
               "ensemble_complete": true,
-              "ensemble_label": "24/24-cycle rolling mean",
               "ensemble_scope": "rolling_initial_conditions",
               "statistic": "ensemble_mean",
               "aggregation": "3-month seasonal mean",
@@ -65285,7 +65285,7 @@
       "status": "online",
       "schema_version": 1,
       "manifest_kind": "cfsv2_seasonal_manifest",
-      "generated_utc": "2026-09-11T03:47:07Z",
+      "generated_utc": "2026-09-11T03:48:11Z",
       "source_url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/",
       "product_labels": {},
       "validation": {
@@ -88671,7 +88671,7 @@
   },
   "health": {
     "status": "attention",
-    "generated_utc": "2026-09-11T03:48:46Z",
+    "generated_utc": "2026-09-11T03:51:30Z",
     "freshness_policy_days": {
       "default": {
         "fresh_days": 35,
