@@ -20,7 +20,7 @@ from seasonal_products import is_retired_product
 
 SEASONAL_MODELS = frozenset({
     "apcc", "c3s", "cansips", "cma_cpsv3", "cfsv2", "geos_s2s3", "jma",
-    "nmme", "seas5", "superensemble",
+    "nmme", "seas5", "sfs", "superensemble",
 })
 RETIRED_ASSET_PATTERN = re.compile(
     r"(?:^|[_./-])(?:sst|ssta|swea|weasd)(?:[_./-]|$)"

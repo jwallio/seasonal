@@ -1,0 +1,163 @@
+name: NOAA SFS Beta2 Seasonal Graphics
+run-name: "SFS beta2 ${{ inputs.init || 'latest' }} · ${{ inputs.product || 'all' }}"
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - scripts/sfs_seasonal.py
+      - scripts/cfsv2_seasonal.py
+      - scripts/height_display.py
+      - scripts/temperature_display.py
+      - scripts/snowfall_display.py
+      - scripts/seasonal_products.py
+      - public/seasonal/sfs/index.html
+      - .github/workflows/sfs.yml
+  schedule:
+    - cron: "30 18 10 * *"
+  workflow_dispatch:
+    inputs:
+      product:
+        description: "NOAA SFS parameter to generate"
+        required: false
+        default: "all"
+        type: choice
+        options:
+          - all
+          - 500mb_height_anomaly
+          - 500mb_height_anomaly_nh
+          - 850mb_temperature_anomaly
+          - 2m_temperature_anomaly
+          - precipitation_anomaly
+          - snowfall_anomaly
+          - mslp_anomaly
+      init:
+        description: "NOAA SFS release as YYYYMM or latest"
+        required: false
+        default: "latest"
+        type: string
+      lead_months:
+        description: "Monthly leads from the release month (September 3,4,5 = DJF)"
+        required: false
+        default: "3,4,5"
+        type: string
+      seasonal_window:
+        description: "Consecutive leads to aggregate into the seasonal map"
+        required: false
+        default: "3,4,5"
+        type: string
+
+permissions:
+  actions: write
+  contents: read
+
+concurrency:
+  group: seasonal-sfs-${{ inputs.init || 'latest' }}-${{ inputs.product || 'all' }}
+  cancel-in-progress: true
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    env:
+      SFS_PRODUCT: ${{ inputs.product || 'all' }}
+      SCHEDULED_SFS_PRODUCTS: 500mb_height_anomaly,850mb_temperature_anomaly,2m_temperature_anomaly,precipitation_anomaly,snowfall_anomaly,mslp_anomaly
+      SFS_INIT: ${{ inputs.init || 'latest' }}
+      LEAD_MONTHS: ${{ inputs.lead_months || '3,4,5' }}
+      SEASONAL_WINDOW: ${{ inputs.seasonal_window || '3,4,5' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Install NOAA SFS rendering dependencies
+        run: python -m pip install --disable-pip-version-check --quiet Pillow numpy matplotlib requests numcodecs
+
+      - name: Restore NOAA SFS Zarr cache
+        uses: actions/cache@v4
+        with:
+          path: .cache/sfs
+          key: sfs-${{ runner.os }}-${{ env.SFS_INIT }}-zarr-v1-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            sfs-${{ runner.os }}-${{ env.SFS_INIT }}-zarr-v1-
+            sfs-${{ runner.os }}-latest-zarr-v1-
+
+      - name: Restore published SFS run history
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .cache/sfs
+          published_manifest=".cache/sfs/previous_manifest.json"
+          temporary_manifest="${published_manifest}.tmp"
+          pages_url="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/sfs_manifest.json"
+          if curl -fsSL --retry 3 --connect-timeout 10 "$pages_url" -o "$temporary_manifest"; then
+            mv "$temporary_manifest" "$published_manifest"
+            echo "Restored prior NOAA SFS manifest for current-plus-three cycle retention."
+          else
+            rm -f "$temporary_manifest"
+            if [ -f "$published_manifest" ]; then
+              echo "Could not refresh NOAA SFS manifest; retaining cached last-known-good history."
+            else
+              echo "No prior NOAA SFS manifest was available; starting a new history."
+            fi
+          fi
+
+      - name: Render NOAA SFS products
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "$SFS_PRODUCT" == "all" ]]; then
+            IFS=',' read -r -a products <<< "$SCHEDULED_SFS_PRODUCTS"
+          else
+            products=("$SFS_PRODUCT")
+          fi
+          for product in "${products[@]}"; do
+            echo "Rendering NOAA SFS product: $product"
+            python scripts/sfs_seasonal.py \
+              --product "$product" \
+              --init "$SFS_INIT" \
+              --lead-months "$LEAD_MONTHS" \
+              --seasonal-window "$SEASONAL_WINDOW" \
+              --cache-dir .cache/sfs \
+              --border-cache-dir .cache/sfs \
+              --output-dir public/seasonal/sfs \
+              --manifest public/seasonal/sfs_manifest.json \
+              --previous-manifest .cache/sfs/previous_manifest.json \
+              --retain-cycles 4 \
+              --download-workers 8
+          done
+
+      - name: Package NOAA SFS Pages payload
+        if: success()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -d public/seasonal/sfs
+          test -f public/seasonal/sfs_manifest.json
+          rm -rf pages-payload
+          mkdir -p pages-payload/sfs
+          cp -R public/seasonal/sfs/. pages-payload/sfs/
+          cp public/seasonal/sfs_manifest.json pages-payload/sfs_manifest.json
+
+      - name: Upload NOAA SFS Pages payload
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sfs-pages-${{ github.run_id }}
+          path: pages-payload
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Dispatch Pages publisher for token-launched render
+        if: ${{ success() && (github.actor == 'github-actions[bot]' || github.event_name == 'push' || github.event_name == 'workflow_dispatch') }}
+        uses: ./.github/actions/publish-pages
+        with:
+          source-workflow: NOAA SFS Beta2 Seasonal Graphics
+          source-run-id: ${{ github.run_id }}

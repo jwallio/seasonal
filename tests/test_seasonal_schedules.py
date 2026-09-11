@@ -16,6 +16,7 @@ EXPECTED = {
     ".github/workflows/cma-cpsv3.yml": "30 18 21 * *",
     ".github/workflows/nmme.yml": "30 15 9 * *",
     ".github/workflows/superensemble.yml": "30 20 22 * *",
+    ".github/workflows/sfs.yml": "30 18 10 * *",
 }
 
 AVAILABILITY_WATCHERS = {
@@ -34,6 +35,7 @@ SCHEDULED_SUITES = {
     ".github/workflows/c3s.yml": ("SCHEDULED_C3S_PRODUCTS", {"500mb_height_anomaly", "500mb_height_anomaly_nh", "850mb_temperature_anomaly", "2m_temperature_anomaly", "precipitation_anomaly", "snowfall_anomaly", "mslp_anomaly"}),
     ".github/workflows/jma.yml": ("SCHEDULED_JMA_PRODUCTS", {"500mb_height_anomaly", "500mb_height_anomaly_nh", "850mb_temperature_anomaly", "2m_temperature_anomaly", "precipitation_anomaly", "mslp_anomaly"}),
     ".github/workflows/seas5.yml": ("SCHEDULED_SEAS5_PRODUCTS", {"500mb_height_anomaly", "500mb_height_anomaly_nh", "850mb_temperature_anomaly", "2m_temperature_anomaly", "precipitation_anomaly", "snowfall_anomaly", "mslp_anomaly"}),
+    ".github/workflows/sfs.yml": ("SCHEDULED_SFS_PRODUCTS", {"500mb_height_anomaly", "850mb_temperature_anomaly", "2m_temperature_anomaly", "precipitation_anomaly", "snowfall_anomaly", "mslp_anomaly"}),
 }
 
 CDS_WORKER_PUBLISHERS = {
@@ -52,6 +54,7 @@ HISTORY_WORKFLOWS = (
     ".github/workflows/jma.yml",
     ".github/workflows/nmme.yml",
     ".github/workflows/seas5.yml",
+    ".github/workflows/sfs.yml",
     ".github/workflows/superensemble.yml",
 )
 
@@ -64,7 +67,7 @@ def check(condition: bool, message: str) -> None:
 def main() -> int:
     check(set(MODEL_SCHEDULES) == {
         "superensemble", "c3s", "apcc", "nmme", "cfsv2", "seas5",
-        "cansips", "cma_cpsv3", "geos_s2s3", "jma",
+        "cansips", "cma_cpsv3", "geos_s2s3", "jma", "sfs",
     }, "every dashboard model must have an availability schedule")
     for model_key, schedule in MODEL_SCHEDULES.items():
         check(schedule.get("cadence_group") in {"frequent", "monthly"}, f"{model_key} schedule is missing its cadence group")
@@ -130,6 +133,8 @@ def main() -> int:
 
     publisher_text = (ROOT / ".github/workflows/publish-pages.yml").read_text(encoding="utf-8")
     workflow_run_triggers = publisher_text.split("  workflow_dispatch:", 1)[0]
+    check("NOAA SFS Beta2 Seasonal Graphics" not in workflow_run_triggers, "NOAA SFS must use its explicit queue-safe Pages handoff without a duplicate workflow_run publisher")
+
     for relative_path, workflow_name in CDS_WORKER_PUBLISHERS.items():
         text = (ROOT / relative_path).read_text(encoding="utf-8")
         check("actions: write" in text, f"{relative_path} must be allowed to dispatch its Pages publisher")
@@ -162,6 +167,7 @@ def main() -> int:
     check("15-minute source-availability probe" in doc, "schedule documentation must describe the CFSv2 source-driven dispatcher")
     check("scheduled reconciliation" in doc, "schedule documentation must describe the analog catch-up")
     check("explicitly dispatch that publisher" in doc, "schedule documentation must explain CDS worker publication")
+    check("NOAA SFS beta2" in doc and "18:30" in doc, "schedule documentation must describe the NOAA SFS beta2 release window")
 
     print("SEASONAL SCHEDULE CONTRACT OK: release-aligned UTC workflows, full scheduled suites, and documentation")
     return 0

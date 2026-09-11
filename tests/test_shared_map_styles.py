@@ -27,6 +27,7 @@ ADAPTERS = (
     "cma_cpsv3_seasonal",
     "seas5_seasonal",
     "geos_s2s3_seasonal",
+    "sfs_seasonal",
     "apcc_seasonal",
 )
 

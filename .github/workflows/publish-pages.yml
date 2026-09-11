@@ -15,6 +15,7 @@ on:
       - public/seasonal/dashboard.css
       - public/seasonal/dashboard.js
       - public/seasonal/cfsv2/index.html
+      - public/seasonal/sfs/index.html
       - .github/workflows/publish-pages.yml
   workflow_run:
     workflows:
@@ -49,6 +50,7 @@ on:
           - APCC MME Seasonal Graphics
           - NASA GEOS-S2S-3 Seasonal Graphics
           - NOAA NMME Seasonal Graphics
+          - NOAA SFS Beta2 Seasonal Graphics
           - Deduplicated Seasonal Super Ensemble
           - Seasonal 500-mb Pattern Analogs
           - Native Snowfall Estimate Page
@@ -91,6 +93,7 @@ jobs:
             public/seasonal/dashboard.css
             public/seasonal/dashboard.js
             public/seasonal/cfsv2/index.html
+            public/seasonal/sfs/index.html
             public/seasonal/cfsv2/native-snowfall/
             public/seasonal/seas5/index.html
             public/seasonal/c3s/index.html
@@ -251,6 +254,16 @@ jobs:
           repository: ${{ github.repository }}
           run-id: ${{ env.SOURCE_RUN_ID }}
 
+      - name: Download NOAA SFS payload
+        if: ${{ env.SOURCE_WORKFLOW == 'NOAA SFS Beta2 Seasonal Graphics' }}
+        uses: actions/download-artifact@v4
+        with:
+          name: sfs-pages-${{ env.SOURCE_RUN_ID }}
+          path: incoming/sfs
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: ${{ env.SOURCE_RUN_ID }}
+
       - name: Download super-ensemble payload
         if: ${{ env.SOURCE_WORKFLOW == 'Deduplicated Seasonal Super Ensemble' }}
         uses: actions/download-artifact@v4
@@ -309,12 +322,14 @@ jobs:
           test -f dashboard-source/public/seasonal/dashboard.css
           test -f dashboard-source/public/seasonal/dashboard.js
           test -f dashboard-source/public/seasonal/cfsv2/index.html
+          test -f dashboard-source/public/seasonal/sfs/index.html
           test -f dashboard-source/public/seasonal/seas5/index.html
           cp dashboard-source/public/seasonal/index.html site/index.html
           cp dashboard-source/public/seasonal/dashboard.css site/dashboard.css
           cp dashboard-source/public/seasonal/dashboard.js site/dashboard.js
-          mkdir -p site/cfsv2 site/seas5 site/c3s site/cma_cpsv3 site/jma site/apcc site/geos_s2s3 site/nmme site/superensemble
+          mkdir -p site/cfsv2 site/seas5 site/c3s site/cma_cpsv3 site/jma site/apcc site/geos_s2s3 site/nmme site/sfs site/superensemble
           cp dashboard-source/public/seasonal/cfsv2/index.html site/cfsv2/index.html
+          cp dashboard-source/public/seasonal/sfs/index.html site/sfs/index.html
           cp dashboard-source/public/seasonal/seas5/index.html site/seas5/index.html
           cp dashboard-source/public/seasonal/c3s/index.html site/c3s/index.html
           cp dashboard-source/public/seasonal/cma_cpsv3/index.html site/cma_cpsv3/index.html
@@ -472,6 +487,18 @@ jobs:
               mkdir -p site/nmme
               cp -R "$payload_root/nmme/." site/nmme/
               cp "$payload_root/nmme_manifest.json" site/nmme_manifest.json
+              ;;
+            "NOAA SFS Beta2 Seasonal Graphics")
+              payload_root=incoming/sfs
+              if [ -d "$payload_root/pages-payload" ]; then
+                payload_root="$payload_root/pages-payload"
+              elif [ -d "$payload_root/.pages-payload" ]; then
+                payload_root="$payload_root/.pages-payload"
+              fi
+              test -f "$payload_root/sfs_manifest.json"
+              mkdir -p site/sfs
+              cp -R "$payload_root/sfs/." site/sfs/
+              cp "$payload_root/sfs_manifest.json" site/sfs_manifest.json
               ;;
             "Deduplicated Seasonal Super Ensemble")
               payload_root=incoming/superensemble

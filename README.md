@@ -28,6 +28,8 @@ Supported model adapters are:
 - **APCC MME** — official APCC CLIK multi-model seasonal anomalies.
 - **NASA GEOS-S2S-3** — public NASA NCCS numerical and drift-climatology
   archives, subject to strict source and pressure-level checks.
+- **NOAA SFS beta2** — experimental NOAA Seasonal Forecast System guidance
+  from the public SFS development archive, with same-month reforecast anomalies.
 
 The viewer also includes model-specific pages, a unified Overview, a Compare
 view, valid-period controls, blend/family/component filters, run provenance,
@@ -50,7 +52,9 @@ sea-surface height, 200-mb fields, probability categories, and other native
 parameters where the source supports them.
 
 Shared comparison conventions include fixed cross-provider scales for 500-mb
-height and temperature. Precipitation is rendered in accumulated inches.
+height and temperature. Precipitation is rendered in accumulated inches. NOAA
+SFS beta2 uses the same fixed discrete bands and full CONUS framing, including
+the eastern Maine border, rather than a smooth gradient.
 Snowfall maps from C3S and SEAS5 use native snowfall accumulation rates,
 converted to inches of liquid-water equivalent—not snow depth—and provide
 CONUS monthly totals and DJF three-month sums. CanSIPS v3 adds a transparent
@@ -120,8 +124,8 @@ coverage summaries. Missing or invalid metadata fails closed before publishing.
 ## Automation and publishing
 
 Release-aligned GitHub Actions workflows are provided for CFSv2, SEAS5, C3S,
-JMA/MRI-CPS4, CanSIPS, CMA CPSv3, APCC, NASA GEOS-S2S-3, NMME, the
-super-ensemble, seasonal analogs, and the central Pages publisher.
+JMA/MRI-CPS4, CanSIPS, CMA CPSv3, APCC, NASA GEOS-S2S-3, NOAA SFS beta2,
+NMME, the super-ensemble, seasonal analogs, and the central Pages publisher.
 
 Provider schedules and UTC automation timing are documented in
 [`docs/SEASONAL_SCHEDULES.md`](docs/SEASONAL_SCHEDULES.md).
@@ -167,6 +171,7 @@ Provider documentation:
 [`JMA/MRI-CPS4`](docs/SEASONAL_JMA.md) ·
 [`APCC`](docs/SEASONAL_APCC.md) ·
 [`GEOS-S2S-3`](docs/SEASONAL_GEOS_S2S3.md) ·
+[`NOAA SFS beta2`](docs/SEASONAL_SFS.md) ·
 [`NMME`](docs/SEASONAL_NMME.md) ·
 [`Super ensemble`](docs/SEASONAL_SUPERENSEMBLE.md)
 

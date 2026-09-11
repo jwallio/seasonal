@@ -40,6 +40,7 @@ const MODEL_CONFIG = {
   jma: { label: 'JMA', role: 'component', kind: 'seasonal', manifest: assetPath('seasonal/jma_manifest.json'), direct: assetPath('seasonal/jma/'), source: 'JMA/MRI-CPS4 via Copernicus C3S' },
   apcc: { label: 'APCC MME', role: 'blend', kind: 'seasonal', manifest: assetPath('seasonal/apcc_manifest.json'), direct: assetPath('seasonal/apcc/'), source: 'APCC multi-model ensemble via CLIK' },
   geos_s2s3: { label: 'NASA GEOS-S2S-3', role: 'family', kind: 'seasonal', manifest: assetPath('seasonal/geos_s2s3_manifest.json'), direct: assetPath('seasonal/geos_s2s3/'), source: 'NASA GEOS-S2S-3 NCCS numerical forecasts' },
+  sfs: { label: 'NOAA SFS beta2', role: 'family', kind: 'seasonal', manifest: assetPath('seasonal/sfs_manifest.json'), direct: assetPath('seasonal/sfs/'), source: 'NOAA SFS beta2 development archive' },
   nmme: { label: 'NOAA NMME', role: 'blend', preferredComponent: 'ENSMEAN', kind: 'seasonal', manifest: assetPath('seasonal/nmme_manifest.json'), direct: assetPath('seasonal/nmme/'), source: 'NOAA CPC NMME' },
 };
 // Kept as a client fallback while an older published catalog is being
@@ -54,6 +55,7 @@ const MODEL_SCHEDULE_FALLBACKS = {
   cansips: { cadenceGroup: 'monthly', cadenceLabel: 'Monthly · ECCC', officialSchedule: 'ECCC global seasonal forecasts are produced on the first day at 00 UTC; wall.cloud publishes after the Datamart window.', officialUrl: 'https://weather.gc.ca/saisons/GPC_Montreal_e.html', expectedCycle: { kind: 'monthly_day', runDay: 1, runTimeUtc: '00:00', publishDay: 2, publishTimeUtc: '16:30', publishLagMinutes: 60, lateAfterMinutes: 360 } },
   cma_cpsv3: { cadenceGroup: 'monthly', cadenceLabel: 'Monthly · WMO window', officialSchedule: 'CMA CPSv3 is a monthly seasonal system; wall.cloud targets the 21st after the WMO GPC Beijing exchange window.', officialUrl: 'https://www.wmolc.org/contents2/index/Beijing', expectedCycle: { kind: 'monthly_day', runDay: 1, runTimeUtc: '00:00', publishDay: 21, publishTimeUtc: '18:30', publishLagMinutes: 60, lateAfterMinutes: 360 } },
   geos_s2s3: { cadenceGroup: 'monthly', cadenceLabel: 'Monthly · NASA', officialSchedule: 'NASA produces GEOS seasonal forecasts monthly; wall.cloud checks the public archive during the first week.', officialUrl: 'https://gmao.gsfc.nasa.gov/seasonal-decadal-analysis_prediction/', expectedCycle: { kind: 'monthly_day', runDay: 1, runTimeUtc: '00:00', publishDay: 6, publishTimeUtc: '16:30', publishLagMinutes: 60, lateAfterMinutes: 360 } },
+  sfs: { cadenceGroup: 'monthly', cadenceLabel: 'Monthly · NOAA SFS', officialSchedule: 'NOAA\'s SFS beta2 development archive is refreshed monthly; wall.cloud checks the S3 inventory after the 9th.', officialUrl: 'https://noaa-oar-sfsdev-pds.s3.amazonaws.com/index.html', expectedCycle: { kind: 'monthly_day', runDay: 1, runTimeUtc: '00:00', publishDay: 10, publishTimeUtc: '18:30', publishLagMinutes: 90, lateAfterMinutes: 360 } },
   jma: { cadenceGroup: 'monthly', cadenceLabel: 'Monthly · JMA/C3S', officialSchedule: 'JMA seasonal guidance is monthly; the C3S component is checked in the 10th-day release window.', officialUrl: 'https://www.data.jma.go.jp/wmc/products/model/', expectedCycle: { kind: 'monthly_day', runDay: 1, runTimeUtc: '00:00', publishDay: 10, publishTimeUtc: '12:00', publishLagMinutes: 90, lateAfterMinutes: 360 } },
 };
 const MODEL_ROLE_LABELS = { blend: 'Blend', family: 'Forecast family', component: 'Component model' };
@@ -134,7 +136,7 @@ function genericSelectionForModel(model, products) {
 }
 const DEFAULT_COMPARE_PRODUCT = '500mb_height_anomaly';
 const COMPARE_MIN_VALID_MONTH = 202612;
-const COMPARE_MODELS = ['superensemble', 'c3s', 'apcc', 'nmme', 'cfsv2', 'seas5', 'cansips', 'cma_cpsv3', 'geos_s2s3', 'jma'];
+const COMPARE_MODELS = ['superensemble', 'c3s', 'apcc', 'nmme', 'cfsv2', 'seas5', 'cansips', 'cma_cpsv3', 'geos_s2s3', 'sfs', 'jma'];
 const COMPARE_PRODUCTS = [
   { value: '500mb_height_anomaly', label: '500-mb Height Anomaly', aliases: ['500mb_height_anomaly'] },
   { value: '850mb_temperature_anomaly', label: '850-mb Temperature Anomaly', aliases: ['850mb_temperature_anomaly'] },

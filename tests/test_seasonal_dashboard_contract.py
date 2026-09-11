@@ -59,6 +59,7 @@ def main() -> int:
         "APCC MME",
         "NASA GEOS-S2S-3",
         "NOAA NMME",
+        "NOAA SFS beta2",
         "Super Ensemble",
         "seasonal/cfsv2_manifest.json",
         "seasonal/seas5_manifest.json",
@@ -69,6 +70,7 @@ def main() -> int:
         "seasonal/apcc_manifest.json",
         "seasonal/geos_s2s3_manifest.json",
         "seasonal/nmme_manifest.json",
+        "seasonal/sfs_manifest.json",
         "seasonal/superensemble_manifest.json",
         "seasonal/analog_z500_manifest.json",
         "seasonal/analog_products_manifest.json",
@@ -241,7 +243,7 @@ def main() -> int:
     check("availabilityPollMinutes" in dashboard_script and "key: 'source_driven'" in dashboard_script, "dashboard must represent source-driven CFSv2 timing without a fabricated overdue clock")
     check("publish.valueOf() < run.valueOf()" in dashboard_script and "24 * 60" in dashboard_script, "daily schedule display must carry overnight publication windows into the next UTC day")
     check("new Set(['sea_surface_temperature_anomaly', 'snow_water_equivalent_anomaly', 'sst_anomaly'])" in page, "dashboard must hide retired SST and quarantined CFSv2 SWE history")
-    check("'geos_s2s3'" in page and "'nmme'" in page, "parameter comparison must include GEOS and NMME when they publish the selected field")
+    check("'geos_s2s3'" in page and "'nmme'" in page and "'sfs'" in page, "parameter comparison must include GEOS, NMME, and SFS when they publish the selected field")
     check("preferredComponent: 'multisystem'" in page, "C3S comparisons should prefer the multi-system blend")
     check("preferredComponent: 'ENSMEAN'" in page, "NMME comparisons should prefer the official ensemble mean")
     check("runDisplayName(model, run)" in page[page.index("function runLabel"):page.index("function isFailedRun")], "run-history labels must use the selected blend or component identity")
@@ -261,7 +263,7 @@ def main() -> int:
     check('"schedule": definition.get("schedule") or {}' in catalog_builder, "catalog must publish model timing metadata")
     check('"generated_utc", "status"' in catalog_builder, "catalog must retain each run publication timestamp")
     check("purge_retired_seasonal_products.py" in workflow, "Pages workflow must purge retired seasonal assets")
-    for direct_page_name in ("cfsv2", "cansips", "seas5"):
+    for direct_page_name in ("cfsv2", "cansips", "seas5", "sfs"):
         direct_page = (ROOT / "public" / "seasonal" / direct_page_name / "index.html").read_text(encoding="utf-8")
         check("RETIRED_PRODUCTS" in direct_page and "!RETIRED_PRODUCTS.has(run.product)" in direct_page, f"{direct_page_name} viewer must hide retired or quarantined history")
     check('aria-label="Copy current dashboard link"' in page_markup, "copy action should retain an accessible label when compacted")
@@ -314,17 +316,20 @@ def main() -> int:
         "APCC MME Seasonal Graphics",
         "NASA GEOS-S2S-3 Seasonal Graphics",
         "NOAA NMME Seasonal Graphics",
+        "NOAA SFS Beta2 Seasonal Graphics",
         "Deduplicated Seasonal Super Ensemble",
         "Seasonal 500-mb Pattern Analogs",
         "name: Checkout dashboard source",
         "ref: main",
         "public/seasonal/index.html",
+        "public/seasonal/sfs/index.html",
         "cp dashboard-source/public/seasonal/index.html site/index.html",
         "public/seasonal/dashboard.css",
         "public/seasonal/dashboard.js",
         "cp dashboard-source/public/seasonal/dashboard.css site/dashboard.css",
         "cp dashboard-source/public/seasonal/dashboard.js site/dashboard.js",
         "cp dashboard-source/public/seasonal/cfsv2/index.html site/cfsv2/index.html",
+        "cp dashboard-source/public/seasonal/sfs/index.html site/sfs/index.html",
         "cp dashboard-source/public/seasonal/seas5/index.html site/seas5/index.html",
         "scripts/build_seasonal_thumbnails.py",
         "scripts/build_seasonal_share_images.py",

@@ -21,6 +21,7 @@ historical cycle or individual field needs to be regenerated.
 | JMA / MRI-CPS4 | JMA is a non-ECMWF C3S component | Uses the same 10th-12th inventory checks and can dispatch independently as soon as JMA is ready |
 | APCC MME | APCC seasonal MME around the middle of the month | 20th of each month at 16:30 |
 | NASA GEOS-S2S-3 | Public NCCS numerical APCN archives during the first week | 6th of each month at 16:30 |
+| NOAA SFS beta2 | NOAA SFS development archive is refreshed monthly; beta2 forecast release checked after the 9th | 10th of each month at 18:30 |
 | Deduplicated super ensemble | After APCC, CMA, and the other component source windows | 22nd of each month at 20:30 |
 | 500-mb pattern analogs and top-analog maps | After each successful CFSv2 or super-ensemble release | Source-triggered, with scheduled reconciliation at 02:35 and 14:35 |
 
@@ -46,7 +47,7 @@ completed full-suite attempt has a 45-minute retry cooldown while Pages
 publishes. A daily catch-up check continues from the 13th through month-end so
 an unusually late provider or failed render is not abandoned.
 
-Automatically dispatched C3S, JMA, and SEAS5 runs generate the full advertised anomaly suite:
+Automatically dispatched C3S, JMA, and SEAS5 runs generate the full advertised anomaly suite. NOAA SFS beta2 uses the same six comparison fields and a native TSNOWP snowfall field:
 500-mb height, 850-mb temperature, 2-m temperature, precipitation,
 snowfall, and mean sea-level pressure. Manual dispatches remain single-product
 by default, with an explicit `all` option for complete repairs. The established

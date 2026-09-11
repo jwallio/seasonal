@@ -452,6 +452,17 @@ MODEL_SCHEDULES: dict[str, dict[str, Any]] = {
             "publish_lag_minutes": 60, "late_after_minutes": 360,
         },
     },
+    "sfs": {
+        "cadence_group": "monthly",
+        "cadence_label": "Monthly · NOAA SFS",
+        "official_schedule": "NOAA's SFS beta2 development archive is refreshed monthly; wall.cloud checks the S3 inventory after the 9th.",
+        "official_url": "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/index.html",
+        "expected_cycle": {
+            "kind": "monthly_day", "run_day": 1, "run_time_utc": "00:00",
+            "publish_day": 10, "publish_time_utc": "18:30",
+            "publish_lag_minutes": 90, "late_after_minutes": 360,
+        },
+    },
     "jma": {
         "cadence_group": "monthly",
         "cadence_label": "Monthly · JMA/C3S",
@@ -533,6 +544,11 @@ MODELS: dict[str, dict[str, Any]] = {
             for key in CORE_COMPARISON_PRODUCTS
         },
     },
+    "sfs": {
+        "label": "NOAA SFS beta2", "role": "family", "manifest": "seasonal/sfs_manifest.json",
+        "source": "NOAA SFS beta2 development archive", "preferred_component": "",
+        "support": {key: _supported() for key in CORE_COMPARISON_PRODUCTS},
+    },
     "jma": {
         "label": "JMA", "role": "component", "manifest": "seasonal/jma_manifest.json",
         "source": "JMA/MRI-CPS4 via Copernicus C3S", "preferred_component": "jma",
@@ -541,12 +557,13 @@ MODELS: dict[str, dict[str, Any]] = {
 }
 
 
-SNOWFALL_SUPPORTED_MODELS = frozenset({"c3s", "seas5", "cansips", "cfsv2", "superensemble"})
+SNOWFALL_SUPPORTED_MODELS = frozenset({"c3s", "seas5", "cansips", "cfsv2", "sfs", "superensemble"})
 SNOWFALL_SUPPORT_REASONS = {
     "c3s": "C3S publishes native snowfall liquid-water-equivalent accumulation.",
     "seas5": "SEAS5 publishes native snowfall liquid-water-equivalent accumulation.",
     "cansips": "CanSIPS combines native snowfall anomalies from CanESM5 and GEM5.2-NEMO through C3S; both models are required.",
     "cfsv2": "CFSv2 derives member/cycle-level snowfall liquid-water equivalent from 2-m/850-hPa temperature and monthly precipitation using the season-appropriate Dai (2008) land phase curve (DJF for winter).",
+    "sfs": "NOAA SFS beta2 publishes native TSNOWP total snow precipitation in liquid-water-equivalent units.",
     "superensemble": "The super ensemble blends eligible snowfall fields including native CanSIPS snowfall in common LWE units.",
 }
 SNOWFALL_UNSUPPORTED_REASON = (
