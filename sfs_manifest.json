@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "kind": "noaa_sfs_seasonal_manifest",
-  "generated_utc": "2026-09-11T19:08:49Z",
+  "generated_utc": "2026-09-11T20:44:35Z",
   "source": "NOAA SFS beta2 development archive",
   "source_url": "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/index.html",
   "source_urls": [
@@ -34,7 +34,7 @@
   "source_quality": {
     "forecast_store": "31-member 0.5-degree global atm_monthly.zarr",
     "reforecast_store": "same-calendar-month 11-member reforecast climatology with at least 30 initializations",
-    "snowfall": "native TSNOWP_surface total snow precipitation in liquid-water-equivalent units; displayed at fixed 10:1",
+    "snowfall": "native TSNOWP_surface total snow precipitation converted from LWE to estimated snow-depth inches at a fixed 10:1 ratio",
     "map_bands": "discrete BoundaryNorm intervals; no smooth interpolation between palette colors"
   },
   "runs": [
@@ -61,7 +61,7 @@
           "valid_start_utc": "2026-12-01T00:00:00Z",
           "valid_end_utc": "2027-01-01T00:00:00Z",
           "lead_month": 3,
-          "field": "snowfall_lwe_anomaly",
+          "field": "snowfall_depth_anomaly",
           "units": "in",
           "statistic": "NOAA SFS beta2 31-member ensemble mean anomaly",
           "aggregation": "Forecast mean minus same-calendar-month reforecast mean",
@@ -87,15 +87,15 @@
             "registry_version": 1,
             "product": "snowfall_anomaly",
             "units": "in",
-            "field": "snowfall_lwe_anomaly",
+            "field": "snowfall_depth_anomaly",
             "period": "monthly",
             "total_points": 6413,
             "finite_points": 6413,
             "finite_fraction": 1.0,
-            "minimum": -0.045045,
-            "maximum": 0.090205,
-            "p01": -0.016316,
-            "p99": 0.019923,
+            "minimum": -0.450447,
+            "maximum": 0.902046,
+            "p01": -0.163158,
+            "p99": 0.199226,
             "display": {
               "minimum": -10.0,
               "maximum": 10.0,
@@ -130,9 +130,30 @@
             "status": "passed"
           },
           "status": "rendered",
+          "display": {
+            "quantity": "estimated snowfall depth departure",
+            "units": "in",
+            "snow_to_liquid_ratio": 10.0,
+            "scale_inches": [
+              -10,
+              10
+            ],
+            "white_band_inches": [
+              -1,
+              1
+            ],
+            "canonical_grid_quantity": "snowfall liquid-water-equivalent departure",
+            "canonical_grid_units": "inches liquid-water equivalent",
+            "numeric_grid_quantity": "estimated snowfall depth departure",
+            "numeric_grid_units": "inches snow",
+            "conversion_kind": "snowfall_lwe_to_snow_depth_10_to_1",
+            "conversion": "estimated snow-depth departure (in) = snowfall LWE departure (in) \u00d7 10.0",
+            "calendar_alignment_version": 2,
+            "native_blend_version": 1
+          },
           "derivation": {
-            "method": "snowfall_lwe_inches",
-            "description": "Native TSNOWP total snow precipitation converted from kg m-2 to liquid-water-equivalent inches; display uses fixed 10:1 snow-depth estimate"
+            "method": "snowfall_lwe_to_snow_depth_10_to_1",
+            "description": "Native TSNOWP total snow precipitation converted from kg m-2 to liquid-water-equivalent inches, then multiplied by 10.0; published snowfall departure is estimated snow depth in inches"
           },
           "image": "public/seasonal/sfs/202609/sfs_snowfall_anomaly_202612.jpg"
         },
@@ -144,7 +165,7 @@
           "valid_start_utc": "2027-01-01T00:00:00Z",
           "valid_end_utc": "2027-02-01T00:00:00Z",
           "lead_month": 4,
-          "field": "snowfall_lwe_anomaly",
+          "field": "snowfall_depth_anomaly",
           "units": "in",
           "statistic": "NOAA SFS beta2 31-member ensemble mean anomaly",
           "aggregation": "Forecast mean minus same-calendar-month reforecast mean",
@@ -170,15 +191,15 @@
             "registry_version": 1,
             "product": "snowfall_anomaly",
             "units": "in",
-            "field": "snowfall_lwe_anomaly",
+            "field": "snowfall_depth_anomaly",
             "period": "monthly",
             "total_points": 6413,
             "finite_points": 6413,
             "finite_fraction": 1.0,
-            "minimum": -0.02225,
-            "maximum": 0.194208,
-            "p01": -0.013453,
-            "p99": 0.053612,
+            "minimum": -0.222496,
+            "maximum": 1.942075,
+            "p01": -0.134531,
+            "p99": 0.536125,
             "display": {
               "minimum": -10.0,
               "maximum": 10.0,
@@ -206,16 +227,37 @@
                 10
               ],
               "below_fraction": 0.0,
-              "above_fraction": 0.0,
-              "clipped_fraction": 0.0
+              "above_fraction": 0.003431,
+              "clipped_fraction": 0.003431
             },
             "issues": [],
             "status": "passed"
           },
           "status": "rendered",
+          "display": {
+            "quantity": "estimated snowfall depth departure",
+            "units": "in",
+            "snow_to_liquid_ratio": 10.0,
+            "scale_inches": [
+              -10,
+              10
+            ],
+            "white_band_inches": [
+              -1,
+              1
+            ],
+            "canonical_grid_quantity": "snowfall liquid-water-equivalent departure",
+            "canonical_grid_units": "inches liquid-water equivalent",
+            "numeric_grid_quantity": "estimated snowfall depth departure",
+            "numeric_grid_units": "inches snow",
+            "conversion_kind": "snowfall_lwe_to_snow_depth_10_to_1",
+            "conversion": "estimated snow-depth departure (in) = snowfall LWE departure (in) \u00d7 10.0",
+            "calendar_alignment_version": 2,
+            "native_blend_version": 1
+          },
           "derivation": {
-            "method": "snowfall_lwe_inches",
-            "description": "Native TSNOWP total snow precipitation converted from kg m-2 to liquid-water-equivalent inches; display uses fixed 10:1 snow-depth estimate"
+            "method": "snowfall_lwe_to_snow_depth_10_to_1",
+            "description": "Native TSNOWP total snow precipitation converted from kg m-2 to liquid-water-equivalent inches, then multiplied by 10.0; published snowfall departure is estimated snow depth in inches"
           },
           "image": "public/seasonal/sfs/202609/sfs_snowfall_anomaly_202701.jpg"
         },
@@ -227,7 +269,7 @@
           "valid_start_utc": "2027-02-01T00:00:00Z",
           "valid_end_utc": "2027-03-01T00:00:00Z",
           "lead_month": 5,
-          "field": "snowfall_lwe_anomaly",
+          "field": "snowfall_depth_anomaly",
           "units": "in",
           "statistic": "NOAA SFS beta2 31-member ensemble mean anomaly",
           "aggregation": "Forecast mean minus same-calendar-month reforecast mean",
@@ -253,15 +295,15 @@
             "registry_version": 1,
             "product": "snowfall_anomaly",
             "units": "in",
-            "field": "snowfall_lwe_anomaly",
+            "field": "snowfall_depth_anomaly",
             "period": "monthly",
             "total_points": 6413,
             "finite_points": 6413,
             "finite_fraction": 1.0,
-            "minimum": -0.060673,
-            "maximum": 0.157719,
-            "p01": -0.02318,
-            "p99": 0.030148,
+            "minimum": -0.606734,
+            "maximum": 1.577188,
+            "p01": -0.231804,
+            "p99": 0.301484,
             "display": {
               "minimum": -10.0,
               "maximum": 10.0,
@@ -289,16 +331,37 @@
                 10
               ],
               "below_fraction": 0.0,
-              "above_fraction": 0.0,
-              "clipped_fraction": 0.0
+              "above_fraction": 0.001871,
+              "clipped_fraction": 0.001871
             },
             "issues": [],
             "status": "passed"
           },
           "status": "rendered",
+          "display": {
+            "quantity": "estimated snowfall depth departure",
+            "units": "in",
+            "snow_to_liquid_ratio": 10.0,
+            "scale_inches": [
+              -10,
+              10
+            ],
+            "white_band_inches": [
+              -1,
+              1
+            ],
+            "canonical_grid_quantity": "snowfall liquid-water-equivalent departure",
+            "canonical_grid_units": "inches liquid-water equivalent",
+            "numeric_grid_quantity": "estimated snowfall depth departure",
+            "numeric_grid_units": "inches snow",
+            "conversion_kind": "snowfall_lwe_to_snow_depth_10_to_1",
+            "conversion": "estimated snow-depth departure (in) = snowfall LWE departure (in) \u00d7 10.0",
+            "calendar_alignment_version": 2,
+            "native_blend_version": 1
+          },
           "derivation": {
-            "method": "snowfall_lwe_inches",
-            "description": "Native TSNOWP total snow precipitation converted from kg m-2 to liquid-water-equivalent inches; display uses fixed 10:1 snow-depth estimate"
+            "method": "snowfall_lwe_to_snow_depth_10_to_1",
+            "description": "Native TSNOWP total snow precipitation converted from kg m-2 to liquid-water-equivalent inches, then multiplied by 10.0; published snowfall departure is estimated snow depth in inches"
           },
           "image": "public/seasonal/sfs/202609/sfs_snowfall_anomaly_202702.jpg"
         },
@@ -310,7 +373,7 @@
           "valid_start_utc": "2026-12-01T00:00:00Z",
           "valid_end_utc": "2027-03-01T00:00:00Z",
           "lead_month": "3-5",
-          "field": "snowfall_lwe_anomaly",
+          "field": "snowfall_depth_anomaly",
           "units": "in",
           "statistic": "NOAA SFS beta2 31-member ensemble mean anomaly",
           "aggregation": "Forecast mean minus same-calendar-month reforecast mean",
@@ -336,15 +399,15 @@
             "registry_version": 1,
             "product": "snowfall_anomaly",
             "units": "in",
-            "field": "snowfall_lwe_anomaly",
+            "field": "snowfall_depth_anomaly",
             "period": "seasonal",
             "total_points": 6413,
             "finite_points": 6413,
             "finite_fraction": 1.0,
-            "minimum": -0.097443,
-            "maximum": 0.441948,
-            "p01": -0.046563,
-            "p99": 0.094002,
+            "minimum": -0.974432,
+            "maximum": 4.419483,
+            "p01": -0.465634,
+            "p99": 0.940022,
             "display": {
               "minimum": -10.0,
               "maximum": 10.0,
@@ -372,16 +435,37 @@
                 10
               ],
               "below_fraction": 0.0,
-              "above_fraction": 0.0,
-              "clipped_fraction": 0.0
+              "above_fraction": 0.009512,
+              "clipped_fraction": 0.009512
             },
             "issues": [],
             "status": "passed"
           },
           "status": "rendered",
+          "display": {
+            "quantity": "estimated snowfall depth departure",
+            "units": "in",
+            "snow_to_liquid_ratio": 10.0,
+            "scale_inches": [
+              -10,
+              10
+            ],
+            "white_band_inches": [
+              -1,
+              1
+            ],
+            "canonical_grid_quantity": "snowfall liquid-water-equivalent departure",
+            "canonical_grid_units": "inches liquid-water equivalent",
+            "numeric_grid_quantity": "estimated snowfall depth departure",
+            "numeric_grid_units": "inches snow",
+            "conversion_kind": "snowfall_lwe_to_snow_depth_10_to_1",
+            "conversion": "estimated snow-depth departure (in) = snowfall LWE departure (in) \u00d7 10.0",
+            "calendar_alignment_version": 2,
+            "native_blend_version": 1
+          },
           "derivation": {
-            "method": "snowfall_lwe_inches",
-            "description": "Native TSNOWP total snow precipitation converted from kg m-2 to liquid-water-equivalent inches; display uses fixed 10:1 snow-depth estimate"
+            "method": "snowfall_lwe_to_snow_depth_10_to_1",
+            "description": "Native TSNOWP total snow precipitation converted from kg m-2 to liquid-water-equivalent inches, then multiplied by 10.0; published snowfall departure is estimated snow depth in inches"
           },
           "image": "public/seasonal/sfs/202609/sfs_snowfall_anomaly_202612-202702.jpg"
         }
@@ -391,10 +475,31 @@
       "ensemble_scope": "NOAA SFS beta2 31-member forecast",
       "raw_field": "tsnowpsfc / TSNOWP_surface",
       "raw_units": "kg/m^2",
-      "field": "snowfall_lwe_anomaly",
+      "field": "snowfall_depth_anomaly",
       "units": "in",
-      "conversion": "Native TSNOWP total snow precipitation converted from kg m-2 to liquid-water-equivalent inches; display uses fixed 10:1 snow-depth estimate",
+      "conversion": "Native TSNOWP total snow precipitation converted from kg m-2 to liquid-water-equivalent inches, then multiplied by 10.0; published snowfall departure is estimated snow depth in inches",
       "source_warning": "NOAA SFS beta2 is an experimental development archive; source fields are schema-validated before publication.",
+      "display": {
+        "quantity": "estimated snowfall depth departure",
+        "units": "in",
+        "snow_to_liquid_ratio": 10.0,
+        "scale_inches": [
+          -10,
+          10
+        ],
+        "white_band_inches": [
+          -1,
+          1
+        ],
+        "canonical_grid_quantity": "snowfall liquid-water-equivalent departure",
+        "canonical_grid_units": "inches liquid-water equivalent",
+        "numeric_grid_quantity": "estimated snowfall depth departure",
+        "numeric_grid_units": "inches snow",
+        "conversion_kind": "snowfall_lwe_to_snow_depth_10_to_1",
+        "conversion": "estimated snow-depth departure (in) = snowfall LWE departure (in) \u00d7 10.0",
+        "calendar_alignment_version": 2,
+        "native_blend_version": 1
+      },
       "initialization_start_utc": "2026-09-01T00:00:00Z",
       "initialization_end_utc": "2026-09-02T00:00:00Z"
     },
