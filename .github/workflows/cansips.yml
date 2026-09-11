@@ -134,13 +134,49 @@ jobs:
         with:
           required: ${{ env.CANSIPS_PRODUCT != 'snowfall_anomaly' && env.RENDER_ONLY != 'true' }}
 
+      - name: Wait for shared CDS workers before native snowfall
+        id: cds_queue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          ready=true
+          if [[ "$RENDER_ONLY" != "true" && ( "$CANSIPS_PRODUCT" == "snowfall_anomaly" || "$CANSIPS_PRODUCT" == "all" ) ]]; then
+            max_wait=5400
+            poll_seconds=30
+            waited=0
+            while :; do
+              active=0
+              for workflow in c3s.yml seas5.yml jma.yml superensemble.yml; do
+                count="$(gh api "repos/$GH_REPO/actions/workflows/$workflow/runs?per_page=100" \
+                  --jq '[.workflow_runs[] | select(.status != "completed")] | length')"
+                active=$((active + count))
+              done
+              if (( active == 0 )); then
+                break
+              fi
+              if (( waited >= max_wait )); then
+                echo "::warning::Shared CDS workers are still active after ${max_wait}s; deferring native snowfall to the next scheduled retry."
+                ready=false
+                break
+              fi
+              echo "${active} shared CDS worker run(s) active; waiting ${poll_seconds}s before native snowfall."
+              sleep "$poll_seconds"
+              waited=$((waited + poll_seconds))
+            done
+          fi
+          echo "ready=$ready" >> "$GITHUB_OUTPUT"
+
       - name: Check native snowfall against available C3S data
-        if: ${{ github.event_name == 'push' }}
+        if: ${{ github.event_name == 'push' && steps.cds_queue.outputs.ready == 'true' }}
         env:
           CDS_API_KEY: ${{ secrets.CDS_API_KEY }}
         run: python scripts/cansips_native_snow.py
 
       - name: Render CanSIPS v3 products
+        if: ${{ success() && steps.cds_queue.outputs.ready == 'true' }}
         env:
           CDS_API_KEY: ${{ secrets.CDS_API_KEY }}
         run: |
@@ -165,7 +201,7 @@ jobs:
             "${extra_args[@]}"
 
       - name: Package CanSIPS Pages payload
-        if: success()
+        if: ${{ success() && steps.cds_queue.outputs.ready == 'true' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -182,7 +218,7 @@ jobs:
           fi
 
       - name: Upload CanSIPS Pages payload
-        if: success()
+        if: ${{ success() && steps.cds_queue.outputs.ready == 'true' }}
         uses: actions/upload-artifact@v4
         with:
           name: cansips-pages-${{ github.run_id }}
@@ -193,7 +229,7 @@ jobs:
       # repository Actions token. Publish this child directly so maintenance
       # cannot strand a successful artifact.
       - name: Dispatch Pages publisher for token-launched render
-        if: ${{ success() && github.actor == 'github-actions[bot]' }}
+        if: ${{ success() && steps.cds_queue.outputs.ready == 'true' && github.actor == 'github-actions[bot]' }}
         uses: ./.github/actions/publish-pages
         with:
           source-workflow: CanSIPS v3 Seasonal Graphics

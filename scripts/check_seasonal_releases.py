@@ -40,6 +40,9 @@ COLLECTIONS = (
     "seasonal-monthly-pressure-levels",
 )
 LEADS = ("4", "5", "6")
+# Native C3S snowfall is limited to forecast months 1-6; align the release
+# check with the complete DJF window used by the C3S worker.
+SNOWFALL_LEADS = ("3", "4", "5")
 
 # Keep this operational centre/system list aligned with c3s_seasonal.CENTRES.
 CENTRE_SYSTEMS: dict[str, str] = {
@@ -304,9 +307,10 @@ def source_requirements(worker: str) -> list[Requirement]:
         snowfall_centres = C3S_SNOWFALL_CENTRES
     else:
         snowfall_centres = ()
+    snowfall_leads = SNOWFALL_LEADS if worker == "c3s" else LEADS
     for centre in snowfall_centres:
         system = CENTRE_SYSTEMS[centre]
-        for lead in LEADS:
+        for lead in snowfall_leads:
             requirements.append(
                 make_requirement(
                     "seasonal-postprocessed-single-levels",

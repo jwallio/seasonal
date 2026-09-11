@@ -1,6 +1,11 @@
 name: APCC MME Seasonal Graphics
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/apcc.yml
+      - scripts/apcc_seasonal.py
   schedule:
     # APCC updates around mid-month; allow several days for the new target
     # month and its far 6-month seasonal window to reach CLIK.

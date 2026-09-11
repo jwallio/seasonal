@@ -26,6 +26,15 @@ on:
         default: false
         type: boolean
 
+      next_worker:
+        description: "Optional serialized handoff after this suite"
+        required: false
+        default: "none"
+        type: choice
+        options:
+          - none
+          - cansips_snowfall
+
       centres:
         description: "C3S centre IDs, or all"
         required: false
@@ -170,13 +179,21 @@ jobs:
         run: |
           set -euo pipefail
           echo "Rendering C3S product: $C3S_PRODUCT"
+          lead_months="$LEAD_MONTHS"
+          seasonal_window="$SEASONAL_WINDOW"
+          if [[ "$C3S_PRODUCT" == "snowfall_anomaly" ]]; then
+            # Native C3S snowfall ends at forecast month 6; for a
+            # September initialization, 3,4,5 is the complete DJF window.
+            lead_months="3,4,5"
+            seasonal_window="3,4,5"
+          fi
           python scripts/c3s_seasonal.py \
             --product "$C3S_PRODUCT" \
             --centres "$C3S_CENTRES" \
             --systems "$C3S_SYSTEMS" \
             --init "$C3S_INIT" \
-            --lead-months "$LEAD_MONTHS" \
-            --seasonal-window "$SEASONAL_WINDOW" \
+            --lead-months "$lead_months" \
+            --seasonal-window "$seasonal_window" \
             --cache-dir .cache/c3s \
             --output-dir public/seasonal/c3s \
             --manifest public/seasonal/c3s_manifest.json \
@@ -259,3 +276,18 @@ jobs:
           source-workflow: C3S Multi-System Seasonal Graphics
           source-run-id: ${{ github.run_id }}
 
+
+      - name: Dispatch CanSIPS native snowfall handoff
+        if: ${{ success() && github.actor == 'github-actions[bot]' && inputs.next_worker == 'cansips_snowfall' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          C3S_INIT: ${{ inputs.init || 'latest' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh workflow run cansips.yml --repo "$GH_REPO" --ref main \
+            -f product=snowfall_anomaly \
+            -f init="$C3S_INIT" \
+            -f lead_months=3,4,5 \
+            -f seasonal_window=3,4,5

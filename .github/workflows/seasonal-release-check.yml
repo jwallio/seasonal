@@ -2,6 +2,11 @@ name: Check Seasonal CDS Releases
 run-name: "CDS release check · ${{ inputs.target || 'current UTC month' }}"
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/seasonal-release-check.yml
+      - scripts/check_seasonal_releases.py
   schedule:
     # Poll quickly around the documented CDS release windows, then hourly for
     # several days if indexing or an individual centre is delayed.
@@ -182,7 +187,7 @@ jobs:
 
             local other_active=0
             local cds_workflow cds_active
-            for cds_workflow in seas5.yml c3s.yml jma.yml; do
+            for cds_workflow in seas5.yml c3s.yml jma.yml superensemble.yml; do
               [[ "$cds_workflow" == "$workflow" ]] && continue
               cds_active="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/$cds_workflow/runs?per_page=20" \
                 --jq '[.workflow_runs[] | select(.status != "completed")] | length')"
@@ -211,10 +216,18 @@ jobs:
               fi
             fi
 
-            gh workflow run "$workflow" \
-              --ref "$DEFAULT_BRANCH" \
-              -f product=all \
-              -f init="$TARGET"
+            if [[ "$worker" == "c3s" ]]; then
+              gh workflow run "$workflow" \
+                --ref "$DEFAULT_BRANCH" \
+                -f product=all \
+                -f init="$TARGET" \
+                -f next_worker=cansips_snowfall
+            else
+              gh workflow run "$workflow" \
+                --ref "$DEFAULT_BRANCH" \
+                -f product=all \
+                -f init="$TARGET"
+            fi
             dispatched=1
             echo "| ${worker^^} | Dispatched full $TARGET suite |" >> "$GITHUB_STEP_SUMMARY"
           }
