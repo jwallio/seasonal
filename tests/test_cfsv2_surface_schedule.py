@@ -25,15 +25,15 @@ class ScheduleTests(unittest.TestCase):
     def test_falls_back_from_incomplete_newest(self):
         plan=schedule.choose(['2026090700','2026090612'],lambda init,targets:init=='2026090612')
         self.assertEqual(plan['init'],'2026090612')
-        self.assertEqual(len(plan['cycles']),21)
+        self.assertEqual(len(plan['cycles']),22)
         self.assertEqual(plan['targets'],['202612','202701','202702','202703'])
         self.assertEqual(plan['years'],list(range(2011,2026)))
     def test_no_ready_cycle(self):
         self.assertIsNone(schedule.choose(['2026090700'],lambda *_:False))
-    def test_gaps_move_out_of_window(self):
+    def test_recoverable_archive_gap_is_included(self):
         plan=schedule.choose(['2026090812'],lambda *_:True)
-        self.assertEqual(plan['excluded'],['2026090418'])
-        self.assertEqual(len(plan['cycles']),23)
+        self.assertEqual(plan['excluded'],[])
+        self.assertEqual(len(plan['cycles']),24)
     def test_listing_requires_every_endpoint(self):
         class Response:
             status_code=200

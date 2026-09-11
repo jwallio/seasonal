@@ -1,6 +1,14 @@
 name: CFSv2 Snowfall Graphics
 run-name: Corrected CFSv2 snowfall · automatic matched reference
 on:
+  push:
+    branches:
+      - main
+    paths:
+      - scripts/cfsv2_surface_phase_build.py
+      - scripts/cfsv2_surface_schedule.py
+      - scripts/cfsv2_surface_phase.py
+      - .github/workflows/cfsv2-snow.yml
   workflow_call:
   workflow_dispatch:
     inputs:

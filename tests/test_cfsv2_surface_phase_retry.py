@@ -55,6 +55,23 @@ class AcquisitionContinuationTests(unittest.TestCase):
             self.assertEqual(len(report['completed']), 3)
 
 
+class UnindexedArchiveTests(unittest.TestCase):
+    def test_missing_index_recovers_exact_archive_object(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as directory:
+            missing = requests.Response()
+            missing.status_code = 404
+            missing._content = b'missing index'
+            missing.url = 'https://example.test/file.idx'
+            missing_error = requests.HTTPError(response=missing)
+            fields = {name: b'grib' for name in build.phase.PARAMETERS}
+            with patch.object(build, 'get', side_effect=[missing_error, b'bounded']), \
+                 patch.object(build, 'extract', return_value=fields):
+                path = build.Source(Path(directory), '2019090418')('2020020200', 'apcp')
+            self.assertTrue(path.exists())
+            self.assertEqual(path.read_bytes(), b'grib')
+
+
 class ParallelAcquisitionTests(unittest.TestCase):
     def test_parallel_errors_preserve_other_completed_cycles(self):
         import tempfile,json

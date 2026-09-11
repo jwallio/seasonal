@@ -104,6 +104,23 @@ def extract(data, init, valid):
     return messages
 
 
+def extract_unindexed(url, init, valid):
+    """Recover required surface records when an archive file has no .idx."""
+    for start, end in ((15_500_000, 17_499_999),
+                       (14_000_000, 17_999_999),
+                       (0, 29_999_999)):
+        try:
+            messages = extract(get(url, start, end), init, valid)
+        except requests.HTTPError as exc:
+            response = exc.response
+            if response is None or response.status_code not in (404, 416):
+                raise
+            continue
+        if set(messages) == set(phase.PARAMETERS):
+            return messages
+    return {}
+
+
 class Source:
     def __init__(self, directory, init, offline=False):
         self.directory, self.init, self.offline = Path(directory), init, offline
@@ -151,26 +168,19 @@ class Source:
                 if status is not None and status not in (404, 408, 429, 500, 502, 503, 504):
                     raise
                 print(f"Indexed provider unavailable ({status or type(exc).__name__}); trying next exact-record source", flush=True)
+                try:
+                    messages = extract_unindexed(url, init, valid)
+                except (requests.RequestException, SourceResponseError):
+                    messages = {}
+                if set(messages) == set(phase.PARAMETERS):
+                    break
         if not messages:
             url = ("https://www.ncei.noaa.gov/oa/prod-cfs-operational-forecast/"
                    f"6-hourly-by-pressure/{init[:4]}/{init[:6]}/{init[:8]}/{init}/"
                    f"pgbf{valid}.01.{init}.grb2")
-            # NCEI exposes no .idx for these older files. The adjacent surface
-            # records are near byte 16M; expand only if validated extraction fails.
-            for start, end in [(15_500_000, 17_499_999), (14_000_000, 17_999_999),
-                               (0, 29_999_999)]:
-                try:
-                    data = get(url, start, end)
-                except requests.HTTPError as exc:
-                    # A compact GRIB can end before a heuristic range begins.
-                    # Try the next bounded window, including the byte-zero fallback.
-                    if exc.response is None or exc.response.status_code != 416:
-                        raise
-                    print(f"NCEI range {start}-{end} unavailable; trying next bounded window", flush=True)
-                    continue
-                messages = extract(data, init, valid)
-                if set(messages) == set(phase.PARAMETERS):
-                    break
+            # NCEI exposes no .idx for these older files. Use the same
+            # validated bounded-range recovery as the AWS archive.
+            messages = extract_unindexed(url, init, valid)
         if set(messages) != set(phase.PARAMETERS):
             raise ValueError(f"Missing required surface fields: {url}")
         stem.parent.mkdir(parents=True, exist_ok=True)

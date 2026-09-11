@@ -13,7 +13,9 @@ import cfsv2_surface_phase as phase
 from cfsv2_native_reference import historical_cycle
 
 # Verified archive gaps; exclude the corresponding cycle on BOTH sides for all months.
-KNOWN_GAPS = {('2019083118', '202003'), ('2019090418', '202002'), ('2018090200', '201812')}
+# The 2019090418/202002 objects are present on AWS but lack most .idx files;
+# cfsv2_surface_phase_build recovers their validated surface records directly.
+KNOWN_GAPS = {('2019083118', '202003'), ('2018090200', '201812')}
 
 def exclusions(init, cycles, targets):
     excluded = []
