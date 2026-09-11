@@ -3,6 +3,8 @@ const root = siteMatch ? siteMatch[1] : '';
 const normalizeAssetPath = value => String(value || '').replace(/^\/+/, '').replace(/^public\//, '').replace(/^seasonal\//, '');
 const assetPath = value => `${root}/${normalizeAssetPath(value)}`;
 const CATALOG_URL = assetPath('seasonal/catalog.json');
+const DATA_CACHE_BUSTER = `v=${Date.now()}`;
+const freshDataUrl = value => `${value}${value.includes('?') ? '&' : '?'}${DATA_CACHE_BUSTER}`;
 const ANALOG_MANIFEST_URL = assetPath('seasonal/analog_z500_manifest.json');
 const ANALOG_PRODUCTS_MANIFEST_URL = assetPath('seasonal/analog_products_manifest.json');
 const ANALOG_PRODUCT_ORDER = ['psl_500mb_height_anomaly', 'psl_2m_temperature_anomaly', 'mrcc_snowfall_departure'];
@@ -759,9 +761,14 @@ function renderUnavailable(model) {
   el('warning').style.display = 'none';
   syncUrlState();
 }
+function overviewAttentionMatches(state, scheduleState) {
+  const surfaceAttention = ['status-failed', 'status-partial', 'status-noncomparable', 'status-unavailable'].includes(state?.className);
+  const overdueSurface = state?.className === 'status-overdue' && !['on_time', 'due'].includes(scheduleState?.key);
+  return surfaceAttention || overdueSurface || scheduleState?.key === 'overdue' || scheduleState?.key === 'processing';
+}
 function overviewFilterMatches(filter, state, scheduleState) {
   if (filter === 'all') return true;
-  if (filter === 'attention') return OVERVIEW_ATTENTION_CLASSES.includes(state?.className) || scheduleState?.key === 'overdue';
+  if (filter === 'attention') return overviewAttentionMatches(state, scheduleState);
   return state?.className === `status-${filter}`;
 }
 function renderOverviewFilters() {
@@ -827,7 +834,13 @@ function renderOverview() {
     row.appendChild(nextCell);
     const rowStates = [];
     COMPARE_PRODUCTS.forEach(productConfig => {
-      const state = { ...freshnessState(modelKey, productConfig.value), modelKey, productKey: productConfig.value };
+      let state = { ...freshnessState(modelKey, productConfig.value), modelKey, productKey: productConfig.value };
+      const surface = productSurface(modelKey, productConfig.value);
+      if (surface?.available && surface.comparable === false && state.available) {
+        state = { ...state, label: 'Non-comparable', className: 'status-noncomparable', title: surface.reason || `${productConfig.label} is excluded from comparison.` };
+      } else if (['on_time', 'due'].includes(scheduleState.key) && state.className === 'status-overdue') {
+        state = { ...state, label: 'Aging', className: 'status-aging', title: `${state.title} · within documented release window` };
+      }
       states.push(state);
       const cell = document.createElement('td'); cell.className = 'availability-status-cell';
       const button = document.createElement('button'); button.type = 'button'; button.className = `status-pill ${state.className}`; button.textContent = OVERVIEW_PARAMETER_BUTTON_LABELS[productConfig.value] || productConfig.label; button.title = `${productConfig.label}: ${state.label} · ${state.title}`;
@@ -889,7 +902,7 @@ function renderOverview() {
   const available = applicable.filter(state => state.available).length;
   const overdueModels = scheduleRows.filter(item => item.scheduleState.key === 'overdue');
   const processingModels = scheduleRows.filter(item => item.scheduleState.key === 'processing');
-  const attention = applicable.filter(state => OVERVIEW_ATTENTION_CLASSES.includes(state.className)).length;
+  const attention = applicable.filter(state => overviewAttentionMatches(state, scheduleRows.find(item => item.modelKey === state.modelKey)?.scheduleState)).length;
   const needsAttention = attention + overdueModels.length + processingModels.length;
   updateOverviewFilterCounts({
     all: applicable.length,
@@ -901,7 +914,7 @@ function renderOverview() {
     { label: 'Models online', value: `${online}/${COMPARE_MODELS.length}`, detail: 'published manifests loaded' },
     { label: 'Map coverage', value: `${available}/${applicable.length}`, detail: 'supported model-parameter surfaces' },
     { label: 'On schedule', value: `${COMPARE_MODELS.length - overdueModels.length - processingModels.length}/${COMPARE_MODELS.length}`, detail: 'provider windows' },
-    { label: 'Needs attention', value: String(needsAttention), detail: 'failed or overdue surfaces' },
+    { label: 'Needs attention', value: String(needsAttention), detail: 'failed, partial, non-comparable, or overdue surfaces' },
   ];
   el('overview-stats').replaceChildren(...stats.map(stat => {
     const isAttention = stat.label === 'Needs attention';
@@ -1469,7 +1482,7 @@ syncCompareControlsDisclosure();
 renderModelOptions();
 async function loadManifest(key, config) {
   try {
-    const response = await fetch(config.manifest);
+    const response = await fetch(freshDataUrl(config.manifest), { cache: 'no-store' });
     if (!response.ok) throw new Error(`Manifest returned ${response.status}`);
     const manifest = await response.json();
     modelStates[key].manifest = manifest;
@@ -1480,7 +1493,7 @@ async function loadManifest(key, config) {
 }
 async function loadAnalogManifest() {
   try {
-    const response = await fetch(ANALOG_MANIFEST_URL);
+    const response = await fetch(freshDataUrl(ANALOG_MANIFEST_URL), { cache: 'no-store' });
     if (!response.ok) throw new Error(`Analog manifest returned ${response.status}`);
     const manifest = await response.json();
     if (manifest?.schema_version !== 'seasonal_z500_analogs_v1' || manifest?.kind !== 'seasonal_z500_analog_manifest') throw new Error('Analog manifest schema is not recognized');
@@ -1491,7 +1504,7 @@ async function loadAnalogManifest() {
 }
 async function loadAnalogProductsManifest() {
   try {
-    const response = await fetch(ANALOG_PRODUCTS_MANIFEST_URL);
+    const response = await fetch(freshDataUrl(ANALOG_PRODUCTS_MANIFEST_URL), { cache: 'no-store' });
     if (!response.ok) throw new Error(`Analog product manifest returned ${response.status}`);
     const manifest = await response.json();
     if (manifest?.schema_version !== 'seasonal_analog_products_v1' || manifest?.kind !== 'seasonal_analog_products_manifest') throw new Error('Analog product manifest schema is not recognized');
@@ -1503,7 +1516,7 @@ async function loadAnalogProductsManifest() {
 async function loadDashboardData() {
   const catalogModels = new Set();
   try {
-    const response = await fetch(CATALOG_URL);
+    const response = await fetch(freshDataUrl(CATALOG_URL), { cache: 'no-store' });
     if (!response.ok) throw new Error(`Catalog returned ${response.status}`);
     const catalog = await response.json();
     if (catalog?.kind !== 'seasonal_dashboard_catalog' || !catalog.models) throw new Error('Catalog schema is not recognized');
