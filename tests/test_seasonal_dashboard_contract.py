@@ -292,7 +292,7 @@ def main() -> int:
     check("status-stale" not in page, "overview status model should not retain stale states")
     check("scheduleState?.key === 'overdue'" in page, "Attention filter must include overdue schedules")
     check("['overdue', 'processing'].includes(scheduleState?.key)" not in page, "Attention filter must exclude processing schedules")
-    check("detail: 'failed or overdue surfaces'" in page, "Attention summary must describe only failed or overdue surfaces")
+    check("detail: 'failed, partial, non-comparable, or overdue surfaces'" in page, "Attention summary must describe failed, partial, non-comparable, or overdue surfaces")
     check(".overview-matrix th.overview-parameter-heading" in stylesheet, "parameter headings should be visually hidden above the labeled buttons")
     check("data-parameter" not in page, "mobile availability cells should not render duplicate parameter labels above buttons")
     check("content:attr(data-parameter)" not in stylesheet, "mobile availability cells should not generate duplicate parameter labels")
