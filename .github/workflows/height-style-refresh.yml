@@ -52,7 +52,7 @@ jobs:
           fi
           for product in "${products[@]}"; do
             request_product="$product"
-            [[ "$product" == "all" ]] && request_product="$plan_product
+            [[ "$product" == "all" ]] && request_product="$plan_product"
             # Give an existing producer a bounded hand-off window; the
             # product-scoped producer key below prevents cross-product canceling.
             wait_seconds=0

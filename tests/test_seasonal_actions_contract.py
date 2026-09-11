@@ -116,6 +116,8 @@ def main() -> int:
               f"{name} must use valid block-scalar YAML for its handoff file")
         check("style_refresh" in maintenance,
               f"{name} should suppress duplicate self-publishers during maintenance")
+        check('request_product="$plan_product"' in maintenance,
+              f"{name} must quote the representative plan product assignment")
         check("Upload serialized Pages handoff" in maintenance
               and "actions/upload-artifact@v4" in maintenance
               and f"name: {prefix}" in maintenance,

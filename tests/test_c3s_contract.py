@@ -43,7 +43,7 @@ def main() -> int:
     workflow = WORKFLOW.read_text(encoding="utf-8")
     pages = PAGES.read_text(encoding="utf-8")
     for term in (
-        "max-parallel: 4",
+        "max-parallel: 2",
         "matrix:",
         "c3s-product-",
         "actions/download-artifact@v4",
