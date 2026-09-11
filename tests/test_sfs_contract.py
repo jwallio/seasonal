@@ -51,6 +51,11 @@ class SFSContractTests(unittest.TestCase):
         self.assertIn("calendar-month days", snowfall["conversion"])
         self.assertEqual(sfs._convert_anomaly(25.4, sfs.PRODUCT_SNOWFALL_ANOMALY, "202612"), 310.0)
         self.assertEqual(sfs._convert_anomaly(25.4, sfs.PRODUCT_SNOWFALL_ANOMALY, "202702"), 280.0)
+        qc_values = sfs._qc_values(
+            sfs.Grid([0.0], [45.0], [[20.0]]),
+            sfs.PRODUCT_SNOWFALL_ANOMALY,
+        )
+        self.assertAlmostEqual(float(qc_values[0, 0]), 2.0)
         self.assertEqual(sfs.PRODUCT_SPECS["500mb_height_anomaly"]["region"], cfsv2.DEFAULT_REGION)
         self.assertEqual(sfs.PRODUCT_SPECS["500mb_height_anomaly_nh"]["region"], cfsv2.NORTHERN_HEMISPHERE_REGION)
 

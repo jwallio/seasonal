@@ -628,6 +628,12 @@ def _qc_values(grid: Grid, product: str) -> Any:
     lons = np.asarray(grid.lons, dtype=float)
     lats = np.asarray(grid.lats, dtype=float)
     values = np.asarray(grid.values, dtype=float)
+    if product == PRODUCT_SNOWFALL_ANOMALY and spec.get("snowfall_values_are_depth"):
+        # The shared QC registry evaluates snowfall in LWE. SFS has already
+        # converted its published field to snow-depth inches, so convert only
+        # this validation view back to LWE; the rendered grid remains in snow
+        # inches and is not converted again.
+        values = values / SNOW_TO_LIQUID_RATIO
     signed_lons = ((lons + 180.0) % 360.0) - 180.0
     lon_mask = (signed_lons >= lon_min) & (signed_lons <= lon_max)
     lat_mask = (lats >= lat_min) & (lats <= lat_max)

@@ -47,13 +47,15 @@ class SnowfallDisplay(unittest.TestCase):
                 self.assertIs(depth_departure(grid, display, cf.SNOWFALL_ANOMALY_PALETTE)[0], grid)
                 for seasonal in (False, True):
                     low, high, ticks, colors = cf.anomaly_style(display, seasonal)
-                    self.assertEqual((low, high), (-10, 10))
-                    self.assertEqual(ticks, list(range(-10, 11)))
+                    self.assertEqual((low, high), (-100, 100))
+                    self.assertEqual(ticks, [-100, -60, -35, -15, -1, 0, 1, 15, 35, 60, 100])
                     cmap = ListedColormap(colors)
-                    norm = BoundaryNorm(ticks, cmap.N)
+                    bounds = display["anomaly_bounds"]
+                    self.assertEqual(len(bounds), len(colors) + 1)
+                    norm = BoundaryNorm(bounds, cmap.N)
                     for value in (-.99, 0, .99):
                         self.assertEqual(cmap(norm(value)), (1, 1, 1, 1))
-                    for value in (-1.01, 1):
+                    for value in (-1.01, 1.01):
                         self.assertNotEqual(cmap(norm(value)), (1, 1, 1, 1))
                 self.assertIn('10:1', display['header_detail'])
 

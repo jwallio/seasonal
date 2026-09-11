@@ -4,7 +4,7 @@ from copy import deepcopy
 RATIO = 10.0
 DISPLAY = {
     "quantity": "estimated snowfall depth departure", "units": "in",
-    "snow_to_liquid_ratio": RATIO, "scale_inches": [-10, 10],
+    "snow_to_liquid_ratio": RATIO, "scale_inches": [-100, 100],
     "white_band_inches": [-1, 1],
     "canonical_grid_quantity": "snowfall liquid-water-equivalent departure",
     "canonical_grid_units": "inches liquid-water equivalent",
@@ -37,11 +37,18 @@ def depth_departure(grid, product, palette):
     for key in list(spec):
         if key.startswith(("monthly_anomaly_", "seasonal_anomaly_")):
             del spec[key]
-    ticks = list(range(-10, 11))
+    # Keep the approved blue/white/brown palette, but use a broader nonlinear
+    # set of discrete snow-depth bands so mountainous seasonal departures are
+    # visible without turning the CONUS map into a saturated endpoint.
+    bounds = [
+        -100, -80, -60, -45, -35, -25, -15, -10, -5, -1, 0,
+        1, 5, 10, 15, 25, 35, 45, 60, 80, 100,
+    ]
+    ticks = [-100, -60, -35, -15, -1, 0, 1, 15, 35, 60, 100]
     spec.update(
-        anomaly_min=-10, anomaly_max=10, anomaly_ticks=ticks, anomaly_bounds=ticks,
+        anomaly_min=-100, anomaly_max=100, anomaly_ticks=ticks, anomaly_bounds=bounds,
         anomaly_palette=[*palette[:9], "#ffffff", "#ffffff", *palette[13:]],
-        anomaly_endpoint_labels={"minimum": "≤−10", "maximum": "≥+10"},
+        anomaly_endpoint_labels={"minimum": "≤−100", "maximum": "≥+100"},
         anomaly_tick_decimals=0, native_snow_depth_display=True,
         snowfall_values_are_depth=True,
         snowfall_input_units="inches liquid-water equivalent",
