@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "kind": "deduplicated_seasonal_superensemble_manifest",
-  "generated_utc": "2026-09-09T16:42:21Z",
+  "generated_utc": "2026-09-11T13:47:21Z",
   "source": "wall.cloud deduplicated seasonal super ensemble",
   "source_url": "https://climate.copernicus.eu/seasonal-forecasts",
   "source_urls": [
@@ -16943,10 +16943,8 @@
           "units": "\u00b0C",
           "statistic": "equal_weight_deduplicated_family_mean",
           "expected_member_count": 10,
-          "member_count": 10,
+          "member_count": 8,
           "included_members": [
-            "c3s_ecmwf_system51",
-            "c3s_ukmo_system610",
             "c3s_meteo_france_system9",
             "c3s_dwd_system22",
             "c3s_cmcc_system4",
@@ -16956,76 +16954,53 @@
             "eccc_cansips_v3",
             "nasa_geos_s2s3"
           ],
-          "missing_members": [],
+          "missing_members": [
+            "c3s_ecmwf_system51",
+            "c3s_ukmo_system610"
+          ],
           "member_weights": [
-            {
-              "key": "c3s_ecmwf_system51",
-              "label": "ECMWF / System 51",
-              "weight": 0.1
-            },
-            {
-              "key": "c3s_ukmo_system610",
-              "label": "UK Met Office / System 610",
-              "weight": 0.1
-            },
             {
               "key": "c3s_meteo_france_system9",
               "label": "M\u00e9t\u00e9o-France / System 9",
-              "weight": 0.1
+              "weight": 0.125
             },
             {
               "key": "c3s_dwd_system22",
               "label": "DWD / System 22",
-              "weight": 0.1
+              "weight": 0.125
             },
             {
               "key": "c3s_cmcc_system4",
               "label": "CMCC / System 4",
-              "weight": 0.1
+              "weight": 0.125
             },
             {
               "key": "c3s_ncep_system2",
               "label": "NCEP / System 2",
-              "weight": 0.1
+              "weight": 0.125
             },
             {
               "key": "c3s_jma_system4",
               "label": "JMA / System 4",
-              "weight": 0.1
+              "weight": 0.125
             },
             {
               "key": "c3s_bom_system2",
               "label": "BOM / System 2",
-              "weight": 0.1
+              "weight": 0.125
             },
             {
               "key": "eccc_cansips_v3",
               "label": "ECCC CanSIPS v3 family",
-              "weight": 0.1
+              "weight": 0.125
             },
             {
               "key": "nasa_geos_s2s3",
               "label": "NASA GEOS-S2S-3",
-              "weight": 0.1
+              "weight": 0.125
             }
           ],
           "member_sources": [
-            {
-              "key": "c3s_ecmwf_system51",
-              "source_package": "Copernicus C3S",
-              "originating_centre": "ecmwf",
-              "system": "51",
-              "source_file": ".cache/c3s/cds/ecmwf_51_seasonal_postprocessed_pressure_levels_temperature_anomaly_202608_anom_l04/field.grib",
-              "baseline": "official C3S native postprocessed anomaly"
-            },
-            {
-              "key": "c3s_ukmo_system610",
-              "source_package": "Copernicus C3S",
-              "originating_centre": "ukmo",
-              "system": "610",
-              "source_file": ".cache/c3s/cds/ukmo_610_seasonal_postprocessed_pressure_levels_temperature_anomaly_202608_anom_l04/field.grib",
-              "baseline": "official C3S native postprocessed anomaly"
-            },
             {
               "key": "c3s_meteo_france_system9",
               "source_package": "Copernicus C3S",
@@ -17130,13 +17105,16 @@
               }
             }
           ],
-          "member_errors": {},
-          "ensemble_scope": "10/10 canonical forecast families",
+          "member_errors": {
+            "c3s_ecmwf_system51": "C3S request failed for ecmwf/51 temperature_anomaly lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/009b03c8-c3d0-436f-9ade-9b9a77f8f28f/results\nThe job has been rejected\nNumber queued requests for this dataset is temporarily limited. Please configure your scripts accordingly ",
+            "c3s_ukmo_system610": "C3S request failed for ukmo/610 temperature_anomaly lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/da3171d0-6bab-43cc-a79b-6b373a667825/results\nThe job has been rejected\nNumber queued requests for this dataset is temporarily limited. Please configure your scripts accordingly "
+          },
+          "ensemble_scope": "8/10 canonical forecast families",
           "baseline": {
             "status": "native_model_baselines",
             "method": "equal mean of source-native anomaly fields; no common climatology imposed"
           },
-          "status": "rendered",
+          "status": "partial",
           "quality_control": {
             "registry_version": 1,
             "product": "850mb_temperature_anomaly",
@@ -17146,10 +17124,10 @@
             "total_points": 3200,
             "finite_points": 3200,
             "finite_fraction": 1.0,
-            "minimum": -0.486731,
-            "maximum": 2.590081,
-            "p01": -0.373435,
-            "p99": 2.551019,
+            "minimum": -0.53143,
+            "maximum": 2.55264,
+            "p01": -0.407859,
+            "p99": 2.514448,
             "display": {
               "minimum": -6.0,
               "maximum": 6.0,
@@ -17174,9 +17152,8 @@
           "units": "\u00b0C",
           "statistic": "equal_weight_deduplicated_family_mean",
           "expected_member_count": 10,
-          "member_count": 10,
+          "member_count": 9,
           "included_members": [
-            "c3s_ecmwf_system51",
             "c3s_ukmo_system610",
             "c3s_meteo_france_system9",
             "c3s_dwd_system22",
@@ -17187,68 +17164,57 @@
             "eccc_cansips_v3",
             "nasa_geos_s2s3"
           ],
-          "missing_members": [],
+          "missing_members": [
+            "c3s_ecmwf_system51"
+          ],
           "member_weights": [
-            {
-              "key": "c3s_ecmwf_system51",
-              "label": "ECMWF / System 51",
-              "weight": 0.1
-            },
             {
               "key": "c3s_ukmo_system610",
               "label": "UK Met Office / System 610",
-              "weight": 0.1
+              "weight": 0.1111111111
             },
             {
               "key": "c3s_meteo_france_system9",
               "label": "M\u00e9t\u00e9o-France / System 9",
-              "weight": 0.1
+              "weight": 0.1111111111
             },
             {
               "key": "c3s_dwd_system22",
               "label": "DWD / System 22",
-              "weight": 0.1
+              "weight": 0.1111111111
             },
             {
               "key": "c3s_cmcc_system4",
               "label": "CMCC / System 4",
-              "weight": 0.1
+              "weight": 0.1111111111
             },
             {
               "key": "c3s_ncep_system2",
               "label": "NCEP / System 2",
-              "weight": 0.1
+              "weight": 0.1111111111
             },
             {
               "key": "c3s_jma_system4",
               "label": "JMA / System 4",
-              "weight": 0.1
+              "weight": 0.1111111111
             },
             {
               "key": "c3s_bom_system2",
               "label": "BOM / System 2",
-              "weight": 0.1
+              "weight": 0.1111111111
             },
             {
               "key": "eccc_cansips_v3",
               "label": "ECCC CanSIPS v3 family",
-              "weight": 0.1
+              "weight": 0.1111111111
             },
             {
               "key": "nasa_geos_s2s3",
               "label": "NASA GEOS-S2S-3",
-              "weight": 0.1
+              "weight": 0.1111111111
             }
           ],
           "member_sources": [
-            {
-              "key": "c3s_ecmwf_system51",
-              "source_package": "Copernicus C3S",
-              "originating_centre": "ecmwf",
-              "system": "51",
-              "source_file": ".cache/c3s/cds/ecmwf_51_seasonal_postprocessed_pressure_levels_temperature_anomaly_202608_anom_l05/field.grib",
-              "baseline": "official C3S native postprocessed anomaly"
-            },
             {
               "key": "c3s_ukmo_system610",
               "source_package": "Copernicus C3S",
@@ -17361,13 +17327,15 @@
               }
             }
           ],
-          "member_errors": {},
-          "ensemble_scope": "10/10 canonical forecast families",
+          "member_errors": {
+            "c3s_ecmwf_system51": "C3S request failed for ecmwf/51 temperature_anomaly lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/be20013a-88b5-4680-8110-024a1351b3d1/results\nThe job has been rejected\nNumber queued requests for this dataset is temporarily limited. Please configure your scripts accordingly "
+          },
+          "ensemble_scope": "9/10 canonical forecast families",
           "baseline": {
             "status": "native_model_baselines",
             "method": "equal mean of source-native anomaly fields; no common climatology imposed"
           },
-          "status": "rendered",
+          "status": "partial",
           "quality_control": {
             "registry_version": 1,
             "product": "850mb_temperature_anomaly",
@@ -17377,10 +17345,10 @@
             "total_points": 3200,
             "finite_points": 3200,
             "finite_fraction": 1.0,
-            "minimum": -1.033035,
-            "maximum": 3.847164,
-            "p01": -0.923354,
-            "p99": 3.800927,
+            "minimum": -1.085402,
+            "maximum": 3.873975,
+            "p01": -0.963283,
+            "p99": 3.830532,
             "display": {
               "minimum": -6.0,
               "maximum": 6.0,
@@ -17405,9 +17373,8 @@
           "units": "\u00b0C",
           "statistic": "equal_weight_deduplicated_family_mean",
           "expected_member_count": 10,
-          "member_count": 10,
+          "member_count": 9,
           "included_members": [
-            "c3s_ecmwf_system51",
             "c3s_ukmo_system610",
             "c3s_meteo_france_system9",
             "c3s_dwd_system22",
@@ -17418,68 +17385,57 @@
             "eccc_cansips_v3",
             "nasa_geos_s2s3"
           ],
-          "missing_members": [],
+          "missing_members": [
+            "c3s_ecmwf_system51"
+          ],
           "member_weights": [
-            {
-              "key": "c3s_ecmwf_system51",
-              "label": "ECMWF / System 51",
-              "weight": 0.1
-            },
             {
               "key": "c3s_ukmo_system610",
               "label": "UK Met Office / System 610",
-              "weight": 0.1
+              "weight": 0.1111111111
             },
             {
               "key": "c3s_meteo_france_system9",
               "label": "M\u00e9t\u00e9o-France / System 9",
-              "weight": 0.1
+              "weight": 0.1111111111
             },
             {
               "key": "c3s_dwd_system22",
               "label": "DWD / System 22",
-              "weight": 0.1
+              "weight": 0.1111111111
             },
             {
               "key": "c3s_cmcc_system4",
               "label": "CMCC / System 4",
-              "weight": 0.1
+              "weight": 0.1111111111
             },
             {
               "key": "c3s_ncep_system2",
               "label": "NCEP / System 2",
-              "weight": 0.1
+              "weight": 0.1111111111
             },
             {
               "key": "c3s_jma_system4",
               "label": "JMA / System 4",
-              "weight": 0.1
+              "weight": 0.1111111111
             },
             {
               "key": "c3s_bom_system2",
               "label": "BOM / System 2",
-              "weight": 0.1
+              "weight": 0.1111111111
             },
             {
               "key": "eccc_cansips_v3",
               "label": "ECCC CanSIPS v3 family",
-              "weight": 0.1
+              "weight": 0.1111111111
             },
             {
               "key": "nasa_geos_s2s3",
               "label": "NASA GEOS-S2S-3",
-              "weight": 0.1
+              "weight": 0.1111111111
             }
           ],
           "member_sources": [
-            {
-              "key": "c3s_ecmwf_system51",
-              "source_package": "Copernicus C3S",
-              "originating_centre": "ecmwf",
-              "system": "51",
-              "source_file": ".cache/c3s/cds/ecmwf_51_seasonal_postprocessed_pressure_levels_temperature_anomaly_202608_anom_l06/field.grib",
-              "baseline": "official C3S native postprocessed anomaly"
-            },
             {
               "key": "c3s_ukmo_system610",
               "source_package": "Copernicus C3S",
@@ -17592,13 +17548,15 @@
               }
             }
           ],
-          "member_errors": {},
-          "ensemble_scope": "10/10 canonical forecast families",
+          "member_errors": {
+            "c3s_ecmwf_system51": "C3S request failed for ecmwf/51 temperature_anomaly lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/a081bf5f-98d3-4e8d-b5a5-021e27e578ef/results\nThe job has been rejected\nNumber queued requests for this dataset is temporarily limited. Please configure your scripts accordingly "
+          },
+          "ensemble_scope": "9/10 canonical forecast families",
           "baseline": {
             "status": "native_model_baselines",
             "method": "equal mean of source-native anomaly fields; no common climatology imposed"
           },
-          "status": "rendered",
+          "status": "partial",
           "quality_control": {
             "registry_version": 1,
             "product": "850mb_temperature_anomaly",
@@ -17608,10 +17566,10 @@
             "total_points": 3200,
             "finite_points": 3200,
             "finite_fraction": 1.0,
-            "minimum": -1.647189,
-            "maximum": 4.470359,
-            "p01": -1.542575,
-            "p99": 4.350625,
+            "minimum": -1.656597,
+            "maximum": 4.515636,
+            "p01": -1.556671,
+            "p99": 4.405265,
             "display": {
               "minimum": -6.0,
               "maximum": 6.0,
@@ -17636,10 +17594,8 @@
           "units": "\u00b0C",
           "statistic": "equal_weight_deduplicated_family_mean",
           "expected_member_count": 10,
-          "member_count": 10,
+          "member_count": 8,
           "included_members": [
-            "c3s_ecmwf_system51",
-            "c3s_ukmo_system610",
             "c3s_meteo_france_system9",
             "c3s_dwd_system22",
             "c3s_cmcc_system4",
@@ -17649,128 +17605,53 @@
             "eccc_cansips_v3",
             "nasa_geos_s2s3"
           ],
-          "missing_members": [],
+          "missing_members": [
+            "c3s_ecmwf_system51",
+            "c3s_ukmo_system610"
+          ],
           "member_weights": [
-            {
-              "key": "c3s_ecmwf_system51",
-              "label": "ECMWF / System 51",
-              "weight": 0.1
-            },
-            {
-              "key": "c3s_ukmo_system610",
-              "label": "UK Met Office / System 610",
-              "weight": 0.1
-            },
             {
               "key": "c3s_meteo_france_system9",
               "label": "M\u00e9t\u00e9o-France / System 9",
-              "weight": 0.1
+              "weight": 0.125
             },
             {
               "key": "c3s_dwd_system22",
               "label": "DWD / System 22",
-              "weight": 0.1
+              "weight": 0.125
             },
             {
               "key": "c3s_cmcc_system4",
               "label": "CMCC / System 4",
-              "weight": 0.1
+              "weight": 0.125
             },
             {
               "key": "c3s_ncep_system2",
               "label": "NCEP / System 2",
-              "weight": 0.1
+              "weight": 0.125
             },
             {
               "key": "c3s_jma_system4",
               "label": "JMA / System 4",
-              "weight": 0.1
+              "weight": 0.125
             },
             {
               "key": "c3s_bom_system2",
               "label": "BOM / System 2",
-              "weight": 0.1
+              "weight": 0.125
             },
             {
               "key": "eccc_cansips_v3",
               "label": "ECCC CanSIPS v3 family",
-              "weight": 0.1
+              "weight": 0.125
             },
             {
               "key": "nasa_geos_s2s3",
               "label": "NASA GEOS-S2S-3",
-              "weight": 0.1
+              "weight": 0.125
             }
           ],
           "member_sources": [
-            {
-              "key": "c3s_ecmwf_system51",
-              "member": {
-                "key": "c3s_ecmwf_system51",
-                "label": "ECMWF / System 51",
-                "source_package": "Copernicus C3S",
-                "system": "ecmwf/51",
-                "internal_members": 51,
-                "notes": "Official C3S postprocessed ensemble-mean anomaly"
-              },
-              "monthly_sources": [
-                {
-                  "source_package": "Copernicus C3S",
-                  "originating_centre": "ecmwf",
-                  "system": "51",
-                  "source_file": ".cache/c3s/cds/ecmwf_51_seasonal_postprocessed_pressure_levels_temperature_anomaly_202608_anom_l04/field.grib",
-                  "baseline": "official C3S native postprocessed anomaly"
-                },
-                {
-                  "source_package": "Copernicus C3S",
-                  "originating_centre": "ecmwf",
-                  "system": "51",
-                  "source_file": ".cache/c3s/cds/ecmwf_51_seasonal_postprocessed_pressure_levels_temperature_anomaly_202608_anom_l05/field.grib",
-                  "baseline": "official C3S native postprocessed anomaly"
-                },
-                {
-                  "source_package": "Copernicus C3S",
-                  "originating_centre": "ecmwf",
-                  "system": "51",
-                  "source_file": ".cache/c3s/cds/ecmwf_51_seasonal_postprocessed_pressure_levels_temperature_anomaly_202608_anom_l06/field.grib",
-                  "baseline": "official C3S native postprocessed anomaly"
-                }
-              ]
-            },
-            {
-              "key": "c3s_ukmo_system610",
-              "member": {
-                "key": "c3s_ukmo_system610",
-                "label": "UK Met Office / System 610",
-                "source_package": "Copernicus C3S",
-                "system": "ukmo/610",
-                "internal_members": 62,
-                "notes": "Official C3S postprocessed ensemble-mean anomaly"
-              },
-              "monthly_sources": [
-                {
-                  "source_package": "Copernicus C3S",
-                  "originating_centre": "ukmo",
-                  "system": "610",
-                  "source_file": ".cache/c3s/cds/ukmo_610_seasonal_postprocessed_pressure_levels_temperature_anomaly_202608_anom_l04/field.grib",
-                  "baseline": "official C3S native postprocessed anomaly"
-                },
-                {
-                  "source_package": "Copernicus C3S",
-                  "originating_centre": "ukmo",
-                  "system": "610",
-                  "source_file": ".cache/c3s/cds/ukmo_610_seasonal_postprocessed_pressure_levels_temperature_anomaly_202608_anom_l05/field.grib",
-                  "baseline": "official C3S native postprocessed anomaly"
-                },
-                {
-                  "source_package": "Copernicus C3S",
-                  "originating_centre": "ukmo",
-                  "system": "610",
-                  "source_file": ".cache/c3s/cds/ukmo_610_seasonal_postprocessed_pressure_levels_temperature_anomaly_202608_anom_l06/field.grib",
-                  "baseline": "official C3S native postprocessed anomaly"
-                }
-              ]
-            },
             {
               "key": "c3s_meteo_france_system9",
               "member": {
@@ -18161,13 +18042,18 @@
               ]
             }
           ],
-          "member_errors": {},
-          "ensemble_scope": "10/10 canonical forecast families",
+          "member_errors": {
+            "lead4_c3s_ecmwf_system51": "C3S request failed for ecmwf/51 temperature_anomaly lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/009b03c8-c3d0-436f-9ade-9b9a77f8f28f/results\nThe job has been rejected\nNumber queued requests for this dataset is temporarily limited. Please configure your scripts accordingly ",
+            "lead4_c3s_ukmo_system610": "C3S request failed for ukmo/610 temperature_anomaly lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/da3171d0-6bab-43cc-a79b-6b373a667825/results\nThe job has been rejected\nNumber queued requests for this dataset is temporarily limited. Please configure your scripts accordingly ",
+            "lead5_c3s_ecmwf_system51": "C3S request failed for ecmwf/51 temperature_anomaly lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/be20013a-88b5-4680-8110-024a1351b3d1/results\nThe job has been rejected\nNumber queued requests for this dataset is temporarily limited. Please configure your scripts accordingly ",
+            "lead6_c3s_ecmwf_system51": "C3S request failed for ecmwf/51 temperature_anomaly lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/a081bf5f-98d3-4e8d-b5a5-021e27e578ef/results\nThe job has been rejected\nNumber queued requests for this dataset is temporarily limited. Please configure your scripts accordingly "
+          },
+          "ensemble_scope": "8/10 canonical forecast families",
           "baseline": {
             "status": "native_model_baselines",
             "method": "equal mean of source-native anomaly fields; no common climatology imposed"
           },
-          "status": "rendered",
+          "status": "partial",
           "monthly_leads": [
             4,
             5,
@@ -18183,10 +18069,10 @@
             "total_points": 3200,
             "finite_points": 3200,
             "finite_fraction": 1.0,
-            "minimum": -1.019191,
-            "maximum": 3.47887,
-            "p01": -0.90142,
-            "p99": 3.441243,
+            "minimum": -1.072798,
+            "maximum": 3.487038,
+            "p01": -0.948038,
+            "p99": 3.435341,
             "display": {
               "minimum": -6.0,
               "maximum": 6.0,
@@ -18202,8 +18088,8 @@
           "image": "public/seasonal/superensemble/20260801/superensemble_t850_202612-202702.jpg"
         }
       ],
-      "status": "rendered",
-      "generated_utc": "2026-09-09T16:41:59Z",
+      "status": "partial",
+      "generated_utc": "2026-09-11T13:47:00Z",
       "output_dir": "public/seasonal/superensemble"
     },
     {
