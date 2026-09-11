@@ -31,7 +31,7 @@ def write_grib(path, *, system=4, param=173144, lead=4, date=20260901, rate=1e-8
 class NativeSnowTests(unittest.TestCase):
     def test_units_and_leap_calendar(self):
         for month, days in [('202612',31),('202701',31),('202702',28),('202802',29)]:
-            # Exactly one inch LWE per day; no 10:1 conversion in data layer.
+            # The source decoder remains in LWE; publication applies the single 10:1 conversion.
             np.testing.assert_allclose(native.rate_to_lwe([.0254/86400, -.0254/86400], month), [days,-days])
 
     def test_equal_weights_and_complete_models(self):
@@ -85,7 +85,8 @@ class NativeSnowTests(unittest.TestCase):
             self.assertEqual(errors,0)
             seasonal = run['targets'][0]
             self.assertEqual(seasonal['target_month'],'202612-202702')
-            self.assertEqual(seasonal['quality_control']['maximum'],6.)
+            self.assertEqual(seasonal['quality_control']['maximum'],60.)
+            self.assertEqual(seasonal['quality_control']['source_maximum'],6.)
             self.assertEqual(seasonal['quality_control']['display']['clipped_fraction'],1.)
             self.assertEqual(run['climatology']['years'],'1993-2016')
             with patch.object(native.NativeSnowArchive,'grid',side_effect=native.NotAvailable('not released')):
@@ -114,10 +115,10 @@ class NativeSnowTests(unittest.TestCase):
             self.assertEqual(august['targets'][1]['missing_months'],['202702','202703'])
             self.assertTrue(all('image' not in t for t in august['targets'][:2]))
             self.assertEqual(august['targets'][2]['label'],'D+J 2026–27')
-            self.assertEqual(august['targets'][2]['quality_control']['maximum'],9.)
+            self.assertEqual(august['targets'][2]['quality_control']['maximum'],90.)
             self.assertEqual(august['targets'][2]['aggregation'],'ensemble-mean 2-month total departure')
-            self.assertEqual(october['targets'][0]['quality_control']['maximum'],9.)
-            self.assertEqual(october['targets'][1]['quality_control']['maximum'],12.)
+            self.assertEqual(october['targets'][0]['quality_control']['maximum'],90.)
+            self.assertEqual(october['targets'][1]['quality_control']['maximum'],120.)
 
     def test_legacy_maps_removed_from_current_manifest(self):
         with tempfile.TemporaryDirectory() as tmp:

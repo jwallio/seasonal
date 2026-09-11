@@ -42,7 +42,12 @@ class SFSContractTests(unittest.TestCase):
         )
         self.assertEqual(sfs.PRODUCT_SPECS["snowfall_anomaly"]["source_variable"], "tsnowpsfc")
         self.assertNotIn("swe", sfs.PRODUCT_SPECS["snowfall_anomaly"]["source_variable"])
-        self.assertEqual(sfs.PRODUCT_SPECS["snowfall_anomaly"]["snowfall_input_kind"], "Native NOAA SFS TSNOWP snowfall")
+        snowfall = sfs.PRODUCT_SPECS["snowfall_anomaly"]
+        self.assertEqual(snowfall["snowfall_input_kind"], "Native NOAA SFS TSNOWP snowfall")
+        self.assertTrue(snowfall["snowfall_values_are_depth"])
+        self.assertEqual(snowfall["field"], "snowfall_depth_anomaly")
+        self.assertEqual(snowfall["conversion_kind"], "snowfall_lwe_to_snow_depth_10_to_1")
+        self.assertEqual(sfs._convert_anomaly(25.4, sfs.PRODUCT_SNOWFALL_ANOMALY, "202612"), 10.0)
         self.assertEqual(sfs.PRODUCT_SPECS["500mb_height_anomaly"]["region"], cfsv2.DEFAULT_REGION)
         self.assertEqual(sfs.PRODUCT_SPECS["500mb_height_anomaly_nh"]["region"], cfsv2.NORTHERN_HEMISPHERE_REGION)
 

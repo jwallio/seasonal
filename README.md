@@ -44,7 +44,7 @@ The common comparison suite includes:
 - 850-mb temperature anomalies
 - 2-metre temperature anomalies
 - CONUS precipitation anomalies
-- CONUS snowfall liquid-water-equivalent departures
+- CONUS snowfall departures in estimated snow-depth inches
 - Mean sea-level pressure anomalies
 
 Additional provider-specific products include snow depth, absolute fields,
@@ -55,16 +55,18 @@ Shared comparison conventions include fixed cross-provider scales for 500-mb
 height and temperature. Precipitation is rendered in accumulated inches. NOAA
 SFS beta2 uses the same fixed discrete bands and full CONUS framing, including
 the eastern Maine border, rather than a smooth gradient.
-Snowfall maps from C3S and SEAS5 use native snowfall accumulation rates,
-converted to inches of liquid-water equivalent—not snow depth—and provide
-CONUS monthly totals and DJF three-month sums. CanSIPS v3 adds a transparent
-derived estimate from its paired 2-m temperature and precipitation members;
-the super ensemble can include that CanSIPS-derived family vote alongside
-native snowfall fields. CanSIPS also uses the paired 850-hPa temperature as a
-warm-layer gate with its 2-m temperature. Monthly snowfall maps use nonlinear
-bins from -2.0 to +2.0 inches, while seasonal/DJF maps use -4.0 to +4.0
-inches—finer near zero and wider in the tails—to reduce clipping while
-preserving the smaller LWE signal. Models without a
+Snowfall departure maps use the native/derived accumulation rate for each
+provider, retain LWE for comparison math, and convert the signed departure once
+to estimated snow-depth inches at a fixed 10:1 ratio. Their published numeric
+`.snow.csv.gz` grids therefore contain inches of snow, while `.lwe.csv.gz`
+sidecars retain the source LWE values. The maps provide CONUS monthly totals
+and DJF three-month sums. CanSIPS v3 adds a transparent derived estimate from
+its paired 2-m temperature and precipitation members; the super ensemble can
+include that CanSIPS-derived family vote alongside native snowfall fields.
+CanSIPS also uses the paired 850-hPa temperature as a warm-layer gate with its
+2-m temperature. Snowfall departure maps use discrete one-inch snow-depth
+bands from −10 to +10 inches, with a white near-zero band from −1 to +1
+inches. Models without a
 native or explicitly derived snowfall field remain explicitly not applicable.
 CFSv2 refreshes its derived snowfall suite for December through March and
 publishes accumulated DJF and JFM departures whenever that complete cold-season

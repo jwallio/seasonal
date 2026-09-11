@@ -105,10 +105,11 @@ PRODUCTS: dict[str, dict[str, Any]] = {
         "comparison": True,
     },
     "snowfall_anomaly": {
-        "label": "CONUS Snowfall Departure (in)",
+        "label": "CONUS Snowfall Departure (in snow)",
         "aliases": [],
-        # C3S/SEAS5 expose snowfall as a rate of liquid-water equivalent.  The
-        # canonical grids retain water equivalent; maps display depth at 10:1.
+        # Providers expose snowfall as liquid-water equivalent. Comparison math
+                # stays in that common unit, while published display/numeric grids
+        # convert signed departures to estimated snow depth at 10:1.
         "units": "in",
         "compatible_units": (),
         "field_tokens": ("snowfall", "sf"),

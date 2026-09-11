@@ -10,8 +10,9 @@ shared seasonal renderer.
 The archive is a development product.  Every field is checked against its
 declared variable name, units, dimensions, member count, and global 0.5-degree
 grid before it can be rendered.  Snowfall uses the native total-snow-
-precipitation field as liquid-water equivalent and applies the site's fixed
-10:1 display conversion at the rendering boundary.
+precipitation field as liquid-water equivalent, converts it to inches of
+estimated snow depth at a fixed 10:1 ratio, and publishes that converted
+quantity while retaining the source units in the provenance metadata.
 """
 
 from __future__ import annotations
@@ -54,6 +55,7 @@ from cfsv2_seasonal import (
 )
 from height_display import HEIGHT_ANOMALY_STYLE, HEIGHT_NH_FRAME
 from seasonal_products import grid_quality_control, is_retired_product, require_quality_control
+from snowfall_display import DISPLAY as SNOWFALL_DISPLAY, RATIO as SNOW_TO_LIQUID_RATIO
 
 
 SFS_BUCKET_ROOT = "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/"
@@ -168,15 +170,15 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "source_variable": "tsnowpsfc",
         "raw_field": "tsnowpsfc / TSNOWP_surface",
         "raw_units": "kg/m^2",
-        "field": "snowfall_lwe_anomaly",
+        "field": "snowfall_depth_anomaly",
         "units": "in",
-        "title": "NOAA SFS beta2 Snowfall Departure (in)",
-        "absolute_title": "NOAA SFS beta2 Snowfall Liquid-Water Equivalent (in)",
+        "title": "NOAA SFS beta2 Snowfall Departure (in snow)",
+        "absolute_title": "NOAA SFS beta2 Estimated Snowfall Depth (in snow)",
         "height_contours": False,
         "region": CONUS_PRECIP_REGION,
         "seasonal_reducer": "sum",
-        "conversion_kind": "snowfall_lwe_inches",
-        "conversion": "Native TSNOWP total snow precipitation converted from kg m-2 to liquid-water-equivalent inches; display uses fixed 10:1 snow-depth estimate",
+        "conversion_kind": "snowfall_lwe_to_snow_depth_10_to_1",
+        "conversion": "Native TSNOWP total snow precipitation converted from kg m-2 to liquid-water-equivalent inches, then multiplied by 10.0; published snowfall departure is estimated snow depth in inches",
         "anomaly_min": SNOWFALL_ANOMALY_MIN_IN,
         "anomaly_max": SNOWFALL_ANOMALY_MAX_IN,
         "anomaly_ticks": SNOWFALL_ANOMALY_TICKS,
@@ -194,6 +196,7 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         ],
         "border_files": ("us-states.geojson",),
         "snowfall_input_kind": "Native NOAA SFS TSNOWP snowfall",
+        "snowfall_values_are_depth": True,
         "source_label": "NOAA SFS beta2 / SFS development archive",
         "scheduled": True,
     },
@@ -594,7 +597,11 @@ def _convert_anomaly(values: Any, product: str, target: str) -> Any:
     if product == PRODUCT_PRECIPITATION_ANOMALY:
         return values * _month_seconds(target) / 25.4
     if product == PRODUCT_SNOWFALL_ANOMALY:
-        return values / 25.4
+        # TSNOWP is kg m-2 of liquid-water equivalent. Convert to LWE
+        # inches first, then convert the signed departure to estimated snow
+        # depth inches. Multiplication is valid before/after the anomaly
+        # subtraction because the operational ratio is fixed at 10:1.
+        return values / 25.4 * SNOW_TO_LIQUID_RATIO
     if product == PRODUCT_MSLP_ANOMALY:
         return values / 100.0
     return values
@@ -779,6 +786,8 @@ def _target_entry(
         "quality_control": qc,
         "status": status,
     }
+    if product == PRODUCT_SNOWFALL_ANOMALY:
+        entry["display"] = dict(SNOWFALL_DISPLAY)
     if spec.get("conversion"):
         entry["derivation"] = {"method": spec["conversion_kind"], "description": spec["conversion"]}
     if image:
@@ -840,7 +849,7 @@ def write_manifest(
         "source_quality": {
             "forecast_store": f"31-member 0.5-degree global {SFS_FORECAST_DATASET}",
             "reforecast_store": "same-calendar-month 11-member reforecast climatology with at least 30 initializations",
-            "snowfall": "native TSNOWP_surface total snow precipitation in liquid-water-equivalent units; displayed at fixed 10:1",
+            "snowfall": "native TSNOWP_surface total snow precipitation converted from LWE to estimated snow-depth inches at a fixed 10:1 ratio",
             "map_bands": "discrete BoundaryNorm intervals; no smooth interpolation between palette colors",
         },
         "runs": retained,
@@ -973,6 +982,8 @@ def run(args: argparse.Namespace) -> int:
             "conversion": spec.get("conversion", "Forecast-minus-reforecast anomaly in native source units"),
             "source_warning": f"NOAA SFS {args.experiment} is an experimental development archive; source fields are schema-validated before publication.",
         }
+        if product == PRODUCT_SNOWFALL_ANOMALY:
+            run_entry["display"] = dict(SNOWFALL_DISPLAY)
         try:
             fields = load_product_fields(
                 product=product,

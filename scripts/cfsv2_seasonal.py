@@ -4244,8 +4244,21 @@ def _run_single_window(args: argparse.Namespace) -> int:
             )
             target_entry["image"] = relative_path(output_path, repo_root)
             if product_name in {PRODUCT_HEIGHT_ANOMALY, PRODUCT_SNOWFALL_ANOMALY, PRODUCT_SNOWFALL_ACCUMULATION}:
-                numeric_grid_path = output_dir / init / f"cfsv2_{product['file_token']}_{target}.csv.gz"
-                write_grid_state(anomaly_grid, numeric_grid_path)
+                if product_name == PRODUCT_SNOWFALL_ANOMALY:
+                    # render_map writes the authoritative converted snow-depth
+                    # and retained LWE sidecars. Expose those exact paths so
+                    # consumers cannot accidentally read the LWE grid as snow.
+                    numeric_grid_path = output_path.with_suffix(".snow.csv.gz")
+                    native_lwe_path = output_path.with_suffix(".lwe.csv.gz")
+                    if not numeric_grid_path.exists():
+                        from snowfall_display import convert_lwe_to_snow_depth
+                        write_grid_state(convert_lwe_to_snow_depth(anomaly_grid), numeric_grid_path)
+                    if not native_lwe_path.exists():
+                        write_grid_state(anomaly_grid, native_lwe_path)
+                    target_entry["native_lwe_grid"] = relative_path(native_lwe_path, repo_root)
+                else:
+                    numeric_grid_path = output_dir / init / f"cfsv2_{product['file_token']}_{target}.csv.gz"
+                    write_grid_state(anomaly_grid, numeric_grid_path)
                 target_entry["numeric_grid"] = relative_path(numeric_grid_path, repo_root)
                 target_entry["numeric_grid_format"] = "csv.gz"
             if product_name == PRODUCT_SNOWFALL_ACCUMULATION:
@@ -4458,8 +4471,18 @@ def _run_single_window(args: argparse.Namespace) -> int:
             )
             seasonal_entry["image"] = relative_path(output_path, repo_root)
             if product_name in {PRODUCT_HEIGHT_ANOMALY, PRODUCT_SNOWFALL_ANOMALY, PRODUCT_SNOWFALL_ACCUMULATION}:
-                numeric_grid_path = output_dir / init / f"cfsv2_{product['file_token']}_{first_target}-{last_target}.csv.gz"
-                write_grid_state(seasonal_grid, numeric_grid_path)
+                if product_name == PRODUCT_SNOWFALL_ANOMALY:
+                    numeric_grid_path = output_path.with_suffix(".snow.csv.gz")
+                    native_lwe_path = output_path.with_suffix(".lwe.csv.gz")
+                    if not numeric_grid_path.exists():
+                        from snowfall_display import convert_lwe_to_snow_depth
+                        write_grid_state(convert_lwe_to_snow_depth(seasonal_grid), numeric_grid_path)
+                    if not native_lwe_path.exists():
+                        write_grid_state(seasonal_grid, native_lwe_path)
+                    seasonal_entry["native_lwe_grid"] = relative_path(native_lwe_path, repo_root)
+                else:
+                    numeric_grid_path = output_dir / init / f"cfsv2_{product['file_token']}_{first_target}-{last_target}.csv.gz"
+                    write_grid_state(seasonal_grid, numeric_grid_path)
                 seasonal_entry["numeric_grid"] = relative_path(numeric_grid_path, repo_root)
                 seasonal_entry["numeric_grid_format"] = "csv.gz"
             if product_name == PRODUCT_SNOWFALL_ACCUMULATION:

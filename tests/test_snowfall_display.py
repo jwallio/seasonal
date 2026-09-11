@@ -1,4 +1,4 @@
-"""Cross-provider display contract, separate from canonical blending units."""
+"""Cross-provider snowfall-depth conversion and display contracts."""
 import sys
 import unittest
 from pathlib import Path
@@ -8,7 +8,7 @@ import c3s_seasonal as c3s
 import cansips_seasonal as can
 import seas5_seasonal as seas
 import superensemble_seasonal as superensemble
-from snowfall_display import depth_departure
+from snowfall_display import DISPLAY, convert_lwe_to_snow_depth, depth_departure
 
 
 class SnowfallDisplay(unittest.TestCase):
@@ -56,6 +56,16 @@ class SnowfallDisplay(unittest.TestCase):
                     for value in (-1.01, 1):
                         self.assertNotEqual(cmap(norm(value)), (1, 1, 1, 1))
                 self.assertIn('10:1', display['header_detail'])
+
+    def test_published_grid_is_snow_depth_and_preconverted_inputs_are_idempotent(self):
+        original = cf.Grid([0, 1], [0], [[0.5, -0.25]])
+        converted = convert_lwe_to_snow_depth(original)
+        self.assertEqual(converted.values, [[5.0, -2.5]])
+        self.assertEqual(DISPLAY["numeric_grid_units"], "inches snow")
+        already_converted = dict(cf.get_product_spec("snowfall_anomaly"), snowfall_values_are_depth=True)
+        same, display = depth_departure(converted, already_converted, cf.SNOWFALL_ANOMALY_PALETTE)
+        self.assertIs(same, converted)
+        self.assertEqual(display["snowfall_output_units"], "inches snow")
 
     def test_conversion_commutes_with_monthly_sum(self):
         months = [cf.Grid([0, 1], [0], [[v, -v]]) for v in (.2, .3, .5)]

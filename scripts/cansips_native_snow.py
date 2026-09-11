@@ -1,7 +1,8 @@
 """Native CanSIPS snowfall via the two ECCC C3S components.
 
 Uses provider-postprocessed anomalies (matching system hindcasts), not a
-precipitation/temperature proxy. Canonical grids stay in inches of LWE.
+precipitation/temperature proxy. Comparison grids stay in inches of LWE, while
+published numeric grids are converted to estimated snow depth at 10:1.
 """
 from __future__ import annotations
 
@@ -13,6 +14,7 @@ import numpy as np
 
 from c3s_seasonal import CDSArchive, month_seconds
 from cfsv2_seasonal import Grid, CONUS_REGION, mean_grids, sum_grids, relative_path, write_grid_state
+from snowfall_display import DISPLAY as SNOWFALL_DISPLAY, depth_departure
 
 DATASET = 'seasonal-postprocessed-single-levels'
 VARIABLE = 'snowfall_anomalous_rate_of_accumulation'
@@ -133,19 +135,21 @@ class NativeSnowArchive:
                             'weight': 0.5, 'dataset': DATASET, 'variable': VARIABLE,
                             'init': init, 'cds_lead': lead + 1, 'metadata': metadata})
         return blend(components), {'method': METHOD, 'baseline': BASELINE, 'components': sources,
-                                   'units': 'in', 'quantity': 'snowfall LWE departure'}
+                                   'units': 'in LWE', 'quantity': 'snowfall LWE departure'}
 
 
-def quality(grid):
+def quality(grid, snow_depth=None):
     vals = np.asarray(grid.values, dtype=float)
     if not np.isfinite(vals).all():
         raise ValueError('Incomplete native snowfall blend')
-    return {'status': 'passed', 'field': 'snowfall_anomaly', 'units': 'in',
-            'quantity': 'snowfall LWE departure', 'minimum': float(vals.min()),
-            'maximum': float(vals.max()), 'finite_fraction': 1.0,
+    depth = np.asarray((snow_depth if snow_depth is not None else grid).values, dtype=float)
+    return {'status': 'passed', 'field': 'snowfall_depth_anomaly', 'units': 'in',
+            'quantity': 'estimated snowfall depth departure', 'minimum': float(depth.min()),
+            'maximum': float(depth.max()), 'finite_fraction': 1.0,
+            'source_minimum': float(vals.min()), 'source_maximum': float(vals.max()),
             'display': {'quantity': 'estimated snowfall depth departure', 'units': 'in',
                         'snow_to_liquid_ratio': 10, 'minimum': -10, 'maximum': 10,
-                        'clipped_fraction': float(np.mean(np.abs(vals * 10) > 10))},
+                        'clipped_fraction': float(np.mean(np.abs(depth) > 10))},
             'issues': [], 'validation_scope': 'data integrity and units; not observational forecast skill'}
 
 
@@ -174,9 +178,10 @@ def render_run(args, init, leads, seasonal_leads, cache_dir, output_dir, border_
              'climatology': {'source': BASELINE, 'years': '1993-2016', 'method': 'provider postprocessed; no second subtraction'},
              'display': {'quantity': 'estimated snowfall depth departure', 'units': 'in',
                          'snow_to_liquid_ratio': 10, 'scale_inches': [-10, 10],
-                         'white_band_inches': [-1, 1], 'numeric_grid_quantity': 'snowfall LWE departure'},
-             'conversion': 'Native snowfall anomalous rate × target-month seconds ÷ 0.0254; '
-                           'equal component mean; sum months; display only ×10.', 'targets': []}
+                         'white_band_inches': [-1, 1], 'numeric_grid_quantity': 'estimated snowfall depth departure',
+                         'numeric_grid_units': 'inches snow', 'canonical_grid_quantity': 'snowfall LWE departure'},
+             'conversion': 'Native snowfall anomalous rate × target-month seconds ÷ 0.0254 to obtain LWE inches; '
+                           'equal component mean; sum months; multiply signed departures by 10 for estimated snow-depth inches.', 'targets': []}
     archive = NativeSnowArchive(cache_dir, render_only=getattr(args, 'render_only', False))
     grids, monthly, failures = {}, {}, 0
     product = dict(can.PRODUCT_SPECS[can.PRODUCT_SNOWFALL_ANOMALY])
@@ -185,24 +190,29 @@ def render_run(args, init, leads, seasonal_leads, cache_dir, output_dir, border_
     def target_entry(target, lead):
         first, last = target.split('-') if '-' in target else (target, target)
         return {'id': f'{run_id}-{target}' if '-' in target else f'{run_id}-lead{lead:02d}',
-                'target_month': target, 'lead_month': lead, 'field': 'snowfall_anomaly', 'units': 'in',
+                'target_month': target, 'lead_month': lead, 'field': 'snowfall_depth_anomaly', 'units': 'in',
                 'valid_start_utc': can.target_period(first)[0], 'valid_end_utc': can.target_period(last)[1],
                 'ensemble_members': 40, 'statistic': 'ensemble_mean',
                 'baseline': {'source': BASELINE, 'method': METHOD}}
 
     def output(grid, t, lead, seasonal=False):
         target = t['target_month']
-        t['quality_control'] = quality(grid)
+        snow_depth, display_spec = depth_departure(grid, product, can.SNOWFALL_ANOMALY_PALETTE)
+        t['quality_control'] = quality(grid, snow_depth)
+        t['display'] = dict(SNOWFALL_DISPLAY)
         t['ensemble_complete'] = True
         t['status'] = 'decoded'
         gridpath = output_dir / init[:8] / f'cansips_native_snow_{target}.csv.gz'
-        write_grid_state(grid, gridpath)
+        write_grid_state(snow_depth, gridpath)
         t['numeric_grid'] = relative_path(gridpath, root)
+        lwe_path = output_dir / init[:8] / f'cansips_native_snow_{target}.lwe.csv.gz'
+        write_grid_state(grid, lwe_path)
+        t['native_lwe_grid'] = relative_path(lwe_path, root)
         if not args.decode_only:
             imagepath = output_dir / init[:8] / f'cansips_native_snowfalla_winter_{target}.jpg'
-            can.render_standalone(grid, init, target[:6], lead, list(range(1, 41)), imagepath,
+            can.render_standalone(snow_depth, init, target[:6], lead, list(range(1, 41)), imagepath,
                 anomaly=True, baseline_label=BASELINE, border_paths=border_paths,
-                ensemble_label='40-member mean' + (f"  •  {len(t['monthly_leads'])}-month total departure" if seasonal else ''), product_spec=product,
+                ensemble_label='40-member mean' + (f"  •  {len(t['monthly_leads'])}-month total departure" if seasonal else ''), product_spec=display_spec,
                 seasonal=seasonal,
                 period_label=can.seasonal_period_label(*target.split('-')) if seasonal else None)
             t.update(image=relative_path(imagepath, root), status='rendered')
