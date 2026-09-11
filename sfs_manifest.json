@@ -1,0 +1,1836 @@
+{
+  "schema_version": 1,
+  "kind": "noaa_sfs_seasonal_manifest",
+  "generated_utc": "2026-09-11T19:08:49Z",
+  "source": "NOAA SFS beta2 development archive",
+  "source_url": "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/index.html",
+  "source_urls": [
+    "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/index.html",
+    "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/"
+  ],
+  "experiment": "beta2",
+  "rendering": "31-member NOAA SFS beta2 mean minus same-calendar-month 35-year reforecast mean; fixed discrete map bands",
+  "comparison_products": [
+    "500mb_height_anomaly",
+    "850mb_temperature_anomaly",
+    "2m_temperature_anomaly",
+    "precipitation_anomaly",
+    "snowfall_anomaly",
+    "mslp_anomaly"
+  ],
+  "product_labels": {
+    "500mb_height_anomaly": "500-mb Height Anomaly",
+    "500mb_height_anomaly_nh": "500-mb Height Anomaly \u00b7 Northern Hemisphere",
+    "850mb_temperature_anomaly": "850-mb Temperature Anomaly",
+    "2m_temperature_anomaly": "2-m Temperature Anomaly",
+    "precipitation_anomaly": "Precipitation Anomaly",
+    "snowfall_anomaly": "Snowfall Departure",
+    "mslp_anomaly": "MSLP Anomaly"
+  },
+  "retention": {
+    "max_cycles": 4,
+    "history_cycles": 3
+  },
+  "source_quality": {
+    "forecast_store": "31-member 0.5-degree global atm_monthly.zarr",
+    "reforecast_store": "same-calendar-month 11-member reforecast climatology with at least 30 initializations",
+    "snowfall": "native TSNOWP_surface total snow precipitation in liquid-water-equivalent units; displayed at fixed 10:1",
+    "map_bands": "discrete BoundaryNorm intervals; no smooth interpolation between palette colors"
+  },
+  "runs": [
+    {
+      "id": "sfs-beta2-202609-snowfall_anomaly",
+      "init_utc": "2026-09-01T00:00:00Z",
+      "model": "NOAA SFS beta2",
+      "product": "snowfall_anomaly",
+      "status": "rendered",
+      "source": "NOAA SFS beta2 development archive",
+      "source_url": "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/index.html",
+      "source_urls": [
+        "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/forecast/202609/atm_monthly.zarr",
+        "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/reforecast/09/atm_monthly.zarr"
+      ],
+      "aggregation": "31-member forecast mean minus same-calendar-month reforecast mean",
+      "output_dir": "public/seasonal/sfs",
+      "targets": [
+        {
+          "id": "sfs-beta2-202609-snowfall_anomaly-202612",
+          "label": "December 2026",
+          "target_month": "202612",
+          "period_label": "December 2026",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-01-01T00:00:00Z",
+          "lead_month": 3,
+          "field": "snowfall_lwe_anomaly",
+          "units": "in",
+          "statistic": "NOAA SFS beta2 31-member ensemble mean anomaly",
+          "aggregation": "Forecast mean minus same-calendar-month reforecast mean",
+          "ensemble_members": 31,
+          "ensemble_expected_members": 31,
+          "ensemble_complete": true,
+          "ensemble_label": "31-member NOAA SFS beta2 mean",
+          "ensemble_scope": "NOAA SFS beta2 forecast members",
+          "source_files": [
+            "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/forecast/202609/atm_monthly.zarr/tsnowpsfc",
+            "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/reforecast/09/atm_monthly.zarr/tsnowpsfc"
+          ],
+          "baseline": {
+            "status": "same_calendar_month_reforecast_mean",
+            "source": "NOAA SFS beta2 same-calendar-month reforecast mean (1991\u20132025)",
+            "years": "1991-2025",
+            "method": "35 same-month initializations \u00d7 11 reforecast members, lead matched to the forecast",
+            "source_urls": [
+              "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/reforecast/09/atm_monthly.zarr/tsnowpsfc"
+            ]
+          },
+          "quality_control": {
+            "registry_version": 1,
+            "product": "snowfall_anomaly",
+            "units": "in",
+            "field": "snowfall_lwe_anomaly",
+            "period": "monthly",
+            "total_points": 6413,
+            "finite_points": 6413,
+            "finite_fraction": 1.0,
+            "minimum": -0.045045,
+            "maximum": 0.090205,
+            "p01": -0.016316,
+            "p99": 0.019923,
+            "display": {
+              "minimum": -10.0,
+              "maximum": 10.0,
+              "breakpoints": [
+                -10,
+                -9,
+                -8,
+                -7,
+                -6,
+                -5,
+                -4,
+                -3,
+                -2,
+                -1,
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10
+              ],
+              "below_fraction": 0.0,
+              "above_fraction": 0.0,
+              "clipped_fraction": 0.0
+            },
+            "issues": [],
+            "status": "passed"
+          },
+          "status": "rendered",
+          "derivation": {
+            "method": "snowfall_lwe_inches",
+            "description": "Native TSNOWP total snow precipitation converted from kg m-2 to liquid-water-equivalent inches; display uses fixed 10:1 snow-depth estimate"
+          },
+          "image": "public/seasonal/sfs/202609/sfs_snowfall_anomaly_202612.jpg"
+        },
+        {
+          "id": "sfs-beta2-202609-snowfall_anomaly-202701",
+          "label": "January 2027",
+          "target_month": "202701",
+          "period_label": "January 2027",
+          "valid_start_utc": "2027-01-01T00:00:00Z",
+          "valid_end_utc": "2027-02-01T00:00:00Z",
+          "lead_month": 4,
+          "field": "snowfall_lwe_anomaly",
+          "units": "in",
+          "statistic": "NOAA SFS beta2 31-member ensemble mean anomaly",
+          "aggregation": "Forecast mean minus same-calendar-month reforecast mean",
+          "ensemble_members": 31,
+          "ensemble_expected_members": 31,
+          "ensemble_complete": true,
+          "ensemble_label": "31-member NOAA SFS beta2 mean",
+          "ensemble_scope": "NOAA SFS beta2 forecast members",
+          "source_files": [
+            "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/forecast/202609/atm_monthly.zarr/tsnowpsfc",
+            "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/reforecast/09/atm_monthly.zarr/tsnowpsfc"
+          ],
+          "baseline": {
+            "status": "same_calendar_month_reforecast_mean",
+            "source": "NOAA SFS beta2 same-calendar-month reforecast mean (1991\u20132025)",
+            "years": "1991-2025",
+            "method": "35 same-month initializations \u00d7 11 reforecast members, lead matched to the forecast",
+            "source_urls": [
+              "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/reforecast/09/atm_monthly.zarr/tsnowpsfc"
+            ]
+          },
+          "quality_control": {
+            "registry_version": 1,
+            "product": "snowfall_anomaly",
+            "units": "in",
+            "field": "snowfall_lwe_anomaly",
+            "period": "monthly",
+            "total_points": 6413,
+            "finite_points": 6413,
+            "finite_fraction": 1.0,
+            "minimum": -0.02225,
+            "maximum": 0.194208,
+            "p01": -0.013453,
+            "p99": 0.053612,
+            "display": {
+              "minimum": -10.0,
+              "maximum": 10.0,
+              "breakpoints": [
+                -10,
+                -9,
+                -8,
+                -7,
+                -6,
+                -5,
+                -4,
+                -3,
+                -2,
+                -1,
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10
+              ],
+              "below_fraction": 0.0,
+              "above_fraction": 0.0,
+              "clipped_fraction": 0.0
+            },
+            "issues": [],
+            "status": "passed"
+          },
+          "status": "rendered",
+          "derivation": {
+            "method": "snowfall_lwe_inches",
+            "description": "Native TSNOWP total snow precipitation converted from kg m-2 to liquid-water-equivalent inches; display uses fixed 10:1 snow-depth estimate"
+          },
+          "image": "public/seasonal/sfs/202609/sfs_snowfall_anomaly_202701.jpg"
+        },
+        {
+          "id": "sfs-beta2-202609-snowfall_anomaly-202702",
+          "label": "February 2027",
+          "target_month": "202702",
+          "period_label": "February 2027",
+          "valid_start_utc": "2027-02-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": 5,
+          "field": "snowfall_lwe_anomaly",
+          "units": "in",
+          "statistic": "NOAA SFS beta2 31-member ensemble mean anomaly",
+          "aggregation": "Forecast mean minus same-calendar-month reforecast mean",
+          "ensemble_members": 31,
+          "ensemble_expected_members": 31,
+          "ensemble_complete": true,
+          "ensemble_label": "31-member NOAA SFS beta2 mean",
+          "ensemble_scope": "NOAA SFS beta2 forecast members",
+          "source_files": [
+            "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/forecast/202609/atm_monthly.zarr/tsnowpsfc",
+            "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/reforecast/09/atm_monthly.zarr/tsnowpsfc"
+          ],
+          "baseline": {
+            "status": "same_calendar_month_reforecast_mean",
+            "source": "NOAA SFS beta2 same-calendar-month reforecast mean (1991\u20132025)",
+            "years": "1991-2025",
+            "method": "35 same-month initializations \u00d7 11 reforecast members, lead matched to the forecast",
+            "source_urls": [
+              "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/reforecast/09/atm_monthly.zarr/tsnowpsfc"
+            ]
+          },
+          "quality_control": {
+            "registry_version": 1,
+            "product": "snowfall_anomaly",
+            "units": "in",
+            "field": "snowfall_lwe_anomaly",
+            "period": "monthly",
+            "total_points": 6413,
+            "finite_points": 6413,
+            "finite_fraction": 1.0,
+            "minimum": -0.060673,
+            "maximum": 0.157719,
+            "p01": -0.02318,
+            "p99": 0.030148,
+            "display": {
+              "minimum": -10.0,
+              "maximum": 10.0,
+              "breakpoints": [
+                -10,
+                -9,
+                -8,
+                -7,
+                -6,
+                -5,
+                -4,
+                -3,
+                -2,
+                -1,
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10
+              ],
+              "below_fraction": 0.0,
+              "above_fraction": 0.0,
+              "clipped_fraction": 0.0
+            },
+            "issues": [],
+            "status": "passed"
+          },
+          "status": "rendered",
+          "derivation": {
+            "method": "snowfall_lwe_inches",
+            "description": "Native TSNOWP total snow precipitation converted from kg m-2 to liquid-water-equivalent inches; display uses fixed 10:1 snow-depth estimate"
+          },
+          "image": "public/seasonal/sfs/202609/sfs_snowfall_anomaly_202702.jpg"
+        },
+        {
+          "id": "sfs-beta2-202609-snowfall_anomaly-202612-202702",
+          "label": "DJF 2026\u201327",
+          "target_month": "202612-202702",
+          "period_label": "DJF 2026\u201327",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": "3-5",
+          "field": "snowfall_lwe_anomaly",
+          "units": "in",
+          "statistic": "NOAA SFS beta2 31-member ensemble mean anomaly",
+          "aggregation": "Forecast mean minus same-calendar-month reforecast mean",
+          "ensemble_members": 31,
+          "ensemble_expected_members": 31,
+          "ensemble_complete": true,
+          "ensemble_label": "31-member NOAA SFS beta2 mean",
+          "ensemble_scope": "NOAA SFS beta2 forecast members",
+          "source_files": [
+            "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/forecast/202609/atm_monthly.zarr/tsnowpsfc",
+            "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/reforecast/09/atm_monthly.zarr/tsnowpsfc"
+          ],
+          "baseline": {
+            "status": "same_calendar_month_reforecast_mean",
+            "source": "NOAA SFS beta2 same-calendar-month reforecast mean (1991\u20132025)",
+            "years": "1991-2025",
+            "method": "35 same-month initializations \u00d7 11 reforecast members, lead matched to the forecast",
+            "source_urls": [
+              "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/reforecast/09/atm_monthly.zarr/tsnowpsfc"
+            ]
+          },
+          "quality_control": {
+            "registry_version": 1,
+            "product": "snowfall_anomaly",
+            "units": "in",
+            "field": "snowfall_lwe_anomaly",
+            "period": "seasonal",
+            "total_points": 6413,
+            "finite_points": 6413,
+            "finite_fraction": 1.0,
+            "minimum": -0.097443,
+            "maximum": 0.441948,
+            "p01": -0.046563,
+            "p99": 0.094002,
+            "display": {
+              "minimum": -10.0,
+              "maximum": 10.0,
+              "breakpoints": [
+                -10,
+                -9,
+                -8,
+                -7,
+                -6,
+                -5,
+                -4,
+                -3,
+                -2,
+                -1,
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10
+              ],
+              "below_fraction": 0.0,
+              "above_fraction": 0.0,
+              "clipped_fraction": 0.0
+            },
+            "issues": [],
+            "status": "passed"
+          },
+          "status": "rendered",
+          "derivation": {
+            "method": "snowfall_lwe_inches",
+            "description": "Native TSNOWP total snow precipitation converted from kg m-2 to liquid-water-equivalent inches; display uses fixed 10:1 snow-depth estimate"
+          },
+          "image": "public/seasonal/sfs/202609/sfs_snowfall_anomaly_202612-202702.jpg"
+        }
+      ],
+      "ensemble_members": 31,
+      "ensemble_expected_members": 31,
+      "ensemble_scope": "NOAA SFS beta2 31-member forecast",
+      "raw_field": "tsnowpsfc / TSNOWP_surface",
+      "raw_units": "kg/m^2",
+      "field": "snowfall_lwe_anomaly",
+      "units": "in",
+      "conversion": "Native TSNOWP total snow precipitation converted from kg m-2 to liquid-water-equivalent inches; display uses fixed 10:1 snow-depth estimate",
+      "source_warning": "NOAA SFS beta2 is an experimental development archive; source fields are schema-validated before publication.",
+      "initialization_start_utc": "2026-09-01T00:00:00Z",
+      "initialization_end_utc": "2026-09-02T00:00:00Z"
+    },
+    {
+      "id": "sfs-beta2-202609-precipitation_anomaly",
+      "init_utc": "2026-09-01T00:00:00Z",
+      "model": "NOAA SFS beta2",
+      "product": "precipitation_anomaly",
+      "status": "rendered",
+      "source": "NOAA SFS beta2 development archive",
+      "source_url": "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/index.html",
+      "source_urls": [
+        "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/forecast/202609/atm_monthly.zarr",
+        "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/reforecast/09/atm_monthly.zarr"
+      ],
+      "aggregation": "31-member forecast mean minus same-calendar-month reforecast mean",
+      "output_dir": "public/seasonal/sfs",
+      "targets": [
+        {
+          "id": "sfs-beta2-202609-precipitation_anomaly-202612",
+          "label": "December 2026",
+          "target_month": "202612",
+          "period_label": "December 2026",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-01-01T00:00:00Z",
+          "lead_month": 3,
+          "field": "precipitation_anomaly",
+          "units": "in",
+          "statistic": "NOAA SFS beta2 31-member ensemble mean anomaly",
+          "aggregation": "Forecast mean minus same-calendar-month reforecast mean",
+          "ensemble_members": 31,
+          "ensemble_expected_members": 31,
+          "ensemble_complete": true,
+          "ensemble_label": "31-member NOAA SFS beta2 mean",
+          "ensemble_scope": "NOAA SFS beta2 forecast members",
+          "source_files": [
+            "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/forecast/202609/atm_monthly.zarr/pratesfc",
+            "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/reforecast/09/atm_monthly.zarr/pratesfc"
+          ],
+          "baseline": {
+            "status": "same_calendar_month_reforecast_mean",
+            "source": "NOAA SFS beta2 same-calendar-month reforecast mean (1991\u20132025)",
+            "years": "1991-2025",
+            "method": "35 same-month initializations \u00d7 11 reforecast members, lead matched to the forecast",
+            "source_urls": [
+              "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/reforecast/09/atm_monthly.zarr/pratesfc"
+            ]
+          },
+          "quality_control": {
+            "registry_version": 1,
+            "product": "precipitation_anomaly",
+            "units": "in",
+            "field": "precipitation_anomaly",
+            "period": "monthly",
+            "total_points": 6413,
+            "finite_points": 6413,
+            "finite_fraction": 1.0,
+            "minimum": -1.473076,
+            "maximum": 5.774399,
+            "p01": -0.55887,
+            "p99": 4.554415,
+            "display": {
+              "minimum": -4.0,
+              "maximum": 4.0,
+              "step": 0.5,
+              "below_fraction": 0.0,
+              "above_fraction": 0.025417,
+              "clipped_fraction": 0.025417
+            },
+            "issues": [
+              {
+                "code": "display_scale_clipping",
+                "severity": "warning",
+                "message": "2.5% of finite cells exceed the fixed display scale."
+              }
+            ],
+            "status": "warning"
+          },
+          "status": "rendered",
+          "derivation": {
+            "method": "monthly_precipitation_total_inches",
+            "description": "Monthly PRATE multiplied by calendar-month seconds and converted from kg m-2 to inches"
+          },
+          "image": "public/seasonal/sfs/202609/sfs_precipitation_anomaly_202612.jpg"
+        },
+        {
+          "id": "sfs-beta2-202609-precipitation_anomaly-202701",
+          "label": "January 2027",
+          "target_month": "202701",
+          "period_label": "January 2027",
+          "valid_start_utc": "2027-01-01T00:00:00Z",
+          "valid_end_utc": "2027-02-01T00:00:00Z",
+          "lead_month": 4,
+          "field": "precipitation_anomaly",
+          "units": "in",
+          "statistic": "NOAA SFS beta2 31-member ensemble mean anomaly",
+          "aggregation": "Forecast mean minus same-calendar-month reforecast mean",
+          "ensemble_members": 31,
+          "ensemble_expected_members": 31,
+          "ensemble_complete": true,
+          "ensemble_label": "31-member NOAA SFS beta2 mean",
+          "ensemble_scope": "NOAA SFS beta2 forecast members",
+          "source_files": [
+            "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/forecast/202609/atm_monthly.zarr/pratesfc",
+            "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/reforecast/09/atm_monthly.zarr/pratesfc"
+          ],
+          "baseline": {
+            "status": "same_calendar_month_reforecast_mean",
+            "source": "NOAA SFS beta2 same-calendar-month reforecast mean (1991\u20132025)",
+            "years": "1991-2025",
+            "method": "35 same-month initializations \u00d7 11 reforecast members, lead matched to the forecast",
+            "source_urls": [
+              "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/reforecast/09/atm_monthly.zarr/pratesfc"
+            ]
+          },
+          "quality_control": {
+            "registry_version": 1,
+            "product": "precipitation_anomaly",
+            "units": "in",
+            "field": "precipitation_anomaly",
+            "period": "monthly",
+            "total_points": 6413,
+            "finite_points": 6413,
+            "finite_fraction": 1.0,
+            "minimum": -0.812155,
+            "maximum": 8.89533,
+            "p01": -0.523049,
+            "p99": 4.968211,
+            "display": {
+              "minimum": -4.0,
+              "maximum": 4.0,
+              "step": 0.5,
+              "below_fraction": 0.0,
+              "above_fraction": 0.02261,
+              "clipped_fraction": 0.02261
+            },
+            "issues": [
+              {
+                "code": "display_scale_clipping",
+                "severity": "warning",
+                "message": "2.3% of finite cells exceed the fixed display scale."
+              }
+            ],
+            "status": "warning"
+          },
+          "status": "rendered",
+          "derivation": {
+            "method": "monthly_precipitation_total_inches",
+            "description": "Monthly PRATE multiplied by calendar-month seconds and converted from kg m-2 to inches"
+          },
+          "image": "public/seasonal/sfs/202609/sfs_precipitation_anomaly_202701.jpg"
+        },
+        {
+          "id": "sfs-beta2-202609-precipitation_anomaly-202702",
+          "label": "February 2027",
+          "target_month": "202702",
+          "period_label": "February 2027",
+          "valid_start_utc": "2027-02-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": 5,
+          "field": "precipitation_anomaly",
+          "units": "in",
+          "statistic": "NOAA SFS beta2 31-member ensemble mean anomaly",
+          "aggregation": "Forecast mean minus same-calendar-month reforecast mean",
+          "ensemble_members": 31,
+          "ensemble_expected_members": 31,
+          "ensemble_complete": true,
+          "ensemble_label": "31-member NOAA SFS beta2 mean",
+          "ensemble_scope": "NOAA SFS beta2 forecast members",
+          "source_files": [
+            "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/forecast/202609/atm_monthly.zarr/pratesfc",
+            "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/reforecast/09/atm_monthly.zarr/pratesfc"
+          ],
+          "baseline": {
+            "status": "same_calendar_month_reforecast_mean",
+            "source": "NOAA SFS beta2 same-calendar-month reforecast mean (1991\u20132025)",
+            "years": "1991-2025",
+            "method": "35 same-month initializations \u00d7 11 reforecast members, lead matched to the forecast",
+            "source_urls": [
+              "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/reforecast/09/atm_monthly.zarr/pratesfc"
+            ]
+          },
+          "quality_control": {
+            "registry_version": 1,
+            "product": "precipitation_anomaly",
+            "units": "in",
+            "field": "precipitation_anomaly",
+            "period": "monthly",
+            "total_points": 6413,
+            "finite_points": 6413,
+            "finite_fraction": 1.0,
+            "minimum": -1.989624,
+            "maximum": 6.280149,
+            "p01": -0.990472,
+            "p99": 3.67263,
+            "display": {
+              "minimum": -4.0,
+              "maximum": 4.0,
+              "step": 0.5,
+              "below_fraction": 0.0,
+              "above_fraction": 0.007797,
+              "clipped_fraction": 0.007797
+            },
+            "issues": [],
+            "status": "passed"
+          },
+          "status": "rendered",
+          "derivation": {
+            "method": "monthly_precipitation_total_inches",
+            "description": "Monthly PRATE multiplied by calendar-month seconds and converted from kg m-2 to inches"
+          },
+          "image": "public/seasonal/sfs/202609/sfs_precipitation_anomaly_202702.jpg"
+        },
+        {
+          "id": "sfs-beta2-202609-precipitation_anomaly-202612-202702",
+          "label": "DJF 2026\u201327",
+          "target_month": "202612-202702",
+          "period_label": "DJF 2026\u201327",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": "3-5",
+          "field": "precipitation_anomaly",
+          "units": "in",
+          "statistic": "NOAA SFS beta2 31-member ensemble mean anomaly",
+          "aggregation": "Forecast mean minus same-calendar-month reforecast mean",
+          "ensemble_members": 31,
+          "ensemble_expected_members": 31,
+          "ensemble_complete": true,
+          "ensemble_label": "31-member NOAA SFS beta2 mean",
+          "ensemble_scope": "NOAA SFS beta2 forecast members",
+          "source_files": [
+            "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/forecast/202609/atm_monthly.zarr/pratesfc",
+            "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/reforecast/09/atm_monthly.zarr/pratesfc"
+          ],
+          "baseline": {
+            "status": "same_calendar_month_reforecast_mean",
+            "source": "NOAA SFS beta2 same-calendar-month reforecast mean (1991\u20132025)",
+            "years": "1991-2025",
+            "method": "35 same-month initializations \u00d7 11 reforecast members, lead matched to the forecast",
+            "source_urls": [
+              "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/reforecast/09/atm_monthly.zarr/pratesfc"
+            ]
+          },
+          "quality_control": {
+            "registry_version": 1,
+            "product": "precipitation_anomaly",
+            "units": "in",
+            "field": "precipitation_anomaly",
+            "period": "seasonal",
+            "total_points": 6413,
+            "finite_points": 6413,
+            "finite_fraction": 1.0,
+            "minimum": -3.863604,
+            "maximum": 18.835127,
+            "p01": -1.749214,
+            "p99": 12.266141,
+            "display": {
+              "minimum": -8.0,
+              "maximum": 8.0,
+              "step": 1.0,
+              "below_fraction": 0.0,
+              "above_fraction": 0.111648,
+              "clipped_fraction": 0.111648
+            },
+            "issues": [
+              {
+                "code": "display_scale_clipping",
+                "severity": "warning",
+                "message": "11.2% of finite cells exceed the fixed display scale."
+              }
+            ],
+            "status": "warning"
+          },
+          "status": "rendered",
+          "derivation": {
+            "method": "monthly_precipitation_total_inches",
+            "description": "Monthly PRATE multiplied by calendar-month seconds and converted from kg m-2 to inches"
+          },
+          "image": "public/seasonal/sfs/202609/sfs_precipitation_anomaly_202612-202702.jpg"
+        }
+      ],
+      "ensemble_members": 31,
+      "ensemble_expected_members": 31,
+      "ensemble_scope": "NOAA SFS beta2 31-member forecast",
+      "raw_field": "pratesfc / PRATE_surface",
+      "raw_units": "kg/m^2/s",
+      "field": "precipitation_anomaly",
+      "units": "in",
+      "conversion": "Monthly PRATE multiplied by calendar-month seconds and converted from kg m-2 to inches",
+      "source_warning": "NOAA SFS beta2 is an experimental development archive; source fields are schema-validated before publication.",
+      "initialization_start_utc": "2026-09-01T00:00:00Z",
+      "initialization_end_utc": "2026-09-02T00:00:00Z"
+    },
+    {
+      "id": "sfs-beta2-202609-mslp_anomaly",
+      "init_utc": "2026-09-01T00:00:00Z",
+      "model": "NOAA SFS beta2",
+      "product": "mslp_anomaly",
+      "status": "rendered",
+      "source": "NOAA SFS beta2 development archive",
+      "source_url": "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/index.html",
+      "source_urls": [
+        "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/forecast/202609/atm_monthly.zarr",
+        "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/reforecast/09/atm_monthly.zarr"
+      ],
+      "aggregation": "31-member forecast mean minus same-calendar-month reforecast mean",
+      "output_dir": "public/seasonal/sfs",
+      "targets": [
+        {
+          "id": "sfs-beta2-202609-mslp_anomaly-202612",
+          "label": "December 2026",
+          "target_month": "202612",
+          "period_label": "December 2026",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-01-01T00:00:00Z",
+          "lead_month": 3,
+          "field": "mslp_anomaly",
+          "units": "hPa",
+          "statistic": "NOAA SFS beta2 31-member ensemble mean anomaly",
+          "aggregation": "Forecast mean minus same-calendar-month reforecast mean",
+          "ensemble_members": 31,
+          "ensemble_expected_members": 31,
+          "ensemble_complete": true,
+          "ensemble_label": "31-member NOAA SFS beta2 mean",
+          "ensemble_scope": "NOAA SFS beta2 forecast members",
+          "source_files": [
+            "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/forecast/202609/atm_monthly.zarr/prmsl",
+            "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/reforecast/09/atm_monthly.zarr/prmsl"
+          ],
+          "baseline": {
+            "status": "same_calendar_month_reforecast_mean",
+            "source": "NOAA SFS beta2 same-calendar-month reforecast mean (1991\u20132025)",
+            "years": "1991-2025",
+            "method": "35 same-month initializations \u00d7 11 reforecast members, lead matched to the forecast",
+            "source_urls": [
+              "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/reforecast/09/atm_monthly.zarr/prmsl"
+            ]
+          },
+          "quality_control": {
+            "registry_version": 1,
+            "product": "mslp_anomaly",
+            "units": "hPa",
+            "field": "mslp_anomaly",
+            "period": "monthly",
+            "total_points": 6413,
+            "finite_points": 6413,
+            "finite_fraction": 1.0,
+            "minimum": -5.203621,
+            "maximum": -0.615284,
+            "p01": -4.748493,
+            "p99": -1.269829,
+            "display": {
+              "minimum": -10.0,
+              "maximum": 10.0,
+              "step": 1.0,
+              "below_fraction": 0.0,
+              "above_fraction": 0.0,
+              "clipped_fraction": 0.0
+            },
+            "issues": [],
+            "status": "passed"
+          },
+          "status": "rendered",
+          "derivation": {
+            "method": "pascals_to_hectopascals",
+            "description": "PRMSL anomaly divided by 100 to convert Pa to hPa"
+          },
+          "image": "public/seasonal/sfs/202609/sfs_mslp_anomaly_202612.jpg"
+        },
+        {
+          "id": "sfs-beta2-202609-mslp_anomaly-202701",
+          "label": "January 2027",
+          "target_month": "202701",
+          "period_label": "January 2027",
+          "valid_start_utc": "2027-01-01T00:00:00Z",
+          "valid_end_utc": "2027-02-01T00:00:00Z",
+          "lead_month": 4,
+          "field": "mslp_anomaly",
+          "units": "hPa",
+          "statistic": "NOAA SFS beta2 31-member ensemble mean anomaly",
+          "aggregation": "Forecast mean minus same-calendar-month reforecast mean",
+          "ensemble_members": 31,
+          "ensemble_expected_members": 31,
+          "ensemble_complete": true,
+          "ensemble_label": "31-member NOAA SFS beta2 mean",
+          "ensemble_scope": "NOAA SFS beta2 forecast members",
+          "source_files": [
+            "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/forecast/202609/atm_monthly.zarr/prmsl",
+            "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/reforecast/09/atm_monthly.zarr/prmsl"
+          ],
+          "baseline": {
+            "status": "same_calendar_month_reforecast_mean",
+            "source": "NOAA SFS beta2 same-calendar-month reforecast mean (1991\u20132025)",
+            "years": "1991-2025",
+            "method": "35 same-month initializations \u00d7 11 reforecast members, lead matched to the forecast",
+            "source_urls": [
+              "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/reforecast/09/atm_monthly.zarr/prmsl"
+            ]
+          },
+          "quality_control": {
+            "registry_version": 1,
+            "product": "mslp_anomaly",
+            "units": "hPa",
+            "field": "mslp_anomaly",
+            "period": "monthly",
+            "total_points": 6413,
+            "finite_points": 6413,
+            "finite_fraction": 1.0,
+            "minimum": -7.340146,
+            "maximum": -0.066122,
+            "p01": -6.541493,
+            "p99": -0.457204,
+            "display": {
+              "minimum": -10.0,
+              "maximum": 10.0,
+              "step": 1.0,
+              "below_fraction": 0.0,
+              "above_fraction": 0.0,
+              "clipped_fraction": 0.0
+            },
+            "issues": [],
+            "status": "passed"
+          },
+          "status": "rendered",
+          "derivation": {
+            "method": "pascals_to_hectopascals",
+            "description": "PRMSL anomaly divided by 100 to convert Pa to hPa"
+          },
+          "image": "public/seasonal/sfs/202609/sfs_mslp_anomaly_202701.jpg"
+        },
+        {
+          "id": "sfs-beta2-202609-mslp_anomaly-202702",
+          "label": "February 2027",
+          "target_month": "202702",
+          "period_label": "February 2027",
+          "valid_start_utc": "2027-02-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": 5,
+          "field": "mslp_anomaly",
+          "units": "hPa",
+          "statistic": "NOAA SFS beta2 31-member ensemble mean anomaly",
+          "aggregation": "Forecast mean minus same-calendar-month reforecast mean",
+          "ensemble_members": 31,
+          "ensemble_expected_members": 31,
+          "ensemble_complete": true,
+          "ensemble_label": "31-member NOAA SFS beta2 mean",
+          "ensemble_scope": "NOAA SFS beta2 forecast members",
+          "source_files": [
+            "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/forecast/202609/atm_monthly.zarr/prmsl",
+            "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/reforecast/09/atm_monthly.zarr/prmsl"
+          ],
+          "baseline": {
+            "status": "same_calendar_month_reforecast_mean",
+            "source": "NOAA SFS beta2 same-calendar-month reforecast mean (1991\u20132025)",
+            "years": "1991-2025",
+            "method": "35 same-month initializations \u00d7 11 reforecast members, lead matched to the forecast",
+            "source_urls": [
+              "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/reforecast/09/atm_monthly.zarr/prmsl"
+            ]
+          },
+          "quality_control": {
+            "registry_version": 1,
+            "product": "mslp_anomaly",
+            "units": "hPa",
+            "field": "mslp_anomaly",
+            "period": "monthly",
+            "total_points": 6413,
+            "finite_points": 6413,
+            "finite_fraction": 1.0,
+            "minimum": -6.327627,
+            "maximum": 0.175212,
+            "p01": -5.47431,
+            "p99": -0.040733,
+            "display": {
+              "minimum": -10.0,
+              "maximum": 10.0,
+              "step": 1.0,
+              "below_fraction": 0.0,
+              "above_fraction": 0.0,
+              "clipped_fraction": 0.0
+            },
+            "issues": [],
+            "status": "passed"
+          },
+          "status": "rendered",
+          "derivation": {
+            "method": "pascals_to_hectopascals",
+            "description": "PRMSL anomaly divided by 100 to convert Pa to hPa"
+          },
+          "image": "public/seasonal/sfs/202609/sfs_mslp_anomaly_202702.jpg"
+        },
+        {
+          "id": "sfs-beta2-202609-mslp_anomaly-202612-202702",
+          "label": "DJF 2026\u201327",
+          "target_month": "202612-202702",
+          "period_label": "DJF 2026\u201327",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": "3-5",
+          "field": "mslp_anomaly",
+          "units": "hPa",
+          "statistic": "NOAA SFS beta2 31-member ensemble mean anomaly",
+          "aggregation": "Forecast mean minus same-calendar-month reforecast mean",
+          "ensemble_members": 31,
+          "ensemble_expected_members": 31,
+          "ensemble_complete": true,
+          "ensemble_label": "31-member NOAA SFS beta2 mean",
+          "ensemble_scope": "NOAA SFS beta2 forecast members",
+          "source_files": [
+            "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/forecast/202609/atm_monthly.zarr/prmsl",
+            "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/reforecast/09/atm_monthly.zarr/prmsl"
+          ],
+          "baseline": {
+            "status": "same_calendar_month_reforecast_mean",
+            "source": "NOAA SFS beta2 same-calendar-month reforecast mean (1991\u20132025)",
+            "years": "1991-2025",
+            "method": "35 same-month initializations \u00d7 11 reforecast members, lead matched to the forecast",
+            "source_urls": [
+              "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/reforecast/09/atm_monthly.zarr/prmsl"
+            ]
+          },
+          "quality_control": {
+            "registry_version": 1,
+            "product": "mslp_anomaly",
+            "units": "hPa",
+            "field": "mslp_anomaly",
+            "period": "seasonal",
+            "total_points": 6413,
+            "finite_points": 6413,
+            "finite_fraction": 1.0,
+            "minimum": -6.245608,
+            "maximum": -0.526772,
+            "p01": -5.553157,
+            "p99": -0.875079,
+            "display": {
+              "minimum": -10.0,
+              "maximum": 10.0,
+              "step": 1.0,
+              "below_fraction": 0.0,
+              "above_fraction": 0.0,
+              "clipped_fraction": 0.0
+            },
+            "issues": [],
+            "status": "passed"
+          },
+          "status": "rendered",
+          "derivation": {
+            "method": "pascals_to_hectopascals",
+            "description": "PRMSL anomaly divided by 100 to convert Pa to hPa"
+          },
+          "image": "public/seasonal/sfs/202609/sfs_mslp_anomaly_202612-202702.jpg"
+        }
+      ],
+      "ensemble_members": 31,
+      "ensemble_expected_members": 31,
+      "ensemble_scope": "NOAA SFS beta2 31-member forecast",
+      "raw_field": "prmsl / PRMSL_meansealevel",
+      "raw_units": "Pa",
+      "field": "mslp_anomaly",
+      "units": "hPa",
+      "conversion": "PRMSL anomaly divided by 100 to convert Pa to hPa",
+      "source_warning": "NOAA SFS beta2 is an experimental development archive; source fields are schema-validated before publication.",
+      "initialization_start_utc": "2026-09-01T00:00:00Z",
+      "initialization_end_utc": "2026-09-02T00:00:00Z"
+    },
+    {
+      "id": "sfs-beta2-202609-850mb_temperature_anomaly",
+      "init_utc": "2026-09-01T00:00:00Z",
+      "model": "NOAA SFS beta2",
+      "product": "850mb_temperature_anomaly",
+      "status": "rendered",
+      "source": "NOAA SFS beta2 development archive",
+      "source_url": "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/index.html",
+      "source_urls": [
+        "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/forecast/202609/atm_monthly.zarr",
+        "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/reforecast/09/atm_monthly.zarr"
+      ],
+      "aggregation": "31-member forecast mean minus same-calendar-month reforecast mean",
+      "output_dir": "public/seasonal/sfs",
+      "targets": [
+        {
+          "id": "sfs-beta2-202609-850mb_temperature_anomaly-202612",
+          "label": "December 2026",
+          "target_month": "202612",
+          "period_label": "December 2026",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-01-01T00:00:00Z",
+          "lead_month": 3,
+          "field": "t850_anomaly",
+          "units": "\u00b0C",
+          "statistic": "NOAA SFS beta2 31-member ensemble mean anomaly",
+          "aggregation": "Forecast mean minus same-calendar-month reforecast mean",
+          "ensemble_members": 31,
+          "ensemble_expected_members": 31,
+          "ensemble_complete": true,
+          "ensemble_label": "31-member NOAA SFS beta2 mean",
+          "ensemble_scope": "NOAA SFS beta2 forecast members",
+          "source_files": [
+            "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/forecast/202609/atm_monthly.zarr/t850",
+            "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/reforecast/09/atm_monthly.zarr/t850"
+          ],
+          "baseline": {
+            "status": "same_calendar_month_reforecast_mean",
+            "source": "NOAA SFS beta2 same-calendar-month reforecast mean (1991\u20132025)",
+            "years": "1991-2025",
+            "method": "35 same-month initializations \u00d7 11 reforecast members, lead matched to the forecast",
+            "source_urls": [
+              "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/reforecast/09/atm_monthly.zarr/t850"
+            ]
+          },
+          "quality_control": {
+            "registry_version": 1,
+            "product": "850mb_temperature_anomaly",
+            "units": "\u00b0C",
+            "field": "t850_anomaly",
+            "period": "monthly",
+            "total_points": 6413,
+            "finite_points": 6413,
+            "finite_fraction": 1.0,
+            "minimum": -1.509126,
+            "maximum": 3.917242,
+            "p01": -1.430422,
+            "p99": 3.685416,
+            "display": {
+              "minimum": -6.0,
+              "maximum": 6.0,
+              "step": 0.5,
+              "below_fraction": 0.0,
+              "above_fraction": 0.0,
+              "clipped_fraction": 0.0
+            },
+            "issues": [],
+            "status": "passed"
+          },
+          "status": "rendered",
+          "image": "public/seasonal/sfs/202609/sfs_850mb_temperature_anomaly_202612.jpg"
+        },
+        {
+          "id": "sfs-beta2-202609-850mb_temperature_anomaly-202701",
+          "label": "January 2027",
+          "target_month": "202701",
+          "period_label": "January 2027",
+          "valid_start_utc": "2027-01-01T00:00:00Z",
+          "valid_end_utc": "2027-02-01T00:00:00Z",
+          "lead_month": 4,
+          "field": "t850_anomaly",
+          "units": "\u00b0C",
+          "statistic": "NOAA SFS beta2 31-member ensemble mean anomaly",
+          "aggregation": "Forecast mean minus same-calendar-month reforecast mean",
+          "ensemble_members": 31,
+          "ensemble_expected_members": 31,
+          "ensemble_complete": true,
+          "ensemble_label": "31-member NOAA SFS beta2 mean",
+          "ensemble_scope": "NOAA SFS beta2 forecast members",
+          "source_files": [
+            "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/forecast/202609/atm_monthly.zarr/t850",
+            "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/reforecast/09/atm_monthly.zarr/t850"
+          ],
+          "baseline": {
+            "status": "same_calendar_month_reforecast_mean",
+            "source": "NOAA SFS beta2 same-calendar-month reforecast mean (1991\u20132025)",
+            "years": "1991-2025",
+            "method": "35 same-month initializations \u00d7 11 reforecast members, lead matched to the forecast",
+            "source_urls": [
+              "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/reforecast/09/atm_monthly.zarr/t850"
+            ]
+          },
+          "quality_control": {
+            "registry_version": 1,
+            "product": "850mb_temperature_anomaly",
+            "units": "\u00b0C",
+            "field": "t850_anomaly",
+            "period": "monthly",
+            "total_points": 6413,
+            "finite_points": 6413,
+            "finite_fraction": 1.0,
+            "minimum": -2.273921,
+            "maximum": 4.116426,
+            "p01": -2.191885,
+            "p99": 3.742969,
+            "display": {
+              "minimum": -6.0,
+              "maximum": 6.0,
+              "step": 0.5,
+              "below_fraction": 0.0,
+              "above_fraction": 0.0,
+              "clipped_fraction": 0.0
+            },
+            "issues": [],
+            "status": "passed"
+          },
+          "status": "rendered",
+          "image": "public/seasonal/sfs/202609/sfs_850mb_temperature_anomaly_202701.jpg"
+        },
+        {
+          "id": "sfs-beta2-202609-850mb_temperature_anomaly-202702",
+          "label": "February 2027",
+          "target_month": "202702",
+          "period_label": "February 2027",
+          "valid_start_utc": "2027-02-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": 5,
+          "field": "t850_anomaly",
+          "units": "\u00b0C",
+          "statistic": "NOAA SFS beta2 31-member ensemble mean anomaly",
+          "aggregation": "Forecast mean minus same-calendar-month reforecast mean",
+          "ensemble_members": 31,
+          "ensemble_expected_members": 31,
+          "ensemble_complete": true,
+          "ensemble_label": "31-member NOAA SFS beta2 mean",
+          "ensemble_scope": "NOAA SFS beta2 forecast members",
+          "source_files": [
+            "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/forecast/202609/atm_monthly.zarr/t850",
+            "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/reforecast/09/atm_monthly.zarr/t850"
+          ],
+          "baseline": {
+            "status": "same_calendar_month_reforecast_mean",
+            "source": "NOAA SFS beta2 same-calendar-month reforecast mean (1991\u20132025)",
+            "years": "1991-2025",
+            "method": "35 same-month initializations \u00d7 11 reforecast members, lead matched to the forecast",
+            "source_urls": [
+              "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/reforecast/09/atm_monthly.zarr/t850"
+            ]
+          },
+          "quality_control": {
+            "registry_version": 1,
+            "product": "850mb_temperature_anomaly",
+            "units": "\u00b0C",
+            "field": "t850_anomaly",
+            "period": "monthly",
+            "total_points": 6413,
+            "finite_points": 6413,
+            "finite_fraction": 1.0,
+            "minimum": -2.302275,
+            "maximum": 4.623532,
+            "p01": -2.20217,
+            "p99": 4.194879,
+            "display": {
+              "minimum": -6.0,
+              "maximum": 6.0,
+              "step": 0.5,
+              "below_fraction": 0.0,
+              "above_fraction": 0.0,
+              "clipped_fraction": 0.0
+            },
+            "issues": [],
+            "status": "passed"
+          },
+          "status": "rendered",
+          "image": "public/seasonal/sfs/202609/sfs_850mb_temperature_anomaly_202702.jpg"
+        },
+        {
+          "id": "sfs-beta2-202609-850mb_temperature_anomaly-202612-202702",
+          "label": "DJF 2026\u201327",
+          "target_month": "202612-202702",
+          "period_label": "DJF 2026\u201327",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": "3-5",
+          "field": "t850_anomaly",
+          "units": "\u00b0C",
+          "statistic": "NOAA SFS beta2 31-member ensemble mean anomaly",
+          "aggregation": "Forecast mean minus same-calendar-month reforecast mean",
+          "ensemble_members": 31,
+          "ensemble_expected_members": 31,
+          "ensemble_complete": true,
+          "ensemble_label": "31-member NOAA SFS beta2 mean",
+          "ensemble_scope": "NOAA SFS beta2 forecast members",
+          "source_files": [
+            "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/forecast/202609/atm_monthly.zarr/t850",
+            "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/reforecast/09/atm_monthly.zarr/t850"
+          ],
+          "baseline": {
+            "status": "same_calendar_month_reforecast_mean",
+            "source": "NOAA SFS beta2 same-calendar-month reforecast mean (1991\u20132025)",
+            "years": "1991-2025",
+            "method": "35 same-month initializations \u00d7 11 reforecast members, lead matched to the forecast",
+            "source_urls": [
+              "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/reforecast/09/atm_monthly.zarr/t850"
+            ]
+          },
+          "quality_control": {
+            "registry_version": 1,
+            "product": "850mb_temperature_anomaly",
+            "units": "\u00b0C",
+            "field": "t850_anomaly",
+            "period": "seasonal",
+            "total_points": 6413,
+            "finite_points": 6413,
+            "finite_fraction": 1.0,
+            "minimum": -2.010764,
+            "maximum": 4.202713,
+            "p01": -1.918505,
+            "p99": 3.86203,
+            "display": {
+              "minimum": -6.0,
+              "maximum": 6.0,
+              "step": 0.5,
+              "below_fraction": 0.0,
+              "above_fraction": 0.0,
+              "clipped_fraction": 0.0
+            },
+            "issues": [],
+            "status": "passed"
+          },
+          "status": "rendered",
+          "image": "public/seasonal/sfs/202609/sfs_850mb_temperature_anomaly_202612-202702.jpg"
+        }
+      ],
+      "ensemble_members": 31,
+      "ensemble_expected_members": 31,
+      "ensemble_scope": "NOAA SFS beta2 31-member forecast",
+      "raw_field": "t850 / TMP_850mb",
+      "raw_units": "K",
+      "field": "t850_anomaly",
+      "units": "\u00b0C",
+      "conversion": "Forecast-minus-reforecast anomaly in native source units",
+      "source_warning": "NOAA SFS beta2 is an experimental development archive; source fields are schema-validated before publication.",
+      "initialization_start_utc": "2026-09-01T00:00:00Z",
+      "initialization_end_utc": "2026-09-02T00:00:00Z"
+    },
+    {
+      "id": "sfs-beta2-202609-500mb_height_anomaly",
+      "init_utc": "2026-09-01T00:00:00Z",
+      "model": "NOAA SFS beta2",
+      "product": "500mb_height_anomaly",
+      "status": "rendered",
+      "source": "NOAA SFS beta2 development archive",
+      "source_url": "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/index.html",
+      "source_urls": [
+        "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/forecast/202609/atm_monthly.zarr",
+        "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/reforecast/09/atm_monthly.zarr"
+      ],
+      "aggregation": "31-member forecast mean minus same-calendar-month reforecast mean",
+      "output_dir": "public/seasonal/sfs",
+      "targets": [
+        {
+          "id": "sfs-beta2-202609-500mb_height_anomaly-202612",
+          "label": "December 2026",
+          "target_month": "202612",
+          "period_label": "December 2026",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-01-01T00:00:00Z",
+          "lead_month": 3,
+          "field": "z500_anomaly",
+          "units": "m",
+          "statistic": "NOAA SFS beta2 31-member ensemble mean anomaly",
+          "aggregation": "Forecast mean minus same-calendar-month reforecast mean",
+          "ensemble_members": 31,
+          "ensemble_expected_members": 31,
+          "ensemble_complete": true,
+          "ensemble_label": "31-member NOAA SFS beta2 mean",
+          "ensemble_scope": "NOAA SFS beta2 forecast members",
+          "source_files": [
+            "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/forecast/202609/atm_monthly.zarr/z500",
+            "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/reforecast/09/atm_monthly.zarr/z500"
+          ],
+          "baseline": {
+            "status": "same_calendar_month_reforecast_mean",
+            "source": "NOAA SFS beta2 same-calendar-month reforecast mean (1991\u20132025)",
+            "years": "1991-2025",
+            "method": "35 same-month initializations \u00d7 11 reforecast members, lead matched to the forecast",
+            "source_urls": [
+              "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/reforecast/09/atm_monthly.zarr/z500"
+            ]
+          },
+          "quality_control": {
+            "registry_version": 1,
+            "product": "500mb_height_anomaly",
+            "units": "m",
+            "field": "z500_anomaly",
+            "period": "monthly",
+            "total_points": 38227,
+            "finite_points": 38227,
+            "finite_fraction": 1.0,
+            "minimum": -83.66273,
+            "maximum": 95.039872,
+            "p01": -76.414991,
+            "p99": 91.681508,
+            "display": {
+              "minimum": -120.0,
+              "maximum": 120.0,
+              "breakpoints": [
+                -120,
+                -110,
+                -100,
+                -90,
+                -80,
+                -70,
+                -60,
+                -50,
+                -40,
+                -30,
+                -20,
+                -10,
+                0,
+                10,
+                20,
+                30,
+                40,
+                50,
+                60,
+                70,
+                80,
+                90,
+                100,
+                110,
+                120
+              ],
+              "below_fraction": 0.0,
+              "above_fraction": 0.0,
+              "clipped_fraction": 0.0
+            },
+            "issues": [],
+            "status": "passed"
+          },
+          "status": "rendered",
+          "image": "public/seasonal/sfs/202609/sfs_500mb_height_anomaly_202612.jpg"
+        },
+        {
+          "id": "sfs-beta2-202609-500mb_height_anomaly-202701",
+          "label": "January 2027",
+          "target_month": "202701",
+          "period_label": "January 2027",
+          "valid_start_utc": "2027-01-01T00:00:00Z",
+          "valid_end_utc": "2027-02-01T00:00:00Z",
+          "lead_month": 4,
+          "field": "z500_anomaly",
+          "units": "m",
+          "statistic": "NOAA SFS beta2 31-member ensemble mean anomaly",
+          "aggregation": "Forecast mean minus same-calendar-month reforecast mean",
+          "ensemble_members": 31,
+          "ensemble_expected_members": 31,
+          "ensemble_complete": true,
+          "ensemble_label": "31-member NOAA SFS beta2 mean",
+          "ensemble_scope": "NOAA SFS beta2 forecast members",
+          "source_files": [
+            "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/forecast/202609/atm_monthly.zarr/z500",
+            "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/reforecast/09/atm_monthly.zarr/z500"
+          ],
+          "baseline": {
+            "status": "same_calendar_month_reforecast_mean",
+            "source": "NOAA SFS beta2 same-calendar-month reforecast mean (1991\u20132025)",
+            "years": "1991-2025",
+            "method": "35 same-month initializations \u00d7 11 reforecast members, lead matched to the forecast",
+            "source_urls": [
+              "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/reforecast/09/atm_monthly.zarr/z500"
+            ]
+          },
+          "quality_control": {
+            "registry_version": 1,
+            "product": "500mb_height_anomaly",
+            "units": "m",
+            "field": "z500_anomaly",
+            "period": "monthly",
+            "total_points": 38227,
+            "finite_points": 38227,
+            "finite_fraction": 1.0,
+            "minimum": -116.643559,
+            "maximum": 102.550804,
+            "p01": -108.522906,
+            "p99": 98.746417,
+            "display": {
+              "minimum": -120.0,
+              "maximum": 120.0,
+              "breakpoints": [
+                -120,
+                -110,
+                -100,
+                -90,
+                -80,
+                -70,
+                -60,
+                -50,
+                -40,
+                -30,
+                -20,
+                -10,
+                0,
+                10,
+                20,
+                30,
+                40,
+                50,
+                60,
+                70,
+                80,
+                90,
+                100,
+                110,
+                120
+              ],
+              "below_fraction": 0.0,
+              "above_fraction": 0.0,
+              "clipped_fraction": 0.0
+            },
+            "issues": [],
+            "status": "passed"
+          },
+          "status": "rendered",
+          "image": "public/seasonal/sfs/202609/sfs_500mb_height_anomaly_202701.jpg"
+        },
+        {
+          "id": "sfs-beta2-202609-500mb_height_anomaly-202702",
+          "label": "February 2027",
+          "target_month": "202702",
+          "period_label": "February 2027",
+          "valid_start_utc": "2027-02-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": 5,
+          "field": "z500_anomaly",
+          "units": "m",
+          "statistic": "NOAA SFS beta2 31-member ensemble mean anomaly",
+          "aggregation": "Forecast mean minus same-calendar-month reforecast mean",
+          "ensemble_members": 31,
+          "ensemble_expected_members": 31,
+          "ensemble_complete": true,
+          "ensemble_label": "31-member NOAA SFS beta2 mean",
+          "ensemble_scope": "NOAA SFS beta2 forecast members",
+          "source_files": [
+            "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/forecast/202609/atm_monthly.zarr/z500",
+            "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/reforecast/09/atm_monthly.zarr/z500"
+          ],
+          "baseline": {
+            "status": "same_calendar_month_reforecast_mean",
+            "source": "NOAA SFS beta2 same-calendar-month reforecast mean (1991\u20132025)",
+            "years": "1991-2025",
+            "method": "35 same-month initializations \u00d7 11 reforecast members, lead matched to the forecast",
+            "source_urls": [
+              "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/reforecast/09/atm_monthly.zarr/z500"
+            ]
+          },
+          "quality_control": {
+            "registry_version": 1,
+            "product": "500mb_height_anomaly",
+            "units": "m",
+            "field": "z500_anomaly",
+            "period": "monthly",
+            "total_points": 38227,
+            "finite_points": 38227,
+            "finite_fraction": 1.0,
+            "minimum": -119.208948,
+            "maximum": 119.316431,
+            "p01": -111.194696,
+            "p99": 114.520936,
+            "display": {
+              "minimum": -120.0,
+              "maximum": 120.0,
+              "breakpoints": [
+                -120,
+                -110,
+                -100,
+                -90,
+                -80,
+                -70,
+                -60,
+                -50,
+                -40,
+                -30,
+                -20,
+                -10,
+                0,
+                10,
+                20,
+                30,
+                40,
+                50,
+                60,
+                70,
+                80,
+                90,
+                100,
+                110,
+                120
+              ],
+              "below_fraction": 0.0,
+              "above_fraction": 0.0,
+              "clipped_fraction": 0.0
+            },
+            "issues": [],
+            "status": "passed"
+          },
+          "status": "rendered",
+          "image": "public/seasonal/sfs/202609/sfs_500mb_height_anomaly_202702.jpg"
+        },
+        {
+          "id": "sfs-beta2-202609-500mb_height_anomaly-202612-202702",
+          "label": "DJF 2026\u201327",
+          "target_month": "202612-202702",
+          "period_label": "DJF 2026\u201327",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": "3-5",
+          "field": "z500_anomaly",
+          "units": "m",
+          "statistic": "NOAA SFS beta2 31-member ensemble mean anomaly",
+          "aggregation": "Forecast mean minus same-calendar-month reforecast mean",
+          "ensemble_members": 31,
+          "ensemble_expected_members": 31,
+          "ensemble_complete": true,
+          "ensemble_label": "31-member NOAA SFS beta2 mean",
+          "ensemble_scope": "NOAA SFS beta2 forecast members",
+          "source_files": [
+            "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/forecast/202609/atm_monthly.zarr/z500",
+            "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/reforecast/09/atm_monthly.zarr/z500"
+          ],
+          "baseline": {
+            "status": "same_calendar_month_reforecast_mean",
+            "source": "NOAA SFS beta2 same-calendar-month reforecast mean (1991\u20132025)",
+            "years": "1991-2025",
+            "method": "35 same-month initializations \u00d7 11 reforecast members, lead matched to the forecast",
+            "source_urls": [
+              "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/reforecast/09/atm_monthly.zarr/z500"
+            ]
+          },
+          "quality_control": {
+            "registry_version": 1,
+            "product": "500mb_height_anomaly",
+            "units": "m",
+            "field": "z500_anomaly",
+            "period": "seasonal",
+            "total_points": 38227,
+            "finite_points": 38227,
+            "finite_fraction": 1.0,
+            "minimum": -105.635951,
+            "maximum": 105.005046,
+            "p01": -97.83999,
+            "p99": 100.818662,
+            "display": {
+              "minimum": -120.0,
+              "maximum": 120.0,
+              "breakpoints": [
+                -120,
+                -110,
+                -100,
+                -90,
+                -80,
+                -70,
+                -60,
+                -50,
+                -40,
+                -30,
+                -20,
+                -10,
+                0,
+                10,
+                20,
+                30,
+                40,
+                50,
+                60,
+                70,
+                80,
+                90,
+                100,
+                110,
+                120
+              ],
+              "below_fraction": 0.0,
+              "above_fraction": 0.0,
+              "clipped_fraction": 0.0
+            },
+            "issues": [],
+            "status": "passed"
+          },
+          "status": "rendered",
+          "image": "public/seasonal/sfs/202609/sfs_500mb_height_anomaly_202612-202702.jpg"
+        }
+      ],
+      "ensemble_members": 31,
+      "ensemble_expected_members": 31,
+      "ensemble_scope": "NOAA SFS beta2 31-member forecast",
+      "raw_field": "z500 / HGT_500mb",
+      "raw_units": "m",
+      "field": "z500_anomaly",
+      "units": "m",
+      "conversion": "Forecast-minus-reforecast anomaly in native source units",
+      "source_warning": "NOAA SFS beta2 is an experimental development archive; source fields are schema-validated before publication.",
+      "initialization_start_utc": "2026-09-01T00:00:00Z",
+      "initialization_end_utc": "2026-09-02T00:00:00Z"
+    },
+    {
+      "id": "sfs-beta2-202609-2m_temperature_anomaly",
+      "init_utc": "2026-09-01T00:00:00Z",
+      "model": "NOAA SFS beta2",
+      "product": "2m_temperature_anomaly",
+      "status": "rendered",
+      "source": "NOAA SFS beta2 development archive",
+      "source_url": "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/index.html",
+      "source_urls": [
+        "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/forecast/202609/atm_monthly.zarr",
+        "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/reforecast/09/atm_monthly.zarr"
+      ],
+      "aggregation": "31-member forecast mean minus same-calendar-month reforecast mean",
+      "output_dir": "public/seasonal/sfs",
+      "targets": [
+        {
+          "id": "sfs-beta2-202609-2m_temperature_anomaly-202612",
+          "label": "December 2026",
+          "target_month": "202612",
+          "period_label": "December 2026",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-01-01T00:00:00Z",
+          "lead_month": 3,
+          "field": "t2m_anomaly",
+          "units": "\u00b0C",
+          "statistic": "NOAA SFS beta2 31-member ensemble mean anomaly",
+          "aggregation": "Forecast mean minus same-calendar-month reforecast mean",
+          "ensemble_members": 31,
+          "ensemble_expected_members": 31,
+          "ensemble_complete": true,
+          "ensemble_label": "31-member NOAA SFS beta2 mean",
+          "ensemble_scope": "NOAA SFS beta2 forecast members",
+          "source_files": [
+            "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/forecast/202609/atm_monthly.zarr/tmp2m",
+            "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/reforecast/09/atm_monthly.zarr/tmp2m"
+          ],
+          "baseline": {
+            "status": "same_calendar_month_reforecast_mean",
+            "source": "NOAA SFS beta2 same-calendar-month reforecast mean (1991\u20132025)",
+            "years": "1991-2025",
+            "method": "35 same-month initializations \u00d7 11 reforecast members, lead matched to the forecast",
+            "source_urls": [
+              "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/reforecast/09/atm_monthly.zarr/tmp2m"
+            ]
+          },
+          "quality_control": {
+            "registry_version": 1,
+            "product": "2m_temperature_anomaly",
+            "units": "\u00b0C",
+            "field": "t2m_anomaly",
+            "period": "monthly",
+            "total_points": 6413,
+            "finite_points": 6413,
+            "finite_fraction": 1.0,
+            "minimum": -1.251012,
+            "maximum": 4.155056,
+            "p01": -1.030084,
+            "p99": 3.872259,
+            "display": {
+              "minimum": -6.0,
+              "maximum": 6.0,
+              "step": 0.5,
+              "below_fraction": 0.0,
+              "above_fraction": 0.0,
+              "clipped_fraction": 0.0
+            },
+            "issues": [],
+            "status": "passed"
+          },
+          "status": "rendered",
+          "image": "public/seasonal/sfs/202609/sfs_2m_temperature_anomaly_202612.jpg"
+        },
+        {
+          "id": "sfs-beta2-202609-2m_temperature_anomaly-202701",
+          "label": "January 2027",
+          "target_month": "202701",
+          "period_label": "January 2027",
+          "valid_start_utc": "2027-01-01T00:00:00Z",
+          "valid_end_utc": "2027-02-01T00:00:00Z",
+          "lead_month": 4,
+          "field": "t2m_anomaly",
+          "units": "\u00b0C",
+          "statistic": "NOAA SFS beta2 31-member ensemble mean anomaly",
+          "aggregation": "Forecast mean minus same-calendar-month reforecast mean",
+          "ensemble_members": 31,
+          "ensemble_expected_members": 31,
+          "ensemble_complete": true,
+          "ensemble_label": "31-member NOAA SFS beta2 mean",
+          "ensemble_scope": "NOAA SFS beta2 forecast members",
+          "source_files": [
+            "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/forecast/202609/atm_monthly.zarr/tmp2m",
+            "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/reforecast/09/atm_monthly.zarr/tmp2m"
+          ],
+          "baseline": {
+            "status": "same_calendar_month_reforecast_mean",
+            "source": "NOAA SFS beta2 same-calendar-month reforecast mean (1991\u20132025)",
+            "years": "1991-2025",
+            "method": "35 same-month initializations \u00d7 11 reforecast members, lead matched to the forecast",
+            "source_urls": [
+              "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/reforecast/09/atm_monthly.zarr/tmp2m"
+            ]
+          },
+          "quality_control": {
+            "registry_version": 1,
+            "product": "2m_temperature_anomaly",
+            "units": "\u00b0C",
+            "field": "t2m_anomaly",
+            "period": "monthly",
+            "total_points": 6413,
+            "finite_points": 6413,
+            "finite_fraction": 1.0,
+            "minimum": -2.00481,
+            "maximum": 4.713775,
+            "p01": -1.856222,
+            "p99": 4.162435,
+            "display": {
+              "minimum": -6.0,
+              "maximum": 6.0,
+              "step": 0.5,
+              "below_fraction": 0.0,
+              "above_fraction": 0.0,
+              "clipped_fraction": 0.0
+            },
+            "issues": [],
+            "status": "passed"
+          },
+          "status": "rendered",
+          "image": "public/seasonal/sfs/202609/sfs_2m_temperature_anomaly_202701.jpg"
+        },
+        {
+          "id": "sfs-beta2-202609-2m_temperature_anomaly-202702",
+          "label": "February 2027",
+          "target_month": "202702",
+          "period_label": "February 2027",
+          "valid_start_utc": "2027-02-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": 5,
+          "field": "t2m_anomaly",
+          "units": "\u00b0C",
+          "statistic": "NOAA SFS beta2 31-member ensemble mean anomaly",
+          "aggregation": "Forecast mean minus same-calendar-month reforecast mean",
+          "ensemble_members": 31,
+          "ensemble_expected_members": 31,
+          "ensemble_complete": true,
+          "ensemble_label": "31-member NOAA SFS beta2 mean",
+          "ensemble_scope": "NOAA SFS beta2 forecast members",
+          "source_files": [
+            "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/forecast/202609/atm_monthly.zarr/tmp2m",
+            "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/reforecast/09/atm_monthly.zarr/tmp2m"
+          ],
+          "baseline": {
+            "status": "same_calendar_month_reforecast_mean",
+            "source": "NOAA SFS beta2 same-calendar-month reforecast mean (1991\u20132025)",
+            "years": "1991-2025",
+            "method": "35 same-month initializations \u00d7 11 reforecast members, lead matched to the forecast",
+            "source_urls": [
+              "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/reforecast/09/atm_monthly.zarr/tmp2m"
+            ]
+          },
+          "quality_control": {
+            "registry_version": 1,
+            "product": "2m_temperature_anomaly",
+            "units": "\u00b0C",
+            "field": "t2m_anomaly",
+            "period": "monthly",
+            "total_points": 6413,
+            "finite_points": 6413,
+            "finite_fraction": 1.0,
+            "minimum": -2.356148,
+            "maximum": 4.829586,
+            "p01": -1.963359,
+            "p99": 4.333609,
+            "display": {
+              "minimum": -6.0,
+              "maximum": 6.0,
+              "step": 0.5,
+              "below_fraction": 0.0,
+              "above_fraction": 0.0,
+              "clipped_fraction": 0.0
+            },
+            "issues": [],
+            "status": "passed"
+          },
+          "status": "rendered",
+          "image": "public/seasonal/sfs/202609/sfs_2m_temperature_anomaly_202702.jpg"
+        },
+        {
+          "id": "sfs-beta2-202609-2m_temperature_anomaly-202612-202702",
+          "label": "DJF 2026\u201327",
+          "target_month": "202612-202702",
+          "period_label": "DJF 2026\u201327",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": "3-5",
+          "field": "t2m_anomaly",
+          "units": "\u00b0C",
+          "statistic": "NOAA SFS beta2 31-member ensemble mean anomaly",
+          "aggregation": "Forecast mean minus same-calendar-month reforecast mean",
+          "ensemble_members": 31,
+          "ensemble_expected_members": 31,
+          "ensemble_complete": true,
+          "ensemble_label": "31-member NOAA SFS beta2 mean",
+          "ensemble_scope": "NOAA SFS beta2 forecast members",
+          "source_files": [
+            "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/forecast/202609/atm_monthly.zarr/tmp2m",
+            "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/reforecast/09/atm_monthly.zarr/tmp2m"
+          ],
+          "baseline": {
+            "status": "same_calendar_month_reforecast_mean",
+            "source": "NOAA SFS beta2 same-calendar-month reforecast mean (1991\u20132025)",
+            "years": "1991-2025",
+            "method": "35 same-month initializations \u00d7 11 reforecast members, lead matched to the forecast",
+            "source_urls": [
+              "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/experiments/beta2/reforecast/09/atm_monthly.zarr/tmp2m"
+            ]
+          },
+          "quality_control": {
+            "registry_version": 1,
+            "product": "2m_temperature_anomaly",
+            "units": "\u00b0C",
+            "field": "t2m_anomaly",
+            "period": "seasonal",
+            "total_points": 6413,
+            "finite_points": 6413,
+            "finite_fraction": 1.0,
+            "minimum": -1.763569,
+            "maximum": 4.559454,
+            "p01": -1.593319,
+            "p99": 4.113922,
+            "display": {
+              "minimum": -6.0,
+              "maximum": 6.0,
+              "step": 0.5,
+              "below_fraction": 0.0,
+              "above_fraction": 0.0,
+              "clipped_fraction": 0.0
+            },
+            "issues": [],
+            "status": "passed"
+          },
+          "status": "rendered",
+          "image": "public/seasonal/sfs/202609/sfs_2m_temperature_anomaly_202612-202702.jpg"
+        }
+      ],
+      "ensemble_members": 31,
+      "ensemble_expected_members": 31,
+      "ensemble_scope": "NOAA SFS beta2 31-member forecast",
+      "raw_field": "tmp2m / TMP_2maboveground",
+      "raw_units": "K",
+      "field": "t2m_anomaly",
+      "units": "\u00b0C",
+      "conversion": "Forecast-minus-reforecast anomaly in native source units",
+      "source_warning": "NOAA SFS beta2 is an experimental development archive; source fields are schema-validated before publication.",
+      "initialization_start_utc": "2026-09-01T00:00:00Z",
+      "initialization_end_utc": "2026-09-02T00:00:00Z"
+    }
+  ]
+}
