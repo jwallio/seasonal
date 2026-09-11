@@ -153,7 +153,7 @@ allowing one model update to remove another model's products.
   analog selection and workflow support
 - `.github/workflows/` — scheduled model, analog, validation, and publishing
   workflows
-- `docs/` — provider methods, data sources, schedules, and limitations
+- `docs/` — provider methods, data sources, schedules, limitations, and map-content protection
 - `tests/` — provider contracts, workflow contracts, catalog validation,
   analog tests, dashboard tests, and smoke tests
 
