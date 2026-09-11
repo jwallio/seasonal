@@ -2,7 +2,7 @@
   "schema_version": 1,
   "registry_version": 1,
   "kind": "seasonal_dashboard_catalog",
-  "generated_utc": "2026-09-11T15:12:43Z",
+  "generated_utc": "2026-09-11T15:16:18Z",
   "source_revision": "0b39e80b4d8e3790c0ae6994ad3533ac62722770",
   "model_order": [
     "superensemble",
@@ -20269,7 +20269,7 @@
               "valid_end_utc": "2027-03-01T00:00:00Z",
               "lead_month": "6-MON",
               "field": "precipitation_anomaly",
-              "units": "mm",
+              "units": "in",
               "status": "rendered",
               "image": "apcc/202609/apcc_preca_202612-202702.jpg",
               "baseline": {
@@ -20279,16 +20279,46 @@
               "ensemble_scope": "APCC MME seasonal product",
               "statistic": "APCC multi-model ensemble mean",
               "aggregation": "seasonal accumulation from native APCC seasonal mean",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "precipitation_anomaly",
+                "units": "in",
+                "field": "precipitation_anomaly",
+                "period": "seasonal",
+                "total_points": 10512,
+                "finite_points": 10512,
+                "finite_fraction": 1.0,
+                "minimum": -25.237064,
+                "maximum": 43.81979,
+                "p01": -15.626845,
+                "p99": 24.768931,
+                "display": {
+                  "minimum": -8.0,
+                  "maximum": 8.0,
+                  "step": 1.0,
+                  "below_fraction": 0.031393,
+                  "above_fraction": 0.029585,
+                  "clipped_fraction": 0.060978
+                },
+                "issues": [
+                  {
+                    "code": "display_scale_clipping",
+                    "severity": "warning",
+                    "message": "6.1% of finite cells exceed the fixed display scale."
+                  }
+                ],
+                "status": "warning"
+              },
               "_catalog": {
                 "canonical_product": "precipitation_anomaly",
-                "comparable": false,
-                "quality_control": "legacy"
+                "comparable": true,
+                "quality_control": "warning"
               }
             }
           ],
           "_catalog": {
             "canonical_product": "precipitation_anomaly",
-            "comparable": false
+            "comparable": true
           }
         },
         {
@@ -20318,10 +20348,34 @@
               "ensemble_scope": "APCC MME seasonal product",
               "statistic": "APCC multi-model ensemble mean",
               "aggregation": "native APCC seasonal mean",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "mslp_anomaly",
+                "units": "hPa",
+                "field": "mslp_anomaly",
+                "period": "seasonal",
+                "total_points": 10512,
+                "finite_points": 10512,
+                "finite_fraction": 1.0,
+                "minimum": -7.395056,
+                "maximum": 4.205188,
+                "p01": -5.078908,
+                "p99": 2.995995,
+                "display": {
+                  "minimum": -10.0,
+                  "maximum": 10.0,
+                  "step": 1.0,
+                  "below_fraction": 0.0,
+                  "above_fraction": 0.0,
+                  "clipped_fraction": 0.0
+                },
+                "issues": [],
+                "status": "passed"
+              },
               "_catalog": {
                 "canonical_product": "mslp_anomaly",
                 "comparable": true,
-                "quality_control": "legacy"
+                "quality_control": "passed"
               }
             }
           ],
@@ -20394,6 +20448,95 @@
           }
         },
         {
+          "id": "apcc-202609-500mb_height_anomaly_nh",
+          "source": "APCC multi-model ensemble via CLIK",
+          "source_url": "https://apcc21.org/clik/processing/prediction",
+          "product": "500mb_height_anomaly_nh",
+          "init_utc": "2026-08-18T00:00:00Z",
+          "status": "rendered",
+          "method": "SCM",
+          "targets": [
+            {
+              "id": "apcc-202609-z500a-nh-202612-202702",
+              "target_month": "202612-202702",
+              "period_label": "DJF 2027",
+              "valid_start_utc": "2026-12-01T00:00:00Z",
+              "valid_end_utc": "2027-03-01T00:00:00Z",
+              "lead_month": "6-MON",
+              "field": "z500_anomaly",
+              "units": "m",
+              "status": "rendered",
+              "image": "apcc/202609/apcc_z500a-nh_202612-202702.jpg",
+              "baseline": {
+                "status": "native_source_anomaly",
+                "label": "Native APCC MME anomaly"
+              },
+              "ensemble_scope": "APCC MME seasonal product",
+              "statistic": "APCC multi-model ensemble mean",
+              "aggregation": "native APCC seasonal mean",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "500mb_height_anomaly_nh",
+                "units": "m",
+                "field": "z500_anomaly",
+                "period": "seasonal",
+                "total_points": 10512,
+                "finite_points": 10512,
+                "finite_fraction": 1.0,
+                "minimum": -69.960739,
+                "maximum": 82.7584,
+                "p01": -42.680273,
+                "p99": 73.268901,
+                "display": {
+                  "minimum": -120.0,
+                  "maximum": 120.0,
+                  "breakpoints": [
+                    -120,
+                    -110,
+                    -100,
+                    -90,
+                    -80,
+                    -70,
+                    -60,
+                    -50,
+                    -40,
+                    -30,
+                    -20,
+                    -10,
+                    0,
+                    10,
+                    20,
+                    30,
+                    40,
+                    50,
+                    60,
+                    70,
+                    80,
+                    90,
+                    100,
+                    110,
+                    120
+                  ],
+                  "below_fraction": 0.0,
+                  "above_fraction": 0.0,
+                  "clipped_fraction": 0.0
+                },
+                "issues": [],
+                "status": "passed"
+              },
+              "_catalog": {
+                "canonical_product": "500mb_height_anomaly_nh",
+                "comparable": true,
+                "quality_control": "passed"
+              }
+            }
+          ],
+          "_catalog": {
+            "canonical_product": "500mb_height_anomaly_nh",
+            "comparable": true
+          }
+        },
+        {
           "id": "apcc-202609-500mb_height_anomaly",
           "source": "APCC multi-model ensemble via CLIK",
           "source_url": "https://apcc21.org/clik/processing/prediction",
@@ -20420,10 +20563,60 @@
               "ensemble_scope": "APCC MME seasonal product",
               "statistic": "APCC multi-model ensemble mean",
               "aggregation": "native APCC seasonal mean",
+              "quality_control": {
+                "registry_version": 1,
+                "product": "500mb_height_anomaly",
+                "units": "m",
+                "field": "z500_anomaly",
+                "period": "seasonal",
+                "total_points": 10512,
+                "finite_points": 10512,
+                "finite_fraction": 1.0,
+                "minimum": -69.960739,
+                "maximum": 82.7584,
+                "p01": -42.680273,
+                "p99": 73.268901,
+                "display": {
+                  "minimum": -120.0,
+                  "maximum": 120.0,
+                  "breakpoints": [
+                    -120,
+                    -110,
+                    -100,
+                    -90,
+                    -80,
+                    -70,
+                    -60,
+                    -50,
+                    -40,
+                    -30,
+                    -20,
+                    -10,
+                    0,
+                    10,
+                    20,
+                    30,
+                    40,
+                    50,
+                    60,
+                    70,
+                    80,
+                    90,
+                    100,
+                    110,
+                    120
+                  ],
+                  "below_fraction": 0.0,
+                  "above_fraction": 0.0,
+                  "clipped_fraction": 0.0
+                },
+                "issues": [],
+                "status": "passed"
+              },
               "_catalog": {
                 "canonical_product": "500mb_height_anomaly",
                 "comparable": true,
-                "quality_control": "legacy"
+                "quality_control": "passed"
               }
             }
           ],
@@ -20694,7 +20887,7 @@
       "status": "degraded",
       "schema_version": 1,
       "manifest_kind": "apcc_seasonal_manifest",
-      "generated_utc": "2026-09-11T11:44:30Z",
+      "generated_utc": "2026-09-11T15:11:45Z",
       "source_url": "https://apcc21.org/clik/processing/prediction",
       "product_labels": {
         "500mb_height_anomaly": "500-mb Height Anomaly",
@@ -20721,37 +20914,37 @@
             "code": "noncanonical_units",
             "severity": "warning",
             "message": "precipitation_anomaly uses compatible legacy units mm; canonical comparison units are in.",
-            "path": "runs[0].targets[0]"
+            "path": "runs[6].targets[0]"
           },
           {
             "code": "legacy_qc_missing:precipitation_anomaly",
             "severity": "warning",
             "message": "Retained precipitation_anomaly targets predate numerical grid QC; regenerate this product to certify it.",
-            "path": "runs[0].targets[0]"
+            "path": "runs[6].targets[0]"
           },
           {
             "code": "legacy_qc_missing:mslp_anomaly",
             "severity": "warning",
             "message": "Retained mslp_anomaly targets predate numerical grid QC; regenerate this product to certify it.",
-            "path": "runs[1].targets[0]"
-          },
-          {
-            "code": "legacy_qc_missing:500mb_height_anomaly",
-            "severity": "warning",
-            "message": "Retained 500mb_height_anomaly targets predate numerical grid QC; regenerate this product to certify it.",
-            "path": "runs[3].targets[0]"
+            "path": "runs[7].targets[0]"
           },
           {
             "code": "legacy_qc_missing:850mb_temperature_anomaly",
             "severity": "warning",
             "message": "Retained 850mb_temperature_anomaly targets predate numerical grid QC; regenerate this product to certify it.",
-            "path": "runs[7].targets[0]"
+            "path": "runs[8].targets[0]"
+          },
+          {
+            "code": "legacy_qc_missing:500mb_height_anomaly",
+            "severity": "warning",
+            "message": "Retained 500mb_height_anomaly targets predate numerical grid QC; regenerate this product to certify it.",
+            "path": "runs[9].targets[0]"
           },
           {
             "code": "legacy_qc_missing:2m_temperature_anomaly",
             "severity": "warning",
             "message": "Retained 2m_temperature_anomaly targets predate numerical grid QC; regenerate this product to certify it.",
-            "path": "runs[9].targets[0]"
+            "path": "runs[10].targets[0]"
           }
         ]
       },
@@ -20797,9 +20990,9 @@
         },
         "precipitation_anomaly": {
           "state": "available",
-          "reason": "Rendered target uses noncanonical units or field metadata and is excluded from comparison.",
+          "reason": "Rendered target available.",
           "available": true,
-          "comparable": false,
+          "comparable": true,
           "latest_init_utc": "2026-08-18T00:00:00Z",
           "run_id": "apcc-202609-precipitation_anomaly",
           "target_count": 1,
@@ -98123,7 +98316,7 @@
   },
   "health": {
     "status": "attention",
-    "generated_utc": "2026-09-11T15:12:43Z",
+    "generated_utc": "2026-09-11T15:16:18Z",
     "freshness_policy_days": {
       "default": {
         "fresh_days": 35,
@@ -98136,15 +98329,15 @@
     },
     "summary": {
       "surfaces": 60,
-      "attention_surfaces": 18,
+      "attention_surfaces": 17,
       "by_state": {
-        "healthy": 32,
+        "healthy": 33,
         "aging": 13,
         "stale": 0,
         "partial": 4,
         "failed": 0,
         "missing": 0,
-        "noncomparable": 1,
+        "noncomparable": 0,
         "not_applicable": 10
       }
     },
@@ -98426,8 +98619,8 @@
         "product_label": "Precipitation Anomaly",
         "surface_state": "available",
         "available": true,
-        "comparable": false,
-        "health_state": "noncomparable",
+        "comparable": true,
+        "health_state": "healthy",
         "freshness": "fresh",
         "age_days": 24.6,
         "latest_status": "rendered",
@@ -98435,7 +98628,7 @@
         "selected_init_utc": "2026-08-18T00:00:00Z",
         "selected_run_id": "apcc-202609-precipitation_anomaly",
         "retained_fallback": false,
-        "reason": "Rendered target uses noncanonical units or field metadata and is excluded from comparison."
+        "reason": "Rendered target available."
       },
       {
         "model": "apcc",
@@ -99428,24 +99621,6 @@
         "selected_run_id": "c3s-multisystem-2026080100-mslp_anomaly",
         "retained_fallback": false,
         "reason": "Rendered target available."
-      },
-      {
-        "model": "apcc",
-        "model_label": "APCC MME",
-        "product": "precipitation_anomaly",
-        "product_label": "Precipitation Anomaly",
-        "surface_state": "available",
-        "available": true,
-        "comparable": false,
-        "health_state": "noncomparable",
-        "freshness": "fresh",
-        "age_days": 24.6,
-        "latest_status": "rendered",
-        "latest_init_utc": "2026-08-18T00:00:00Z",
-        "selected_init_utc": "2026-08-18T00:00:00Z",
-        "selected_run_id": "apcc-202609-precipitation_anomaly",
-        "retained_fallback": false,
-        "reason": "Rendered target uses noncanonical units or field metadata and is excluded from comparison."
       },
       {
         "model": "cansips",

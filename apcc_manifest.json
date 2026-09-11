@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "kind": "apcc_seasonal_manifest",
-  "generated_utc": "2026-09-11T11:44:30Z",
+  "generated_utc": "2026-09-11T15:11:45Z",
   "source": "APCC multi-model ensemble via CLIK",
   "source_url": "https://apcc21.org/clik/processing/prediction",
   "source_urls": [
@@ -58,7 +58,7 @@
           "period_label": "DJF 2027",
           "aggregation": "seasonal accumulation from native APCC seasonal mean",
           "field": "precipitation_anomaly",
-          "units": "mm",
+          "units": "in",
           "raw_field": "precipitation anomaly",
           "raw_units": "mm/day",
           "statistic": "APCC multi-model ensemble mean",
@@ -80,13 +80,43 @@
           },
           "source_issue_utc": "2026-08-18T00:00:00Z",
           "status": "rendered",
+          "quality_control": {
+            "registry_version": 1,
+            "product": "precipitation_anomaly",
+            "units": "in",
+            "field": "precipitation_anomaly",
+            "period": "seasonal",
+            "total_points": 10512,
+            "finite_points": 10512,
+            "finite_fraction": 1.0,
+            "minimum": -25.237064,
+            "maximum": 43.81979,
+            "p01": -15.626845,
+            "p99": 24.768931,
+            "display": {
+              "minimum": -8.0,
+              "maximum": 8.0,
+              "step": 1.0,
+              "below_fraction": 0.031393,
+              "above_fraction": 0.029585,
+              "clipped_fraction": 0.060978
+            },
+            "issues": [
+              {
+                "code": "display_scale_clipping",
+                "severity": "warning",
+                "message": "6.1% of finite cells exceed the fixed display scale."
+              }
+            ],
+            "status": "warning"
+          },
           "image": "public/seasonal/apcc/202609/apcc_preca_202612-202702.jpg",
-          "source_file": ".cache/apcc/extracted/mme_6month_6-mon_202609_prec_slp_sst_t2m_t850_z500/FORECAST_SCM_SEP_DJF_2026_prec.nc",
+          "source_file": ".cache/apcc/extracted/mme_6month_6-mon_202609_prec_slp_t2m_t850_z500/FORECAST_SCM_SEP_DJF_2026_prec.nc",
           "data_range": {
-            "min": -641.0214,
-            "max": 1113.0227,
-            "p05": -139.3099,
-            "p95": 102.1893,
+            "min": -25.2371,
+            "max": 43.8198,
+            "p05": -5.4846,
+            "p95": 4.0232,
             "finite_points": 10512
           },
           "native_grid": {
@@ -97,7 +127,7 @@
             "status": "native_source_anomaly",
             "label": "Native APCC MME anomaly"
           },
-          "conversion": "seasonal mean mm/day \u00d7 valid-season days = seasonal accumulation mm"
+          "conversion": "seasonal mean mm/day \u00d7 valid-season days \u00f7 25.4 = seasonal accumulation inches"
         }
       ],
       "output_dir": "public/seasonal/apcc"
@@ -159,8 +189,32 @@
           },
           "source_issue_utc": "2026-08-18T00:00:00Z",
           "status": "rendered",
+          "quality_control": {
+            "registry_version": 1,
+            "product": "mslp_anomaly",
+            "units": "hPa",
+            "field": "mslp_anomaly",
+            "period": "seasonal",
+            "total_points": 10512,
+            "finite_points": 10512,
+            "finite_fraction": 1.0,
+            "minimum": -7.395056,
+            "maximum": 4.205188,
+            "p01": -5.078908,
+            "p99": 2.995995,
+            "display": {
+              "minimum": -10.0,
+              "maximum": 10.0,
+              "step": 1.0,
+              "below_fraction": 0.0,
+              "above_fraction": 0.0,
+              "clipped_fraction": 0.0
+            },
+            "issues": [],
+            "status": "passed"
+          },
           "image": "public/seasonal/apcc/202609/apcc_slpa_202612-202702.jpg",
-          "source_file": ".cache/apcc/extracted/mme_6month_6-mon_202609_prec_slp_sst_t2m_t850_z500/FORECAST_SCM_SEP_DJF_2026_slp.nc",
+          "source_file": ".cache/apcc/extracted/mme_6month_6-mon_202609_prec_slp_t2m_t850_z500/FORECAST_SCM_SEP_DJF_2026_slp.nc",
           "data_range": {
             "min": -7.3951,
             "max": 4.2052,
@@ -262,12 +316,140 @@
             "status": "passed"
           },
           "image": "public/seasonal/apcc/202609/apcc_t850a_202612-202702.jpg",
-          "source_file": ".cache/apcc/extracted/mme_6month_6-mon_202609_t850/FORECAST_SCM_SEP_DJF_2026_t850.nc",
+          "source_file": ".cache/apcc/extracted/mme_6month_6-mon_202609_prec_slp_t2m_t850_z500/FORECAST_SCM_SEP_DJF_2026_t850.nc",
           "data_range": {
             "min": -1.44,
             "max": 4.0864,
             "p05": -0.0979,
             "p95": 2.3947,
+            "finite_points": 10512
+          },
+          "native_grid": {
+            "longitude_degrees": 2.5,
+            "latitude_degrees": 2.5
+          },
+          "baseline": {
+            "status": "native_source_anomaly",
+            "label": "Native APCC MME anomaly"
+          }
+        }
+      ],
+      "output_dir": "public/seasonal/apcc"
+    },
+    {
+      "id": "apcc-202609-500mb_height_anomaly_nh",
+      "init_utc": "2026-08-18T00:00:00Z",
+      "product": "500mb_height_anomaly_nh",
+      "status": "rendered",
+      "source": "APCC multi-model ensemble via CLIK",
+      "source_url": "https://apcc21.org/clik/processing/prediction",
+      "dataset": "MME_6MONTH",
+      "lead_month": "6-MON",
+      "forecast_horizon": "6-MON",
+      "request_target_month": "202609",
+      "resolution": "2.5",
+      "method": "SCM",
+      "requested_target_window": "3,4,5",
+      "native_period": {
+        "season_code": "DJF",
+        "season_year": 2026,
+        "period_label": "DJF 2027",
+        "target_code": "202612-202702",
+        "first_target": "202612",
+        "valid_start_utc": "2026-12-01T00:00:00Z",
+        "valid_end_utc": "2027-03-01T00:00:00Z",
+        "days": 90,
+        "forecast_info": "Seasonal Mean Forecast for DJF (2026SONDJF)"
+      },
+      "targets": [
+        {
+          "id": "apcc-202609-z500a-nh-202612-202702",
+          "valid_start_utc": "2026-12-01T00:00:00Z",
+          "valid_end_utc": "2027-03-01T00:00:00Z",
+          "lead_month": "6-MON",
+          "target_month": "202612-202702",
+          "period_label": "DJF 2027",
+          "aggregation": "native APCC seasonal mean",
+          "field": "z500_anomaly",
+          "units": "m",
+          "raw_field": "geopotential height anomaly",
+          "raw_units": "m",
+          "statistic": "APCC multi-model ensemble mean",
+          "ensemble_scope": "APCC MME seasonal product",
+          "source_urls": [
+            "https://apcc21.org/clik/dataset/mme/6-MON?lang=en",
+            "https://apcc21.org/clik/clikapi?lang=en"
+          ],
+          "source_period": {
+            "season_code": "DJF",
+            "season_year": 2026,
+            "period_label": "DJF 2027",
+            "target_code": "202612-202702",
+            "first_target": "202612",
+            "valid_start_utc": "2026-12-01T00:00:00Z",
+            "valid_end_utc": "2027-03-01T00:00:00Z",
+            "days": 90,
+            "forecast_info": "Seasonal Mean Forecast for DJF (2026SONDJF)"
+          },
+          "source_issue_utc": "2026-08-18T00:00:00Z",
+          "status": "rendered",
+          "quality_control": {
+            "registry_version": 1,
+            "product": "500mb_height_anomaly_nh",
+            "units": "m",
+            "field": "z500_anomaly",
+            "period": "seasonal",
+            "total_points": 10512,
+            "finite_points": 10512,
+            "finite_fraction": 1.0,
+            "minimum": -69.960739,
+            "maximum": 82.7584,
+            "p01": -42.680273,
+            "p99": 73.268901,
+            "display": {
+              "minimum": -120.0,
+              "maximum": 120.0,
+              "breakpoints": [
+                -120,
+                -110,
+                -100,
+                -90,
+                -80,
+                -70,
+                -60,
+                -50,
+                -40,
+                -30,
+                -20,
+                -10,
+                0,
+                10,
+                20,
+                30,
+                40,
+                50,
+                60,
+                70,
+                80,
+                90,
+                100,
+                110,
+                120
+              ],
+              "below_fraction": 0.0,
+              "above_fraction": 0.0,
+              "clipped_fraction": 0.0
+            },
+            "issues": [],
+            "status": "passed"
+          },
+          "image": "public/seasonal/apcc/202609/apcc_z500a-nh_202612-202702.jpg",
+          "source_file": ".cache/apcc/extracted/mme_6month_6-mon_202609_prec_slp_t2m_t850_z500/FORECAST_SCM_SEP_DJF_2026_z500.nc",
+          "data_range": {
+            "min": -69.9607,
+            "max": 82.7584,
+            "p05": -14.5309,
+            "p95": 50.7009,
             "finite_points": 10512
           },
           "native_grid": {
@@ -339,8 +521,58 @@
           },
           "source_issue_utc": "2026-08-18T00:00:00Z",
           "status": "rendered",
+          "quality_control": {
+            "registry_version": 1,
+            "product": "500mb_height_anomaly",
+            "units": "m",
+            "field": "z500_anomaly",
+            "period": "seasonal",
+            "total_points": 10512,
+            "finite_points": 10512,
+            "finite_fraction": 1.0,
+            "minimum": -69.960739,
+            "maximum": 82.7584,
+            "p01": -42.680273,
+            "p99": 73.268901,
+            "display": {
+              "minimum": -120.0,
+              "maximum": 120.0,
+              "breakpoints": [
+                -120,
+                -110,
+                -100,
+                -90,
+                -80,
+                -70,
+                -60,
+                -50,
+                -40,
+                -30,
+                -20,
+                -10,
+                0,
+                10,
+                20,
+                30,
+                40,
+                50,
+                60,
+                70,
+                80,
+                90,
+                100,
+                110,
+                120
+              ],
+              "below_fraction": 0.0,
+              "above_fraction": 0.0,
+              "clipped_fraction": 0.0
+            },
+            "issues": [],
+            "status": "passed"
+          },
           "image": "public/seasonal/apcc/202609/apcc_z500a_202612-202702.jpg",
-          "source_file": ".cache/apcc/extracted/mme_6month_6-mon_202609_prec_slp_sst_t2m_t850_z500/FORECAST_SCM_SEP_DJF_2026_z500.nc",
+          "source_file": ".cache/apcc/extracted/mme_6month_6-mon_202609_prec_slp_t2m_t850_z500/FORECAST_SCM_SEP_DJF_2026_z500.nc",
           "data_range": {
             "min": -69.9607,
             "max": 82.7584,
@@ -442,7 +674,7 @@
             "status": "passed"
           },
           "image": "public/seasonal/apcc/202609/apcc_t2ma_202612-202702.jpg",
-          "source_file": ".cache/apcc/extracted/mme_6month_6-mon_202609_t2m/FORECAST_SCM_SEP_DJF_2026_t2m.nc",
+          "source_file": ".cache/apcc/extracted/mme_6month_6-mon_202609_prec_slp_t2m_t850_z500/FORECAST_SCM_SEP_DJF_2026_t2m.nc",
           "data_range": {
             "min": -1.4305,
             "max": 4.7981,
