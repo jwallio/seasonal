@@ -25,7 +25,6 @@ jobs:
       # provider behind one six-hour provider attempt.  The provider workers
       # already scope their own data requests and concurrency groups.
       max-parallel: 4
-      max-parallel: 1
       matrix:
         workflow: [seas5.yml, cansips.yml, c3s.yml, jma.yml, cfsv2.yml, apcc.yml, cma-cpsv3.yml, superensemble.yml]
     env:
@@ -60,7 +59,6 @@ jobs:
               deferred=$((deferred + 1))
               continue
             fi
-            # C3S/JMA pressure-level access can lag the current monthly issue.
             # C3S/JMA pressure-level access can lag the current monthly issue.
             # Re-render its last published height cycle so a style-only refresh
             # stays green while the next restricted issue is unavailable.

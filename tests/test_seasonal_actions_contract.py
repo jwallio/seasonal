@@ -97,7 +97,7 @@ def main() -> int:
           "500-mb styling should refresh when the shared height contract changes")
     check("group: height-maintenance-" in height and "cancel-in-progress: true" in height,
           "500-mb styling should supersede stale maintenance fan-out")
-    check("max-parallel: 4" in height and "500mb_height_anomaly_nh" in height,
+    check(height.count("max-parallel: 4") == 1 and "500mb_height_anomaly_nh" in height,
           "500-mb styling should bound provider refreshes without serializing the whole fan-out")
     check("deferring this style refresh" in height,
           "500-mb styling must not cancel an active scheduled or release run")

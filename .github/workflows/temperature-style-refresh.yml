@@ -61,7 +61,6 @@ jobs:
               continue
             fi
             provider="${WORKFLOW%.yml}"
-            provider="${WORKFLOW%.yml}"
             [[ "$provider" == "cma-cpsv3" ]] && provider=cma_cpsv3
             [[ "$provider" == "geos-s2s3" ]] && provider=geos_s2s3
             curl -fsSL --retry 3 --connect-timeout 15 --max-time 60 \
