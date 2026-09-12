@@ -163,9 +163,10 @@ def main() -> int:
         check("Feb 2027" in str(exc), "unsupported lead error must explain the actual endpoint")
     check(module.parse_cds_leads("4,5,6","lead months","2026090100") == [4,5,6], "DJF must remain valid")
     original = module.Grid([0.,1.,2.],[0.],[[-0.4,0.,0.4]])
+    from snowfall_display import COMPACT_TICKS, SEASONAL_TICKS
     for seasonal in (False,True):
         display,spec = module.snowfall_display(original,snowfall_spec,seasonal)
-        expected_display_ticks = list(module.SEASONAL_TICKS if seasonal else module.COMPACT_TICKS)
+        expected_display_ticks = list(SEASONAL_TICKS if seasonal else COMPACT_TICKS)
         check(spec["anomaly_ticks"] == expected_display_ticks, "snow-depth display must use the shared monthly or seasonal labelled bands")
         check((spec["anomaly_min"], spec["anomaly_max"]) == ((-20,20) if seasonal else (-14,14)), "snow-depth display must use the correct seasonal or monthly endpoints")
         check(len(spec["anomaly_bounds"]) == len(spec["anomaly_palette"]) + 1, "snow-depth boundaries must align with palette")
