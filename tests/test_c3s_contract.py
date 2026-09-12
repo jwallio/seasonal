@@ -110,7 +110,7 @@ def main() -> int:
     check("(in LWE)" not in ukmo_snowfall["absolute_title"], "C3S snowfall absolute image title should omit the parenthetical LWE unit")
     check(ukmo_snowfall["map_domain"] == "land" and ukmo_snowfall["fit_frame_to_domain"], "C3S snowfall should use a fitted lower-48 land frame")
     check(len(ukmo_snowfall["mask_states"]) == 48, "C3S snowfall lower-48 mask should include all 48 states")
-    check(ukmo_snowfall["anomaly_endpoint_labels"] == {"minimum": "≤−4.0", "maximum": "≥+4.0"}, "C3S snowfall seasonal legend should mark clipped endpoints")
+    check(ukmo_snowfall["anomaly_endpoint_labels"] == {"minimum": "≤−14", "maximum": "≥+14"}, "C3S snowfall seasonal legend should mark clipped endpoints")
     converted = module.convert_product_grid(
         module.Grid([0.0], [0.0], [[0.001]]), snowfall_spec, "202601"
     )
