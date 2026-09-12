@@ -56,6 +56,7 @@ from cfsv2_seasonal import (
 )
 from seas5_seasonal import grid_from_grib
 from seasonal_products import grid_quality_control, is_retired_product, require_quality_control
+from snowfall_display import depth_departure
 
 
 CDS_API_ROOT = "https://cds.climate.copernicus.eu/api"
@@ -521,6 +522,11 @@ def render_target(
     period: str = "",
     seasonal: bool = False,
 ) -> None:
+    # C3S publishes snowfall departures as liquid-water equivalent. Convert
+    # that comparison field once for the image and pass the compact snow-depth
+    # display contract through to the shared renderer and its sidecars.
+    if product.get("name") == "snowfall_anomaly":
+        grid, product = depth_departure(grid, product, SNOWFALL_ANOMALY_PALETTE)
     render_map(
         grid, init, target, lead, list(range(max(1, int(str(lead).split("–")[0])))), output,
         anomaly=True, baseline_label="C3S native postprocessed anomaly", border_paths=borders,
