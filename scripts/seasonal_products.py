@@ -747,12 +747,13 @@ def grid_quality_control(
                 ))
             display = None
             if display_profile == "c3s_readable" and canonical == "snowfall_anomaly":
-                from snowfall_display import COMPACT_BOUNDS
+                from snowfall_display import COMPACT_BOUNDS, SEASONAL_BOUNDS
 
+                bounds = SEASONAL_BOUNDS if seasonal else COMPACT_BOUNDS
                 display = {
-                    "minimum": float(COMPACT_BOUNDS[0]),
-                    "maximum": float(COMPACT_BOUNDS[-1]),
-                    "breakpoints": list(COMPACT_BOUNDS),
+                    "minimum": float(bounds[0]),
+                    "maximum": float(bounds[-1]),
+                    "breakpoints": list(bounds),
                 }
             if display is None:
                 display = (definition.get("display") or {}).get("seasonal" if seasonal else "monthly")
