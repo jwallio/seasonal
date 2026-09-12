@@ -58,6 +58,32 @@ class SnowfallDisplayTests(unittest.TestCase):
             display_metadata_for_product(source)["legend_ticks_inches"], COMPACT_BOUNDS
         )
 
+    def test_c3s_renderer_converts_lwe_once_and_passes_compact_contract(self):
+        import c3s_seasonal
+        from unittest.mock import patch
+
+        source = dict(c3s_seasonal.PRODUCT_SPECS["snowfall_anomaly"])
+        with patch.object(c3s_seasonal, "render_map") as render:
+            c3s_seasonal.render_target(
+                FakeGrid([0.0], [0.0], [[0.75]]),
+                source,
+                "2026090100",
+                "202612",
+                4,
+                Path("out.jpg"),
+                [],
+                None,
+                "ensemble mean",
+            )
+
+        rendered_grid = render.call_args.args[0]
+        rendered_spec = render.call_args.kwargs["product_spec"]
+        self.assertEqual(rendered_grid.values, [[7.5]])
+        self.assertEqual(rendered_spec["anomaly_min"], -10)
+        self.assertEqual(rendered_spec["anomaly_max"], 10)
+        self.assertEqual(rendered_spec["anomaly_bounds"], COMPACT_BOUNDS)
+        self.assertTrue(rendered_spec["native_snow_depth_display"])
+
     def test_provider_specs_opt_into_compact_profile(self):
         import c3s_seasonal
         import cfsv2_seasonal
