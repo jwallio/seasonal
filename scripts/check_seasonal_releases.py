@@ -10,6 +10,8 @@ This checker keeps three states separate for each publishing worker:
 
 * ``source_ready``: every source field needed by the configured suite exists;
 * ``published``: the live manifest contains a rendered current-month suite;
+  for the super-ensemble, source retrieval and minimum-member validation remain
+  inside the rendering worker because its inputs span multiple archives;
 * ``needs_dispatch``: the release window is open, the source is ready, and the
   live suite is not complete.
 
@@ -101,12 +103,22 @@ EXPECTED_PRODUCTS: dict[str, tuple[str, ...]] = {
         "precipitation_anomaly",
         "mslp_anomaly",
     ),
+    "superensemble": (
+        "500mb_height_anomaly",
+        "500mb_height_anomaly_nh",
+        "850mb_temperature_anomaly",
+        "2m_temperature_anomaly",
+        "precipitation_anomaly",
+        "snowfall_anomaly",
+        "mslp_anomaly",
+    ),
 }
 
 MANIFEST_NAMES = {
     "seas5": "seas5_manifest.json",
     "c3s": "c3s_manifest.json",
     "jma": "jma_manifest.json",
+    "superensemble": "superensemble_manifest.json",
 }
 
 # ECMWF's own member dissemination is on the 5th.  The C3S/CDS inventory used
@@ -116,6 +128,9 @@ RELEASE_WINDOWS = {
     "seas5": (6, 12),
     "c3s": (10, 12),
     "jma": (10, 12),
+    # Super-ensemble snowfall uses the same current-month C3S release gate;
+    # its own adapters validate the additional non-CDS source families.
+    "superensemble": (10, 12),
 }
 
 
@@ -243,6 +258,11 @@ def make_requirement(
 
 
 def source_requirements(worker: str) -> list[Requirement]:
+    if worker == "superensemble":
+        # The super-ensemble retrieves and validates its heterogeneous source
+        # families inside its own worker; CDS catalogue completeness is not a
+        # sufficient proxy for its readiness.
+        return []
     if worker not in EXPECTED_PRODUCTS:
         raise ReleaseCheckError(f"unsupported worker {worker!r}")
     centres: Iterable[str]

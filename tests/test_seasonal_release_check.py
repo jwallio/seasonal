@@ -45,7 +45,7 @@ def synthetic_inventory(module, workers, target: str):
 
 def complete_manifest(module, worker: str, target: str, products=None):
     products = products or module.EXPECTED_PRODUCTS[worker]
-    component = {"seas5": "", "c3s": "multisystem", "jma": "jma"}[worker]
+    component = {"seas5": "", "c3s": "multisystem", "jma": "jma"}.get(worker, "")
     runs = []
     for product in products:
         run = {
@@ -64,7 +64,7 @@ def main() -> int:
     check(CHECKER.exists(), "seasonal release checker script is missing")
     module = load_checker()
     target = "202609"
-    workers = ("seas5", "c3s", "jma")
+    workers = ("seas5", "c3s", "jma", "superensemble")
     inventories = synthetic_inventory(module, workers, target)
 
     for worker in workers:

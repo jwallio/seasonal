@@ -27,6 +27,7 @@ on:
           - seas5
           - c3s
           - jma
+          - superensemble
       target:
         description: "Nominal initialization month as YYYYMM (blank = current UTC month)"
         required: false
@@ -135,6 +136,10 @@ jobs:
           JMA_SOURCE_READY: ${{ steps.release.outputs.jma_source_ready }}
           JMA_PUBLISHED: ${{ steps.release.outputs.jma_published }}
           JMA_MISSING_SOURCE_COUNT: ${{ steps.release.outputs.jma_missing_source_count }}
+          SUPERENSEMBLE_WINDOW_OPEN: ${{ steps.release.outputs.superensemble_window_open }}
+          SUPERENSEMBLE_SOURCE_READY: ${{ steps.release.outputs.superensemble_source_ready }}
+          SUPERENSEMBLE_PUBLISHED: ${{ steps.release.outputs.superensemble_published }}
+          SUPERENSEMBLE_MISSING_SOURCE_COUNT: ${{ steps.release.outputs.superensemble_missing_source_count }}
         run: |
           set -euo pipefail
           echo "" >> "$GITHUB_STEP_SUMMARY"
@@ -222,6 +227,14 @@ jobs:
                 -f product=all \
                 -f init="$TARGET" \
                 -f next_worker=cansips_snowfall
+            elif [[ "$worker" == "superensemble" ]]; then
+              gh workflow run "$workflow" \
+                --ref "$DEFAULT_BRANCH" \
+                -f product=all \
+                -f init="$TARGET" \
+                -f lead_months=4,5,6 \
+                -f seasonal_window=4,5,6 \
+                -f minimum_members=6
             else
               gh workflow run "$workflow" \
                 --ref "$DEFAULT_BRANCH" \
@@ -235,3 +248,4 @@ jobs:
           dispatch_worker "seas5" "seas5.yml" "$SEAS5_WINDOW_OPEN" "$SEAS5_SOURCE_READY" "$SEAS5_PUBLISHED" "$SEAS5_MISSING_SOURCE_COUNT"
           dispatch_worker "c3s" "c3s.yml" "$C3S_WINDOW_OPEN" "$C3S_SOURCE_READY" "$C3S_PUBLISHED" "$C3S_MISSING_SOURCE_COUNT"
           dispatch_worker "jma" "jma.yml" "$JMA_WINDOW_OPEN" "$JMA_SOURCE_READY" "$JMA_PUBLISHED" "$JMA_MISSING_SOURCE_COUNT"
+          dispatch_worker "superensemble" "superensemble.yml" "$SUPERENSEMBLE_WINDOW_OPEN" "$SUPERENSEMBLE_SOURCE_READY" "$SUPERENSEMBLE_PUBLISHED" "$SUPERENSEMBLE_MISSING_SOURCE_COUNT"

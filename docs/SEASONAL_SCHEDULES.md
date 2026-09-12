@@ -22,7 +22,7 @@ historical cycle or individual field needs to be regenerated.
 | APCC MME | APCC seasonal MME around the middle of the month | 20th of each month at 16:30 |
 | NASA GEOS-S2S-3 | Public NCCS numerical APCN archives during the first week | 6th of each month at 16:30 |
 | NOAA SFS beta2 | NOAA SFS development archive is refreshed monthly; beta2 forecast release checked after the 9th | 10th of each month at 18:30 |
-| Deduplicated super ensemble | After APCC, CMA, and the other component source windows | 22nd of each month at 20:30 |
+| Deduplicated super ensemble | After the C3S window; the 22nd remains a safety refresh | Release-check dispatch after the 10th; 22nd of each month at 20:30 safety run |
 | 500-mb pattern analogs and top-analog maps | After each successful CFSv2 or super-ensemble release | Source-triggered, with scheduled reconciliation at 02:35 and 14:35 |
 
 The Overview availability matrix exposes both clocks. **Last run** is the
@@ -45,7 +45,10 @@ cancelling concurrency groups; a newer release-target run supersedes an older
 delayed attempt, while an active run still suppresses duplicate dispatch, and a
 completed full-suite attempt has a 45-minute retry cooldown while Pages
 publishes. A daily catch-up check continues from the 13th through month-end so
-an unusually late provider or failed render is not abandoned.
+an unusually late provider or failed render is not abandoned. The same check
+evaluates the deduplicated super-ensemble manifest and dispatches a full
+4-5-6 DJF refresh once the C3S window is open, so a complete but older cycle
+cannot be mistaken for the current suite.
 
 Automatically dispatched C3S, JMA, and SEAS5 runs generate the full advertised anomaly suite. NOAA SFS beta2 uses the same six comparison fields and a native TSNOWP snowfall field:
 500-mb height, 850-mb temperature, 2-m temperature, precipitation,
