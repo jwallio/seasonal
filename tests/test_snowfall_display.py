@@ -6,6 +6,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
 from cfsv2_seasonal import SNOWFALL_ANOMALY_PALETTE
+from seasonal_products import grid_quality_control
 from snowfall_display import (
     BROAD_BOUNDS,
     COMPACT_BOUNDS,
@@ -83,6 +84,18 @@ class SnowfallDisplayTests(unittest.TestCase):
         self.assertEqual(rendered_spec["anomaly_max"], 14)
         self.assertEqual(rendered_spec["anomaly_bounds"], COMPACT_BOUNDS)
         self.assertTrue(rendered_spec["native_snow_depth_display"])
+
+    def test_quality_control_uses_compact_display_scale(self):
+        qc = grid_quality_control(
+            "snowfall_anomaly",
+            [[0.75]],
+            units="in",
+            field="snowfall_lwe",
+            display_profile=COMPACT_DISPLAY_PROFILE,
+        )
+        self.assertEqual(qc["display"]["minimum"], -14.0)
+        self.assertEqual(qc["display"]["maximum"], 14.0)
+        self.assertEqual(qc["display"]["breakpoints"], COMPACT_BOUNDS)
 
     def test_depth_input_is_not_converted_twice(self):
         source = {
