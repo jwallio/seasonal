@@ -106,6 +106,23 @@ def main() -> int:
             check(has_teal_brand_dot, "share image should contain the teal in-map brand dot")
             footer_pixel = image.convert("RGB").getpixel((2, image.height - 2))
             check(footer_pixel != BRAND_FOREGROUND, "share image must not replace the source bottom row with a footer")
+            comment = image.info.get("comment", b"")
+            if isinstance(comment, bytes):
+                comment = comment.decode("utf-8", errors="replace")
+            check("MapID: map-" in comment, "JPEG share image should carry a stable map identifier")
+            check("SourceSHA256:" in comment, "JPEG share image should carry source provenance metadata")
+        with Image.open(analog_share) as image:
+            check("MapID" in image.info, "PNG share image should carry a stable map identifier")
+            check("SourceSHA256" in image.info, "PNG share image should carry source provenance metadata")
+            check("UsageTerms" in image.info, "PNG share image should carry usage terms")
+        provenance = json.loads(
+            (site / "seasonal/share/provenance.json").read_text(encoding="utf-8")
+        )
+        check(len(provenance["assets"]) == 2, "provenance manifest should index every published share image")
+        check(
+            all(record["source_sha256"] and record["share_sha256"] for record in provenance["assets"]),
+            "provenance manifest should include source and published hashes",
+        )
         second = build_share_images(site)
         check(second["skipped"] == 2 and second["refreshed"] == 0, "repeat publication should reuse unchanged branded derivatives")
 
@@ -117,6 +134,7 @@ def main() -> int:
         summary = build_share_images(site)
         check(summary["created"] == 1, "flat Pages output should produce one share image")
         check((site / "share/cfsv2/run/map.jpg").is_file(), "flat Pages share path changed")
+        check((site / "share/provenance.json").is_file(), "flat Pages provenance path changed")
 
     print("SEASONAL SHARE IMAGE CONTRACT OK: branded, uncropped nested and flat derivatives")
     return 0
