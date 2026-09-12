@@ -6,13 +6,14 @@ RATIO = 10.0
 # The broad profile is retained for SFS and other products whose seasonal
 # mountain departures can exceed ten inches. CFSv2 and C3S explicitly opt into
 # the compact profile below so their legends match the readable reference
-# product: one-inch discrete bands from -10 to +10.
+# product: one-inch bands through ±8, then two-inch bands through ±14.
 BROAD_BOUNDS = [
     -100, -80, -60, -45, -35, -25, -15, -10, -5, -1, 0,
     1, 5, 10, 15, 25, 35, 45, 60, 80, 100,
 ]
 BROAD_TICKS = [-100, -60, -35, -15, -1, 0, 1, 15, 35, 60, 100]
-COMPACT_BOUNDS = list(range(-10, 11))
+# Use one-inch bins through ±8, then two-inch bins at ±10, ±12, and ±14.
+COMPACT_BOUNDS = [-14, -12, -10, -8, *range(-7, 9), 10, 12, 14]
 COMPACT_TICKS = list(COMPACT_BOUNDS)
 
 DISPLAY = {
@@ -40,7 +41,7 @@ def display_metadata_for_product(product=None):
     if product and product.get("snowfall_display_profile") == COMPACT_DISPLAY_PROFILE:
         metadata = deepcopy(DISPLAY)
         metadata.update(
-            scale_inches=[-10, 10],
+            scale_inches=[COMPACT_BOUNDS[0], COMPACT_BOUNDS[-1]],
             scale_profile=COMPACT_DISPLAY_PROFILE,
             scale_bounds_inches=list(COMPACT_BOUNDS),
             legend_ticks_inches=list(COMPACT_TICKS),
@@ -75,9 +76,16 @@ def depth_departure(grid, product, palette):
     bounds = list(COMPACT_BOUNDS if compact else BROAD_BOUNDS)
     ticks = list(COMPACT_TICKS if compact else BROAD_TICKS)
     scale_min, scale_max = bounds[0], bounds[-1]
+    if len(palette) == len(bounds) - 1:
+        display_palette = list(palette)
+    else:
+        # The broad profile uses the legacy 20-band subset of the shared palette.
+        display_palette = [*palette[:9], "#ffffff", "#ffffff", *palette[13:]]
+    if len(display_palette) != len(bounds) - 1:
+        raise ValueError("snowfall palette length must match display intervals")
     spec.update(
         anomaly_min=scale_min, anomaly_max=scale_max, anomaly_ticks=ticks, anomaly_bounds=bounds,
-        anomaly_palette=[*palette[:9], "#ffffff", "#ffffff", *palette[13:]],
+        anomaly_palette=display_palette,
         anomaly_endpoint_labels={"minimum": f"≤−{abs(scale_min)}", "maximum": f"≥+{scale_max}"},
         anomaly_tick_decimals=0, native_snow_depth_display=True,
         snowfall_values_are_depth=True,
@@ -85,18 +93,17 @@ def depth_departure(grid, product, palette):
         snowfall_output_units="inches snow",
         conversion_kind="snowfall_lwe_to_snow_depth_10_to_1",
         conversion="estimated snow-depth departure (in) = snowfall LWE departure (in) × 10.0",
-        header_detail="{source_label}  •  Snowfall depth departure (in)  •  LWE × 10 at a fixed 10:1 ratio",
+        header_detail="{source_label}  •  Snowfall LWE departure × 10 = estimated snow depth (in)  •  fixed 10:1 ratio",
     )
-    source = str(spec.get("source_label", "NOAA CFSv2 / NOMADS"))
-    kind = ("Native/derived blend" if "super ensemble" in source.lower() else
-            "Derived snowfall" if "CFSv2" in source else "Native model snowfall")
-    kind = spec.get("snowfall_input_kind", kind)
-    spec["header_detail"] = "{source_label}  •  " + kind + "  •  LWE × 10 = estimated snow depth (in)  •  fixed 10:1 ratio"
+    spec["header_detail"] = (
+        "{source_label}  •  Snowfall LWE departure × 10 = estimated snow depth (in)"
+        "  •  fixed 10:1 ratio"
+    )
     title = (spec.get("title", "Snowfall Departure")
              .replace("Estimated Snowfall", "Snowfall")
              .replace("Derived Snowfall", "Snowfall")
              .replace(" (in LWE)", "")
              .replace(" (in snow)", "")
              .replace(" (in)", ""))
-    spec["title"] = title + " (in snow)"
+    spec["title"] = title + " (in)"
     return (grid if values_are_depth else convert_lwe_to_snow_depth(grid)), spec
