@@ -526,7 +526,9 @@ def render_target(
     # that comparison field once for the image and pass the compact snow-depth
     # display contract through to the shared renderer and its sidecars.
     if product.get("name") == "snowfall_anomaly":
-        grid, product = depth_departure(grid, product, SNOWFALL_ANOMALY_PALETTE)
+        grid, product = depth_departure(
+            grid, product, SNOWFALL_ANOMALY_PALETTE, seasonal=seasonal
+        )
     render_map(
         grid, init, target, lead, list(range(max(1, int(str(lead).split("–")[0])))), output,
         anomaly=True, baseline_label="C3S native postprocessed anomaly", border_paths=borders,
