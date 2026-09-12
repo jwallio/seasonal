@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "kind": "c3s_seasonal_manifest",
-  "generated_utc": "2026-09-12T09:19:15Z",
+  "generated_utc": "2026-09-12T14:59:56Z",
   "source": "Copernicus C3S seasonal forecasts",
   "source_url": "https://climate.copernicus.eu/seasonal-forecasts",
   "source_urls": [
@@ -275,42 +275,40 @@
             "p01": -3.584649,
             "p99": 1.007585,
             "display": {
-              "minimum": -14.0,
-              "maximum": 14.0,
+              "minimum": -20.0,
+              "maximum": 20.0,
               "breakpoints": [
+                -20,
+                -18,
+                -16,
                 -14,
                 -12,
                 -10,
                 -8,
-                -7,
                 -6,
-                -5,
                 -4,
-                -3,
                 -2,
-                -1,
                 0,
-                1,
                 2,
-                3,
                 4,
-                5,
                 6,
-                7,
                 8,
                 10,
                 12,
-                14
+                14,
+                16,
+                18,
+                20
               ],
-              "below_fraction": 0.072188,
-              "above_fraction": 0.004063,
-              "clipped_fraction": 0.07625
+              "below_fraction": 0.044375,
+              "above_fraction": 0.001563,
+              "clipped_fraction": 0.045937
             },
             "issues": [
               {
                 "code": "display_scale_clipping",
                 "severity": "warning",
-                "message": "7.6% of finite cells exceed the fixed display scale."
+                "message": "4.6% of finite cells exceed the fixed display scale."
               }
             ],
             "status": "warning"
@@ -1783,7 +1781,7 @@
           "units": "in",
           "statistic": "ensemble_mean",
           "status": "failed",
-          "error": "C3S request failed for ncep/2 snowfall_anomalous_rate_of_accumulation lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/a97b79ad-49c7-4ef1-a95a-217e54a3a72f/results\nThe job has failed\nThe job failed with: MarsNoDataError\nMARS returned no data, please check your selection.Request submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['4'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['kwbc'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['2'], 'time': ['all'], 'type': ['em']}]\n"
+          "error": "C3S request failed for ncep/2 snowfall_anomalous_rate_of_accumulation lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/7caf8559-d19d-4bbf-a96f-7e7a50733f4d/results\nThe job has failed\nThe job failed with: MarsNoDataError\nMARS returned no data, please check your selection.Request submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['4'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['kwbc'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['2'], 'time': ['all'], 'type': ['em']}]\n"
         },
         {
           "id": "c3s-ncep-2026090100-snowfall_anomaly-lead04",
@@ -1795,7 +1793,7 @@
           "units": "in",
           "statistic": "ensemble_mean",
           "status": "failed",
-          "error": "C3S request failed for ncep/2 snowfall_anomalous_rate_of_accumulation lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/cd56110c-a25d-469c-8797-57ef8ac285b4/results\nThe job has failed\nThe job failed with: MarsNoDataError\nMARS returned no data, please check your selection.Request submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['5'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['kwbc'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['2'], 'time': ['all'], 'type': ['em']}]\n"
+          "error": "C3S request failed for ncep/2 snowfall_anomalous_rate_of_accumulation lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/594c6696-c88e-43ec-9cee-c68c0ed34c29/results\nThe job has failed\nMARS returned no data, please check your selection.Request submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['5'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['kwbc'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['2'], 'time': ['all'], 'type': ['em']}]\n\nThe job failed with: MarsNoDataError"
         },
         {
           "id": "c3s-ncep-2026090100-snowfall_anomaly-lead05",
@@ -1807,7 +1805,7 @@
           "units": "in",
           "statistic": "ensemble_mean",
           "status": "failed",
-          "error": "C3S request failed for ncep/2 snowfall_anomalous_rate_of_accumulation lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/8d66cf93-2d33-437d-9731-4b6f6f50bbe2/results\nThe job has failed\nThe job failed with: MarsNoDataError\nMARS returned no data, please check your selection.Request submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['6'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['kwbc'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['2'], 'time': ['all'], 'type': ['em']}]\n"
+          "error": "C3S request failed for ncep/2 snowfall_anomalous_rate_of_accumulation lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/16e80075-59cd-4e58-85e4-eab14d2faf30/results\nThe job has failed\nThe job failed with: MarsNoDataError\nMARS returned no data, please check your selection.Request submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['6'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['kwbc'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['2'], 'time': ['all'], 'type': ['em']}]\n"
         },
         {
           "id": "c3s-ncep-2026090100-snowfall_anomaly-202612-202702",
@@ -3526,42 +3524,40 @@
             "p01": -3.535277,
             "p99": 0.806461,
             "display": {
-              "minimum": -14.0,
-              "maximum": 14.0,
+              "minimum": -20.0,
+              "maximum": 20.0,
               "breakpoints": [
+                -20,
+                -18,
+                -16,
                 -14,
                 -12,
                 -10,
                 -8,
-                -7,
                 -6,
-                -5,
                 -4,
-                -3,
                 -2,
-                -1,
                 0,
-                1,
                 2,
-                3,
                 4,
-                5,
                 6,
-                7,
                 8,
                 10,
                 12,
-                14
+                14,
+                16,
+                18,
+                20
               ],
-              "below_fraction": 0.060312,
-              "above_fraction": 0.001563,
-              "clipped_fraction": 0.061875
+              "below_fraction": 0.04,
+              "above_fraction": 0.000937,
+              "clipped_fraction": 0.040938
             },
             "issues": [
               {
                 "code": "display_scale_clipping",
                 "severity": "warning",
-                "message": "6.2% of finite cells exceed the fixed display scale."
+                "message": "4.1% of finite cells exceed the fixed display scale."
               }
             ],
             "status": "warning"
@@ -5729,42 +5725,40 @@
             "p01": -2.733787,
             "p99": 0.605109,
             "display": {
-              "minimum": -14.0,
-              "maximum": 14.0,
+              "minimum": -20.0,
+              "maximum": 20.0,
               "breakpoints": [
+                -20,
+                -18,
+                -16,
                 -14,
                 -12,
                 -10,
                 -8,
-                -7,
                 -6,
-                -5,
                 -4,
-                -3,
                 -2,
-                -1,
                 0,
-                1,
                 2,
-                3,
                 4,
-                5,
                 6,
-                7,
                 8,
                 10,
                 12,
-                14
+                14,
+                16,
+                18,
+                20
               ],
-              "below_fraction": 0.049375,
-              "above_fraction": 0.000625,
-              "clipped_fraction": 0.05
+              "below_fraction": 0.028125,
+              "above_fraction": 0.000313,
+              "clipped_fraction": 0.028438
             },
             "issues": [
               {
                 "code": "display_scale_clipping",
                 "severity": "warning",
-                "message": "5.0% of finite cells exceed the fixed display scale."
+                "message": "2.8% of finite cells exceed the fixed display scale."
               }
             ],
             "status": "warning"
@@ -7213,7 +7207,7 @@
           "units": "in",
           "statistic": "ensemble_mean",
           "status": "failed",
-          "error": "C3S request failed for jma/4 snowfall_anomalous_rate_of_accumulation lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/e4cf8dc3-9291-4d0c-9555-fffc716fd447/results\nThe job has failed\nThe job failed with: MarsNoDataError\nMARS returned no data, please check your selection.Request submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['4'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['rjtd'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['4'], 'time': ['all'], 'type': ['em']}]\n"
+          "error": "C3S request failed for jma/4 snowfall_anomalous_rate_of_accumulation lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/ddcbfa63-fd40-45f5-ab9a-0e92390af788/results\nThe job has failed\nMARS returned no data, please check your selection.Request submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['4'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['rjtd'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['4'], 'time': ['all'], 'type': ['em']}]\n\nThe job failed with: MarsNoDataError"
         },
         {
           "id": "c3s-jma-2026090100-snowfall_anomaly-lead04",
@@ -7225,7 +7219,7 @@
           "units": "in",
           "statistic": "ensemble_mean",
           "status": "failed",
-          "error": "C3S request failed for jma/4 snowfall_anomalous_rate_of_accumulation lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/fdd4cbba-4fb0-4f0c-845d-ed0ce5455338/results\nThe job has failed\nThe job failed with: MarsNoDataError\nMARS returned no data, please check your selection.Request submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['5'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['rjtd'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['4'], 'time': ['all'], 'type': ['em']}]\n"
+          "error": "C3S request failed for jma/4 snowfall_anomalous_rate_of_accumulation lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/5863ae53-6341-4e65-b830-41db486ea813/results\nThe job has failed\nThe job failed with: MarsNoDataError\nMARS returned no data, please check your selection.Request submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['5'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['rjtd'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['4'], 'time': ['all'], 'type': ['em']}]\n"
         },
         {
           "id": "c3s-jma-2026090100-snowfall_anomaly-lead05",
@@ -7237,7 +7231,7 @@
           "units": "in",
           "statistic": "ensemble_mean",
           "status": "failed",
-          "error": "C3S request failed for jma/4 snowfall_anomalous_rate_of_accumulation lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/7b41d952-e752-471e-9ef2-764eba74430e/results\nThe job has failed\nThe job failed with: MarsNoDataError\nMARS returned no data, please check your selection.Request submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['6'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['rjtd'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['4'], 'time': ['all'], 'type': ['em']}]\n"
+          "error": "C3S request failed for jma/4 snowfall_anomalous_rate_of_accumulation lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/5a1ec543-793a-43fb-8119-826da61702a9/results\nThe job has failed\nThe job failed with: MarsNoDataError\nMARS returned no data, please check your selection.Request submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['6'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['rjtd'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['4'], 'time': ['all'], 'type': ['em']}]\n"
         },
         {
           "id": "c3s-jma-2026090100-snowfall_anomaly-202612-202702",
@@ -8912,42 +8906,40 @@
             "p01": -3.440505,
             "p99": 0.765347,
             "display": {
-              "minimum": -14.0,
-              "maximum": 14.0,
+              "minimum": -20.0,
+              "maximum": 20.0,
               "breakpoints": [
+                -20,
+                -18,
+                -16,
                 -14,
                 -12,
                 -10,
                 -8,
-                -7,
                 -6,
-                -5,
                 -4,
-                -3,
                 -2,
-                -1,
                 0,
-                1,
                 2,
-                3,
                 4,
-                5,
                 6,
-                7,
                 8,
                 10,
                 12,
-                14
+                14,
+                16,
+                18,
+                20
               ],
-              "below_fraction": 0.064062,
-              "above_fraction": 0.003125,
-              "clipped_fraction": 0.067187
+              "below_fraction": 0.03625,
+              "above_fraction": 0.002188,
+              "clipped_fraction": 0.038437
             },
             "issues": [
               {
                 "code": "display_scale_clipping",
                 "severity": "warning",
-                "message": "6.7% of finite cells exceed the fixed display scale."
+                "message": "3.8% of finite cells exceed the fixed display scale."
               }
             ],
             "status": "warning"
@@ -10604,42 +10596,40 @@
             "p01": -3.654651,
             "p99": 1.211539,
             "display": {
-              "minimum": -14.0,
-              "maximum": 14.0,
+              "minimum": -20.0,
+              "maximum": 20.0,
               "breakpoints": [
+                -20,
+                -18,
+                -16,
                 -14,
                 -12,
                 -10,
                 -8,
-                -7,
                 -6,
-                -5,
                 -4,
-                -3,
                 -2,
-                -1,
                 0,
-                1,
                 2,
-                3,
                 4,
-                5,
                 6,
-                7,
                 8,
                 10,
                 12,
-                14
+                14,
+                16,
+                18,
+                20
               ],
-              "below_fraction": 0.069375,
-              "above_fraction": 0.005938,
-              "clipped_fraction": 0.075313
+              "below_fraction": 0.046875,
+              "above_fraction": 0.002188,
+              "clipped_fraction": 0.049063
             },
             "issues": [
               {
                 "code": "display_scale_clipping",
                 "severity": "warning",
-                "message": "7.5% of finite cells exceed the fixed display scale."
+                "message": "4.9% of finite cells exceed the fixed display scale."
               }
             ],
             "status": "warning"
@@ -12314,42 +12304,40 @@
             "p01": -4.853663,
             "p99": 0.578622,
             "display": {
-              "minimum": -14.0,
-              "maximum": 14.0,
+              "minimum": -20.0,
+              "maximum": 20.0,
               "breakpoints": [
+                -20,
+                -18,
+                -16,
                 -14,
                 -12,
                 -10,
                 -8,
-                -7,
                 -6,
-                -5,
                 -4,
-                -3,
                 -2,
-                -1,
                 0,
-                1,
                 2,
-                3,
                 4,
-                5,
                 6,
-                7,
                 8,
                 10,
                 12,
-                14
+                14,
+                16,
+                18,
+                20
               ],
-              "below_fraction": 0.07,
-              "above_fraction": 0.001875,
-              "clipped_fraction": 0.071875
+              "below_fraction": 0.04,
+              "above_fraction": 0.000313,
+              "clipped_fraction": 0.040313
             },
             "issues": [
               {
                 "code": "display_scale_clipping",
                 "severity": "warning",
-                "message": "7.2% of finite cells exceed the fixed display scale."
+                "message": "4.0% of finite cells exceed the fixed display scale."
               }
             ],
             "status": "warning"
@@ -14006,42 +13994,40 @@
             "p01": -4.090046,
             "p99": 1.704955,
             "display": {
-              "minimum": -14.0,
-              "maximum": 14.0,
+              "minimum": -20.0,
+              "maximum": 20.0,
               "breakpoints": [
+                -20,
+                -18,
+                -16,
                 -14,
                 -12,
                 -10,
                 -8,
-                -7,
                 -6,
-                -5,
                 -4,
-                -3,
                 -2,
-                -1,
                 0,
-                1,
                 2,
-                3,
                 4,
-                5,
                 6,
-                7,
                 8,
                 10,
                 12,
-                14
+                14,
+                16,
+                18,
+                20
               ],
-              "below_fraction": 0.067187,
-              "above_fraction": 0.0175,
-              "clipped_fraction": 0.084687
+              "below_fraction": 0.040313,
+              "above_fraction": 0.006562,
+              "clipped_fraction": 0.046875
             },
             "issues": [
               {
                 "code": "display_scale_clipping",
                 "severity": "warning",
-                "message": "8.5% of finite cells exceed the fixed display scale."
+                "message": "4.7% of finite cells exceed the fixed display scale."
               }
             ],
             "status": "warning"
@@ -15502,7 +15488,7 @@
           "units": "in",
           "statistic": "ensemble_mean",
           "status": "failed",
-          "error": "C3S request failed for bom/2 snowfall_anomalous_rate_of_accumulation lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/3e54aedf-afd6-4c5a-b210-a2c4a965f188/results\nThe job has failed\nMARS returned no data, please check your selection.Request submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['4'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['ammc'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['2'], 'time': ['all'], 'type': ['em']}]\n\nThe job failed with: MarsNoDataError"
+          "error": "C3S request failed for bom/2 snowfall_anomalous_rate_of_accumulation lead 4: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/8df0f8b8-e98a-43e9-b599-86df91386fe9/results\nThe job has failed\nThe job failed with: MarsNoDataError\nMARS returned no data, please check your selection.Request submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['4'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['ammc'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['2'], 'time': ['all'], 'type': ['em']}]\n"
         },
         {
           "id": "c3s-bom-2026090100-snowfall_anomaly-lead04",
@@ -15514,7 +15500,7 @@
           "units": "in",
           "statistic": "ensemble_mean",
           "status": "failed",
-          "error": "C3S request failed for bom/2 snowfall_anomalous_rate_of_accumulation lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/5bd4fc22-ecb4-44b6-9986-b0bcb7a83109/results\nThe job has failed\nMARS returned no data, please check your selection.Request submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['5'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['ammc'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['2'], 'time': ['all'], 'type': ['em']}]\n\nThe job failed with: MarsNoDataError"
+          "error": "C3S request failed for bom/2 snowfall_anomalous_rate_of_accumulation lead 5: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/3c72ec00-299f-4f57-99cb-b7db06f89676/results\nThe job has failed\nThe job failed with: MarsNoDataError\nMARS returned no data, please check your selection.Request submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['5'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['ammc'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['2'], 'time': ['all'], 'type': ['em']}]\n"
         },
         {
           "id": "c3s-bom-2026090100-snowfall_anomaly-lead05",
@@ -15526,7 +15512,7 @@
           "units": "in",
           "statistic": "ensemble_mean",
           "status": "failed",
-          "error": "C3S request failed for bom/2 snowfall_anomalous_rate_of_accumulation lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/ad8dc195-9be7-432e-853b-f7387583b2d6/results\nThe job has failed\nThe job failed with: MarsNoDataError\nMARS returned no data, please check your selection.Request submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['6'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['ammc'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['2'], 'time': ['all'], 'type': ['em']}]\n"
+          "error": "C3S request failed for bom/2 snowfall_anomalous_rate_of_accumulation lead 6: 400 Client Error: Bad Request for url: https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/9ea23f1e-ab7e-4d38-b382-d39d3c4d9836/results\nThe job has failed\nMARS returned no data, please check your selection.Request submitted to the MARS server:\n[{'area': ['60.0', '-135.0', '20.0', '-55.0'], 'class': ['c3'], 'database': 'ecmwf', 'date': ['2026-09-01'], 'expect': ['any'], 'expver': ['1'], 'fcmonth': ['6'], 'levtype': ['sfc'], 'method': ['1'], 'number': ['all'], 'origin': ['ammc'], 'param': ['173144'], 'stream': ['mmsa'], 'system': ['2'], 'time': ['all'], 'type': ['em']}]\n\nThe job failed with: MarsNoDataError"
         },
         {
           "id": "c3s-bom-2026090100-snowfall_anomaly-202612-202702",
