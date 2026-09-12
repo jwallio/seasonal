@@ -679,6 +679,7 @@ def grid_quality_control(
     units: str | None,
     field: str | None,
     seasonal: bool = False,
+    display_profile: str | None = None,
 ) -> dict[str, Any]:
     """Return serializable numerical QC for a decoded forecast grid.
 
@@ -744,7 +745,17 @@ def grid_quality_control(
                     "above_physical_envelope", "error",
                     f"Grid maximum {maximum:g} exceeds the hard {hard_maximum:g} envelope.",
                 ))
-            display = (definition.get("display") or {}).get("seasonal" if seasonal else "monthly")
+            display = None
+            if display_profile == "c3s_readable" and canonical == "snowfall_anomaly":
+                from snowfall_display import COMPACT_BOUNDS
+
+                display = {
+                    "minimum": float(COMPACT_BOUNDS[0]),
+                    "maximum": float(COMPACT_BOUNDS[-1]),
+                    "breakpoints": list(COMPACT_BOUNDS),
+                }
+            if display is None:
+                display = (definition.get("display") or {}).get("seasonal" if seasonal else "monthly")
             if display:
                 display_minimum = float(display["minimum"])
                 display_maximum = float(display["maximum"])
