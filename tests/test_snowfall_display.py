@@ -12,6 +12,7 @@ from snowfall_display import (
     COMPACT_BOUNDS,
     COMPACT_DISPLAY_PROFILE,
     DISPLAY,
+    SEASONAL_BOUNDS,
     depth_departure,
     display_metadata_for_product,
 )
@@ -85,6 +86,33 @@ class SnowfallDisplayTests(unittest.TestCase):
         self.assertEqual(rendered_spec["anomaly_bounds"], COMPACT_BOUNDS)
         self.assertTrue(rendered_spec["native_snow_depth_display"])
 
+
+    def test_three_month_profile_uses_two_inch_bands(self):
+        source = {
+            "name": "snowfall_anomaly",
+            "snowfall_display_profile": COMPACT_DISPLAY_PROFILE,
+        }
+        grid, spec = depth_departure(
+            FakeGrid([0.0], [0.0], [[0.75]]),
+            source,
+            SNOWFALL_ANOMALY_PALETTE,
+            seasonal=True,
+        )
+        self.assertEqual(grid.values, [[7.5]])
+        self.assertEqual(spec["anomaly_min"], -20)
+        self.assertEqual(spec["anomaly_max"], 20)
+        self.assertEqual(spec["anomaly_bounds"], SEASONAL_BOUNDS)
+        self.assertEqual(spec["anomaly_ticks"], SEASONAL_BOUNDS)
+        self.assertEqual(len(spec["anomaly_palette"]), len(SEASONAL_BOUNDS) - 1)
+        self.assertEqual(
+            display_metadata_for_product(source, seasonal=True)["scale_inches"],
+            [-20, 20],
+        )
+        self.assertEqual(
+            display_metadata_for_product(source, seasonal=True)["legend_ticks_inches"],
+            SEASONAL_BOUNDS,
+        )
+
     def test_quality_control_uses_compact_display_scale(self):
         qc = grid_quality_control(
             "snowfall_anomaly",
@@ -96,6 +124,20 @@ class SnowfallDisplayTests(unittest.TestCase):
         self.assertEqual(qc["display"]["minimum"], -14.0)
         self.assertEqual(qc["display"]["maximum"], 14.0)
         self.assertEqual(qc["display"]["breakpoints"], COMPACT_BOUNDS)
+
+
+    def test_quality_control_uses_two_inch_seasonal_display_scale(self):
+        qc = grid_quality_control(
+            "snowfall_anomaly",
+            [[0.75]],
+            units="in",
+            field="snowfall_lwe",
+            display_profile=COMPACT_DISPLAY_PROFILE,
+            seasonal=True,
+        )
+        self.assertEqual(qc["display"]["minimum"], -20.0)
+        self.assertEqual(qc["display"]["maximum"], 20.0)
+        self.assertEqual(qc["display"]["breakpoints"], SEASONAL_BOUNDS)
 
     def test_depth_input_is_not_converted_twice(self):
         source = {
