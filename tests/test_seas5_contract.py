@@ -132,9 +132,9 @@ def main() -> int:
     check(module.PRODUCT_SPECS[module.PRECIP_ANOMALY]["anomaly_palette"] == module.SEAS5_PRECIP_ANOMALY_PALETTE, "SEAS5 precipitation should use its darker negative palette")
     snowfall_spec = module.PRODUCT_SPECS[module.SNOWFALL_ANOMALY]
     expected_snowfall_ticks = [-4.0, -3.5, -3.0, -2.5, -2.0, -1.75, -1.5, -1.25, -1.0, -0.75, -0.5, 0.0, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 2.5, 3.0, 3.5, 4.0]
-    check((snowfall_spec["anomaly_min"], snowfall_spec["anomaly_max"]) == (-4.0, 4.0), "SEAS5 snowfall should use a nonlinear ±4.0 inch water-equivalent range")
-    check(snowfall_spec["anomaly_ticks"] == expected_snowfall_ticks, "SEAS5 snowfall should use the approved nonlinear labelled breakpoints")
-    check(snowfall_spec["anomaly_tick_format"] == "signed_trimmed" and snowfall_spec["anomaly_tick_decimals"] == 2, "SEAS5 snowfall labels should preserve quarter-inch breakpoints")
+    check(snowfall_spec["snowfall_display_profile"] == "c3s_readable", "SEAS5 snowfall should use the shared readable display profile")
+    check((snowfall_spec["anomaly_min"], snowfall_spec["anomaly_max"]) == (-4.0, 4.0), "SEAS5 snowfall source spec should retain its LWE range")
+    check(snowfall_spec["anomaly_ticks"] == expected_snowfall_ticks, "SEAS5 snowfall source spec should retain its LWE breakpoints")
     check((snowfall_spec["monthly_anomaly_min"], snowfall_spec["monthly_anomaly_max"]) == (-2.0, 2.0), "SEAS5 monthly snowfall should use the tighter ±2.0 inch range")
     check(len(snowfall_spec["monthly_anomaly_ticks"]) == len(snowfall_spec["monthly_anomaly_palette"]) + 1, "SEAS5 monthly snowfall bounds must align with swatches")
     check(snowfall_spec["monthly_anomaly_endpoint_labels"] == {"minimum": "≤−2.0", "maximum": "≥+2.0"}, "SEAS5 monthly snowfall legend should mark clipped endpoints")
@@ -165,7 +165,9 @@ def main() -> int:
     original = module.Grid([0.,1.,2.],[0.],[[-0.4,0.,0.4]])
     for seasonal in (False,True):
         display,spec = module.snowfall_display(original,snowfall_spec,seasonal)
-        check(spec["anomaly_ticks"] == [-100, -60, -35, -15, -1, 0, 1, 15, 35, 60, 100], "snow-depth display must use the shared broad labelled bands")
+        expected_display_ticks = list(module.SEASONAL_TICKS if seasonal else module.COMPACT_TICKS)
+        check(spec["anomaly_ticks"] == expected_display_ticks, "snow-depth display must use the shared monthly or seasonal labelled bands")
+        check((spec["anomaly_min"], spec["anomaly_max"]) == ((-20,20) if seasonal else (-14,14)), "snow-depth display must use the correct seasonal or monthly endpoints")
         check(len(spec["anomaly_bounds"]) == len(spec["anomaly_palette"]) + 1, "snow-depth boundaries must align with palette")
         check(display.values == [[-4.,0.,4.]], "signed LWE departures must convert exactly once")
         check(original.values == [[-0.4,0.,0.4]], "conversion must not mutate canonical LWE")
