@@ -4,17 +4,19 @@ from copy import deepcopy
 RATIO = 10.0
 
 # The broad profile is retained for SFS and other products whose seasonal
-# mountain departures can exceed ten inches. CFSv2 and C3S explicitly opt into
-# the compact profile below so their legends match the readable reference
-# product: one-inch bands through ±8, then two-inch bands through ±14.
+# mountain departures can exceed ten inches.
 BROAD_BOUNDS = [
     -100, -80, -60, -45, -35, -25, -15, -10, -5, -1, 0,
     1, 5, 10, 15, 25, 35, 45, 60, 80, 100,
 ]
 BROAD_TICKS = [-100, -60, -35, -15, -1, 0, 1, 15, 35, 60, 100]
-# Use one-inch bins through ±8, then two-inch bins at ±10, ±12, and ±14.
+# Monthly maps use one-inch bins through ±8, then two-inch bins at ±10, ±12,
+# and ±14. Three-month average maps use only two-inch bins from ±2 through
+# ±20, so DJF/JFM departues remain readable without overplotting the legend.
 COMPACT_BOUNDS = [-14, -12, -10, -8, *range(-7, 9), 10, 12, 14]
 COMPACT_TICKS = list(COMPACT_BOUNDS)
+SEASONAL_BOUNDS = list(range(-20, 21, 2))
+SEASONAL_TICKS = list(SEASONAL_BOUNDS)
 
 DISPLAY = {
     "quantity": "estimated snowfall depth departure", "units": "in",
@@ -34,17 +36,21 @@ DISPLAY = {
 }
 
 COMPACT_DISPLAY_PROFILE = "c3s_readable"
+SEASONAL_DISPLAY_PROFILE = "c3s_readable_seasonal"
 
 
-def display_metadata_for_product(product=None):
-    """Return metadata for the snowfall image profile selected by a product."""
+def display_metadata_for_product(product=None, *, seasonal=False):
+    """Return metadata for the selected monthly or three-month snowfall profile."""
     if product and product.get("snowfall_display_profile") == COMPACT_DISPLAY_PROFILE:
+        bounds = SEASONAL_BOUNDS if seasonal else COMPACT_BOUNDS
+        ticks = SEASONAL_TICKS if seasonal else COMPACT_TICKS
+        profile = SEASONAL_DISPLAY_PROFILE if seasonal else COMPACT_DISPLAY_PROFILE
         metadata = deepcopy(DISPLAY)
         metadata.update(
-            scale_inches=[COMPACT_BOUNDS[0], COMPACT_BOUNDS[-1]],
-            scale_profile=COMPACT_DISPLAY_PROFILE,
-            scale_bounds_inches=list(COMPACT_BOUNDS),
-            legend_ticks_inches=list(COMPACT_TICKS),
+            scale_inches=[bounds[0], bounds[-1]],
+            scale_profile=profile,
+            scale_bounds_inches=list(bounds),
+            legend_ticks_inches=list(ticks),
         )
         return metadata
     return deepcopy(DISPLAY)
@@ -56,7 +62,7 @@ def convert_lwe_to_snow_depth(grid):
                       [[value * RATIO for value in row] for row in grid.values])
 
 
-def depth_departure(grid, product, palette):
+def depth_departure(grid, product, palette, *, seasonal=False):
     """Return an inches-of-snow grid and its discrete display specification.
 
     Most providers keep their comparison math in LWE and arrive here with an
@@ -70,11 +76,19 @@ def depth_departure(grid, product, palette):
     for key in list(spec):
         if key.startswith(("monthly_anomaly_", "seasonal_anomaly_")):
             del spec[key]
-    # CFSv2 and C3S use the compact C3S-style one-inch legend. Other
-    # providers retain the broader nonlinear profile unless they opt in.
+    # Opted-in providers use the readable monthly profile, or the dedicated
+    # two-inch profile for three-month average maps. Other providers retain
+    # the broader nonlinear profile unless they opt in.
     compact = product.get("snowfall_display_profile") == COMPACT_DISPLAY_PROFILE
-    bounds = list(COMPACT_BOUNDS if compact else BROAD_BOUNDS)
-    ticks = list(COMPACT_TICKS if compact else BROAD_TICKS)
+    if compact and seasonal:
+        bounds = list(SEASONAL_BOUNDS)
+        ticks = list(SEASONAL_TICKS)
+    elif compact:
+        bounds = list(COMPACT_BOUNDS)
+        ticks = list(COMPACT_TICKS)
+    else:
+        bounds = list(BROAD_BOUNDS)
+        ticks = list(BROAD_TICKS)
     scale_min, scale_max = bounds[0], bounds[-1]
     if len(palette) == len(bounds) - 1:
         display_palette = list(palette)
