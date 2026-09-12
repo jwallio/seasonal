@@ -229,6 +229,7 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "name": SNOWFALL_ANOMALY,
         "variable": "sf",
         "field": "snowfall_anomaly",
+        "snowfall_display_profile": "c3s_readable",
         "raw_field": "sf / snowfall",
         "raw_units": "m s**-1",
         "units": "in",
@@ -455,7 +456,7 @@ SNOW_DISPLAY_RATIO = 10.0
 
 def snowfall_display(grid: Grid, product: dict[str, Any], seasonal: bool = False):
     from snowfall_display import depth_departure
-    return depth_departure(grid, product, SNOWFALL_ANOMALY_PALETTE)
+    return depth_departure(grid, product, SNOWFALL_ANOMALY_PALETTE, seasonal=seasonal)
 
 
 def render_standalone(grid: Grid, *args, product_spec, seasonal=False, **kwargs):
