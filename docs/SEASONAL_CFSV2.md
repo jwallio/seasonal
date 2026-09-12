@@ -34,7 +34,7 @@ The supported production products are:
 | `2m_temperature_anomaly` | `TMP:2 m above ground` from `flxf` | °C | 3-month mean |
 | `mslp_anomaly` | `PRES:mean sea level` from `pgbf` | hPa | 3-month mean |
 | `precipitation_anomaly` | `PRATE:surface` from `flxf` | in | 3-month total |
-| `snowfall_anomaly` | Derived from `TMP:2 m`, `TMP:850 mb`, and `PRATE:surface` | in LWE | 3-month total |
+| `snowfall_anomaly` | Derived from `TMP:2 m`, `TMP:850 mb`, and `PRATE:surface` | in LWE; image in estimated snow depth | 3-month total |
 | `snowfall_accumulation` | Derived snowfall LWE multiplied by seasonal CIPS/Baxter SLR climatology | in estimated snow depth | 3-month total |
 
 The 2-m temperature anomaly is a forecast-minus-reforecast difference; the
@@ -65,6 +65,11 @@ regridded to the native FLXF Gaussian grid before the phase calculation. The
 matching 1982-2010 NCEI calibration fields are processed with the same method
 and subtracted from the forecast. A single SWE or precipitation baseline is
 never accepted as a snowfall substitute.
+
+The snowfall-departure image uses the C3S-readable scale: 20 discrete one-inch
+estimated snow-depth bands from −10 to +10 inches, with white from −1 to +1
+inches. The canonical comparison grid remains LWE, and the fixed 10:1 ratio is
+applied once for the displayed snow-depth product.
 
 Estimated snowfall accumulation is a separate product. After the member-level
 Dai phase calculation produces monthly snowfall liquid-water equivalent, the

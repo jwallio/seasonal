@@ -23,10 +23,10 @@ the shared seasonal 500-mb scale of −120 to +120 m in 10-metre intervals.
 The scheduled suite also renders `snowfall_anomaly` for the C3S centres and
 multi-system blend. It is a CONUS monthly total or DJF three-month sum of the
 native C3S snowfall anomalous rate, converted to inches of liquid-water
-equivalent. This is a snowfall water-equivalent departure, not a snow-depth
-estimate. Monthly maps use nonlinear labelled bins from -2.0 to +2.0 inches;
-seasonal/DJF maps use -4.0 to +4.0 inches. Both use finer breakpoints near zero
-and wider tail bins. A centre that does not return the field is retained as a
+equivalent. The canonical comparison field remains LWE; the renderer applies
+the fixed 10:1 ratio once for the displayed estimated snow-depth departure.
+Monthly and seasonal C3S maps use 20 discrete one-inch snow-depth bands from
+−10 to +10 inches, with a white near-zero band from −1 to +1 inches. A centre that does not return the field is retained as a
 failed or partial component rather than being silently substituted with
 snowpack.
 Every monthly and seasonal field passes finite-coverage and physical-range QC

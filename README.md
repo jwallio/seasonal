@@ -65,10 +65,11 @@ and DJF three-month sums. CanSIPS v3 adds a transparent derived estimate from
 its paired 2-m temperature and precipitation members; the super ensemble can
 include that CanSIPS-derived family vote alongside native snowfall fields.
 CanSIPS also uses the paired 850-hPa temperature as a warm-layer gate with its
-2-m temperature. Snowfall departure maps use 20 discrete snow-depth bands spanning −100 to
-+100 inches, with progressively wider outer intervals and a white near-zero
-band from −1 to +1 inches; values outside the endpoints use the endpoint
-colors. Models without a
+2-m temperature. CFSv2 and C3S snowfall-departure maps use 20 discrete one-inch snow-depth
+bands from −10 to +10 inches, with a white near-zero band from −1 to +1
+inches. SFS and other products that can carry larger mountain departures retain
+the broad nonlinear −100 to +100-inch profile. Values outside each product's
+endpoints use the endpoint color. Models without a
 native or explicitly derived snowfall field remain explicitly not applicable.
 CFSv2 refreshes its derived snowfall suite for December through March and
 publishes accumulated DJF and JFM departures whenever that complete cold-season

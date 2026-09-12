@@ -140,6 +140,7 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "monthly_reducer": "total", "seasonal_reducer": "sum",
         "anomaly_min": SNOWFALL_ANOMALY_MIN_IN, "anomaly_max": SNOWFALL_ANOMALY_MAX_IN,
         "anomaly_ticks": SNOWFALL_ANOMALY_TICKS, "anomaly_palette": SNOWFALL_ANOMALY_PALETTE,
+        "snowfall_display_profile": "c3s_readable",
         "anomaly_tick_decimals": SNOWFALL_ANOMALY_TICK_DECIMALS,
         "anomaly_tick_format": SNOWFALL_ANOMALY_TICK_FORMAT,
         "monthly_anomaly_min": SNOWFALL_MONTHLY_ANOMALY_MIN_IN,

@@ -592,6 +592,11 @@ PRODUCT_SPECS = {
         "anomaly_max": SNOWFALL_ANOMALY_MAX_IN,
         "anomaly_ticks": SNOWFALL_ANOMALY_TICKS,
         "anomaly_palette": SNOWFALL_ANOMALY_PALETTE,
+        # Match the C3S readable snowfall legend: one-inch discrete bands
+        # from -10 to +10 estimated snow-depth inches.
+        "snowfall_display_profile": "c3s_readable",
+        # Retained for provenance, but the renderer selects the C3S-readable
+        # snow-depth profile above.
         # Wider CFS seasonal departures; keep other models' shared scale intact.
         "seasonal_anomaly_min": -7.0,
         "seasonal_anomaly_max": 7.0,
@@ -3626,11 +3631,11 @@ def render_map(
     figure.savefig(output_path, dpi=120, facecolor=figure.get_facecolor())
     plt.close(figure)
     if product_spec["name"] == PRODUCT_SNOWFALL_ANOMALY:
-        from snowfall_display import DISPLAY
+        from snowfall_display import display_metadata_for_product
         write_grid_state(grid, output_path.with_suffix(".snow.csv.gz"))
         lwe = Grid(grid.lons[:], grid.lats[:], [[v / 10. for v in row] for row in grid.values])
         write_grid_state(lwe, output_path.with_suffix(".lwe.csv.gz"))
-        display_metadata = dict(DISPLAY)
+        display_metadata = display_metadata_for_product(product_spec)
         if product_spec.get("raw_field") == "SRWEQ:surface":
             display_metadata.update(snowfall_method="native_SRWEQ_departure_v1",
                                     reference_kind="archived operational forecasts", reference_period="2011-2025")
