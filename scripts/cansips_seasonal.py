@@ -234,6 +234,7 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "title": "CanSIPS v3 Derived Snowfall Departure",
         "absolute_title": "CanSIPS v3 Derived Snowfall Estimate",
         "field": "snowfall_anomaly",
+        "snowfall_display_profile": "c3s_readable",
         "raw_field": "Derived from 2-m/850-hPa AirTemp and surface PrecipRate",
         "raw_units": "K; K; kg m-2 s-1",
         "units": "in",
@@ -651,13 +652,13 @@ def _decode_cfgrib_members(
                 pass
 
 
-def snowfall_depth_display(grid: Grid, product: dict[str, Any]):
+def snowfall_depth_display(grid: Grid, product: dict[str, Any], seasonal: bool = False):
     from snowfall_display import depth_departure
-    return depth_departure(grid, product, SNOWFALL_ANOMALY_PALETTE)
+    return depth_departure(grid, product, SNOWFALL_ANOMALY_PALETTE, seasonal=seasonal)
 
 
-def render_standalone(grid: Grid, *args, product_spec, **kwargs):
-    display_grid, display_spec = snowfall_depth_display(grid, product_spec)
+def render_standalone(grid: Grid, *args, product_spec, seasonal=False, **kwargs):
+    display_grid, display_spec = snowfall_depth_display(grid, product_spec, seasonal=seasonal)
     return render_map(display_grid, *args, product_spec=display_spec, **kwargs)
 
 
