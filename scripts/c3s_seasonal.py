@@ -503,7 +503,7 @@ def product_spec(product: str, label: str, *, multisystem: bool = False) -> dict
                 "domain_frame_padding_fraction": 0.012,
                 "mask_states": list(CONUS_STATE_NAMES),
                 "border_files": ("us-states.geojson",),
-                "anomaly_endpoint_labels": {"minimum": "\u2264\u22124.0", "maximum": "\u2265+4.0"},
+                "anomaly_endpoint_labels": {"minimum": "\u2264\u221214", "maximum": "\u2265+14"},
             }
         )
     return base
