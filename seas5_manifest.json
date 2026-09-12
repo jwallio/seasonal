@@ -1,12 +1,11 @@
 {
   "schema_version": 1,
   "kind": "seas5_seasonal_manifest",
-  "generated_utc": "2026-09-09T17:11:11Z",
+  "generated_utc": "2026-09-12T14:51:24Z",
   "source": "ECMWF SEAS5 / Copernicus CDS",
-  "source_url": "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-pressure-levels",
+  "source_url": "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-single-levels",
   "source_urls": [
-    "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-pressure-levels",
-    "https://cds.climate.copernicus.eu/datasets/seasonal-monthly-pressure-levels"
+    "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-single-levels"
   ],
   "archive_root": "https://cds.climate.copernicus.eu/api",
   "retention": {
@@ -69,6 +68,85 @@
         }
       ],
       "targets": [
+        {
+          "id": "seas5-2026090100-snowfall_anomaly-lead03",
+          "valid_start_utc": "2026-11-01T00:00:00Z",
+          "valid_end_utc": "2026-12-01T00:00:00Z",
+          "lead_month": 3,
+          "target_month": "202611",
+          "aggregation": "monthly total",
+          "field": "snowfall_anomaly",
+          "units": "in",
+          "raw_field": "sf / snowfall",
+          "raw_units": "m s**-1",
+          "statistic": "ensemble_mean",
+          "originating_centre": "ecmwf",
+          "system": "51",
+          "ensemble_members": 51,
+          "status": "rendered",
+          "source_dataset": "seasonal-postprocessed-single-levels",
+          "source_variable": "snowfall_anomalous_rate_of_accumulation",
+          "source_file": ".cache/seas5/cds/conus/seasonal_postprocessed_single_levels_snowfall_anomalous_rate_of_accumulation_202609_lead03.grib",
+          "source_url": "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-single-levels",
+          "area": [
+            60.0,
+            -135.0,
+            20.0,
+            -55.0
+          ],
+          "baseline": {
+            "status": "official_postprocessed",
+            "source": "C3S official postprocessed anomaly; ECMWF/System 51",
+            "dataset": "seasonal-postprocessed-single-levels"
+          },
+          "quality_control": {
+            "registry_version": 1,
+            "product": "snowfall_anomaly",
+            "units": "in",
+            "field": "snowfall_anomaly",
+            "period": "monthly",
+            "total_points": 3200,
+            "finite_points": 3200,
+            "finite_fraction": 1.0,
+            "minimum": -2.249231,
+            "maximum": 0.834428,
+            "p01": -0.938286,
+            "p99": 0.120621,
+            "display": {
+              "minimum": -10.0,
+              "maximum": 10.0,
+              "breakpoints": [
+                -10,
+                -9,
+                -8,
+                -7,
+                -6,
+                -5,
+                -4,
+                -3,
+                -2,
+                -1,
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10
+              ],
+              "below_fraction": 0.00875,
+              "above_fraction": 0.0,
+              "clipped_fraction": 0.00875
+            },
+            "issues": [],
+            "status": "passed"
+          },
+          "image": "public/seasonal/seas5/20260901/seas5_sf_202611.jpg"
+        },
         {
           "id": "seas5-2026090100-snowfall_anomaly-lead04",
           "valid_start_utc": "2026-12-01T00:00:00Z",
@@ -228,90 +306,11 @@
           "image": "public/seasonal/seas5/20260901/seas5_sf_202701.jpg"
         },
         {
-          "id": "seas5-2026090100-snowfall_anomaly-lead06",
-          "valid_start_utc": "2027-02-01T00:00:00Z",
-          "valid_end_utc": "2027-03-01T00:00:00Z",
-          "lead_month": 6,
-          "target_month": "202702",
-          "aggregation": "monthly total",
-          "field": "snowfall_anomaly",
-          "units": "in",
-          "raw_field": "sf / snowfall",
-          "raw_units": "m s**-1",
-          "statistic": "ensemble_mean",
-          "originating_centre": "ecmwf",
-          "system": "51",
-          "ensemble_members": 51,
-          "status": "rendered",
-          "source_dataset": "seasonal-postprocessed-single-levels",
-          "source_variable": "snowfall_anomalous_rate_of_accumulation",
-          "source_file": ".cache/seas5/cds/conus/seasonal_postprocessed_single_levels_snowfall_anomalous_rate_of_accumulation_202609_lead06.grib",
-          "source_url": "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-single-levels",
-          "area": [
-            60.0,
-            -135.0,
-            20.0,
-            -55.0
-          ],
-          "baseline": {
-            "status": "official_postprocessed",
-            "source": "C3S official postprocessed anomaly; ECMWF/System 51",
-            "dataset": "seasonal-postprocessed-single-levels"
-          },
-          "quality_control": {
-            "registry_version": 1,
-            "product": "snowfall_anomaly",
-            "units": "in",
-            "field": "snowfall_anomaly",
-            "period": "monthly",
-            "total_points": 3200,
-            "finite_points": 3200,
-            "finite_fraction": 1.0,
-            "minimum": -2.537335,
-            "maximum": 1.76909,
-            "p01": -1.248086,
-            "p99": 0.388007,
-            "display": {
-              "minimum": -10.0,
-              "maximum": 10.0,
-              "breakpoints": [
-                -10,
-                -9,
-                -8,
-                -7,
-                -6,
-                -5,
-                -4,
-                -3,
-                -2,
-                -1,
-                0,
-                1,
-                2,
-                3,
-                4,
-                5,
-                6,
-                7,
-                8,
-                9,
-                10
-              ],
-              "below_fraction": 0.018125,
-              "above_fraction": 0.001875,
-              "clipped_fraction": 0.02
-            },
-            "issues": [],
-            "status": "passed"
-          },
-          "image": "public/seasonal/seas5/20260901/seas5_sf_202702.jpg"
-        },
-        {
-          "id": "seas5-2026090100-snowfall_anomaly-202612-202702",
-          "valid_start_utc": "2026-12-01T00:00:00Z",
-          "valid_end_utc": "2027-03-01T00:00:00Z",
-          "lead_month": "4-6",
-          "target_month": "202612-202702",
+          "id": "seas5-2026090100-snowfall_anomaly-202611-202701",
+          "valid_start_utc": "2026-11-01T00:00:00Z",
+          "valid_end_utc": "2027-02-01T00:00:00Z",
+          "lead_month": "3-5",
+          "target_month": "202611-202701",
           "aggregation": "3-month sum",
           "field": "snowfall_anomaly",
           "units": "in",
@@ -319,9 +318,9 @@
           "raw_units": "m s**-1",
           "statistic": "ensemble_mean",
           "monthly_leads": [
+            3,
             4,
-            5,
-            6
+            5
           ],
           "originating_centre": "ecmwf",
           "system": "51",
@@ -336,10 +335,10 @@
             "total_points": 3200,
             "finite_points": 3200,
             "finite_fraction": 1.0,
-            "minimum": -7.403791,
-            "maximum": 4.029061,
-            "p01": -3.440505,
-            "p99": 0.765347,
+            "minimum": -6.941851,
+            "maximum": 2.103962,
+            "p01": -2.842814,
+            "p99": 0.495966,
             "display": {
               "minimum": -10.0,
               "maximum": 10.0,
@@ -366,20 +365,20 @@
                 9,
                 10
               ],
-              "below_fraction": 0.095,
-              "above_fraction": 0.005625,
-              "clipped_fraction": 0.100625
+              "below_fraction": 0.0825,
+              "above_fraction": 0.002188,
+              "clipped_fraction": 0.084687
             },
             "issues": [
               {
                 "code": "display_scale_clipping",
                 "severity": "warning",
-                "message": "10.1% of finite cells exceed the fixed display scale."
+                "message": "8.5% of finite cells exceed the fixed display scale."
               }
             ],
             "status": "warning"
           },
-          "image": "public/seasonal/seas5/20260901/seas5_sf_202612-202702.jpg",
+          "image": "public/seasonal/seas5/20260901/seas5_sf_202611-202701.jpg",
           "source_dataset": "seasonal-postprocessed-single-levels",
           "source_url": "https://cds.climate.copernicus.eu/datasets/seasonal-postprocessed-single-levels",
           "baseline": {
@@ -391,7 +390,7 @@
       ],
       "status": "rendered",
       "archive_latest_init": "2026090100",
-      "archive_age_days": 5,
+      "archive_age_days": 11,
       "output_dir": "public/seasonal/seas5"
     },
     {
