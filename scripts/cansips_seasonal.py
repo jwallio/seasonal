@@ -659,7 +659,7 @@ def snowfall_depth_display(grid: Grid, product: dict[str, Any], seasonal: bool =
 
 def render_standalone(grid: Grid, *args, product_spec, seasonal=False, **kwargs):
     display_grid, display_spec = snowfall_depth_display(grid, product_spec, seasonal=seasonal)
-    return render_map(display_grid, *args, product_spec=display_spec, **kwargs)
+    return render_map(display_grid, *args, product_spec=display_spec, seasonal=seasonal, **kwargs)
 
 
 def derive_snowfall_lwe_grid(
