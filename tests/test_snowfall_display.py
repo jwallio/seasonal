@@ -36,7 +36,7 @@ class SnowfallDisplayTests(unittest.TestCase):
         self.assertEqual(spec["anomaly_bounds"], BROAD_BOUNDS)
         self.assertEqual(DISPLAY["scale_inches"], [-100, 100])
 
-    def test_c3s_profile_uses_one_inch_discrete_bands(self):
+    def test_c3s_profile_uses_approved_discrete_bands(self):
         source = {
             "name": "snowfall_anomaly",
             "snowfall_display_profile": COMPACT_DISPLAY_PROFILE,
@@ -45,14 +45,14 @@ class SnowfallDisplayTests(unittest.TestCase):
             FakeGrid([0.0], [0.0], [[0.75]]), source, SNOWFALL_ANOMALY_PALETTE
         )
         self.assertEqual(grid.values, [[7.5]])
-        self.assertEqual(spec["anomaly_min"], -10)
-        self.assertEqual(spec["anomaly_max"], 10)
+        self.assertEqual(spec["anomaly_min"], -14)
+        self.assertEqual(spec["anomaly_max"], 14)
         self.assertEqual(spec["anomaly_bounds"], COMPACT_BOUNDS)
         self.assertEqual(spec["anomaly_ticks"], COMPACT_BOUNDS)
         self.assertEqual(len(spec["anomaly_palette"]), len(COMPACT_BOUNDS) - 1)
         self.assertFalse(spec.get("anomaly_continuous", False))
         self.assertEqual(
-            display_metadata_for_product(source)["scale_inches"], [-10, 10]
+            display_metadata_for_product(source)["scale_inches"], [-14, 14]
         )
         self.assertEqual(
             display_metadata_for_product(source)["legend_ticks_inches"], COMPACT_BOUNDS
@@ -79,10 +79,37 @@ class SnowfallDisplayTests(unittest.TestCase):
         rendered_grid = render.call_args.args[0]
         rendered_spec = render.call_args.kwargs["product_spec"]
         self.assertEqual(rendered_grid.values, [[7.5]])
-        self.assertEqual(rendered_spec["anomaly_min"], -10)
-        self.assertEqual(rendered_spec["anomaly_max"], 10)
+        self.assertEqual(rendered_spec["anomaly_min"], -14)
+        self.assertEqual(rendered_spec["anomaly_max"], 14)
         self.assertEqual(rendered_spec["anomaly_bounds"], COMPACT_BOUNDS)
         self.assertTrue(rendered_spec["native_snow_depth_display"])
+
+    def test_depth_input_is_not_converted_twice(self):
+        source = {
+            "name": "snowfall_anomaly",
+            "snowfall_display_profile": COMPACT_DISPLAY_PROFILE,
+            "snowfall_values_are_depth": True,
+        }
+        grid, spec = depth_departure(
+            FakeGrid([0.0], [0.0], [[7.5]]), source, SNOWFALL_ANOMALY_PALETTE
+        )
+        self.assertEqual(grid.values, [[7.5]])
+        self.assertTrue(spec["snowfall_values_are_depth"])
+
+    def test_title_and_subtitle_use_clean_units(self):
+        source = {
+            "name": "snowfall_anomaly",
+            "snowfall_display_profile": COMPACT_DISPLAY_PROFILE,
+            "title": "CFSv2 Snowfall Departure (in snow)",
+        }
+        _, spec = depth_departure(
+            FakeGrid([0.0], [0.0], [[0.0]]), source, SNOWFALL_ANOMALY_PALETTE
+        )
+        self.assertEqual(spec["title"], "CFSv2 Snowfall Departure (in)")
+        self.assertEqual(
+            spec["header_detail"],
+            "{source_label}  •  Snowfall LWE departure × 10 = estimated snow depth (in)  •  fixed 10:1 ratio",
+        )
 
     def test_provider_specs_opt_into_compact_profile(self):
         import c3s_seasonal
