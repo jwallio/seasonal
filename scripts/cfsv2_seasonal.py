@@ -592,11 +592,11 @@ PRODUCT_SPECS = {
         "anomaly_max": SNOWFALL_ANOMALY_MAX_IN,
         "anomaly_ticks": SNOWFALL_ANOMALY_TICKS,
         "anomaly_palette": SNOWFALL_ANOMALY_PALETTE,
-        # Match the readable snowfall legend: one-inch bands through ±8,
-        # then two-inch bands at ±10, ±12, and ±14 estimated snow-depth inches.
+        # Monthly maps use one-inch bands through ±8, then two-inch bands at
+        # ±10, ±12, and ±14. Three-month maps use two-inch bands through ±20.
         "snowfall_display_profile": "c3s_readable",
-        # Retained for provenance, but the renderer selects the C3S-readable
-        # snow-depth profile above.
+        # Retained for provenance; the renderer selects the monthly or
+        # three-month snow-depth profile based on the seasonal flag.
         # Wider CFS seasonal departures; keep other models' shared scale intact.
         "seasonal_anomaly_min": -7.0,
         "seasonal_anomaly_max": 7.0,
@@ -2812,7 +2812,9 @@ def render_map(
         return render(native_lwe, init, target, lead, output_path, seasonal, period_label, ensemble_label,
                       input_label=product_spec.get("snowfall_input_kind", "Native model snowfall"))
     from snowfall_display import depth_departure
-    grid, product_spec = depth_departure(grid, product_spec, SNOWFALL_ANOMALY_PALETTE)
+    grid, product_spec = depth_departure(
+        grid, product_spec, SNOWFALL_ANOMALY_PALETTE, seasonal=seasonal
+    )
     region = product_spec.get("region", region)
     if product_spec["height_contours"]:
         # Absolute products can contour their own field.  An anomaly product
@@ -3635,7 +3637,7 @@ def render_map(
         write_grid_state(grid, output_path.with_suffix(".snow.csv.gz"))
         lwe = Grid(grid.lons[:], grid.lats[:], [[v / 10. for v in row] for row in grid.values])
         write_grid_state(lwe, output_path.with_suffix(".lwe.csv.gz"))
-        display_metadata = display_metadata_for_product(product_spec)
+        display_metadata = display_metadata_for_product(product_spec, seasonal=seasonal)
         if product_spec.get("raw_field") == "SRWEQ:surface":
             display_metadata.update(snowfall_method="native_SRWEQ_departure_v1",
                                     reference_kind="archived operational forecasts", reference_period="2011-2025")
