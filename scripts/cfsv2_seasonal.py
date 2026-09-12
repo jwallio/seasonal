@@ -592,8 +592,8 @@ PRODUCT_SPECS = {
         "anomaly_max": SNOWFALL_ANOMALY_MAX_IN,
         "anomaly_ticks": SNOWFALL_ANOMALY_TICKS,
         "anomaly_palette": SNOWFALL_ANOMALY_PALETTE,
-        # Match the C3S readable snowfall legend: one-inch discrete bands
-        # from -10 to +10 estimated snow-depth inches.
+        # Match the readable snowfall legend: one-inch bands through ±8,
+        # then two-inch bands at ±10, ±12, and ±14 estimated snow-depth inches.
         "snowfall_display_profile": "c3s_readable",
         # Retained for provenance, but the renderer selects the C3S-readable
         # snow-depth profile above.
