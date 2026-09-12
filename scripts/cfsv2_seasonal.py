@@ -4214,6 +4214,7 @@ def _run_single_window(args: argparse.Namespace) -> int:
                     anomaly_grid.values,
                     units=product["units"],
                     field=product["field"],
+                    display_profile=product.get("snowfall_display_profile"),
                     seasonal=False,
                 )
                 require_quality_control(target_entry["quality_control"], CFSv2Error)
@@ -4229,6 +4230,7 @@ def _run_single_window(args: argparse.Namespace) -> int:
                 anomaly_grid.values,
                 units=product["units"],
                 field=product["field"],
+                display_profile=product.get("snowfall_display_profile"),
                 seasonal=False,
             )
             require_quality_control(target_entry["quality_control"], CFSv2Error)
@@ -4293,6 +4295,7 @@ def _run_single_window(args: argparse.Namespace) -> int:
                         common_grid.values,
                         units=product["units"],
                         field=product["field"],
+                        display_profile=product.get("snowfall_display_profile"),
                         seasonal=False,
                     )
                     require_quality_control(common_qc, CFSv2Error)
@@ -4450,6 +4453,7 @@ def _run_single_window(args: argparse.Namespace) -> int:
                 seasonal_grid.values,
                 units=product["seasonal_units"],
                 field=product["field"],
+                display_profile=product.get("snowfall_display_profile"),
                 seasonal=True,
             )
             require_quality_control(seasonal_entry["quality_control"], CFSv2Error)
@@ -4532,6 +4536,7 @@ def _run_single_window(args: argparse.Namespace) -> int:
                         common_grid.values,
                         units=product["seasonal_units"],
                         field=product["field"],
+                        display_profile=product.get("snowfall_display_profile"),
                         seasonal=True,
                     )
                     require_quality_control(common_qc, CFSv2Error)
