@@ -70,6 +70,8 @@ def main() -> int:
     check('f"{len(complete_components)}-system mean"' in adapter, "C3S seasonal image labels must use the actual contributor count")
     module = load_adapter()
     check(set(module.CENTRES) == {"ecmwf", "ukmo", "meteo_france", "dwd", "cmcc", "ncep", "jma", "eccc", "bom"}, "C3S centre catalog is incomplete")
+    check(set(module.parse_centres("all", "snowfall_anomaly")) == set(module.SNOWFALL_CENTRES), "C3S snowfall all-centre selection must use only supported native snowfall systems")
+    check(set(module.parse_centres("all", "precipitation_anomaly")) == set(module.CENTRES), "C3S non-snowfall all-centre selection must retain the full centre catalog")
     check(module.CENTRES["ukmo"]["system"] == "610", "C3S UKMO must use operational GloSea6-GC5.1 system 610")
     check(module.CENTRES["ukmo"]["model_version"] == "GloSea6-GC5.1", "C3S UKMO model version metadata is stale")
     check(module.target_month("2026080100", 4) == "202612", "C3S lead conversion should produce December")
