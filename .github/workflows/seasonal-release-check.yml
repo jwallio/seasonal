@@ -232,8 +232,8 @@ jobs:
                 --ref "$DEFAULT_BRANCH" \
                 -f product=all \
                 -f init="$TARGET" \
-                -f lead_months=4,5,6 \
-                -f seasonal_window=4,5,6 \
+                -f lead_months=3,4,5 \
+                -f seasonal_window=3,4,5 \
                 -f minimum_members=6
             else
               gh workflow run "$workflow" \

@@ -53,12 +53,12 @@ on:
       lead_months:
         description: "Target leads, comma-separated"
         required: false
-        default: "4,5,6"
+        default: "3,4,5"
         type: string
       seasonal_window:
         description: "Seasonal leads, comma-separated"
         required: false
-        default: "4,5,6"
+        default: "3,4,5"
         type: string
 
 permissions:
@@ -117,8 +117,8 @@ jobs:
       C3S_CENTRES: ${{ inputs.centres || 'all' }}
       C3S_SYSTEMS: ${{ inputs.systems || '' }}
       C3S_INIT: ${{ inputs.init || 'latest' }}
-      LEAD_MONTHS: ${{ inputs.lead_months || '4,5,6' }}
-      SEASONAL_WINDOW: ${{ inputs.seasonal_window || '4,5,6' }}
+      LEAD_MONTHS: ${{ inputs.lead_months || '3,4,5' }}
+      SEASONAL_WINDOW: ${{ inputs.seasonal_window || '3,4,5' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4

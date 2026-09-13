@@ -24,12 +24,12 @@ on:
       lead_months:
         description: "Target leads, comma-separated"
         required: false
-        default: "4,5,6"
+        default: "3,4,5"
         type: string
       seasonal_window:
         description: "Optional consecutive leads for a seasonal aggregate"
         required: false
-        default: "4,5,6"
+        default: "3,4,5"
         type: string
   workflow_call:
     inputs:
@@ -40,12 +40,12 @@ on:
       lead_months:
         description: "Target leads, comma-separated"
         required: false
-        default: "4,5,6"
+        default: "3,4,5"
         type: string
       seasonal_window:
         description: "Optional consecutive leads for a seasonal aggregate"
         required: false
-        default: "4,5,6"
+        default: "3,4,5"
         type: string
       rolling_days:
         description: "Lagged initial-condition window"
@@ -77,8 +77,8 @@ jobs:
       CFSV2_PRODUCT: ${{ inputs.product || '500mb_height_anomaly' }}
       SCHEDULED_CFSV2_PRODUCTS: 500mb_height_anomaly,500mb_height_anomaly_nh,850mb_temperature_anomaly,2m_temperature_anomaly,mslp_anomaly,precipitation_anomaly
       ALL_CFSV2_PRODUCTS: 500mb_height_anomaly,500mb_height_anomaly_nh,500mb_height_absolute,850mb_temperature_anomaly,2m_temperature_anomaly,mslp_anomaly,precipitation_anomaly
-      LEAD_MONTHS: ${{ inputs.lead_months || '4,5,6' }}
-      SEASONAL_WINDOW: ${{ inputs.seasonal_window || '4,5,6' }}
+      LEAD_MONTHS: ${{ inputs.lead_months || '3,4,5' }}
+      SEASONAL_WINDOW: ${{ inputs.seasonal_window || '3,4,5' }}
       ROLLING_DAYS: ${{ inputs.rolling_days || '6' }}
       # Source readiness, not elapsed age, decides when a cycle can render.
       CFSV2_MINIMUM_ANCHOR_AGE_MINUTES: "0"

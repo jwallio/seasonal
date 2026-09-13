@@ -425,6 +425,8 @@ def combine_member_months(grids: list[Grid], reducer: str, label: str) -> Grid:
 
 
 def weights_for(keys: list[str], definitions: dict[str, MemberDefinition]) -> list[dict[str, Any]]:
+    if not keys:
+        return []
     weight = 1.0 / len(keys)
     return [
         {
@@ -1309,8 +1311,8 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--product", default="500mb_height_anomaly", help="one product, a comma-separated list, or all")
     parser.add_argument("--init", default="latest", help="initialization as YYYYMM or latest")
-    parser.add_argument("--lead-months", default="4,5,6")
-    parser.add_argument("--seasonal-window", default="4,5,6")
+    parser.add_argument("--lead-months", default="3,4,5")
+    parser.add_argument("--seasonal-window", default="3,4,5")
     parser.add_argument("--systems", default="", help="optional C3S centre=system overrides")
     parser.add_argument("--climo-start", type=int, default=cansips.CANSIPS_HINDCAST_START)
     parser.add_argument("--climo-end", type=int, default=cansips.CANSIPS_HINDCAST_END)

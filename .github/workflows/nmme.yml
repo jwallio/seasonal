@@ -29,12 +29,12 @@ on:
       lead_months:
         description: "Target leads, comma-separated"
         required: false
-        default: "4,5,6"
+        default: "3,4,5"
         type: string
       seasonal_window:
         description: "Seasonal leads, comma-separated"
         required: false
-        default: "4,5,6"
+        default: "3,4,5"
         type: string
       probability_period:
         description: "Official probability product period"
@@ -62,8 +62,8 @@ jobs:
       NMME_PRODUCTS: ${{ inputs.products || '2m_temperature_anomaly,probability_above_normal,probability_near_normal,probability_below_normal,multi_model_consensus' }}
       NMME_BASE_PRODUCT: ${{ inputs.base_product || '2m_temperature_anomaly' }}
       NMME_INIT: ${{ inputs.init || 'latest' }}
-      LEAD_MONTHS: ${{ inputs.lead_months || '4,5,6' }}
-      SEASONAL_WINDOW: ${{ inputs.seasonal_window || '4,5,6' }}
+      LEAD_MONTHS: ${{ inputs.lead_months || '3,4,5' }}
+      SEASONAL_WINDOW: ${{ inputs.seasonal_window || '3,4,5' }}
       PROBABILITY_PERIOD: ${{ inputs.probability_period || 'seas' }}
     steps:
       - name: Checkout

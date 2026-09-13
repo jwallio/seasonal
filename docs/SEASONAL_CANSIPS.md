@@ -135,8 +135,8 @@ DJF-style window:
 ```powershell
 python scripts/cansips_seasonal.py `
   --init latest `
-  --lead-months 4,5,6 `
-  --seasonal-window 4,5,6 `
+  --lead-months 3,4,5 `
+  --seasonal-window 3,4,5 `
   --cache-dir .cache/cansips `
   --output-dir public/seasonal/cansips `
   --manifest public/seasonal/cansips_manifest.json

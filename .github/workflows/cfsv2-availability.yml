@@ -57,7 +57,7 @@ jobs:
             else
               echo "Dispatching weather maps for NOAA cycle $STANDARD_READY_INIT."
               gh workflow run cfsv2.yml --ref main \
-                -f product=weather_suite -f lead_months=4,5,6 -f seasonal_window=4,5,6
+                -f product=weather_suite -f lead_months=3,4,5 -f seasonal_window=3,4,5
             fi
           else
             echo "No newer complete NOAA monthly cycle for the weather suite."

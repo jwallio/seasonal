@@ -2,8 +2,8 @@ param(
     [ValidateSet("500mb_height_anomaly")]
     [string]$Product = "500mb_height_anomaly",
     [string]$Init = "latest",
-    [string]$LeadMonths = "4,5,6",
-    [string]$SeasonalWindow = "4,5,6",
+    [string]$LeadMonths = "3,4,5",
+    [string]$SeasonalWindow = "3,4,5",
     [int]$ClimoStart = 1991,
     [int]$ClimoEnd = 2020,
     [string]$CacheDir = ".cache/cansips",

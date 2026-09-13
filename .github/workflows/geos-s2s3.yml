@@ -26,12 +26,12 @@ on:
       lead_months:
         description: "Target offsets from the NASA release month"
         required: false
-        default: "4,5,6"
+        default: "3,4,5"
         type: string
       seasonal_window:
         description: "Consecutive offsets for the seasonal aggregate"
         required: false
-        default: "4,5,6"
+        default: "3,4,5"
         type: string
 
 permissions:
@@ -51,8 +51,8 @@ jobs:
     env:
       GEOS_PRODUCT: ${{ inputs.product || 'all' }}
       GEOS_INIT: ${{ inputs.init || 'latest' }}
-      LEAD_MONTHS: ${{ inputs.lead_months || '4,5,6' }}
-      SEASONAL_WINDOW: ${{ inputs.seasonal_window || '4,5,6' }}
+      LEAD_MONTHS: ${{ inputs.lead_months || '3,4,5' }}
+      SEASONAL_WINDOW: ${{ inputs.seasonal_window || '3,4,5' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4

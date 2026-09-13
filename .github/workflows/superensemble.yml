@@ -29,12 +29,12 @@ on:
       lead_months:
         description: "Target leads, comma-separated"
         required: false
-        default: "4,5,6"
+        default: "3,4,5"
         type: string
       seasonal_window:
         description: "Consecutive leads for the seasonal aggregate"
         required: false
-        default: "4,5,6"
+        default: "3,4,5"
         type: string
       minimum_members:
         description: "Minimum canonical families required to render"
@@ -103,8 +103,8 @@ jobs:
       SUPER_PRODUCT: ${{ matrix.product }}
       SCHEDULED_SUPER_PRODUCT: all
       SUPER_INIT: ${{ inputs.init || 'latest' }}
-      LEAD_MONTHS: ${{ inputs.lead_months || '4,5,6' }}
-      SEASONAL_WINDOW: ${{ inputs.seasonal_window || '4,5,6' }}
+      LEAD_MONTHS: ${{ inputs.lead_months || '3,4,5' }}
+      SEASONAL_WINDOW: ${{ inputs.seasonal_window || '3,4,5' }}
       MINIMUM_MEMBERS: ${{ inputs.minimum_members || '6' }}
       CANSIPS_WGRIB2: ""
     steps:

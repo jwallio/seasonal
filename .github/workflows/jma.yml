@@ -38,12 +38,12 @@ on:
       lead_months:
         description: "Target leads, comma-separated"
         required: false
-        default: "4,5,6"
+        default: "3,4,5"
         type: string
       seasonal_window:
         description: "Seasonal leads, comma-separated"
         required: false
-        default: "4,5,6"
+        default: "3,4,5"
         type: string
 
 permissions:
@@ -64,8 +64,8 @@ jobs:
       SCHEDULED_JMA_PRODUCTS: 500mb_height_anomaly,500mb_height_anomaly_nh,850mb_temperature_anomaly,2m_temperature_anomaly,precipitation_anomaly,mslp_anomaly
       JMA_SYSTEMS: ${{ inputs.systems || '' }}
       JMA_INIT: ${{ inputs.init || 'latest' }}
-      LEAD_MONTHS: ${{ inputs.lead_months || '4,5,6' }}
-      SEASONAL_WINDOW: ${{ inputs.seasonal_window || '4,5,6' }}
+      LEAD_MONTHS: ${{ inputs.lead_months || '3,4,5' }}
+      SEASONAL_WINDOW: ${{ inputs.seasonal_window || '3,4,5' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
