@@ -197,6 +197,7 @@ jobs:
             --cache-dir .cache/c3s \
             --output-dir public/seasonal/c3s \
             --manifest public/seasonal/c3s_manifest.json \
+            --cfsv2-manifest-url "https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/cfsv2_manifest.json" \
             --previous-manifest .cache/c3s/previous_manifest.json \
             --retain-cycles 4
 

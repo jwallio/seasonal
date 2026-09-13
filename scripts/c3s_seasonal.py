@@ -4,7 +4,9 @@
 The Copernicus Climate Data Store exposes each contributing centre through the
 same postprocessed seasonal datasets.  This adapter keeps those centre/system
 choices in the manifest, renders the selected components, and also publishes a
-transparent multi-system mean made from the native C3S anomaly fields.
+transparent multi-system mean.  Snowfall adds the already-produced, corrected
+NOAA CFSv2 departure as the NCEP blend input because CDS does not expose a
+native NCEP snowfall field for the operational window.
 """
 
 from __future__ import annotations
@@ -19,6 +21,8 @@ import re
 import sys
 from pathlib import Path
 from typing import Any, Iterable
+from urllib.parse import urljoin, urlparse, urlunparse
+from urllib.request import Request, urlopen
 
 import numpy as np
 
@@ -72,6 +76,11 @@ NORTHERN_HEMISPHERE_AREA = [90.0, -180.0, 0.0, 180.0]
 CONUS_AREA = [60.0, -135.0, 20.0, -55.0]
 GEOPOTENTIAL_GRAVITY = 9.80665
 M_TO_INCH = 1000.0 / 25.4
+CFSV2_COMPONENT = "ncep"
+CFSV2_COMPONENT_LABEL = "NCEP / CFSv2"
+CFSV2_PUBLISHED_MANIFEST_URL = "https://jwallio.github.io/seasonal/cfsv2_manifest.json"
+CFSV2_MANIFEST_TIMEOUT_SECONDS = 30
+CFSV2_GRID_TIMEOUT_SECONDS = 180
 
 CENTRES: dict[str, dict[str, Any]] = {
     "ecmwf": {"label": "ECMWF", "system": "51", "members": 51},
@@ -286,6 +295,244 @@ def parse_centres(value: str, product_name: str | None = None) -> list[str]:
     return list(dict.fromkeys(names))
 
 
+def _cache_busted_url(url: str) -> str:
+    """Prevent a Pages/CDN cache from hiding the newest CFSv2 manifest."""
+
+    parsed = urlparse(url)
+    if parsed.scheme not in {"http", "https"}:
+        return url
+    query = f"{parsed.query}&" if parsed.query else ""
+    query += f"c3s_refresh={int(dt.datetime.now(dt.timezone.utc).timestamp())}"
+    return urlunparse(parsed._replace(query=query))
+
+
+def _fetch_json(url: str) -> dict[str, Any]:
+    request = Request(
+        _cache_busted_url(url),
+        headers={"Accept": "application/json", "Cache-Control": "no-cache"},
+    )
+    try:
+        with urlopen(request, timeout=CFSV2_MANIFEST_TIMEOUT_SECONDS) as response:
+            payload = json.loads(response.read().decode("utf-8"))
+    except Exception as exc:
+        raise C3SError(f"could not read published CFSv2 manifest {url}: {exc}") from exc
+    if not isinstance(payload, dict):
+        raise C3SError(f"published CFSv2 manifest {url} is not a JSON object")
+    return payload
+
+
+def _published_cfsv2_asset_url(manifest_url: str, asset: str) -> str:
+    """Map a repository-relative CFSv2 asset to the Pages publication root.
+
+    The CFSv2 producer records its checkout path (``public/seasonal/cfsv2``)
+    in the manifest, while the Pages publisher exposes that payload at
+    ``<site-root>/cfsv2``.  Keeping this translation here prevents the C3S
+    adapter from depending on a local checkout of the other workflow's files.
+    """
+
+    asset = str(asset).strip()
+    if not asset:
+        raise C3SError("published CFSv2 target has an empty numeric-grid path")
+    if urlparse(asset).scheme in {"http", "https"}:
+        return asset
+    relative = asset.lstrip("/")
+    for prefix in ("public/seasonal/cfsv2/", "seasonal/cfsv2/", "cfsv2/"):
+        if relative.startswith(prefix):
+            relative = "cfsv2/" + relative[len(prefix):]
+            break
+    else:
+        if relative.startswith("public/seasonal/"):
+            relative = relative[len("public/seasonal/"):]
+    return urljoin(manifest_url, relative)
+
+
+def _published_cfsv2_lwe_asset(target_entry: dict[str, Any]) -> tuple[str, str] | None:
+    """Return the CFSv2 asset that is still in LWE units.
+
+    Recent CFSv2 snowfall manifests expose both ``numeric_grid`` (the
+    already-converted snow-depth sidecar) and ``native_lwe_grid``.  The latter
+    is the only valid input for the C3S blend.  Older corrected manifests used
+    the unsuffixed ``numeric_grid`` for LWE, so retain that narrowly-defined
+    compatibility path while rejecting ``.snow.csv.gz`` outright.
+    """
+
+    native_lwe = target_entry.get("native_lwe_grid")
+    if native_lwe:
+        return str(native_lwe), "native_lwe_grid"
+    numeric = str(target_entry.get("numeric_grid") or "")
+    if numeric and not numeric.endswith(".snow.csv.gz"):
+        return numeric, "legacy_numeric_grid_lwe"
+    return None
+
+
+def _download_published_grid(url: str, destination: Path) -> Path:
+    """Download one already-decoded CFSv2 CSV grid into the C3S cache."""
+
+    if destination.exists() and destination.stat().st_size > 0:
+        return destination
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    temporary = destination.with_name(destination.name + ".part")
+    try:
+        temporary.unlink(missing_ok=True)
+        request = Request(
+            url,
+            headers={"Accept": "application/octet-stream", "Cache-Control": "no-cache"},
+        )
+        with urlopen(request, timeout=CFSV2_GRID_TIMEOUT_SECONDS) as response, temporary.open("wb") as handle:
+            while True:
+                chunk = response.read(1024 * 1024)
+                if not chunk:
+                    break
+                handle.write(chunk)
+        if not temporary.exists() or temporary.stat().st_size == 0:
+            raise C3SError(f"published CFSv2 numeric grid is empty: {url}")
+        temporary.replace(destination)
+    except C3SError:
+        temporary.unlink(missing_ok=True)
+        raise
+    except Exception as exc:
+        temporary.unlink(missing_ok=True)
+        raise C3SError(f"could not download published CFSv2 numeric grid {url}: {exc}") from exc
+    return destination
+
+
+def _published_cfsv2_candidates(
+    payload: dict[str, Any], targets: dict[int, str]
+) -> list[tuple[dict[str, Any], dict[int, dict[str, Any]]]]:
+    """Return newest complete, baseline-applied CFSv2 snowfall runs first."""
+
+    candidates: list[tuple[dict[str, Any], dict[int, dict[str, Any]]]] = []
+    for run in payload.get("runs", []):
+        if not isinstance(run, dict) or run.get("product") != "snowfall_anomaly":
+            continue
+        if run.get("status") not in {"rendered", "decoded", "partial"}:
+            continue
+        by_target: dict[str, dict[str, Any]] = {}
+        for target_entry in run.get("targets", []):
+            if not isinstance(target_entry, dict):
+                continue
+            target = str(target_entry.get("target_month", ""))
+            if target in targets.values() and target not in by_target:
+                baseline = target_entry.get("baseline") or {}
+                lwe_asset = _published_cfsv2_lwe_asset(target_entry)
+                if (
+                    target_entry.get("status") in {"rendered", "decoded", "partial"}
+                    and target_entry.get("field") == "snowfall_lwe"
+                    and target_entry.get("units") == "in"
+                    and lwe_asset is not None
+                    and baseline.get("status") == "applied"
+                ):
+                    by_target[target] = target_entry
+        if len(by_target) != len(set(targets.values())):
+            continue
+        entries_by_lead = {
+            lead: by_target[target]
+            for lead, target in targets.items()
+        }
+        candidates.append((run, entries_by_lead))
+    candidates.sort(
+        key=lambda candidate: (
+            str(candidate[0].get("init_utc", "")),
+            str(candidate[0].get("generated_utc", "")),
+            str(candidate[0].get("id", "")),
+        ),
+        reverse=True,
+    )
+    return candidates
+
+
+def load_published_cfsv2_snowfall(
+    *,
+    targets: dict[int, str],
+    cache_dir: Path,
+    manifest_url: str,
+    repo_root: Path,
+) -> tuple[dict[int, Grid], dict[str, Any]]:
+    """Load CFSv2's published LWE departures for the C3S blend.
+
+    The CFSv2 snowfall workflow has already done the ensemble and matched
+    baseline work.  This adapter intentionally consumes its numeric LWE grid
+    directly: no metre conversion, month-length multiplication, or 10:1 snow
+    ratio is applied here.  The shared C3S renderer applies the 10:1 display
+    conversion once, after the seven-source blend is formed.
+    """
+
+    if not targets:
+        raise C3SError("CFSv2 snowfall source was requested without target months")
+    payload = _fetch_json(manifest_url)
+    candidates = _published_cfsv2_candidates(payload, targets)
+    if not candidates:
+        requested = ", ".join(f"lead {lead}={target}" for lead, target in targets.items())
+        raise C3SError(
+            "published CFSv2 manifest has no complete baseline-applied snowfall run for "
+            f"{requested}"
+        )
+
+    errors: list[str] = []
+    for run, entries_by_lead in candidates:
+        run_id = str(run.get("id", "unknown"))
+        grids: dict[int, Grid] = {}
+        target_provenance: dict[str, Any] = {}
+        try:
+            for lead, target_entry in entries_by_lead.items():
+                target = targets[lead]
+                lwe_asset = _published_cfsv2_lwe_asset(target_entry)
+                if lwe_asset is None:
+                    raise C3SError(f"published CFSv2 target has no LWE grid for {target}")
+                source_url = _published_cfsv2_asset_url(
+                    manifest_url, lwe_asset[0]
+                )
+                cached_path = cache_dir / "cfsv2-published" / run_id / f"{target}.snow.csv.gz"
+                grid = read_grid_state(_download_published_grid(source_url, cached_path))
+                if not grid.lons or not grid.lats:
+                    raise C3SError(f"published CFSv2 grid has no usable axes for {target}")
+                grids[lead] = grid
+                target_provenance[target] = {
+                    "run_id": run_id,
+                    "init_utc": run.get("init_utc"),
+                    "source_url": manifest_url,
+                    "numeric_grid_url": source_url,
+                    "source_file": relative_path(cached_path, repo_root),
+                    "grid_role": lwe_asset[1],
+                    "field": target_entry.get("field"),
+                    "units": target_entry.get("units"),
+                    "baseline": target_entry.get("baseline"),
+                    "derivation": target_entry.get("derivation"),
+                }
+            first_target = next(iter(target_provenance))
+            first_baseline = target_provenance[first_target]["baseline"]
+            provenance = {
+                "component": CFSV2_COMPONENT,
+                "component_label": CFSV2_COMPONENT_LABEL,
+                "model": "NOAA CFSv2",
+                "source": "published corrected CFSv2 snowfall departure",
+                "source_url": manifest_url,
+                "run_id": run_id,
+                "init_utc": run.get("init_utc"),
+                "field": "snowfall_lwe",
+                "units": "in",
+                "quantity": "snowfall liquid-water-equivalent departure",
+                "baseline": {
+                    "status": "applied",
+                    "method": first_baseline.get("method"),
+                    "source": first_baseline.get("source"),
+                    "years": first_baseline.get("years"),
+                },
+                "conversion": (
+                    "published values are already inches LWE; blend unchanged; "
+                    "shared renderer applies ×10 once for estimated snow depth"
+                ),
+                "targets": target_provenance,
+            }
+            return grids, provenance
+        except Exception as exc:
+            errors.append(f"{run_id}: {exc}")
+
+    raise C3SError(
+        "could not load any complete published CFSv2 snowfall run: " + "; ".join(errors)
+    )
+
+
 def parse_system_overrides(value: str) -> dict[str, str]:
     overrides: dict[str, str] = {}
     for item in (part.strip() for part in value.split(",") if part.strip()):
@@ -473,7 +720,13 @@ class CDSArchive:
             raise C3SError(f"could not decode C3S raw geopotential {path.name}: {exc}") from exc
 
 
-def product_spec(product: str, label: str, *, multisystem: bool = False) -> dict[str, Any]:
+def product_spec(
+    product: str,
+    label: str,
+    *,
+    multisystem: bool = False,
+    includes_cfsv2: bool = False,
+) -> dict[str, Any]:
     base = dict(PRODUCT_SPECS[product])
     prefix = "C3S multi-system" if multisystem else f"C3S {label}"
     subject = {
@@ -497,7 +750,12 @@ def product_spec(product: str, label: str, *, multisystem: bool = False) -> dict
         }.get(label, label)
         base["title"] = f"C3S {title_label} Snowfall Departure"
     base["absolute_title"] = base["title"].replace(" & Anomaly", "")
-    base["source_label"] = f"Copernicus C3S / {('multi-system' if multisystem else label)}"
+    base["includes_cfsv2"] = bool(includes_cfsv2 and product == "snowfall_anomaly" and multisystem)
+    base["source_label"] = (
+        "Copernicus C3S + NOAA CFSv2 / multi-system"
+        if base["includes_cfsv2"]
+        else f"Copernicus C3S / {('multi-system' if multisystem else label)}"
+    )
     detail = (
         "Height contours in dam"
         if base["height_contours"]
@@ -506,7 +764,11 @@ def product_spec(product: str, label: str, *, multisystem: bool = False) -> dict
         else f"{base['units']} anomaly"
     )
     if product == "snowfall_anomaly":
-        base["header_detail"] = "{source_label}  •  Official postprocessed snowfall departure  •  " + detail
+        base["header_detail"] = (
+            "{source_label}  •  Native C3S + corrected CFSv2 snowfall departure  •  " + detail
+            if base["includes_cfsv2"]
+            else "{source_label}  •  Official postprocessed snowfall departure  •  " + detail
+        )
     else:
         base["header_detail"] = "{source_label}  •  Native C3S postprocessed anomaly  •  " + detail
     if product == "snowfall_anomaly":
@@ -543,9 +805,14 @@ def render_target(
         grid, product = depth_departure(
             grid, product, SNOWFALL_ANOMALY_PALETTE, seasonal=seasonal
         )
+    baseline_label = (
+        "C3S native + NOAA CFSv2 published snowfall departure"
+        if product.get("includes_cfsv2")
+        else "C3S native postprocessed anomaly"
+    )
     render_map(
         grid, init, target, lead, list(range(max(1, int(str(lead).split("–")[0])))), output,
-        anomaly=True, baseline_label="C3S native postprocessed anomaly", border_paths=borders,
+        anomaly=True, baseline_label=baseline_label, border_paths=borders,
         period_label=period, height_grid=height, ensemble_label=ensemble_label,
         product_spec=product, seasonal=seasonal,
     )
@@ -561,34 +828,59 @@ def base_run_entry(
     members: int | None,
     multisystem: bool,
     centres: list[str],
+    includes_cfsv2: bool = False,
+    cfsv2_manifest_url: str = CFSV2_PUBLISHED_MANIFEST_URL,
 ) -> dict[str, Any]:
     source_datasets = [product["cds_dataset"]]
     if product["height_contours"]:
         source_datasets.append(product["cds_raw_dataset"])
+    mixed_snowfall = bool(includes_cfsv2 and multisystem and product_name == "snowfall_anomaly")
     return {
         "id": f"c3s-{component}-{init}-{product_name}",
-        "model": "C3S multi-system" if multisystem else f"C3S {label}",
+        "model": "C3S multi-system + CFSv2" if mixed_snowfall else ("C3S multi-system" if multisystem else f"C3S {label}"),
         "component": component,
         "component_label": label,
         "components": centres if multisystem else [component],
         "originating_centre": "multi-system" if multisystem else component,
         "system": system if not multisystem else "multiple",
-        "source": f"Copernicus C3S / {label if not multisystem else 'multi-system'}",
+        "source": (
+            "Copernicus C3S + NOAA CFSv2 / multi-system"
+            if mixed_snowfall
+            else f"Copernicus C3S / {label if not multisystem else 'multi-system'}"
+        ),
         "source_url": dataset_url(product["cds_dataset"]),
-        "source_urls": [dataset_url(dataset) for dataset in source_datasets],
+        "source_urls": [dataset_url(dataset) for dataset in source_datasets]
+        + ([cfsv2_manifest_url] if mixed_snowfall else []),
         "archive_root": CDS_API_ROOT,
         "source_datasets": source_datasets,
-        "model_version": CENTRES.get(component, {}).get("model_version") if not multisystem else "C3S multi-system",
+        "model_version": CENTRES.get(component, {}).get("model_version") if not multisystem else (
+            "C3S multi-system + NOAA CFSv2" if mixed_snowfall else "C3S multi-system"
+        ),
         "product": product_name,
         "variable": product["variable"],
         "init_utc": iso_utc(dt.datetime.strptime(init, "%Y%m%d%H").replace(tzinfo=dt.timezone.utc)),
-        "statistic": "multi-system mean of native ensemble-mean anomalies" if multisystem else "ensemble_mean",
-        "ensemble_scope": "C3S multi-system blend" if multisystem else f"{label}/System {system} ensemble",
+        "statistic": (
+            "equal-weight mean of native C3S and published CFSv2 snowfall departures"
+            if mixed_snowfall
+            else "multi-system mean of native ensemble-mean anomalies" if multisystem else "ensemble_mean"
+        ),
+        "ensemble_scope": (
+            "C3S native systems + NOAA CFSv2 blend"
+            if mixed_snowfall
+            else "C3S multi-system blend" if multisystem else f"{label}/System {system} ensemble"
+        ),
         "ensemble_members": members if not multisystem else None,
-        "aggregation": "official C3S monthly ensemble-mean anomaly",
+        "aggregation": (
+            "equal-weight source mean of monthly LWE departures"
+            if mixed_snowfall else "official C3S monthly ensemble-mean anomaly"
+        ),
         "field": product["field"], "units": product["units"],
         "raw_field": product["raw_field"], "raw_units": product["raw_units"],
-        "baseline": {"status": "official_postprocessed", "source": "C3S native bias-adjusted anomaly"},
+        "baseline": (
+            {"status": "mixed_native_and_published", "source": "C3S native bias-adjusted anomaly + corrected NOAA CFSv2 snowfall departure"}
+            if mixed_snowfall
+            else {"status": "official_postprocessed", "source": "C3S native bias-adjusted anomaly"}
+        ),
         "climatology": {"status": "not_used", "method": "native C3S postprocessed anomaly"},
         "targets": [], "status": "planned",
     }
@@ -603,8 +895,18 @@ def build_run(
     seasonal_component_names: list[str] | None = None,
     seasonal_grid_override: Grid | None = None,
     seasonal_height_override: Grid | None = None,
+    includes_cfsv2: bool = False,
+    component_sources_by_lead: dict[int, dict[str, Any]] | None = None,
+    source_components: dict[str, Any] | None = None,
+    cfsv2_manifest_url: str = CFSV2_PUBLISHED_MANIFEST_URL,
 ) -> tuple[dict[str, Any], int]:
-    entry = base_run_entry(component, label, system, product, product_name, init, members, multisystem, centres)
+    entry = base_run_entry(
+        component, label, system, product, product_name, init, members, multisystem, centres,
+        includes_cfsv2=includes_cfsv2,
+        cfsv2_manifest_url=cfsv2_manifest_url,
+    )
+    if source_components:
+        entry["source_components"] = source_components
     component_names_by_lead = component_names_by_lead or {}
     failures = 0
     for lead in leads:
@@ -619,6 +921,8 @@ def build_run(
         if multisystem:
             target_entry["available_components"] = available_components
             target_entry["component_count"] = len(available_components)
+            if component_sources_by_lead and component_sources_by_lead.get(lead):
+                target_entry["component_sources"] = component_sources_by_lead[lead]
         try:
             if lead not in lead_grids:
                 if archive is None:
@@ -746,8 +1050,11 @@ def write_manifest(path: Path, entries: Iterable[dict[str, Any]], previous: Path
         if blend.get("component") != "multisystem":
             continue
         requested = set(blend.get("components") or blend.get("requested_components") or [])
+        synthetic = set(blend.get("synthetic_components") or [])
         if not requested:
-            continue
+            requested = synthetic
+        elif synthetic:
+            requested.update(synthetic)
         product_name = blend.get("product")
         init_utc = blend.get("init_utc")
         all_entries = [
@@ -756,10 +1063,23 @@ def write_manifest(path: Path, entries: Iterable[dict[str, Any]], previous: Path
                 run.get("product") == product_name
                 and run.get("init_utc") == init_utc
                 and run.get("component") != "multisystem"
-                and run.get("component") not in requested
+                and (
+                    run.get("component") not in requested
+                    or run.get("component") in synthetic
+                )
             )
         ]
 
+    cfsv2_urls = sorted(
+        {
+            str(source_url)
+            for run in current_entries
+            if run.get("product") == "snowfall_anomaly"
+            and CFSV2_COMPONENT in set(run.get("components") or [])
+            for source_url in run.get("source_urls", [])
+            if "cfsv2_manifest" in str(source_url)
+        }
+    )
     unique: dict[str, dict[str, Any]] = {str(run.get("id")): run for run in all_entries if run.get("id")}
     ordered = sorted(unique.values(), key=lambda run: (str(run.get("init_utc", "")), str(run.get("id", ""))), reverse=True)
     cycles: list[str] = []
@@ -771,7 +1091,13 @@ def write_manifest(path: Path, entries: Iterable[dict[str, Any]], previous: Path
     payload = {
         "schema_version": 1, "kind": "c3s_seasonal_manifest",
         "generated_utc": iso_utc(dt.datetime.now(dt.timezone.utc)), "source": "Copernicus C3S seasonal forecasts",
-        "source_url": SOURCE_URL, "source_urls": [SOURCE_URL, PRESSURE_SOURCE_URL, SINGLE_SOURCE_URL],
+        "source_url": SOURCE_URL,
+        "source_urls": [
+            SOURCE_URL,
+            PRESSURE_SOURCE_URL,
+            SINGLE_SOURCE_URL,
+            *cfsv2_urls,
+        ],
         "product_labels": {
             key: {
                 "500mb_height_anomaly": "500-mb Height Anomaly",
@@ -779,6 +1105,7 @@ def write_manifest(path: Path, entries: Iterable[dict[str, Any]], previous: Path
                 "850mb_temperature_anomaly": "850-mb Temperature Anomaly",
                 "2m_temperature_anomaly": "2-m Temperature Anomaly",
                 "precipitation_anomaly": "Precipitation Anomaly",
+                "snowfall_anomaly": "Snowfall Departure",
                 "mslp_anomaly": "MSLP Anomaly",
             }.get(key, key)
             for key in PRODUCT_SPECS
@@ -805,6 +1132,16 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--manifest", default="public/seasonal/c3s_manifest.json")
     parser.add_argument("--previous-manifest", type=Path)
     parser.add_argument("--retain-cycles", type=int, default=4)
+    parser.add_argument(
+        "--cfsv2-manifest-url",
+        default=CFSV2_PUBLISHED_MANIFEST_URL,
+        help="published CFSv2 manifest used as the NCEP snowfall blend input",
+    )
+    parser.add_argument(
+        "--no-cfsv2",
+        action="store_true",
+        help="do not include the published CFSv2 snowfall source in the blend",
+    )
     parser.add_argument("--no-components", action="store_true", help="publish only the C3S multi-system blend")
     parser.add_argument("--no-blend", action="store_true", help="publish only the selected C3S component entries")
     parser.add_argument("--no-borders", action="store_true")
@@ -862,13 +1199,49 @@ def run(args: argparse.Namespace) -> int:
         component_grids[centre] = lead_grids
         component_heights[centre] = lead_heights
 
+    cfsv2_requested = (
+        product_name == "snowfall_anomaly"
+        and not getattr(args, "no_cfsv2", False)
+        and not args.no_blend
+    )
+    requested_blend_centres = list(centres)
+    if cfsv2_requested:
+        requested_blend_centres.append(CFSV2_COMPONENT)
+    blend_centres = list(centres)
+    cfsv2_provenance: dict[str, Any] | None = None
+    cfsv2_sources_by_lead: dict[int, dict[str, Any]] = {}
+    cfsv2_error: str | None = None
+    if cfsv2_requested:
+        try:
+            cfsv2_targets = {lead: target_month(init, lead) for lead in leads}
+            cfsv2_grids, cfsv2_provenance = load_published_cfsv2_snowfall(
+                targets=cfsv2_targets,
+                cache_dir=cache_dir,
+                manifest_url=getattr(args, "cfsv2_manifest_url", CFSV2_PUBLISHED_MANIFEST_URL),
+                repo_root=repo_root,
+            )
+            component_grids[CFSV2_COMPONENT] = cfsv2_grids
+            component_heights[CFSV2_COMPONENT] = {}
+            blend_centres.append(CFSV2_COMPONENT)
+            cfsv2_sources_by_lead = {
+                lead: {CFSV2_COMPONENT: cfsv2_provenance["targets"][target]}
+                for lead, target in cfsv2_targets.items()
+            }
+            print(
+                f"Loaded published CFSv2 snowfall departure {cfsv2_provenance['run_id']} "
+                f"as the {CFSV2_COMPONENT} C3S blend source"
+            )
+        except C3SError as exc:
+            cfsv2_error = str(exc)
+            print(f"CFSv2 snowfall blend source unavailable: {exc}", file=sys.stderr)
+
     blend_failures = 0
     if not args.no_blend:
         blend_grids: dict[int, Grid] = {}
         blend_heights: dict[int, Grid] = {}
         component_names_by_lead: dict[int, list[str]] = {}
         for lead in leads:
-            available_components = [centre for centre in centres if lead in component_grids.get(centre, {})]
+            available_components = [centre for centre in blend_centres if lead in component_grids.get(centre, {})]
             component_names_by_lead[lead] = available_components
             available = [component_grids[centre][lead] for centre in available_components]
             if available:
@@ -878,7 +1251,7 @@ def run(args: argparse.Namespace) -> int:
                 # blend explicit instead of silently dropping that component.
                 from cfsv2_seasonal import regrid_nearest
                 blend_grids[lead] = mean_grids([regrid_nearest(grid, reference.lons, reference.lats, "C3S blend") for grid in available])
-            heights = [component_heights[centre][lead] for centre in centres if lead in component_heights.get(centre, {})]
+            heights = [component_heights[centre][lead] for centre in blend_centres if lead in component_heights.get(centre, {})]
             if heights:
                 reference = heights[0]
                 from cfsv2_seasonal import regrid_nearest
@@ -887,13 +1260,17 @@ def run(args: argparse.Namespace) -> int:
             from cfsv2_seasonal import regrid_nearest
 
             seasonal_components = [
-                centre for centre in centres
+                centre for centre in blend_centres
                 if seasonal and all(lead in component_grids.get(centre, {}) for lead in seasonal)
             ]
             seasonal_grid_override = None
             seasonal_height_override = None
             if seasonal_components:
                 combine = sum_grids if product["seasonal_reducer"] == "sum" else mean_grids
+                # Every source is still in monthly LWE inches here, including
+                # the published CFSv2 member.  Sum each source's months first,
+                # then average source totals; the 10:1 display conversion is
+                # intentionally deferred until render_target().
                 component_seasonal_grids = [
                     combine([component_grids[centre][lead] for lead in seasonal])
                     for centre in seasonal_components
@@ -919,33 +1296,59 @@ def run(args: argparse.Namespace) -> int:
                     ])
             entry, count = build_run(
                 component="multisystem", label="multi-system", system="multiple",
-                product_name=product_name, product=product_spec(product_name, "multi-system", multisystem=True),
+                product_name=product_name,
+                product=product_spec(
+                    product_name,
+                    "multi-system",
+                    multisystem=True,
+                    includes_cfsv2=cfsv2_provenance is not None,
+                ),
                 init=init, leads=leads, seasonal_leads=seasonal, archive=None,
                 lead_grids=blend_grids, lead_heights=blend_heights, output_dir=output_dir,
-                borders=borders, members=None, multisystem=True, centres=centres,
+                borders=borders, members=None, multisystem=True, centres=blend_centres,
                 decode_only=args.decode_only, component_names_by_lead=component_names_by_lead,
                 seasonal_component_names=seasonal_components,
                 seasonal_grid_override=seasonal_grid_override,
                 seasonal_height_override=seasonal_height_override,
+                includes_cfsv2=cfsv2_provenance is not None,
+                component_sources_by_lead=cfsv2_sources_by_lead,
+                source_components=(
+                    {CFSV2_COMPONENT: cfsv2_provenance}
+                    if cfsv2_provenance is not None else None
+                ),
+                cfsv2_manifest_url=getattr(args, "cfsv2_manifest_url", CFSV2_PUBLISHED_MANIFEST_URL),
             )
-            entry["requested_components"] = list(centres)
-            entry["available_components"] = [centre for centre in centres if component_grids.get(centre)]
+            entry["requested_components"] = list(requested_blend_centres)
+            entry["available_components"] = [centre for centre in blend_centres if component_grids.get(centre)]
             entry["components"] = entry["available_components"]
             entry["component_count"] = len(entry["available_components"])
             entry["component_count_by_lead"] = {
                 str(lead): len(component_names_by_lead.get(lead, [])) for lead in leads
             }
+            if product_name == "snowfall_anomaly":
+                # NCEP is represented by the published CFSv2 adapter above,
+                # not by a separate native C3S CDS component row.
+                entry["synthetic_components"] = [CFSV2_COMPONENT]
+            if cfsv2_error:
+                entry["component_errors"] = {CFSV2_COMPONENT: cfsv2_error}
             entries.append(entry)
             blend_failures += count
+            if cfsv2_error and cfsv2_requested:
+                blend_failures += 1
         else:
             print("C3S multi-system blend has no component fields", file=sys.stderr)
             blend_failures += 1
     write_manifest(manifest_path, entries, previous, args.retain_cycles)
     print(f"wrote C3S manifest: {manifest_path} ({len(entries)} run entries)")
-    # A missing centre should be visible in the manifest but should not make a
-    # usable multi-system release impossible.  Fail only when no rendered or
-    # decoded entry survived.
+    # A missing native centre should be visible in the manifest but should not
+    # make a usable multi-system release impossible.  The explicitly required
+    # CFSv2 snowfall handoff is handled as a hard failure just below.
     usable = any(entry.get("status") in {"rendered", "decoded", "partial"} for entry in entries)
+    if cfsv2_error and cfsv2_requested:
+        # Snowfall blends explicitly promise the CFSv2/NCEP member.  Do not
+        # publish a six-source map under the seven-source contract when the
+        # published CFSv2 handoff is unavailable.
+        return 2
     return 0 if usable and not blend_failures else (0 if usable and entries else 2)
 
 

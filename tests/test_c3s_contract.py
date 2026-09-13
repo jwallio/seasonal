@@ -59,6 +59,7 @@ def main() -> int:
         "snowfall_anomalous_rate_of_accumulation", "snowfall_anomaly",
         "retain-cycles", "systems", "system", "cds_client", "retry_max", "sleep_max",
         "retrieve_with_queue_retry", "CDS_QUEUE_RETRY_MAX", "CDS_QUEUE_RETRY_SLEEP_SECONDS",
+        "load_published_cfsv2_snowfall", "cfsv2-manifest-url", "CFSV2_COMPONENT",
     ):
         check(term in adapter or term in workflow or term in pages or term in cds_client, f"missing C3S term: {term}")
     check("cfgrib.open_datasets" in grib_adapter, "C3S/JMA GRIB decoder should discover heterogeneous raw pressure-level groups")
@@ -113,10 +114,54 @@ def main() -> int:
     check(ukmo_snowfall["map_domain"] == "land" and ukmo_snowfall["fit_frame_to_domain"], "C3S snowfall should use a fitted lower-48 land frame")
     check(len(ukmo_snowfall["mask_states"]) == 48, "C3S snowfall lower-48 mask should include all 48 states")
     check(ukmo_snowfall["anomaly_endpoint_labels"] == {"minimum": "≤−14", "maximum": "≥+14"}, "C3S snowfall seasonal legend should mark clipped endpoints")
+    mixed_snowfall = module.product_spec(
+        "snowfall_anomaly", "multi-system", multisystem=True, includes_cfsv2=True
+    )
+    check(mixed_snowfall["includes_cfsv2"], "C3S snowfall blend must mark the CFSv2 source")
+    check("CFSv2" in mixed_snowfall["source_label"], "C3S snowfall blend source label should disclose CFSv2")
+    check(
+        module._published_cfsv2_asset_url(
+            module.CFSV2_PUBLISHED_MANIFEST_URL,
+            "public/seasonal/cfsv2/2026091306/cfsv2_snowfalla_202612.snow.csv.gz",
+        ) == "https://jwallio.github.io/seasonal/cfsv2/2026091306/cfsv2_snowfalla_202612.snow.csv.gz",
+        "C3S should map the CFSv2 repository asset to its Pages publication path",
+    )
+    candidate_payload = {
+        "runs": [{
+            "id": "cfsv2-test-snowfall",
+            "product": "snowfall_anomaly",
+            "status": "rendered",
+            "init_utc": "2026-09-13T06:00:00Z",
+            "targets": [{
+                "target_month": "202612",
+                "status": "rendered",
+                "field": "snowfall_lwe",
+                "units": "in",
+                "numeric_grid": "public/seasonal/cfsv2/test/202612.snow.csv.gz",
+                "native_lwe_grid": "public/seasonal/cfsv2/test/202612.lwe.csv.gz",
+                "baseline": {"status": "applied", "method": "test"},
+            }],
+        }]
+    }
+    candidates = module._published_cfsv2_candidates(candidate_payload, {3: "202612"})
+    check(len(candidates) == 1 and candidates[0][0]["id"] == "cfsv2-test-snowfall", "CFSv2 candidate selection should require a complete applied departure")
+    check(
+        module._published_cfsv2_lwe_asset({"numeric_grid": "field.snow.csv.gz"}) is None,
+        "C3S must not reuse the CFSv2 snow-depth sidecar as an LWE input",
+    )
     converted = module.convert_product_grid(
         module.Grid([0.0], [0.0], [[0.001]]), snowfall_spec, "202601"
     )
     check(round(converted.values[0][0], 5) == round(0.001 * 31 * 86400 * module.M_TO_INCH, 5), "C3S snowfall conversion should use calendar-month seconds and metres-to-inches")
+    lwe_grid = module.Grid([0.0], [0.0], [[1.25]])
+    depth_grid, depth_spec = module.depth_departure(
+        lwe_grid, mixed_snowfall, module.SNOWFALL_ANOMALY_PALETTE, seasonal=True
+    )
+    check(depth_grid.values == [[12.5]], "C3S blend should apply the 10:1 display conversion once")
+    depth_again, _ = module.depth_departure(
+        depth_grid, depth_spec, module.SNOWFALL_ANOMALY_PALETTE, seasonal=True
+    )
+    check(depth_again.values == [[12.5]], "C3S snowfall display conversion must be idempotent")
     with tempfile.TemporaryDirectory() as temporary:
         output = Path(temporary) / "manifest.json"
         previous = Path(temporary) / "previous.json"
@@ -127,7 +172,26 @@ def main() -> int:
         run_ids = {run["id"] for run in payload["runs"]}
         check({"current-z500", "current-t2m"}.issubset(run_ids), "C3S repeated product renders must accumulate in the current manifest")
         check(len({run["init_utc"] for run in payload["runs"]}) == 4, "C3S retention should keep the current cycle plus three prior cycles")
-    print("C3S CONTRACT OK: official centres/systems, native anomalies, blend metadata, multi-product accumulation, workflow, and retention")
+        stale = Path(temporary) / "stale.json"
+        stale.write_text(json.dumps({"runs": [{
+            "id": "old-native-ncep",
+            "product": "snowfall_anomaly",
+            "component": "ncep",
+            "init_utc": "2026-08-01T00:00:00Z",
+        }]}), encoding="utf-8")
+        module.write_manifest(output, [{
+            "id": "current-snowfall-blend",
+            "product": "snowfall_anomaly",
+            "component": "multisystem",
+            "init_utc": "2026-08-01T00:00:00Z",
+            "components": ["ecmwf", "ncep"],
+            "synthetic_components": ["ncep"],
+            "source_urls": [module.CFSV2_PUBLISHED_MANIFEST_URL],
+        }], stale, 4)
+        payload = json.loads(output.read_text(encoding="utf-8"))
+        check("old-native-ncep" not in {run["id"] for run in payload["runs"]}, "C3S should remove stale native NCEP snowfall rows when NCEP is synthetic CFSv2")
+        check(module.CFSV2_PUBLISHED_MANIFEST_URL in payload["source_urls"], "C3S manifest should expose the CFSv2 provenance URL")
+    print("C3S CONTRACT OK: official centres/systems, native anomalies, CFSv2 snowfall handoff, blend metadata, multi-product accumulation, workflow, and retention")
     return 0
 
 
