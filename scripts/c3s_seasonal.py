@@ -90,6 +90,14 @@ CENTRES: dict[str, dict[str, Any]] = {
     "bom": {"label": "BOM", "system": "2", "members": 33},
 }
 
+# Native snowfall is currently published for these six C3S systems.  Keep
+# this list aligned with check_seasonal_releases.py and the live blend policy;
+# the other catalogue centre/system pairs return MarsNoDataError for the
+# snowfall field in the operational DJF window.
+SNOWFALL_CENTRES = (
+    "ecmwf", "ukmo", "meteo_france", "dwd", "cmcc", "eccc",
+)
+
 MSLP_PALETTE = ANOMALY_PALETTE
 PRECIP_PALETTE = [
     "#7f3b08", "#914b0d", "#a6611a", "#bd7a2d", "#d0a052", "#dfbd7d",
@@ -264,8 +272,14 @@ def month_seconds(target: str) -> int:
     return int((dt.datetime(year, month, 1) - start).total_seconds())
 
 
-def parse_centres(value: str) -> list[str]:
-    names = list(CENTRES) if value.strip().lower() in {"all", "c3s", "multi-system"} else [item.strip() for item in value.split(",") if item.strip()]
+def parse_centres(value: str, product_name: str | None = None) -> list[str]:
+    requested_all = value.strip().lower() in {"all", "c3s", "multi-system"}
+    if requested_all and product_name == "snowfall_anomaly":
+        names = list(SNOWFALL_CENTRES)
+    elif requested_all:
+        names = list(CENTRES)
+    else:
+        names = [item.strip() for item in value.split(",") if item.strip()]
     unknown = [item for item in names if item not in CENTRES]
     if unknown:
         raise C3SError(f"unknown C3S centre(s): {', '.join(unknown)}")
@@ -718,10 +732,34 @@ def write_manifest(path: Path, entries: Iterable[dict[str, Any]], previous: Path
             )
         except (OSError, ValueError) as exc:
             raise C3SError(f"could not read C3S manifest {candidate}: {exc}") from exc
-    all_entries.extend(
+    current_entries = [
         run for run in entries
         if isinstance(run, dict) and not is_retired_product(run.get("product"))
-    )
+    ]
+    all_entries.extend(current_entries)
+
+    # A refreshed multi-system run is authoritative for its current cycle.
+    # Remove stale component rows that were requested by an older, broader
+    # centre list (for example NCEP/JMA/BOM snowfall rows) so the dashboard
+    # cannot expose failed members beside the repaired blend.
+    for blend in current_entries:
+        if blend.get("component") != "multisystem":
+            continue
+        requested = set(blend.get("components") or blend.get("requested_components") or [])
+        if not requested:
+            continue
+        product_name = blend.get("product")
+        init_utc = blend.get("init_utc")
+        all_entries = [
+            run for run in all_entries
+            if not (
+                run.get("product") == product_name
+                and run.get("init_utc") == init_utc
+                and run.get("component") != "multisystem"
+                and run.get("component") not in requested
+            )
+        ]
+
     unique: dict[str, dict[str, Any]] = {str(run.get("id")): run for run in all_entries if run.get("id")}
     ordered = sorted(unique.values(), key=lambda run: (str(run.get("init_utc", "")), str(run.get("id", ""))), reverse=True)
     cycles: list[str] = []
@@ -778,7 +816,7 @@ def build_parser() -> argparse.ArgumentParser:
 def run(args: argparse.Namespace) -> int:
     product_name = args.product
     product = PRODUCT_SPECS[product_name]
-    centres = parse_centres(args.centres)
+    centres = parse_centres(args.centres, args.product)
     overrides = parse_system_overrides(args.systems)
     systems = {centre: overrides.get(centre, str(CENTRES[centre]["system"])) for centre in centres}
     init = parse_init(args.init)
