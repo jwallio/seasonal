@@ -270,7 +270,7 @@ jobs:
       # completion cannot create a workflow_run publisher under GitHub's
       # recursion guard. An explicit workflow_dispatch remains permitted.
       - name: Dispatch C3S Pages publish
-        if: ${{ success() && github.actor == 'github-actions[bot]' }}
+        if: ${{ success() && (github.actor == 'github-actions[bot]' || github.event_name == 'workflow_dispatch') }}
         uses: ./.github/actions/publish-pages
         with:
           source-workflow: C3S Multi-System Seasonal Graphics
