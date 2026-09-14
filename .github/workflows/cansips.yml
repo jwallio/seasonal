@@ -75,18 +75,43 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  route_push:
+    name: Route push safely
+    runs-on: ubuntu-latest
+    outputs:
+      run_workflow: ${{ steps.route.outputs.run_workflow }}
+    steps:
+      - name: Checkout history for push routing
+        if: github.event_name == 'push'
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Detect a coordinated canonical-style release
+        id: route
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BEFORE_SHA: ${{ github.event.before }}
+          AFTER_SHA: ${{ github.sha }}
+        run: |
+          if [[ "$EVENT_NAME" != "push" ]]; then
+            echo "run_workflow=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          base="$BEFORE_SHA"
+          if [[ -z "$base" || "$base" =~ ^0+$ ]] || ! git cat-file -e "${base}^{commit}"; then
+            base="${AFTER_SHA}^"
+          fi
+          changed=$(git diff --name-only "$base" "$AFTER_SHA")
+          if grep -Eq '^(scripts/(seasonal_rendering|seasonal_products|height_display|temperature_display|snowfall_display|cfsv2_seasonal|cfsv2_native_snow)\.py|\.github/workflows/height-style-refresh\.yml)$' <<< "$changed"; then
+            echo "run_workflow=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "run_workflow=true" >> "$GITHUB_OUTPUT"
+          fi
+
   render:
-    if: >-
-      ${{
-        github.event_name != 'push' ||
-        (
-          !contains(toJSON(github.event.commits), 'scripts/seasonal_rendering.py') &&
-          !contains(toJSON(github.event.commits), 'scripts/seasonal_products.py') &&
-          !contains(toJSON(github.event.commits), 'scripts/height_display.py') &&
-          !contains(toJSON(github.event.commits), 'scripts/temperature_display.py') &&
-          !contains(toJSON(github.event.commits), 'scripts/snowfall_display.py')
-        )
-      }}
+    needs: route_push
+    if: needs.route_push.outputs.run_workflow == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 360
     env:

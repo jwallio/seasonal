@@ -151,7 +151,8 @@ def main() -> int:
           and "payloads/cfsv2-snow" in publisher,
           "Pages must accept and merge the complete canonical-style payload")
     check("transient Pages tree containing a mixture" in publisher
-          and "!contains(toJSON(github.event.commits), 'scripts/seasonal_rendering.py')" in publisher,
+          and "git diff --name-only" in publisher
+          and "needs.route_push.outputs.run_workflow == 'true'" in publisher,
           "direct push publication must be gated while a canonical style release is staging")
 
     temperature = (WORKFLOWS / "temperature-style-refresh.yml").read_text(encoding="utf-8")
@@ -166,8 +167,11 @@ def main() -> int:
           "CFS snowfall push triggers must leave shared-style invalidation to the canonical coordinator")
     for name in ("apcc.yml", "cansips.yml", "sfs.yml", "cfsv2-snow.yml"):
         workflow = (WORKFLOWS / name).read_text(encoding="utf-8")
-        check("github.event.commits" in workflow and "scripts/seasonal_rendering.py" in workflow,
-              f"{name} must suppress its push-triggered producer during an atomic shared-style release")
+        check("git diff --name-only" in workflow
+              and "github.event.before" in workflow
+              and "needs: route_push" in workflow
+              and "seasonal_rendering" in workflow,
+              f"{name} must route from Git history and suppress its push-triggered producer during an atomic shared-style release")
     check("scripts/seasonal_rendering.py" in publisher,
           "Pages sparse checkout must include the canonical style registry")
     analogs = (WORKFLOWS / "seasonal-analogs.yml").read_text(encoding="utf-8")

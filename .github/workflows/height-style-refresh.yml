@@ -19,6 +19,8 @@ permissions:
   contents: read
 
 concurrency:
+  # This workflow path is itself classified as a canonical-style change so
+  # release-safety repairs also fan out through the single atomic publisher.
   group: canonical-seasonal-style-${{ github.ref }}
   cancel-in-progress: true
 
