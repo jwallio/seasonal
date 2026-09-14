@@ -917,7 +917,7 @@ def run(args: argparse.Namespace) -> int:
             if args.decode_only:
                 target_entry["status"] = "decoded"
             else:
-                output_path = output_dir / init[:8] / f"seas5_{product['variable']}_{target}.jpg"
+                output_path = output_dir / init[:8] / f"seas5_{product['artifact_token']}_{target}.jpg"
                 render_standalone(
                     forecast,
                     init,
@@ -952,7 +952,7 @@ def run(args: argparse.Namespace) -> int:
                             f"common reference {target}",
                         )
                         common_grid = subtract_grids(height_grids[lead], common_reference)
-                        common_output = output_dir / init[:8] / f"seas5_{product['variable']}_{target}_common-1991-2020.jpg"
+                        common_output = output_dir / init[:8] / f"seas5_{product['artifact_token']}_{target}_common-1991-2020.jpg"
                         render_map(
                             common_grid,
                             init,
@@ -1043,7 +1043,7 @@ def run(args: argparse.Namespace) -> int:
                     seasonal=True,
                 )
                 require_quality_control(seasonal_entry["quality_control"], SEAS5Error)
-            output_path = output_dir / init[:8] / f"seas5_{product['variable']}_{first_target}-{last_target}.jpg"
+            output_path = output_dir / init[:8] / f"seas5_{product['artifact_token']}_{first_target}-{last_target}.jpg"
             render_standalone(
                 seasonal_forecast,
                 init,
@@ -1102,7 +1102,7 @@ def run(args: argparse.Namespace) -> int:
                             reference_urls.append(reference_url)
                     common_baseline = mean_grids(common_references)
                     common_grid = subtract_grids(seasonal_height, common_baseline)
-                    common_output = output_dir / init[:8] / f"seas5_{product['variable']}_{first_target}-{last_target}_common-1991-2020.jpg"
+                    common_output = output_dir / init[:8] / f"seas5_{product['artifact_token']}_{first_target}-{last_target}_common-1991-2020.jpg"
                     render_map(
                         common_grid,
                         init,

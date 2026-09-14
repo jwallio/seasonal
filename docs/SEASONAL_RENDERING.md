@@ -61,6 +61,11 @@ therefore keep identical map and colorbar axes across providers. Core maps are
 1080×882. Provider titles and provenance text may change, but they cannot move
 the map, resize the legend, or change the crop.
 
+Source/cache variables may be shared between domain variants, but public
+artifact tokens may not. The explicit Northern Hemisphere height product is
+always suffixed `-nh`; strict catalog validation rejects any image path shared
+by distinct products so a polar render cannot overwrite the North America map.
+
 Every resolved style is serialized as sorted canonical JSON and identified by
 a SHA-256 fingerprint. The catalog publishes the complete `render_styles`
 registry, while each target records its style key and fingerprint. The

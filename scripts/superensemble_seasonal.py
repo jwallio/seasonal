@@ -1082,7 +1082,7 @@ def render_product_run(
             height = aligned_mean(height_grids[lead], height_keys, f"height lead {lead}") if height_keys else None
             entry["height_member_count"] = len(height_keys)
             if not args.decode_only:
-                output = output_dir / init[:8] / f"superensemble_{c3s.PRODUCT_SPECS[product]['variable']}_{target}.jpg"
+                output = output_dir / init[:8] / f"superensemble_{render_spec['artifact_token']}_{target}.jpg"
                 render_map(
                     anomaly,
                     init,
@@ -1101,7 +1101,7 @@ def render_product_run(
                 )
                 entry["image"] = relative_path(output, root)
                 if product in {"500mb_height_anomaly", "500mb_height_anomaly_nh"}:
-                    numeric_grid_path = output_dir / init[:8] / f"superensemble_{c3s.PRODUCT_SPECS[product]['variable']}_{target}.csv.gz"
+                    numeric_grid_path = output_dir / init[:8] / f"superensemble_{render_spec['artifact_token']}_{target}.csv.gz"
                     write_grid_state(anomaly, numeric_grid_path)
                     entry["numeric_grid"] = relative_path(numeric_grid_path, root)
                     entry["numeric_grid_format"] = "csv.gz"
@@ -1189,7 +1189,7 @@ def render_product_run(
                 height = aligned_mean(member_heights, height_keys, "seasonal height blend") if height_keys else None
                 entry["height_member_count"] = len(height_keys)
                 if not args.decode_only:
-                    output = output_dir / init[:8] / f"superensemble_{c3s.PRODUCT_SPECS[product]['variable']}_{target}.jpg"
+                    output = output_dir / init[:8] / f"superensemble_{render_spec['artifact_token']}_{target}.jpg"
                     render_map(
                         anomaly,
                         init,
@@ -1209,7 +1209,7 @@ def render_product_run(
                     )
                     entry["image"] = relative_path(output, root)
                     if product in {"500mb_height_anomaly", "500mb_height_anomaly_nh"}:
-                        numeric_grid_path = output_dir / init[:8] / f"superensemble_{c3s.PRODUCT_SPECS[product]['variable']}_{target}.csv.gz"
+                        numeric_grid_path = output_dir / init[:8] / f"superensemble_{render_spec['artifact_token']}_{target}.csv.gz"
                         write_grid_state(anomaly, numeric_grid_path)
                         entry["numeric_grid"] = relative_path(numeric_grid_path, root)
                         entry["numeric_grid_format"] = "csv.gz"

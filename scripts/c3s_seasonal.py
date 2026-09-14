@@ -906,7 +906,7 @@ def build_run(
             if decode_only:
                 target_entry["status"] = "decoded"
             else:
-                output = output_dir / init[:8] / f"c3s_{component}_{product['variable']}_{target}.jpg"
+                output = output_dir / init[:8] / f"c3s_{component}_{product['artifact_token']}_{target}.jpg"
                 ensemble_label = (
                     f"{members or len(centres)}-member mean"
                     if not multisystem
@@ -957,7 +957,7 @@ def build_run(
             seasonal_height = seasonal_height_override
             if seasonal_height is None and product["height_contours"] and all(lead in lead_heights for lead in seasonal_leads):
                 seasonal_height = combine([lead_heights[lead] for lead in seasonal_leads])
-            output = output_dir / init[:8] / f"c3s_{component}_{product['variable']}_{first_target}-{last_target}.jpg"
+            output = output_dir / init[:8] / f"c3s_{component}_{product['artifact_token']}_{first_target}-{last_target}.jpg"
             ensemble_label = (
                 f"{members or len(centres)}-member mean"
                 if not multisystem

@@ -103,6 +103,8 @@ def main() -> int:
         check(len(temperature_spec["anomaly_ticks"]) == len(temperature_spec["anomaly_palette"]) + 1, f"CMA {product} bounds must align with colors")
     northern_height = module.PRODUCT_SPECS["500mb_height_anomaly_nh"]
     check(northern_height["projection"] == "north_polar_stereographic", "CMA Northern Hemisphere 500-mb view must use the polar projection")
+    check(height["artifact_token"] != northern_height["artifact_token"] and "spec['artifact_token']" in adapter_text,
+          "CMA must publish the two height domains to distinct image paths")
     mslp = module.PRODUCT_SPECS["mslp_anomaly"]
     check((mslp["anomaly_min"], mslp["anomaly_max"]) == (-5.0, 5.0), "CMA MSLP must use the shared ±5 hPa scale")
     monthly_precip = module.render_product_spec("precipitation_anomaly", seasonal=False)

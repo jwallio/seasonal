@@ -247,6 +247,22 @@ def main() -> int:
         )
         check("probability_sum_mismatch" in validation["issue_codes"], "invalid probability sums must be rejected")
 
+        collision_manifest = manifest()
+        collision_manifest["runs"].append({
+            "id": "cfsv2-height-nh",
+            "init_utc": "2026-08-23T00:00:00Z",
+            "product": "500mb_height_anomaly_nh",
+            "status": "rendered",
+            "targets": [target(
+                product="500mb_height_anomaly_nh",
+                field="z500_anomaly",
+                units="m",
+                image="seasonal/cfsv2/map.jpg",
+            )],
+        })
+        _, validation = validate_manifest("cfsv2", collision_manifest, site_root=site, check_assets=False)
+        check("image_product_collision" in validation["issue_codes"], "distinct height domains must not share one public image path")
+
         legacy_precip = target(product="precipitation_anomaly", field="precipitation_anomaly", units="mm")
         runs, validation = validate_manifest(
             "apcc",

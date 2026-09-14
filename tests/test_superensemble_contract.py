@@ -47,6 +47,9 @@ def main() -> int:
     check(height_spec["anomaly_ticks"] == list(range(-120, 121, 10)), "super-ensemble 500-mb maps should use the shared 10-m labelled bounds")
     northern_height = module.product_spec("500mb_height_anomaly_nh", synthetic=True)
     check(northern_height["projection"] == "north_polar_stereographic", "super-ensemble Northern Hemisphere 500-mb view must use the polar projection")
+    check(height_spec["artifact_token"] != northern_height["artifact_token"]
+          and adapter_text.count("render_spec['artifact_token']") >= 4,
+          "super-ensemble images and numeric grids must keep the two height domains separately addressable")
     for product in ("850mb_temperature_anomaly", "2m_temperature_anomaly"):
         temperature_spec = module.product_spec(product)
         check((temperature_spec["anomaly_min"], temperature_spec["anomaly_max"]) == (-6.0, 6.0), f"super-ensemble {product} should use the shared ±6 °C range")

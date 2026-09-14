@@ -12,6 +12,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 
 import cfsv2_seasonal as cfsv2
 from height_display import HEIGHT_NH_FRAME, HEIGHT_ANOMALY_STYLE
+from seasonal_rendering import canonical_artifact_token
 from temperature_display import (
     TEMPERATURE_ANOMALY_MAX_C,
     TEMPERATURE_ANOMALY_MIN_C,
@@ -43,6 +44,22 @@ def _temperature_style(spec: dict) -> tuple:
 
 
 class SharedMapStyleTests(unittest.TestCase):
+    def test_height_domain_variants_have_unique_public_artifact_tokens(self):
+        for module_name in ADAPTERS:
+            module = importlib.import_module(module_name)
+            normal = module.PRODUCT_SPECS["500mb_height_anomaly"]
+            northern = module.PRODUCT_SPECS["500mb_height_anomaly_nh"]
+            with self.subTest(module=module_name):
+                self.assertNotEqual(normal["artifact_token"], northern["artifact_token"])
+                self.assertEqual(canonical_artifact_token(normal), normal["artifact_token"])
+                self.assertEqual(canonical_artifact_token(northern), northern["artifact_token"])
+                self.assertTrue(northern["artifact_token"].replace("_", "-").endswith("-nh"))
+
+        superensemble = importlib.import_module("superensemble_seasonal")
+        normal = superensemble.product_spec("500mb_height_anomaly")
+        northern = superensemble.product_spec("500mb_height_anomaly_nh")
+        self.assertNotEqual(normal["artifact_token"], northern["artifact_token"])
+
     def test_all_provider_adapters_share_temperature_style_and_frame(self):
         expected = (
             TEMPERATURE_ANOMALY_MIN_C,

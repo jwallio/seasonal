@@ -377,6 +377,7 @@ def validate_manifest(
 
     normalized_runs: list[dict[str, Any]] = []
     run_ids: set[str] = set()
+    image_owners: dict[str, tuple[str, str]] = {}
     for index, raw_run in enumerate(runs):
         run_path = f"runs[{index}]"
         if not isinstance(raw_run, dict):
@@ -428,6 +429,21 @@ def validate_manifest(
             )
             normalized_targets.append(normalized_target)
             comparable_targets.append(comparable)
+            image = str(normalized_target.get("image") or "")
+            if image:
+                previous_owner = image_owners.get(image)
+                if previous_owner and previous_owner[0] != product:
+                    collector.add(
+                        "image_product_collision",
+                        "error",
+                        (
+                            f"Public image {image!r} is shared by distinct products "
+                            f"{previous_owner[0]!r} and {product!r}; domain variants require unique artifacts."
+                        ),
+                        target_path,
+                    )
+                else:
+                    image_owners[image] = (product, target_path)
         normalized_run["targets"] = normalized_targets
         verified_display = next((t["display"] for t in normalized_targets if t.get("display")), None)
         if verified_display:

@@ -90,6 +90,8 @@ def main() -> int:
     northern_height = module.PRODUCT_SPECS["500mb_height_anomaly_nh"]
     check(northern_height["region"] == module.NORTHERN_HEMISPHERE_REGION, "C3S Northern Hemisphere 500-mb view must use the polar region")
     check(northern_height["projection"] == "north_polar_stereographic", "C3S Northern Hemisphere 500-mb view must use the polar projection")
+    check(height_spec["artifact_token"] != northern_height["artifact_token"] and "product['artifact_token']" in adapter,
+          "C3S/JMA must publish the two height domains to distinct image paths")
     for product in ("850mb_temperature_anomaly", "2m_temperature_anomaly"):
         temperature_spec = module.PRODUCT_SPECS[product]
         check((temperature_spec["anomaly_min"], temperature_spec["anomaly_max"]) == (-6.0, 6.0), f"C3S {product} should use the shared ±6 °C range")

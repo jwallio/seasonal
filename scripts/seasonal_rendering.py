@@ -258,6 +258,32 @@ _VISUAL_FIELDS = {
 }
 
 
+def canonical_artifact_token(product_spec: dict[str, Any]) -> str:
+    """Return a provider-compatible token that cannot alias a domain variant.
+
+    Source/cache variable names may legitimately be shared by the North
+    America and Northern Hemisphere 500-mb products. Public images may not:
+    they have different canonical domains and must remain separately
+    addressable. Preserve each adapter's established token while adding the
+    scientific domain suffix when it is absent.
+    """
+
+    style_product = str(product_spec.get("canonical_style_product") or product_spec.get("name") or "")
+    token = str(
+        product_spec.get("artifact_token")
+        or product_spec.get("file_token")
+        or product_spec.get("id_token")
+        or product_spec.get("variable")
+        or style_product
+    ).strip()
+    if not token:
+        raise ValueError("canonical public artifact token is empty")
+    normalized = token.lower().replace("_", "-")
+    if style_product == "500mb_height_anomaly_nh" and not normalized.endswith("-nh"):
+        token = f"{token}-nh"
+    return token
+
+
 def canonicalize_product_spec(product_spec: dict[str, Any], *, seasonal: bool = False) -> dict[str, Any]:
     """Replace provider visual fields with the resolved canonical contract."""
 
@@ -283,6 +309,7 @@ def canonicalize_product_spec(product_spec: dict[str, Any], *, seasonal: bool = 
         render_figure_pixel_dimensions=list(style["render_figure_dimensions"]),
         crop_bottom_to_legend=style["canvas_dimensions"][1] < style["render_figure_dimensions"][1],
         crop_bottom_px=style["canvas_dimensions"][1],
+        artifact_token=canonical_artifact_token(spec),
         canonical_style_key=style["style_key"],
         render_style_fingerprint=style["fingerprint"],
         inclusive_upper_boundaries=list(style["inclusive_upper_boundaries"]),

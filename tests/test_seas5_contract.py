@@ -124,6 +124,8 @@ def main() -> int:
     check(northern_height["projection_central_longitude"] == -100., "North America must face the bottom")
     check(northern_height["polar_frame_latitude"] == 24., "NH frame must include southern Texas and Florida")
     check(len(northern_height["anomaly_palette"])+1 == len(northern_height["anomaly_ticks"]), "NH colors must align with bounds")
+    check(height_spec["artifact_token"] != northern_height["artifact_token"] and adapter.count("product['artifact_token']") >= 4,
+          "SEAS5 must publish the two height domains to distinct image paths")
     for product in (module.T850_ANOMALY, module.T2M_ANOMALY):
         temperature_spec = module.PRODUCT_SPECS[product]
         check((temperature_spec["anomaly_min"], temperature_spec["anomaly_max"]) == (-6.0, 6.0), f"SEAS5 {product} should use the shared ±6 °C range")

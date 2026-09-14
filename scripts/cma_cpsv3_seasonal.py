@@ -600,7 +600,7 @@ def build_run(
             if decode_only:
                 target_entry["status"] = "decoded"
             else:
-                output = output_dir / init[:8] / f"cma_cpsv3_{spec['variable']}_{target}.jpg"
+                output = output_dir / init[:8] / f"cma_cpsv3_{spec['artifact_token']}_{target}.jpg"
                 render_target(grids[lead], product, init, target, lead, output, borders, climate_label)
                 target_entry["image"] = relative_path(output, root)
                 target_entry["status"] = "rendered"
@@ -640,7 +640,7 @@ def build_run(
             if decode_only:
                 target_entry["status"] = "decoded"
             else:
-                output = output_dir / init[:8] / f"cma_cpsv3_{spec['variable']}_{first_target}-{last_target}.jpg"
+                output = output_dir / init[:8] / f"cma_cpsv3_{spec['artifact_token']}_{first_target}-{last_target}.jpg"
                 render_target(
                     seasonal_grid,
                     product,
