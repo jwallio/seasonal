@@ -50,7 +50,9 @@ def main() -> int:
         archive = root / "z500_anom.zarr"
         archive.mkdir()
         grid = root / "public/seasonal/cfsv2/202608/cfsv2_z500a_202701.csv.gz"
+        snow_grid = root / "public/seasonal/cfsv2/202608/cfsv2_snowfalla_202701.snow.csv.gz"
         write_grid(grid)
+        write_grid(snow_grid)
         for model_key in ("cfsv2", "superensemble"):
             manifest_path = root / builder.MODEL_SPECS[model_key]["manifest"]
             manifest_path.parent.mkdir(parents=True, exist_ok=True)
@@ -71,6 +73,20 @@ def main() -> int:
                                 ],
                             },
                             {
+                                "id": f"{model_key}-usable-old-snowfall_anomaly",
+                                "status": "rendered",
+                                "init_utc": "2026-08-18T18:00:00Z",
+                                "targets": [
+                                    {
+                                        "status": "rendered",
+                                        "target_month": "202701",
+                                        "numeric_grid": "public/seasonal/cfsv2/202608/cfsv2_snowfalla_202701.snow.csv.gz",
+                                        "field": "snowfall_lwe",
+                                        "image": "public/seasonal/cfsv2/202608/cfsv2_snowfalla_202701.jpg",
+                                    }
+                                ],
+                            },
+                            {
                                 "id": f"{model_key}-usable-old",
                                 "status": "rendered",
                                 "init_utc": "2026-08-18T18:00:00Z",
@@ -79,6 +95,7 @@ def main() -> int:
                                         "status": "rendered",
                                         "target_month": "202701",
                                         "numeric_grid": "public/seasonal/cfsv2/202608/cfsv2_z500a_202701.csv.gz",
+                                        "field": "z500_anomaly",
                                         "image": "public/seasonal/example.jpg",
                                     }
                                 ],
@@ -120,6 +137,8 @@ def main() -> int:
             "the newest failed run must never be selected",
         )
         check(payload["source"]["failed_runs_excluded"], "manifest should record failed-run exclusion")
+        check(payload["source"]["forecast_field"] == builder.ANALOG_FORECAST_FIELD, "manifest should record the Z500 input field")
+        check(all(entry["forecast_field"] == builder.ANALOG_FORECAST_FIELD for entry in payload["entries"]), "only Z500 forecast fields may enter the analog manifest")
         check(payload["source"]["amplitude_method"] == analogs.AMPLITUDE_METHOD, "manifest should record amplitude matching")
         check(payload["source"]["composite"]["count"] == analogs.COMPOSITE_ANALOG_COUNT, "manifest should record the composite count")
         check(payload["entries"][0]["results"][0]["rank"] == 1, "analog result rank is missing")

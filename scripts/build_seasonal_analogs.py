@@ -21,6 +21,10 @@ MODEL_SPECS = {
         "manifest": "public/seasonal/superensemble_manifest.json",
     },
 }
+
+# The analog archive is a Z500 anomaly archive.  Do not allow a different
+# numeric product (especially snowfall) to masquerade as a Z500 input.
+ANALOG_FORECAST_FIELD = "z500_anomaly"
 USABLE_STATUSES = frozenset({"rendered", "partial", "decoded"})
 
 
@@ -67,12 +71,36 @@ def _read_manifest(path: Path) -> dict[str, Any]:
     return payload
 
 
+def _is_nh_variant(run: dict[str, Any], target_entry: dict[str, Any]) -> bool:
+    """Identify a Northern-Hemisphere-only Z500 product for fallback ordering."""
+
+    identity = " ".join(
+        str(run.get(key, ""))
+        for key in ("id",)
+    ) + " " + " ".join(
+        str(target_entry.get(key, ""))
+        for key in ("image", "numeric_grid")
+    )
+    normalized = identity.lower()
+    return any(
+        marker in normalized
+        for marker in ("height_anomaly_nh", "z500a-nh", "z500-nh", "z500_nh")
+    )
+
+
 def _target_entries(
     root: Path,
     model_key: str,
     manifest_path: Path,
 ) -> tuple[list[dict[str, Any]], list[str]]:
-    """Select newest usable target entries without ever selecting failed runs."""
+    """Select newest usable standard-Z500 target entries.
+
+    Seasonal manifests contain many numeric products.  The analog archive is
+    specifically Z500, so snowfall, precipitation, temperature, and other
+    numeric grids must never be eligible.  If both the standard and NH-only
+    Z500 products exist for one target, prefer the standard product while
+    retaining the NH variant as a fallback.
+    """
 
     payload = _read_manifest(manifest_path)
     runs = sorted(
@@ -84,8 +112,7 @@ def _target_entries(
         ),
         reverse=True,
     )
-    selected: list[dict[str, Any]] = []
-    selected_targets: set[str] = set()
+    selected_by_target: dict[str, tuple[dict[str, Any], bool]] = {}
     skipped: list[str] = []
     for run in runs:
         if str(run.get("status", "")) not in USABLE_STATUSES:
@@ -97,11 +124,17 @@ def _target_entries(
             if str(target_entry.get("status", "")) not in USABLE_STATUSES:
                 continue
             target = str(target_entry.get("target_month") or target_entry.get("target") or "")
-            if not target or target in selected_targets:
+            if not target:
                 continue
             try:
                 metadata = analogs.parse_target(target)
             except analogs.SeasonalAnalogError:
+                continue
+
+            # Field metadata is the type-safety gate.  A valid numeric grid is
+            # not sufficient because the manifest also contains snowfall grids.
+            field = str(target_entry.get("field", "")).strip().lower()
+            if field != ANALOG_FORECAST_FIELD:
                 continue
             numeric_grid = target_entry.get("numeric_grid")
             if not numeric_grid:
@@ -111,21 +144,28 @@ def _target_entries(
             if not grid_path.exists():
                 skipped.append(f"{model_key}:{run.get('id', 'unknown')}:{target}:numeric_grid_unavailable")
                 continue
-            selected_targets.add(target)
-            selected.append(
-                {
-                    "model": model_key,
-                    "model_label": MODEL_SPECS[model_key]["label"],
-                    "run_id": str(run.get("id", target_entry.get("id", "unknown"))),
-                    "init_utc": str(run.get("init_utc", "")),
-                    "target": target,
-                    "target_label": metadata["label"],
-                    "image": target_entry.get("image"),
-                    "grid_path": grid_path,
-                }
-            )
-    return selected, skipped
 
+            is_nh_variant = _is_nh_variant(run, target_entry)
+            candidate = {
+                "model": model_key,
+                "model_label": MODEL_SPECS[model_key]["label"],
+                "run_id": str(run.get("id", target_entry.get("id", "unknown"))),
+                "init_utc": str(run.get("init_utc", "")),
+                "target": target,
+                "target_label": metadata["label"],
+                "image": target_entry.get("image"),
+                "grid_path": grid_path,
+                "forecast_field": field,
+            }
+            existing = selected_by_target.get(target)
+            # Runs are newest-first.  Keep the newest candidate of a product
+            # class, but replace an NH fallback if an older standard Z500 grid
+            # is available later in the manifest.
+            if existing is not None and (not existing[1] or is_nh_variant):
+                continue
+            selected_by_target[target] = (candidate, is_nh_variant)
+
+    return [candidate for candidate, _is_nh in selected_by_target.values()], skipped
 
 def build_manifest(
     *,
@@ -186,6 +226,7 @@ def build_manifest(
                     "target": target,
                     "target_label": candidate["target_label"],
                     "image": candidate["image"],
+                    "forecast_field": candidate["forecast_field"],
                     "results": match["results"],
                 }
             )
@@ -205,6 +246,8 @@ def build_manifest(
         "source": {
             "label": analogs.ARCHIVE_LABEL,
             "archive_variable": variable,
+            "forecast_field": ANALOG_FORECAST_FIELD,
+            "selection": "standard Z500 anomaly numeric grids only; standard product preferred over NH fallback",
             "climatology_years": "1981-2010",
             "method": analogs.PATTERN_METHOD,
             "regional_weights": {"nh": analogs.NH_WEIGHT, "conus": analogs.CONUS_WEIGHT},
