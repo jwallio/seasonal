@@ -15,7 +15,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
 from build_seasonal_catalog import build_catalog, validate_manifest  # noqa: E402
-from seasonal_products import PRODUCTS, grid_quality_control, issue_codes, public_product_registry, require_quality_control  # noqa: E402
+from seasonal_products import PRODUCTS, REGISTRY_VERSION, grid_quality_control, issue_codes, public_product_registry, require_quality_control  # noqa: E402
 
 
 def check(condition: bool, message: str) -> None:
@@ -41,7 +41,7 @@ def target(
         "status": "rendered",
         "image": image,
         "quality_control": {
-            "registry_version": 1,
+            "registry_version": REGISTRY_VERSION,
             "status": "passed",
             "product": product,
         },
@@ -67,12 +67,12 @@ def main() -> int:
     check("snow_water_equivalent_anomaly" not in public_product_registry(), "quarantined CFSv2 SWE must not appear in the public product registry")
     snowfall_display = PRODUCTS["snowfall_anomaly"]["display"]
     check(
-        (snowfall_display["monthly"]["minimum"], snowfall_display["monthly"]["maximum"]) == (-10.0, 10.0),
-        "monthly snowfall catalog display should use the ±10 inch snowfall-depth range",
+        (snowfall_display["monthly"]["minimum"], snowfall_display["monthly"]["maximum"]) == (-14.0, 14.0),
+        "monthly snowfall catalog display should use the ±14 inch snowfall-depth range",
     )
     check(
-        (snowfall_display["seasonal"]["minimum"], snowfall_display["seasonal"]["maximum"]) == (-10.0, 10.0),
-        "seasonal snowfall catalog display should use the ±10 inch snowfall-depth range",
+        (snowfall_display["seasonal"]["minimum"], snowfall_display["seasonal"]["maximum"]) == (-20.0, 20.0),
+        "seasonal snowfall catalog display should use the ±20 inch snowfall-depth range",
     )
     passed = grid_quality_control(
         "2m_temperature_anomaly",
@@ -120,6 +120,11 @@ def main() -> int:
             source_revision="test-revision",
         )
         summary = catalog["summary"]
+        check(catalog["schema_version"] == 2, "catalog should identify the rendering-contract schema")
+        check("render_styles" in catalog, "catalog should publish canonical render styles")
+        style_key = catalog["models"]["cfsv2"]["runs"][0]["targets"][0]["_catalog"]["render_style_key"]
+        check(style_key in catalog["render_styles"], "target style key should resolve in the catalog registry")
+        check(len(catalog["render_styles"][style_key]["fingerprint"]) == 64, "style fingerprint should be SHA-256")
         check(summary["models_online"] == 1, "valid model should be online")
         check(summary["supported_surfaces"] == 6, "CFSv2 should have five core surfaces plus derived snowfall")
         check(summary["available_surfaces"] == 1, "one synthetic CFSv2 surface should be available")

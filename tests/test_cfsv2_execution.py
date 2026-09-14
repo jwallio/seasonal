@@ -93,8 +93,7 @@ class ExecutionTests(unittest.TestCase):
         from concurrent.futures import ThreadPoolExecutor
         limiter = RequestLimiter(.02)
         def one(_):
-            limiter.wait()
-            return time.monotonic()
+            return limiter.wait()
         with ThreadPoolExecutor(max_workers=2) as pool:
             starts = sorted(pool.map(one, range(4)))
         self.assertTrue(all(b-a >= .018 for a,b in zip(starts, starts[1:])))

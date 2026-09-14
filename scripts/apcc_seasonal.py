@@ -25,7 +25,6 @@ import zipfile
 import numpy as np
 
 from cfsv2_seasonal import (
-    ANOMALY_PALETTE,
     CONUS_REGION,
     DEFAULT_REGION,
     Grid,
@@ -39,6 +38,7 @@ from cfsv2_seasonal import (
     render_map,
 )
 from seasonal_products import grid_quality_control, is_retired_product, require_quality_control
+from seasonal_rendering import canonicalize_product_spec
 
 
 APCC_SOURCE_URL = "https://apcc21.org/clik/processing/prediction"
@@ -54,17 +54,6 @@ APCC_ACKNOWLEDGEMENT = (
     "APCC MME data collected and reproduced by APCC based on hindcast/forecast "
     "data produced by APCC MME Producing Centres."
 )
-
-APCC_Z500_TICKS = list(range(-100, 101, 10))
-APCC_PRECIP_TICKS = list(range(-8, 9))
-APCC_PRECIP_PALETTE = [
-    "#7f3b08", "#914b0d", "#a6611a", "#bd7a2d", "#d0a052", "#dfbd7d",
-    "#ead8b3", "#ffffff", "#ffffff", "#e5f1dc", "#c8e4bf", "#aad89f",
-    "#86c879", "#5fba6b", "#3aa55b", "#006d2c",
-]
-APCC_PRESSURE_TICKS = list(range(-10, 11))
-APCC_PRESSURE_PALETTE = ANOMALY_PALETTE
-
 
 def dataset_url(dataset: str) -> str:
     """Return the official APCC dataset page matching the requested horizon."""
@@ -103,8 +92,7 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "api_variable": "prec", "field": "precipitation_anomaly", "raw_field": "precipitation anomaly",
         "raw_units": "mm/day", "units": "in", "title": "APCC MME Seasonal Precipitation Anomaly (in)",
         "absolute_title": "APCC MME Precipitation (in)", "height_contours": False,
-        "region": CONUS_REGION, "anomaly_min": -8.0, "anomaly_max": 8.0,
-        "anomaly_ticks": APCC_PRECIP_TICKS, "anomaly_palette": APCC_PRECIP_PALETTE,
+        "region": CONUS_REGION,
         "precipitation_conversion": "seasonal mean mm/day × valid-season days ÷ 25.4 = seasonal accumulation inches",
         "header_detail": "{source_label}  •  {baseline_label}  •  Native APCC seasonal MME anomaly",
         "id_token": "preca",
@@ -113,8 +101,7 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "api_variable": "slp", "field": "mslp_anomaly", "raw_field": "mean sea-level pressure anomaly",
         "raw_units": "mb", "units": "hPa", "title": "APCC MME Mean Sea-Level Pressure Anomaly (hPa)",
         "absolute_title": "APCC MME Mean Sea-Level Pressure (hPa)", "height_contours": False,
-        "region": CONUS_REGION, "anomaly_min": -10.0, "anomaly_max": 10.0,
-        "anomaly_ticks": APCC_PRESSURE_TICKS, "anomaly_palette": APCC_PRESSURE_PALETTE,
+        "region": CONUS_REGION,
         "header_detail": "{source_label}  •  {baseline_label}  •  Native APCC seasonal MME anomaly",
         "id_token": "slpa",
     },
@@ -130,6 +117,12 @@ PRODUCT_SPECS["500mb_height_anomaly_nh"] = {
     "header_detail": "{source_label}  •  {baseline_label}  •  Native APCC seasonal MME anomaly  •  Northern Hemisphere",
     "id_token": "z500a-nh",
 }
+
+for _product_name, _product_spec in list(PRODUCT_SPECS.items()):
+    PRODUCT_SPECS[_product_name] = canonicalize_product_spec(
+        {**_product_spec, "name": _product_name},
+        seasonal=True,
+    )
 
 
 class APCCError(RuntimeError):
@@ -755,6 +748,7 @@ def run(args: argparse.Namespace) -> int:
                 period_label=period,
                 ensemble_label="APCC multi-model ensemble mean",
                 initialization_label=issue_label,
+                seasonal=True,
                 product_spec={
                     **product,
                     "name": product_name,

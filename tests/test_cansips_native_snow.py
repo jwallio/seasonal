@@ -88,6 +88,8 @@ class NativeSnowTests(unittest.TestCase):
             self.assertEqual(seasonal['quality_control']['maximum'],60.)
             self.assertEqual(seasonal['quality_control']['source_maximum'],6.)
             self.assertEqual(seasonal['quality_control']['display']['clipped_fraction'],1.)
+            self.assertEqual(seasonal['display']['scale_inches'],[-20.0,20.0])
+            self.assertEqual(seasonal['display']['white_band_inches'],[-2.0,2.0])
             self.assertEqual(run['climatology']['years'],'1993-2016')
             with patch.object(native.NativeSnowArchive,'grid',side_effect=native.NotAvailable('not released')):
                 run, errors = native.render_run(args,'2026090100',[3,4,5],[3,4,5],Path(tmp),output,[])

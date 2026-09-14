@@ -51,10 +51,13 @@ Additional provider-specific products include snow depth, absolute fields,
 sea-surface height, 200-mb fields, probability categories, and other native
 parameters where the source supports them.
 
-Shared comparison conventions include fixed cross-provider scales for 500-mb
-height and temperature. Precipitation is rendered in accumulated inches. NOAA
-SFS beta2 uses the same fixed discrete bands and full CONUS framing, including
-the eastern Maine border, rather than a smooth gradient.
+Shared comparison conventions include fixed cross-provider scales, palettes,
+projections, legend geometry, overflow colors, and canvas dimensions. The
+complete contract is documented in
+[`docs/SEASONAL_RENDERING.md`](docs/SEASONAL_RENDERING.md). Precipitation is
+rendered in accumulated inches. NOAA SFS beta2 uses the same discrete bands and
+CONUS framing, including the eastern Maine border, rather than a smooth
+gradient.
 Snowfall departure maps use the native/derived accumulation rate for each
 provider, retain LWE for comparison math, and convert the signed departure once
 to estimated snow-depth inches at a fixed 10:1 ratio. NOAA SFS TSNOWP monthly mean daily accumulations are first
@@ -65,11 +68,10 @@ and DJF three-month sums. CanSIPS v3 adds a transparent derived estimate from
 its paired 2-m temperature and precipitation members; the super ensemble can
 include that CanSIPS-derived family vote alongside native snowfall fields.
 CanSIPS also uses the paired 850-hPa temperature as a warm-layer gate with its
-2-m temperature. CFSv2 and C3S snowfall-departure maps use 20 discrete one-inch snow-depth
-bands from −10 to +10 inches, with a white near-zero band from −1 to +1
-inches. SFS and other products that can carry larger mountain departures retain
-the broad nonlinear −100 to +100-inch profile. Values outside each product's
-endpoints use the endpoint color. Models without a
+2-m temperature. All providers use the same aggregation-based snowfall style:
+monthly departures span −14 to +14 inches with one-inch center bands, and
+three-month totals span −20 to +20 inches in two-inch bands. Values beyond the
+fixed ranges use distinct darker rectangular overflow cells. Models without a
 native or explicitly derived snowfall field remain explicitly not applicable.
 CFSv2 refreshes its derived snowfall suite for December through March and
 publishes accumulated DJF and JFM departures whenever that complete cold-season
@@ -124,7 +126,9 @@ Before publication, `scripts/build_seasonal_catalog.py --strict` validates:
 - model/product support and intentional unavailability
 
 The resulting `seasonal/catalog.json` drives the dashboard and its health and
-coverage summaries. Missing or invalid metadata fails closed before publishing.
+coverage summaries. It also publishes deterministic style fingerprints and
+pixel dimensions for stable cache invalidation and image aspect reservation.
+Missing or invalid metadata fails closed before publishing.
 
 ## Automation and publishing
 
@@ -154,6 +158,8 @@ allowing one model update to remove another model's products.
 - `public/seasonal/` — seasonal dashboard and model-specific viewers
 - `scripts/seasonal_products.py` — canonical product, units, scale, support,
   and QC registry
+- `scripts/seasonal_rendering.py` — provider-independent palettes, boundaries,
+  overflow behavior, geometry, and style fingerprints
 - `scripts/*_seasonal.py` — provider adapters
 - `scripts/build_seasonal_catalog.py` — strict catalog and health builder
 - `scripts/build_seasonal_thumbnails.py` — deterministic Compare thumbnails

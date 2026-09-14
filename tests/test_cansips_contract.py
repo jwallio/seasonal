@@ -117,12 +117,10 @@ def main() -> int:
     check(snowfall_spec["region"] == module.CONUS_PRECIP_REGION, "CanSIPS snowfall must use the tight CONUS crop")
     check(snowfall_spec["map_domain"] == "land" and snowfall_spec["fit_frame_to_domain"], "CanSIPS snowfall must use a fitted lower-48 land frame")
     check(snowfall_spec["seasonal_reducer"] == "sum", "CanSIPS snowfall seasons must sum monthly LWE departures")
-    check((snowfall_spec["anomaly_min"], snowfall_spec["anomaly_max"]) == (-4.0, 4.0), "CanSIPS snowfall should use a nonlinear ±4.0 inch water-equivalent range")
-    check(snowfall_spec["anomaly_ticks"] == module.SNOWFALL_ANOMALY_TICKS, "CanSIPS snowfall should use the approved nonlinear labelled breakpoints")
-    check(snowfall_spec["anomaly_tick_format"] == "signed_trimmed" and snowfall_spec["anomaly_tick_decimals"] == 2, "CanSIPS snowfall labels should preserve quarter-inch breakpoints")
-    check((snowfall_spec["monthly_anomaly_min"], snowfall_spec["monthly_anomaly_max"]) == (-2.0, 2.0), "CanSIPS monthly snowfall should use the tighter ±2.0 inch range")
-    check(len(snowfall_spec["monthly_anomaly_ticks"]) == len(snowfall_spec["monthly_anomaly_palette"]) + 1, "CanSIPS monthly snowfall bounds must align with colors")
-    check(snowfall_spec["monthly_anomaly_endpoint_labels"] == {"minimum": "≤−2.0", "maximum": "≥+2.0"}, "CanSIPS monthly snowfall legend should mark clipped endpoints")
+    check((snowfall_spec["anomaly_min"], snowfall_spec["anomaly_max"]) == (-14.0, 14.0), "CanSIPS monthly snowfall should use the canonical ±14-inch snow-depth range")
+    check(snowfall_spec["anomaly_ticks"] == COMPACT_TICKS, "CanSIPS snowfall should use canonical monthly labelled breakpoints")
+    check(snowfall_spec["anomaly_tick_format"] == "signed_trimmed" and snowfall_spec["anomaly_tick_decimals"] == 0, "CanSIPS snowfall labels should use whole snow-depth inches")
+    check(not any(key.startswith("monthly_anomaly_") for key in snowfall_spec), "CanSIPS must not retain a provider-local monthly style branch")
     check(len(snowfall_spec["anomaly_ticks"]) == len(snowfall_spec["anomaly_palette"]) + 1, "CanSIPS snowfall bounds must align with colors")
     check("(in LWE)" not in snowfall_spec["title"], "CanSIPS snowfall title must not use the obsolete in-LWE wording")
     dai_expected = -48.2372 * (math.tanh(0.7449 * (1.0 - 1.0919)) - 1.0209) / 100.0
@@ -143,7 +141,7 @@ def main() -> int:
     height_spec = module.PRODUCT_SPECS[module.PRODUCT_Z500_ANOMALY]
     check((height_spec["anomaly_min"], height_spec["anomaly_max"]) == (-120.0, 120.0), "CanSIPS 500-mb should use the shared ±120 m range")
     check(height_spec["anomaly_ticks"] == list(range(-120, 121, 10)), "CanSIPS 500-mb should use the shared 10-m labelled bounds")
-    check(len(module.ANOMALY_PALETTE) == len(module.ANOMALY_TICKS) - 1, "CanSIPS height anomaly colors must align with labelled bounds")
+    check(len(height_spec["anomaly_palette"]) == len(height_spec["anomaly_ticks"]) - 1, "CanSIPS height anomaly colors must align with canonical labelled bounds")
     northern_height = module.PRODUCT_SPECS[module.PRODUCT_Z500_ANOMALY_NH]
     check(northern_height["projection"] == "north_polar_stereographic", "CanSIPS Northern Hemisphere 500-mb view must use the polar projection")
     check(len(module.SSH_ANOMALY_PALETTE) == len(module.SSH_ANOMALY_TICKS) - 1, "CanSIPS sea-surface height colors must align with labelled bounds")
@@ -152,7 +150,7 @@ def main() -> int:
         check((temperature_spec["anomaly_min"], temperature_spec["anomaly_max"]) == (-6.0, 6.0), f"CanSIPS {product} should use the shared ±6 °C range")
         check(temperature_spec["anomaly_ticks"] == [value / 2.0 for value in range(-12, 13)], f"CanSIPS {product} should use 0.5 °C labelled bounds")
         check(len(temperature_spec["anomaly_ticks"]) == len(temperature_spec["anomaly_palette"]) + 1, f"CanSIPS {product} bounds must align with colors")
-    check((module.PRODUCT_SPECS[module.PRODUCT_MSLP_ANOMALY]["anomaly_min"], module.PRODUCT_SPECS[module.PRODUCT_MSLP_ANOMALY]["anomaly_max"]) == (-10.0, 10.0), "CanSIPS MSLP should use the readable shared ±10 hPa range")
+    check((module.PRODUCT_SPECS[module.PRODUCT_MSLP_ANOMALY]["anomaly_min"], module.PRODUCT_SPECS[module.PRODUCT_MSLP_ANOMALY]["anomaly_max"]) == (-5.0, 5.0), "CanSIPS MSLP should use the shared ±5 hPa range")
     for ocean_product in (module.PRODUCT_SEA_SURFACE_HEIGHT_ANOMALY,):
         check(module.PRODUCT_SPECS[ocean_product]["map_domain"] == "ocean", f"CanSIPS {ocean_product} must mask land")
         check(len(module.PRODUCT_SPECS[ocean_product]["anomaly_ticks"]) == len(module.PRODUCT_SPECS[ocean_product]["anomaly_palette"]) + 1, f"CanSIPS {ocean_product} bounds must align with colors")

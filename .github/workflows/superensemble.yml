@@ -7,6 +7,11 @@ on:
     - cron: "30 20 22 * *"
   workflow_dispatch:
     inputs:
+      style_refresh:
+        description: "Stage output for a coordinated canonical-style release"
+        required: false
+        default: false
+        type: boolean
       product:
         description: "Super-ensemble parameter to generate"
         required: false
@@ -321,7 +326,7 @@ jobs:
       # workflow_run is suppressed for workflow_dispatch calls made with the
       # repository Actions token. Publish this merged child directly.
       - name: Dispatch Pages publisher for token-launched render
-        if: ${{ success() && github.actor == 'github-actions[bot]' }}
+        if: ${{ success() && github.actor == 'github-actions[bot]' && inputs.style_refresh != true }}
         uses: ./.github/actions/publish-pages
         with:
           source-workflow: Deduplicated Seasonal Super Ensemble

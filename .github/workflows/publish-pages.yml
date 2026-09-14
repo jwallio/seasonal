@@ -53,6 +53,7 @@ on:
           - NOAA SFS Beta2 Seasonal Graphics
           - Deduplicated Seasonal Super Ensemble
           - Seasonal 500-mb Pattern Analogs
+          - Canonical Seasonal Style Refresh
           - Native Snowfall Estimate Page
       source_run_id:
         description: "Artifact run ID (use 0 for Native Snowfall Estimate Page)"
@@ -69,7 +70,28 @@ concurrency:
 
 jobs:
   publish:
-    if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    # A shared-style push is staged by height-style-refresh.yml and arrives here
+    # as one aggregate workflow_dispatch. Skipping the direct push prevents a
+    # transient Pages tree containing a mixture of old and new provider maps.
+    if: >-
+      ${{
+        github.event_name == 'workflow_dispatch' ||
+        (
+          github.event_name == 'workflow_run' &&
+          github.event.workflow_run.event != 'push' &&
+          github.event.workflow_run.conclusion == 'success'
+        ) ||
+        (
+          github.event_name == 'push' &&
+          !contains(toJSON(github.event.commits), 'scripts/seasonal_rendering.py') &&
+          !contains(toJSON(github.event.commits), 'scripts/seasonal_products.py') &&
+          !contains(toJSON(github.event.commits), 'scripts/height_display.py') &&
+          !contains(toJSON(github.event.commits), 'scripts/temperature_display.py') &&
+          !contains(toJSON(github.event.commits), 'scripts/snowfall_display.py') &&
+          !contains(toJSON(github.event.commits), 'scripts/cfsv2_seasonal.py') &&
+          !contains(toJSON(github.event.commits), 'scripts/cfsv2_native_snow.py')
+        )
+      }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
@@ -105,6 +127,7 @@ jobs:
             public/seasonal/superensemble/index.html
             scripts/height_display.py
             scripts/seasonal_products.py
+            scripts/seasonal_rendering.py
             scripts/build_seasonal_catalog.py
             scripts/build_seasonal_share_images.py
             scripts/build_seasonal_thumbnails.py
@@ -284,6 +307,16 @@ jobs:
           repository: ${{ github.repository }}
           run-id: ${{ env.SOURCE_RUN_ID }}
 
+      - name: Download atomic canonical-style payload
+        if: ${{ env.SOURCE_WORKFLOW == 'Canonical Seasonal Style Refresh' }}
+        uses: actions/download-artifact@v4
+        with:
+          name: canonical-seasonal-pages-${{ env.SOURCE_RUN_ID }}
+          path: incoming/canonical
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: ${{ env.SOURCE_RUN_ID }}
+
       - name: Merge payload into the Pages tree
         shell: bash
         run: |
@@ -340,6 +373,45 @@ jobs:
           cp dashboard-source/public/seasonal/superensemble/index.html site/superensemble/index.html
 
           case "$SOURCE_WORKFLOW" in
+            "Canonical Seasonal Style Refresh")
+              payload_root=incoming/canonical
+              if [ -d "$payload_root/canonical-payload" ]; then
+                payload_root="$payload_root/canonical-payload"
+              fi
+              test -f "$payload_root/producers.tsv"
+              test "$(wc -l < "$payload_root/producers.tsv")" -eq 11
+
+              cfsv2_root="$payload_root/payloads/cfsv2"
+              if [ -d "$cfsv2_root/pages-payload" ]; then
+                cfsv2_root="$cfsv2_root/pages-payload"
+              elif [ -d "$cfsv2_root/.pages-payload" ]; then
+                cfsv2_root="$cfsv2_root/.pages-payload"
+              fi
+              test -f "$cfsv2_root/cfsv2_manifest.json"
+              python dashboard-source/scripts/merge_cfsv2_surface_release.py \
+                --incoming "$cfsv2_root" --site site --preserve
+
+              snowfall_root="$payload_root/payloads/cfsv2-snow"
+              if [ -d "$snowfall_root/payload" ]; then
+                snowfall_root="$snowfall_root/payload"
+              fi
+              test -f "$snowfall_root/cfsv2_manifest.json"
+              test -f "$snowfall_root/surface-plan.json"
+              python dashboard-source/scripts/merge_cfsv2_surface_release.py \
+                --incoming "$snowfall_root" --site site
+
+              for slug in seas5 cansips c3s jma apcc cma_cpsv3 geos_s2s3 sfs superensemble nmme; do
+                provider_root="$payload_root/payloads/$slug"
+                if [ -d "$provider_root/pages-payload" ]; then
+                  provider_root="$provider_root/pages-payload"
+                elif [ -d "$provider_root/.pages-payload" ]; then
+                  provider_root="$provider_root/.pages-payload"
+                fi
+                test -d "$provider_root/$slug"
+                test -f "$provider_root/${slug}_manifest.json"
+                cp -R "$provider_root/." site/
+              done
+              ;;
             "Native Snowfall Estimate Page")
               # Static reviewed snapshot; no model run or incoming payload.
               ;;

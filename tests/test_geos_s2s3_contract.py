@@ -53,7 +53,7 @@ def main() -> int:
         check(temperature_spec["anomaly_ticks"] == [value / 2.0 for value in range(-12, 13)], f"NASA {product} should use 0.5 °C labelled bounds")
         check(len(temperature_spec["anomaly_ticks"]) == len(temperature_spec["anomaly_palette"]) + 1, f"NASA {product} bounds must align with colors")
     mslp_spec = module.PRODUCT_SPECS[module.PRODUCT_MSLP_ANOMALY]
-    check((mslp_spec["anomaly_min"], mslp_spec["anomaly_max"]) == (-10.0, 10.0), "NASA MSLP should use ±10 hPa")
+    check((mslp_spec["anomaly_min"], mslp_spec["anomaly_max"]) == (-5.0, 5.0), "NASA MSLP should use ±5 hPa")
     northern_height = module.PRODUCT_SPECS[module.PRODUCT_Z500_ANOMALY_NH]
     check(northern_height["projection"] == "north_polar_stereographic", "NASA Northern Hemisphere 500-mb view must use the polar projection")
     for product in (

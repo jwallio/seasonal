@@ -39,7 +39,6 @@ from cfsv2_seasonal import (
     MSLP_ANOMALY_PALETTE,
     MSLP_ANOMALY_TICKS,
     NORTHERN_HEMISPHERE_REGION,
-    PRECIP_ANOMALY_PALETTE,
     PRECIP_ANOMALY_TICKS,
     TEMPERATURE_ANOMALY_MAX_C,
     TEMPERATURE_ANOMALY_MIN_C,
@@ -56,6 +55,7 @@ from cfsv2_seasonal import (
     sum_grids,
 )
 from seasonal_products import is_retired_product
+from seasonal_rendering import canonicalize_product_spec
 
 
 NASA_DATA_ROOT = "https://portal.nccs.nasa.gov/datashare/gmao/geos-s2s-3/"
@@ -172,10 +172,6 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "seasonal_reducer": "sum",
         "conversion_kind": "monthly_precipitation_total_inches",
         "conversion": "Monthly mean precipitation rate multiplied by calendar-month seconds and converted to inches",
-        "anomaly_min": -8.0,
-        "anomaly_max": 8.0,
-        "anomaly_ticks": PRECIP_ANOMALY_TICKS,
-        "anomaly_palette": PRECIP_ANOMALY_PALETTE,
         "source_label": "NASA GEOS-S2S-3 / NCCS",
         "header_detail": "{source_label}  •  {baseline_label}  •  Precipitation anomaly (in)  •  CONUS domain",
         "scheduled": True,
@@ -199,10 +195,6 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "seasonal_reducer": "mean",
         "conversion_kind": "pascals_to_hectopascals",
         "conversion": "Sea-level pressure divided by 100 after anomaly calculation",
-        "anomaly_min": -10.0,
-        "anomaly_max": 10.0,
-        "anomaly_ticks": list(range(-10, 11)),
-        "anomaly_palette": MSLP_ANOMALY_PALETTE,
         "source_label": "NASA GEOS-S2S-3 / NCCS",
         "header_detail": "{source_label}  •  {baseline_label}  •  Mean sea-level pressure anomaly (hPa)",
         "scheduled": True,
@@ -219,6 +211,9 @@ PRODUCT_SPECS[PRODUCT_Z500_ANOMALY_NH] = {
     "absolute_title": "GEOS-S2S-3 Northern Hemisphere 500-mb Geopotential Height (m)",
     "header_detail": "{source_label}  •  {baseline_label}  •  Height contours in dam  •  Northern Hemisphere",
 }
+
+for _product_name, _product_spec in list(PRODUCT_SPECS.items()):
+    PRODUCT_SPECS[_product_name] = canonicalize_product_spec(_product_spec, seasonal=False)
 
 DEFAULT_PRODUCTS = tuple(name for name, spec in PRODUCT_SPECS.items() if spec["scheduled"])
 SUPERENSEMBLE_PRODUCTS = frozenset(DEFAULT_PRODUCTS)

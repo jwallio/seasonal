@@ -34,35 +34,29 @@ _DECODE_POOL = None
 
 def decode_snow_inputs(inputs):
     global _DECODE_POOL
+    expected_grid_shape = tuple(CANSIPS_GRID_SHAPE)
     if _DECODE_WORKERS == 1:
-        return [_decode_cfgrib_members(*item) for item in inputs]
+        return [_decode_cfgrib_members(*item, expected_grid_shape) for item in inputs]
     if _DECODE_POOL is None:
         _DECODE_POOL = ProcessPoolExecutor(max_workers=_DECODE_WORKERS)
         atexit.register(_DECODE_POOL.shutdown)
-    futures = [_DECODE_POOL.submit(_decode_cfgrib_members, *item) for item in inputs]
+    # Pass the contract explicitly so spawn-based workers use the same tested
+    # grid shape as the parent process instead of re-importing a stale default.
+    futures = [
+        _DECODE_POOL.submit(_decode_cfgrib_members, *item, expected_grid_shape)
+        for item in inputs
+    ]
     return [future.result() for future in futures]
 
 
 from cfsv2_seasonal import (
     ANOMALY_PALETTE,
-    ANOMALY_TICKS,
     CONUS_PRECIP_REGION,
-    CONUS_STATE_NAMES,
     CFSv2Error,
     CONUS_REGION,
     DEFAULT_REGION,
-    PRECIP_ANOMALY_PALETTE,
     PRECIP_ANOMALY_TICKS,
-    SNOWFALL_ANOMALY_MAX_IN,
-    SNOWFALL_ANOMALY_MIN_IN,
     SNOWFALL_ANOMALY_PALETTE,
-    SNOWFALL_ANOMALY_TICK_DECIMALS,
-    SNOWFALL_ANOMALY_TICK_FORMAT,
-    SNOWFALL_ANOMALY_TICKS,
-    SNOWFALL_MONTHLY_ANOMALY_MAX_IN,
-    SNOWFALL_MONTHLY_ANOMALY_MIN_IN,
-    SNOWFALL_MONTHLY_ANOMALY_PALETTE,
-    SNOWFALL_MONTHLY_ANOMALY_TICKS,
     TEMPERATURE_ANOMALY_MAX_C,
     TEMPERATURE_ANOMALY_MIN_C,
     TEMPERATURE_ANOMALY_PALETTE,
@@ -83,6 +77,7 @@ from cfsv2_seasonal import (
     write_grid_state,
 )
 from seasonal_products import grid_quality_control, is_retired_product, require_quality_control
+from seasonal_rendering import canonicalize_product_spec
 
 
 CANSIPS_ROOT = "https://dd.weather.gc.ca/today/model_cansips/100km/"
@@ -113,7 +108,6 @@ SNOWFALL_DAI_LAND_PARAMS_BY_SEASON = {
 }
 SNOWFALL_DAI_LAND_DJF_PARAMS = SNOWFALL_DAI_LAND_PARAMS_BY_SEASON["DJF"]
 
-MSLP_ANOMALY_TICKS = list(range(-10, 11))
 SSH_ANOMALY_TICKS = [round(-0.50 + index * 0.10, 2) for index in range(11)]
 SSH_ANOMALY_PALETTE = [
     "#24527a", "#3d83a6", "#539cb8", "#70b2c6", "#95c4d3",
@@ -216,10 +210,6 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "region": CONUS_REGION,
         "monthly_reducer": "mean",
         "seasonal_reducer": "sum",
-        "anomaly_min": -8.0,
-        "anomaly_max": 8.0,
-        "anomaly_ticks": PRECIP_ANOMALY_TICKS,
-        "anomaly_palette": PRECIP_ANOMALY_PALETTE,
         "conversion_kind": "monthly_precipitation_total_inches",
         "conversion": "PrecipRate multiplied by calendar-month seconds, converted from millimetres to inches",
         "source_label": "ECCC MSC CanSIPS v3 / Datamart",
@@ -234,7 +224,6 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "title": "CanSIPS v3 Derived Snowfall Departure",
         "absolute_title": "CanSIPS v3 Derived Snowfall Estimate",
         "field": "snowfall_anomaly",
-        "snowfall_display_profile": "c3s_readable",
         "raw_field": "Derived from 2-m/850-hPa AirTemp and surface PrecipRate",
         "raw_units": "K; K; kg m-2 s-1",
         "units": "in",
@@ -243,23 +232,6 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "region": CONUS_PRECIP_REGION,
         "monthly_reducer": "total",
         "seasonal_reducer": "sum",
-        "anomaly_min": SNOWFALL_ANOMALY_MIN_IN,
-        "anomaly_max": SNOWFALL_ANOMALY_MAX_IN,
-        "anomaly_ticks": SNOWFALL_ANOMALY_TICKS,
-        "anomaly_palette": SNOWFALL_ANOMALY_PALETTE,
-        "anomaly_tick_decimals": SNOWFALL_ANOMALY_TICK_DECIMALS,
-        "anomaly_tick_format": SNOWFALL_ANOMALY_TICK_FORMAT,
-        "monthly_anomaly_min": SNOWFALL_MONTHLY_ANOMALY_MIN_IN,
-        "monthly_anomaly_max": SNOWFALL_MONTHLY_ANOMALY_MAX_IN,
-        "monthly_anomaly_ticks": SNOWFALL_MONTHLY_ANOMALY_TICKS,
-        "monthly_anomaly_palette": SNOWFALL_MONTHLY_ANOMALY_PALETTE,
-        "monthly_anomaly_endpoint_labels": {"minimum": "≤−2.0", "maximum": "≥+2.0"},
-        "map_domain": "land",
-        "fit_frame_to_domain": True,
-        "domain_frame_padding_fraction": 0.012,
-        "mask_states": list(CONUS_STATE_NAMES),
-        "border_files": ("us-states.geojson",),
-        "anomaly_endpoint_labels": {"minimum": "≤−4.0", "maximum": "≥+4.0"},
         "derived_product": True,
         "source_variables": ["AirTemp at AGL-2m", "AirTemp at ISBL-0850", "PrecipRate at Sfc"],
         "conversion_kind": "derived_snowfall_lwe",
@@ -294,10 +266,6 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "region": CONUS_REGION,
         "monthly_reducer": "mean",
         "seasonal_reducer": "mean",
-        "anomaly_min": -10.0,
-        "anomaly_max": 10.0,
-        "anomaly_ticks": MSLP_ANOMALY_TICKS,
-        "anomaly_palette": ANOMALY_PALETTE,
         "conversion_kind": "pascals_to_hectopascals",
         "conversion": "Pressure divided by 100 to convert Pa to hPa",
         "source_label": "ECCC MSC CanSIPS v3 / Datamart",
@@ -341,6 +309,9 @@ PRODUCT_SPECS[PRODUCT_Z500_ANOMALY_NH] = {
     "absolute_title": "CanSIPS v3 Northern Hemisphere 500-mb Geopotential Height (m)",
     "header_detail": "{source_label}  •  {baseline_label}  •  Height contours in dam  •  Northern Hemisphere",
 }
+
+for _product_name, _product_spec in list(PRODUCT_SPECS.items()):
+    PRODUCT_SPECS[_product_name] = canonicalize_product_spec(_product_spec, seasonal=False)
 
 Z500_PRODUCTS = frozenset({PRODUCT_Z500_ANOMALY, PRODUCT_Z500_ANOMALY_NH})
 
@@ -560,6 +531,7 @@ def _decode_cfgrib_members(
     path: Path,
     expected_variables: tuple[str, ...],
     label: str,
+    expected_grid_shape: tuple[int, int] | None = None,
 ) -> tuple[list[float], list[float], Any, str]:
     """Decode one 40-member CanSIPS field with its member dimension intact."""
 
@@ -620,12 +592,13 @@ def _decode_cfgrib_members(
                 f"CanSIPS {label} file {path.name} does not contain members 1-"
                 f"{CANSIPS_ENSEMBLE_MEMBERS}"
             )
-        if values.shape != (CANSIPS_ENSEMBLE_MEMBERS, *CANSIPS_GRID_SHAPE[::-1]):
+        grid_shape = tuple(expected_grid_shape or CANSIPS_GRID_SHAPE)
+        if values.shape != (CANSIPS_ENSEMBLE_MEMBERS, *grid_shape[::-1]):
             raise CanSIPSError(
                 f"CanSIPS {label} file {path.name} has decoded shape {values.shape}; "
-                f"expected {(CANSIPS_ENSEMBLE_MEMBERS, *CANSIPS_GRID_SHAPE[::-1])}"
+                f"expected {(CANSIPS_ENSEMBLE_MEMBERS, *grid_shape[::-1])}"
             )
-        if lons.size != CANSIPS_GRID_SHAPE[0] or lats.size != CANSIPS_GRID_SHAPE[1]:
+        if lons.size != grid_shape[0] or lats.size != grid_shape[1]:
             raise CanSIPSError(
                 f"CanSIPS {label} file {path.name} has unexpected coordinate lengths "
                 f"({lons.size}, {lats.size})"
@@ -1331,10 +1304,6 @@ def render_product_run(
         "raw_field": product["raw_field"],
         "raw_units": product["raw_units"],
         "conversion": product.get("conversion"),
-        "display": ({"quantity":"estimated snowfall depth departure", "units":"in",
-                     "snow_to_liquid_ratio":10., "white_band_inches":[-1.,1.],
-                     "scale_inches":[-10.,10.], "numeric_grid_quantity":"snowfall LWE departure"}
-                    if product["name"] == PRODUCT_SNOWFALL_ANOMALY else None),
         "source_variables": product.get("source_variables"),
         "grid": {"longitude_count": 360, "latitude_count": 180, "resolution": "1 degree", "layout": "LatLon1.0"},
         "climatology": {

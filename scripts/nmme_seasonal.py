@@ -23,15 +23,12 @@ from cfsv2_seasonal import (
     CONUS_REGION,
     DEFAULT_REGION,
     Grid,
-    TEMPERATURE_ANOMALY_MAX_C,
-    TEMPERATURE_ANOMALY_MIN_C,
-    TEMPERATURE_ANOMALY_PALETTE,
-    TEMPERATURE_ANOMALY_TICKS,
     ensure_border_files,
     mean_grids,
     relative_path,
     render_map,
 )
+from seasonal_rendering import canonicalize_product_spec
 
 
 REALTIME_ROOT = "https://ftp.cpc.ncep.noaa.gov/NMME/realtime_anom/ENSMEAN/"
@@ -52,11 +49,6 @@ COMPONENT_LABELS = {
 }
 RETIRED_PRODUCTS = frozenset({"model_spread"})
 
-PRECIP_PALETTE = [
-    "#7f3b08", "#914b0d", "#a6611a", "#bd7a2d", "#d0a052", "#dfbd7d",
-    "#ead8b3", "#ffffff", "#e5f1dc", "#c8e4bf", "#aad89f", "#86c879",
-    "#5fba6b", "#3aa55b", "#1d8947", "#006d2c",
-]
 HEIGHT_PALETTE = [
     "#24527a", "#306b90", "#3d83a6", "#4891b0", "#539cb8", "#61a7bf",
     "#70b2c6", "#95c4d3", "#c4dce3", "#e1e4e7", "#eee0e0", "#f2cecd",
@@ -83,14 +75,12 @@ PROBABILITY_VARIABLES = ("prob_above", "prob_norm", "prob_below")
 BASE_PRODUCTS: dict[str, dict[str, Any]] = {
     "2m_temperature_anomaly": {
         "file_var": "tmp2m", "field": "tmp2m_anomaly", "raw_field": "2-m temperature anomaly",
-        "units": "°C", "seasonal_units": "°C", "min": TEMPERATURE_ANOMALY_MIN_C, "max": TEMPERATURE_ANOMALY_MAX_C,
-        "ticks": TEMPERATURE_ANOMALY_TICKS, "palette": TEMPERATURE_ANOMALY_PALETTE, "title": "2-m Temperature Anomaly (°C)",
+        "units": "°C", "seasonal_units": "°C", "title": "2-m Temperature Anomaly (°C)",
         "conversion": "Kelvin anomaly increments are displayed in °C", "reducer": "mean", "region": CONUS_REGION,
     },
     "precipitation_anomaly": {
         "file_var": "prate", "field": "precipitation_anomaly", "raw_field": "precipitation anomaly",
-        "units": "in", "seasonal_units": "in", "min": -8.0, "max": 8.0,
-        "ticks": list(range(-8, 9)), "palette": PRECIP_PALETTE, "title": "CONUS Precipitation Anomaly (in)",
+        "units": "in", "seasonal_units": "in", "title": "CONUS Precipitation Anomaly (in)",
         "conversion": "NMME precipitation-rate anomaly multiplied by target-month seconds and converted to inches", "reducer": "sum",
         "region": CONUS_REGION,
     },
@@ -327,11 +317,15 @@ def spec_for(product_name: str, base_name: str) -> dict[str, Any]:
             "name": product_name, "variable": base["file_var"], "field": base["field"], "raw_field": base["raw_field"],
             "raw_units": base["units"], "units": base["units"], "seasonal_units": base["seasonal_units"],
             "title": f"NMME {base['title']}", "absolute_title": f"NMME {base['title']}", "height_contours": False,
-            "region": base.get("region", DEFAULT_REGION), "anomaly_min": base["min"], "anomaly_max": base["max"],
-            "anomaly_ticks": base["ticks"], "anomaly_palette": base["palette"], "conversion": base["conversion"],
+            "region": base.get("region", DEFAULT_REGION), "conversion": base["conversion"],
             "header_detail": "{source_label}  •  CPC realtime ensemble-mean anomaly  •  {baseline_label}",
         }
-        return spec
+        if product_name == "200mb_height_anomaly":
+            spec.update(
+                anomaly_min=base["min"], anomaly_max=base["max"],
+                anomaly_ticks=base["ticks"], anomaly_palette=base["palette"],
+            )
+        return canonicalize_product_spec(spec, seasonal=False)
     if product_name.startswith("probability_"):
         label = {
             "probability_above_normal": "Above-Normal Probability",
@@ -356,6 +350,7 @@ def spec_for(product_name: str, base_name: str) -> dict[str, Any]:
         return {
             **spec_for(base_name, base_name), "name": product_name, "title": f"NMME Multi-Model Consensus · {base['title']}",
             "absolute_title": f"NMME Multi-Model Consensus · {base['title']}", "field": f"{base['field']}_consensus",
+            "canonical_style_product": base_name,
             "header_detail": "{source_label}  •  Equal-weight component-model consensus",
         }
     raise NMMEError(f"unsupported NMME product {product_name}")

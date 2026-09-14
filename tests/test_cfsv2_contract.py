@@ -19,6 +19,9 @@ SNOW_WORKFLOW = ROOT / ".github" / "workflows" / "cfsv2-snow.yml"
 PAGES_WORKFLOW = ROOT / ".github" / "workflows" / "publish-pages.yml"
 UPDATE_WORKFLOW = ROOT / ".github" / "workflows" / "update.yml"
 PAGE = ROOT / "public" / "seasonal" / "cfsv2" / "index.html"
+RENDERING = ROOT / "scripts" / "seasonal_rendering.py"
+SNOW_DISPLAY = ROOT / "scripts" / "snowfall_display.py"
+TEMPERATURE_DISPLAY = ROOT / "scripts" / "temperature_display.py"
 
 
 def load_adapter():
@@ -47,6 +50,12 @@ def main() -> int:
     check(PAGE.exists(), "CFSv2 Pages index missing")
 
     adapter = ADAPTER.read_text(encoding="utf-8")
+    shared_sources = "\n".join((
+        adapter,
+        RENDERING.read_text(encoding="utf-8"),
+        SNOW_DISPLAY.read_text(encoding="utf-8"),
+        TEMPERATURE_DISPLAY.read_text(encoding="utf-8"),
+    ))
     documentation = DOC.read_text(encoding="utf-8")
     page = PAGE.read_text(encoding="utf-8")
     for term in (
@@ -107,7 +116,7 @@ def main() -> int:
         "PRECIP_MONTHLY_ANOMALY_MAX_IN = 4.0",
         "PRECIP_SEASONAL_ANOMALY_MIN_IN = -8.0",
         "PRECIP_SEASONAL_ANOMALY_MAX_IN = 8.0",
-        "CONUS_PRECIP_REGION = (-126.0, -66.0, 24.0, 50.0)",
+        "CONUS_PRECIP_REGION = CONUS_REGION",
         "CFSv2 Precipitation Anomaly (in)",
         "CONUS domain",
         "numeric_grid",
@@ -163,22 +172,17 @@ def main() -> int:
         "DJF {start.year}\\u2013{end.year % 100:02d}",
         '"status"',
     ):
-        check(term in adapter, f"adapter missing contract term: {term}")
+        check(term in shared_sources, f"shared renderer missing contract term: {term}")
     check("colorbar.set_label" not in adapter, "footer colorbar description should be absent")
     check("figure.text(0.035, 0.045" not in adapter, "footer text position should be absent")
-    check("PRECIP_ANOMALY_TICKS = list(range(-8, 9))" in adapter, "shared precipitation scale should remain available to dependent adapters")
-    check("TEMPERATURE_ANOMALY_MIN_C = -6.0" in adapter, "shared temperature scale should use a -6 °C lower bound")
-    check("TEMPERATURE_ANOMALY_MAX_C = 6.0" in adapter, "shared temperature scale should use a +6 °C upper bound")
-    check("TEMPERATURE_ANOMALY_TICKS = [value / 2.0 for value in range(-12, 13)]" in adapter, "shared temperature scale should label every half degree")
-    check("MSLP_ANOMALY_TICKS = list(range(-20, 21, 2))" in adapter, "shared MSLP scale should remain available to dependent adapters")
-    check("PRECIP_MONTHLY_ANOMALY_TICKS = [value / 2.0 for value in range(-8, 9)]" in adapter, "monthly precipitation should use 0.5-inch intervals from -4 to +4")
-    check("PRECIP_SEASONAL_ANOMALY_TICKS = list(range(-8, 9))" in adapter, "seasonal precipitation should retain 1-inch intervals from -8 to +8")
-    check("list(range(0, 42, 2)) + list(range(45, 105, 5)) + list(range(110, 201, 10))" in adapter, "monthly estimated snowfall should retain two-inch detail through 40 inches and add high-end bands through 200 inches")
-    check("SNOWFALL_ACCUMULATION_MONTHLY_TICKS_IN = list(range(0, 201, 20))" in adapter, "monthly estimated snowfall should use readable 20-inch major labels")
-    check("SNOWFALL_ACCUMULATION_SEASONAL_BOUNDS_IN = list(range(0, 105, 5)) + list(range(110, 201, 10))" in adapter, "seasonal estimated snowfall should preserve five-inch detail through 100 inches and add high-end bands through 200 inches")
-    check("SNOWFALL_ACCUMULATION_SEASONAL_TICKS_IN = list(range(0, 201, 20))" in adapter, "seasonal estimated snowfall should use readable 20-inch major labels")
+    check("TEMPERATURE_ANOMALY_MIN_C = -6.0" in shared_sources, "shared temperature scale should use a -6 °C lower bound")
+    check("TEMPERATURE_ANOMALY_MAX_C = 6.0" in shared_sources, "shared temperature scale should use a +6 °C upper bound")
+    check("TEMPERATURE_ANOMALY_TICKS = [value / 2.0 for value in range(-12, 13)]" in shared_sources, "shared temperature scale should label every half degree")
+    check("MSLP_ANOMALY_BOUNDS" in shared_sources, "shared renderer should expose the canonical MSLP boundaries")
+    check("range(-8, 9)" in shared_sources, "shared precipitation scales should retain monthly half-inch and seasonal one-inch boundaries")
+    check("ACCUMULATION_MONTHLY_BOUNDS" in shared_sources and "180" in shared_sources, "estimated snowfall accumulation should retain the approved scale through 180 inches")
     check("CFSV2_TEMPERATURE_ANOMALY_TICKS = TEMPERATURE_ANOMALY_TICKS" in adapter, "CFSv2 2-m temperature should use the shared scale")
-    check("CFSV2_MSLP_ANOMALY_TICKS = list(range(-10, 11))" in adapter, "CFSv2 MSLP should use 1 hPa intervals from -10 to +10")
+    check("CFSV2_MSLP_ANOMALY_TICKS = MSLP_ANOMALY_TICKS" in adapter, "CFSv2 MSLP should use the shared canonical ticks")
     check('boundary_values = product_spec.get("anomaly_bounds", colorbar_ticks)' in adapter, "anomaly bounds should support product-specific neutral intervals")
     check("bounds = np.asarray(boundary_values, dtype=float)" in adapter, "anomaly bounds should be built from the configured boundaries")
     check('colorbar_options["boundaries"] = bounds' in adapter, "colorbar should use the labelled anomaly bounds")
@@ -187,8 +191,8 @@ def main() -> int:
     check("header_summary" in adapter and "suppress_header_detail" in adapter, "product headers should support concise subtitles")
     check('pad=1.2 if dense_tick_labels else 1.8' in adapter, "dense snowfall colorbar labels should sit close to the scale")
     check('width=0.85' in adapter, "colorbar tick marks should remain legible")
-    check("DEFAULT_REGION = (-160.0, -10.0, 22.0, 85.0)" in adapter, "seasonal graphic should use the centered North America and Greenland region")
-    check("PROJECTED_X_SHIFT_FRACTION = 0.035" in adapter, "seasonal graphic should shift the projected window to center the CONUS")
+    check("DEFAULT_REGION = (-160.0, -10.0, 22.0, 85.0)" in shared_sources, "seasonal graphic should use the centered North America and Greenland region")
+    check("PROJECTED_X_SHIFT_FRACTION = 0.035" in shared_sources, "seasonal graphic should shift the projected window to center the CONUS")
     swe_block = adapter.split("PRODUCT_SWE_ANOMALY:", 1)[1].split("    },", 1)[0]
     check('"region": CONUS_PRECIP_REGION' in swe_block, "SWE map should use the same CONUS crop as precipitation")
     check("Snow-water equivalent (in)  •  CONUS domain" in adapter, "SWE header should identify the CONUS crop")
@@ -227,12 +231,12 @@ def main() -> int:
     check("available.find(run => !isFailedRun(run))" in page, "Pages viewer should default to the latest non-failed run")
     check("if (target?.label) return target.label;" in page, "Pages viewer should honor manifest labels for DJF and JFM")
     adapter_module = load_adapter()
-    check(len(adapter_module.SNOWFALL_ACCUMULATION_BLUE_PALETTE) == 8, "estimated snowfall should expand the WN2 blue family to eight bands")
-    check(len(adapter_module.SNOWFALL_ACCUMULATION_PURPLE_PALETTE) == 8, "estimated snowfall should expand the WN2 purple family to eight bands")
-    check(len(adapter_module.SNOWFALL_ACCUMULATION_CYAN_PALETTE) == 6, "estimated snowfall should expand the WN2 cyan family to six bands")
-    check(len(adapter_module.SNOWFALL_ACCUMULATION_YELLOW_PALETTE) == 1, "estimated snowfall should use one saturated yellow transition band")
     check(len(adapter_module.SNOWFALL_ACCUMULATION_MONTHLY_PALETTE) == len(adapter_module.SNOWFALL_ACCUMULATION_MONTHLY_BOUNDS_IN) - 1, "monthly estimated snowfall should provide exactly one color per contour band")
     check(len(adapter_module.SNOWFALL_ACCUMULATION_SEASONAL_PALETTE) == len(adapter_module.SNOWFALL_ACCUMULATION_SEASONAL_BOUNDS_IN) - 1, "seasonal estimated snowfall should provide exactly one color per contour band")
+    from seasonal_rendering import canonical_render_style
+    accumulation_style = canonical_render_style("snowfall_accumulation")
+    check(accumulation_style["bounds"][-1] == 180 and accumulation_style["extend"] == "max", "estimated snowfall should retain the approved 180-inch scale plus overflow")
+    check(accumulation_style["over_color"] != accumulation_style["palette"][-1], "estimated snowfall overflow must be visually distinct")
     accumulation_spec = adapter_module.get_product_spec(adapter_module.PRODUCT_SNOWFALL_ACCUMULATION)
     check(
         accumulation_spec["requires_baseline"] is False
@@ -398,7 +402,7 @@ def main() -> int:
     check(len(adapter_module.ANOMALY_PALETTE) == len(adapter_module.ANOMALY_TICKS) - 1, "height anomaly colors should align with labelled transitions")
     check(len(adapter_module.HEIGHT_ANOMALY_STYLE["anomaly_palette"]) == len(adapter_module.HEIGHT_ANOMALY_STYLE["anomaly_ticks"]) - 1, "CFSv2 height anomaly colors should align with labelled transitions")
     check(len(adapter_module.TEMPERATURE_ANOMALY_PALETTE) == len(adapter_module.CFSV2_TEMPERATURE_ANOMALY_TICKS) - 1, "CFSv2 2-m temperature colors should align with labelled transitions")
-    check(len(adapter_module.MSLP_ANOMALY_PALETTE) == len(adapter_module.CFSV2_MSLP_ANOMALY_TICKS) - 1, "CFSv2 MSLP colors should align with labelled transitions")
+    check(len(adapter_module.MSLP_ANOMALY_PALETTE) == len(adapter_module.PRODUCT_SPECS[adapter_module.PRODUCT_MSLP_ANOMALY]["anomaly_bounds"]) - 1, "CFSv2 MSLP colors should align with interval boundaries")
     check(len(adapter_module.PRECIP_ANOMALY_PALETTE) == len(adapter_module.PRECIP_MONTHLY_ANOMALY_TICKS) - 1, "monthly precipitation colors should align with labelled transitions")
     check(len(adapter_module.PRECIP_ANOMALY_PALETTE) == len(adapter_module.PRECIP_SEASONAL_ANOMALY_TICKS) - 1, "seasonal precipitation colors should align with labelled transitions")
     check(len(adapter_module.SWE_ANOMALY_PALETTE) == len(adapter_module.SWE_ANOMALY_TICKS) - 1, "SWE colors should align with labelled transitions")
@@ -419,7 +423,13 @@ def main() -> int:
     check(adapter_module.anomaly_style(height_spec)[:2] == (-120.0, 120.0), "height anomaly style should use the shared ±120 m range")
     check(adapter_module.anomaly_style(t2m_spec)[:2] == (-6.0, 6.0), "temperature anomaly style should use the shared ±6 °C range")
     check(t2m_spec["anomaly_ticks"] == [value / 2.0 for value in range(-12, 13)], "temperature anomaly style should use 0.5 °C labelled bounds")
-    check(adapter_module.anomaly_style(mslp_spec)[:2] == (-10.0, 10.0), "MSLP anomaly style should use the tighter ±10 hPa range")
+    check(adapter_module.anomaly_style(mslp_spec)[:2] == (-5.0, 5.0), "MSLP anomaly style should use the canonical ±5 hPa range")
+    check(
+        tuple(mslp_spec["anomaly_bounds"])
+        == tuple(value / 2.0 for value in range(-10, 0))
+        + tuple(value / 2.0 for value in range(1, 11)),
+        "MSLP boundaries should preserve the -0.5 to +0.5 hPa neutral interval",
+    )
     check(adapter_module.anomaly_style(precip_spec, seasonal=False)[:2] == (-4.0, 4.0), "monthly precipitation should use the tighter ±4-inch range")
     check(adapter_module.anomaly_style(precip_spec, seasonal=True)[:2] == (-8.0, 8.0), "seasonal precipitation should retain the ±8-inch total range")
     check(swe_spec["map_domain"] == "land", "SWE must retain a land-only render domain")

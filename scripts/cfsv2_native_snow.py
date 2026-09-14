@@ -12,6 +12,7 @@ import numpy as np
 import requests
 import cfsv2_seasonal as cf
 from functools import lru_cache
+from seasonal_rendering import canonical_render_style, prepare_capped_values
 
 
 def snowfall_record(index, init, month):
@@ -182,10 +183,9 @@ def decode(args, init, target, members, rolling_inits, cache_dir, state_dir, wgr
 
 
 def accumulation_style(seasonal=False):
-    """Approved monthly/seasonal snowfall-depth scales; full palette through 180 inches."""
-    bounds = [0, 1, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36, 42, 48, 54, 60, 66, 72, 84, 96, 108, 120, 132, 144, 150, 156, 162, 168, 174, 180] if seasonal else [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24, 28, 32, 36, 42, 48, 60, 72, 84, 96, 120, 144, 180]
-    palette = ['#ffffff', '#e1f2ff', '#86c7fa', '#4ba4f3', '#287eee', '#0c5dc9', '#4b0392', '#5a048d', '#67038d', '#870389', '#c7037f', '#f4067c', '#f62f94', '#f962ac', '#f789c2', '#ed97ca', '#dca7d3', '#cdbbdc', '#bdcbe4', '#a6e5ed', '#a0f2f4', '#98f9f7', '#90f1ed', '#81d8d7', '#7cb9c9', '#89b1d3', '#9ea5db', '#ac9ae4', '#bc92ed', '#c48df1']
-    return bounds, bounds[:], palette
+    """Return the canonical positive-only snowfall-depth scale."""
+    style = canonical_render_style('snowfall_accumulation', seasonal=seasonal)
+    return style['bounds'], style['ticks'], style['palette']
 
 
 def render(lwe, init, target, lead, output, seasonal=False, period_label='', ensemble_label='', input_label='Native model snowfall'):
@@ -198,11 +198,13 @@ def render(lwe, init, target, lead, output, seasonal=False, period_label='', ens
     xlon, ylat = np.meshgrid(data['display_lons'], data['display_lats'])
     x, y = project(xlon, ylat)
     field = np.where(np.isfinite(data['display_ratios']), sample(lwe, xlon, ylat) * 10.0, np.nan)
-    bounds, ticks, palette = accumulation_style(seasonal)
-    cmap = ListedColormap(palette); cmap.set_over(palette[-1])
+    style = canonical_render_style('snowfall_accumulation', seasonal=seasonal)
+    bounds, ticks, palette = style['bounds'], style['ticks'], style['palette']
+    cmap = ListedColormap(palette).with_extremes(over=style["over_color"])
     fig = plt.figure(figsize=(9,7.35), dpi=120, facecolor='#f7f9fb')
-    ax = fig.add_axes([.038,.15,.924,.70], facecolor='#edf3f5')
-    filled = ax.contourf(x,y,np.ma.masked_invalid(field), levels=bounds, cmap=cmap,
+    ax = fig.add_axes(style['map_axes_bounds'], facecolor='#edf3f5')
+    plot_values = prepare_capped_values(np.ma.masked_invalid(field), style)
+    filled = ax.contourf(x,y,plot_values, levels=bounds, cmap=cmap,
         norm=BoundaryNorm(bounds,cmap.N,clip=False), extend='max', antialiased=False, corner_mask=False)
     state_points=[]
     points, offsets = data['states_points'], data['states_offsets']
@@ -217,7 +219,9 @@ def render(lwe, init, target, lead, output, seasonal=False, period_label='', ens
     # In-map branding is applied once by the shared seasonal share-image
     # builder so every model uses the same protected mark without duplicates.
 
-    cb=fig.colorbar(filled,cax=fig.add_axes([.038,.100,.924,.034]),orientation='horizontal',ticks=ticks,spacing='uniform',drawedges=True,extendrect=True,extendfrac=0)
+    colorbar_axes = fig.add_axes(style['colorbar_bounds'])
+    cb=fig.colorbar(filled,cax=colorbar_axes,orientation='horizontal',ticks=ticks,spacing='uniform',drawedges=True,extend='max',extendrect=True,extendfrac='auto')
+    cb.set_ticklabels([str(value) for value in ticks[:-1]] + [f"{ticks[-1]}+"])
     cb.ax.tick_params(labelsize=7,length=3);cb.outline.set_linewidth(.5)
     label=period_label or datetime.strptime(target,'%Y%m').strftime('%b %Y')
     fig.text(.038,.955,'CFSv2 Estimated Snowfall Accumulation (in)',fontsize=15.5,weight='bold',color='#172735')
@@ -228,7 +232,15 @@ def render(lwe, init, target, lead, output, seasonal=False, period_label='', ens
     fig.text(.5,.052,'Accumulated snowfall depth (inches)',ha='center',fontsize=10,color='#43535d')
     output.parent.mkdir(parents=True,exist_ok=True)
     fig.savefig(output,dpi=120,pil_kwargs={'quality':95,'subsampling':0} if output.suffix=='.jpg' else {})
+    result = {
+        'style_key': style['style_key'],
+        'style_fingerprint': style['fingerprint'],
+        'pixel_dimensions': style['canvas_dimensions'],
+        'map_axes_bounds': [round(float(value), 6) for value in ax.get_position().bounds],
+        'colorbar_axes_bounds': [round(float(value), 6) for value in colorbar_axes.get_position().bounds],
+    }
     plt.close(fig)
+    return result
 
 
 def sample(grid, lons, lats):

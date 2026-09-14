@@ -15,6 +15,7 @@ SHARE_IMAGE_SCRIPT = ROOT / "scripts" / "build_seasonal_share_images.py"
 PURGE_SCRIPT = ROOT / "scripts" / "purge_retired_seasonal_products.py"
 CATALOG_SCRIPT = ROOT / "scripts" / "build_seasonal_catalog.py"
 PRODUCT_REGISTRY = ROOT / "scripts" / "seasonal_products.py"
+RENDER_REGISTRY = ROOT / "scripts" / "seasonal_rendering.py"
 
 
 def check(condition: bool, message: str) -> None:
@@ -32,6 +33,7 @@ def main() -> int:
     check(PURGE_SCRIPT.exists(), "retired seasonal product purge is missing")
     check(CATALOG_SCRIPT.exists(), "seasonal catalog builder is missing")
     check(PRODUCT_REGISTRY.exists(), "canonical seasonal product registry is missing")
+    check(RENDER_REGISTRY.exists(), "canonical seasonal render registry is missing")
     page_markup = PAGE.read_text(encoding="utf-8")
     stylesheet = STYLESHEET.read_text(encoding="utf-8")
     dashboard_script = DASHBOARD_SCRIPT.read_text(encoding="utf-8")
@@ -260,6 +262,17 @@ def main() -> int:
     check("DJF ${match[1]}–${match[3].slice(2)}" in dashboard_script, "dashboard should identify both years in cross-year DJF labels")
     check("JFM ${match[3]}" in dashboard_script, "dashboard should label January-March targets as JFM")
     check("seasonalCatalog?.generated_utc" in dashboard_script, "Compare thumbnails should bust stale published asset URLs")
+    check("function mapAspectFor(productKey, target = null)" in dashboard_script
+          and dashboard_script.count("applyMapAspect(") >= 3,
+          "Single and Compare views must reserve the catalog-defined map aspect before loading")
+    check("seasonalCatalog?.render_styles" in dashboard_script
+          and "canvas_dimensions" in dashboard_script,
+          "dashboard map geometry must come from canonical catalog dimensions")
+    check("aspect-ratio:var(--seasonal-map-aspect,1 / 1)" in stylesheet
+          and ".map-wrap img { display:block; width:100%; height:100%; object-fit:contain; }" in stylesheet,
+          "map containers must preserve provider-independent aspect without stretching")
+    check('"render_styles": public_render_style_registry()' in catalog_builder,
+          "catalog must expose deterministic public rendering variants")
     check('"schedule": definition.get("schedule") or {}' in catalog_builder, "catalog must publish model timing metadata")
     check('"generated_utc", "status"' in catalog_builder, "catalog must retain each run publication timestamp")
     check("purge_retired_seasonal_products.py" in workflow, "Pages workflow must purge retired seasonal assets")
@@ -334,6 +347,7 @@ def main() -> int:
         "scripts/build_seasonal_thumbnails.py",
         "scripts/build_seasonal_share_images.py",
         "scripts/seasonal_products.py",
+        "scripts/seasonal_rendering.py",
         "scripts/build_seasonal_catalog.py",
         "name: Validate seasonal manifests and build catalog",
         "--strict",

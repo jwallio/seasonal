@@ -1,18 +1,21 @@
 import sys
 from pathlib import Path
 import unittest
+from unittest.mock import patch
+
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
-from cfsv2_seasonal import SNOWFALL_ANOMALY_PALETTE
 from seasonal_products import grid_quality_control
 from snowfall_display import (
-    BROAD_BOUNDS,
-    COMPACT_BOUNDS,
-    COMPACT_DISPLAY_PROFILE,
     DISPLAY,
+    MONTHLY_BOUNDS,
+    MONTHLY_PALETTE,
+    MONTHLY_WHITE_BAND,
     SEASONAL_BOUNDS,
+    SEASONAL_PALETTE,
+    SEASONAL_WHITE_BAND,
     depth_departure,
     display_metadata_for_product,
 )
@@ -26,162 +29,93 @@ class FakeGrid:
 
 
 class SnowfallDisplayTests(unittest.TestCase):
-    def test_default_profile_keeps_broad_scale(self):
-        grid, spec = depth_departure(
-            FakeGrid([0.0], [0.0], [[1.0]]),
-            {"name": "snowfall_anomaly"},
-            SNOWFALL_ANOMALY_PALETTE,
-        )
-        self.assertEqual(grid.values, [[10.0]])
-        self.assertEqual(spec["anomaly_min"], -100)
-        self.assertEqual(spec["anomaly_max"], 100)
-        self.assertEqual(spec["anomaly_bounds"], BROAD_BOUNDS)
-        self.assertEqual(DISPLAY["scale_inches"], [-100, 100])
-
-    def test_c3s_profile_uses_approved_discrete_bands(self):
+    def test_monthly_style_is_canonical_and_provider_independent(self):
         source = {
             "name": "snowfall_anomaly",
-            "snowfall_display_profile": COMPACT_DISPLAY_PROFILE,
+            "snowfall_display_profile": "obsolete_provider_profile",
+            "monthly_anomaly_min": -2,
+            "monthly_anomaly_max": 2,
         }
         grid, spec = depth_departure(
-            FakeGrid([0.0], [0.0], [[0.75]]), source, SNOWFALL_ANOMALY_PALETTE
+            FakeGrid([0.0], [0.0], [[0.75]]), source, ["#000000"], seasonal=False
         )
         self.assertEqual(grid.values, [[7.5]])
-        self.assertEqual(spec["anomaly_min"], -14)
-        self.assertEqual(spec["anomaly_max"], 14)
-        self.assertEqual(spec["anomaly_bounds"], COMPACT_BOUNDS)
-        self.assertEqual(spec["anomaly_ticks"], COMPACT_BOUNDS)
-        self.assertEqual(len(spec["anomaly_palette"]), len(COMPACT_BOUNDS) - 1)
-        self.assertFalse(spec.get("anomaly_continuous", False))
-        self.assertEqual(
-            display_metadata_for_product(source)["scale_inches"], [-14, 14]
+        self.assertEqual((spec["anomaly_min"], spec["anomaly_max"]), (-14.0, 14.0))
+        self.assertEqual(spec["anomaly_bounds"], MONTHLY_BOUNDS)
+        self.assertEqual(spec["anomaly_ticks"], MONTHLY_BOUNDS)
+        self.assertEqual(spec["anomaly_palette"], MONTHLY_PALETTE)
+        self.assertNotIn("snowfall_display_profile", spec)
+        self.assertNotIn("monthly_anomaly_min", spec)
+
+    def test_seasonal_style_follows_aggregation_not_provider(self):
+        for provider in ("cfsv2", "c3s", "seas5", "sfs"):
+            with self.subTest(provider=provider):
+                grid, spec = depth_departure(
+                    FakeGrid([0.0], [0.0], [[-0.4]]),
+                    {"name": "snowfall_anomaly", "provider": provider},
+                    seasonal=True,
+                )
+                self.assertEqual(grid.values, [[-4.0]])
+                self.assertEqual((spec["anomaly_min"], spec["anomaly_max"]), (-20.0, 20.0))
+                self.assertEqual(spec["anomaly_bounds"], SEASONAL_BOUNDS)
+                self.assertEqual(spec["anomaly_palette"], SEASONAL_PALETTE)
+
+    def test_display_metadata_ignores_provider_profile(self):
+        monthly = display_metadata_for_product({"provider": "anything"})
+        seasonal = display_metadata_for_product({"provider": "anything"}, seasonal=True)
+        self.assertEqual(monthly["scale_inches"], [-14.0, 14.0])
+        self.assertEqual(monthly["scale_bounds_inches"], MONTHLY_BOUNDS)
+        self.assertEqual(monthly["white_band_inches"], MONTHLY_WHITE_BAND)
+        self.assertEqual(seasonal["scale_inches"], [-20.0, 20.0])
+        self.assertEqual(seasonal["scale_bounds_inches"], SEASONAL_BOUNDS)
+        self.assertEqual(seasonal["white_band_inches"], SEASONAL_WHITE_BAND)
+        self.assertEqual(DISPLAY["snow_to_liquid_ratio"], 10.0)
+
+    def test_quality_control_uses_aggregation_scale_and_ignores_profile(self):
+        monthly = grid_quality_control(
+            "snowfall_anomaly", [[0.75]], units="in", field="snowfall_lwe",
+            display_profile="obsolete_provider_profile",
         )
-        self.assertEqual(
-            display_metadata_for_product(source)["legend_ticks_inches"], COMPACT_BOUNDS
+        seasonal = grid_quality_control(
+            "snowfall_anomaly", [[0.75]], units="in", field="snowfall_lwe",
+            seasonal=True, display_profile="obsolete_provider_profile",
         )
-
-    def test_c3s_renderer_converts_lwe_once_and_passes_compact_contract(self):
-        import c3s_seasonal
-        from unittest.mock import patch
-
-        source = dict(c3s_seasonal.PRODUCT_SPECS["snowfall_anomaly"])
-        with patch.object(c3s_seasonal, "render_map") as render:
-            c3s_seasonal.render_target(
-                FakeGrid([0.0], [0.0], [[0.75]]),
-                source,
-                "2026090100",
-                "202612",
-                4,
-                Path("out.jpg"),
-                [],
-                None,
-                "ensemble mean",
-            )
-
-        rendered_grid = render.call_args.args[0]
-        rendered_spec = render.call_args.kwargs["product_spec"]
-        self.assertEqual(rendered_grid.values, [[7.5]])
-        self.assertEqual(rendered_spec["anomaly_min"], -14)
-        self.assertEqual(rendered_spec["anomaly_max"], 14)
-        self.assertEqual(rendered_spec["anomaly_bounds"], COMPACT_BOUNDS)
-        self.assertTrue(rendered_spec["native_snow_depth_display"])
-
-
-    def test_three_month_profile_uses_two_inch_bands(self):
-        source = {
-            "name": "snowfall_anomaly",
-            "snowfall_display_profile": COMPACT_DISPLAY_PROFILE,
-        }
-        grid, spec = depth_departure(
-            FakeGrid([0.0], [0.0], [[0.75]]),
-            source,
-            SNOWFALL_ANOMALY_PALETTE,
-            seasonal=True,
-        )
-        self.assertEqual(grid.values, [[7.5]])
-        self.assertEqual(spec["anomaly_min"], -20)
-        self.assertEqual(spec["anomaly_max"], 20)
-        self.assertEqual(spec["anomaly_bounds"], SEASONAL_BOUNDS)
-        self.assertEqual(spec["anomaly_ticks"], SEASONAL_BOUNDS)
-        self.assertEqual(len(spec["anomaly_palette"]), len(SEASONAL_BOUNDS) - 1)
-        self.assertEqual(
-            display_metadata_for_product(source, seasonal=True)["scale_inches"],
-            [-20, 20],
-        )
-        self.assertEqual(
-            display_metadata_for_product(source, seasonal=True)["legend_ticks_inches"],
-            SEASONAL_BOUNDS,
-        )
-
-    def test_quality_control_uses_compact_display_scale(self):
-        qc = grid_quality_control(
-            "snowfall_anomaly",
-            [[0.75]],
-            units="in",
-            field="snowfall_lwe",
-            display_profile=COMPACT_DISPLAY_PROFILE,
-        )
-        self.assertEqual(qc["display"]["minimum"], -14.0)
-        self.assertEqual(qc["display"]["maximum"], 14.0)
-        self.assertEqual(qc["display"]["breakpoints"], COMPACT_BOUNDS)
-
-
-    def test_quality_control_uses_two_inch_seasonal_display_scale(self):
-        qc = grid_quality_control(
-            "snowfall_anomaly",
-            [[0.75]],
-            units="in",
-            field="snowfall_lwe",
-            display_profile=COMPACT_DISPLAY_PROFILE,
-            seasonal=True,
-        )
-        self.assertEqual(qc["display"]["minimum"], -20.0)
-        self.assertEqual(qc["display"]["maximum"], 20.0)
-        self.assertEqual(qc["display"]["breakpoints"], SEASONAL_BOUNDS)
+        self.assertEqual((monthly["display"]["minimum"], monthly["display"]["maximum"]), (-14.0, 14.0))
+        self.assertEqual(monthly["display"]["breakpoints"], MONTHLY_BOUNDS)
+        self.assertEqual((seasonal["display"]["minimum"], seasonal["display"]["maximum"]), (-20.0, 20.0))
+        self.assertEqual(seasonal["display"]["breakpoints"], SEASONAL_BOUNDS)
 
     def test_depth_input_is_not_converted_twice(self):
-        source = {
-            "name": "snowfall_anomaly",
-            "snowfall_display_profile": COMPACT_DISPLAY_PROFILE,
-            "snowfall_values_are_depth": True,
-        }
         grid, spec = depth_departure(
-            FakeGrid([0.0], [0.0], [[7.5]]), source, SNOWFALL_ANOMALY_PALETTE
+            FakeGrid([0.0], [0.0], [[7.5]]),
+            {"name": "snowfall_anomaly", "snowfall_values_are_depth": True},
         )
         self.assertEqual(grid.values, [[7.5]])
         self.assertTrue(spec["snowfall_values_are_depth"])
 
-    def test_title_and_subtitle_use_clean_units(self):
-        source = {
-            "name": "snowfall_anomaly",
-            "snowfall_display_profile": COMPACT_DISPLAY_PROFILE,
-            "title": "CFSv2 Snowfall Departure (in snow)",
-        }
+    def test_c3s_adapter_and_common_renderer_share_idempotent_conversion(self):
+        import c3s_seasonal
+
+        source = c3s_seasonal.product_spec("snowfall_anomaly", "ECMWF")
+        with patch.object(c3s_seasonal, "render_map") as render:
+            c3s_seasonal.render_target(
+                FakeGrid([0.0], [0.0], [[0.75]]), source,
+                "2026090100", "202612", 4, Path("out.png"), [], None, "ensemble mean",
+            )
+        rendered_grid = render.call_args.args[0]
+        rendered_spec = render.call_args.kwargs["product_spec"]
+        self.assertEqual(rendered_grid.values, [[7.5]])
+        self.assertTrue(rendered_spec["snowfall_values_are_depth"])
+        second_grid, _ = depth_departure(rendered_grid, rendered_spec)
+        self.assertEqual(second_grid.values, [[7.5]])
+
+    def test_title_and_subtitle_use_clean_depth_units(self):
         _, spec = depth_departure(
-            FakeGrid([0.0], [0.0], [[0.0]]), source, SNOWFALL_ANOMALY_PALETTE
+            FakeGrid([0.0], [0.0], [[0.0]]),
+            {"name": "snowfall_anomaly", "title": "CFSv2 Snowfall Departure (in snow)"},
         )
         self.assertEqual(spec["title"], "CFSv2 Snowfall Departure (in)")
-        self.assertEqual(
-            spec["header_detail"],
-            "{source_label}  •  Snowfall LWE departure × 10 = estimated snow depth (in)  •  fixed 10:1 ratio",
-        )
-
-    def test_provider_specs_opt_into_compact_profile(self):
-        import c3s_seasonal
-        import cfsv2_seasonal
-
-        self.assertEqual(
-            cfsv2_seasonal.PRODUCT_SPECS[
-                cfsv2_seasonal.PRODUCT_SNOWFALL_ANOMALY
-            ]["snowfall_display_profile"],
-            COMPACT_DISPLAY_PROFILE,
-        )
-        self.assertEqual(
-            c3s_seasonal.PRODUCT_SPECS["snowfall_anomaly"][
-                "snowfall_display_profile"
-            ],
-            COMPACT_DISPLAY_PROFILE,
-        )
+        self.assertIn("x 10 = estimated snow depth", spec["header_detail"])
 
 
 if __name__ == "__main__":

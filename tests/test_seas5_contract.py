@@ -71,7 +71,7 @@ def main() -> int:
         "write_manifest",
         "archive_latest_init",
         "archive_age_days",
-        "SEAS5_PRECIP_ANOMALY_PALETTE",
+        "canonicalize_product_spec",
         "COMMON_REFERENCE_YEARS",
         "load_common_reference",
         "regrid_nearest",
@@ -129,23 +129,19 @@ def main() -> int:
         check((temperature_spec["anomaly_min"], temperature_spec["anomaly_max"]) == (-6.0, 6.0), f"SEAS5 {product} should use the shared ±6 °C range")
         check(temperature_spec["anomaly_ticks"] == [value / 2.0 for value in range(-12, 13)], f"SEAS5 {product} should use 0.5 °C labelled bounds")
         check(len(temperature_spec["anomaly_ticks"]) == len(temperature_spec["anomaly_palette"]) + 1, f"SEAS5 {product} bounds must align with colors")
-    check(module.PRODUCT_SPECS[module.PRECIP_ANOMALY]["anomaly_palette"] == module.SEAS5_PRECIP_ANOMALY_PALETTE, "SEAS5 precipitation should use its darker negative palette")
+    check(module.PRODUCT_SPECS[module.PRECIP_ANOMALY]["canonical_style_key"] == "precipitation_anomaly|monthly|conus", "SEAS5 precipitation should use the provider-independent canonical style")
     snowfall_spec = module.PRODUCT_SPECS[module.SNOWFALL_ANOMALY]
-    expected_snowfall_ticks = [-4.0, -3.5, -3.0, -2.5, -2.0, -1.75, -1.5, -1.25, -1.0, -0.75, -0.5, 0.0, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 2.5, 3.0, 3.5, 4.0]
-    check(snowfall_spec["snowfall_display_profile"] == "c3s_readable", "SEAS5 snowfall should use the shared readable display profile")
-    check((snowfall_spec["anomaly_min"], snowfall_spec["anomaly_max"]) == (-4.0, 4.0), "SEAS5 snowfall source spec should retain its LWE range")
-    check(snowfall_spec["anomaly_ticks"] == expected_snowfall_ticks, "SEAS5 snowfall source spec should retain its LWE breakpoints")
-    check((snowfall_spec["monthly_anomaly_min"], snowfall_spec["monthly_anomaly_max"]) == (-2.0, 2.0), "SEAS5 monthly snowfall should use the tighter ±2.0 inch range")
-    check(len(snowfall_spec["monthly_anomaly_ticks"]) == len(snowfall_spec["monthly_anomaly_palette"]) + 1, "SEAS5 monthly snowfall bounds must align with swatches")
-    check(snowfall_spec["monthly_anomaly_endpoint_labels"] == {"minimum": "≤−2.0", "maximum": "≥+2.0"}, "SEAS5 monthly snowfall legend should mark clipped endpoints")
+    from snowfall_display import MONTHLY_BOUNDS
+    check("snowfall_display_profile" not in snowfall_spec, "SEAS5 snowfall should not retain a provider display profile")
+    check((snowfall_spec["anomaly_min"], snowfall_spec["anomaly_max"]) == (-14.0, 14.0), "SEAS5 monthly snowfall should use the canonical snow-depth range")
+    check(snowfall_spec["anomaly_ticks"] == MONTHLY_BOUNDS, "SEAS5 snowfall should use canonical monthly breakpoints")
+    check(not any(key.startswith("monthly_anomaly_") for key in snowfall_spec), "SEAS5 must not retain a provider-local monthly style branch")
     check(len(snowfall_spec["anomaly_ticks"]) == len(snowfall_spec["anomaly_palette"]) + 1, "SEAS5 snowfall bounds must align with swatches")
     mslp_spec = module.PRODUCT_SPECS[module.MSLP_ANOMALY]
-    check((mslp_spec["anomaly_min"], mslp_spec["anomaly_max"]) == (-10.0, 10.0), "SEAS5 MSLP should use ±10 hPa")
-    check(len(mslp_spec["anomaly_ticks"]) == len(mslp_spec["anomaly_palette"]) + 1, "SEAS5 MSLP bounds must align with swatches")
-    check(module.SEAS5_PRECIP_ANOMALY_PALETTE[7] == "#dfbd91", "SEAS5 weak negative precipitation colors should be muted")
-    check(module.SEAS5_PRECIP_ANOMALY_PALETTE[8] == "#dcebd7", "SEAS5 0-to-1 precipitation anomaly should use a visible pale-sage transition")
-    check(module.SEAS5_PRECIP_ANOMALY_PALETTE[9] == "#c8e4bf", "SEAS5 positive precipitation anomaly should retain a smooth first positive bin")
-    check(module.SEAS5_PRECIP_ANOMALY_PALETTE[-1] == "#006d2c", "SEAS5 positive precipitation anomaly should retain a dark endpoint")
+    check((mslp_spec["anomaly_min"], mslp_spec["anomaly_max"]) == (-5.0, 5.0), "SEAS5 MSLP should use ±5 hPa")
+    check(len(mslp_spec["anomaly_bounds"]) == len(mslp_spec["anomaly_palette"]) + 1, "SEAS5 MSLP bounds must align with swatches")
+    check(mslp_spec["anomaly_under_color"] != mslp_spec["anomaly_palette"][0], "MSLP underflow color should be distinct from its endpoint bin")
+    check(mslp_spec["anomaly_over_color"] != mslp_spec["anomaly_palette"][-1], "MSLP overflow color should be distinct from its endpoint bin")
     check(module.latest_cds_init(dt.datetime(2026, 8, 6, 12, 0)) == "2026080100", "release-time init should use the current ECMWF month")
     check(module.latest_cds_init(dt.datetime(2026, 8, 6, 11, 59)) == "2026070100", "pre-release init should use the prior ECMWF month")
     check(module.target_month("2025080100", 4) == "202511", "CDS month 4 from August should produce November")
@@ -185,7 +181,7 @@ def main() -> int:
     check("(in LWE)" not in snowfall_title["absolute_title"], "SEAS5 snowfall absolute image title should omit the parenthetical LWE unit")
     check(snowfall_title["map_domain"] == "land" and snowfall_title["fit_frame_to_domain"], "SEAS5 snowfall should use a fitted lower-48 land frame")
     check(len(snowfall_title["mask_states"]) == 48, "SEAS5 snowfall lower-48 mask should include all 48 states")
-    check(snowfall_title["anomaly_endpoint_labels"] == {"minimum": "≤−4.0", "maximum": "≥+4.0"}, "SEAS5 snowfall seasonal legend should mark clipped endpoints")
+    check(snowfall_title["anomaly_endpoint_labels"] == {"minimum": "≤−14", "maximum": "14+"}, "SEAS5 snowfall legend should mark canonical overflow endpoints")
     check(round(float(module.convert_values([[module.GEOPOTENTIAL_GRAVITY]], module.PRODUCT_SPECS[module.Z500_ANOMALY], "202512")[0][0]), 5) == 1.0, "z500 conversion should divide by gravity")
     check(round(float(module.convert_values([[0.001]], module.PRODUCT_SPECS[module.PRECIP_ANOMALY], "202601")[0][0]), 5) == round(0.001 * 31 * 86400 * 1000 / 25.4, 5), "precipitation conversion should use calendar-month seconds and metres-to-inches")
     check(round(float(module.convert_values([[2.5]], module.PRODUCT_SPECS[module.T850_ANOMALY], "202601")[0][0]), 5) == 2.5, "850-mb temperature anomaly should preserve Kelvin increments in Celsius")

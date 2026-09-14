@@ -11,6 +11,12 @@ import cfsv2_surface_phase as phase
 from merge_cfsv2_surface_release import merge, preserve_surface, FIELD
 
 class ScheduleTests(unittest.TestCase):
+    def test_render_signature_includes_every_shared_style_source(self):
+        source = Path(schedule.__file__).read_text(encoding='utf-8')
+        for name in ('seasonal_products.py', 'seasonal_rendering.py',
+                     'height_display.py', 'temperature_display.py', 'snowfall_display.py'):
+            self.assertIn(repr(name), source)
+
     def test_skip_requires_exact_method_and_rendering(self):
         plan=schedule.choose(['2026090812'], lambda *_: True)
         plan['render_signature']='current-code'

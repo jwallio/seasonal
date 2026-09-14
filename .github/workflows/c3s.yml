@@ -21,7 +21,7 @@ on:
           - snowfall_anomaly
           - mslp_anomaly
       style_refresh:
-        description: "Automated style children publish their own Pages payload"
+        description: "Stage output for a coordinated canonical-style release"
         required: false
         default: false
         type: boolean
@@ -271,7 +271,7 @@ jobs:
       # completion cannot create a workflow_run publisher under GitHub's
       # recursion guard. An explicit workflow_dispatch remains permitted.
       - name: Dispatch C3S Pages publish
-        if: ${{ success() && (github.actor == 'github-actions[bot]' || github.event_name == 'workflow_dispatch') }}
+        if: ${{ success() && (github.actor == 'github-actions[bot]' || github.event_name == 'workflow_dispatch') && inputs.style_refresh != true }}
         uses: ./.github/actions/publish-pages
         with:
           source-workflow: C3S Multi-System Seasonal Graphics

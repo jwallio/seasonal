@@ -72,9 +72,8 @@ climatology using its common **1993–2016** reference. Do not subtract the old
 continue to govern Datamart products; they do not change the native C3S baseline.
 
 The 10:1 ratio remains an explicit depth estimate, not an observed accumulation
-or snowpack depth. The maps use the shared nonlinear snow-depth bands from −100 to +100 inches,
-with white between −1 and +1 inches, and report the actual displayed clipped
-fraction. Data-integrity QC is
+or snowpack depth. Monthly maps use the canonical −14 to +14-inch scale and
+seasonal totals use −20 to +20 inches. Data-integrity QC is
 not a claim of observed seasonal snowfall forecast skill.
 
 C3S forecast months 1–6 correspond to CanSIPS leads 0–5. September leads 3,4,5
@@ -112,9 +111,9 @@ footer is added. The
 500-mb product uses the blue–white–yellow–orange–red scale from −120 to +120 metres with
 nonuniform reference-image intervals;
 850-mb and 2-m temperature products use the shared ±6 °C scale in 0.5 °C bands, sea-surface
-temperature uses ±3 °C, MSLP uses ±10 hPa, precipitation uses the operational
-brown/green ±8-inch scale, snowfall uses nonlinear blue/brown ±2.0-inch
-monthly or ±4.0-inch seasonal scales with the documented breakpoints, and SSH
+temperature uses ±3 °C, MSLP uses ±5 hPa, precipitation uses the operational
+brown/green ±4-inch monthly or ±8-inch seasonal scale, snowfall uses the
+canonical −14/+14-inch monthly or −20/+20-inch seasonal scale, and SSH
 uses a ±0.50-metre scale with two-decimal labels.
 
 When the production climatology window is `1991-2020`, the 500-mb hindcast
@@ -175,11 +174,13 @@ Standalone monthly and seasonal snowfall images convert signed LWE departures
 to estimated snow depth using a fixed 10:1 snow-to-liquid ratio. The title and
 subtitle identify estimated snowfall inches and the ratio. This is not a
 calibration: forecast and hindcast reference implicitly use the same fixed ratio.
-The scale has one-inch steps from -10 to +10 inches, with white between -1
-and +1 inch. Endpoint labels indicate saturation; larger numeric values are
-retained. Numeric grids and multi-model comparisons retain LWE units.
+Monthly maps use the shared aggregation-aware estimated snow-depth scale from
+-14 to +14 inches and retain a white -1 to +1 inch center band. Seasonal maps
+use -20 to +20 inches in two-inch steps and a white -2 to +2 inch center band.
+Values outside the displayed range
+remain unchanged in the source grids and appear in distinct, darker rectangular
+overflow cells. Numeric grids and multi-model comparisons retain LWE units.
 Run metadata records image units, ratio, white band, and scale separately.
-Existing maps need regeneration to pick up this display change.
 
 
 ## Faster repeat runs

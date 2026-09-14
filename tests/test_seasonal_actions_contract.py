@@ -93,57 +93,83 @@ def main() -> int:
           and "endswith" in handoff
           and "conclusion" in handoff,
           "snowfall publication must use the retrying, queue-safe Pages handoff")
-    height = (WORKFLOWS / "height-style-refresh.yml").read_text(encoding="utf-8")
-    check("scripts/height_display.py" in height and "workflow_dispatch:" in height,
-          "500-mb styling should refresh when the shared height contract changes")
-    check("group: height-maintenance-" in height and "cancel-in-progress: true" in height,
-          "500-mb styling should supersede stale maintenance fan-out")
-    check(height.count("max-parallel: 4") == 1 and "500mb_height_anomaly_nh" in height,
-          "500-mb styling should bound provider refreshes without serializing the whole fan-out")
-    check("deferring this style refresh" in height,
-          "500-mb styling must not cancel an active scheduled or release run")
-    check("the provider will publish its Pages artifact on completion" in height
-          and height.count("if (( deferred ));") == 1,
-          "500-mb maintenance must not wait on child runs or use an out-of-scope deferred variable")
-    check("publish_wait >= 1800" in height and "Pages publisher queue did not drain" in height,
-          "500-mb handoff should wait for a bounded serialized Pages queue")
-    check("${provider}_manifest.json" in height and "init_arg=$(PRODUCT=" in height
-          and "No prior accessible" in height,
-          "C3S/JMA style refresh should fall back or skip when no accessible cycle exists")
-    for name, prefix in (("temperature-style-refresh.yml", "temperature-publish-refs-"),
-                         ("height-style-refresh.yml", "height-publish-refs-")):
-        maintenance = (WORKFLOWS / name).read_text(encoding="utf-8")
-        check("run: : > publish-refs.txt" not in maintenance,
-              f"{name} must use valid block-scalar YAML for its handoff file")
-        check("style_refresh" in maintenance,
-              f"{name} should suppress duplicate self-publishers during maintenance")
-        check('request_product="$plan_product"' in maintenance,
-              f"{name} must quote the representative plan product assignment")
-        check("if (( started_products == 0 )); then" in maintenance
-              and "started_products=$((started_products + 1))" in maintenance,
-              f"{name} must not self-block its second product after launching the first")
-        check("            blocked=0\n            if (( started_products == 0 )); then" in maintenance,
-              f"{name} must initialize its handoff guard for every product iteration")
-        check("Upload serialized Pages handoff" in maintenance
-              and "actions/upload-artifact@v4" in maintenance
-              and f"name: {prefix}" in maintenance,
-              f"{name} should collect self-publishing producer refs")
-        check("Download serialized Pages handoffs" in maintenance
-              and "actions/download-artifact@v4" in maintenance
-              and "Publish self-dispatching provider payloads" in maintenance,
-              f"{name} should publish self-publishing refs in one batch")
-        check("displayTitle" in maintenance and "endswith" in maintenance and "Pages publisher queue did not drain" in maintenance,
-              f"{name} should resolve and retry the serialized Pages handoff")
+    style_refresh = (WORKFLOWS / "height-style-refresh.yml").read_text(encoding="utf-8")
+    for path in (
+        "scripts/seasonal_rendering.py", "scripts/seasonal_products.py",
+        "scripts/height_display.py", "scripts/temperature_display.py",
+        "scripts/snowfall_display.py", "scripts/cfsv2_seasonal.py",
+        "scripts/cfsv2_native_snow.py",
+    ):
+        check(path in style_refresh, f"canonical style refresh is missing trigger path {path}")
+    for workflow_name in (
+        "seas5.yml", "c3s.yml", "jma.yml", "cfsv2.yml",
+        "apcc.yml", "cma-cpsv3.yml", "geos-s2s3.yml", "sfs.yml",
+        "superensemble.yml", "nmme.yml",
+    ):
+        check(f"- {workflow_name}" in style_refresh, f"canonical style refresh is missing {workflow_name}")
+    check("gh workflow run cansips.yml" in style_refresh
+          and "after shared CDS workers" in style_refresh
+          and "producer-refs/cansips/producer.tsv" in style_refresh,
+          "CanSIPS must run after the shared CDS matrix and join the atomic payload")
+    check("group: canonical-seasonal-style-" in style_refresh and "cancel-in-progress: true" in style_refresh,
+          "canonical styling should supersede a stale fan-out")
+    check(style_refresh.count("max-parallel: 4") == 1,
+          "canonical styling should bound provider refresh concurrency")
+    check("args+=(-f product=all)" in style_refresh and "-f products=2m_temperature_anomaly" in style_refresh,
+          "canonical styling should request each provider's complete supported comparison suite")
+    check("gh workflow run" in style_refresh
+          and ".headSha ==" in style_refresh and "$GITHUB_SHA" in style_refresh
+          and "same_sha_live" not in style_refresh,
+          "canonical styling must dispatch a complete suite and resolve its exact-revision producer")
+    check("${provider}_manifest.json" in style_refresh and "STYLE_INIT=" in style_refresh,
+          "C3S/JMA style refresh should reuse an accessible published cycle")
+    check("style_refresh=true" in style_refresh,
+          "provider children should identify coordinated complete-suite refreshes")
+    check("needs: refresh" in style_refresh
+          and "canonical-seasonal-pages-${{ github.run_id }}" in style_refresh
+          and "Expected 11 staged provider references" in style_refresh
+          and "source-workflow: Canonical Seasonal Style Refresh" in style_refresh,
+          "canonical styling must stage every provider and publish one aggregate payload")
+    check("corrected-snowfall-ready" in style_refresh and "payloads/cfsv2-snow" in style_refresh,
+          "the atomic payload must include both CFSv2 weather and corrected snowfall artifacts")
+
+    staged_workers = (
+        "cfsv2.yml", "cansips.yml", "c3s.yml", "seas5.yml", "jma.yml",
+        "apcc.yml", "cma-cpsv3.yml", "geos-s2s3.yml", "sfs.yml",
+        "superensemble.yml", "nmme.yml",
+    )
+    for name in staged_workers:
+        workflow = (WORKFLOWS / name).read_text(encoding="utf-8")
+        check("style_refresh:" in workflow and "inputs.style_refresh != true" in workflow,
+              f"{name} must expose staged rendering and suppress its individual Pages publish")
+    check("style_refresh: ${{ inputs.style_refresh }}" in cfsv2,
+          "CFSv2 must pass coordinated staging through to corrected snowfall")
+    check("style_refresh:" in snow and "inputs.style_refresh != true" in snow,
+          "corrected snowfall must be stageable without an individual Pages publish")
+    check("Canonical Seasonal Style Refresh" in publisher
+          and "canonical-seasonal-pages-${{ env.SOURCE_RUN_ID }}" in publisher
+          and "payloads/cfsv2-snow" in publisher,
+          "Pages must accept and merge the complete canonical-style payload")
+    check("transient Pages tree containing a mixture" in publisher
+          and "!contains(toJSON(github.event.commits), 'scripts/seasonal_rendering.py')" in publisher,
+          "direct push publication must be gated while a canonical style release is staging")
+
     temperature = (WORKFLOWS / "temperature-style-refresh.yml").read_text(encoding="utf-8")
-    check(".github/workflows/temperature-style-refresh.yml" in temperature,
-          "temperature maintenance changes must trigger a replacement run")
-    check("isinstance(value, bool)" in temperature and 'payload["style_refresh"] = True' in temperature,
-          "temperature maintenance must stringify boolean workflow inputs before gh dispatch")
-    check("the provider will publish its Pages artifact on completion" in temperature
-          and temperature.count("if (( deferred ));") == 1,
-          "temperature maintenance must not wait on child runs or use an out-of-scope deferred variable")
-    check("deferring this style refresh" in temperature,
-          "temperature styling must not cancel an active scheduled or release run")
+    check("push:" not in temperature.split("permissions:", 1)[0],
+          "legacy temperature maintenance must not duplicate canonical push fan-out")
+    sfs = (WORKFLOWS / "sfs.yml").read_text(encoding="utf-8")
+    sfs_trigger = sfs.split("workflow_dispatch:", 1)[0]
+    check("scripts/seasonal_products.py" not in sfs_trigger and "scripts/height_display.py" not in sfs_trigger,
+          "SFS push triggers must leave shared-style invalidation to the canonical coordinator")
+    snow_trigger = snow.split("workflow_call:", 1)[0]
+    check("scripts/seasonal_products.py" not in snow_trigger and "scripts/snowfall_display.py" not in snow_trigger,
+          "CFS snowfall push triggers must leave shared-style invalidation to the canonical coordinator")
+    for name in ("apcc.yml", "cansips.yml", "sfs.yml", "cfsv2-snow.yml"):
+        workflow = (WORKFLOWS / name).read_text(encoding="utf-8")
+        check("github.event.commits" in workflow and "scripts/seasonal_rendering.py" in workflow,
+              f"{name} must suppress its push-triggered producer during an atomic shared-style release")
+    check("scripts/seasonal_rendering.py" in publisher,
+          "Pages sparse checkout must include the canonical style registry")
     analogs = (WORKFLOWS / "seasonal-analogs.yml").read_text(encoding="utf-8")
     check("id: source_payload" in analogs and "actions/runs/{1}/artifacts" in analogs
           and "steps.source_payload.outputs.available == 'true'" in analogs

@@ -15,18 +15,21 @@ from typing import Any, Iterable
 
 
 from height_display import HEIGHT_ANOMALY_TICKS
+from snowfall_display import (
+    ACCUMULATION_MONTHLY_BOUNDS,
+    ACCUMULATION_SEASONAL_BOUNDS,
+    MONTHLY_BOUNDS as SNOWFALL_MONTHLY_BOUNDS,
+    SEASONAL_BOUNDS as SNOWFALL_SEASONAL_BOUNDS,
+)
 
-REGISTRY_VERSION = 1
+REGISTRY_VERSION = 2
 
-SNOWFALL_MONTHLY_DISPLAY_BREAKPOINTS = [
-    -2.0, -1.75, -1.5, -1.25, -1.0, -0.75, -0.5, 0.0, 0.5, 0.75, 1.0,
-    1.25, 1.5, 1.75, 2.0,
-]
-SNOWFALL_SEASONAL_DISPLAY_BREAKPOINTS = [
-    -4.0, -3.5, -3.0, -2.5, -2.0, -1.75, -1.5, -1.25, -1.0, -0.75,
-    -0.5, 0.0, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 2.5, 3.0, 3.5,
-    4.0,
-]
+SNOWFALL_MONTHLY_DISPLAY_BREAKPOINTS = list(SNOWFALL_MONTHLY_BOUNDS)
+SNOWFALL_SEASONAL_DISPLAY_BREAKPOINTS = list(SNOWFALL_SEASONAL_BOUNDS)
+MSLP_DISPLAY_BREAKPOINTS = (
+    [value / 2.0 for value in range(-10, 0)]
+    + [value / 2.0 for value in range(1, 11)]
+)
 
 
 PRODUCTS: dict[str, dict[str, Any]] = {
@@ -108,7 +111,7 @@ PRODUCTS: dict[str, dict[str, Any]] = {
         "label": "CONUS Snowfall Departure (in snow)",
         "aliases": [],
         # Providers expose snowfall as liquid-water equivalent. Comparison math
-                # stays in that common unit, while published display/numeric grids
+        # stays in that common unit, while published display/numeric grids
         # convert signed departures to estimated snow depth at 10:1.
         "units": "in",
         "compatible_units": (),
@@ -119,14 +122,14 @@ PRODUCTS: dict[str, dict[str, Any]] = {
         "display_scale_factor": 10.0,
         "display": {
             "monthly": {
-                "minimum": -10.0,
-                "maximum": 10.0,
-                "breakpoints": list(range(-10, 11)),
+                "minimum": -14.0,
+                "maximum": 14.0,
+                "breakpoints": SNOWFALL_MONTHLY_DISPLAY_BREAKPOINTS,
             },
             "seasonal": {
-                "minimum": -10.0,
-                "maximum": 10.0,
-                "breakpoints": list(range(-10, 11)),
+                "minimum": -20.0,
+                "maximum": 20.0,
+                "breakpoints": SNOWFALL_SEASONAL_DISPLAY_BREAKPOINTS,
             },
         },
         "hard_range": {"minimum": -100.0, "maximum": 100.0},
@@ -144,8 +147,8 @@ PRODUCTS: dict[str, dict[str, Any]] = {
         "level": {"type": "surface"},
         "aggregation": {"monthly": "total", "seasonal": "total"},
         "display": {
-            "monthly": {"minimum": 0.0, "maximum": 200.0, "step": 2.0},
-            "seasonal": {"minimum": 0.0, "maximum": 200.0, "step": 5.0},
+            "monthly": {"minimum": 0.0, "maximum": 180.0, "breakpoints": list(ACCUMULATION_MONTHLY_BOUNDS)},
+            "seasonal": {"minimum": 0.0, "maximum": 180.0, "breakpoints": list(ACCUMULATION_SEASONAL_BOUNDS)},
         },
         "hard_range": {"minimum": 0.0, "maximum": 500.0},
         "minimum_finite_fraction": 0.01,
@@ -162,8 +165,8 @@ PRODUCTS: dict[str, dict[str, Any]] = {
         "level": {"type": "mean_sea_level"},
         "aggregation": {"monthly": "mean", "seasonal": "mean"},
         "display": {
-            "monthly": {"minimum": -10.0, "maximum": 10.0, "step": 1.0},
-            "seasonal": {"minimum": -10.0, "maximum": 10.0, "step": 1.0},
+            "monthly": {"minimum": -5.0, "maximum": 5.0, "breakpoints": MSLP_DISPLAY_BREAKPOINTS},
+            "seasonal": {"minimum": -5.0, "maximum": 5.0, "breakpoints": MSLP_DISPLAY_BREAKPOINTS},
         },
         "hard_range": {"minimum": -100.0, "maximum": 100.0},
         "minimum_finite_fraction": 0.2,
@@ -693,6 +696,9 @@ def grid_quality_control(
     except ImportError as exc:  # pragma: no cover - numerical workflows install numpy
         raise RuntimeError("seasonal grid QC requires numpy") from exc
 
+    # Kept for API compatibility with older adapters. Provider identity is
+    # deliberately unable to select a public display profile.
+    _ = display_profile
     canonical = canonical_product(product)
     definition = PRODUCTS.get(canonical)
     issues = metadata_issues(canonical, units=units, field=field)
@@ -745,18 +751,7 @@ def grid_quality_control(
                     "above_physical_envelope", "error",
                     f"Grid maximum {maximum:g} exceeds the hard {hard_maximum:g} envelope.",
                 ))
-            display = None
-            if display_profile == "c3s_readable" and canonical == "snowfall_anomaly":
-                from snowfall_display import COMPACT_BOUNDS, SEASONAL_BOUNDS
-
-                bounds = SEASONAL_BOUNDS if seasonal else COMPACT_BOUNDS
-                display = {
-                    "minimum": float(bounds[0]),
-                    "maximum": float(bounds[-1]),
-                    "breakpoints": list(bounds),
-                }
-            if display is None:
-                display = (definition.get("display") or {}).get("seasonal" if seasonal else "monthly")
+            display = (definition.get("display") or {}).get("seasonal" if seasonal else "monthly")
             if display:
                 display_minimum = float(display["minimum"])
                 display_maximum = float(display["maximum"])

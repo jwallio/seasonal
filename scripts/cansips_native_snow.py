@@ -14,7 +14,11 @@ import numpy as np
 
 from c3s_seasonal import CDSArchive, month_seconds
 from cfsv2_seasonal import Grid, CONUS_REGION, mean_grids, sum_grids, relative_path, write_grid_state
-from snowfall_display import DISPLAY as SNOWFALL_DISPLAY, depth_departure
+from snowfall_display import (
+    depth_departure,
+    display_metadata_for_aggregations,
+    display_metadata_for_product,
+)
 
 DATASET = 'seasonal-postprocessed-single-levels'
 VARIABLE = 'snowfall_anomalous_rate_of_accumulation'
@@ -138,18 +142,26 @@ class NativeSnowArchive:
                                    'units': 'in LWE', 'quantity': 'snowfall LWE departure'}
 
 
-def quality(grid, snow_depth=None):
+def quality(grid, snow_depth=None, *, seasonal=False):
     vals = np.asarray(grid.values, dtype=float)
     if not np.isfinite(vals).all():
         raise ValueError('Incomplete native snowfall blend')
     depth = np.asarray((snow_depth if snow_depth is not None else grid).values, dtype=float)
+    display = display_metadata_for_product(seasonal=seasonal)
+    minimum, maximum = display['scale_inches']
+    below_fraction = float(np.mean(depth < minimum))
+    above_fraction = float(np.mean(depth > maximum))
     return {'status': 'passed', 'field': 'snowfall_depth_anomaly', 'units': 'in',
             'quantity': 'estimated snowfall depth departure', 'minimum': float(depth.min()),
             'maximum': float(depth.max()), 'finite_fraction': 1.0,
             'source_minimum': float(vals.min()), 'source_maximum': float(vals.max()),
-            'display': {'quantity': 'estimated snowfall depth departure', 'units': 'in',
-                        'snow_to_liquid_ratio': 10, 'minimum': -10, 'maximum': 10,
-                        'clipped_fraction': float(np.mean(np.abs(depth) > 10))},
+            'display': {'quantity': display['quantity'], 'units': display['units'],
+                        'snow_to_liquid_ratio': display['snow_to_liquid_ratio'],
+                        'minimum': minimum, 'maximum': maximum,
+                        'breakpoints': display['scale_bounds_inches'],
+                        'white_band_inches': display['white_band_inches'],
+                        'below_fraction': below_fraction, 'above_fraction': above_fraction,
+                        'clipped_fraction': below_fraction + above_fraction},
             'issues': [], 'validation_scope': 'data integrity and units; not observational forecast skill'}
 
 
@@ -176,10 +188,7 @@ def render_run(args, init, leads, seasonal_leads, cache_dir, output_dir, border_
              'aggregation': 'ensemble-mean period total departure; sum included monthly departures',
              'ensemble_scope': '20 CanESM5 + 20 GEM5.2-NEMO members; equal component weights',
              'climatology': {'source': BASELINE, 'years': '1993-2016', 'method': 'provider postprocessed; no second subtraction'},
-             'display': {'quantity': 'estimated snowfall depth departure', 'units': 'in',
-                         'snow_to_liquid_ratio': 10, 'scale_inches': [-10, 10],
-                         'white_band_inches': [-1, 1], 'numeric_grid_quantity': 'estimated snowfall depth departure',
-                         'numeric_grid_units': 'inches snow', 'canonical_grid_quantity': 'snowfall LWE departure'},
+             'display': display_metadata_for_aggregations(),
              'conversion': 'Native snowfall anomalous rate × target-month seconds ÷ 0.0254 to obtain LWE inches; '
                            'equal component mean; sum months; multiply signed departures by 10 for estimated snow-depth inches.', 'targets': []}
     archive = NativeSnowArchive(cache_dir, render_only=getattr(args, 'render_only', False))
@@ -197,9 +206,11 @@ def render_run(args, init, leads, seasonal_leads, cache_dir, output_dir, border_
 
     def output(grid, t, lead, seasonal=False):
         target = t['target_month']
-        snow_depth, display_spec = depth_departure(grid, product, can.SNOWFALL_ANOMALY_PALETTE)
-        t['quality_control'] = quality(grid, snow_depth)
-        t['display'] = dict(SNOWFALL_DISPLAY)
+        snow_depth, display_spec = depth_departure(
+            grid, product, can.SNOWFALL_ANOMALY_PALETTE, seasonal=seasonal,
+        )
+        t['quality_control'] = quality(grid, snow_depth, seasonal=seasonal)
+        t['display'] = display_metadata_for_product(product, seasonal=seasonal)
         t['ensemble_complete'] = True
         t['status'] = 'decoded'
         gridpath = output_dir / init[:8] / f'cansips_native_snow_{target}.csv.gz'

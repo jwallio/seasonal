@@ -104,7 +104,7 @@ def main() -> int:
     northern_height = module.PRODUCT_SPECS["500mb_height_anomaly_nh"]
     check(northern_height["projection"] == "north_polar_stereographic", "CMA Northern Hemisphere 500-mb view must use the polar projection")
     mslp = module.PRODUCT_SPECS["mslp_anomaly"]
-    check((mslp["anomaly_min"], mslp["anomaly_max"]) == (-10.0, 10.0), "CMA MSLP must use the shared ±10 hPa scale")
+    check((mslp["anomaly_min"], mslp["anomaly_max"]) == (-5.0, 5.0), "CMA MSLP must use the shared ±5 hPa scale")
     monthly_precip = module.render_product_spec("precipitation_anomaly", seasonal=False)
     seasonal_precip = module.render_product_spec("precipitation_anomaly", seasonal=True)
     check((monthly_precip["anomaly_min"], monthly_precip["anomaly_max"]) == (-4.0, 4.0), "monthly CMA precipitation must use ±4 in")

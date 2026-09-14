@@ -19,6 +19,25 @@ function thumbnailPath(value) {
   const version = seasonalCatalog?.generated_utc || seasonalCatalog?.source_revision || '';
   return `${assetPath(`thumbnails/${webp}`)}${version ? `?v=${encodeURIComponent(version)}` : ''}`;
 }
+function mapAspectFor(productKey, target = null) {
+  const product = canonicalProductKey(productKey);
+  const targetMonth = String(target?.target_month || '');
+  const aggregation = /^\d{6}-\d{6}$/.test(targetMonth) ? 'seasonal' : 'monthly';
+  const registry = seasonalCatalog?.render_styles || {};
+  const catalogStyleKey = target?._catalog?.render_style_key;
+  const style = registry[catalogStyleKey]
+    || Object.values(registry).find(item => item?.product === product && item?.aggregation === aggregation);
+  const dimensions = style?.canvas_dimensions;
+  if (Array.isArray(dimensions) && dimensions.length === 2 && dimensions.every(value => Number(value) > 0)) {
+    return `${Number(dimensions[0])} / ${Number(dimensions[1])}`;
+  }
+  if (product === 'snowfall_anomaly') return '1080 / 845';
+  if (product === 'snowfall_accumulation') return '1080 / 882';
+  return '1 / 1';
+}
+function applyMapAspect(container, productKey, target = null) {
+  if (container) container.style.setProperty('--seasonal-map-aspect', mapAspectFor(productKey, target));
+}
 function setImageFallbacks(image, sources, onFailure) {
   const queue = [...new Set(sources.filter(Boolean))];
   const loadNext = () => {
@@ -1018,6 +1037,7 @@ function renderCompareCard(modelKey, targetKey) {
   const run = compareRunForTarget(modelKey, targetKey, baseline, productKey);
   const target = run ? compareTarget(run, targetKey, baseline) : null;
   const asset = target ? compareTargetAsset(target, baseline) : null;
+  applyMapAspect(imageWrap, productKey, target);
   if (!state.manifest) {
     imageWrap.appendChild(compareEmpty(state.error || 'Manifest unavailable.'));
   } else if (support && support.state !== 'supported') {
@@ -1382,14 +1402,16 @@ function renderAll() {
   const originalImage = imagePath(model, run, target);
   const image = targetValue?.image ? shareImagePath(targetValue.image) : originalImage;
   setMessage('');
-  el('map-wrap').replaceChildren();
+  const mapWrap = el('map-wrap');
+  applyMapAspect(mapWrap, selection.product, targetValue);
+  mapWrap.replaceChildren();
   if (releaseMessage) {
     setMessage(releaseMessage);
     el('fact-status').textContent = 'Awaiting update';
   } else if (image) {
     const imageElement = document.createElement('img'); imageElement.alt = `${runDisplayName(model, run)} ${label} ${targetText(model, target)}`; imageElement.loading = 'eager'; imageElement.decoding = 'async'; imageElement.fetchPriority = 'high';
     setImageFallbacks(imageElement, [image, originalImage], () => { el('download-link').hidden = true; setMessage('The manifest is available, but this image is not present in the published Pages tree.'); });
-    const imageButton = document.createElement('button'); imageButton.type = 'button'; imageButton.className = 'image-button'; imageButton.setAttribute('aria-label', `Open full-size ${imageElement.alt}`); imageButton.addEventListener('click', () => { dialogOpener = imageButton; openMapDialog(imageElement.src, imageElement.alt); }); imageButton.appendChild(imageElement); el('map-wrap').appendChild(imageButton);
+    const imageButton = document.createElement('button'); imageButton.type = 'button'; imageButton.className = 'image-button'; imageButton.setAttribute('aria-label', `Open full-size ${imageElement.alt}`); imageButton.addEventListener('click', () => { dialogOpener = imageButton; openMapDialog(imageElement.src, imageElement.alt); }); imageButton.appendChild(imageElement); mapWrap.appendChild(imageButton);
     el('download-link').href = image; el('download-link').download = downloadFileName(image); el('download-link').hidden = false;
   } else setMessage(targetValue?.error || 'No rendered image is available for this target.');
   const warning = el('warning');

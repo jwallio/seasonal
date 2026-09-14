@@ -49,10 +49,11 @@ def main() -> int:
     check(temperature_spec["region"] == module.CONUS_REGION, "NMME 2-m temperature should use the CONUS frame")
     check(module.BASE_PRODUCTS["precipitation_anomaly"]["region"] == module.CONUS_REGION, "NMME precipitation should use the CONUS frame")
     check(module.BASE_PRODUCTS["200mb_height_anomaly"]["region"] == module.CONUS_REGION, "NMME 200-mb maps should use the CONUS frame")
-    check((temperature_spec["min"], temperature_spec["max"]) == (-6.0, 6.0), "NMME 2-m temperature should use the shared ±6 °C range")
-    check(temperature_spec["ticks"] == [value / 2.0 for value in range(-12, 13)], "NMME 2-m temperature should use 0.5 °C labelled bounds")
-    check(len(temperature_spec["ticks"]) == len(temperature_spec["palette"]) + 1, "NMME 2-m temperature bounds must align with colors")
     run_spec = module.spec_for("2m_temperature_anomaly", "2m_temperature_anomaly")
+    check((run_spec["anomaly_min"], run_spec["anomaly_max"]) == (-6.0, 6.0), "NMME 2-m temperature should use the shared ±6 °C range")
+    check(run_spec["anomaly_ticks"] == [value / 2.0 for value in range(-12, 13)], "NMME 2-m temperature should use 0.5 °C labelled bounds")
+    check(len(run_spec["anomaly_ticks"]) == len(run_spec["anomaly_palette"]) + 1, "NMME 2-m temperature bounds must align with colors")
+    check(run_spec["canonical_style_key"] == "2m_temperature_anomaly|monthly|conus", "NMME should resolve the shared style only after selecting a public product")
     entries = {
         component: module.make_run_entry(
             "2m_temperature_anomaly", "2m_temperature_anomaly", "2026080800",

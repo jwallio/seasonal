@@ -28,23 +28,11 @@ import numpy as np
 
 from cds_client import client_options, retrieve_with_queue_retry
 from cfsv2_seasonal import (
-    ANOMALY_PALETTE,
-    ANOMALY_TICKS,
     CONUS_REGION,
     CONUS_PRECIP_REGION,
-    CONUS_STATE_NAMES,
     DEFAULT_REGION,
     Grid,
-    SNOWFALL_ANOMALY_MAX_IN,
-    SNOWFALL_ANOMALY_MIN_IN,
     SNOWFALL_ANOMALY_PALETTE,
-    SNOWFALL_ANOMALY_TICK_DECIMALS,
-    SNOWFALL_ANOMALY_TICK_FORMAT,
-    SNOWFALL_ANOMALY_TICKS,
-    SNOWFALL_MONTHLY_ANOMALY_MAX_IN,
-    SNOWFALL_MONTHLY_ANOMALY_MIN_IN,
-    SNOWFALL_MONTHLY_ANOMALY_PALETTE,
-    SNOWFALL_MONTHLY_ANOMALY_TICKS,
     TEMPERATURE_ANOMALY_MAX_C,
     TEMPERATURE_ANOMALY_MIN_C,
     TEMPERATURE_ANOMALY_PALETTE,
@@ -60,6 +48,7 @@ from cfsv2_seasonal import (
 )
 from seas5_seasonal import grid_from_grib
 from seasonal_products import grid_quality_control, is_retired_product, require_quality_control
+from seasonal_rendering import canonicalize_product_spec
 from snowfall_display import depth_departure
 
 
@@ -107,13 +96,6 @@ SNOWFALL_CENTRES = (
     "ecmwf", "ukmo", "meteo_france", "dwd", "cmcc", "eccc",
 )
 
-MSLP_PALETTE = ANOMALY_PALETTE
-PRECIP_PALETTE = [
-    "#7f3b08", "#914b0d", "#a6611a", "#bd7a2d", "#d0a052", "#dfbd7d",
-    "#ead8b3", "#ffffff", "#e5f1dc", "#c8e4bf", "#aad89f", "#86c879",
-    "#5fba6b", "#3aa55b", "#1d8947", "#006d2c",
-]
-
 PRODUCT_SPECS: dict[str, dict[str, Any]] = {
     "500mb_height_anomaly": {
         "name": "500mb_height_anomaly", "variable": "z500", "field": "z500_anomaly",
@@ -145,8 +127,7 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "name": "precipitation_anomaly", "variable": "pr", "field": "precipitation_anomaly",
         "raw_field": "total precipitation anomaly", "raw_units": "m s⁻¹", "units": "in",
         "seasonal_units": "in", "height_contours": False, "region": CONUS_PRECIP_REGION,
-        "monthly_reducer": "total", "seasonal_reducer": "sum", "anomaly_min": -8.0,
-        "anomaly_max": 8.0, "anomaly_ticks": list(range(-8, 9)), "anomaly_palette": PRECIP_PALETTE,
+        "monthly_reducer": "total", "seasonal_reducer": "sum",
         "cds_dataset": SINGLE_DATASET,
         "cds_variable": "total_precipitation_anomalous_rate_of_accumulation",
     },
@@ -156,16 +137,6 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "raw_units": "m s⁻¹ of water equivalent", "units": "in", "seasonal_units": "in",
         "height_contours": False, "region": CONUS_PRECIP_REGION,
         "monthly_reducer": "total", "seasonal_reducer": "sum",
-        "anomaly_min": SNOWFALL_ANOMALY_MIN_IN, "anomaly_max": SNOWFALL_ANOMALY_MAX_IN,
-        "anomaly_ticks": SNOWFALL_ANOMALY_TICKS, "anomaly_palette": SNOWFALL_ANOMALY_PALETTE,
-        "snowfall_display_profile": "c3s_readable",
-        "anomaly_tick_decimals": SNOWFALL_ANOMALY_TICK_DECIMALS,
-        "anomaly_tick_format": SNOWFALL_ANOMALY_TICK_FORMAT,
-        "monthly_anomaly_min": SNOWFALL_MONTHLY_ANOMALY_MIN_IN,
-        "monthly_anomaly_max": SNOWFALL_MONTHLY_ANOMALY_MAX_IN,
-        "monthly_anomaly_ticks": SNOWFALL_MONTHLY_ANOMALY_TICKS,
-        "monthly_anomaly_palette": SNOWFALL_MONTHLY_ANOMALY_PALETTE,
-        "monthly_anomaly_endpoint_labels": {"minimum": "≤−2.0", "maximum": "≥+2.0"},
         "cds_dataset": SINGLE_DATASET,
         "cds_variable": "snowfall_anomalous_rate_of_accumulation",
     },
@@ -173,8 +144,7 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "name": "mslp_anomaly", "variable": "slp", "field": "mslp_anomaly",
         "raw_field": "mean sea-level pressure anomaly", "raw_units": "Pa", "units": "hPa",
         "seasonal_units": "hPa", "height_contours": False, "region": CONUS_REGION,
-        "monthly_reducer": "mean", "seasonal_reducer": "mean", "anomaly_min": -10.0,
-        "anomaly_max": 10.0, "anomaly_ticks": list(range(-10, 11)), "anomaly_palette": MSLP_PALETTE,
+        "monthly_reducer": "mean", "seasonal_reducer": "mean",
         "cds_dataset": SINGLE_DATASET, "cds_variable": "mean_sea_level_pressure_anomaly",
     },
 }
@@ -186,6 +156,9 @@ PRODUCT_SPECS["500mb_height_anomaly_nh"] = {
     "region": NORTHERN_HEMISPHERE_REGION,
     **HEIGHT_NH_FRAME,
 }
+
+for _product_name, _product_spec in list(PRODUCT_SPECS.items()):
+    PRODUCT_SPECS[_product_name] = canonicalize_product_spec(_product_spec, seasonal=False)
 
 
 class C3SError(RuntimeError):
@@ -771,17 +744,6 @@ def product_spec(
         )
     else:
         base["header_detail"] = "{source_label}  •  Native C3S postprocessed anomaly  •  " + detail
-    if product == "snowfall_anomaly":
-        base.update(
-            {
-                "map_domain": "land",
-                "fit_frame_to_domain": True,
-                "domain_frame_padding_fraction": 0.012,
-                "mask_states": list(CONUS_STATE_NAMES),
-                "border_files": ("us-states.geojson",),
-                "anomaly_endpoint_labels": {"minimum": "\u2264\u221214", "maximum": "\u2265+14"},
-            }
-        )
     return base
 
 
@@ -799,8 +761,8 @@ def render_target(
     seasonal: bool = False,
 ) -> None:
     # C3S publishes snowfall departures as liquid-water equivalent. Convert
-    # that comparison field once for the image and pass the compact snow-depth
-    # display contract through to the shared renderer and its sidecars.
+    # that comparison field once for the image and pass the canonical
+    # aggregation-based snow-depth contract to the shared renderer/sidecars.
     if product.get("name") == "snowfall_anomaly":
         grid, product = depth_departure(
             grid, product, SNOWFALL_ANOMALY_PALETTE, seasonal=seasonal
@@ -938,7 +900,6 @@ def build_run(
                 lead_grids[lead].values,
                 units=product["units"],
                 field=product["field"],
-                display_profile=product.get("snowfall_display_profile"),
                 seasonal=False,
             )
             require_quality_control(target_entry["quality_control"], C3SError)
@@ -990,7 +951,6 @@ def build_run(
                 seasonal_grid.values,
                 units=product["seasonal_units"],
                 field=product["field"],
-                display_profile=product.get("snowfall_display_profile"),
                 seasonal=True,
             )
             require_quality_control(target_entry["quality_control"], C3SError)

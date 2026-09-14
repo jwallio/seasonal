@@ -15,10 +15,15 @@ class RequestLimiter:
 
     def wait(self):
         with self.lock:
-            remaining = self.delay - (time.monotonic() - self.last)
-            if remaining > 0:
+            deadline = self.last + self.delay
+            remaining = deadline - time.monotonic()
+            while remaining > 0:
                 time.sleep(remaining)
+                # Windows timers can wake several milliseconds early. Keep
+                # the shared request gate closed until the full delay elapsed.
+                remaining = deadline - time.monotonic()
             self.last = time.monotonic()
+            return self.last
 
 
 def validate_retained(grid, spec):

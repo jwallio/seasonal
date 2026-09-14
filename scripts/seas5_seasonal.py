@@ -28,26 +28,14 @@ import numpy as np
 from cds_client import client_options, retrieve_with_queue_retry
 from cfsv2_seasonal import (
     ANOMALY_PALETTE,
-    ANOMALY_TICKS,
     COMMON_REFERENCE_LABEL,
     COMMON_REFERENCE_YEARS,
     CONUS_REGION,
     CONUS_PRECIP_REGION,
-    CONUS_STATE_NAMES,
     CFSv2Error,
     DEFAULT_REGION,
     NORTHERN_HEMISPHERE_REGION,
-    PRECIP_ANOMALY_PALETTE,
-    SNOWFALL_ANOMALY_MAX_IN,
-    SNOWFALL_ANOMALY_MIN_IN,
     SNOWFALL_ANOMALY_PALETTE,
-    SNOWFALL_ANOMALY_TICK_DECIMALS,
-    SNOWFALL_ANOMALY_TICK_FORMAT,
-    SNOWFALL_ANOMALY_TICKS,
-    SNOWFALL_MONTHLY_ANOMALY_MAX_IN,
-    SNOWFALL_MONTHLY_ANOMALY_MIN_IN,
-    SNOWFALL_MONTHLY_ANOMALY_PALETTE,
-    SNOWFALL_MONTHLY_ANOMALY_TICKS,
     SWE_ANOMALY_PALETTE,
     TEMPERATURE_ANOMALY_MAX_C,
     TEMPERATURE_ANOMALY_MIN_C,
@@ -64,6 +52,8 @@ from cfsv2_seasonal import (
     sum_grids,
 )
 from seasonal_products import grid_quality_control, is_retired_product, require_quality_control
+from seasonal_rendering import canonicalize_product_spec
+from snowfall_display import display_metadata_for_aggregations, display_metadata_for_product
 
 
 # The CDS catalogue currently identifies ECMWF SEAS5 as originating centre
@@ -97,39 +87,6 @@ PRECIP_ANOMALY = "precipitation_anomaly"
 SNOWFALL_ANOMALY = "snowfall_anomaly"
 SNOW_DEPTH_ANOMALY = "snow_depth_anomaly"
 MSLP_ANOMALY = "mslp_anomaly"
-
-MSLP_PALETTE = [
-    "#315f85",
-    "#4e83a3",
-    "#72a6bb",
-    "#a5c6cf",
-    "#d9e5e6",
-    "#f7f7f2",
-    "#f0d9d4",
-    "#dfa69f",
-    "#c87974",
-    "#ac4f55",
-    "#8a3542",
-]
-SEAS5_PRECIP_ANOMALY_PALETTE = [
-    "#6e3b17",
-    "#81491e",
-    "#955a27",
-    "#a96b31",
-    "#bb7f3f",
-    "#ca9156",
-    "#d6a875",
-    "#dfbd91",
-    "#dcebd7",
-    "#c8e4bf",
-    "#aad89f",
-    "#86c879",
-    "#5fba6b",
-    "#3aa55b",
-    "#1d8947",
-    "#006d2c",
-]
-
 
 PRODUCT_SPECS: dict[str, dict[str, Any]] = {
     Z500_ANOMALY: {
@@ -216,10 +173,6 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "region": CONUS_PRECIP_REGION,
         "monthly_reducer": "total",
         "seasonal_reducer": "sum",
-        "anomaly_min": -8.0,
-        "anomaly_max": 8.0,
-        "anomaly_ticks": list(range(-8, 9)),
-        "anomaly_palette": SEAS5_PRECIP_ANOMALY_PALETTE,
         "conversion": "CDS anomalous water rate multiplied by target-month seconds and converted from metres to inches",
         "header_detail": "{source_label}  •  {baseline_label}  •  Precipitation accumulation (in)  •  CONUS domain",
         "cds_dataset": CDS_SINGLE_ANOMALY_DATASET,
@@ -229,7 +182,6 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "name": SNOWFALL_ANOMALY,
         "variable": "sf",
         "field": "snowfall_anomaly",
-        "snowfall_display_profile": "c3s_readable",
         "raw_field": "sf / snowfall",
         "raw_units": "m s**-1",
         "units": "in",
@@ -240,25 +192,8 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "region": CONUS_PRECIP_REGION,
         "monthly_reducer": "total",
         "seasonal_reducer": "sum",
-        "anomaly_min": SNOWFALL_ANOMALY_MIN_IN,
-        "anomaly_max": SNOWFALL_ANOMALY_MAX_IN,
-        "anomaly_ticks": SNOWFALL_ANOMALY_TICKS,
-        "anomaly_palette": SNOWFALL_ANOMALY_PALETTE,
-        "anomaly_tick_decimals": SNOWFALL_ANOMALY_TICK_DECIMALS,
-        "anomaly_tick_format": SNOWFALL_ANOMALY_TICK_FORMAT,
-        "monthly_anomaly_min": SNOWFALL_MONTHLY_ANOMALY_MIN_IN,
-        "monthly_anomaly_max": SNOWFALL_MONTHLY_ANOMALY_MAX_IN,
-        "monthly_anomaly_ticks": SNOWFALL_MONTHLY_ANOMALY_TICKS,
-        "monthly_anomaly_palette": SNOWFALL_MONTHLY_ANOMALY_PALETTE,
-        "monthly_anomaly_endpoint_labels": {"minimum": "≤−2.0", "maximum": "≥+2.0"},
         "conversion": "CDS anomalous snowfall water rate multiplied by target-month seconds and converted from metres to inches",
         "header_detail": "{source_label}  •  {baseline_label}  •  Snowfall departure  •  LWE  •  CONUS  •  {snowfall_scale_label}",
-        "map_domain": "land",
-        "fit_frame_to_domain": True,
-        "domain_frame_padding_fraction": 0.012,
-        "mask_states": list(CONUS_STATE_NAMES),
-        "border_files": ("us-states.geojson",),
-        "anomaly_endpoint_labels": {"minimum": "≤−4.0", "maximum": "≥+4.0"},
         "cds_dataset": CDS_SINGLE_ANOMALY_DATASET,
         "cds_variable": "snowfall_anomalous_rate_of_accumulation",
     },
@@ -299,10 +234,6 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "region": CONUS_REGION,
         "monthly_reducer": "mean",
         "seasonal_reducer": "mean",
-        "anomaly_min": -10.0,
-        "anomaly_max": 10.0,
-        "anomaly_ticks": list(range(-10, 11)),
-        "anomaly_palette": ANOMALY_PALETTE,
         "conversion": "Pa divided by 100 to convert mean sea-level pressure to hPa",
         "header_detail": "{source_label}  •  {baseline_label}  •  Mean sea-level pressure anomaly (hPa)",
         "cds_dataset": CDS_SINGLE_ANOMALY_DATASET,
@@ -320,6 +251,8 @@ PRODUCT_SPECS["500mb_height_anomaly_nh"] = {
     "absolute_title": "SEAS5 Northern Hemisphere 500-mb Geopotential Height (m)",
     "header_detail": "{source_label}  •  {baseline_label}  •  Height contours in dam  •  Northern Hemisphere",
 }
+for _product_name, _product_spec in list(PRODUCT_SPECS.items()):
+    PRODUCT_SPECS[_product_name] = canonicalize_product_spec(_product_spec, seasonal=False)
 Z500_PRODUCTS = frozenset({Z500_ANOMALY, "500mb_height_anomaly_nh"})
 
 
@@ -885,9 +818,7 @@ def run(args: argparse.Namespace) -> int:
         "raw_units": product["raw_units"],
         "conversion": product["conversion"],
         "lead_convention": "CDS forecast month 1 is the initialization month",
-        "display": ({"quantity": "estimated snowfall depth departure", "units": "in",
-                     "snow_to_liquid_ratio": SNOW_DISPLAY_RATIO, "white_band_inches": [-1.0, 1.0],
-                     "numeric_grid_quantity": "snowfall liquid-water-equivalent departure"}
+        "display": (display_metadata_for_aggregations(product)
                     if args.product == SNOWFALL_ANOMALY else None),
         "climatology": {
             "source": "C3S postprocessed anomaly field",
@@ -944,6 +875,8 @@ def run(args: argparse.Namespace) -> int:
             "ensemble_members": CDS_ENSEMBLE_MEMBERS,
             "status": "planned",
         }
+        if args.product == SNOWFALL_ANOMALY:
+            target_entry["display"] = display_metadata_for_product(product, seasonal=False)
         try:
             if args.absolute:
                 forecast, source_path = archive.height_grid(product, init, target, lead)
@@ -1089,6 +1022,8 @@ def run(args: argparse.Namespace) -> int:
             "ensemble_members": CDS_ENSEMBLE_MEMBERS,
             "status": "planned",
         }
+        if args.product == SNOWFALL_ANOMALY:
+            seasonal_entry["display"] = display_metadata_for_product(product, seasonal=True)
         try:
             if any(lead not in forecast_grids for lead in seasonal_leads):
                 raise SEAS5Error("seasonal window is missing one or more CDS forecast grids")

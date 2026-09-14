@@ -3,6 +3,11 @@ name: CFSv2 Rolling Seasonal Graphics
 on:
   workflow_dispatch:
     inputs:
+      style_refresh:
+        description: "Stage output for a coordinated canonical-style release"
+        required: false
+        default: false
+        type: boolean
       product:
         description: "CFSv2 product to generate"
         required: false
@@ -33,6 +38,11 @@ on:
         type: string
   workflow_call:
     inputs:
+      style_refresh:
+        description: "Stage output for a coordinated canonical-style release"
+        required: false
+        default: false
+        type: boolean
       product:
         description: "CFSv2 product to generate"
         required: true
@@ -68,6 +78,8 @@ jobs:
   corrected_snowfall:
     if: github.event_name != 'schedule' && contains(fromJSON('["all","snowfall_suite","snowfall_anomaly","snowfall_accumulation"]'), inputs.product)
     uses: ./.github/workflows/cfsv2-snow.yml
+    with:
+      style_refresh: ${{ inputs.style_refresh }}
     secrets: inherit
   render:
     if: ${{ !contains(fromJSON('["snowfall_suite","snowfall_anomaly","snowfall_accumulation"]'), inputs.product || '') }}
@@ -335,7 +347,7 @@ jobs:
       # Actions token. Hand off directly in that case; UI/manual runs still
       # use the existing workflow_run publisher and are not duplicated.
       - name: Dispatch Pages publisher for token-launched render
-        if: ${{ success() && github.actor == 'github-actions[bot]' }}
+        if: ${{ success() && github.actor == 'github-actions[bot]' && inputs.style_refresh != true }}
         uses: ./.github/actions/publish-pages
         with:
           source-workflow: CFSv2 Rolling Seasonal Graphics

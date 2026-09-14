@@ -88,11 +88,11 @@ class SharedMapStyleTests(unittest.TestCase):
 
     def test_nmme_2m_and_superensemble_inherit_the_same_contract(self):
         nmme = importlib.import_module("nmme_seasonal")
-        spec = nmme.BASE_PRODUCTS["2m_temperature_anomaly"]
-        self.assertEqual(spec["min"], TEMPERATURE_ANOMALY_MIN_C)
-        self.assertEqual(spec["max"], TEMPERATURE_ANOMALY_MAX_C)
-        self.assertEqual(tuple(spec["ticks"]), tuple(TEMPERATURE_ANOMALY_TICKS))
-        self.assertEqual(tuple(spec["palette"]), tuple(TEMPERATURE_ANOMALY_PALETTE))
+        spec = nmme.spec_for("2m_temperature_anomaly", "2m_temperature_anomaly")
+        self.assertEqual(spec["anomaly_min"], TEMPERATURE_ANOMALY_MIN_C)
+        self.assertEqual(spec["anomaly_max"], TEMPERATURE_ANOMALY_MAX_C)
+        self.assertEqual(tuple(spec["anomaly_ticks"]), tuple(TEMPERATURE_ANOMALY_TICKS))
+        self.assertEqual(tuple(spec["anomaly_palette"]), tuple(TEMPERATURE_ANOMALY_PALETTE))
         self.assertEqual(spec["region"], cfsv2.CONUS_REGION)
 
         superensemble = importlib.import_module("superensemble_seasonal")

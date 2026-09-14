@@ -89,7 +89,8 @@ def main() -> int:
     northern_height = module.PRODUCT_SPECS["500mb_height_anomaly_nh"]
     check(northern_height["region"] == module.NORTHERN_HEMISPHERE_REGION, "APCC Northern Hemisphere 500-mb view must use the polar region")
     mslp_spec = module.PRODUCT_SPECS["mslp_anomaly"]
-    check((mslp_spec["anomaly_min"], mslp_spec["anomaly_max"]) == (-10.0, 10.0), "APCC MSLP should use the shared ±10 hPa range")
+    check((mslp_spec["anomaly_min"], mslp_spec["anomaly_max"]) == (-5.0, 5.0), "APCC MSLP should use the shared ±5 hPa range")
+    check(mslp_spec["anomaly_bounds"] == [value / 2 for value in range(-10, 0)] + [value / 2 for value in range(1, 11)], "APCC MSLP should preserve the −0.5 to +0.5 neutral interval")
     check("6-MON" in module.dataset_url("MME_6MONTH"), "APCC 6-month provenance URL is incorrect")
     parser_defaults = module.build_parser().parse_args([])
     check(parser_defaults.dataset == "MME_6MONTH" and parser_defaults.target_window == "", "APCC defaults should derive the far 6-month season")
@@ -103,7 +104,7 @@ def main() -> int:
         selected = module.find_product_file([aso, djf_file], module.PRODUCT_SPECS["2m_temperature_anomaly"], "DJF")
         check(selected == djf_file, "APCC archive selection must use the requested season rather than the first file")
     for name, spec in module.PRODUCT_SPECS.items():
-        check(len(spec["anomaly_ticks"]) == len(spec["anomaly_palette"]) + 1, f"APCC {name} palette bounds are misaligned")
+        check(len(spec["anomaly_bounds"]) == len(spec["anomaly_palette"]) + 1, f"APCC {name} palette bounds are misaligned")
     print("APCC CONTRACT OK: target-month indexing, canonical comparison units/scales, source issue date, native anomalies, workflow, and retention")
     return 0
 

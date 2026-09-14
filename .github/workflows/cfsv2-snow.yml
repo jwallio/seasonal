@@ -8,13 +8,21 @@ on:
       - scripts/cfsv2_surface_phase_build.py
       - scripts/cfsv2_surface_schedule.py
       - scripts/cfsv2_surface_phase.py
-      - scripts/cfsv2_seasonal.py
-      - scripts/snowfall_display.py
-      - scripts/seasonal_products.py
       - .github/workflows/cfsv2-snow.yml
   workflow_call:
+    inputs:
+      style_refresh:
+        description: "Stage output for a coordinated canonical-style release"
+        required: false
+        default: false
+        type: boolean
   workflow_dispatch:
     inputs:
+      style_refresh:
+        description: "Stage output for a coordinated canonical-style release"
+        required: false
+        default: false
+        type: boolean
       product:
         description: Both snowfall totals and departures are always rebuilt together
         default: snowfall_suite
@@ -38,6 +46,17 @@ concurrency:
   cancel-in-progress: false
 jobs:
   select:
+    if: >-
+      ${{
+        github.event_name != 'push' ||
+        (
+          !contains(toJSON(github.event.commits), 'scripts/seasonal_rendering.py') &&
+          !contains(toJSON(github.event.commits), 'scripts/seasonal_products.py') &&
+          !contains(toJSON(github.event.commits), 'scripts/height_display.py') &&
+          !contains(toJSON(github.event.commits), 'scripts/temperature_display.py') &&
+          !contains(toJSON(github.event.commits), 'scripts/snowfall_display.py')
+        )
+      }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     outputs:
@@ -234,7 +253,7 @@ jobs:
           retention-days: 90
   publish:
     needs: [select, render]
-    if: needs.select.outputs.ready == 'true'
+    if: ${{ needs.select.outputs.ready == 'true' && inputs.style_refresh != true }}
     runs-on: ubuntu-latest
     timeout-minutes: 75
     steps:

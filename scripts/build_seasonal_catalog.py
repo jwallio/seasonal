@@ -31,9 +31,10 @@ from seasonal_products import (
     public_model_registry,
     public_product_registry,
 )
+from seasonal_rendering import canonical_render_style, public_render_style_registry
 
 
-CATALOG_SCHEMA_VERSION = 1
+CATALOG_SCHEMA_VERSION = 2
 UTC_PATTERN = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z$")
 TARGET_PATTERN = re.compile(r"^\d{6}(?:-\d{6})?$")
 USABLE_STATUSES = {"available", "decoded", "partial", "rendered"}
@@ -338,6 +339,15 @@ def _target_catalog_state(
         "comparable": comparable,
         "quality_control": qc_status,
     }
+    render_style = canonical_render_style(
+        product,
+        seasonal=bool(re.fullmatch(r"\d{6}-\d{6}", target_month)),
+    )
+    if render_style is not None:
+        normalized["_catalog"].update({
+            "render_style_key": render_style["style_key"],
+            "render_style_fingerprint": render_style["fingerprint"],
+        })
     return normalized, comparable
 
 
@@ -773,6 +783,7 @@ def build_catalog(
         "source_revision": source_revision,
         "model_order": keys,
         "products": public_product_registry(),
+        "render_styles": public_render_style_registry(),
         "models": catalog_models,
         "health": health,
         "summary": {

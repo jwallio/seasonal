@@ -27,7 +27,8 @@ units, conversion, source season, grid resolution, and rendered data range.
 The five products use the dashboard's canonical comparison units and scales.
 The 500-mb height product uses ±120 m in 10-metre bands; 850-mb and 2-m temperature use ±6°C in 0.5°C bands;
 seasonal precipitation is accumulated and converted from the native APCC
-millimetres to inches with a ±8-inch scale; and MSLP uses ±10 hPa. APCC's
+millimetres to inches with a ±8-inch seasonal scale; and MSLP uses ±5 hPa in
+0.5-hPa bands. APCC's
 z500 archive contains anomalies only, so no
 absolute-height contour overlay is fabricated.
 

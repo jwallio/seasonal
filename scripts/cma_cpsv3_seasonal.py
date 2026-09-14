@@ -29,6 +29,7 @@ import c3s_seasonal as c3s
 import cfsv2_seasonal as cfsv2
 from cfsv2_seasonal import Grid, ensure_border_files, mean_grids, relative_path, render_map, sum_grids
 from seasonal_products import is_retired_product
+from seasonal_rendering import canonicalize_product_spec
 
 
 WMOLC_ROOT = "https://www.wmolc.org"
@@ -143,6 +144,9 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "Pa ÷ 100 = hPa",
     ),
 }
+
+for _product_name, _product_spec in list(PRODUCT_SPECS.items()):
+    PRODUCT_SPECS[_product_name] = canonicalize_product_spec(_product_spec, seasonal=False)
 
 
 class CMACPSv3Error(RuntimeError):
@@ -486,17 +490,7 @@ def baseline_label(attrs: dict[str, Any]) -> str:
 
 
 def render_product_spec(product: str, *, seasonal: bool) -> dict[str, Any]:
-    spec = dict(PRODUCT_SPECS[product])
-    if product == "precipitation_anomaly" and not seasonal:
-        spec.update(
-            {
-                "anomaly_min": cfsv2.PRECIP_MONTHLY_ANOMALY_MIN_IN,
-                "anomaly_max": cfsv2.PRECIP_MONTHLY_ANOMALY_MAX_IN,
-                "anomaly_ticks": cfsv2.PRECIP_MONTHLY_ANOMALY_TICKS,
-                "anomaly_palette": cfsv2.PRECIP_ANOMALY_PALETTE,
-            }
-        )
-    return spec
+    return canonicalize_product_spec(PRODUCT_SPECS[product], seasonal=seasonal)
 
 
 def render_target(

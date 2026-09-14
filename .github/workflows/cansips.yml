@@ -14,6 +14,11 @@ on:
     - cron: "30 13 10-14 * *"
   workflow_dispatch:
     inputs:
+      style_refresh:
+        description: "Stage output for a coordinated canonical-style release"
+        required: false
+        default: false
+        type: boolean
       product:
         description: "CanSIPS v3 product bundle to generate"
         required: false
@@ -71,6 +76,17 @@ concurrency:
 
 jobs:
   render:
+    if: >-
+      ${{
+        github.event_name != 'push' ||
+        (
+          !contains(toJSON(github.event.commits), 'scripts/seasonal_rendering.py') &&
+          !contains(toJSON(github.event.commits), 'scripts/seasonal_products.py') &&
+          !contains(toJSON(github.event.commits), 'scripts/height_display.py') &&
+          !contains(toJSON(github.event.commits), 'scripts/temperature_display.py') &&
+          !contains(toJSON(github.event.commits), 'scripts/snowfall_display.py')
+        )
+      }}
     runs-on: ubuntu-latest
     timeout-minutes: 360
     env:
@@ -229,7 +245,7 @@ jobs:
       # repository Actions token. Publish this child directly so maintenance
       # cannot strand a successful artifact.
       - name: Dispatch Pages publisher for token-launched render
-        if: ${{ success() && steps.cds_queue.outputs.ready == 'true' && github.actor == 'github-actions[bot]' }}
+        if: ${{ success() && steps.cds_queue.outputs.ready == 'true' && (github.actor == 'github-actions[bot]' || github.event_name == 'push') && inputs.style_refresh != true }}
         uses: ./.github/actions/publish-pages
         with:
           source-workflow: CanSIPS v3 Seasonal Graphics

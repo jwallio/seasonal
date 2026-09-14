@@ -22,7 +22,7 @@ on:
           - snow_depth_anomaly
           - mslp_anomaly
       style_refresh:
-        description: "Automated style children publish their own Pages payload"
+        description: "Stage output for a coordinated canonical-style release"
         required: false
         default: false
         type: boolean
@@ -173,7 +173,7 @@ jobs:
       # completion cannot create a workflow_run publisher under GitHub's
       # recursion guard. An explicit workflow_dispatch remains permitted.
       - name: Dispatch SEAS5 Pages publish
-        if: ${{ success() && github.actor == 'github-actions[bot]' }}
+        if: ${{ success() && github.actor == 'github-actions[bot]' && inputs.style_refresh != true }}
         uses: ./.github/actions/publish-pages
         with:
           source-workflow: ECMWF SEAS5 Seasonal Graphics

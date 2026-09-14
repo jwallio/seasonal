@@ -1,98 +1,65 @@
-name: Maintenance - Refresh 500-mb styling
+name: Maintenance - Refresh canonical seasonal styling
+
 on:
   push:
     branches: [main]
     paths:
+      - scripts/seasonal_rendering.py
+      - scripts/seasonal_products.py
       - scripts/height_display.py
       - scripts/temperature_display.py
+      - scripts/snowfall_display.py
+      - scripts/cfsv2_seasonal.py
+      - scripts/cfsv2_native_snow.py
       - .github/workflows/height-style-refresh.yml
-      - .github/workflows/temperature-style-refresh.yml
   workflow_dispatch:
+
 permissions:
   actions: write
   contents: read
 
 concurrency:
-  # A newer style refresh supersedes a stale fan-out.
-  group: height-maintenance-${{ github.ref }}
+  group: canonical-seasonal-style-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   refresh:
+    name: Refresh ${{ matrix.workflow }}
     runs-on: ubuntu-latest
-    timeout-minutes: 360
+    timeout-minutes: 420
     strategy:
       fail-fast: false
-      # Keep the maintenance fan-out bounded, but do not serialize every
-      # provider behind one six-hour provider attempt.  The provider workers
-      # already scope their own data requests and concurrency groups.
       max-parallel: 4
       matrix:
-        workflow: [seas5.yml, cansips.yml, c3s.yml, jma.yml, cfsv2.yml, apcc.yml, cma-cpsv3.yml, superensemble.yml]
+        workflow:
+          - seas5.yml
+          - c3s.yml
+          - jma.yml
+          - cfsv2.yml
+          - apcc.yml
+          - cma-cpsv3.yml
+          - geos-s2s3.yml
+          - sfs.yml
+          - superensemble.yml
+          - nmme.yml
     env:
       GH_TOKEN: ${{ github.token }}
       GH_REPO: ${{ github.repository }}
       WORKFLOW: ${{ matrix.workflow }}
     steps:
-      - name: Initialize serialized Pages handoff
-        shell: bash
-        run: ": > publish-refs.txt"
-      - name: Refresh both views sequentially
-        id: refresh_products
+      - name: Resolve a published CDS initialization
+        if: ${{ contains(fromJSON('["c3s.yml","jma.yml"]'), matrix.workflow) }}
         shell: bash
         run: |
           set -euo pipefail
-          failed=0
-          deferred=0
-          started_products=0
-          # The CDS-backed workers can render their complete suite from one
-          # representative published cycle; this keeps their account queue
-          # serialized while still refreshing both requested height views.
-          products=(500mb_height_anomaly 500mb_height_anomaly_nh)
-          plan_product=500mb_height_anomaly
-          if [[ "$WORKFLOW" == "seas5.yml" || "$WORKFLOW" == "c3s.yml" || "$WORKFLOW" == "jma.yml" ]]; then
-            products=(all)
-          fi
-          for product in "${products[@]}"; do
-            request_product="$product"
-            [[ "$product" == "all" ]] && request_product="$plan_product"
-            # Give an existing producer a bounded hand-off window; the
-            # product-scoped producer key below prevents cross-product canceling.
-            blocked=0
-            if (( started_products == 0 )); then
-              wait_seconds=0
-              blocked=0
-              while gh run list --workflow "$WORKFLOW" --limit 50 --json status --jq 'any(.[]; .status == "in_progress" or .status == "queued" or .status == "waiting" or .status == "pending")' | grep -qx true; do
-                if (( wait_seconds >= 900 )); then
-                  echo "::warning::${WORKFLOW} is still active after 15 minutes; deferring this style refresh so it cannot cancel a scheduled or release run."
-                  blocked=1
-                  break
-                fi
-                sleep 30
-                wait_seconds=$((wait_seconds + 30))
-              done
-              fi
-            if (( blocked )); then
-              deferred=$((deferred + 1))
-              continue
-            fi
-            # C3S/JMA pressure-level access can lag the current monthly issue.
-            # Re-render its last published height cycle so a style-only refresh
-            # stays green while the next restricted issue is unavailable.
-            init_arg=latest
-            if [[ "$WORKFLOW" == "jma.yml" || "$WORKFLOW" == "c3s.yml" ]]; then
-              provider="${WORKFLOW%.yml}"
-              init_arg=""
-              pages_url="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/${provider}_manifest.json"
-              if curl -fsSL --retry 2 --connect-timeout 10 "$pages_url" -o published.json; then
-                init_arg=$(PRODUCT="$request_product" python - <<'PY'
-          import json, os, re
-          try:
-              payload = json.load(open("published.json", encoding="utf-8"))
-          except (OSError, ValueError):
-              payload = {}
+          provider="${WORKFLOW%.yml}"
+          manifest_url="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/${provider}_manifest.json"
+          curl -fsSL --retry 3 --connect-timeout 15 --max-time 60 "$manifest_url" -o published.json
+          init_arg="$(python - <<'PY'
+          import json, re
+          payload = json.load(open("published.json", encoding="utf-8"))
           for run in payload.get("runs", []):
-              if run.get("product") != os.environ["PRODUCT"]:
+              if run.get("product") != "500mb_height_anomaly":
                   continue
               if run.get("status") not in {"rendered", "decoded", "partial"}:
                   continue
@@ -101,129 +68,200 @@ jobs:
                   print(digits[:10])
                   break
           PY
-                )
-              fi
-              if [[ -z "$init_arg" ]]; then
-                echo "::warning::No prior accessible $product cycle is published for $WORKFLOW; skipping this style-only product refresh."
-                continue
-              fi
-            fi
-            started=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-            for attempt in 1 2 3 4 5; do
-              if [[ "$product" == "all" ]]; then
-                dispatch_args=(-f product=all)
-              else
-                dispatch_args=(-f product="$product")
-              fi
-              [[ "$WORKFLOW" == "jma.yml" || "$WORKFLOW" == "c3s.yml" ]] && dispatch_args+=(-f init="$init_arg")
-              [[ "$WORKFLOW" == "seas5.yml" || "$WORKFLOW" == "jma.yml" || "$WORKFLOW" == "c3s.yml" ]] && dispatch_args+=(-f style_refresh=true)
-              if gh workflow run "$WORKFLOW" --ref main "${dispatch_args[@]}"; then
-                break
-              fi
-              if [[ "$attempt" == 5 ]]; then
-                echo "::error::$WORKFLOW dispatch failed after five attempts"
-                exit 1
-              fi
-              sleep $((attempt * 10))
-            done
-            run_id=""
-            for attempt in {1..24}; do
-              run_id=$(gh run list --workflow "$WORKFLOW" --branch main --event workflow_dispatch --limit 20 --json databaseId,createdAt --jq ".[] | select(.createdAt >= \"$started\") | .databaseId" | head -1)
-              [[ -n "$run_id" ]] && break
-              sleep 5
-            done
-            test -n "$run_id"
-            echo "- $WORKFLOW / $product: https://github.com/$GH_REPO/actions/runs/$run_id" >> "$GITHUB_STEP_SUMMARY"
-            echo "::notice::$WORKFLOW / $product dispatched as run $run_id; the provider will publish its Pages artifact on completion."
-            started_products=$((started_products + 1))
-          done
-          if (( deferred )); then
-            echo "::warning::$deferred 500-mb style refresh product(s) were deferred because a live producer was already active."
-          fi
-          exit "$failed"
-      - name: Upload serialized Pages handoff
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: height-publish-refs-${{ matrix.workflow }}
-          path: publish-refs.txt
-          if-no-files-found: warn
-  publish:
-    if: ${{ always() && needs.refresh.result != 'cancelled' }}
-    needs: refresh
-    runs-on: ubuntu-latest
-    timeout-minutes: 180
-    permissions:
-      actions: write
-      contents: read
-    env:
-      GH_TOKEN: ${{ github.token }}
-      GH_REPO: ${{ github.repository }}
-      REFRESH_RESULT: ${{ needs.refresh.result }}
-    steps:
-      - name: Download serialized Pages handoffs
-        uses: actions/download-artifact@v4
-        continue-on-error: true
-        with:
-          pattern: height-publish-refs-*
-          path: publish-refs
-      - name: Publish self-dispatching provider payloads
+          )"
+          test -n "$init_arg"
+          echo "STYLE_INIT=$init_arg" >> "$GITHUB_ENV"
+
+      - name: Dispatch one complete staged provider refresh
         shell: bash
         run: |
           set -euo pipefail
-          shopt -s nullglob
-          failed=0
-          mapfile -t ref_files < <(find publish-refs -type f -name publish-refs.txt -print 2>/dev/null | sort)
-          for ref_file in "${ref_files[@]}"; do
-            while IFS=$'\t' read -r source_name source_run_id; do
-              [[ -z "$source_name" || -z "$source_run_id" ]] && continue
-              published=0
-              for attempt in 1 2 3 4 5; do
-                publish_wait=0
-                while gh run list --workflow publish-pages.yml --limit 100 --json status --jq 'any(.[]; .status != "completed")' | grep -qx true; do
-                  if (( publish_wait >= 1800 )); then
-                    echo "::error::Pages publisher queue did not drain within 30 minutes"
-                    break 2
-                  fi
-                  sleep 15
-                  publish_wait=$((publish_wait + 15))
-                done
-                publish_started=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-                if ! gh workflow run publish-pages.yml --ref main -f source_workflow="$source_name" -f source_run_id="$source_run_id"; then
-                  if [[ "$attempt" == 5 ]]; then
-                    echo "::error::Pages dispatch failed for $source_name run $source_run_id"
-                    break
-                  fi
-                  sleep $(($attempt * 10))
-                  continue
-                fi
-                publish_id=""
-                for lookup in {1..24}; do
-                  publish_id=$(gh run list --workflow publish-pages.yml --event workflow_dispatch --limit 20 --json databaseId,createdAt,displayTitle,event --jq ".[] | select(.event == \"workflow_dispatch\" and .createdAt >= \"$publish_started\" and (.displayTitle | endswith(\" · $source_run_id\"))) | .databaseId" | head -1)
-                  [[ -n "$publish_id" ]] && break
-                  sleep 5
-                done
-                if [[ -z "$publish_id" ]]; then
-                  echo "::error::Could not resolve Pages publisher for $source_name run $source_run_id"
-                  [[ "$attempt" == 5 ]] && break
-                  sleep $(($attempt * 10))
-                  continue
-                fi
-                if gh run watch "$publish_id" --exit-status --interval 30; then
-                  echo "- $source_name / $source_run_id: https://github.com/$GH_REPO/actions/runs/$publish_id" >> "$GITHUB_STEP_SUMMARY"
-                  published=1
-                  break
-                fi
-                echo "::warning::Pages publisher $publish_id did not complete successfully; retrying handoff"
-                sleep $(($attempt * 10))
-              done
-              if (( published == 0 )); then
-                failed=1
-              fi
-            done < "$ref_file"
-          done
-          if [[ "$REFRESH_RESULT" != "success" ]]; then
-            echo "::error::At least one producer refresh failed"
-            failed=1
+          args=(--repo "$GH_REPO" --ref main -f style_refresh=true)
+          if [[ "$WORKFLOW" == "nmme.yml" ]]; then
+            args+=(-f products=2m_temperature_anomaly,probability_above_normal,probability_near_normal,probability_below_normal,multi_model_consensus)
+            args+=(-f base_product=2m_temperature_anomaly)
+          else
+            args+=(-f product=all)
           fi
-          exit "$failed"
+          if [[ -n "${STYLE_INIT:-}" ]]; then
+            args+=(-f init="$STYLE_INIT")
+          fi
+
+          dispatch_started="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          for attempt in 1 2 3 4 5; do
+            if gh workflow run "$WORKFLOW" "${args[@]}"; then
+              break
+            fi
+            if (( attempt == 5 )); then
+              echo "::error::$WORKFLOW dispatch failed after five attempts"
+              exit 1
+            fi
+            sleep $((attempt * 10))
+          done
+
+          run_id=""
+          for lookup in $(seq 1 36); do
+            run_id="$(gh run list --repo "$GH_REPO" --workflow "$WORKFLOW" --event workflow_dispatch \
+              --limit 100 --json createdAt,databaseId,headSha \
+              --jq ".[] | select(.headSha == \"$GITHUB_SHA\" and .createdAt >= \"$dispatch_started\") | .databaseId" | head -1)"
+            if [[ -n "$run_id" ]]; then
+              break
+            fi
+            sleep 5
+          done
+          test -n "$run_id"
+          echo "PRODUCER_RUN_ID=$run_id" >> "$GITHUB_ENV"
+          echo "Dispatched $WORKFLOW as run $run_id." >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Wait for the staged provider payload
+        shell: bash
+        run: |
+          set -euo pipefail
+          run_id="${PRODUCER_RUN_ID:?producer run was not resolved}"
+          gh run watch "$run_id" --repo "$GH_REPO" --exit-status --interval 30
+
+          case "$WORKFLOW" in
+            seas5.yml) slug=seas5; source="ECMWF SEAS5 Seasonal Graphics"; artifact="seas5-pages-$run_id" ;;
+            cansips.yml) slug=cansips; source="CanSIPS v3 Seasonal Graphics"; artifact="cansips-pages-$run_id" ;;
+            c3s.yml) slug=c3s; source="C3S Multi-System Seasonal Graphics"; artifact="c3s-pages-$run_id" ;;
+            jma.yml) slug=jma; source="JMA Seasonal Graphics"; artifact="jma-pages-$run_id" ;;
+            cfsv2.yml) slug=cfsv2; source="CFSv2 Rolling Seasonal Graphics"; artifact="cfsv2-pages-$run_id" ;;
+            apcc.yml) slug=apcc; source="APCC MME Seasonal Graphics"; artifact="apcc-pages-$run_id" ;;
+            cma-cpsv3.yml) slug=cma_cpsv3; source="CMA CPSv3 Seasonal Graphics"; artifact="cma-cpsv3-pages-$run_id" ;;
+            geos-s2s3.yml) slug=geos_s2s3; source="NASA GEOS-S2S-3 Seasonal Graphics"; artifact="geos-s2s3-pages-$run_id" ;;
+            sfs.yml) slug=sfs; source="NOAA SFS Beta2 Seasonal Graphics"; artifact="sfs-pages-$run_id" ;;
+            superensemble.yml) slug=superensemble; source="Deduplicated Seasonal Super Ensemble"; artifact="superensemble-pages-$run_id" ;;
+            nmme.yml) slug=nmme; source="NOAA NMME Seasonal Graphics"; artifact="nmme-pages-$run_id" ;;
+            *) exit 1 ;;
+          esac
+          artifact_id="$(gh api "repos/$GH_REPO/actions/runs/$run_id/artifacts" --paginate \
+            --jq ".artifacts[] | select(.expired == false and .name == \"$artifact\") | .id" | head -1)"
+          test -n "$artifact_id"
+          if [[ "$slug" == cfsv2 ]]; then
+            snowfall_id="$(gh api "repos/$GH_REPO/actions/runs/$run_id/artifacts" --paginate \
+              --jq '.artifacts[] | select(.expired == false and .name == "corrected-snowfall-ready") | .id' | head -1)"
+            test -n "$snowfall_id"
+          fi
+
+          mkdir -p producer-ref
+          printf '%s\t%s\t%s\t%s\n' "$slug" "$run_id" "$artifact" "$source" > producer-ref/producer.tsv
+
+      - name: Upload staged producer reference
+        uses: actions/upload-artifact@v4
+        with:
+          name: canonical-style-ref-${{ matrix.workflow }}
+          path: producer-ref/producer.tsv
+          if-no-files-found: error
+          retention-days: 14
+
+  aggregate:
+    name: Publish one atomic seasonal style release
+    needs: refresh
+    runs-on: ubuntu-latest
+    timeout-minutes: 420
+    steps:
+      - name: Checkout Pages handoff helper
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Download staged producer references
+        uses: actions/download-artifact@v4
+        with:
+          pattern: canonical-style-ref-*
+          path: producer-refs
+
+      # CanSIPS native snowfall uses the same CDS account as C3S, SEAS5, and
+      # JMA. Launch it only after the matrix is complete so its own queue guard
+      # cannot defer snowfall and leave the aggregate payload incomplete.
+      - name: Render the staged CanSIPS payload after shared CDS workers
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          dispatch_started="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          for attempt in 1 2 3 4 5; do
+            if gh workflow run cansips.yml --repo "$GH_REPO" --ref main \
+              -f style_refresh=true -f product=all; then
+              break
+            fi
+            if (( attempt == 5 )); then
+              echo "::error::cansips.yml dispatch failed after five attempts"
+              exit 1
+            fi
+            sleep $((attempt * 10))
+          done
+
+          run_id=""
+          for lookup in $(seq 1 36); do
+            run_id="$(gh run list --repo "$GH_REPO" --workflow cansips.yml --event workflow_dispatch \
+              --limit 100 --json createdAt,databaseId,headSha \
+              --jq ".[] | select(.headSha == \"$GITHUB_SHA\" and .createdAt >= \"$dispatch_started\") | .databaseId" | head -1)"
+            if [[ -n "$run_id" ]]; then
+              break
+            fi
+            sleep 5
+          done
+          test -n "$run_id"
+          gh run watch "$run_id" --repo "$GH_REPO" --exit-status --interval 30
+
+          artifact="cansips-pages-$run_id"
+          artifact_id="$(gh api "repos/$GH_REPO/actions/runs/$run_id/artifacts" --paginate \
+            --jq ".artifacts[] | select(.expired == false and .name == \"$artifact\") | .id" | head -1)"
+          test -n "$artifact_id"
+          mkdir -p producer-refs/cansips
+          printf '%s\t%s\t%s\t%s\n' cansips "$run_id" "$artifact" \
+            "CanSIPS v3 Seasonal Graphics" > producer-refs/cansips/producer.tsv
+          echo "Dispatched cansips.yml as serialized run $run_id." >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Assemble all provider payloads without publishing
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          mapfile -t refs < <(find producer-refs -name producer.tsv -type f | sort)
+          if (( ${#refs[@]} != 11 )); then
+            echo "::error::Expected 11 staged provider references, found ${#refs[@]}"
+            exit 1
+          fi
+
+          mkdir -p canonical-payload/payloads
+          : > canonical-payload/producers.tsv
+          for ref in "${refs[@]}"; do
+            IFS=$'\t' read -r slug run_id artifact source < "$ref"
+            test -n "$slug" && test -n "$run_id" && test -n "$artifact" && test -n "$source"
+            destination="canonical-payload/payloads/$slug"
+            mkdir -p "$destination"
+            gh run download "$run_id" --repo "$GH_REPO" --name "$artifact" --dir "$destination"
+            printf '%s\t%s\t%s\t%s\n' "$slug" "$run_id" "$artifact" "$source" >> canonical-payload/producers.tsv
+            if [[ "$slug" == cfsv2 ]]; then
+              mkdir -p canonical-payload/payloads/cfsv2-snow
+              gh run download "$run_id" --repo "$GH_REPO" --name corrected-snowfall-ready \
+                --dir canonical-payload/payloads/cfsv2-snow
+            fi
+          done
+
+          for manifest in \
+            cfsv2_manifest.json cansips_manifest.json c3s_manifest.json seas5_manifest.json \
+            jma_manifest.json apcc_manifest.json cma_cpsv3_manifest.json geos_s2s3_manifest.json \
+            sfs_manifest.json superensemble_manifest.json nmme_manifest.json; do
+            test "$(find canonical-payload/payloads -name "$manifest" -type f | wc -l)" -ge 1
+          done
+
+      - name: Upload atomic canonical-style Pages payload
+        uses: actions/upload-artifact@v4
+        with:
+          name: canonical-seasonal-pages-${{ github.run_id }}
+          path: canonical-payload
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Publish the complete staged release once
+        uses: ./.github/actions/publish-pages
+        with:
+          source-workflow: Canonical Seasonal Style Refresh
+          source-run-id: ${{ github.run_id }}

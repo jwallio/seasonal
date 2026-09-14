@@ -43,8 +43,11 @@ official `PRES:mean sea level` field and converted from Pa to hPa before the
 forecast-minus-reforecast difference is calculated. Both products use the
 official NCEI CFS reforecast calibration climatology. Fixed scales keep runs
 directly comparable while resolving the relatively small rolling-mean signal:
-500-mb height uses ±120 m in 10-metre intervals; 850-mb and 2-m temperature use the shared ±6 °C scale with 0.5 °C intervals; and MSLP uses ±10 hPa with 1 hPa intervals. Values outside
-the displayed range use the saturated end color.
+500-mb height uses ±120 m in 10-metre intervals; 850-mb and 2-m temperature use
+the shared ±6 °C scale with 0.5 °C intervals; and MSLP uses ±5 hPa with 0.5 hPa
+boundaries and one −0.5 to +0.5 hPa neutral band. Values outside the displayed
+range use distinct darker rectangular overflow cells; source values are not
+clipped.
 
 For precipitation, the source rate (`kg m-2 s-1`) is multiplied by the actual
 number of seconds in each target calendar month. Since `1 kg m-2 = 1 mm` of
@@ -66,10 +69,11 @@ matching 1982-2010 NCEI calibration fields are processed with the same method
 and subtracted from the forecast. A single SWE or precipitation baseline is
 never accepted as a snowfall substitute.
 
-The snowfall-departure image uses the C3S-readable scale: 20 discrete one-inch
-estimated snow-depth bands from −10 to +10 inches, with white from −1 to +1
-inches. The canonical comparison grid remains LWE, and the fixed 10:1 ratio is
-applied once for the displayed snow-depth product.
+The snowfall-departure image uses the canonical aggregation-based scale.
+Monthly maps span −14 to +14 estimated snow-depth inches, with one-inch bands
+near zero and wider outer bands. DJF/JFM maps span −20 to +20 inches in
+two-inch bands. The canonical comparison grid remains LWE, and the fixed 10:1
+ratio is applied once for the displayed snow-depth product.
 
 Estimated snowfall accumulation is a separate product. After the member-level
 Dai phase calculation produces monthly snowfall liquid-water equivalent, the
@@ -84,13 +88,10 @@ source, years, anchors, interpolation, bounds, and limitations. This is a
 climatological snow-depth estimate; monthly CFSv2 cannot resolve event-scale
 crystal habit, melting, wind compaction, or settling.
 
-Monthly accumulation maps retain the WN2 two-inch color bands through 40 inches,
-then use five-inch bands through 100 inches and ten-inch high-end bands through
-200 inches. DJF and JFM maps use five-inch bands through 100 inches and the same
-ten-inch bands from 100-200 inches. The WN2 progression emphasizes expanded
-blue, purple, and cyan families, with a single saturated-yellow transition
-before orange, red, and deep purple at the high end. Major legend labels appear
-every 20 inches, while all contour boundaries remain intact. This keeps
+Monthly and seasonal accumulation maps retain the approved nonlinear detail
+through 180 inches, followed by a distinct rectangular `180+` overflow cell.
+The progression emphasizes expanded blue, purple, and cyan families. All
+contour boundaries remain intact. This keeps
 Northeast and mountain maxima distinct, avoids broad washed-out yellow areas,
 and keeps the legend readable when the share image is viewed small.
 

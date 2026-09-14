@@ -25,8 +25,8 @@ multi-system blend. It is a CONUS monthly total or DJF three-month sum of the
 native C3S snowfall anomalous rate, converted to inches of liquid-water
 equivalent. The canonical comparison field remains LWE; the renderer applies
 the fixed 10:1 ratio once for the displayed estimated snow-depth departure.
-Monthly and seasonal C3S maps use 20 discrete one-inch snow-depth bands from
-−10 to +10 inches, with a white near-zero band from −1 to +1 inches. A centre that does not return the field is retained as a
+Monthly maps use the canonical −14 to +14-inch snow-depth scale with one-inch
+center bands; seasonal totals use −20 to +20 inches in two-inch bands. A centre that does not return the field is retained as a
 failed or partial component rather than being silently substituted with
 snowpack.
 Every monthly and seasonal field passes finite-coverage and physical-range QC

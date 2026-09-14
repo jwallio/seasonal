@@ -37,8 +37,46 @@ from urllib.parse import urljoin
 SCRIPT_DIRECTORY = str(Path(__file__).resolve().parent)
 if SCRIPT_DIRECTORY not in sys.path:
     sys.path.insert(0, SCRIPT_DIRECTORY)
-from height_display import HEIGHT_ANOMALY_STYLE, HEIGHT_NH_FRAME
+from height_display import (
+    HEIGHT_ANOMALY_PALETTE,
+    HEIGHT_ANOMALY_STYLE,
+    HEIGHT_ANOMALY_TICKS,
+    HEIGHT_NH_FRAME,
+)
 from seasonal_products import grid_quality_control, is_retired_product, require_quality_control
+from seasonal_rendering import (
+    CONUS_PRECIP_REGION,
+    CONUS_PROJECTED_X_SHIFT_FRACTION,
+    CONUS_REGION,
+    CONUS_STATE_NAMES,
+    DEFAULT_REGION,
+    MSLP_ANOMALY_PALETTE,
+    MSLP_ANOMALY_TICKS,
+    NORTHERN_HEMISPHERE_REGION,
+    PRECIPITATION_ANOMALY_PALETTE,
+    PROJECTED_X_SHIFT_FRACTION,
+    SEASONAL_LCC_CENTRAL_LONGITUDE,
+    SEASONAL_LCC_LATITUDE_ORIGIN,
+    SEASONAL_LCC_PROJECTION_NAME,
+    SEASONAL_LCC_STANDARD_PARALLEL_1,
+    SEASONAL_LCC_STANDARD_PARALLEL_2,
+    SEASONAL_NORTH_POLAR_STEREOGRAPHIC_PROJECTION_NAME,
+    canonical_render_style,
+    canonicalize_product_spec,
+    prepare_capped_values,
+)
+from snowfall_display import (
+    ACCUMULATION_MONTHLY_BOUNDS,
+    ACCUMULATION_PALETTE,
+    ACCUMULATION_SEASONAL_BOUNDS,
+    MONTHLY_PALETTE as SNOWFALL_ANOMALY_PALETTE,
+)
+from temperature_display import (
+    TEMPERATURE_ANOMALY_MAX_C,
+    TEMPERATURE_ANOMALY_MIN_C,
+    TEMPERATURE_ANOMALY_PALETTE,
+    TEMPERATURE_ANOMALY_TICKS,
+)
 
 
 NOMADS_ROOT = "https://nomads.ncep.noaa.gov/pub/data/nccf/com/cfs/prod/"
@@ -61,10 +99,12 @@ GRID_LON_COUNT = 360
 GRID_LAT_COUNT = 181
 FLUX_GRID_LON_COUNT = 384
 FLUX_GRID_LAT_COUNT = 190
-# Legacy generic anomaly defaults, also used by non-height products.
-# True seasonal 500-mb maps use HEIGHT_ANOMALY_STYLE.
-ANOMALY_MIN_M = -100.0
-ANOMALY_MAX_M = 100.0
+# Compatibility aliases for older callers. The values are owned by the
+# canonical height display contract rather than by the CFSv2 adapter.
+ANOMALY_TICKS = list(HEIGHT_ANOMALY_TICKS)
+ANOMALY_MIN_M = float(ANOMALY_TICKS[0])
+ANOMALY_MAX_M = float(ANOMALY_TICKS[-1])
+ANOMALY_PALETTE = list(HEIGHT_ANOMALY_PALETTE)
 PRECIP_ANOMALY_MIN_IN = -8.0
 PRECIP_ANOMALY_MAX_IN = 8.0
 PRECIP_MONTHLY_ANOMALY_MIN_IN = -4.0
@@ -73,50 +113,10 @@ PRECIP_SEASONAL_ANOMALY_MIN_IN = -8.0
 PRECIP_SEASONAL_ANOMALY_MAX_IN = 8.0
 SWE_ANOMALY_MIN_IN = -8.0
 SWE_ANOMALY_MAX_IN = 8.0
-ANOMALY_PALETTE = [
-    "#24527a",
-    "#306b90",
-    "#3d83a6",
-    "#4891b0",
-    "#539cb8",
-    "#61a7bf",
-    "#70b2c6",
-    "#95c4d3",
-    "#c4dce3",
-    "#e1e4e7",
-    "#eee0e0",
-    "#f2cecd",
-    "#eaaaa8",
-    "#e28c8b",
-    "#db797b",
-    "#d3686c",
-    "#ca5861",
-    "#bf4856",
-    "#a1384a",
-    "#84283f",
-]
-ANOMALY_TICKS = list(range(-100, 101, 10))
 PRECIP_ANOMALY_TICKS = list(range(-8, 9))
 PRECIP_MONTHLY_ANOMALY_TICKS = [value / 2.0 for value in range(-8, 9)]
 PRECIP_SEASONAL_ANOMALY_TICKS = list(range(-8, 9))
-PRECIP_ANOMALY_PALETTE = [
-    "#7f3b08",
-    "#914b0d",
-    "#a6611a",
-    "#bd7a2d",
-    "#d0a052",
-    "#dfbd7d",
-    "#ead8b3",
-    "#f5ead8",
-    "#edf7e9",
-    "#d9efd2",
-    "#bfe4b6",
-    "#9bd694",
-    "#74c476",
-    "#41ab5d",
-    "#238b45",
-    "#006d2c",
-]
+PRECIP_ANOMALY_PALETTE = PRECIPITATION_ANOMALY_PALETTE
 SWE_ANOMALY_TICKS = list(range(-8, 9))
 SWE_ANOMALY_PALETTE = [
     "#6b2d0c",
@@ -136,213 +136,16 @@ SWE_ANOMALY_PALETTE = [
     "#1d496f",
     "#143b5f",
 ]
-# Shared snowfall liquid-water-equivalent departure scale.  The previous ±1.2
-# range clips broad areas of the DJF CanSIPS field, so use a symmetric,
-# nonlinear set of bins: finer near zero and progressively wider toward the
-# tails.  The bins are intentionally categorical (uniform visual widths), so
-# the strong departures retain contrast without turning ordinary departures
-# into a mostly white map.
-SNOWFALL_ANOMALY_MIN_IN = -4.0
-SNOWFALL_ANOMALY_MAX_IN = 4.0
-SNOWFALL_ANOMALY_TICK_DECIMALS = 2
-SNOWFALL_ANOMALY_TICK_FORMAT = "signed_trimmed"
-SNOWFALL_ANOMALY_TICKS = [
-    -4.0,
-    -3.5,
-    -3.0,
-    -2.5,
-    -2.0,
-    -1.75,
-    -1.5,
-    -1.25,
-    -1.0,
-    -0.75,
-    -0.5,
-    0.0,
-    0.5,
-    0.75,
-    1.0,
-    1.25,
-    1.5,
-    1.75,
-    2.0,
-    2.5,
-    3.0,
-    3.5,
-    4.0,
-]
-SNOWFALL_ANOMALY_PALETTE = [
-    "#572308",
-    "#6b2d0c",
-    "#7b370d",
-    "#8c4712",
-    "#9d5517",
-    "#ae691f",
-    "#bd7d34",
-    "#ca9156",
-    "#d7a875",
-    "#e3c99a",
-    "#ffffff",
-    "#ffffff",
-    "#b9dce8",
-    "#96c9d7",
-    "#75b8cc",
-    "#5ca5bd",
-    "#4a93b2",
-    "#3a80a5",
-    "#2e6d93",
-    "#245b83",
-    "#1b496e",
-    "#123856",
-]
-# A single month has a smaller liquid-water-equivalent departure amplitude
-# than a three-month total. Use the approved fine breakpoints through 2 inches
-# for monthly maps, while the generic snowfall constants above remain the
-# wider seasonal/DJF scale for existing callers.
-SNOWFALL_MONTHLY_ANOMALY_MIN_IN = -2.0
-SNOWFALL_MONTHLY_ANOMALY_MAX_IN = 2.0
-SNOWFALL_MONTHLY_ANOMALY_TICKS = [
-    -2.0,
-    -1.75,
-    -1.5,
-    -1.25,
-    -1.0,
-    -0.75,
-    -0.5,
-    0.0,
-    0.5,
-    0.75,
-    1.0,
-    1.25,
-    1.5,
-    1.75,
-    2.0,
-]
-SNOWFALL_MONTHLY_ANOMALY_PALETTE = [
-    "#572308",
-    "#7b370d",
-    "#9d5517",
-    "#bd7d34",
-    "#d7a875",
-    "#e3c99a",
-    "#ffffff",
-    "#ffffff",
-    "#b9dce8",
-    "#75b8cc",
-    "#4a93b2",
-    "#2e6d93",
-    "#1b496e",
-    "#123856",
-]
-# Snow-depth accumulation uses the established WN2 snowfall palette. Monthly
-# products retain two-inch bins through 40 inches, then use five-inch bins
-# through 100 inches and ten-inch high-end bins through 200 inches. Three-month
-# totals use five-inch bins through 100 inches and the same ten-inch high-end
-# bins. Major labels remain sparse while every contour boundary is retained.
-SNOWFALL_ACCUMULATION_MONTHLY_BOUNDS_IN = (
-    list(range(0, 42, 2)) + list(range(45, 105, 5)) + list(range(110, 201, 10))
-)
-SNOWFALL_ACCUMULATION_MONTHLY_TICKS_IN = list(range(0, 201, 20))
-SNOWFALL_ACCUMULATION_SEASONAL_BOUNDS_IN = list(range(0, 105, 5)) + list(range(110, 201, 10))
-SNOWFALL_ACCUMULATION_SEASONAL_TICKS_IN = list(range(0, 201, 20))
-SNOWFALL_ACCUMULATION_BLUE_PALETTE = [
-    "#eaf8ff", "#cfeeff", "#a9defd", "#8bd1fa",
-    "#6ac1f0", "#4aaee8", "#3a9ee1", "#2f8fd9",
-]
-SNOWFALL_ACCUMULATION_PURPLE_PALETTE = [
-    "#516dd0", "#5f5fc9", "#6b52c6", "#7849c2",
-    "#8540be", "#9d36b7", "#b93db8", "#d451bb",
-]
-SNOWFALL_ACCUMULATION_CYAN_PALETTE = [
-    "#00b8d6", "#16c4df", "#28d0e6",
-    "#52def0", "#74e8f4", "#cbfbff",
-]
-SNOWFALL_ACCUMULATION_GREEN_PALETTE = [
-    "#1ec48f", "#53d8ae", "#97edd0", "#ddfff1",
-]
-SNOWFALL_ACCUMULATION_YELLOW_PALETTE = ["#ffd153"]
-SNOWFALL_ACCUMULATION_ORANGE_PALETTE = ["#f9b03b", "#f28530", "#ef6c2f"]
-SNOWFALL_ACCUMULATION_RED_PALETTE = [
-    "#e95732", "#e33f36", "#d92d3a", "#c91f3a", "#ba173f",
-]
-SNOWFALL_ACCUMULATION_HIGH_PALETTE = [
-    "#a50f47", "#92154f", "#7f1d5a", "#6a1a59",
-    "#53144f", "#441143", "#3b103f",
-]
-SNOWFALL_ACCUMULATION_MONTHLY_PALETTE = (
-    SNOWFALL_ACCUMULATION_BLUE_PALETTE
-    + SNOWFALL_ACCUMULATION_PURPLE_PALETTE
-    + SNOWFALL_ACCUMULATION_CYAN_PALETTE
-    + SNOWFALL_ACCUMULATION_GREEN_PALETTE
-    + SNOWFALL_ACCUMULATION_YELLOW_PALETTE
-    + SNOWFALL_ACCUMULATION_ORANGE_PALETTE
-    + SNOWFALL_ACCUMULATION_RED_PALETTE
-    + SNOWFALL_ACCUMULATION_HIGH_PALETTE
-)
-SNOWFALL_ACCUMULATION_SEASONAL_PALETTE = (
-    SNOWFALL_ACCUMULATION_BLUE_PALETTE
-    + SNOWFALL_ACCUMULATION_PURPLE_PALETTE
-    + SNOWFALL_ACCUMULATION_CYAN_PALETTE
-    + [SNOWFALL_ACCUMULATION_GREEN_PALETTE[0], SNOWFALL_ACCUMULATION_GREEN_PALETTE[2]]
-    + SNOWFALL_ACCUMULATION_YELLOW_PALETTE
-    + [SNOWFALL_ACCUMULATION_ORANGE_PALETTE[1]]
-    + [SNOWFALL_ACCUMULATION_RED_PALETTE[1], SNOWFALL_ACCUMULATION_RED_PALETTE[3]]
-    + [SNOWFALL_ACCUMULATION_HIGH_PALETTE[2], SNOWFALL_ACCUMULATION_HIGH_PALETTE[4]]
-)
-# Shared fixed scale for seasonal 850-mb and 2-m temperature anomalies.
-# Model-specific narrower ranges clipped stronger signals and made the same
-# anomaly look different in comparison views.
-TEMPERATURE_ANOMALY_MIN_C = -6.0
-TEMPERATURE_ANOMALY_MAX_C = 6.0
-TEMPERATURE_ANOMALY_TICKS = [value / 2.0 for value in range(-12, 13)]
+SNOWFALL_ACCUMULATION_MONTHLY_BOUNDS_IN = ACCUMULATION_MONTHLY_BOUNDS
+SNOWFALL_ACCUMULATION_MONTHLY_TICKS_IN = ACCUMULATION_MONTHLY_BOUNDS
+SNOWFALL_ACCUMULATION_SEASONAL_BOUNDS_IN = ACCUMULATION_SEASONAL_BOUNDS
+SNOWFALL_ACCUMULATION_SEASONAL_TICKS_IN = ACCUMULATION_SEASONAL_BOUNDS
+SNOWFALL_ACCUMULATION_MONTHLY_PALETTE = ACCUMULATION_PALETTE
+SNOWFALL_ACCUMULATION_SEASONAL_PALETTE = ACCUMULATION_PALETTE
 # Retain the CFSv2 name for callers that imported the former model-specific
 # tick list; CFSv2 now uses the shared scale too.
 CFSV2_TEMPERATURE_ANOMALY_TICKS = TEMPERATURE_ANOMALY_TICKS
-from temperature_display import TEMPERATURE_ANOMALY_PALETTE
-MSLP_ANOMALY_TICKS = list(range(-20, 21, 2))
-CFSV2_MSLP_ANOMALY_TICKS = list(range(-10, 11))
-MSLP_ANOMALY_PALETTE = ANOMALY_PALETTE
-# A social-sized North America view: retain Alaska and all of Greenland while
-# keeping the lower field in the subtropics. Border drawing applies a separate
-# 14°N cutoff so South America does not appear in the frame.
-DEFAULT_REGION = (-160.0, -10.0, 22.0, 85.0)
-# CONUS products use a tight lower-48 frame: enough margin to keep the
-# westernmost, easternmost, northernmost, and southernmost states visible,
-# while minimizing unused Canada and Mexico in the square projected canvas.
-# This is a render crop only; provider download areas remain deliberately
-# larger for edge-data coverage.
-CONUS_PRECIP_REGION = (-126.0, -66.0, 24.0, 50.0)
-CONUS_REGION = CONUS_PRECIP_REGION
-NORTHERN_HEMISPHERE_REGION = (-180.0, 180.0, 0.0, 90.0)
-# The renderer uses these names when a CONUS product requests a land-only
-# frame. Keeping the list here lets every provider share the same lower-48
-# crop instead of relying on a provider-specific lon/lat rectangle.
-CONUS_STATE_NAMES = (
-    "Alabama", "Arizona", "Arkansas", "California", "Colorado", "Connecticut",
-    "Delaware", "Florida", "Georgia", "Idaho", "Illinois", "Indiana", "Iowa",
-    "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts",
-    "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska",
-    "Nevada", "New Hampshire", "New Jersey", "New Mexico", "New York",
-    "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania",
-    "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah",
-    "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming",
-)
-# Shift the projected window slightly west so the CONUS sits at the visual
-# center of the square canvas while preserving Alaska and all of Greenland.
-PROJECTED_X_SHIFT_FRACTION = 0.035
-# The tighter CONUS frame needs a smaller westward shift. A 3.5% shift places
-# eastern Maine beyond the right spine; 1% keeps both Maine and the Pacific
-# coast visibly inside the frame.
-CONUS_PROJECTED_X_SHIFT_FRACTION = 0.010
-# Keep the projection definition named and shared with other seasonal
-# renderers. Analog products are re-rendered through this same function so
-# their geometry cannot drift from the operational seasonal maps.
-SEASONAL_LCC_PROJECTION_NAME = "Lambert Conformal Conic"
-SEASONAL_LCC_STANDARD_PARALLEL_1 = 30.0
-SEASONAL_LCC_STANDARD_PARALLEL_2 = 60.0
-SEASONAL_LCC_LATITUDE_ORIGIN = 45.0
-SEASONAL_LCC_CENTRAL_LONGITUDE = -100.0
-SEASONAL_NORTH_POLAR_STEREOGRAPHIC_PROJECTION_NAME = "North Polar Stereographic"
+CFSV2_MSLP_ANOMALY_TICKS = MSLP_ANOMALY_TICKS
 DEFAULT_BORDER_URLS = (
     (
         "countries.geojson",
@@ -503,10 +306,6 @@ PRODUCT_SPECS = {
         "monthly_aggregation": "monthly mean sea-level pressure",
         "conversion_kind": "pascals_to_hectopascals",
         "conversion": "PRES divided by 100 to convert Pa to hPa before calculating the anomaly",
-        "anomaly_min": -10.0,
-        "anomaly_max": 10.0,
-        "anomaly_ticks": CFSV2_MSLP_ANOMALY_TICKS,
-        "anomaly_palette": MSLP_ANOMALY_PALETTE,
         "header_detail": "{source_label}  •  {baseline_label}  •  Mean sea-level pressure anomaly (hPa)",
     },
     PRODUCT_PRECIPITATION_ANOMALY: {
@@ -588,25 +387,6 @@ PRODUCT_SPECS = {
         "seasonal_aggregation": "seasonal snowfall departure total",
         "seasonal_units": "in",
         "monthly_aggregation": "monthly derived snowfall departure",
-        "anomaly_min": SNOWFALL_ANOMALY_MIN_IN,
-        "anomaly_max": SNOWFALL_ANOMALY_MAX_IN,
-        "anomaly_ticks": SNOWFALL_ANOMALY_TICKS,
-        "anomaly_palette": SNOWFALL_ANOMALY_PALETTE,
-        # Monthly maps use one-inch bands through ±8, then two-inch bands at
-        # ±10, ±12, and ±14. Three-month maps use two-inch bands through ±20.
-        "snowfall_display_profile": "c3s_readable",
-        # Retained for provenance; the renderer selects the monthly or
-        # three-month snow-depth profile based on the seasonal flag.
-        # Wider CFS seasonal departures; keep other models' shared scale intact.
-        "seasonal_anomaly_min": -7.0,
-        "seasonal_anomaly_max": 7.0,
-        "seasonal_anomaly_ticks": [-7., -6., -5., -4., -3., -2.5, -2., -1.5, -1., -.75, -.5,
-                                   0., .5, .75, 1., 1.5, 2., 2.5, 3., 4., 5., 6., 7.],
-        "seasonal_anomaly_palette": SNOWFALL_ANOMALY_PALETTE,
-        "monthly_anomaly_min": SNOWFALL_MONTHLY_ANOMALY_MIN_IN,
-        "monthly_anomaly_max": SNOWFALL_MONTHLY_ANOMALY_MAX_IN,
-        "monthly_anomaly_ticks": SNOWFALL_MONTHLY_ANOMALY_TICKS,
-        "monthly_anomaly_palette": SNOWFALL_MONTHLY_ANOMALY_PALETTE,
         "conversion": "Dai 2008 snow fraction applied member-by-member to monthly precipitation LWE using max(2-m, 850-mb) temperature",
         "map_domain": "land",
         "fit_frame_to_domain": True,
@@ -637,12 +417,6 @@ PRODUCT_SPECS = {
         "seasonal_aggregation": "seasonal estimated snowfall accumulation",
         "seasonal_units": "in",
         "monthly_aggregation": "monthly estimated snowfall accumulation",
-        "monthly_absolute_bounds": SNOWFALL_ACCUMULATION_MONTHLY_BOUNDS_IN,
-        "monthly_absolute_ticks": SNOWFALL_ACCUMULATION_MONTHLY_TICKS_IN,
-        "monthly_absolute_palette": SNOWFALL_ACCUMULATION_MONTHLY_PALETTE,
-        "seasonal_absolute_bounds": SNOWFALL_ACCUMULATION_SEASONAL_BOUNDS_IN,
-        "seasonal_absolute_ticks": SNOWFALL_ACCUMULATION_SEASONAL_TICKS_IN,
-        "seasonal_absolute_palette": SNOWFALL_ACCUMULATION_SEASONAL_PALETTE,
         "conversion": "Native SRWEQ integrated over calendar months, complete-cycle mean, multiplied by CIPS CWA mean SLR with explicit owner-assumed fills; unadjusted estimate",
         "header_detail": "{source_label}  •  Native snowfall × 10:1 ratio  •  Estimated snow depth (in)  •  CONUS domain",
         "map_domain": "land",
@@ -667,6 +441,14 @@ PRODUCT_SPECS[PRODUCT_HEIGHT_ANOMALY_NH] = {
     "absolute_title": "CFSv2 Northern Hemisphere 500-mb Geopotential Height (m)",
     "header_detail": "{source_label}  •  {baseline_label}  •  Height contours in dam  •  Northern Hemisphere",
 }
+
+# Keep directly imported adapter dictionaries useful for diagnostics while the
+# renderer re-resolves the period-specific variant at every render call.
+for _canonical_product_name, _canonical_product_spec in list(PRODUCT_SPECS.items()):
+    PRODUCT_SPECS[_canonical_product_name] = canonicalize_product_spec(
+        _canonical_product_spec,
+        seasonal=False,
+    )
 
 HEIGHT_ANOMALY_PRODUCTS = frozenset({PRODUCT_HEIGHT_ANOMALY, PRODUCT_HEIGHT_ANOMALY_NH})
 SNOWFALL_PRODUCTS = frozenset({PRODUCT_SNOWFALL_ANOMALY, PRODUCT_SNOWFALL_ACCUMULATION})
@@ -1128,6 +910,7 @@ def anomaly_style(
 ) -> tuple[float, float, Sequence[float], Sequence[str]]:
     """Return the fixed comparable scale for one anomaly product and period."""
 
+    product_spec = canonicalize_product_spec(product_spec, seasonal=seasonal)
     period_prefix = "seasonal" if seasonal else "monthly"
     period_min_key = f"{period_prefix}_anomaly_min"
     if period_min_key in product_spec:
@@ -1168,12 +951,64 @@ def anomaly_style(
     return ANOMALY_MIN_M, ANOMALY_MAX_M, ANOMALY_TICKS, ANOMALY_PALETTE
 
 
+def format_anomaly_tick(value: float, tick_decimals: int, tick_format: str) -> str:
+    """Format a legend boundary without stripping significant integer zeros."""
+
+    numeric = float(value)
+    if abs(numeric) < 0.5 * (10 ** -tick_decimals):
+        numeric = 0.0
+    if tick_format == "plain":
+        return f"{numeric:.{tick_decimals}f}"
+    if tick_format == "signed_trimmed":
+        if numeric == 0.0:
+            return "0"
+        formatted = f"{abs(numeric):.{tick_decimals}f}"
+        if tick_decimals:
+            formatted = formatted.rstrip("0").rstrip(".")
+        return f"+{formatted}" if numeric > 0.0 else f"−{formatted}"
+    if tick_decimals:
+        return f"{numeric:+.{tick_decimals}f}" if numeric else f"{numeric:.{tick_decimals}f}"
+    return f"+{int(round(numeric))}" if numeric > 0 else str(int(round(numeric)))
+
+
+def default_header_detail(
+    product_spec: dict,
+    source_label: str,
+    baseline_label: str,
+    *,
+    anomaly: bool,
+) -> str:
+    """Return scientifically accurate fallback metadata for a public field."""
+
+    if not anomaly:
+        detail = f"{source_label}  •  Absolute field smoke output"
+        if product_spec.get("height_contours"):
+            detail += "  •  Height contours in dam"
+        return detail
+    product = str(product_spec.get("name") or "")
+    quantity = {
+        PRODUCT_HEIGHT_ANOMALY: "500-mb height anomaly (m)",
+        PRODUCT_HEIGHT_ANOMALY_NH: "500-mb height anomaly (m)",
+        PRODUCT_850_TEMPERATURE_ANOMALY: "850-mb temperature anomaly (°C)",
+        PRODUCT_2M_TEMPERATURE_ANOMALY: "2-m temperature anomaly (°C)",
+        PRODUCT_MSLP_ANOMALY: "Mean sea-level pressure anomaly (hPa)  •  CONUS domain",
+        PRODUCT_PRECIPITATION_ANOMALY: "Precipitation accumulation anomaly (in)  •  CONUS domain",
+        PRODUCT_SNOWFALL_ANOMALY: "Estimated snowfall-depth departure (in)  •  fixed 10:1 ratio  •  CONUS domain",
+        PRODUCT_SWE_ANOMALY: "Snow-water equivalent anomaly (in)  •  CONUS domain",
+    }.get(product, f"Anomaly ({product_spec.get('units', 'source units')})")
+    detail = f"{source_label}  •  {baseline_label}  •  {quantity}"
+    if product in HEIGHT_ANOMALY_PRODUCTS and product_spec.get("height_contours"):
+        detail += "  •  Height contours in dam"
+    return detail
+
+
 def absolute_style(
     product_spec: dict,
     seasonal: bool = False,
 ) -> tuple[Sequence[float], Sequence[float], Sequence[str]] | None:
     """Return an optional fixed categorical scale for a non-anomaly product."""
 
+    product_spec = canonicalize_product_spec(product_spec, seasonal=seasonal)
     period_prefix = "seasonal" if seasonal else "monthly"
     bounds = product_spec.get(f"{period_prefix}_absolute_bounds")
     if bounds is None:
@@ -2793,7 +2628,7 @@ def render_map(
     initialization_label: str = "",
     footer_text: str = "",
     native_lwe: Grid | None = None,
-) -> None:
+) -> dict[str, Any]:
     try:
         import matplotlib
 
@@ -2815,6 +2650,8 @@ def render_map(
     grid, product_spec = depth_departure(
         grid, product_spec, SNOWFALL_ANOMALY_PALETTE, seasonal=seasonal
     )
+    product_spec = canonicalize_product_spec(product_spec, seasonal=seasonal)
+    render_style = canonical_render_style(product_spec["name"], seasonal=seasonal)
     region = product_spec.get("region", region)
     if product_spec["height_contours"]:
         # Absolute products can contour their own field.  An anomaly product
@@ -3050,32 +2887,39 @@ def render_map(
         if height_data is not None:
             height_data = np.ma.masked_where(~polar_valid, height_data)
 
-    # Match a 1080x1080 social-media footprint. Size the map box from the
-    # projected bounds so the LCC geometry remains undistorted at square size.
-    # Snowfall maps use a tighter legend gap and are cropped after rendering so
-    # the branded share image does not carry a large unused lower panel.
+    # Render on a deterministic 1080x1080 work canvas. Canonical products use
+    # fixed CFSv2-reference axes; snowfall departure output receives one fixed
+    # top-aligned crop after saving, never a content-dependent tight bbox.
     figure = plt.figure(figsize=(9.0, 9.0), dpi=120, facecolor="#f7f9fb")
-    has_footer = bool(footer_text.strip())
+    has_footer = bool(footer_text.strip()) and not product_spec.get("suppress_footer", False)
     is_snowfall = product_spec.get("name") in SNOWFALL_PRODUCTS
     colorbar_height = 0.032
-    colorbar_gap = float(product_spec.get("colorbar_gap", 0.012 if is_snowfall else 0.025))
-    if not math.isfinite(colorbar_gap) or colorbar_gap < 0.0:
-        raise CFSv2Error("colorbar_gap must be a finite non-negative number")
-    footer_line_count = footer_text.count("\n") + 1 if has_footer else 0
-    colorbar_floor = 0.055 + 0.012 * footer_line_count
-    map_left = 0.05 if has_footer else 0.035
-    map_width = 0.90 if has_footer else 0.93
-    map_height = map_width * (y_max - y_min) / (x_max - x_min)
-    map_top = 0.88
-    # Tall regional frames can otherwise push the map behind the colorbar.
-    # Shrink the map box proportionally when needed so the complete requested
-    # geographic extent remains visible above the legend and footer.
-    map_height_limit = map_top - (colorbar_floor + colorbar_gap + colorbar_height)
-    if map_height > map_height_limit:
-        map_height = map_height_limit
-        map_width = map_height * (x_max - x_min) / (y_max - y_min)
-        map_left = (1.0 - map_width) / 2.0
-    map_bottom = map_top - map_height
+    fixed_map_axes = product_spec.get("map_axes_bounds")
+    fixed_colorbar_axes = product_spec.get("colorbar_axes_bounds")
+    if fixed_map_axes is not None:
+        if len(fixed_map_axes) != 4 or not all(math.isfinite(float(value)) for value in fixed_map_axes):
+            raise CFSv2Error("canonical map_axes_bounds must contain four finite values")
+        map_left, map_bottom, map_width, map_height = map(float, fixed_map_axes)
+        map_top = map_bottom + map_height
+        colorbar_floor = float(fixed_colorbar_axes[1]) if fixed_colorbar_axes else 0.055
+        colorbar_gap = map_bottom - colorbar_floor - colorbar_height
+        map_height_limit = map_height
+    else:
+        colorbar_gap = float(product_spec.get("colorbar_gap", 0.012 if is_snowfall else 0.025))
+        if not math.isfinite(colorbar_gap) or colorbar_gap < 0.0:
+            raise CFSv2Error("colorbar_gap must be a finite non-negative number")
+        footer_line_count = footer_text.count("\n") + 1 if has_footer else 0
+        colorbar_floor = 0.055 + 0.012 * footer_line_count
+        map_left = 0.05 if has_footer else 0.035
+        map_width = 0.90 if has_footer else 0.93
+        map_height = map_width * (y_max - y_min) / (x_max - x_min)
+        map_top = 0.88
+        map_height_limit = map_top - (colorbar_floor + colorbar_gap + colorbar_height)
+        if map_height > map_height_limit:
+            map_height = map_height_limit
+            map_width = map_height * (x_max - x_min) / (y_max - y_min)
+            map_left = (1.0 - map_width) / 2.0
+        map_bottom = map_top - map_height
     axes = figure.add_axes([map_left, map_bottom, map_width, map_height])
     axes.set_facecolor("#ffffff" if product_spec["name"] == PRODUCT_SWE_ANOMALY else "#edf3f5")
 
@@ -3118,9 +2962,12 @@ def render_map(
         if product_spec.get("fit_frame_to_domain"):
             if map_domain != "land":
                 raise CFSv2Error("fit_frame_to_domain requires a land-only product")
-            domain_points = land_mask & np.isfinite(data)
-            if not np.any(domain_points):
+            finite_domain_points = land_mask & np.isfinite(data)
+            if not np.any(finite_domain_points):
                 raise CFSv2Error("fit_frame_to_domain found no finite land cells")
+            # Frame from the canonical state mask alone. Provider-specific
+            # missing cells may hide data, but can never resize the public map.
+            domain_points = land_mask
             domain_x = canvas_x_mesh[domain_points]
             domain_y = canvas_y_mesh[domain_points]
             x_min = float(np.nanmin(domain_x))
@@ -3134,13 +2981,14 @@ def render_map(
                 raise CFSv2Error("domain_frame_padding_fraction must be a finite non-negative number")
             x_pad = (x_max - x_min) * frame_padding_fraction
             y_pad = (y_max - y_min) * frame_padding_fraction
-            map_height = map_width * (y_max - y_min) / (x_max - x_min)
-            if map_height > map_height_limit:
-                map_height = map_height_limit
-                map_width = map_height * (x_max - x_min) / (y_max - y_min)
-                map_left = (1.0 - map_width) / 2.0
-            map_bottom = map_top - map_height
-            axes.set_position([map_left, map_bottom, map_width, map_height])
+            if fixed_map_axes is None:
+                map_height = map_width * (y_max - y_min) / (x_max - x_min)
+                if map_height > map_height_limit:
+                    map_height = map_height_limit
+                    map_width = map_height * (x_max - x_min) / (y_max - y_min)
+                    map_left = (1.0 - map_width) / 2.0
+                map_bottom = map_top - map_height
+                axes.set_position([map_left, map_bottom, map_width, map_height])
             # The fitted lower-48 frame replaces the original regional bounds;
             # keep its visible border padding proportional to the fitted
             # domain rather than reusing padding from the full CONUS window.
@@ -3155,7 +3003,7 @@ def render_map(
             seasonal=seasonal,
         )
         snowfall_scale_label = (
-            f"clipped at ±{max(abs(anomaly_min), abs(anomaly_max)):.1f} in"
+            f"fixed at ±{max(abs(anomaly_min), abs(anomaly_max)):.1f} in with overflow"
             if is_snowfall
             else ""
         )
@@ -3174,6 +3022,10 @@ def render_map(
                 "anomaly palette must have one fewer color than strictly increasing boundaries"
             )
         continuous_anomaly = bool(product_spec.get("anomaly_continuous", False))
+        under_color = product_spec.get("anomaly_under_color")
+        over_color = product_spec.get("anomaly_over_color")
+        extend_mode = str(product_spec.get("colorbar_extend", "both"))
+        plot_values = prepare_capped_values(masked, render_style) if render_style else masked
         if continuous_anomaly:
             # The palette colors remain the exact approved control points at
             # the labelled transitions, while dense contour levels provide a
@@ -3184,14 +3036,16 @@ def render_map(
                 list(zip(control_positions, palette)),
                 N=1024,
             )
-            norm = mcolors.Normalize(vmin=anomaly_min, vmax=anomaly_max, clip=True)
+            cmap = cmap.with_extremes(under=under_color, over=over_color)
+            norm = mcolors.Normalize(vmin=anomaly_min, vmax=anomaly_max, clip=False)
             image = axes.contourf(
                 canvas_x,
                 canvas_y,
-                np.ma.clip(masked, anomaly_min, anomaly_max),
+                plot_values,
                 levels=np.linspace(anomaly_min, anomaly_max, 257),
                 cmap=cmap,
                 norm=norm,
+                extend=extend_mode,
                 # Dense contourf polygons otherwise leave hairline white
                 # seams after rasterization, which makes a smooth field look
                 # striped. The colormap itself supplies the interpolation.
@@ -3199,14 +3053,16 @@ def render_map(
             )
         else:
             cmap = mcolors.ListedColormap(palette)
-            norm = mcolors.BoundaryNorm(bounds, cmap.N, clip=True)
+            cmap = cmap.with_extremes(under=under_color, over=over_color)
+            norm = mcolors.BoundaryNorm(bounds, cmap.N, clip=False)
             image = axes.contourf(
                 canvas_x,
                 canvas_y,
-                np.ma.clip(masked, anomaly_min, anomaly_max),
+                plot_values,
                 levels=bounds,
                 cmap=cmap,
                 norm=norm,
+                extend=extend_mode,
                 antialiased=True,
             )
     else:
@@ -3223,14 +3079,23 @@ def render_map(
                     "absolute palette must have one fewer color than strictly increasing boundaries"
                 )
             cmap = mcolors.ListedColormap(palette)
-            norm = mcolors.BoundaryNorm(bounds, cmap.N, clip=True)
+            absolute_under_color = product_spec.get("absolute_under_color")
+            absolute_over_color = product_spec.get("absolute_over_color")
+            cmap = cmap.with_extremes(
+                under=absolute_under_color,
+                over=absolute_over_color,
+            )
+            norm = mcolors.BoundaryNorm(bounds, cmap.N, clip=False)
+            absolute_style_spec = canonical_render_style(product_spec["name"], seasonal=seasonal)
+            plot_values = prepare_capped_values(masked, absolute_style_spec) if absolute_style_spec else masked
             image = axes.contourf(
                 canvas_x,
                 canvas_y,
-                np.ma.clip(masked, bounds[0], bounds[-1]),
+                plot_values,
                 levels=bounds,
                 cmap=cmap,
                 norm=norm,
+                extend=product_spec.get("colorbar_extend", "max"),
                 antialiased=True,
             )
         else:
@@ -3407,17 +3272,61 @@ def render_map(
         fontweight="bold",
         color="#172735",
     )
-    # A long calendar-month label such as "Valid: December 2026" must not
-    # overlap the title and visually erase the first characters of "Valid".
-    # Fit only the title when the two header artists do not leave a readable
-    # gap, preserving the prominent right-aligned valid-period label.
+    # A long provider/product title must not overlap the fixed right-aligned
+    # valid period. Fit it inside the reserved left header region without
+    # moving the map. Very long titles use two balanced lines in the fixed
+    # header band; shorter titles remain on one line.
+    header_gap_target_px = 20.0
     figure.canvas.draw()
     renderer = figure.canvas.get_renderer()
     title_box = title_text.get_window_extent(renderer=renderer)
     valid_box = valid_text.get_window_extent(renderer=renderer)
-    available_title_width = max(1.0, valid_box.x0 - title_box.x0 - 16.0)
+    available_title_width = max(
+        1.0,
+        valid_box.x0 - title_box.x0 - header_gap_target_px,
+    )
     if title_box.width > available_title_width:
-        title_text.set_fontsize(max(12.5, 15.5 * available_title_width / title_box.width))
+        fitted_size = 15.5 * available_title_width / title_box.width * 0.98
+        if fitted_size >= 11.0:
+            title_text.set_fontsize(fitted_size)
+        else:
+            words = title.split()
+            title_text.set_fontsize(12.5)
+            font_properties = title_text.get_fontproperties()
+            line_choices = []
+            for split_at in range(1, len(words)):
+                first_line = " ".join(words[:split_at])
+                second_line = " ".join(words[split_at:])
+                first_width = renderer.get_text_width_height_descent(
+                    first_line, font_properties, ismath=False
+                )[0]
+                second_width = renderer.get_text_width_height_descent(
+                    second_line, font_properties, ismath=False
+                )[0]
+                line_choices.append(
+                    (max(first_width, second_width), first_line, second_line)
+                )
+            if line_choices:
+                widest_line, first_line, second_line = min(line_choices)
+                wrapped_size = 12.5 * available_title_width / max(1.0, widest_line) * 0.98
+                title_text.set_text(f"{first_line}\n{second_line}")
+                title_text.set_fontsize(max(9.0, min(12.5, wrapped_size)))
+                title_text.set_position((0.035, 0.983))
+                title_text.set_verticalalignment("top")
+                title_text.set_linespacing(0.92)
+
+        # Font hinting is not perfectly linear at the final pixel size. A
+        # bounded second measurement closes any residual overlap.
+        for _ in range(2):
+            figure.canvas.draw()
+            renderer = figure.canvas.get_renderer()
+            title_box = title_text.get_window_extent(renderer=renderer)
+            if title_box.width <= available_title_width:
+                break
+            current_size = float(title_text.get_fontsize())
+            title_text.set_fontsize(
+                max(8.5, current_size * available_title_width / title_box.width * 0.98)
+            )
     source_label = product_spec.get("source_label", "NOAA CFSv2 / NOMADS")
     display_baseline_label = re.sub(
         r"\s*\(cached\s+[^)]*fallback\)\s*$",
@@ -3476,15 +3385,12 @@ def render_map(
                 ),
                 snowfall_scale_label=snowfall_scale_label,
             )
-        elif product_spec["height_contours"]:
-            header_detail = (
-                f"{source_label}  •  {display_baseline_label}  •  Height contours in dam"
-                if anomaly
-                else f"{source_label}  •  Absolute field smoke output  •  Height contours in dam"
-            )
         else:
-            header_detail = (
-                f"{source_label}  •  {display_baseline_label}  •  Precipitation accumulation (in)  •  CONUS domain"
+            header_detail = default_header_detail(
+                product_spec,
+                source_label,
+                display_baseline_label,
+                anomaly=anomaly,
             )
         if product_spec["name"] == PRODUCT_SWE_ANOMALY:
             header_detail = (
@@ -3504,8 +3410,14 @@ def render_map(
             color="#5d6b75",
         )
         fit_header_artist(header_detail_text, 6.4)
-    colorbar_bottom = max(colorbar_floor, map_bottom - colorbar_gap - colorbar_height)
-    colorbar_axes = figure.add_axes([map_left, colorbar_bottom, map_width, colorbar_height])
+    if fixed_colorbar_axes is not None:
+        if len(fixed_colorbar_axes) != 4 or not all(math.isfinite(float(value)) for value in fixed_colorbar_axes):
+            raise CFSv2Error("canonical colorbar_axes_bounds must contain four finite values")
+        colorbar_box = list(map(float, fixed_colorbar_axes))
+    else:
+        colorbar_bottom = max(colorbar_floor, map_bottom - colorbar_gap - colorbar_height)
+        colorbar_box = [map_left, colorbar_bottom, map_width, colorbar_height]
+    colorbar_axes = figure.add_axes(colorbar_box)
     colorbar_options = {"ticks": colorbar_ticks}
     if (anomaly and not continuous_anomaly) or fixed_absolute_style is not None:
         colorbar_options["boundaries"] = bounds
@@ -3513,14 +3425,11 @@ def render_map(
         image,
         cax=colorbar_axes,
         orientation="horizontal",
-        extend="neither",
+        extend=product_spec.get("colorbar_extend", "neither"),
+        extendrect=bool(product_spec.get("colorbar_extendrect", True)),
+        extendfrac=product_spec.get("colorbar_extendfrac", "auto"),
         spacing="uniform",
-        drawedges=product_spec["name"] in {
-            PRODUCT_PRECIPITATION_ANOMALY,
-            PRODUCT_SWE_ANOMALY,
-            PRODUCT_SNOWFALL_ANOMALY,
-            PRODUCT_SNOWFALL_ACCUMULATION,
-        },
+        drawedges=(anomaly and not continuous_anomaly) or fixed_absolute_style is not None,
         **colorbar_options,
     )
     colorbar.set_ticks(colorbar_ticks)
@@ -3536,21 +3445,6 @@ def render_map(
             } else "signed",
         )
 
-        def format_anomaly_tick(value: float) -> str:
-            numeric = float(value)
-            if abs(numeric) < 0.5 * (10 ** -tick_decimals):
-                numeric = 0.0
-            if tick_format == "plain":
-                return f"{numeric:.{tick_decimals}f}"
-            if tick_format == "signed_trimmed":
-                if numeric == 0.0:
-                    return "0"
-                formatted = f"{abs(numeric):.{tick_decimals}f}".rstrip("0").rstrip(".")
-                return f"+{formatted}" if numeric > 0.0 else f"−{formatted}"
-            if tick_decimals:
-                return f"{numeric:+.{tick_decimals}f}" if numeric else f"{numeric:.{tick_decimals}f}"
-            return f"+{int(round(numeric))}" if numeric > 0 else str(int(round(numeric)))
-
         endpoint_labels = product_spec.get(
             f"{'seasonal' if seasonal else 'monthly'}_anomaly_endpoint_labels",
             product_spec.get("anomaly_endpoint_labels", {}),
@@ -3562,7 +3456,7 @@ def render_map(
             elif index == len(colorbar_ticks) - 1 and endpoint_labels.get("maximum"):
                 tick_labels.append(str(endpoint_labels["maximum"]))
             else:
-                tick_labels.append(format_anomaly_tick(tick))
+                tick_labels.append(format_anomaly_tick(tick, tick_decimals, tick_format))
         colorbar.set_ticklabels(tick_labels)
     dense_tick_labels = len(colorbar_ticks) > 20
     colorbar.ax.tick_params(
@@ -3610,26 +3504,29 @@ def render_map(
     )
     crop_bottom_px = None
     if crop_bottom_to_legend:
-        # Draw once so Matplotlib resolves the tick-label extents.  The saved
-        # source map is then cropped only below the lowest relevant artist;
-        # the top/header and all legend labels remain unchanged.
-        figure.canvas.draw()
-        renderer = figure.canvas.get_renderer()
-        bottom_boxes = [colorbar.ax.get_tightbbox(renderer)]
-        if footer_artist is not None:
-            bottom_boxes.append(footer_artist.get_window_extent(renderer=renderer))
-        bottom_y = min(box.y0 for box in bottom_boxes if box is not None)
-        padding_px = float(product_spec.get("crop_bottom_padding_px", 10.0))
-        if not math.isfinite(padding_px) or padding_px < 0.0:
-            raise CFSv2Error("crop_bottom_padding_px must be a finite non-negative number")
-        figure_height_px = float(figure.canvas.get_width_height()[1])
-        crop_bottom_px = max(
-            1,
-            min(
-                int(round(figure_height_px)),
-                int(math.ceil(figure_height_px - bottom_y + padding_px)),
-            ),
-        )
+        configured_crop = product_spec.get("crop_bottom_px")
+        if configured_crop is not None:
+            crop_bottom_px = int(configured_crop)
+        else:
+            # Non-canonical retained products keep the legacy bounded crop.
+            figure.canvas.draw()
+            renderer = figure.canvas.get_renderer()
+            bottom_boxes = [colorbar.ax.get_tightbbox(renderer)]
+            if footer_artist is not None:
+                bottom_boxes.append(footer_artist.get_window_extent(renderer=renderer))
+            bottom_y = min(box.y0 for box in bottom_boxes if box is not None)
+            padding_px = float(product_spec.get("crop_bottom_padding_px", 10.0))
+            if not math.isfinite(padding_px) or padding_px < 0.0:
+                raise CFSv2Error("crop_bottom_padding_px must be a finite non-negative number")
+            figure_height_px = float(figure.canvas.get_width_height()[1])
+            crop_bottom_px = max(1, min(int(round(figure_height_px)), int(math.ceil(figure_height_px - bottom_y + padding_px))))
+    figure.canvas.draw()
+    renderer = figure.canvas.get_renderer()
+    final_title_box = title_text.get_window_extent(renderer=renderer)
+    final_valid_box = valid_text.get_window_extent(renderer=renderer)
+    header_gap_px = round(float(final_valid_box.x0 - final_title_box.x1), 3)
+    rendered_map_axes = [round(float(value), 6) for value in axes.get_position().bounds]
+    rendered_colorbar_axes = [round(float(value), 6) for value in colorbar_axes.get_position().bounds]
     figure.savefig(output_path, dpi=120, facecolor=figure.get_facecolor())
     plt.close(figure)
     if product_spec["name"] == PRODUCT_SNOWFALL_ANOMALY:
@@ -3656,6 +3553,17 @@ def render_map(
             else:
                 cropped.save(temporary_path)
         temporary_path.replace(output_path)
+
+    output_dimensions = product_spec.get("output_pixel_dimensions", [1080, crop_bottom_px or 1080])
+    return {
+        "style_key": product_spec.get("canonical_style_key"),
+        "style_fingerprint": product_spec.get("render_style_fingerprint"),
+        "pixel_dimensions": [int(output_dimensions[0]), int(output_dimensions[1])],
+        "map_axes_bounds": rendered_map_axes,
+        "colorbar_axes_bounds": rendered_colorbar_axes,
+        "header_gap_pixels": header_gap_px,
+        "header_title_fontsize": round(float(title_text.get_fontsize()), 3),
+    }
 
 
 def relative_path(path: Path, repo_root: Path) -> str:
@@ -4216,7 +4124,6 @@ def _run_single_window(args: argparse.Namespace) -> int:
                     anomaly_grid.values,
                     units=product["units"],
                     field=product["field"],
-                    display_profile=product.get("snowfall_display_profile"),
                     seasonal=False,
                 )
                 require_quality_control(target_entry["quality_control"], CFSv2Error)
@@ -4232,7 +4139,6 @@ def _run_single_window(args: argparse.Namespace) -> int:
                 anomaly_grid.values,
                 units=product["units"],
                 field=product["field"],
-                display_profile=product.get("snowfall_display_profile"),
                 seasonal=False,
             )
             require_quality_control(target_entry["quality_control"], CFSv2Error)
@@ -4297,7 +4203,6 @@ def _run_single_window(args: argparse.Namespace) -> int:
                         common_grid.values,
                         units=product["units"],
                         field=product["field"],
-                        display_profile=product.get("snowfall_display_profile"),
                         seasonal=False,
                     )
                     require_quality_control(common_qc, CFSv2Error)
@@ -4455,7 +4360,6 @@ def _run_single_window(args: argparse.Namespace) -> int:
                 seasonal_grid.values,
                 units=product["seasonal_units"],
                 field=product["field"],
-                display_profile=product.get("snowfall_display_profile"),
                 seasonal=True,
             )
             require_quality_control(seasonal_entry["quality_control"], CFSv2Error)
@@ -4538,7 +4442,6 @@ def _run_single_window(args: argparse.Namespace) -> int:
                         common_grid.values,
                         units=product["seasonal_units"],
                         field=product["field"],
-                        display_profile=product.get("snowfall_display_profile"),
                         seasonal=True,
                     )
                     require_quality_control(common_qc, CFSv2Error)

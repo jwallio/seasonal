@@ -46,9 +46,9 @@ All anomaly products use the shared fixed palettes and `BoundaryNorm` interval
 boundaries. The maps therefore contain discrete color bands rather than a
 smooth interpolated gradient. Temperature and height products use the common
 cross-model scales; precipitation and pressure use their canonical units and
-boundaries. Snowfall depth-departure maps use 20 shared nonlinear intervals
-from −100 to +100 inches, with a white near-zero band from −1 to +1 inches;
-values outside the endpoints use the endpoint color.
+boundaries. Monthly snowfall depth-departure maps use the shared −14 to +14-inch
+scale; seasonal totals use −20 to +20 inches. Values outside the endpoints use
+distinct darker rectangular overflow cells.
 
 The 500-mb product keeps the North American frame and the other products use
 the shared CONUS frame. The horizontal frame includes an explicit margin so the

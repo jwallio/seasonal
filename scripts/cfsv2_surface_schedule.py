@@ -87,7 +87,8 @@ def render_signature():
     root = Path(__file__).resolve().parent
     names = ('cfsv2_surface_phase.py', 'cfsv2_surface_phase_build.py',
              'cfsv2_seasonal.py', 'cfsv2_native_snow.py', 'cfsv2_surface_schedule.py',
-             'seasonal_products.py', 'height_display.py')
+             'seasonal_products.py', 'seasonal_rendering.py', 'height_display.py',
+             'temperature_display.py', 'snowfall_display.py')
     return hashlib.sha256(b''.join((root/name).read_bytes() for name in names)).hexdigest()
 
 

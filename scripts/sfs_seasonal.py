@@ -40,12 +40,8 @@ from cfsv2_seasonal import (
     Grid,
     MSLP_ANOMALY_PALETTE,
     MSLP_ANOMALY_TICKS,
-    PRECIP_ANOMALY_PALETTE,
     PRECIP_ANOMALY_TICKS,
-    SNOWFALL_ANOMALY_MAX_IN,
-    SNOWFALL_ANOMALY_MIN_IN,
     SNOWFALL_ANOMALY_PALETTE,
-    SNOWFALL_ANOMALY_TICKS,
     TEMPERATURE_ANOMALY_MAX_C,
     TEMPERATURE_ANOMALY_MIN_C,
     TEMPERATURE_ANOMALY_PALETTE,
@@ -57,7 +53,12 @@ from cfsv2_seasonal import (
 )
 from height_display import HEIGHT_ANOMALY_STYLE, HEIGHT_NH_FRAME
 from seasonal_products import grid_quality_control, is_retired_product, require_quality_control
-from snowfall_display import DISPLAY as SNOWFALL_DISPLAY, RATIO as SNOW_TO_LIQUID_RATIO
+from seasonal_rendering import canonicalize_product_spec
+from snowfall_display import (
+    RATIO as SNOW_TO_LIQUID_RATIO,
+    display_metadata_for_aggregations,
+    display_metadata_for_product,
+)
 
 
 SFS_BUCKET_ROOT = "https://noaa-oar-sfsdev-pds.s3.amazonaws.com/"
@@ -161,8 +162,6 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "seasonal_reducer": "sum",
         "conversion_kind": "monthly_precipitation_total_inches",
         "conversion": "Monthly PRATE multiplied by calendar-month seconds and converted from kg m-2 to inches",
-        "anomaly_ticks": PRECIP_ANOMALY_TICKS,
-        "anomaly_palette": PRECIP_ANOMALY_PALETTE,
         "source_label": "NOAA SFS beta2 / SFS development archive",
         "header_detail": "{source_label}  •  {baseline_label}  •  Precipitation anomaly (in)  •  CONUS domain",
         "scheduled": True,
@@ -173,7 +172,6 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "raw_field": "tsnowpsfc / TSNOWP_surface",
         "raw_units": "kg/m^2",
         "field": "snowfall_depth_anomaly",
-        "snowfall_display_profile": "c3s_readable",
         "units": "in",
         "title": "NOAA SFS beta2 Snowfall Departure (in)",
         "absolute_title": "NOAA SFS beta2 Estimated Snowfall Depth (in)",
@@ -182,22 +180,6 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "seasonal_reducer": "sum",
         "conversion_kind": "snowfall_lwe_to_snow_depth_10_to_1",
         "conversion": "Native TSNOWP monthly-mean daily snow precipitation multiplied by calendar-month days, converted from kg m-2 to liquid-water-equivalent inches, then multiplied by 10.0; published snowfall departure is estimated snow depth in inches",
-        "anomaly_min": SNOWFALL_ANOMALY_MIN_IN,
-        "anomaly_max": SNOWFALL_ANOMALY_MAX_IN,
-        "anomaly_ticks": SNOWFALL_ANOMALY_TICKS,
-        "anomaly_palette": SNOWFALL_ANOMALY_PALETTE,
-        "map_domain": "land",
-        "mask_states": [
-            "Alabama", "Arizona", "Arkansas", "California", "Colorado", "Connecticut",
-            "Delaware", "Florida", "Georgia", "Idaho", "Illinois", "Indiana", "Iowa",
-            "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts",
-            "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska",
-            "Nevada", "New Hampshire", "New Jersey", "New Mexico", "New York",
-            "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania",
-            "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah",
-            "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming",
-        ],
-        "border_files": ("us-states.geojson",),
         "snowfall_input_kind": "Native NOAA SFS TSNOWP snowfall",
         "snowfall_values_are_depth": True,
         "source_accumulation": "TSNOWP monthly mean daily accumulation × calendar-month days",
@@ -218,10 +200,6 @@ PRODUCT_SPECS: dict[str, dict[str, Any]] = {
         "seasonal_reducer": "mean",
         "conversion_kind": "pascals_to_hectopascals",
         "conversion": "PRMSL anomaly divided by 100 to convert Pa to hPa",
-        "anomaly_min": -10.0,
-        "anomaly_max": 10.0,
-        "anomaly_ticks": MSLP_ANOMALY_TICKS,
-        "anomaly_palette": MSLP_ANOMALY_PALETTE,
         "source_label": "NOAA SFS beta2 / SFS development archive",
         "header_detail": "{source_label}  •  {baseline_label}  •  Mean sea-level pressure anomaly (hPa)",
         "scheduled": True,
@@ -238,6 +216,9 @@ PRODUCT_SPECS[PRODUCT_Z500_ANOMALY_NH] = {
     "absolute_title": "NOAA SFS beta2 Northern Hemisphere 500-mb Geopotential Height (m)",
     "header_detail": "{source_label}  •  {baseline_label}  •  Height contours in dam  •  Northern Hemisphere",
 }
+
+for _product_name, _product_spec in list(PRODUCT_SPECS.items()):
+    PRODUCT_SPECS[_product_name] = canonicalize_product_spec(_product_spec, seasonal=False)
 
 DEFAULT_PRODUCTS = tuple(name for name, spec in PRODUCT_SPECS.items() if spec.get("scheduled"))
 PRODUCT_LABELS = {
@@ -803,7 +784,7 @@ def _target_entry(
         "status": status,
     }
     if product == PRODUCT_SNOWFALL_ANOMALY:
-        entry["display"] = dict(SNOWFALL_DISPLAY)
+        entry["display"] = display_metadata_for_product(spec, seasonal=seasonal)
     if spec.get("conversion"):
         entry["derivation"] = {"method": spec["conversion_kind"], "description": spec["conversion"]}
     if image:
@@ -999,7 +980,7 @@ def run(args: argparse.Namespace) -> int:
             "source_warning": f"NOAA SFS {args.experiment} is an experimental development archive; source fields are schema-validated before publication.",
         }
         if product == PRODUCT_SNOWFALL_ANOMALY:
-            run_entry["display"] = dict(SNOWFALL_DISPLAY)
+            run_entry["display"] = display_metadata_for_aggregations(spec)
         try:
             fields = load_product_fields(
                 product=product,
