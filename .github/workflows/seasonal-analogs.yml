@@ -1,6 +1,14 @@
 name: Seasonal 500-mb Pattern Analogs
 
 on:
+  push:
+    branches:
+      - main
+    paths:
+      - scripts/build_seasonal_analogs.py
+      - scripts/seasonal_analogs.py
+      - tests/test_seasonal_analog_builder.py
+      - .github/workflows/seasonal-analogs.yml
   workflow_run:
     workflows:
       - CFSv2 Rolling Seasonal Graphics
@@ -23,7 +31,7 @@ concurrency:
 
 jobs:
   build:
-    if: ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'schedule' || github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' || github.event_name == 'schedule' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: [self-hosted, windows, x64, wn2-analogwx]
     timeout-minutes: 120
     env:
