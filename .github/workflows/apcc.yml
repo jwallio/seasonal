@@ -74,11 +74,6 @@ jobs:
     outputs:
       run_workflow: ${{ steps.route.outputs.run_workflow }}
     steps:
-      - name: Checkout history for push routing
-        if: github.event_name == 'push'
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
       - name: Detect a coordinated canonical-style release
         id: route
         shell: bash
@@ -86,16 +81,27 @@ jobs:
           EVENT_NAME: ${{ github.event_name }}
           BEFORE_SHA: ${{ github.event.before }}
           AFTER_SHA: ${{ github.sha }}
+          HEAD_MESSAGE: ${{ github.event.head_commit.message }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           if [[ "$EVENT_NAME" != "push" ]]; then
             echo "run_workflow=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          base="$BEFORE_SHA"
-          if [[ -z "$base" || "$base" =~ ^0+$ ]] || ! git cat-file -e "${base}^{commit}"; then
-            base="${AFTER_SHA}^"
+          if [[ "$HEAD_MESSAGE" == *"[canonical-style-release]"* ]]; then
+            echo "run_workflow=false" >> "$GITHUB_OUTPUT"
+            exit 0
           fi
-          changed=$(git diff --name-only "$base" "$AFTER_SHA")
+          if [[ -z "$BEFORE_SHA" || "$BEFORE_SHA" =~ ^0+$ ]]; then
+            echo "run_workflow=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          route_repo="$RUNNER_TEMP/seasonal-push-routing-$GITHUB_RUN_ID-$GITHUB_JOB"
+          git init --quiet "$route_repo"
+          git -C "$route_repo" remote add origin "https://github.com/$GITHUB_REPOSITORY.git"
+          gh auth setup-git
+          git -C "$route_repo" -c protocol.version=2 fetch --quiet --no-tags --depth=1 --filter=blob:none origin "$AFTER_SHA" "$BEFORE_SHA"
+          changed=$(git -C "$route_repo" diff --name-only "$BEFORE_SHA" "$AFTER_SHA")
           if grep -Eq '^(scripts/(seasonal_rendering|seasonal_products|height_display|temperature_display|snowfall_display|cfsv2_seasonal|cfsv2_native_snow)\.py|\.github/workflows/height-style-refresh\.yml)$' <<< "$changed"; then
             echo "run_workflow=false" >> "$GITHUB_OUTPUT"
           else
