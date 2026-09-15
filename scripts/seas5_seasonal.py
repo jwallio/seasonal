@@ -1121,6 +1121,7 @@ def run(args: argparse.Namespace) -> int:
                         ensemble_label=f"{CDS_ENSEMBLE_MEMBERS}-member mean",
                         height_grid=seasonal_height,
                         product_spec={**product, "source_label": SOURCE_LABEL},
+                        seasonal=True,
                     )
                     seasonal_entry["comparison"] = {
                         "common_1991_2020": {

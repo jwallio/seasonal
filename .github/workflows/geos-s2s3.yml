@@ -115,6 +115,49 @@ jobs:
             --previous-manifest .cache/geos-s2s3/previous_manifest.json \
             --retain-cycles 4
 
+      - name: Require a complete coordinated NASA payload
+        if: ${{ inputs.style_refresh == true }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          expected = {
+              "850mb_temperature_anomaly",
+              "2m_temperature_anomaly",
+              "precipitation_anomaly",
+              "mslp_anomaly",
+          }
+          requested = os.environ["GEOS_INIT"]
+          if len(requested) != 6 or not requested.isdigit():
+              raise SystemExit(f"coordinated NASA refresh requires an explicit YYYYMM init, got {requested!r}")
+          issue_utc = f"{requested[:4]}-{requested[4:]}-01T00:00:00Z"
+          payload = json.loads(Path("public/seasonal/geos_s2s3_manifest.json").read_text())
+          current = {
+              run.get("product"): run
+              for run in payload.get("runs", [])
+              if isinstance(run, dict) and run.get("init_utc") == issue_utc
+          }
+          problems = []
+          for product in sorted(expected):
+              run = current.get(product)
+              targets = run.get("targets", []) if run else []
+              if not run or run.get("status") != "rendered":
+                  problems.append(f"{product}: run did not render")
+                  continue
+              if len(targets) != 4 or any(
+                  target.get("status") != "rendered" or not target.get("image")
+                  for target in targets
+              ):
+                  problems.append(f"{product}: expected four rendered image targets")
+          if problems:
+              raise SystemExit("incomplete coordinated NASA payload: " + "; ".join(problems))
+          print(f"validated complete coordinated NASA payload for {requested}: {len(expected)} products")
+          PY
+
       - name: Package NASA Pages payload
         if: success()
         shell: bash

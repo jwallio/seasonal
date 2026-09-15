@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 """Ensure equivalent seasonal products render with equivalent public styles."""
 
+import ast
 import importlib
 from pathlib import Path
 import sys
 import unittest
+from unittest.mock import patch
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -44,6 +46,72 @@ def _temperature_style(spec: dict) -> tuple:
 
 
 class SharedMapStyleTests(unittest.TestCase):
+    def test_direct_seasonal_render_calls_select_the_seasonal_contract(self):
+        for path in sorted((ROOT / "scripts").glob("*_seasonal.py")):
+            tree = ast.parse(path.read_text(encoding="utf-8"))
+            parents = {
+                child: node
+                for node in ast.walk(tree)
+                for child in ast.iter_child_nodes(node)
+            }
+            for call in (node for node in ast.walk(tree) if isinstance(node, ast.Call)):
+                function = call.func
+                name = (
+                    function.id
+                    if isinstance(function, ast.Name)
+                    else function.attr
+                    if isinstance(function, ast.Attribute)
+                    else ""
+                )
+                if name != "render_map":
+                    continue
+                ancestor = call
+                seasonal_branch = False
+                while ancestor in parents:
+                    ancestor = parents[ancestor]
+                    if isinstance(ancestor, ast.If) and "seasonal" in ast.unparse(ancestor.test):
+                        seasonal_branch = True
+                    if isinstance(ancestor, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                        break
+                if not seasonal_branch:
+                    continue
+                seasonal_keyword = next(
+                    (keyword.value for keyword in call.keywords if keyword.arg == "seasonal"),
+                    None,
+                )
+                with self.subTest(path=path.name, line=call.lineno):
+                    self.assertIsNotNone(
+                        seasonal_keyword,
+                        "multi-month render calls must select the seasonal style explicitly",
+                    )
+                    self.assertFalse(
+                        isinstance(seasonal_keyword, ast.Constant)
+                        and seasonal_keyword.value is False,
+                    )
+
+    def test_cma_render_wrapper_forwards_its_aggregation(self):
+        module = importlib.import_module("cma_cpsv3_seasonal")
+        grid = cfsv2.Grid([0.0], [0.0], [[0.0]])
+        for period, expected in (("", False), ("DJF 2026–27", True)):
+            with self.subTest(period=period), patch.object(module, "render_map") as renderer:
+                module.render_target(
+                    grid,
+                    "precipitation_anomaly",
+                    "2026090100",
+                    "202612",
+                    "3–5" if expected else 3,
+                    Path("unused.jpg"),
+                    [],
+                    "test climatology",
+                    period=period,
+                )
+                self.assertEqual(renderer.call_args.kwargs["seasonal"], expected)
+                aggregation = "seasonal" if expected else "monthly"
+                self.assertEqual(
+                    renderer.call_args.kwargs["product_spec"]["canonical_style_key"],
+                    f"precipitation_anomaly|{aggregation}|conus",
+                )
+
     def test_height_domain_variants_have_unique_public_artifact_tokens(self):
         for module_name in ADAPTERS:
             module = importlib.import_module(module_name)

@@ -861,6 +861,7 @@ def run(args: argparse.Namespace) -> int:
                         initialization_label=init_label,
                         height_grid=height,
                         product_spec=spec,
+                        seasonal=True,
                     )
                     image = relative_path(output, root)
                 run_entry["targets"].append(

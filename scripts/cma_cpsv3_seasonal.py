@@ -518,6 +518,7 @@ def render_target(
         period_label=period,
         ensemble_label=f"{CMA_ENSEMBLE_MEMBERS}-member ensemble mean",
         product_spec=render_product_spec(product, seasonal=bool(period)),
+        seasonal=bool(period),
     )
 
 

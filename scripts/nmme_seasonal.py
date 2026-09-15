@@ -425,6 +425,7 @@ def render_run(
                     baseline_label="CPC NMME official anomaly/probability", border_paths=borders,
                     period_label=period_label(start, season_months), ensemble_label=("NMME ensemble mean" if component == "ENSMEAN" else ("Official CPC probability" if component == "PROBABILITY" else f"{len(components)} component models")),
                     product_spec={**product, "source_label": "NOAA CPC NMME"},
+                    seasonal=season_months == 3,
                 )
                 target_entry["image"] = relative_path(output, root)
                 target_entry["status"] = "rendered"
@@ -451,7 +452,21 @@ def render_run(
                 seasonal_grid = mean_grids(grids)
             if not decode_only:
                 output = output_dir / init[:8] / f"nmme_{component.lower()}_{base_name}_{product_name}_{start}-{end}.jpg"
-                render_map(seasonal_grid, init, start, f"{first}–{last}", list(range(max(1, len(components)))), output, anomaly=True, baseline_label="CPC NMME official anomaly/probability", border_paths=borders, period_label=period_label(start, 3), ensemble_label=("NMME ensemble mean" if component == "ENSMEAN" else f"{len(components)} component models"), product_spec={**product, "source_label": "NOAA CPC NMME"})
+                render_map(
+                    seasonal_grid, init, start, f"{first}–{last}",
+                    list(range(max(1, len(components)))), output,
+                    anomaly=True,
+                    baseline_label="CPC NMME official anomaly/probability",
+                    border_paths=borders,
+                    period_label=period_label(start, 3),
+                    ensemble_label=(
+                        "NMME ensemble mean"
+                        if component == "ENSMEAN"
+                        else f"{len(components)} component models"
+                    ),
+                    product_spec={**product, "source_label": "NOAA CPC NMME"},
+                    seasonal=True,
+                )
                 target_entry["image"] = relative_path(output, root)
             target_entry["status"] = "decoded" if decode_only else "rendered"
         except Exception as exc:

@@ -78,19 +78,21 @@ jobs:
       STYLE_REF: ${{ needs.pin_revision.outputs.dispatch_ref }}
     steps:
       - name: Resolve a published provider initialization
-        if: ${{ contains(fromJSON('["apcc.yml","c3s.yml","jma.yml"]'), matrix.workflow) }}
+        if: ${{ contains(fromJSON('["apcc.yml","c3s.yml","geos-s2s3.yml","jma.yml"]'), matrix.workflow) }}
         shell: bash
         run: |
           set -euo pipefail
           provider="${WORKFLOW%.yml}"
-          manifest_url="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/${provider}_manifest.json"
+          manifest_slug="${provider//-/_}"
+          manifest_url="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/${manifest_slug}_manifest.json"
           curl -fsSL --retry 3 --connect-timeout 15 --max-time 60 "$manifest_url" -o published.json
           init_arg="$(python - "$provider" <<'PY'
           import json, re, sys
           provider = sys.argv[1]
           payload = json.load(open("published.json", encoding="utf-8"))
+          expected_product = "2m_temperature_anomaly" if provider == "geos-s2s3" else "500mb_height_anomaly"
           for run in payload.get("runs", []):
-              if run.get("product") != "500mb_height_anomaly":
+              if run.get("product") != expected_product:
                   continue
               if run.get("status") not in {"rendered", "decoded", "partial"}:
                   continue
@@ -101,6 +103,9 @@ jobs:
                       break
                   continue
               digits = "".join(re.findall(r"\d", str(run.get("init_utc", ""))))
+              if provider == "geos-s2s3" and len(digits) >= 6:
+                  print(digits[:6])
+                  break
               if len(digits) >= 10:
                   print(digits[:10])
                   break

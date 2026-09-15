@@ -75,6 +75,14 @@ def main() -> int:
         check(term in adapter or term in workflow or term in page or term in doc, f"missing NASA term: {term}")
     check("pre-rendered" not in page, "NASA page must not describe the numerical adapter as pre-rendered")
     check("timeout-minutes: 180" in workflow, "NASA numerical workflow needs the extended runtime")
+    for term in (
+        "Require a complete coordinated NASA payload",
+        "inputs.style_refresh == true",
+        "coordinated NASA refresh requires an explicit YYYYMM init",
+        "incomplete coordinated NASA payload",
+        'target.get("status") != "rendered" or not target.get("image")',
+    ):
+        check(term in workflow, f"coordinated NASA releases need a complete-product gate: {term}")
 
     with tempfile.TemporaryDirectory() as temporary:
         output = Path(temporary) / "manifest.json"
