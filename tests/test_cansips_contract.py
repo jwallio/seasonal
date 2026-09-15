@@ -173,6 +173,36 @@ def main() -> int:
         )
         migrated = json.loads(replacement.read_text(encoding="utf-8"))["runs"]
         check([run["id"] for run in migrated] == ["cansips-2026080100-500mb_height_anomaly"], "legacy z500 run should be replaced by the product-aware entry")
+        staged = Path(temporary) / "staged.json"
+        published = Path(temporary) / "published.json"
+        products = (module.PRODUCT_850MB_TEMPERATURE_ANOMALY, module.PRODUCT_2M_TEMPERATURE_ANOMALY)
+        published.write_text(json.dumps({"runs": [
+            {
+                "id": f"{product}-current",
+                "product": product,
+                "init_utc": "2026-08-01T00:00:00Z",
+                "marker": "stale-published-copy",
+            }
+            for product in products
+        ]}), encoding="utf-8")
+        for product in products:
+            module.write_manifest(
+                staged,
+                ROOT,
+                {
+                    "id": f"{product}-current",
+                    "product": product,
+                    "init_utc": "2026-08-01T00:00:00Z",
+                    "marker": "fresh-workflow-copy",
+                },
+                published,
+                4,
+            )
+        staged_runs = json.loads(staged.read_text(encoding="utf-8"))["runs"]
+        check(
+            all(run.get("marker") == "fresh-workflow-copy" for run in staged_runs),
+            "staged CanSIPS runs must take precedence over same-id copies from the published baseline",
+        )
     print("CANSIPS CONTRACT OK: ECCC Datamart, 40-member means, hindcast anomalies, workflow, viewer, retention")
     return 0
 

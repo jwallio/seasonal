@@ -1128,9 +1128,12 @@ def write_manifest(
         "retention": {"max_runs": retain_runs, "history_runs": max(0, retain_runs - 1)},
         "runs": [],
     }
-    existing_paths = [path]
+    existing_paths: list[Path] = []
     if previous_manifest and previous_manifest.resolve() != path.resolve():
         existing_paths.append(previous_manifest)
+    # Preserve staged workflow work over the restored published baseline when
+    # the same run id exists in both manifests.
+    existing_paths.append(path)
     for existing_path in existing_paths:
         if not existing_path.exists():
             continue

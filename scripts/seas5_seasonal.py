@@ -668,9 +668,13 @@ def write_manifest(
         },
         "runs": [],
     }
-    existing_paths = [path]
+    existing_paths: list[Path] = []
     if previous_manifest and previous_manifest.resolve() != path.resolve():
         existing_paths.append(previous_manifest)
+    # Treat the restored published manifest as a baseline.  A manifest already
+    # written in this workflow must win when it contains the same run id, or a
+    # later per-product invocation can silently revert earlier fresh products.
+    existing_paths.append(path)
     for existing_path in existing_paths:
         if not existing_path.exists():
             continue

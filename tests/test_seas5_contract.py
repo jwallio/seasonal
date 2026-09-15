@@ -193,13 +193,24 @@ def main() -> int:
         previous = Path(temporary) / "previous.json"
         products = (module.T850_ANOMALY, module.T2M_ANOMALY)
         previous.write_text(json.dumps({"runs": [
-            {
-                "id": f"{product}-old-{index}",
-                "product": product,
-                "init_utc": f"2025-0{index}-01T00:00:00Z",
-            }
-            for product in products
-            for index in range(1, 5)
+            *[
+                {
+                    "id": f"{product}-current",
+                    "product": product,
+                    "init_utc": "2026-08-13T00:00:00Z",
+                    "marker": "stale-published-copy",
+                }
+                for product in products
+            ],
+            *[
+                {
+                    "id": f"{product}-old-{index}",
+                    "product": product,
+                    "init_utc": f"2025-0{index}-01T00:00:00Z",
+                }
+                for product in products
+                for index in range(1, 5)
+            ],
         ]}), encoding="utf-8")
         for product in products:
             module.write_manifest(
@@ -209,6 +220,7 @@ def main() -> int:
                     "id": f"{product}-current",
                     "product": product,
                     "init_utc": "2026-08-13T00:00:00Z",
+                    "marker": "fresh-workflow-copy",
                 },
                 previous,
                 4,
@@ -218,6 +230,8 @@ def main() -> int:
         for product in products:
             product_runs = [run["id"] for run in retained if run["product"] == product]
             check(product_runs == [f"{product}-current", f"{product}-old-4", f"{product}-old-3", f"{product}-old-2"], "manifest should retain current plus three prior runs for each product")
+            current = next(run for run in retained if run["id"] == f"{product}-current")
+            check(current["marker"] == "fresh-workflow-copy", "later product writes must not restore a stale published copy over earlier staged work")
         check(retained_payload["retention"]["scope"] == "per_product", "manifest retention should identify its per-product scope")
         check(retained_payload["retention"]["max_runs_per_product"] == 4, "manifest should retain four runs for each product")
     print("SEAS5 CONTRACT OK: CDS source, GRIB access, conversions, official anomalies, viewer, workflow, retention")
