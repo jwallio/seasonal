@@ -152,6 +152,7 @@ def main() -> int:
           and "payloads/cfsv2-snow" in publisher
           and "Canonical payload must contain all 11 provider references" in publisher
           and "payloads/${slug}" in publisher
+          and "if: ${{ env.SOURCE_WORKFLOW == 'Canonical Seasonal Style Refresh' }}" in publisher
           and "migrate_legacy_height_artifacts.py" in publisher,
           "Pages must require every canonical provider payload and migrate legacy height paths")
     check("transient Pages tree containing a mixture" in publisher

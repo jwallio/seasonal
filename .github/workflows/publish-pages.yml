@@ -673,6 +673,7 @@ jobs:
         run: python dashboard-source/scripts/purge_retired_seasonal_products.py --site-root site
 
       - name: Migrate legacy North Hemisphere height artifact paths
+        if: ${{ env.SOURCE_WORKFLOW == 'Canonical Seasonal Style Refresh' }}
         run: python dashboard-source/scripts/migrate_legacy_height_artifacts.py --site site
 
       - name: Validate seasonal manifests and build catalog
