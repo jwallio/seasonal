@@ -232,7 +232,14 @@ jobs:
             exit 1
           fi
           for required_slug in cfsv2 c3s; do
-            if ! find producer-refs -name producer.tsv -type f -exec awk -F '\\t' -v slug="$required_slug" '$1 == slug { found=1 } END { exit !found }' {} \\; | grep -q .; then
+            found=false
+            for ref in "${refs[@]}"; do
+              if awk -F '\\t' -v slug="$required_slug" '$1 == slug { found=1 } END { exit !found }' "$ref"; then
+                found=true
+                break
+              fi
+            done
+            if [[ "$found" != true ]]; then
               echo "::error::Required staged provider reference missing: $required_slug"
               exit 1
             fi
