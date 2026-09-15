@@ -416,11 +416,12 @@ jobs:
               fi
               test -f "$payload_root/producers.tsv"
               producer_count="$(wc -l < "$payload_root/producers.tsv")"
-              if (( producer_count < 2 )); then
-                echo "::error::Canonical payload must contain at least CFSv2 and C3S references"
+              if (( producer_count != 11 )); then
+                echo "::error::Canonical payload must contain all 11 provider references; found $producer_count"
                 exit 1
               fi
-              for required_slug in cfsv2 c3s; do
+              for required_slug in \
+                cfsv2 cansips c3s seas5 jma apcc cma_cpsv3 geos_s2s3 sfs superensemble nmme; do
                 if ! awk -F '\\t' -v slug="$required_slug" '$1 == slug { found=1 } END { exit !found }' "$payload_root/producers.tsv"; then
                   echo "::error::Canonical payload is missing required provider: $required_slug"
                   exit 1
@@ -447,17 +448,15 @@ jobs:
                 --incoming "$snowfall_root" --site site
 
               for slug in seas5 cansips c3s jma apcc cma_cpsv3 geos_s2s3 sfs superensemble nmme; do
-                provider_root="$payload_root/${slug}"
+                provider_root="$payload_root/payloads/${slug}"
                 if [ -d "$provider_root/pages-payload" ]; then
                   provider_root="$provider_root/pages-payload"
                 elif [ -d "$provider_root/.pages-payload" ]; then
                   provider_root="$provider_root/.pages-payload"
                 fi
-                if [ -d "$provider_root/${slug}" ] && [ -f "$provider_root/${slug}_manifest.json" ]; then
-                  cp -R "$provider_root/." site/
-                else
-                  echo "::warning::Canonical style payload omitted $slug; retaining the last published provider tree."
-                fi
+                test -d "$provider_root/${slug}"
+                test -f "$provider_root/${slug}_manifest.json"
+                cp -R "$provider_root/." site/
               done
               ;;
             "Native Snowfall Estimate Page")

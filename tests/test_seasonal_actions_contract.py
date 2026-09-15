@@ -150,10 +150,10 @@ def main() -> int:
     check("Canonical Seasonal Style Refresh" in publisher
           and "canonical-seasonal-pages-${{ env.SOURCE_RUN_ID }}" in publisher
           and "payloads/cfsv2-snow" in publisher
-          and "Canonical payload must contain at least CFSv2 and C3S references" in publisher
-          and "retaining the last published provider tree" in publisher
+          and "Canonical payload must contain all 11 provider references" in publisher
+          and "payloads/${slug}" in publisher
           and "migrate_legacy_height_artifacts.py" in publisher,
-          "Pages must accept partial canonical payloads and migrate legacy height paths")
+          "Pages must require every canonical provider payload and migrate legacy height paths")
     check("transient Pages tree containing a mixture" in publisher
           and "diff --name-only" in publisher
           and "needs.route_push.outputs.run_workflow == 'true'" in publisher,
