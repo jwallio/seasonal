@@ -178,6 +178,7 @@ jobs:
             scripts/data/cfsv2_cwa_slr_v1.json
             scripts/data/cfsv2_slr_assumptions_v1.json
             scripts/purge_retired_seasonal_products.py
+            scripts/migrate_legacy_height_artifacts.py
           sparse-checkout-cone-mode: false
 
       - name: Normalize source workflow name
@@ -414,7 +415,17 @@ jobs:
                 payload_root="$payload_root/canonical-payload"
               fi
               test -f "$payload_root/producers.tsv"
-              test "$(wc -l < "$payload_root/producers.tsv")" -eq 11
+              producer_count="$(wc -l < "$payload_root/producers.tsv")"
+              if (( producer_count < 2 )); then
+                echo "::error::Canonical payload must contain at least CFSv2 and C3S references"
+                exit 1
+              fi
+              for required_slug in cfsv2 c3s; do
+                if ! awk -F '\\t' -v slug="$required_slug" '$1 == slug { found=1 } END { exit !found }' "$payload_root/producers.tsv"; then
+                  echo "::error::Canonical payload is missing required provider: $required_slug"
+                  exit 1
+                fi
+              done
 
               cfsv2_root="$payload_root/payloads/cfsv2"
               if [ -d "$cfsv2_root/pages-payload" ]; then
@@ -436,15 +447,17 @@ jobs:
                 --incoming "$snowfall_root" --site site
 
               for slug in seas5 cansips c3s jma apcc cma_cpsv3 geos_s2s3 sfs superensemble nmme; do
-                provider_root="$payload_root/payloads/$slug"
+                provider_root="$payload_root/${slug}"
                 if [ -d "$provider_root/pages-payload" ]; then
                   provider_root="$provider_root/pages-payload"
                 elif [ -d "$provider_root/.pages-payload" ]; then
                   provider_root="$provider_root/.pages-payload"
                 fi
-                test -d "$provider_root/$slug"
-                test -f "$provider_root/${slug}_manifest.json"
-                cp -R "$provider_root/." site/
+                if [ -d "$provider_root/${slug}" ] && [ -f "$provider_root/${slug}_manifest.json" ]; then
+                  cp -R "$provider_root/." site/
+                else
+                  echo "::warning::Canonical style payload omitted $slug; retaining the last published provider tree."
+                fi
               done
               ;;
             "Native Snowfall Estimate Page")
@@ -659,6 +672,9 @@ jobs:
 
       - name: Remove retired seasonal products
         run: python dashboard-source/scripts/purge_retired_seasonal_products.py --site-root site
+
+      - name: Migrate legacy North Hemisphere height artifact paths
+        run: python dashboard-source/scripts/migrate_legacy_height_artifacts.py --site site
 
       - name: Validate seasonal manifests and build catalog
         run: |
