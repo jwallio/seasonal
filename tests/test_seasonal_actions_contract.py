@@ -123,8 +123,9 @@ def main() -> int:
           and '--ref "$STYLE_REF"' in style_refresh
           and "same_sha_live" not in style_refresh,
           "canonical styling must pin, dispatch, and resolve one exact-revision provider suite")
-    check("${provider}_manifest.json" in style_refresh and "STYLE_INIT=" in style_refresh,
-          "C3S/JMA style refresh should reuse an accessible published cycle")
+    check('["apcc.yml","c3s.yml","jma.yml"]' in style_refresh
+          and "${provider}_manifest.json" in style_refresh and "STYLE_INIT=" in style_refresh,
+          "APCC/C3S/JMA style refresh should reuse an accessible published cycle")
     check("style_refresh=true" in style_refresh,
           "provider children should identify coordinated complete-suite refreshes")
     check("needs: [pin_revision, refresh]" in style_refresh

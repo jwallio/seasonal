@@ -77,8 +77,8 @@ jobs:
       WORKFLOW: ${{ matrix.workflow }}
       STYLE_REF: ${{ needs.pin_revision.outputs.dispatch_ref }}
     steps:
-      - name: Resolve a published CDS initialization
-        if: ${{ contains(fromJSON('["c3s.yml","jma.yml"]'), matrix.workflow) }}
+      - name: Resolve a published provider initialization
+        if: ${{ contains(fromJSON('["apcc.yml","c3s.yml","jma.yml"]'), matrix.workflow) }}
         shell: bash
         run: |
           set -euo pipefail
