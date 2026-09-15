@@ -85,13 +85,20 @@ jobs:
           provider="${WORKFLOW%.yml}"
           manifest_url="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/${provider}_manifest.json"
           curl -fsSL --retry 3 --connect-timeout 15 --max-time 60 "$manifest_url" -o published.json
-          init_arg="$(python - <<'PY'
-          import json, re
+          init_arg="$(python - "$provider" <<'PY'
+          import json, re, sys
+          provider = sys.argv[1]
           payload = json.load(open("published.json", encoding="utf-8"))
           for run in payload.get("runs", []):
               if run.get("product") != "500mb_height_anomaly":
                   continue
               if run.get("status") not in {"rendered", "decoded", "partial"}:
+                  continue
+              if provider == "apcc":
+                  request_month = str(run.get("request_target_month", ""))
+                  if re.fullmatch(r"\d{6}", request_month):
+                      print(request_month)
+                      break
                   continue
               digits = "".join(re.findall(r"\d", str(run.get("init_utc", ""))))
               if len(digits) >= 10:
