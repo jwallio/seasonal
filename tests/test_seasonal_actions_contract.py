@@ -91,8 +91,10 @@ def main() -> int:
           and "source-workflow: CFSv2 Snowfall Graphics" in snow
           and "source-run-id: ${{ github.run_id }}" in snow
           and "endswith" in handoff
+          and "height-style-refresh.yml" in handoff
+          and 'SOURCE_WORKFLOW" != "Canonical Seasonal Style Refresh' in handoff
           and "conclusion" in handoff,
-          "snowfall publication must use the retrying, queue-safe Pages handoff")
+          "snowfall publication must use the retrying, atomic-release-aware Pages handoff")
     style_refresh = (WORKFLOWS / "height-style-refresh.yml").read_text(encoding="utf-8")
     for path in (
         "scripts/seasonal_rendering.py", "scripts/seasonal_products.py",

@@ -39,6 +39,16 @@ runs:
         QUEUE_TIMEOUT_SECONDS: ${{ inputs.queue-timeout-seconds }}
       run: |
         set -euo pipefail
+        if [[ "$SOURCE_WORKFLOW" != "Canonical Seasonal Style Refresh" ]]; then
+          canonical_active="$(gh run list --repo "$GH_REPO" --workflow height-style-refresh.yml \
+            --limit 20 --json status --jq 'any(.[]; .status != "completed")')"
+          if [[ "$canonical_active" == true ]]; then
+            echo "::notice::Skipping the individual Pages handoff while an atomic canonical-style release is active."
+            echo "publish-run-id=" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+        fi
+
         publisher_id=""
         for attempt in $(seq 1 "$MAX_ATTEMPTS"); do
           queue_wait=0
