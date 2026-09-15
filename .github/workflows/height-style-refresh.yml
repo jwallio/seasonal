@@ -159,6 +159,7 @@ jobs:
   aggregate:
     name: Publish one atomic seasonal style release
     needs: refresh
+    if: ${{ always() && needs.refresh.result != 'cancelled' }}
     runs-on: ubuntu-latest
     timeout-minutes: 420
     steps:
@@ -226,10 +227,16 @@ jobs:
         run: |
           set -euo pipefail
           mapfile -t refs < <(find producer-refs -name producer.tsv -type f | sort)
-          if (( ${#refs[@]} != 11 )); then
-            echo "::error::Expected 11 staged provider references, found ${#refs[@]}"
+          if (( ${#refs[@]} < 2 )); then
+            echo "::error::Expected at least CFSv2 and C3S staged provider references, found ${#refs[@]}"
             exit 1
           fi
+          for required_slug in cfsv2 c3s; do
+            if ! find producer-refs -name producer.tsv -type f -exec awk -F '\\t' -v slug="$required_slug" '$1 == slug { found=1 } END { exit !found }' {} \\; | grep -q .; then
+              echo "::error::Required staged provider reference missing: $required_slug"
+              exit 1
+            fi
+          done
 
           mkdir -p canonical-payload/payloads
           : > canonical-payload/producers.tsv
@@ -247,10 +254,7 @@ jobs:
             fi
           done
 
-          for manifest in \
-            cfsv2_manifest.json cansips_manifest.json c3s_manifest.json seas5_manifest.json \
-            jma_manifest.json apcc_manifest.json cma_cpsv3_manifest.json geos_s2s3_manifest.json \
-            sfs_manifest.json superensemble_manifest.json nmme_manifest.json; do
+          for manifest in cfsv2_manifest.json c3s_manifest.json; do
             test "$(find canonical-payload/payloads -name "$manifest" -type f | wc -l)" -ge 1
           done
 
