@@ -25,8 +25,35 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  pin_revision:
+    name: Pin the immutable style-render revision
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    outputs:
+      dispatch_ref: ${{ steps.pin.outputs.dispatch_ref }}
+    steps:
+      - id: pin
+        name: Point the dedicated dispatch branch at this revision
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          dispatch_ref=canonical-style-dispatch
+          if gh api "repos/$GH_REPO/git/ref/heads/$dispatch_ref" >/dev/null 2>&1; then
+            gh api --method PATCH "repos/$GH_REPO/git/refs/heads/$dispatch_ref" \
+              -f sha="$GITHUB_SHA" -F force=false >/dev/null
+          else
+            gh api --method POST "repos/$GH_REPO/git/refs" \
+              -f ref="refs/heads/$dispatch_ref" -f sha="$GITHUB_SHA" >/dev/null
+          fi
+          echo "dispatch_ref=$dispatch_ref" >> "$GITHUB_OUTPUT"
+
   refresh:
     name: Refresh ${{ matrix.workflow }}
+    needs: pin_revision
     runs-on: ubuntu-latest
     timeout-minutes: 420
     strategy:
@@ -48,6 +75,7 @@ jobs:
       GH_TOKEN: ${{ github.token }}
       GH_REPO: ${{ github.repository }}
       WORKFLOW: ${{ matrix.workflow }}
+      STYLE_REF: ${{ needs.pin_revision.outputs.dispatch_ref }}
     steps:
       - name: Resolve a published CDS initialization
         if: ${{ contains(fromJSON('["c3s.yml","jma.yml"]'), matrix.workflow) }}
@@ -78,7 +106,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          args=(--repo "$GH_REPO" --ref main -f style_refresh=true)
+          args=(--repo "$GH_REPO" --ref "$STYLE_REF" -f style_refresh=true)
           if [[ "$WORKFLOW" == "nmme.yml" ]]; then
             args+=(-f products=2m_temperature_anomaly,probability_above_normal,probability_near_normal,probability_below_normal,multi_model_consensus)
             args+=(-f base_product=2m_temperature_anomaly)
@@ -158,8 +186,8 @@ jobs:
 
   aggregate:
     name: Publish one atomic seasonal style release
-    needs: refresh
-    if: ${{ always() && needs.refresh.result != 'cancelled' }}
+    needs: [pin_revision, refresh]
+    if: ${{ needs.refresh.result == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 420
     steps:
@@ -182,11 +210,12 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
+          STYLE_REF: ${{ needs.pin_revision.outputs.dispatch_ref }}
         run: |
           set -euo pipefail
           dispatch_started="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
           for attempt in 1 2 3 4 5; do
-            if gh workflow run cansips.yml --repo "$GH_REPO" --ref main \
+            if gh workflow run cansips.yml --repo "$GH_REPO" --ref "$STYLE_REF" \
               -f style_refresh=true -f product=all; then
               break
             fi
@@ -227,23 +256,10 @@ jobs:
         run: |
           set -euo pipefail
           mapfile -t refs < <(find producer-refs -name producer.tsv -type f | sort)
-          if (( ${#refs[@]} < 2 )); then
-            echo "::error::Expected at least CFSv2 and C3S staged provider references, found ${#refs[@]}"
+          if (( ${#refs[@]} != 11 )); then
+            echo "::error::Expected 11 staged provider references, found ${#refs[@]}"
             exit 1
           fi
-          for required_slug in cfsv2 c3s; do
-            found=false
-            for ref in "${refs[@]}"; do
-              if awk -F '\\t' -v slug="$required_slug" '$1 == slug { found=1 } END { exit !found }' "$ref"; then
-                found=true
-                break
-              fi
-            done
-            if [[ "$found" != true ]]; then
-              echo "::error::Required staged provider reference missing: $required_slug"
-              exit 1
-            fi
-          done
 
           mkdir -p canonical-payload/payloads
           : > canonical-payload/producers.tsv
@@ -261,7 +277,10 @@ jobs:
             fi
           done
 
-          for manifest in cfsv2_manifest.json c3s_manifest.json; do
+          for manifest in \
+            cfsv2_manifest.json cansips_manifest.json c3s_manifest.json seas5_manifest.json \
+            jma_manifest.json apcc_manifest.json cma_cpsv3_manifest.json geos_s2s3_manifest.json \
+            sfs_manifest.json superensemble_manifest.json nmme_manifest.json; do
             test "$(find canonical-payload/payloads -name "$manifest" -type f | wc -l)" -ge 1
           done
 
@@ -278,3 +297,4 @@ jobs:
         with:
           source-workflow: Canonical Seasonal Style Refresh
           source-run-id: ${{ github.run_id }}
+

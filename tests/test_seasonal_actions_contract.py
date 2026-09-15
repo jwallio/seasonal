@@ -119,18 +119,20 @@ def main() -> int:
           "canonical styling should request each provider's complete supported comparison suite")
     check("gh workflow run" in style_refresh
           and ".headSha ==" in style_refresh and "$GITHUB_SHA" in style_refresh
+          and "canonical-style-dispatch" in style_refresh
+          and '--ref "$STYLE_REF"' in style_refresh
           and "same_sha_live" not in style_refresh,
-          "canonical styling must dispatch a complete suite and resolve its exact-revision producer")
+          "canonical styling must pin, dispatch, and resolve one exact-revision provider suite")
     check("${provider}_manifest.json" in style_refresh and "STYLE_INIT=" in style_refresh,
           "C3S/JMA style refresh should reuse an accessible published cycle")
     check("style_refresh=true" in style_refresh,
           "provider children should identify coordinated complete-suite refreshes")
-    check("needs: refresh" in style_refresh
-          and "always() && needs.refresh.result != 'cancelled'" in style_refresh
+    check("needs: [pin_revision, refresh]" in style_refresh
+          and "needs.refresh.result == 'success'" in style_refresh
           and "canonical-seasonal-pages-${{ github.run_id }}" in style_refresh
-          and "at least CFSv2 and C3S staged provider references" in style_refresh
+          and "Expected 11 staged provider references" in style_refresh
           and "source-workflow: Canonical Seasonal Style Refresh" in style_refresh,
-          "canonical styling must publish the successful provider subset as one aggregate payload")
+          "canonical styling must publish all provider payloads as one atomic release")
     check("corrected-snowfall-ready" in style_refresh and "payloads/cfsv2-snow" in style_refresh,
           "the atomic payload must include both CFSv2 weather and corrected snowfall artifacts")
 
@@ -212,3 +214,4 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
