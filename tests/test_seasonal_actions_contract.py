@@ -126,10 +126,11 @@ def main() -> int:
     check("style_refresh=true" in style_refresh,
           "provider children should identify coordinated complete-suite refreshes")
     check("needs: refresh" in style_refresh
+          and "always() && needs.refresh.result != 'cancelled'" in style_refresh
           and "canonical-seasonal-pages-${{ github.run_id }}" in style_refresh
-          and "Expected 11 staged provider references" in style_refresh
+          and "at least CFSv2 and C3S staged provider references" in style_refresh
           and "source-workflow: Canonical Seasonal Style Refresh" in style_refresh,
-          "canonical styling must stage every provider and publish one aggregate payload")
+          "canonical styling must publish the successful provider subset as one aggregate payload")
     check("corrected-snowfall-ready" in style_refresh and "payloads/cfsv2-snow" in style_refresh,
           "the atomic payload must include both CFSv2 weather and corrected snowfall artifacts")
 
@@ -148,8 +149,11 @@ def main() -> int:
           "corrected snowfall must be stageable without an individual Pages publish")
     check("Canonical Seasonal Style Refresh" in publisher
           and "canonical-seasonal-pages-${{ env.SOURCE_RUN_ID }}" in publisher
-          and "payloads/cfsv2-snow" in publisher,
-          "Pages must accept and merge the complete canonical-style payload")
+          and "payloads/cfsv2-snow" in publisher
+          and "Canonical payload must contain at least CFSv2 and C3S references" in publisher
+          and "retaining the last published provider tree" in publisher
+          and "migrate_legacy_height_artifacts.py" in publisher,
+          "Pages must accept partial canonical payloads and migrate legacy height paths")
     check("transient Pages tree containing a mixture" in publisher
           and "diff --name-only" in publisher
           and "needs.route_push.outputs.run_workflow == 'true'" in publisher,
